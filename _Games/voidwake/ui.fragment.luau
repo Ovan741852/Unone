@@ -2,14 +2,14 @@
 -- No host CSS, raw canvas calls, or game-specific engine branches.
 local abandonPrompt = false
 local function updateUi(api: EngineApi)
- local ui=api.ui.components.create()
- local nodes: {any} = {}
+ local ui:UiComponentKit=api.ui.components
+ local nodes: {UiNode} = {}
  local compact=api.ui.getViewport().aspect<1.4
- local mint={.74,.89,.84,1}
- local ivory={.88,.93,.89,1}
- local muted={.47,.62,.62,1}
- local edgeColor={.57,.72,.68,.23}
- local function rect(x:number,y:number,w:number,h:number):any return {x=x,y=y,width=w,height=h} end
+ local mint:UiColor={.74,.89,.84,1}
+ local ivory:UiColor={.88,.93,.89,1}
+ local muted:UiColor={.47,.62,.62,1}
+ local edgeColor:UiColor={.57,.72,.68,.23}
+ local function rect(x:number,y:number,w:number,h:number):UiRect return {x=x,y=y,width=w,height=h} end
  local function component(id:string,kind:string,x:number,y:number,w:number,h:number,build:()->())
   local parent=nodes;nodes={};build();local children=nodes;nodes=parent
   table.insert(nodes,(ui.component({id=id,component=kind,rect=rect(x,y,w,h),children=children})))
@@ -18,10 +18,10 @@ local function updateUi(api: EngineApi)
   table.insert(nodes,(ui.panel({id=name,rect=rect(x,y,w,h),style={
    background={.025,.065,.085,.72},border_color=edgeColor,border_width=.07,border_radius=.18}})))
  end
- local function rule(name:string,x:number,y:number,w:number,color:any?)
+ local function rule(name:string,x:number,y:number,w:number,color:UiColor?)
   table.insert(nodes,(ui.panel({id=name,rect=rect(x,y,w,.08),style={background=color or edgeColor}})))
  end
- local tokens:any={
+ local tokens:{[string]:UiStyle}={
   brand={font_family="Barlow Condensed",font_size=3.5,font_weight=700,letter_spacing=.38,color=ivory},
   comms={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.8,letter_spacing=.18},
   eyebrow={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1,letter_spacing=.25,color=mint},
@@ -51,9 +51,8 @@ local function updateUi(api: EngineApi)
   flight_hint={font_size=.8,text_align="center",color={.32,.47,.49,1}},
  }
  local function text(name:string,value:string,x:number,y:number,w:number,h:number)
-  local style:any={font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,font_weight=400,color=muted,
-   text_align="start",vertical_align="middle",line_height=1.5,letter_spacing=0,overflow="clip"}
-  for k,v in pairs(tokens[name] or {}) do style[k]=v end
+  local style:UiStyle=ui.composeStyle({font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,font_weight=400,color=muted,
+   text_align="start",vertical_align="middle",line_height=1.5,letter_spacing=0,overflow="clip"},tokens[name])
   if string.sub(name,1,7)=="rarity_" then style.font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental";style.font_size=.9;style.color=mint;style.letter_spacing=.18 end
   if string.sub(name,1,12)=="choice_name_" then style.font_size=2.1;style.font_weight=600;style.color=ivory end
   if string.sub(name,1,12)=="choice_desc_" then style.font_size=1.15;style.line_height=1.8 end
@@ -74,7 +73,7 @@ local function updateUi(api: EngineApi)
     padding={left=1.4,right=1.4,top=.3,bottom=.3},text_align="start",vertical_align="middle",letter_spacing=primary and .18 or .04}})))
   end)
  end
- local function statBar(name:string,title:string,current:number,maximum:number,x:number,y:number,w:number,color:any)
+ local function statBar(name:string,title:string,current:number,maximum:number,x:number,y:number,w:number,color:UiColor)
   component(name.."_component","StatBar",x,y,w,3,function()
    text(name.."_label",title,x,y,w*.16,3)
    table.insert(nodes,(ui.panel({id=name.."_track",rect=rect(x+w*.19,y+1.3,w*.51,.35),style={background={.4,.6,.6,.17}}})))
@@ -191,5 +190,5 @@ local function updateUi(api: EngineApi)
  rule("footer_rule",3.1,4.8,93.8)
  text("footer","DEEP SPACE NETWORK  ·  CONNECTED",3.1,1.5,compact and 60 or 30,2)
  text("engine_mark","POWERED BY UNONE ↗",compact and 68 or 81,1.5,compact and 27 or 15,2)
- api.ui.setRoot({kind="screen",id=phase,node=phase,children=nodes})
+ api.ui.setRoot(ui.screen({id=phase,node=phase,children=nodes}))
 end

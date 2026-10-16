@@ -97,7 +97,7 @@ fn matching_runtime<'a>(
         runtime.target == target && runtime.variant == variant
             && id.is_none_or(|wanted| wanted == runtime.id)
             && systems.iter().all(|system| runtime.compiled_systems.contains(system))
-            && packages.iter().all(|(id, version)| runtime.runtime_packages.get(id) == Some(version))
+            && package_version_gaps(packages, &runtime.runtime_packages).is_empty()
     }).collect();
     candidates.sort_by(|left, right| left.bytes.cmp(&right.bytes).then(left.id.cmp(&right.id)));
     candidates.first().copied().ok_or_else(|| RuntimeUnavailable {
@@ -117,7 +117,7 @@ fn matching_runtime<'a>(
             matches_variant: runtime.variant == variant,
             matches_requested_id: id.is_none_or(|wanted| wanted == runtime.id),
             missing_systems: systems.iter().filter(|system| !runtime.compiled_systems.contains(system)).cloned().collect(),
-            missing_packages: packages.iter().filter(|(id, version)| runtime.runtime_packages.get(*id) != Some(*version)).map(|(id, version)| (id.clone(), PackageVersionGap { expected: version.clone(), found: runtime.runtime_packages.get(id).cloned() })).collect(),
+            missing_packages: package_version_gaps(packages, &runtime.runtime_packages),
         }).collect(),
     }.into())
 }
@@ -309,11 +309,23 @@ fn runtime_files(r: &Value) -> Result<Vec<(String, String)>> {
         })
         .collect()
 }
-fn descriptor_packages(descriptor: &Value) -> Result<BTreeMap<String, String>> {
+pub(crate) fn descriptor_packages(descriptor: &Value) -> Result<BTreeMap<String, String>> {
     descriptor.get("runtime_packages").map_or_else(
         || Ok(BTreeMap::new()),
         |packages| serde_json::from_value(packages.clone()).context("SDK_RUNTIME_PACKAGES_INVALID"),
     )
+}
+
+/// Shared exact-version policy for SDK selection and direct runtime export.
+/// Missing legacy metadata is an empty available set, not implicit support.
+pub(crate) fn package_version_gaps(
+    required: &BTreeMap<String, String>,
+    available: &BTreeMap<String, String>,
+) -> BTreeMap<String, PackageVersionGap> {
+    required.iter().filter(|(id, version)| available.get(*id) != Some(*version))
+        .map(|(id, version)| (id.clone(), PackageVersionGap {
+            expected: version.clone(), found: available.get(id).cloned(),
+        })).collect()
 }
 
 fn validate_runtime_package_metadata(runtime: &Runtime, descriptor: &Value) -> Result<()> {

@@ -1,6 +1,6 @@
 #[cfg(feature = "dev-tools")]
 use crate::project::TestSpec;
-use std::{cell::RefCell, collections::BTreeMap, path::PathBuf, rc::Rc};
+use std::{cell::RefCell, collections::{BTreeMap, BTreeSet}, path::PathBuf, rc::Rc};
 #[cfg(feature = "dev-tools")]
 use std::{env, fs, path::Path, process::Command, time::SystemTime};
 
@@ -130,7 +130,51 @@ pub struct TraceEvent {
 #[derive(Debug, Clone, Default)]
 struct InputState {
     down: BTreeMap<String, bool>,
+    previous_down: BTreeMap<String, bool>,
+    pressed: BTreeSet<String>,
+    released: BTreeSet<String>,
     pointer: PointerState,
+}
+
+// Host writes may arrive several times between ticks. Publish one read-only
+// edge snapshot for the tick and advance its held baseline only on success.
+// A failed script/physics/job step must not consume the next retry's edges.
+struct InputTick {
+    input: Rc<RefCell<InputState>>,
+    down: BTreeMap<String, bool>,
+    previous_pressed: BTreeSet<String>,
+    previous_released: BTreeSet<String>,
+    committed: bool,
+}
+
+impl InputTick {
+    fn begin(input: &Rc<RefCell<InputState>>) -> Self {
+        let mut state = input.borrow_mut();
+        let pressed = state.down.iter().filter(|(action, down)| **down && !state.previous_down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
+        let released = state.previous_down.iter().filter(|(action, down)| **down && !state.down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
+        Self {
+            input: Rc::clone(input),
+            down: state.down.clone(),
+            previous_pressed: std::mem::replace(&mut state.pressed, pressed),
+            previous_released: std::mem::replace(&mut state.released, released),
+            committed: false,
+        }
+    }
+
+    fn commit(mut self) {
+        self.input.borrow_mut().previous_down = std::mem::take(&mut self.down);
+        self.committed = true;
+    }
+}
+
+impl Drop for InputTick {
+    fn drop(&mut self) {
+        if !self.committed {
+            let mut input = self.input.borrow_mut();
+            input.pressed = std::mem::take(&mut self.previous_pressed);
+            input.released = std::mem::take(&mut self.previous_released);
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -893,6 +937,7 @@ impl EngineRuntime {
 
     pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
         let started = std::time::Instant::now();
+        let input_tick = InputTick::begin(&self.input);
         #[cfg(feature = "jobs")]
         if self.systems.is_enabled("jobs") {
             self.jobs
@@ -1039,6 +1084,7 @@ impl EngineRuntime {
                 },
             );
         }
+        input_tick.commit();
         Ok(snapshot)
     }
 
@@ -1359,6 +1405,11 @@ impl EngineRuntime {
         // mutate the live script state before the candidate is accepted.
         let candidate_lua = determinism::new_vm()?;
         let table = evaluate_script(&candidate_lua, &self.paths, &source)?;
+        // The adapter belongs to the candidate VM just like its update
+        // function. Publish the new registry only with a successful reload.
+        if let Ok(Value::Table(adapter)) = table.raw_get::<Value>("replay") {
+            candidate_lua.set_named_registry_value("unone.replay.adapter", adapter).map_err(|e| Box::new(script_diagnostic(&self.paths, e.to_string())))?;
+        }
         let update_fn = script_entrypoint(&table, "update", &self.paths)?;
         let _start_fn = script_entrypoint(&table, "start", &self.paths)?;
         let on_reload = table.get::<Function>("onReload").ok();

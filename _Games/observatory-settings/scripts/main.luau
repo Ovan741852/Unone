@@ -1,6 +1,21 @@
 --!strict
--- Engine type contract, inlined by `project init`.
--- Refresh it after an engine upgrade with `game api typings`.
+-- BEGIN UNONE API TYPES
+-- Unone public Luau contract.
+--
+-- This file is the engine's own copy and the single source of truth. A test
+-- asserts every API in the engine's semantic index appears here, so the two
+-- cannot drift. Write it into a project with:
+--     game api typings --output <path>
+-- project init inlines it into the entry script, because the engine runtime
+-- has no module require: a single-file game must carry its own types for
+-- `game check --types` to mean anything.
+-- Official SDK-bundled Luau packages use typed API namespaces such as
+-- api.ui.components; declare their exact runtime_packages versions in the project.
+-- Refresh an existing marked type block without replacing game code with:
+--     game --project <root> api typings --update-script <project-relative-script>
+--
+-- Game-owned models, ViewModels, Views and save schemas belong in the game.
+
 export type Vec2 = { x: number, y: number }
 export type Vec3 = { x: number, y: number, z: number }
 export type Transform2D = { position: Vec2, rotation: number, scale: Vec2 }
@@ -30,12 +45,18 @@ export type EntityApi = {
 }
 
 export type Instances3DApi = {
+    -- Packed little-endian f32 records: position.xyz, quaternion.xyzw, scale.xyz (40 bytes).
+    -- Replaces a complete batch atomically; max 262144 instances / 256 batches per world.
     set: (id: string, asset: string, transforms: buffer) -> (),
     remove: (id: string) -> (),
 }
 
 export type InputApi = {
     isDown: (action: string) -> boolean,
+    -- Non-consuming edges for the current simulation tick. Read in update;
+    -- multiple reads return the same result. Held actions press only once.
+    wasPressed: (action: string) -> boolean,
+    wasReleased: (action: string) -> boolean,
     getPointerPosition: () -> Vec2,
     getScreenPointerPosition: () -> Vec2,
     isPointerDown: () -> boolean,
@@ -81,6 +102,10 @@ export type QueryFilter3D = {membership:number?,filter:number?,exclude:string?,i
 export type JointKind3D = {kind:"fixed"}|{kind:"spherical"}|{kind:"revolute",axis:Vec3,limits:{number}?}
 
 export type CameraApi = {
+    -- Canonical Unity-like camera: one 3D transform plus a projection mode.
+    -- `orthographic` is the 2D-compatible projection; `perspective` is the
+    -- regular 3D projection. The old 2D calls below remain compatibility
+    -- helpers and should not be used to model a second camera.
     getProjection: () -> ("orthographic" | "perspective"),
     setProjection: (projection: "orthographic" | "perspective") -> (),
     getTransform: () -> CameraTransform,
@@ -117,6 +142,20 @@ export type ObservationApi = {
     set: (key: string, value: ObservationValue) -> (),
 }
 
+-- The UI design space is 0..100 on both axes and **y points UP**: y = 0 is the
+-- bottom of the screen, y = 100 the top, and a rect grows upward from its y.
+-- Most UI systems are y-down, so this is the single easiest thing to get wrong
+-- when you cannot see the screen.
+--
+-- A UI node declares its placement exactly one of two ways.
+--
+-- `rect` is absolute in the 0..100 design space; use it when the layout is not
+-- edge relative, such as a ring laid out with trigonometry.
+--
+-- `anchor` + `size` (+ optional `offset` and `pivot`) is edge relative. Its
+-- numbers are vertical units on both axes -- percent of the viewport height --
+-- so a box keeps its shape and its distance from the edge on any screen shape.
+-- The engine resolves it against the viewport the host reports.
 export type UiAnchor =
     "top_left" | "top" | "top_right"
     | "left" | "center" | "right"
@@ -125,13 +164,21 @@ export type UiAnchor =
 export type UiApi = {
     components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
+    -- Current host width/height ratio, also used by anchored placement.
+    -- Read-only environment data; selecting a layout remains game code.
     getViewport: () -> {aspect: number},
-    scrollView: (options: UiScrollOptions) -> any,
-    virtualList: (options: UiVirtualOptions) -> any,
-    virtualGrid: (options: UiVirtualGridOptions) -> any,
+    -- Helpers return a real scroll_view node. Content is local top-left/y-down;
+    -- viewport uses explicit left/top; never pass a stage x/y rect here.
+    scrollView: (options: UiScrollOptions) -> UiScrollNode,
+    virtualList: <T>(options: UiVirtualOptions<T>) -> UiScrollNode,
+    virtualGrid: <T>(options: UiVirtualGridOptions<T>) -> UiScrollNode,
+    -- Actual host ceilings and the last valid tree's node/subtree usage.
     inspect: () -> ObservationValue,
 }
 export type UiRect = {x: number, y: number, width: number, height: number}
+-- Every style length uses vertical units (1 = 1% of viewport height).
+-- Styles belong to one leaf, with no implicit inheritance. An explicit
+-- font_size does not change when its box changes and never silently shrinks.
 export type UiColor = {number} -- exactly four RGBA values, each in 0..1
 export type UiInsets = {left: number?, top: number?, right: number?, bottom: number?}
 export type UiStyle = {
@@ -160,6 +207,9 @@ export type UiComboBoxNode = UiPlacement & {
     kind: "combobox", id: string, text: string?, action: string,
     expanded: boolean?, style: UiStyle?,
 }
+-- Image and panel styles accept box fields; typography requires a text leaf.
+-- A decorative surface may explicitly belong to its screen or an ancestor
+-- component in the same coordinate space. This never changes placement/order.
 export type UiBackgroundScope = {screen: true} | {component: string}
 export type UiImageNode = UiPlacement & {
     kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
@@ -169,6 +219,8 @@ export type UiPanelNode = UiPlacement & {
     kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
 }
 export type UiComponentNode = UiPlacement & {
+    -- Grouping does not transform children: their coordinates remain in the
+    -- current stage/scroll space, with no relative-placement or style inheritance.
     kind: "component", id: string, component: string, children: {UiNode}?,
 }
 export type UiScrollNode = UiPlacement & {
@@ -179,14 +231,23 @@ export type UiScrollNode = UiPlacement & {
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
+-- @unone/ui: pure constructors. All positions/order remain explicitly authored.
+-- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
     text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
+    slider: UiStyle?, combobox: UiStyle?,
 }
 export type UiComponentTextProps = UiPlacement & {
     id: string, text: string?, style: UiStyle?,
 }
 export type UiComponentButtonProps = UiPlacement & {
     id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComponentSliderProps = UiPlacement & {
+    id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComponentComboBoxProps = UiPlacement & {
+    id: string, text: string?, action: string, expanded: boolean?, style: UiStyle?,
 }
 export type UiComponentPanelProps = UiPlacement & {
     id: string, style: UiStyle?, background_for: UiBackgroundScope?,
@@ -204,12 +265,23 @@ export type UiComponentSurface = {
 export type UiComponentProps = UiPlacement & {
     id: string, component: string, children: {UiNode}?, surface: UiComponentSurface?,
 }
+export type UiComponentScreenProps = {
+    id: string, node: string, children: {UiNode}, budget: UiBudget?,
+}
 export type UiComponentKit = {
     text: (props: UiComponentTextProps) -> UiTextNode,
     button: (props: UiComponentButtonProps) -> UiButtonNode,
+    slider: (props: UiComponentSliderProps) -> UiSliderNode,
+    combobox: (props: UiComponentComboBoxProps) -> UiComboBoxNode,
     panel: (props: UiComponentPanelProps) -> UiPanelNode,
     image: (props: UiComponentImageProps) -> UiImageNode,
     component: (props: UiComponentProps) -> UiComponentNode,
+    screen: (props: UiComponentScreenProps) -> UiScreen,
+    -- Same engine-owned live helpers as UiApi. Scroll content is local
+    -- top-left/y-down; the viewport uses left/top/width/height.
+    scrollView: (options: UiScrollOptions) -> UiScrollNode,
+    virtualList: <T>(options: UiVirtualOptions<T>) -> UiScrollNode,
+    virtualGrid: <T>(options: UiVirtualGridOptions<T>) -> UiScrollNode,
     id: (instanceId: string, role: string) -> string,
     composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
 }
@@ -217,7 +289,9 @@ export type UiComponentsInfo = {
     name: string, version: string, kind: string, entry: string,
     api: string, license: string, declared: boolean,
 }
-export type UiComponentsApi = {
+-- Direct constructors use default styles. create(theme) supplies the same
+-- constructor methods with explicitly authored per-kind style defaults.
+export type UiComponentsApi = UiComponentKit & {
     info: () -> UiComponentsInfo,
     create: (theme: UiComponentsTheme?) -> UiComponentKit,
     composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
@@ -225,20 +299,24 @@ export type UiComponentsApi = {
 }
 export type UiViewport = {left: number, top: number, width: number, height: number}
 export type UiScrollOptions = {
-    id: string, viewport: UiViewport, content: {any}?,
+    id: string, viewport: UiViewport, content: {UiNode}?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
 }
-export type UiVirtualOptions = {
-    id: string, viewport: UiViewport, items: {any}, key: string | ((any, number) -> string),
+-- Give T your project row type to check keys and render callbacks.
+-- Bare options keep the legacy any default for existing projects.
+export type UiVirtualOptions<T = any> = {
+    id: string, viewport: UiViewport, items: {T}, key: string | ((T, number) -> string),
     rowHeight: number, gapY: number?,
-    renderItem: (any, number, string) -> {any},
+    renderItem: (T, number, string) -> {UiNode},
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
 }
-export type UiVirtualGridOptions = UiVirtualOptions & {
+export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
     columns: number, columnWidth: number, gapX: number?,
 }
 
+-- One source texture and one node. Border pixels / pixels_per_unit become
+-- vertical design units; optional source is a y-down pixel crop, not UI rect.
 export type UiSlice = {
     left: number, top: number, right: number, bottom: number,
     pixels_per_unit: number,
@@ -257,6 +335,8 @@ export type AnimationOptions = {
     speed: number?,
 }
 
+-- Semantic skeletal animation state. The engine stores the selection; the
+-- host runs the Spine runtime. Requires system "spine".
 export type AnimationApi = {
     play: (id: string, name: string, options: AnimationOptions?) -> (),
     stop: (id: string) -> (),
@@ -269,6 +349,8 @@ export type EffectOptions = {
     rotation: number?,
 }
 
+-- Semantic effect events. The engine stores live instances; the host runs the
+-- Effekseer runtime. Requires system "effekseer".
 export type EffectApi = {
     spawn: (asset: string, options: EffectOptions?) -> string,
     stop: (handle: string) -> boolean,
@@ -280,9 +362,14 @@ export type AudioOptions = {
     category: string?,
     x: number?,
     y: number?,
+    -- Attach the sound to an entity; the engine keeps it on that entity and
+    -- stops it when the entity is gone.
     entity: string?,
 }
 
+-- Semantic audio requests. The engine owns which sound starts, which one a
+-- category switch stops, and the exact frame a fade ends; the host decodes and
+-- mixes. Requires system "audio".
 export type AudioApi = {
     play: (asset: string, options: AudioOptions?) -> string,
     loop: (asset: string, options: AudioOptions?) -> string,
@@ -299,9 +386,13 @@ export type AudioApi = {
 }
 
 export type ParticleApi = {
+    -- Packed f32le xyz positions, copied at submission. One stoppable batch handle.
     play_batch: (effect: string, positions: buffer, seed: number?) -> string,
+    -- Update where new births appear. Existing particles remain in world space.
     move: (handle: string, position: Vec3) -> boolean,
+    -- End an emitter now and allow its existing particles to fade naturally.
     finish: (handle: string) -> boolean,
+    -- Other particle fields are authored in scene particle_effects and validated against particle.schema.json.
     stats: () -> {active_handles: number, max_handles: number, reserved_particles: number, max_particles: number, live_particles: number},
     play: (effect: string, position: Vec3, seed: number?) -> string,
     stop: (handle: string) -> boolean,
@@ -345,6 +436,7 @@ export type EngineApi = {
     physics: PhysicsApi,
     physics3d: Physics3DApi,
     camera: CameraApi,
+    -- Deprecated compatibility namespace; new code uses camera.*.
     camera3d: Camera3DApi,
     observation: ObservationApi,
     ui: UiApi,
@@ -359,6 +451,7 @@ export type Game = {
     start: (api: EngineApi) -> (),
     update: (api: EngineApi, dt: number) -> (),
 }
+-- END UNONE API TYPES
 
 -- Authored UI example: composition, theme and application state stay in Luau.
 local Game = {}
@@ -368,7 +461,6 @@ local draft: Settings = {sound=true, mode=2, level=65}
 local applied: Settings = {sound=true, mode=2, level=65}
 local applyCount = 0
 local status = "觀測設定已就緒 READY · 長時間觀測前，請確認環境與設備，讓每一個微小的調整成為今晚更好的開始。請將螢幕亮度維持在舒適範圍，讓雙眼適應黑暗，從容等待下一道星光。"
-local previous: {[string]: boolean} = {}
 local previousAspect = 0
 local draggingLevel = false
 local sliderRect: UiRect = {x=69,y=27,width=15,height=5}
@@ -445,8 +537,8 @@ local function publish(api: EngineApi)
             panel("level_track",track,{0.18,0.28,0.33,1},0.4),
             panel("level_fill",rect(track.x,track.y,fillWidth,track.height),MINT,0.4),
             panel("level_thumb",rect(thumbX,sliderRect.y+1.5,0.8,2),WHITE,0.4),
-            {kind="slider",id="level_slider",action="SetLevel",text="",rect=sliderRect,
-                style={background={0,0,0,0},color={0,0,0,0},border_width=0}},
+            ui.slider({id="level_slider",action="SetLevel",text="",rect=sliderRect,
+                style={background={0,0,0,0},color={0,0,0,0},border_width=0}}),
             actionButton("level_plus","+","LevelUp",plus,false),
         }
     end
@@ -511,7 +603,7 @@ local function publish(api: EngineApi)
     statusStyle.border_radius=0.3
     local statusNode = ui.text({id="status_line",text=status,rect=rect(6,3,if compact then 88 else 58,3.2),style=statusStyle})
     table.insert(nodes,statusNode)
-    api.ui.setRoot({kind="screen",id="observatory_settings",node="settings",children=nodes})
+    api.ui.setRoot(ui.screen({id="observatory_settings",node="settings",children=nodes}))
     api.observation.set("draft",{sound=draft.sound,mode=draft.mode,level=draft.level})
     api.observation.set("applied",{sound=applied.sound,mode=applied.mode,level=applied.level})
     api.observation.set("apply_count",applyCount)
@@ -519,32 +611,27 @@ local function publish(api: EngineApi)
     api.observation.set("status",status)
     api.observation.set("compact_ui",compact)
 end
-local function pressed(api: EngineApi,action: string): boolean
-    local down=api.input.isDown(action)
-    local edge=down and not previous[action]
-    previous[action]=down
-    return edge
-end
+
 function Game.start(api: EngineApi)
     publish(api)
 end
 function Game.update(api: EngineApi,_dt: number)
     local redraw = api.ui.getViewport().aspect ~= previousAspect
-    if pressed(api,"ToggleSound") then
+    if api.input.wasPressed("ToggleSound") then
         draft.sound=not draft.sound
         status=if draft.sound then "環境聲音已開啟 SOUND ON · 套用以保留這次調整。" else "環境聲音已關閉 SOUND OFF · 套用以保留這次調整。"
         redraw=true
     end
     local actions={"ModeMoon","ModeDeep","ModeMeteor"}
     for i,action in actions do
-        if pressed(api,action) then
+        if api.input.wasPressed(action) then
             draft.mode=i
             status="已選擇 SELECTED · "..modeNames[i].." · 套用以保留這次調整。"
             redraw=true
         end
     end
-    if pressed(api,"LevelDown") then draft.level=math.max(0,draft.level-5); redraw=true; status="亮度已降低 LEVEL DOWN · 套用以保留這次調整。" end
-    if pressed(api,"LevelUp") then draft.level=math.min(100,draft.level+5); redraw=true; status="亮度已提高 LEVEL UP · 套用以保留這次調整。" end
+    if api.input.wasPressed("LevelDown") then draft.level=math.max(0,draft.level-5); redraw=true; status="亮度已降低 LEVEL DOWN · 套用以保留這次調整。" end
+    if api.input.wasPressed("LevelUp") then draft.level=math.min(100,draft.level+5); redraw=true; status="亮度已提高 LEVEL UP · 套用以保留這次調整。" end
     local pointer=api.input.getScreenPointerPosition()
     local pointerDown=api.input.isPointerDown()
     local inside=pointer.x>=sliderRect.x and pointer.x<=sliderRect.x+sliderRect.width and pointer.y>=sliderRect.y and pointer.y<=sliderRect.y+sliderRect.height
@@ -553,12 +640,12 @@ function Game.update(api: EngineApi,_dt: number)
         local value=math.floor(math.clamp((pointer.x-sliderRect.x-1)/(sliderRect.width-2),0,1)*100+0.5)
         if draft.level~=value then draft.level=value; redraw=true; status="亮度預覽 LEVEL PREVIEW · 套用以保留這次調整。" end
     elseif not pointerDown then draggingLevel=false end
-    if pressed(api,"Reset") then
+    if api.input.wasPressed("Reset") then
         draft={sound=defaults.sound,mode=defaults.mode,level=defaults.level}
         status="預設值已還原 DEFAULTS RESTORED · 你可以繼續調整，或套用目前設定。"
         redraw=true
     end
-    if pressed(api,"Apply") then
+    if api.input.wasPressed("Apply") then
         applied={sound=draft.sound,mode=draft.mode,level=draft.level}
         applyCount+=1
         status="設定已套用 APPLIED #"..tostring(applyCount).." · "..modeNames[draft.mode].." · LEVEL "..tostring(draft.level).." · 今晚，慢慢看。"

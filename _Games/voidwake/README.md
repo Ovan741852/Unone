@@ -3,8 +3,10 @@
 A top-down space roguelike authored in Luau and presented by the official Unone
 player. Clear three sectors, choose upgrades, and defeat the capital ship.
 
-This example declares the official `@unone/ui` 0.1.0 package and composes its
-text, button, panel and component constructors through `api.ui.components.create()`.
+This example declares the official `@unone/ui` 0.2.0 package and composes its
+text, button, panel, component and screen constructors through the typed
+`api.ui.components` default kit. `api.input.wasPressed` handles one-shot actions;
+`isDown` remains the held-input query.
 The same package, typography/styles, declared font faces, particle effects and
 sprite Shader API are available to any Unone project. Gameplay and the screen
 composition remain game code. There is no game-owned renderer, HTML overlay,
@@ -49,12 +51,16 @@ under `.unone/`; it never serves authoring files.
 and UI fragments. Edit these source files and compose the checked-in entry point:
 
 ```powershell
+./target/debug/game.exe --project _Games/voidwake api typings --update-script gameplay.luau
 node _Games/voidwake/tools/compose-game.mjs
 ./target/debug/game.exe --project _Games/voidwake bundle pack --output .unone/bundles/manifest.json --json
 ./target/debug/game.exe --project _Games/voidwake verify --json
 ```
 
-`export.ps1` composes and prepares source bundles before exporting. The replay
+The safe type refresh updates only the marked canonical contract in
+`gameplay.luau`; project types and logic stay outside that block. Compose afterward
+to refresh the generated entry point. `export.ps1` composes and prepares source
+bundles before exporting. The replay
 tests and four UI previews cover the menu, flight HUD, pause screen and upgrade selection. The overlap policy
 explicitly names decorative background layers; it does not waive overlapping
 controls or text. Visual layout choices belong to `ui.fragment.luau`, using the

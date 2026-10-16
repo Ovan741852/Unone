@@ -1,0 +1,132 @@
+{
+  "ok": true,
+  "export": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player",
+  "browser": "Microsoft Edge / Playwright, headless",
+  "interaction": "Actual mouse movement/down/up/wheel only",
+  "observation": "Read-only WASM observation ABI; actual exported projectScrollTree pure utility plus DOM scrollbar positions",
+  "errors": [],
+  "limits": [
+    "No runtime/game/payload/renderer or developer API mutations and no direct materialization calls.",
+    "Portrait is tested with a mouse at a narrow viewport; this is not a mobile touch-device test.",
+    "This probe is one SDK-authored project, not a general guarantee for all layouts."
+  ],
+  "url": "http://127.0.0.1:13354/",
+  "interactionChecksPassed": true,
+  "visualReview": {
+    "method": "Direct visual inspection of actual desktop-final.png and portrait-final.png screenshots",
+    "scope": "This is a project-authored fixed-geometry layout limitation; the interaction test does not establish automatic layout or typography fitting.",
+    "portrait": {
+      "visuallyUsable": false,
+      "screenshot": "portrait-final.png",
+      "finding": "At 390x844 the fixed two-column project layout clips headings, subtitle, counts, combobox label, list row labels and loaded-key label. Mouse hitboxes and all tested state transitions work, but this does not pass visual responsive-layout QA.",
+      "interactionPassed": true
+    },
+    "desktop": {
+      "readable": true,
+      "screenshot": "desktop-final.png",
+      "finding": "Headings, control labels, counts and selected row are readable at 1440x900."
+    }
+  },
+  "okScope": "Interaction and runtime checks only; visualReview explicitly records portrait clipping.",
+  "raw_report": {
+    "path": "artifacts/ui-ergonomics/fresh-controls-browser/browser-report.json",
+    "bytes": 754859,
+    "sha256": "5e1b67618ef807e9470230e08ad1f52863322e3af7d97582a6a5e00a947f1f72"
+  },
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "ok": true,
+      "checks": [
+        "Official renderer and main-thread WASM actually booted",
+        "Exact @unone/ui 0.2.0 declaration is active",
+        "Expected initial game state",
+        "350ms hold has exactly one press and no release",
+        "Hold/release produces exactly one press and one release",
+        "Repeated input edge readers agree",
+        "Real pointer drag changes project-owned slider value to 80%",
+        "Slider value remains after release",
+        "Expanded option is actual authored UI",
+        "Real combobox click expands, then Studio choice updates and closes",
+        "Virtual list keeps a bounded materialized subset",
+        "A fully visible row has a projected real hitbox",
+        "Scrolled visible-row selection uses its stable key",
+        "Edge readers remain equal after all interactions",
+        "No browser or failed-resource errors"
+      ],
+      "errors": []
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "ok": true,
+      "checks": [
+        "Official renderer and main-thread WASM actually booted",
+        "Exact @unone/ui 0.2.0 declaration is active",
+        "Expected initial game state",
+        "350ms hold has exactly one press and no release",
+        "Hold/release produces exactly one press and one release",
+        "Repeated input edge readers agree",
+        "Real pointer drag changes project-owned slider value to 80%",
+        "Slider value remains after release",
+        "Expanded option is actual authored UI",
+        "Real combobox click expands, then Studio choice updates and closes",
+        "Virtual list keeps a bounded materialized subset",
+        "A fully visible row has a projected real hitbox",
+        "Scrolled visible-row selection uses its stable key",
+        "Edge readers remain equal after all interactions",
+        "No browser or failed-resource errors"
+      ],
+      "errors": []
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/desktop-combo-expanded.png",
+      "sha256": "0e13918ebfd5a3eaa4d0f1672545bb57fdb63ecc20eb15898c2b385b3fc3468c",
+      "bytes": 80698
+    },
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/desktop-final.png",
+      "sha256": "4a9ba70626fdfeea5992ddadeb2b1ced913512fc629ec26a42cbebfcced69bbb",
+      "bytes": 75389
+    },
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/desktop-initial.png",
+      "sha256": "d9c4d80ae218705e64476258a5018c4d68acf3d14fc6d3a06725c9d8fce8cbc0",
+      "bytes": 77374
+    },
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/desktop-list-scrolled.png",
+      "sha256": "7821c463eceea9a2a06b195b6319372cb2cdfbca9d7c934acf0b0ff71960537d",
+      "bytes": 75023
+    },
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/portrait-combo-expanded.png",
+      "sha256": "fc2058972579a9dd0ed7089bb303c9713555f5b3ce3ad62b1ae392b5c41e9002",
+      "bytes": 57238
+    },
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/portrait-final.png",
+      "sha256": "db8663df7e159dca9e5e664609fe719b7140701aedb7f6c23893f8403b3f3aff",
+      "bytes": 55845
+    },
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/portrait-initial.png",
+      "sha256": "49fd6e62164f01c9b94ee48c75c3ff30c2d99c5f6cdea65a9e8c1f34566b6d85",
+      "bytes": 54239
+    },
+    {
+      "path": "artifacts/ui-ergonomics/fresh-controls-browser/portrait-list-scrolled.png",
+      "sha256": "0f0f3f8a77c9346294422318b197deeb93a74430f0e3c99aa8de4bd2b3365a2e",
+      "bytes": 55520
+    }
+  ]
+}

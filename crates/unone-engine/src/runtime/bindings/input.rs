@@ -17,6 +17,17 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
 
+    let pressed_input = Rc::clone(&input);
+    input_api.set(
+        "wasPressed",
+        lua.create_function(move |_, action: String| Ok(pressed_input.borrow().pressed.contains(&action)))?,
+    )?;
+    let released_input = Rc::clone(&input);
+    input_api.set(
+        "wasReleased",
+        lua.create_function(move |_, action: String| Ok(released_input.borrow().released.contains(&action)))?,
+    )?;
+
     let pointer_position_input = Rc::clone(&input);
     input_api.set(
         "getPointerPosition",

@@ -1,9 +1,22 @@
 # ScrollView and virtual collections (Web)
 
-Use `api.ui.scrollView` for small, irregular authored content. Use
-`api.ui.virtualList` for long fixed-height rows, or `api.ui.virtualGrid` for
-fixed-size cells. All three return a real `scroll_view` node; put that node
-in the `children` of the screen passed to `api.ui.setRoot`.
+Start with the official [`@unone/ui` package](ui-components.md), declaring
+`"runtime_packages":{"@unone/ui":"0.2.0"}` in `project.unone.json`. Use
+`api.ui.components.scrollView` for small, irregular authored content,
+`api.ui.components.virtualList` for long fixed-height rows, or
+`api.ui.components.virtualGrid` for fixed-size cells. The same methods exist on
+the `UiComponentKit` returned by `api.ui.components.create(theme?)`; use that kit
+when the leaves share per-kind styles. Module constructors have no theme defaults.
+All three helpers return a real `scroll_view` node; put it in the `children` of
+a screen and publish with `api.ui.setRoot`.
+
+The existing `api.ui.scrollView`, `api.ui.virtualList` and `api.ui.virtualGrid`
+entrypoints remain compatible. Package wrappers forward the existing options,
+registration and lifecycle; they add no layout, scroll-container theme style or
+host capability. Search `game api search "scroll view"` / `"virtual list"` /
+`"虛擬清單"` and describe the matching `ui.components.*` entrypoint.
+Keep canonical `EngineApi`, `UiComponentKit` and `UiNode` types from
+`game api typings`; see the [safe type refresh guide](ui-components.md#keep-the-official-types-when-upgrading).
 
 ## The coordinate rule
 
@@ -14,6 +27,8 @@ in the `children` of the screen passed to `api.ui.setRoot`.
 - Every content rect, including component children, is **local top-left/y-down**:
   `{x=0,y=0}` is the viewport's top-left before scrolling. x uses percent of stage
   width; y uses percent of stage height, not percent of the scroll viewport.
+  A component does not introduce another relative origin or transform its
+  children. Outside scroll content, ordinary stage children remain 0..100/y-up.
 - Nested scroll viewports are local to the parent's content. Their children
   start a new local space. Anchors are rejected inside scroll content.
 - All content x/y must be non-negative. Negative-origin content is rejected;
@@ -22,15 +37,16 @@ in the `children` of the screen passed to `api.ui.setRoot`.
 - Ordinary ScrollView never arranges your content. Its extent is measured from
   the supplied rectangles. Do not set contentHeight, maxScroll or itemCount.
 
-```lua
-local help = api.ui.scrollView({
+```luau
+local ui = api.ui.components
+local help = ui.scrollView({
  id="help", viewport={left=10,top=15,width=80,height=70},
  content={
-  {kind="text",id="intro",text="Introduction",rect={x=0,y=0,width=80,height=10}},
-  {kind="text",id="more",text="More",rect={x=0,y=100,width=80,height=10}},
+  ui.text({id="intro",text="Introduction",rect={x=0,y=0,width=80,height=10}}),
+  ui.text({id="more",text="More",rect={x=0,y=100,width=80,height=10}}),
  },
 })
-api.ui.setRoot({kind="screen",id="settings",node="help",children={help}})
+api.ui.setRoot(ui.screen({id="settings",node="help",children={help}}))
 ```
 
 ## VirtualList
@@ -45,17 +61,30 @@ every republish; keys are validated before materializing nodes. Sizes are
 finite positive numbers; gaps finite non-negative numbers; columns are integer
 1..1024. Unknown helper options are errors, not silently ignored.
 
-```lua
-local list = api.ui.virtualList({
- id="inventory", viewport={left=10,top=15,width=80,height=70},
- items=items, key="id", rowHeight=8, gapY=1,
- renderItem=function(item,index,key)
-  return {{kind="button",id="item_"..key,text=item.name,action="Inspect_"..key,
-   rect={x=0,y=0,width=80,height=8}}}
- end,
+```luau
+local ui: UiComponentKit = api.ui.components.create({
+ button={font_size=2,text_align="start",padding={left=1,right=1}},
 })
-api.ui.setRoot({kind="screen",id="inventory_screen",node="inventory",children={list}})
+type Row = {id: string, name: string}
+local rows: {Row} = items -- Project-owned inventory data.
+local options: UiVirtualOptions<Row> = {
+ id="inventory", viewport={left=10,top=15,width=80,height=70},
+ items=rows, key="id", rowHeight=8, gapY=1,
+ renderItem=function(item,index,key)
+  return {ui.button({id="item_"..key,text=item.name,action="Inspect_"..key,
+   rect={x=0,y=0,width=80,height=8}})}
+ end,
+}
+local list = ui.virtualList(options)
+api.ui.setRoot(ui.screen({id="inventory_screen",node="inventory",children={list}}))
 ```
+
+Use a project-owned item type such as `Row` with `UiVirtualOptions<Row>` or
+`UiVirtualGridOptions<Row>`. Both the module and kit methods preserve the item
+type in `key` and `renderItem` callbacks, so `item.name` is checked and a typo
+such as `item.missing` is rejected by strict analysis. Do not replace the
+callback's item with `any` to silence an error. Bare option types retain their
+legacy default for compatibility; new views should name their data type.
 
 `items` is an array; `key` is a string field name or a function returning a
 unique non-empty string. Keys describe the item, **not its array position**.
@@ -69,17 +98,18 @@ Same options as VirtualList plus required `columns`, `columnWidth`, and optional
 `gapX`. `rowHeight` means the cell's height, **not including gapY**. Columns are
 an explicit author decision and must fit the viewport. No implicit reflow.
 
-```lua
-local grid = api.ui.virtualGrid({
+```luau
+local ui = api.ui.components
+local grid = ui.virtualGrid({
  id="skills", viewport={left=10,top=15,width=80,height=70},
  items=skills, key="id", columns=8, columnWidth=9, gapX=1,
  rowHeight=16, gapY=1,
  renderItem=function(item,index,key)
-  return {{kind="button",id="skill_"..key,text=item.name,action="Inspect_"..key,
-   rect={x=0,y=0,width=9,height=16}}}
+  return {ui.button({id="skill_"..key,text=item.name,action="Inspect_"..key,
+   rect={x=0,y=0,width=9,height=16}})}
  end,
 })
-api.ui.setRoot({kind="screen",id="skill_screen",node="skills",children={grid}})
+api.ui.setRoot(ui.screen({id="skill_screen",node="skills",children={grid}}))
 ```
 
 ## Shared optional settings and lifecycle
@@ -132,31 +162,44 @@ not momentum, elastic overscroll or variable-height measurement.
 An image is visual-only; a sibling button owns the action. Assets are stable
 IDs declared in the project's asset manifest, not file paths or remote URLs:
 
-```lua
+```luau
 renderItem=function(item,index,key)
  return {
-  {kind="image",id="icon_"..key,asset=item.asset,fit="contain",
-   rect={x=0,y=0,width=9,height=16}},
-  {kind="button",id="hit_"..key,text="",action="Inspect_"..key,
-   rect={x=0,y=0,width=9,height=16}},
+  ui.image({id="icon_"..key,asset=item.asset,fit="contain",
+   rect={x=0,y=0,width=9,height=16}}),
+  ui.button({id="hit_"..key,text="",action="Inspect_"..key,
+   rect={x=0,y=0,width=9,height=16}}),
  }
 end
 ```
 
-Buttons use the existing action input protocol: host `onAction(action)` queues
-that action using `createHostInput().queueAction(action)`. In `Game.update`,
-read `api.input.isDown(action)`; game-owned edge detection prevents repeated
-activation when held. There is no new Lua `onAction` hook:
+Buttons use the existing semantic action input protocol: host `onAction(action)`
+queues that action using `createHostInput().queueAction(action)`. That callback
+belongs to the host adapter, not to a Luau node. In `Game.update`, read
+`api.input.wasPressed(action)` for one activation per press,
+`api.input.wasReleased(action)` for release, or `api.input.isDown(action)` for
+continuous held behavior. Search `"button click"` / `"按下瞬間"`, `"release"` /
+`"放開"` or `"hold"` / `"長按"` for those real APIs. There is no Luau `onClick`
+or `onAction` function prop:
 
-```lua
-local wasOpen=false
-function Game.update(api,dt)
- local down=api.input.isDown("Inspect_known_item")
- if down and not wasOpen then selectedId="known_item" end
- wasOpen=down
+```luau
+local selectedId: string? = nil
+local heldSeconds = 0
+function Game.update(api: EngineApi,dt: number)
+ if api.input.wasPressed("Inspect_known_item") then selectedId="known_item" end
+ if api.input.isDown("Inspect_known_item") then heldSeconds+=dt end
+ if api.input.wasReleased("Inspect_known_item") then heldSeconds=0 end
  publish(api) -- Rebuild the view from game state; renderItem only reads it.
 end
 ```
+
+Edge reads compare the current action snapshot with the previous successful
+tick and never consume the result. Repeated readers see the same edge; reads,
+rendering and virtual-scroll requests do not advance that snapshot or run a
+gameplay tick. Initially actions are released. These are snapshot transitions,
+not a queued platform-event stream. Selection, held-duration meaning, dialog
+state, filters and actions remain project-owned; virtual callbacks only read
+that state to construct the visible UI.
 
 Keep a modal-blocked collection in the root with `enabled=false`, and keep its
 node ID/resetKey unchanged. Disabling only affects this collection, not the

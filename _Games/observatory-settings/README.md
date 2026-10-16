@@ -62,6 +62,17 @@ directory beside a redistributed player. The script does not modify the official
 player's generated files or inventory. The source `fonts/*-LICENSE.txt` notices
 are also retained here.
 
+After an SDK upgrade, use its public CLI to refresh only the marked canonical
+contract. Project code and state stay outside the block:
+
+```powershell
+C:/Tools/UnoneSDK/bin/game.exe --project _Games/observatory-settings api typings --update-script scripts/main.luau
+```
+
+Read the CLI path from `sdk.json` if the SDK uses a different location. Controls
+use the typed official kit; `api.input.wasPressed` handles one activation while
+`isDown` handles slider dragging.
+
 ## Interactions and state
 
 - Toggle **Sound ON/OFF** to change draft state once per press.
@@ -90,7 +101,7 @@ $Sdk = 'C:/Tools/UnoneSDK'
 ```
 
 Use a current SDK whose CLI and Web runtime both bundle `@unone/ui` version
-`0.1.0`. The project declares `"runtime_packages":{"@unone/ui":"0.1.0"}`;
+`0.2.0`. The project declares `"runtime_packages":{"@unone/ui":"0.2.0"}`;
 `api.ui.components.info()` exposes the installed version and declaration flag.
 No npm install, `require` import or filesystem module loader is involved. An
 older runtime cannot satisfy the package declaration; updating types alone does

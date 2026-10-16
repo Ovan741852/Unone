@@ -82,6 +82,9 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
         .filter(|word| !is_search_filler(word))
         .collect();
     let terms = if terms.is_empty() { &words } else { &terms };
+    if let Some(matches) = ui_authoring_search(terms) {
+        return matches;
+    }
     let components_intent = is_ui_components_query(terms);
     let mut ranked: Vec<_> = descriptors()
         .into_iter()
@@ -100,6 +103,70 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
         .into_iter()
         .map(|(_, descriptor)| descriptor)
         .collect()
+}
+
+/// Resolve common authoring questions to callable entrypoints, not imaginary
+/// callbacks or the transport schema. Every term must belong to this intent;
+/// adding an unknown word cannot turn a query into a broad OR search.
+fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
+    let has = |aliases: &[&str]| terms.iter().any(|term| aliases.contains(term));
+    let press = ["click", "clicked", "pressed", "press", "onclick", "buttonclick", "buttonpressed", "按鈕點擊", "按钮点击", "點擊", "点击", "按一下", "按下", "按下瞬間", "按下瞬间", "單次觸發", "单次触发"];
+    let release = ["release", "released", "放開", "放开", "釋放", "释放"];
+    let hold = ["hold", "held", "holding", "長按", "长按", "持續按住", "持续按住"];
+    let context = ["button", "buttons", "input", "action", "actions", "semantic", "event", "events", "once", "ui", "was", "just", "per", "activation", "按鈕", "按钮", "動作", "动作"];
+    let action_intent = if has(&press) { Some(("input.wasPressed", &press[..])) }
+        else if has(&release) { Some(("input.wasReleased", &release[..])) }
+        else if has(&hold) { Some(("input.isDown", &hold[..])) }
+        else { None };
+    if let Some((name, aliases)) = action_intent {
+        if !terms.iter().all(|term| aliases.contains(term) || context.contains(term)) {
+            return Some(Vec::new());
+        }
+        return Some([name, "ui.components.button"].into_iter().filter_map(describe).collect());
+    }
+    let constructors: &[(&str, &[&str])] = &[
+        ("button", &["button", "buttons", "createbutton", "建立按鈕", "建立按钮", "按鈕元件", "按钮组件", "按鈕", "按钮"]),
+        ("slider", &["slider", "sliders", "slidercomponent", "滑桿", "滑杆", "滑塊", "滑块"]),
+        ("combobox", &["combobox", "comboboxcomponent", "dropdown", "下拉選單", "下拉选单", "下拉框"]),
+        ("scrollView", &["scrollview", "scroll_view", "捲動容器", "滚动容器"]),
+        ("virtualList", &["virtuallist", "virtual_list", "虛擬清單", "虚拟清单", "虛擬列表", "虚拟列表"]),
+        ("virtualGrid", &["virtualgrid", "virtual_grid", "虛擬網格", "虚拟网格"]),
+        ("screen", &["screen", "螢幕根節點", "屏幕根节点"]),
+        ("panel", &["panel", "panels", "建立面板"]),
+        ("image", &["image", "images", "建立圖片", "建立图片"]),
+        ("text", &["text", "建立文字"]),
+    ];
+    let modifiers = ["create", "build", "constructor", "constructors", "component", "components", "control", "controls", "widget", "widgets", "ui", "shared", "reusable", "official", "package", "kit", "建立", "元件", "組件", "组件"];
+    let phrase = terms.join(" ");
+    for (method, aliases) in constructors {
+        let words = match *method {
+            "scrollView" => &["scroll", "view"][..],
+            "virtualList" => &["virtual", "list"][..],
+            "virtualGrid" => &["virtual", "grid"][..],
+            _ => &[],
+        };
+        let phrase_match = !words.is_empty() && phrase.contains(&words.join(" "));
+        if !has(aliases) && !phrase_match { continue; }
+        // Preserve established typography, panel-background and screen-space
+        // searches. Bare control names and explicit constructor questions use
+        // the uniform package entrypoint.
+        if !terms.iter().all(|term| aliases.contains(term) || modifiers.contains(term) || (phrase_match && words.contains(term))) {
+            continue;
+        }
+        let name = format!("ui.components.{method}");
+        return Some([name.as_str(), "ui.components.create", "ui.components.info"].into_iter().filter_map(describe).collect());
+    }
+    if has(&["relative", "coordinates", "coordinate", "相對座標", "相对坐标", "元件座標", "组件坐标"])
+        && terms.iter().all(|term| ["ui", "component", "components", "children", "child", "relative", "coordinates", "coordinate", "相對座標", "相对坐标", "元件座標", "组件坐标"].contains(term))
+    {
+        return Some(["ui.components.component", "ui.setRoot"].into_iter().filter_map(describe).collect());
+    }
+    if has(&["typings", "typed", "types", "型別", "类型", "型別引導", "类型引导"])
+        && terms.iter().all(|term| ["ui", "component", "components", "kit", "typings", "typed", "types", "型別", "类型", "型別引導", "类型引导"].contains(term))
+    {
+        return Some(["ui.components.create", "ui.setRoot"].into_iter().filter_map(describe).collect());
+    }
+    None
 }
 
 fn is_search_filler(word: &str) -> bool {
@@ -1639,7 +1706,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "input.isDown",
             "input",
             "Query whether an action is down in the current frame.",
-            "When player or test input needs to drive game rules.",
+            "For continuous movement, hold or long press (長按/长按). UI button actions use the same semantic names. For one activation per press use input.wasPressed; for release use input.wasReleased. See docs/ui-components.md.",
             "Do not read platform keyboard key codes in game logic; platform input should first be mapped to an action.",
             vec![parameter(
                 "action",
@@ -1651,7 +1718,35 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "The result is stable during the same update; a headless test can inject fixed input using the same action name.",
             vec!["An unknown action name is treated as false"],
             "if api.input.isDown(\"Right\") then ... end",
-            vec!["entity.setPosition"],
+            vec!["input.wasPressed", "input.wasReleased", "ui.components.button", "entity.setPosition"],
+        ),
+        descriptor(
+            "input.wasPressed",
+            "input",
+            "Read a non-consuming semantic action press edge: down now and not down in the previous successful tick.",
+            "For button click, button pressed, once-per-press activation, 按鈕點擊, 按一下 or 按下瞬間. Use a button's action string; create it through ui.components.button or a themed kit. See docs/ui-components.md.",
+            "Not a DOM onClick callback or an OS event queue. Use input.isDown for held movement; UI callbacks do not mutate the game model automatically.",
+            vec![parameter("action", "string", "The same semantic action string declared by the control or input mapping.")],
+            "boolean: action is down in the current snapshot and was absent from the previous successful tick.",
+            vec!["Read-only input snapshot; never consumes the edge"],
+            "Stable across repeated reads during one update. Only successful ticks advance the previous snapshot; reads, rendering, scrolling and failed updates do not. The initial previous state is released. A pulse wholly between snapshots is not queued.",
+            vec!["Unknown action names return false; a held action does not repeat after its first tick. Do not guess input.isActionJustPressed or onClick."],
+            "if api.input.wasPressed(\"ApplySettings\") then applySettings() end",
+            vec!["input.wasReleased", "input.isDown", "ui.components.button", "ui.components.combobox"],
+        ),
+        descriptor(
+            "input.wasReleased",
+            "input",
+            "Read a non-consuming semantic action release edge: up now and down in the previous successful tick.",
+            "For release, released, 放開/放开 or 釋放/释放 transitions of semantic input actions. See docs/ui-components.md.",
+            "Not a platform pointer-up callback. For press activation use input.wasPressed; for continuous state use input.isDown.",
+            vec![parameter("action", "string", "A semantic control or mapped input action, not a platform key code.")],
+            "boolean: action is absent now and was down in the previous successful tick.",
+            vec!["Read-only input snapshot; never consumes the edge"],
+            "Stable across repeated reads during one update. Only successful ticks advance the previous snapshot. Initially released; omitted actions become released. A pulse wholly between snapshots is not queued.",
+            vec!["Unknown actions return false unless they were actually held in the previous successful tick. No callbacks or event consumption."],
+            "if api.input.wasReleased(\"Charge\") then releaseCharge() end",
+            vec!["input.wasPressed", "input.isDown", "ui.components.button"],
         ),
         descriptor(
             "input.getPointerPosition",
@@ -1803,20 +1898,20 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "ui.components.create",
             "ui",
-            "Create the official @unone/ui shared component kit for typed text, button, panel, image and card component construction with project-owned theme styles.",
-            "For UI package, shared components, button component, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.1.0\"} in project.unone.json, then create a kit. See docs/ui-components.md and docs/ui-styling.md. Kit methods are ui.text(props), ui.button(props), ui.panel(props), ui.image(props), ui.component(props), ui.id(instanceId,role) and ui.composeStyle(base?,override?) on the returned value, not api.ui.components.button.",
+            "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
+            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.2.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Direct module constructors use no theme defaults.",
             "No hardcoded theme, layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
             vec![parameter(
                 "theme",
                 "UiComponentsTheme?",
-                "Optional per-kind UiStyle defaults: text, button, panel, image only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order.",
+                "Optional per-kind UiStyle defaults: text, button, panel, image, slider, combobox only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order. screen takes id/node/children and optional budget; scroll helpers retain their existing options and local top-left/y-down content contract.",
             )],
-            "UiComponentKit; text -> UiTextNode, button -> UiButtonNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode; id -> string; composeStyle -> UiStyle.",
+            "UiComponentKit; text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
             vec!["Construct pure Luau tables; does not publish UI or mutate props/theme"],
             "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
             vec![
-                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.1.0\"} to project.unone.json; info() remains available for discovery.",
-                "Use the returned kit's methods; api.ui.components.button and api.ui.component do not exist.",
+                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.2.0\"} to project.unone.json; info() remains available for discovery.",
+                "Both api.ui.components.button and kit.button exist. api.ui.component and onClick do not exist; publish with ui.setRoot and read semantic action edges with input.wasPressed.",
                 "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
                 "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content.",
             ],
@@ -2071,6 +2166,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["camera3d.getTransform", "camera3d.setPosition"],
         ),
     ];
+    result.extend(ui_component_descriptors());
     result.extend(physics3d_descriptors());
     for (name, purpose, parameters, returns, example) in [
         (
@@ -2179,6 +2275,50 @@ fn parameter(name: &str, type_name: &str, meaning: &str) -> ApiParameter {
         type_name: type_name.to_string(),
         meaning: meaning.to_string(),
     }
+}
+
+fn ui_component_descriptors() -> Vec<ApiDescriptor> {
+    let mut result = Vec::new();
+    for (method, props, returns, purpose, example) in [
+        ("text", "UiComponentTextProps", "UiTextNode", "Construct a typed text leaf; project text, explicit placement and optional typography style.", "local title = api.ui.components.text({id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4}})"),
+        ("button", "UiComponentButtonProps", "UiButtonNode", "Create a typed semantic action button; use input.wasPressed(action) for one activation per press.", "local button = api.ui.components.button({id=\"apply\",text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}})"),
+        ("slider", "UiComponentSliderProps", "UiSliderNode", "Create a typed slider control with a semantic action; the project owns its value and drag mapping.", "local slider = api.ui.components.slider({id=\"volume\",text=\"Volume\",action=\"AdjustVolume\",rect={x=10,y=30,width=80,height=8}})"),
+        ("combobox", "UiComponentComboBoxProps", "UiComboBoxNode", "Create a typed combobox/dropdown control with a semantic action and project-owned expanded state.", "local choice = api.ui.components.combobox({id=\"quality\",text=\"High\",action=\"ChooseQuality\",expanded=false,rect={x=10,y=45,width=40,height=8}})"),
+        ("panel", "UiComponentPanelProps", "UiPanelNode", "Construct a decorative panel leaf with box styles and optional explicit background scope.", "local panel = api.ui.components.panel({id=\"paper\",rect={x=10,y=10,width=80,height=80},background_for={screen=true},style={background={0.03,0.05,0.08,1}}})"),
+        ("image", "UiComponentImageProps", "UiImageNode", "Construct a typed image leaf with optional fit, nine-slice, box style and background scope.", "local image = api.ui.components.image({id=\"portrait\",asset=\"portrait\",rect={x=10,y=20,width=25,height=30},fit=\"contain\"})"),
+        ("component", "UiComponentProps", "UiComponentNode", "Compose a reusable component wrapper and optional scoped surface without changing child coordinates.", "local card = api.ui.components.component({id=\"card\",component=\"project.card\",rect={x=10,y=10,width=80,height=80},surface={kind=\"panel\"},children={}})"),
+        ("screen", "UiComponentScreenProps", "UiScreen", "Construct a typed screen root; publish it explicitly with ui.setRoot.", "api.ui.setRoot(api.ui.components.screen({id=\"settings\",node=\"settings\",children={}}))"),
+    ] {
+        result.push(descriptor(
+            &format!("ui.components.{method}"), "ui", purpose,
+            "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.2.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
+            "No callbacks, automatic layout, inherited container styles or project behavior. api.ui.component does not exist. Constructors return canonical data; ui.setRoot publishes it.",
+            vec![parameter("props", props, "Canonical typed props without kind. Leaf/component placement is flattened rect OR anchor+size. screen uses id/node/children/budget, without placement. Component children retain stage coordinates (0..100, y-up); scroll content uses its documented local top-left/y-down contract. action is a semantic string, never an onClick function.")],
+            returns, vec!["Copy authored props and applicable theme styles; no UI publication"],
+            "The module uses no theme defaults; a created kit snapshots its per-kind defaults. No simulation step. component/screen preserve registered virtual view handles; ordinary authored data is copied. Styles and bounds are validated at setRoot.",
+            vec!["UI_PACKAGE_NOT_DECLARED requires the exact bundled package version. Unknown props such as onClick or nested placement are rejected. Use input.wasPressed for one activation per press; input.isDown deliberately remains true while held."],
+            example,
+            vec!["ui.components.create", "ui.components.info", "ui.setRoot", "input.wasPressed", "input.isDown"],
+        ));
+    }
+    for (method, options, purpose, example) in [
+        ("scrollView", "UiScrollOptions", "Construct an authored finite scroll view through the official package's uniform entrypoint.", "local view = api.ui.components.scrollView({id=\"help\",viewport={left=10,top=10,width=80,height=80},content={}})"),
+        ("virtualList", "UiVirtualOptions", "Construct a visible fixed-height virtual list through the official package's uniform entrypoint.", "local view = api.ui.components.virtualList({id=\"rows\",viewport={left=10,top=10,width=80,height=80},items=items,key=\"id\",rowHeight=8,renderItem=renderRow})"),
+        ("virtualGrid", "UiVirtualGridOptions", "Construct a visible fixed-cell virtual grid through the official package's uniform entrypoint.", "local view = api.ui.components.virtualGrid({id=\"icons\",viewport={left=10,top=10,width=80,height=80},items=items,key=\"id\",columns=8,columnWidth=9,rowHeight=16,gapX=1,renderItem=renderIcon})"),
+    ] {
+        result.push(descriptor(
+            &format!("ui.components.{method}"), "ui", purpose,
+            "Declare @unone/ui 0.2.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
+            "No theme style for scroll containers, automatic responsive layout, native scroll support or gameplay callback. Virtual renderItem is UI-pure and never advances Game.update or consumes RNG.",
+            vec![parameter("options", options, "The existing scroll helper options unchanged: viewport belongs to its containing space; content uses local top-left/y-down coordinates. Stable item keys and explicit fixed row/cell sizes are required for virtualization.")],
+            "UiScrollNode (also a UiNode); preserve registered virtualList/virtualGrid handles when composing a screen/component.",
+            vec!["Construct scroll node; virtual helpers register UI-only materialization callbacks"],
+            "Same lifecycle as the corresponding legacy helper; a wrapper does not duplicate a registration or run a simulation tick.",
+            vec!["Do not clone registered virtual handles, author contentHeight/maxScroll, use stage coordinates in content or mutate gameplay in renderItem. Unsupported hosts report their capability boundary explicitly."],
+            example, vec!["ui.components.create", "ui.scrollView", "ui.virtualList", "ui.virtualGrid", "ui.setRoot"],
+        ));
+    }
+    result
 }
 
 fn physics3d_descriptors() -> Vec<ApiDescriptor> {
@@ -2369,7 +2509,6 @@ mod tests {
             "reusable components",
             "shared UI controls",
             "component styling",
-            "button component",
             "card component",
             "UI components",
             "components",
@@ -2409,7 +2548,7 @@ mod tests {
             assert_eq!(found.len(), 1, "{name}");
             assert_eq!(found[0].name, name);
         }
-        assert!(describe("ui.components.button").is_none());
+        assert!(describe("ui.components.button").is_some());
         assert!(describe("ui.component").is_none());
         assert!(search("UI package unfindable").is_empty());
         assert!(search("ECS元件").is_empty());
@@ -2460,6 +2599,44 @@ mod tests {
                 .contains("Available without a runtime_packages declaration")
         );
         assert!(info.returns.contains("declared:boolean"));
+    }
+
+    #[test]
+    fn ui_authoring_intents_rank_callable_controls_and_non_consuming_edges() {
+        for (queries, expected) in [
+            (&["button click", "button pressed", "buttonclick", "按鈕點擊", "按钮点击", "按一下", "按下瞬間", "按下瞬间"][..], "input.wasPressed"),
+            (&["release", "button released", "放開", "放开"][..], "input.wasReleased"),
+            (&["hold", "button held", "長按", "长按"][..], "input.isDown"),
+            (&["create button", "button component", "建立按鈕", "建立按钮"][..], "ui.components.button"),
+            (&["slider component", "滑桿", "滑杆"][..], "ui.components.slider"),
+            (&["combobox", "dropdown", "下拉選單", "下拉选单"][..], "ui.components.combobox"),
+            (&["scrollview", "scroll view", "捲動容器", "滚动容器"][..], "ui.components.scrollView"),
+            (&["virtual list", "虛擬清單", "虚拟列表"][..], "ui.components.virtualList"),
+            (&["virtual grid", "虛擬網格", "虚拟网格"][..], "ui.components.virtualGrid"),
+            (&["UI types", "UI 型別", "UI 类型引导"][..], "ui.components.create"),
+            (&["component relative coordinates", "元件座標", "相对坐标"][..], "ui.components.component"),
+        ] {
+            for query in queries {
+                let found = search(query);
+                assert_eq!(found.first().map(|api| api.name.as_str()), Some(expected), "{query}");
+                assert!(found.iter().all(|api| api.name.starts_with("ui.") || api.name.starts_with("input.")), "{query}");
+            }
+        }
+        for query in ["button click unfindable", "particle hold", "entity release", "UI package unfindable", "ECS元件"] {
+            assert!(search(query).is_empty(), "{query}");
+        }
+        for method in ["text", "button", "slider", "combobox", "panel", "image", "component", "screen", "scrollView", "virtualList", "virtualGrid"] {
+            let name = format!("ui.components.{method}");
+            let found = search(&name);
+            assert_eq!(found.len(), 1, "{name}");
+            assert_eq!(found[0].name, name);
+            assert!(found[0].example.contains(&format!("api.ui.components.{method}(")), "{name}");
+        }
+        let pressed = describe("input.wasPressed").unwrap();
+        assert!(pressed.frame_semantics.contains("Only successful ticks"));
+        assert!(pressed.side_effects.iter().any(|text| text.contains("never consumes")));
+        assert!(describe("input.isActionJustPressed").is_none());
+        assert!(describe("ui.component").is_none());
     }
 
     #[test]

@@ -71,7 +71,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let components: Table = lua.load(crate::runtime_packages::ui_components_source())
         .set_name("@packages/unone-ui")
         .call((json_to_lua(lua, package_info)?, declared,
-            helpers.get::<mlua::Function>("isManagedNode")?))?;
+            helpers.get::<mlua::Function>("isManagedNode")?, helpers))?;
     ui_api.set("components", components)?;
     Ok(ui_api)
 }

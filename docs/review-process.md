@@ -50,6 +50,12 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: official UI control parity, operation search, input edges, safe type
+  refresh, generic rows and matching runtime gates; independent source review,
+  SDK-only fresh author and real official-player acceptance. The prescribed
+  bounded Claude attempt timed out without output and remains incomplete:
+  [record](reviews/2026-10-16-ui-ergonomics.md).
+
 - 2026-10-16: the official SDK-bundled `@unone/ui` package, typed kit discovery,
   runtime/SDK compatibility and observatory migration. Independent source review
   corrected virtual-node identity and stale native package descriptors; release

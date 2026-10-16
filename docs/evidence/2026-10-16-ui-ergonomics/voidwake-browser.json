@@ -1,0 +1,985 @@
+{
+  "ok": true,
+  "title": "VOIDWAKE official UI package migration",
+  "requirePackagedGlyphCoverage": true,
+  "export": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\dist\\player",
+  "url": "http://127.0.0.1:9676/",
+  "errors": [],
+  "checks": [
+    "desktop: actual official renderer selected",
+    "desktop: no fatal player diagnostic",
+    "desktop: actual production WASM advances",
+    "desktop: declared Noto Sans TC 400 face loaded",
+    "desktop: declared Noto Sans TC 600 face loaded",
+    "desktop: declared Noto Sans TC 700 face loaded",
+    "desktop: declared Noto Sans TC Supplemental 400 face loaded",
+    "desktop: declared Noto Sans TC Supplemental 600 face loaded",
+    "desktop: declared Noto Sans TC Supplemental 700 face loaded",
+    "desktop: declared Barlow Condensed 400 face loaded",
+    "desktop: declared Barlow Condensed 600 face loaded",
+    "desktop: declared Barlow Condensed 700 face loaded",
+    "desktop: declared Share Tech Mono 400 face loaded",
+    "desktop: repeated component subtree identity exists",
+    "desktop: multiple packaged families actually paint glyphs",
+    "desktop: weight 400 actually paints glyphs",
+    "desktop: weight 600 actually paints glyphs",
+    "desktop: weight 700 actually paints glyphs",
+    "desktop: intended complete text fits its authored box",
+    "desktop: intended complete text fits its authored box",
+    "desktop: intended complete text fits its authored box",
+    "desktop: sound-off has no fatal diagnostic",
+    "desktop: sound-on has no fatal diagnostic",
+    "desktop: launch has no fatal diagnostic",
+    "desktop: auto-off has no fatal diagnostic",
+    "desktop: burst has no fatal diagnostic",
+    "desktop: dash has no fatal diagnostic",
+    "desktop: pause has no fatal diagnostic",
+    "desktop: abandon-prompt has no fatal diagnostic",
+    "desktop: cancel-abandon has no fatal diagnostic",
+    "desktop: resume has no fatal diagnostic",
+    "desktop: keyboard-pause has no fatal diagnostic",
+    "desktop: abandon-again has no fatal diagnostic",
+    "desktop: return-menu has no fatal diagnostic",
+    "desktop: keyboard-launch has no fatal diagnostic",
+    "desktop: no browser, asset or compiler errors",
+    "intermediate: actual official renderer selected",
+    "intermediate: no fatal player diagnostic",
+    "intermediate: actual production WASM advances",
+    "intermediate: declared Noto Sans TC 400 face loaded",
+    "intermediate: declared Noto Sans TC 600 face loaded",
+    "intermediate: declared Noto Sans TC 700 face loaded",
+    "intermediate: declared Noto Sans TC Supplemental 400 face loaded",
+    "intermediate: declared Noto Sans TC Supplemental 600 face loaded",
+    "intermediate: declared Noto Sans TC Supplemental 700 face loaded",
+    "intermediate: declared Barlow Condensed 400 face loaded",
+    "intermediate: declared Barlow Condensed 600 face loaded",
+    "intermediate: declared Barlow Condensed 700 face loaded",
+    "intermediate: declared Share Tech Mono 400 face loaded",
+    "intermediate: repeated component subtree identity exists",
+    "intermediate: multiple packaged families actually paint glyphs",
+    "intermediate: weight 400 actually paints glyphs",
+    "intermediate: weight 600 actually paints glyphs",
+    "intermediate: weight 700 actually paints glyphs",
+    "intermediate: intended complete text fits its authored box",
+    "intermediate: intended complete text fits its authored box",
+    "intermediate: intended complete text fits its authored box",
+    "intermediate: sound-off has no fatal diagnostic",
+    "intermediate: sound-on has no fatal diagnostic",
+    "intermediate: launch has no fatal diagnostic",
+    "intermediate: auto-off has no fatal diagnostic",
+    "intermediate: burst has no fatal diagnostic",
+    "intermediate: dash has no fatal diagnostic",
+    "intermediate: pause has no fatal diagnostic",
+    "intermediate: abandon-prompt has no fatal diagnostic",
+    "intermediate: cancel-abandon has no fatal diagnostic",
+    "intermediate: resume has no fatal diagnostic",
+    "intermediate: keyboard-pause has no fatal diagnostic",
+    "intermediate: abandon-again has no fatal diagnostic",
+    "intermediate: return-menu has no fatal diagnostic",
+    "intermediate: keyboard-launch has no fatal diagnostic",
+    "intermediate: no browser, asset or compiler errors",
+    "portrait: actual official renderer selected",
+    "portrait: no fatal player diagnostic",
+    "portrait: actual production WASM advances",
+    "portrait: declared Noto Sans TC 400 face loaded",
+    "portrait: declared Noto Sans TC 600 face loaded",
+    "portrait: declared Noto Sans TC 700 face loaded",
+    "portrait: declared Noto Sans TC Supplemental 400 face loaded",
+    "portrait: declared Noto Sans TC Supplemental 600 face loaded",
+    "portrait: declared Noto Sans TC Supplemental 700 face loaded",
+    "portrait: declared Barlow Condensed 400 face loaded",
+    "portrait: declared Barlow Condensed 600 face loaded",
+    "portrait: declared Barlow Condensed 700 face loaded",
+    "portrait: declared Share Tech Mono 400 face loaded",
+    "portrait: repeated component subtree identity exists",
+    "portrait: multiple packaged families actually paint glyphs",
+    "portrait: weight 400 actually paints glyphs",
+    "portrait: weight 600 actually paints glyphs",
+    "portrait: weight 700 actually paints glyphs",
+    "portrait: intended complete text fits its authored box",
+    "portrait: intended complete text fits its authored box",
+    "portrait: intended complete text fits its authored box",
+    "portrait: sound-off has no fatal diagnostic",
+    "portrait: sound-on has no fatal diagnostic",
+    "portrait: launch has no fatal diagnostic",
+    "portrait: auto-off has no fatal diagnostic",
+    "portrait: burst has no fatal diagnostic",
+    "portrait: dash has no fatal diagnostic",
+    "portrait: pause has no fatal diagnostic",
+    "portrait: abandon-prompt has no fatal diagnostic",
+    "portrait: cancel-abandon has no fatal diagnostic",
+    "portrait: resume has no fatal diagnostic",
+    "portrait: keyboard-pause has no fatal diagnostic",
+    "portrait: abandon-again has no fatal diagnostic",
+    "portrait: return-menu has no fatal diagnostic",
+    "portrait: keyboard-launch has no fatal diagnostic",
+    "portrait: no browser, asset or compiler errors"
+  ],
+  "limitations": [
+    "Screenshots require human visual review; geometry and metadata alone do not establish visual quality.",
+    "The read-only WASM ABI observer currently requires a main-thread production runtime.",
+    "Browser font registration does not prove character coverage; local export fonts are independently audited through their cmap."
+  ],
+  "raw_report": {
+    "path": "artifacts/ui-ergonomics/voidwake-browser/browser-report.json",
+    "bytes": 13771418,
+    "sha256": "e0c807e6616c86c120113b546c3b8bde07e63008f04a28b275d7874dbaeca1d1"
+  },
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND ON",
+            "action": "Sound",
+            "point": {
+              "x": 1332,
+              "y": 49.5
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "sound-on",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND OFF",
+            "action": "Sound",
+            "point": {
+              "x": 1332,
+              "y": 49.5
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "launch",
+          "interaction": {
+            "id": "launch",
+            "kind": "button",
+            "text": "啟動遠征  ↗",
+            "action": "Start",
+            "point": {
+              "x": 339.84,
+              "y": 666
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "0ac3f197cbb8bb86c8bbd6b27ded2e45eedb5050377b09c917e9faad1fd9d8b0"
+        },
+        {
+          "name": "auto-off",
+          "interaction": {
+            "id": "auto",
+            "kind": "button",
+            "text": "F 自動 ON",
+            "action": "AutoFire",
+            "point": {
+              "x": 1015.2,
+              "y": 805.0499999999998
+            }
+          },
+          "before_observations_sha256": "29b316ed18f43cf4b55a958569f41524ab04cd6d9fc3ac355a5241deebae5839",
+          "after_observations_sha256": "6ed95f65e72a4c5c0decb75e47ca66d29cac13a6178f41214fe65d5d8101b3d0"
+        },
+        {
+          "name": "burst",
+          "interaction": {
+            "id": "burst",
+            "kind": "button",
+            "text": "Q 脈衝 READY",
+            "action": "Burst",
+            "point": {
+              "x": 1154.88,
+              "y": 805.0499999999998
+            }
+          },
+          "before_observations_sha256": "3e1fe309365ab3fac1d6fb0d79ba8b5205809ab57b65c513571ce538167664e3",
+          "after_observations_sha256": "de5b01a5c8773cdddc08541bc9271c4eccdfb9c593c0d3960fce1dc778689d03"
+        },
+        {
+          "name": "dash",
+          "interaction": {
+            "id": "dash",
+            "kind": "button",
+            "text": "SPACE 閃避",
+            "action": "Dash",
+            "point": {
+              "x": 1306.08,
+              "y": 805.0499999999998
+            }
+          },
+          "before_observations_sha256": "631ca9d813d0ce75622aa1aaf4aa7426f0039e2192d9b7cfa73821a18cb9f777",
+          "after_observations_sha256": "2f22f5ce881f86cff4a982a8b2ab7752b1b73d74632b912cde46f59a0b4bbb86"
+        },
+        {
+          "name": "pause",
+          "interaction": {
+            "id": "pause",
+            "kind": "button",
+            "text": "Ⅱ  暫停",
+            "action": "Pause",
+            "point": {
+              "x": 1332,
+              "y": 220.5
+            }
+          },
+          "before_observations_sha256": "b3693d4ad7bf927272ad1310172c859f9faa0084b1964570e1b6b7f87f801709",
+          "after_observations_sha256": "33cafd2966d08fbbea8663440119dd7d7151c42380fee184db185efd86cae803"
+        },
+        {
+          "name": "abandon-prompt",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 720,
+              "y": 589.5
+            }
+          },
+          "before_observations_sha256": "33cafd2966d08fbbea8663440119dd7d7151c42380fee184db185efd86cae803",
+          "after_observations_sha256": "33cafd2966d08fbbea8663440119dd7d7151c42380fee184db185efd86cae803"
+        },
+        {
+          "name": "cancel-abandon",
+          "interaction": {
+            "id": "cancel_abandon",
+            "kind": "button",
+            "text": "返回遠征",
+            "action": "CancelAbandon",
+            "point": {
+              "x": 720,
+              "y": 589.5
+            }
+          },
+          "before_observations_sha256": "33cafd2966d08fbbea8663440119dd7d7151c42380fee184db185efd86cae803",
+          "after_observations_sha256": "33cafd2966d08fbbea8663440119dd7d7151c42380fee184db185efd86cae803"
+        },
+        {
+          "name": "resume",
+          "interaction": {
+            "id": "resume",
+            "kind": "button",
+            "text": "繼 續 航 行     ↗",
+            "action": "Resume",
+            "point": {
+              "x": 720,
+              "y": 508.5
+            }
+          },
+          "before_observations_sha256": "33cafd2966d08fbbea8663440119dd7d7151c42380fee184db185efd86cae803",
+          "after_observations_sha256": "bba53ffa9421821948d163277e05837717eb239c78700c352dece03d4a8debb1"
+        },
+        {
+          "name": "keyboard-pause",
+          "interaction": {
+            "key": "Escape"
+          },
+          "before_observations_sha256": "52dfad619f4ade75ebb2825937b01652c519c6859fc9210c49d16bf858e96afc",
+          "after_observations_sha256": "50d2b3211267a83a24cc37181ea8c0ccd10eb88329d4fb6cf5c92f932b6be599"
+        },
+        {
+          "name": "abandon-again",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 720,
+              "y": 589.5
+            }
+          },
+          "before_observations_sha256": "50d2b3211267a83a24cc37181ea8c0ccd10eb88329d4fb6cf5c92f932b6be599",
+          "after_observations_sha256": "50d2b3211267a83a24cc37181ea8c0ccd10eb88329d4fb6cf5c92f932b6be599"
+        },
+        {
+          "name": "return-menu",
+          "interaction": {
+            "id": "confirm_menu",
+            "kind": "button",
+            "text": "確認放棄",
+            "action": "Menu",
+            "point": {
+              "x": 720,
+              "y": 508.5
+            }
+          },
+          "before_observations_sha256": "50d2b3211267a83a24cc37181ea8c0ccd10eb88329d4fb6cf5c92f932b6be599",
+          "after_observations_sha256": "d8e3c68abdc77671871c602098e8e1ec7553535db4ad0896e84611b3668e60ad"
+        },
+        {
+          "name": "keyboard-launch",
+          "interaction": {
+            "key": "Enter"
+          },
+          "before_observations_sha256": "d8e3c68abdc77671871c602098e8e1ec7553535db4ad0896e84611b3668e60ad",
+          "after_observations_sha256": "6fa95e17eb28bf50634aa99e7dc0415ee934c8994964fee20480925a98f99563"
+        }
+      ],
+      "errors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND ON",
+            "action": "Sound",
+            "point": {
+              "x": 882.3,
+              "y": 48.62
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "sound-on",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND OFF",
+            "action": "Sound",
+            "point": {
+              "x": 882.3,
+              "y": 48.62
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "launch",
+          "interaction": {
+            "id": "launch",
+            "kind": "button",
+            "text": "啟動遠征  ↗",
+            "action": "Start",
+            "point": {
+              "x": 510,
+              "y": 654.16
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "a82dff12fcee172d4365d84c31c2d710ff57699d3ce4796088a088f9eab2f42a"
+        },
+        {
+          "name": "auto-off",
+          "interaction": {
+            "id": "auto",
+            "kind": "button",
+            "text": "F 自動 ON",
+            "action": "AutoFire",
+            "point": {
+              "x": 749.7,
+              "y": 751.4
+            }
+          },
+          "before_observations_sha256": "c86312c42744a9d1c056f392909c32635881085b59d2447cb63f178792a6e817",
+          "after_observations_sha256": "ac3d48314c09044a1582125e9ae5dd5f1ea71268855daba00921822cc7312021"
+        },
+        {
+          "name": "burst",
+          "interaction": {
+            "id": "burst",
+            "kind": "button",
+            "text": "Q 脈衝",
+            "action": "Burst",
+            "point": {
+              "x": 637.5,
+              "y": 804.44
+            }
+          },
+          "before_observations_sha256": "480d500f7eb3dd2f3933e0b2f382423309ac1c8a247e2a6f11e5b43d003b92d5",
+          "after_observations_sha256": "6bacf78a548139d87ec2c7f9a66fd5574fa91c8146e62e7295534cdbf05fcc52"
+        },
+        {
+          "name": "dash",
+          "interaction": {
+            "id": "dash",
+            "kind": "button",
+            "text": "閃避 READY",
+            "action": "Dash",
+            "point": {
+              "x": 867,
+              "y": 804.44
+            }
+          },
+          "before_observations_sha256": "f83f57cbe5adffff3e402696843117e5f2f53c84fd8d28e674ce82d03a545f25",
+          "after_observations_sha256": "94d76ab302baf0c759d11ebbd21587d0db19ac99a184793c55adb71fd91327c6"
+        },
+        {
+          "name": "pause",
+          "interaction": {
+            "id": "pause",
+            "kind": "button",
+            "text": "Ⅱ  暫停",
+            "action": "Pause",
+            "point": {
+              "x": 882.3,
+              "y": 216.58
+            }
+          },
+          "before_observations_sha256": "6795a3975c70d4ef19943904e5bd874263b64caf15e9f7a7b32991df80c1ecd2",
+          "after_observations_sha256": "5edf8a442b24f4b9fb9d8a972ba720abe987366bd35639a5bd80bbce09f97cdf"
+        },
+        {
+          "name": "abandon-prompt",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 510,
+              "y": 579.02
+            }
+          },
+          "before_observations_sha256": "5edf8a442b24f4b9fb9d8a972ba720abe987366bd35639a5bd80bbce09f97cdf",
+          "after_observations_sha256": "5edf8a442b24f4b9fb9d8a972ba720abe987366bd35639a5bd80bbce09f97cdf"
+        },
+        {
+          "name": "cancel-abandon",
+          "interaction": {
+            "id": "cancel_abandon",
+            "kind": "button",
+            "text": "返回遠征",
+            "action": "CancelAbandon",
+            "point": {
+              "x": 510,
+              "y": 579.02
+            }
+          },
+          "before_observations_sha256": "5edf8a442b24f4b9fb9d8a972ba720abe987366bd35639a5bd80bbce09f97cdf",
+          "after_observations_sha256": "5edf8a442b24f4b9fb9d8a972ba720abe987366bd35639a5bd80bbce09f97cdf"
+        },
+        {
+          "name": "resume",
+          "interaction": {
+            "id": "resume",
+            "kind": "button",
+            "text": "繼 續 航 行     ↗",
+            "action": "Resume",
+            "point": {
+              "x": 510,
+              "y": 499.46
+            }
+          },
+          "before_observations_sha256": "5edf8a442b24f4b9fb9d8a972ba720abe987366bd35639a5bd80bbce09f97cdf",
+          "after_observations_sha256": "3e5edf96a70970f64de996040d891d47f86280590efb6f24e1787177ddf784c1"
+        },
+        {
+          "name": "keyboard-pause",
+          "interaction": {
+            "key": "Escape"
+          },
+          "before_observations_sha256": "477e31c3329f3450e9bd55b2e89e5bd65b16f20cfa5de5541afd643f8b159f33",
+          "after_observations_sha256": "ea30115663f095557f491c8c6d930f929c6c7045ffe5eedebf2461769ff37408"
+        },
+        {
+          "name": "abandon-again",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 510,
+              "y": 579.02
+            }
+          },
+          "before_observations_sha256": "ea30115663f095557f491c8c6d930f929c6c7045ffe5eedebf2461769ff37408",
+          "after_observations_sha256": "ea30115663f095557f491c8c6d930f929c6c7045ffe5eedebf2461769ff37408"
+        },
+        {
+          "name": "return-menu",
+          "interaction": {
+            "id": "confirm_menu",
+            "kind": "button",
+            "text": "確認放棄",
+            "action": "Menu",
+            "point": {
+              "x": 510,
+              "y": 499.46
+            }
+          },
+          "before_observations_sha256": "ea30115663f095557f491c8c6d930f929c6c7045ffe5eedebf2461769ff37408",
+          "after_observations_sha256": "d8e3c68abdc77671871c602098e8e1ec7553535db4ad0896e84611b3668e60ad"
+        },
+        {
+          "name": "keyboard-launch",
+          "interaction": {
+            "key": "Enter"
+          },
+          "before_observations_sha256": "d8e3c68abdc77671871c602098e8e1ec7553535db4ad0896e84611b3668e60ad",
+          "after_observations_sha256": "319b19224de1cf2b3db8f6151e53f1da666d5fef61f1767d893be6989b5eff9c"
+        }
+      ],
+      "errors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND ON",
+            "action": "Sound",
+            "point": {
+              "x": 337.35,
+              "y": 46.42
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "sound-on",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND OFF",
+            "action": "Sound",
+            "point": {
+              "x": 337.35,
+              "y": 46.42
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "launch",
+          "interaction": {
+            "id": "launch",
+            "kind": "button",
+            "text": "啟動遠征  ↗",
+            "action": "Start",
+            "point": {
+              "x": 195,
+              "y": 624.56
+            }
+          },
+          "before_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "after_observations_sha256": "239930f3748ee658fd6f639ff9a03bbb7a51927d450c235f6bd598e8c7637da7"
+        },
+        {
+          "name": "auto-off",
+          "interaction": {
+            "id": "auto",
+            "kind": "button",
+            "text": "F 自動 ON",
+            "action": "AutoFire",
+            "point": {
+              "x": 286.65,
+              "y": 717.4
+            }
+          },
+          "before_observations_sha256": "ba39328625d075ea6c1e2a314e7f381b47303f8edba9e17b9cdfb5174daf8fdf",
+          "after_observations_sha256": "a6126170f5616dcb895bf27fab5c427b9effb50b6cc7c961a33debdafc0a4ccd"
+        },
+        {
+          "name": "burst",
+          "interaction": {
+            "id": "burst",
+            "kind": "button",
+            "text": "Q 脈衝",
+            "action": "Burst",
+            "point": {
+              "x": 243.75,
+              "y": 768.04
+            }
+          },
+          "before_observations_sha256": "32796663b86fed4d4d58d110cc9d30397c0429dd9a90e1d4a7e519035a84d167",
+          "after_observations_sha256": "7106be18dd93907061a0dd215db8714dee7598642c43cecdfc887a89ff0290f0"
+        },
+        {
+          "name": "dash",
+          "interaction": {
+            "id": "dash",
+            "kind": "button",
+            "text": "閃避 READY",
+            "action": "Dash",
+            "point": {
+              "x": 331.5,
+              "y": 768.04
+            }
+          },
+          "before_observations_sha256": "62c9e9cd680fdd9a88608230b0cb9ddb23c7f0b648a606e741b0691935d8773e",
+          "after_observations_sha256": "bb7ec5352a76664a0be89d07b09a3b07ed35da4b54b74580b8a685ade5f5e243"
+        },
+        {
+          "name": "pause",
+          "interaction": {
+            "id": "pause",
+            "kind": "button",
+            "text": "Ⅱ  暫停",
+            "action": "Pause",
+            "point": {
+              "x": 337.35,
+              "y": 206.78
+            }
+          },
+          "before_observations_sha256": "3aa27be3bbe1a4a89e977a22554b16df7cb8a5e1b47bf0a82c12d227cac3fdcd",
+          "after_observations_sha256": "9a910398a5fdd4f900804164f8902dba3cb6092ecd7135183fe6abc9be30c330"
+        },
+        {
+          "name": "abandon-prompt",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 195,
+              "y": 552.82
+            }
+          },
+          "before_observations_sha256": "9a910398a5fdd4f900804164f8902dba3cb6092ecd7135183fe6abc9be30c330",
+          "after_observations_sha256": "9a910398a5fdd4f900804164f8902dba3cb6092ecd7135183fe6abc9be30c330"
+        },
+        {
+          "name": "cancel-abandon",
+          "interaction": {
+            "id": "cancel_abandon",
+            "kind": "button",
+            "text": "返回遠征",
+            "action": "CancelAbandon",
+            "point": {
+              "x": 195,
+              "y": 552.82
+            }
+          },
+          "before_observations_sha256": "9a910398a5fdd4f900804164f8902dba3cb6092ecd7135183fe6abc9be30c330",
+          "after_observations_sha256": "9a910398a5fdd4f900804164f8902dba3cb6092ecd7135183fe6abc9be30c330"
+        },
+        {
+          "name": "resume",
+          "interaction": {
+            "id": "resume",
+            "kind": "button",
+            "text": "繼 續 航 行     ↗",
+            "action": "Resume",
+            "point": {
+              "x": 195,
+              "y": 476.86
+            }
+          },
+          "before_observations_sha256": "9a910398a5fdd4f900804164f8902dba3cb6092ecd7135183fe6abc9be30c330",
+          "after_observations_sha256": "97d960a02d20a43976dae6555fca089e87ef704a051538e563713c05c78a21c7"
+        },
+        {
+          "name": "keyboard-pause",
+          "interaction": {
+            "key": "Escape"
+          },
+          "before_observations_sha256": "12457f1486667309958f948d3170a2d603fab0bbe05bd82d5c009af24088b4f8",
+          "after_observations_sha256": "221a8adb8b05f66082aff6a8ff813caf754ee1d265c8a3f37001ae4ea7642407"
+        },
+        {
+          "name": "abandon-again",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 195,
+              "y": 552.82
+            }
+          },
+          "before_observations_sha256": "221a8adb8b05f66082aff6a8ff813caf754ee1d265c8a3f37001ae4ea7642407",
+          "after_observations_sha256": "221a8adb8b05f66082aff6a8ff813caf754ee1d265c8a3f37001ae4ea7642407"
+        },
+        {
+          "name": "return-menu",
+          "interaction": {
+            "id": "confirm_menu",
+            "kind": "button",
+            "text": "確認放棄",
+            "action": "Menu",
+            "point": {
+              "x": 195,
+              "y": 476.86
+            }
+          },
+          "before_observations_sha256": "221a8adb8b05f66082aff6a8ff813caf754ee1d265c8a3f37001ae4ea7642407",
+          "after_observations_sha256": "aca609db4c71cf7833fe8d8cffe869f269b0f6ae9d7728c0be9a9de235e26b4b"
+        },
+        {
+          "name": "keyboard-launch",
+          "interaction": {
+            "key": "Enter"
+          },
+          "before_observations_sha256": "aca609db4c71cf7833fe8d8cffe869f269b0f6ae9d7728c0be9a9de235e26b4b",
+          "after_observations_sha256": "0b7bbcb74a81d4b8e55958959117043b3606e3f498b38227632dcb3c43dc0197"
+        }
+      ],
+      "errors": [],
+      "failedRequests": []
+    }
+  ],
+  "font_audit": {
+    "ok": true,
+    "strict": true,
+    "text_samples": 65,
+    "note": "Unproven means no explicitly selected packaged face contains the codepoint; system fallback may still paint it.",
+    "faces": 10
+  },
+  "screenshots": [
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-abandon-again.png",
+      "bytes": 366455,
+      "sha256": "85ce68d9cd5589ba3be713e6dcd39fb541cb3c2d9142514a5c96506f586fa7b6"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-abandon-prompt.png",
+      "bytes": 366069,
+      "sha256": "40c9bf1f8679fac49ccea399c62062d46a45ec29cddf49187f592ba970861266"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-auto-off.png",
+      "bytes": 919881,
+      "sha256": "4b04210a11d6b88e258591a1e365cdc8174f5b303ff38555eb6285cac364fda6"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-burst.png",
+      "bytes": 921642,
+      "sha256": "eec4631620742a9f2d1bb743eb256e3ca8ff405f1969036a43abd415dbee34ce"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-cancel-abandon.png",
+      "bytes": 360839,
+      "sha256": "0b753a024ceb5ff50bfecc2a64eca623b22f6895f6d83be5ea2c509a02a51691"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-dash.png",
+      "bytes": 925022,
+      "sha256": "f478630fa1a2f520ad24d0fddb1a5cb5a92c52dc025c7dd876621306ef4e69b5"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-initial.png",
+      "bytes": 912903,
+      "sha256": "85375ff130e80d628d68f8aa18f3a6e4121ffd82f0ebf21664f3efd761f12f71"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-keyboard-launch.png",
+      "bytes": 931110,
+      "sha256": "65b9ac2f3cc5c5247aa75c2164ad4fbcdec0c5a981e20ed3ac592e10d318b9e5"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-keyboard-pause.png",
+      "bytes": 361142,
+      "sha256": "8431f88c3607895f6ba06cb39e526e4fc7eb97dcb641cb01a72fa11b112e063b"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-launch.png",
+      "bytes": 910309,
+      "sha256": "62e15bda08e651173151902cff3183b25c2e685b7bcf13beb9340f704060f960"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-pause.png",
+      "bytes": 360597,
+      "sha256": "e40fc4378fa32a41c87caa0d8541eeb2df92a1a419f62e2ece28eaa8dc0ae2d2"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-resume.png",
+      "bytes": 921134,
+      "sha256": "4cbe35c1e89981de34b071f179681953b79e0cd733f097e8dcba6d4022835236"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-return-menu.png",
+      "bytes": 932754,
+      "sha256": "795bd922e3c8e8cb570eff2eaa1af1d11e0ae612ed286c6a652a6ef1bbdf8384"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-sound-off.png",
+      "bytes": 912434,
+      "sha256": "347e4a26e94e624a735027a60dc13b7f10d5bad4437e0bf700409e675b630520"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/desktop-sound-on.png",
+      "bytes": 912333,
+      "sha256": "46abec65370c7bffd6cfd85f3f953fa3b751c9ece3b050e52edd651d54e2be43"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-abandon-again.png",
+      "bytes": 265107,
+      "sha256": "50a3d83974061dc6ed24d26a094005960519edc14d48d837e2bcc4e630e7abee"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-abandon-prompt.png",
+      "bytes": 262066,
+      "sha256": "5c6fdecfebe42de92889c2103a308c5329aaa60956c387597ca1798150206a4c"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-auto-off.png",
+      "bytes": 630365,
+      "sha256": "0ebfdcbe5bc4d45ae2e5a4ee582616f50937cd38af022b9c513526b77df7d37a"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-burst.png",
+      "bytes": 638686,
+      "sha256": "2839ab5381b0f9aa34348fc960ea5806a8443135f2b5cf95b73389aa14ebb601"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-cancel-abandon.png",
+      "bytes": 258923,
+      "sha256": "a23ed8749b10ef3ac2fd631d4688b80801b89ccea5c6bca37b1b55c22b0f9217"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-dash.png",
+      "bytes": 632959,
+      "sha256": "4c301a92eb58555affca9bf68fb2d7048eca589b7414dce7674f8e109a841d69"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-initial.png",
+      "bytes": 597985,
+      "sha256": "4095a18226a7ba443122284d442a37b464edbde70534fbd1e5b3ae57c749837b"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-keyboard-launch.png",
+      "bytes": 636367,
+      "sha256": "7e6323ce0ec398fb549adfcf555da5a8621667ab00deca69f2273bc0408aae1a"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-keyboard-pause.png",
+      "bytes": 261668,
+      "sha256": "be421ea0ba38e5608e0df58631c43336b1dbfc0551ff0101597e560c5acf2ff0"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-launch.png",
+      "bytes": 627084,
+      "sha256": "8cfbdf1e87984a2b1c979a4d7b6148e608655b317ccfc52d47edbcad9f34b8f2"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-pause.png",
+      "bytes": 259007,
+      "sha256": "59ac4228307f6aa1ee93ef43437b23d1a5190d2c0f7ab6f005d114e59db03d58"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-resume.png",
+      "bytes": 649591,
+      "sha256": "4537ef23e72761108d4d7c8b85cb8c3a6031fd8c2b4c443479c18236b36e358c"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-return-menu.png",
+      "bytes": 596430,
+      "sha256": "eec241d2afd5530dfc3ca6af08bad451a716b3854da7b1920dc97840cc4ca2f7"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-sound-off.png",
+      "bytes": 597565,
+      "sha256": "6da16afb703a02c954dc7fe80c0b11adcd26ecbc02b36770934f72963b5bbce1"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/intermediate-sound-on.png",
+      "bytes": 598049,
+      "sha256": "c4d427fe79dff8543247a4e95cac4b432d98a4208152d6ce9126af4b277b02ee"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-abandon-again.png",
+      "bytes": 107707,
+      "sha256": "5de96d35df307fe5cc34d37d2cb40a0ab6a7db1978c156e4d235ca6ee25c1b7e"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-abandon-prompt.png",
+      "bytes": 107695,
+      "sha256": "df42872953b416fd37e2a62e62832ceefa8b90ea2467bd6c17ea57653758ec37"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-auto-off.png",
+      "bytes": 236201,
+      "sha256": "55b81bb593bf1fec06bcd23d1ef8a09aef05e1a943988e2d78bc370d472a27e2"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-burst.png",
+      "bytes": 237643,
+      "sha256": "a3185fbb6a992143ee3a4ab58b119490a324c88a53a31a9d2ff3bab72e93f664"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-cancel-abandon.png",
+      "bytes": 106106,
+      "sha256": "c5d5308947f0a48c897dce369f750f5d23be93c78d4a0550650680895a395f5c"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-dash.png",
+      "bytes": 241089,
+      "sha256": "d848f03cdcdf87c85f5de8cee33ba803efa4a8fde6eb3f62f98261ee4f489b5c"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-initial.png",
+      "bytes": 250858,
+      "sha256": "5777306cac8e3721ee5cd0b599b3ce03a9693bd43f46c6efdb3d49cc96ad41de"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-keyboard-launch.png",
+      "bytes": 233843,
+      "sha256": "9cb4f5f75b02a71685e306f98b10783872f94b8b9139c6991bbf0164d9972096"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-keyboard-pause.png",
+      "bytes": 106029,
+      "sha256": "415099b19e17f3bb9c54ee0ca5640f6ff57ffe011d196239c16d0d9bfacbbfb1"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-launch.png",
+      "bytes": 237458,
+      "sha256": "4406546e43e99ead951f3a26035afb634e7c025d1523d38167de759acf096982"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-pause.png",
+      "bytes": 106269,
+      "sha256": "b251dad54640751a5b42f9a588324072b522949540fca4afe812a80e70019483"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-resume.png",
+      "bytes": 251245,
+      "sha256": "e46fd4676bd9fa7f191be43a0bb858564c19bf247b938ac1724ed82d75b4e89e"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-return-menu.png",
+      "bytes": 255752,
+      "sha256": "935d641f676dbb3555e74f89fcb9db5c7fe7a279469b9a1e023b4cc485ebd272"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-sound-off.png",
+      "bytes": 251304,
+      "sha256": "de2126bc0eff65d9c77920bf3c022bc95a0b11a0307ec4ee9a4d301dbb2279b8"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/voidwake-browser/portrait-sound-on.png",
+      "bytes": 251187,
+      "sha256": "434ac22f76b7ba629fd8eb478102d596d17da9984ea99d8c7548c4e37d5dd529"
+    }
+  ]
+}

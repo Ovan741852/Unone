@@ -1,0 +1,475 @@
+{
+  "source_hash_matches": true,
+  "input_source_hash_records": 16,
+  "command_records": 49,
+  "schema": "unone.sdk-only-author-freeze.v1",
+  "source_script_sha256": "a51bbd67452a70251e918309df63371520b221f57afcf97099727db61b25dd76",
+  "frozen_files": [
+    {
+      "sha256": "4f31c1dae1a9ac419107e5c051d3a5e4e2114b147d0fe54226a5ef0d63e7d5ec",
+      "bytes": 1537,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\AGENTS.md"
+    },
+    {
+      "sha256": "43468daebe3a568dc2c4be337d7a55555541a16c1a3f4730faaa60719453677f",
+      "bytes": 52,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\player.presentation.json"
+    },
+    {
+      "sha256": "739eb90e0405aa11971d2a7ae169be4ca73d380e06394f57d7a196f7a0eb8f38",
+      "bytes": 580,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\project.unone.json"
+    },
+    {
+      "sha256": "957ce28a27a373f5faec12525f885e052b818cec529eee2838204d91e1517f12",
+      "bytes": 311,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\.unone\\active\\bundles\\generation-00000000000000000001.json"
+    },
+    {
+      "sha256": "739eb90e0405aa11971d2a7ae169be4ca73d380e06394f57d7a196f7a0eb8f38",
+      "bytes": 580,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\.unone\\cache\\bundles\\739eb90e0405aa11971d2a7ae169be4ca73d380e06394f57d7a196f7a0eb8f38.bundle"
+    },
+    {
+      "sha256": "a51bbd67452a70251e918309df63371520b221f57afcf97099727db61b25dd76",
+      "bytes": 28778,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\.unone\\cache\\bundles\\a51bbd67452a70251e918309df63371520b221f57afcf97099727db61b25dd76.bundle"
+    },
+    {
+      "sha256": "e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5",
+      "bytes": 21,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\.unone\\cache\\bundles\\e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5.bundle"
+    },
+    {
+      "sha256": "03776d8207132bc8a96c65cc94ecaaf53e18ac47603e39c61b9aa23ec7492de4",
+      "bytes": 778,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\bundles\\manifest.json"
+    },
+    {
+      "sha256": "97c270ca63e04812315240f2900aebdaac9fe960a09d6c6b4e926b1bfc9ed006",
+      "bytes": 15428,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\export.json"
+    },
+    {
+      "sha256": "e825d1a2df8396bb7ef6b10494f748e4605a140626382e0c718e6d00f25e9ea6",
+      "bytes": 1172,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\index.html"
+    },
+    {
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b",
+      "bytes": 25,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\content\\assets.json"
+    },
+    {
+      "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94",
+      "bytes": 308,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\content\\presentation.json"
+    },
+    {
+      "sha256": "148b8bdd9e65f4b38be2411c28ea2e85a28da3038a64245a2da4b9d0a4330a48",
+      "bytes": 30356,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\content\\project.json"
+    },
+    {
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b",
+      "bytes": 25,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\content\\assets.json"
+    },
+    {
+      "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94",
+      "bytes": 308,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\content\\presentation.json"
+    },
+    {
+      "sha256": "148b8bdd9e65f4b38be2411c28ea2e85a28da3038a64245a2da4b9d0a4330a48",
+      "bytes": 30356,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\content\\project.json"
+    },
+    {
+      "sha256": "8b8c868717ae25ff837f50594fbff5a4fdf6ebb14d7eabe3ee5ac117a7eebc7c",
+      "bytes": 897,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\runtime\\runtime.json"
+    },
+    {
+      "sha256": "f0dd2bd9c028410d5bb299030b498fe8a5000c8973de2a294ece5abd5a198da3",
+      "bytes": 1750377,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\runtime\\unone_player.wasm"
+    },
+    {
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+      "bytes": 88284,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\runtime\\unone-player.js"
+    },
+    {
+      "sha256": "458eab291cbe55642d80298495cfc140c22df72d845aa18b14cb5f6abc1ef9df",
+      "bytes": 10434,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\player\\main.js"
+    },
+    {
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c",
+      "bytes": 7284,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\renderer\\bloom.js"
+    },
+    {
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879",
+      "bytes": 5464,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\renderer\\instances3d.js"
+    },
+    {
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a",
+      "bytes": 1348,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\renderer\\mesh.js"
+    },
+    {
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74",
+      "bytes": 4798,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\renderer\\shader-materials.js"
+    },
+    {
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503",
+      "bytes": 15013,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\renderer\\three.js"
+    },
+    {
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa",
+      "bytes": 1029,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\asset-encoding.js"
+    },
+    {
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b",
+      "bytes": 1902,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\async-scheduler.mjs"
+    },
+    {
+      "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618",
+      "bytes": 9726,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\audio-playback.js"
+    },
+    {
+      "sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51",
+      "bytes": 10842,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\canvas-ui.mjs"
+    },
+    {
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc",
+      "bytes": 11767,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\fixed-step-scheduler.mjs"
+    },
+    {
+      "sha256": "6b6bcc9be7486c6723a69d6f35331ae2f1b3434de6488ac1a2a502b8413dfd87",
+      "bytes": 3658,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\host-input.js"
+    },
+    {
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8",
+      "bytes": 3147,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\instance-transfer.mjs"
+    },
+    {
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f",
+      "bytes": 6407,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\job-binary.mjs"
+    },
+    {
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9",
+      "bytes": 6787,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\job-pool.mjs"
+    },
+    {
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8",
+      "bytes": 771,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\job-worker.js"
+    },
+    {
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1",
+      "bytes": 1220,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\load-project.js"
+    },
+    {
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a",
+      "bytes": 3700,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\presentation-interpolation.mjs"
+    },
+    {
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b",
+      "bytes": 2638,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\renderer-selection.mjs"
+    },
+    {
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592",
+      "bytes": 2506,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\runtime-backend.mjs"
+    },
+    {
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21",
+      "bytes": 4849,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\runtime-core.mjs"
+    },
+    {
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1",
+      "bytes": 1507,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\runtime-worker.js"
+    },
+    {
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3",
+      "bytes": 315,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\ui-contract.mjs"
+    },
+    {
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a",
+      "bytes": 4403,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\ui-geometry.mjs"
+    },
+    {
+      "sha256": "fde1941b01fa28ceb56deb2c0666c74a94f3cbdd5a1b762ea3f8af93d6d16ef5",
+      "bytes": 14031,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\ui-scroll.mjs"
+    },
+    {
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853",
+      "bytes": 9927,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\ui-style.mjs"
+    },
+    {
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4",
+      "bytes": 7868,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\ui-tree.js"
+    },
+    {
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168",
+      "bytes": 20074,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\shared\\webgpu-snapshot.js"
+    },
+    {
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05",
+      "bytes": 1102,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\vendor\\three\\LICENSE"
+    },
+    {
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5",
+      "bytes": 492237,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\releases\\f86f7e7f493b4351ad71b6316a1160bfdf11db78a1ab43d285e34b3255911e02\\web\\vendor\\three\\three.player.min.js"
+    },
+    {
+      "sha256": "8b8c868717ae25ff837f50594fbff5a4fdf6ebb14d7eabe3ee5ac117a7eebc7c",
+      "bytes": 897,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\runtime\\runtime.json"
+    },
+    {
+      "sha256": "f0dd2bd9c028410d5bb299030b498fe8a5000c8973de2a294ece5abd5a198da3",
+      "bytes": 1750377,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\runtime\\unone_player.wasm"
+    },
+    {
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+      "bytes": 88284,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\runtime\\unone-player.js"
+    },
+    {
+      "sha256": "458eab291cbe55642d80298495cfc140c22df72d845aa18b14cb5f6abc1ef9df",
+      "bytes": 10434,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\player\\main.js"
+    },
+    {
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c",
+      "bytes": 7284,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\renderer\\bloom.js"
+    },
+    {
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879",
+      "bytes": 5464,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\renderer\\instances3d.js"
+    },
+    {
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a",
+      "bytes": 1348,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\renderer\\mesh.js"
+    },
+    {
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74",
+      "bytes": 4798,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\renderer\\shader-materials.js"
+    },
+    {
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503",
+      "bytes": 15013,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\renderer\\three.js"
+    },
+    {
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa",
+      "bytes": 1029,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\asset-encoding.js"
+    },
+    {
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b",
+      "bytes": 1902,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\async-scheduler.mjs"
+    },
+    {
+      "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618",
+      "bytes": 9726,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\audio-playback.js"
+    },
+    {
+      "sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51",
+      "bytes": 10842,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\canvas-ui.mjs"
+    },
+    {
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc",
+      "bytes": 11767,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\fixed-step-scheduler.mjs"
+    },
+    {
+      "sha256": "6b6bcc9be7486c6723a69d6f35331ae2f1b3434de6488ac1a2a502b8413dfd87",
+      "bytes": 3658,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\host-input.js"
+    },
+    {
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8",
+      "bytes": 3147,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\instance-transfer.mjs"
+    },
+    {
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f",
+      "bytes": 6407,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\job-binary.mjs"
+    },
+    {
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9",
+      "bytes": 6787,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\job-pool.mjs"
+    },
+    {
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8",
+      "bytes": 771,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\job-worker.js"
+    },
+    {
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1",
+      "bytes": 1220,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\load-project.js"
+    },
+    {
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a",
+      "bytes": 3700,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\presentation-interpolation.mjs"
+    },
+    {
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b",
+      "bytes": 2638,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\renderer-selection.mjs"
+    },
+    {
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592",
+      "bytes": 2506,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\runtime-backend.mjs"
+    },
+    {
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21",
+      "bytes": 4849,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\runtime-core.mjs"
+    },
+    {
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1",
+      "bytes": 1507,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\runtime-worker.js"
+    },
+    {
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3",
+      "bytes": 315,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\ui-contract.mjs"
+    },
+    {
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a",
+      "bytes": 4403,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\ui-geometry.mjs"
+    },
+    {
+      "sha256": "fde1941b01fa28ceb56deb2c0666c74a94f3cbdd5a1b762ea3f8af93d6d16ef5",
+      "bytes": 14031,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\ui-scroll.mjs"
+    },
+    {
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853",
+      "bytes": 9927,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\ui-style.mjs"
+    },
+    {
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4",
+      "bytes": 7868,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\ui-tree.js"
+    },
+    {
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168",
+      "bytes": 20074,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\shared\\webgpu-snapshot.js"
+    },
+    {
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05",
+      "bytes": 1102,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\vendor\\three\\LICENSE"
+    },
+    {
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5",
+      "bytes": 492237,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\dist\\player\\web\\vendor\\three\\three.player.min.js"
+    },
+    {
+      "sha256": "e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5",
+      "bytes": 21,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\scenes\\main.scene.json"
+    },
+    {
+      "sha256": "a51bbd67452a70251e918309df63371520b221f57afcf97099727db61b25dd76",
+      "bytes": 28778,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\scripts\\main.luau"
+    },
+    {
+      "sha256": "165358a5c891a7b2ab40692795e618d33ed75d556e5df4ae4a809c60f076c54c",
+      "bytes": 1106,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\tests\\button-hold-release.test.json"
+    },
+    {
+      "sha256": "e11911231d35eb1f55f62c6559a74691815010df5281e907d08a38b46049cf64",
+      "bytes": 796,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\tests\\button-two-presses.test.json"
+    },
+    {
+      "sha256": "7fb4dd13b7b0077e92d1711a30245190fa26407d0dd3e0b7462644fc1c6e3216",
+      "bytes": 515,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\tests\\combobox.test.json"
+    },
+    {
+      "sha256": "c9251ce426c39938eb2d68122064eb0e6bcf2a7763ccd47f40ace823c294edd3",
+      "bytes": 790,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\tests\\idle.test.json"
+    },
+    {
+      "sha256": "fa189154354c27b70f69a8918565620b061e81281041ec8d57b8aaabab511a63",
+      "bytes": 609,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\tests\\list-stable-selection.test.json"
+    },
+    {
+      "sha256": "3dfce3d24acc28767bef65ddd31f2e83c200a9291956125b07bb90bb86892aa4",
+      "bytes": 961,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\probe\\tests\\slider-drag.test.json"
+    },
+    {
+      "sha256": "fa296c9d6427b2e94fb8ef2523dc1cfc81955946787d305f5957a5ad6b729dd5",
+      "bytes": 7488,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\author-evidence\\author-report.md"
+    },
+    {
+      "sha256": "b4110235f784f1876c8275ced641588a6ac35cbe8b5981cafb365aaddce437fe",
+      "bytes": 209904,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\author-evidence\\commands.json"
+    },
+    {
+      "sha256": "48d9f4a996cc325bb54b0ac64265608c9ab8a1e62bef6cb6d9cd75b55974c950",
+      "bytes": 2802,
+      "path": "D:\\TSProject\\UnoneUiErgonomics-20261016\\author-evidence\\source-input-hashes.json"
+    }
+  ],
+  "boundary": "instruction-enforced only, not OS sandbox"
+}

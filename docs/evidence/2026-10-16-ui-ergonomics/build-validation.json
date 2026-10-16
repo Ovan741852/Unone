@@ -1,0 +1,102 @@
+{
+  "command": "cargo test --workspace --release",
+  "passed": 455,
+  "failed": 0,
+  "ignored": 3,
+  "suites": 21,
+  "clippy_command": "cargo clippy --workspace --all-targets --release -- -D warnings",
+  "logs": [
+    {
+      "path": "artifacts/ui-ergonomics/workspace-tests.txt",
+      "bytes": 2240,
+      "sha256": "7d36d98b83a57cc7e73c0b4e96acdf656d1775e9e91e4db35c0f4532318bad31",
+      "tail": [
+        "called `Result::unwrap()` on an `Err` value: Diagnostic { code: \"REPLAY_ADAPTER_FAILED\", severity: Error, summary: \"Game.replay.inspect failed\", explanation: \"error converting Lua nil to table\", facts: Object {}, likely_causes: [], suggested_actions: [], source: None }",
+        "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "",
+        "",
+        "failures:",
+        "    reload_and_replay_reads_do_not_publish_or_consume_pending_host_edges",
+        "",
+        "test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "",
+        "error: test failed, to rerun pass `-p unone-engine --test input_edges`"
+      ]
+    },
+    {
+      "path": "artifacts/ui-ergonomics/workspace-tests-final.txt",
+      "bytes": 2977,
+      "sha256": "2d420cc24be28a20be2d58c4b778dc373afa9e61ab4320fceecd9b07bf0fd1c4",
+      "tail": [
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        ""
+      ]
+    },
+    {
+      "path": "artifacts/ui-ergonomics/workspace-tests-final2.txt",
+      "bytes": 45025,
+      "sha256": "657ab02a155aa57c1e938165a0bec4bb978160dfd523a1c7c9746a5ed73a11eb",
+      "tail": [
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "",
+        "   Doc-tests unone_mobile_ffi",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        ""
+      ]
+    },
+    {
+      "path": "artifacts/ui-ergonomics/clippy-final.txt",
+      "bytes": 626,
+      "sha256": "d5e08698a1230ca615a0b9551dbb442093d41a78137a4fa2082e6f0b27731556",
+      "tail": [
+        "    Checking unone-engine v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-engine)",
+        "    Checking unone-mobile-ffi v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-mobile-ffi)",
+        "    Checking unone-web-live-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-web-live-smoke)",
+        "    Checking unone-cli v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-cli)",
+        "    Checking unone-web-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-web-smoke)",
+        "    Checking unone-mobile-android-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-mobile-android-smoke)",
+        "    Finished `release` profile [optimized] target(s) in 31.96s"
+      ]
+    },
+    {
+      "path": "artifacts/ui-ergonomics/build-cli-final.txt",
+      "bytes": 228,
+      "sha256": "d3a5fc1ba3c7f7aa35d3a945aa70adfce627028411eb51e29423e19742eadd35",
+      "tail": [
+        "   Compiling unone-engine v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-engine)",
+        "   Compiling unone-cli v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-cli)",
+        "    Finished `release` profile [optimized] target(s) in 54.58s"
+      ]
+    },
+    {
+      "path": "artifacts/ui-ergonomics/build-wasm-final.txt",
+      "bytes": 5362,
+      "sha256": "1d197cbe60b0ad6339b93004c77e4f8dfa4cbe96fdd043538dfa89b289536a58",
+      "tail": [
+        "warning: function `resolve_circle_pair` is never used",
+        "    --> D:\\TSProject\\Voidwake\\engine\\crates\\unone-engine\\src\\world.rs:1697:4",
+        "     |",
+        "1697 | fn resolve_circle_pair(",
+        "     |    ^^^^^^^^^^^^^^^^^^^",
+        "",
+        "warning: `unone-engine` (lib) generated 17 warnings (run `cargo fix --lib -p unone-engine` to apply 4 suggestions)",
+        "   Compiling unone-player v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-player)",
+        "    Finished `release` profile [optimized] target(s) in 2m 04s",
+        "Copied 10 exact Unone shared runtime modules."
+      ]
+    }
+  ]
+}

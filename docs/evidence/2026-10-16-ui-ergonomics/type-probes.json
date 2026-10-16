@@ -1,0 +1,51 @@
+[
+  {
+    "case": "callback-instead-of-action",
+    "expected_pass": false,
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-ergonomics/type-probes/callback-instead-of-action.luau(453,58): TypeError: Expected this to be 'string', but got '(...any) -> ()'\n"
+  },
+  {
+    "case": "invalid-generic-row",
+    "expected_pass": false,
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-ergonomics/type-probes/invalid-generic-row.luau(457,236): TypeError: Key 'missing' not found in table 'Row'\n"
+  },
+  {
+    "case": "invented-input-method",
+    "expected_pass": false,
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-ergonomics/type-probes/invented-input-method.luau(453,1): TypeError: Key 'isActionJustPressed' not found in table 'InputApi'\n"
+  },
+  {
+    "case": "misspelled-constructor",
+    "expected_pass": false,
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-ergonomics/type-probes/misspelled-constructor.luau(453,53): TypeError: Key 'silder' not found in table 'UiComponentKit'\n"
+  },
+  {
+    "case": "valid-controls",
+    "expected_pass": true,
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "case": "valid-generic-rows",
+    "expected_pass": true,
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "case": "wrong-style-type",
+    "expected_pass": false,
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-ergonomics/type-probes/wrong-style-type.luau(453,101): TypeError: Expected this to be 'number?', but got 'string'\n"
+  }
+]

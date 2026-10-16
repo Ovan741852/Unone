@@ -1,0 +1,84 @@
+{
+  "schema": "unone.final-sdk-untouched-starter-validation.v1",
+  "date": "2026-10-16",
+  "verdict": "passed",
+  "sdk_root": "D:/TSProject/UnoneUiErgonomics-20261016/final-sdk",
+  "project_root": "D:/TSProject/UnoneUiErgonomics-20261016/starter-final",
+  "output_root": "D:/TSProject/UnoneUiErgonomics-20261016/starter-final/dist/player",
+  "instruction_boundary": "SDK manifest and public CLI only; generated project instructions/config read; no engine or package implementation source, Cargo, original probe or original evidence access. Instruction-enforced boundary, not OS sandbox.",
+  "author_modified_project_files": [],
+  "systems_before": {
+    "audio": false,
+    "camera2d": true,
+    "camera3d": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": true,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "spine": false,
+    "ui": true
+  },
+  "systems_after": {
+    "audio": false,
+    "camera2d": true,
+    "camera3d": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": true,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "spine": false,
+    "ui": true
+  },
+  "systems_unchanged": true,
+  "automatic_prepare_added_config_fields": [
+    "bundle_manifest"
+  ],
+  "analyzer": "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe",
+  "verify": {
+    "ok": true,
+    "passed": 3,
+    "failed": 0,
+    "not_applicable": 1,
+    "test_summary": "2/2 deterministic cases passed"
+  },
+  "preflight": {
+    "ok": true,
+    "status": "compatible"
+  },
+  "prepare": {
+    "ok": true,
+    "status": "ready",
+    "runtime_id": "web-production-0",
+    "renderer_mode": "official",
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "ui",
+      "world"
+    ],
+    "enabled_systems": [
+      "camera2d",
+      "input",
+      "observation",
+      "particle",
+      "ui",
+      "world"
+    ],
+    "release_root": "releases/24dc037dfd6c9001efe5fbfb9e6f9414757ed8d62699df1ad4dc3a6060b0b6c4/"
+  },
+  "limits": [
+    "This checks scaffold-to-official-Web export readiness. No browser rendering or input QA was requested or performed.",
+    "The starter publishes no UI tree, so the normal layout gate is not applicable.",
+    "Prepare automatically adds bundle_manifest to project config; systems and all authored gameplay files were not edited by this agent."
+  ]
+}

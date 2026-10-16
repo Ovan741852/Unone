@@ -1,0 +1,98 @@
+[
+  {
+    "bytes": 10935,
+    "scope": "sdk_input",
+    "sha256": "e2be4ffb23478d804f1473fa081638729a504f7d4229866acce286d2486c85c5",
+    "path": "sdk.json"
+  },
+  {
+    "bytes": 28689920,
+    "scope": "sdk_input",
+    "sha256": "47e333e192187ef5fd11aa330f533e5fcfed6de24315aa512c233ad9fa719dc6",
+    "path": "bin/game.exe"
+  },
+  {
+    "bytes": 7113,
+    "scope": "sdk_input",
+    "sha256": "9cd64fb009d2296de2570bd6f309d52f7f673046d9411ae38cec1e65d4eb4e22",
+    "path": "packages/unone-ui/README.md"
+  },
+  {
+    "bytes": 15932,
+    "scope": "sdk_input",
+    "sha256": "b8b6df8b851cc81325bb2b258f4449164427bb0e40521e6b9d08dd32f6faee4c",
+    "path": "docs/ui-components.md"
+  },
+  {
+    "bytes": 10000,
+    "scope": "sdk_input",
+    "sha256": "a950e096501b7fdd6e0c93f49b72f652e9185f74956a4a716c1c556b7b19d7f6",
+    "path": "docs/ui-scroll.md"
+  },
+  {
+    "bytes": 1537,
+    "scope": "probe_source",
+    "sha256": "4f31c1dae1a9ac419107e5c051d3a5e4e2114b147d0fe54226a5ef0d63e7d5ec",
+    "path": "AGENTS.md"
+  },
+  {
+    "bytes": 580,
+    "scope": "probe_source",
+    "sha256": "739eb90e0405aa11971d2a7ae169be4ca73d380e06394f57d7a196f7a0eb8f38",
+    "path": "project.unone.json"
+  },
+  {
+    "bytes": 52,
+    "scope": "probe_source",
+    "sha256": "43468daebe3a568dc2c4be337d7a55555541a16c1a3f4730faaa60719453677f",
+    "path": "player.presentation.json"
+  },
+  {
+    "bytes": 21,
+    "scope": "probe_source",
+    "sha256": "e4121e3df9b7a052c0f9273974567381f3209ae6bc5b1a85f1ab403480304ad5",
+    "path": "scenes/main.scene.json"
+  },
+  {
+    "bytes": 28778,
+    "scope": "probe_source",
+    "sha256": "a51bbd67452a70251e918309df63371520b221f57afcf97099727db61b25dd76",
+    "path": "scripts/main.luau"
+  },
+  {
+    "bytes": 790,
+    "scope": "probe_source",
+    "sha256": "c9251ce426c39938eb2d68122064eb0e6bcf2a7763ccd47f40ace823c294edd3",
+    "path": "tests/idle.test.json"
+  },
+  {
+    "bytes": 1106,
+    "scope": "probe_source",
+    "sha256": "165358a5c891a7b2ab40692795e618d33ed75d556e5df4ae4a809c60f076c54c",
+    "path": "tests/button-hold-release.test.json"
+  },
+  {
+    "bytes": 796,
+    "scope": "probe_source",
+    "sha256": "e11911231d35eb1f55f62c6559a74691815010df5281e907d08a38b46049cf64",
+    "path": "tests/button-two-presses.test.json"
+  },
+  {
+    "bytes": 961,
+    "scope": "probe_source",
+    "sha256": "3dfce3d24acc28767bef65ddd31f2e83c200a9291956125b07bb90bb86892aa4",
+    "path": "tests/slider-drag.test.json"
+  },
+  {
+    "bytes": 515,
+    "scope": "probe_source",
+    "sha256": "7fb4dd13b7b0077e92d1711a30245190fa26407d0dd3e0b7462644fc1c6e3216",
+    "path": "tests/combobox.test.json"
+  },
+  {
+    "bytes": 609,
+    "scope": "probe_source",
+    "sha256": "fa189154354c27b70f69a8918565620b061e81281041ec8d57b8aaabab511a63",
+    "path": "tests/list-stable-selection.test.json"
+  }
+]

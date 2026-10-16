@@ -19,12 +19,19 @@ choice. Follow the [AI workflow](docs/ai-workflow.md) and
 gameplay evidence, so inspect the exported player before claiming visual completion.
 
 The official [`@unone/ui` shared component package](docs/ui-components.md) ships
-with Core and the portable SDK. Declare `"runtime_packages":{"@unone/ui":"0.1.0"}`,
-discover `ui.components.info` / `ui.components.create`, then use the returned
-kit's typed text/button/panel/image/component constructors. The kit composes
+with Core and the portable SDK. Declare `"runtime_packages":{"@unone/ui":"0.2.0"}`,
+discover `ui.components.info` / `ui.components.create`, then use the module's
+typed text/button/slider/combobox/panel/image/component/screen constructors and
+scrollView/virtualList/virtualGrid wrappers, or the same methods on a themed kit.
+Search `"create button"`, `"button click"`, `"按下瞬間"`, `"滑桿"` or `"下拉選單"`
+for callable controls and semantic action guidance. `input.wasPressed` /
+`wasReleased` read non-consuming edges; `isDown` reads held state.
+The kit composes
 project-owned theme styles and instance IDs into the existing `ui.setRoot` tree;
 custom Luau factories remain valid. Themes, content, state, actions, screen flow
-and geometry stay in the project.
+and geometry stay in the project. Keep canonical `EngineApi` / `UiComponentKit`
+types; [safely refresh a marked type block](docs/ui-components.md#keep-the-official-types-when-upgrading)
+with `game --project <game-root> api typings --update-script gameplay.luau`.
 [Typography and styling](docs/ui-styling.md) provide font catalogs, explicit type
 sizes, alignment, wrapping, colors, padding and borders. Optional component
 surfaces carry `background_for` ownership while strict inspection still reports

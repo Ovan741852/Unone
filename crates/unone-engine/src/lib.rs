@@ -5,6 +5,8 @@ pub use mesh::{MeshAsset, MeshLod, validate_mesh_geometry};
 #[cfg(feature = "dev-tools")]
 mod api;
 #[cfg(feature = "dev-tools")]
+mod api_typing_authoring;
+#[cfg(feature = "dev-tools")]
 mod asset;
 #[cfg(feature = "dev-tools")]
 mod asset_workflow;
@@ -53,6 +55,8 @@ pub use api::{
     ApiDescriptor, ApiParameter, ApiSearchAction, ApiSearchReport, api_search_result,
     describe as api_describe, search as api_search, typings as api_typings,
 };
+#[cfg(feature = "dev-tools")]
+pub use api_typing_authoring::{ApiTypingsUpdateReport, api_typings_block, update_api_typings};
 #[cfg(feature = "dev-tools")]
 pub use asset::{
     AssetCompanion, AssetEncoding, AssetInitReport, AssetInspectBlocker, AssetInspectReport,

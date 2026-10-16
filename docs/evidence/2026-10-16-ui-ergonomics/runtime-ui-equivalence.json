@@ -1,0 +1,746 @@
+{
+  "ok": true,
+  "started_utc": "2026-10-16T04:33:06.321Z",
+  "harness_sha256": "bd4a9aec55fbcc1497146c0e7d4be016737cd26ec78b07ce9c648f299828d389",
+  "official_host_loader": {
+    "path": "D:\\TSProject\\Voidwake\\game\\web\\shared\\load-project.js",
+    "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+  },
+  "runtimes": {
+    "baseline": {
+      "path": "D:\\TSProject\\Voidwake\\engine\\artifacts\\ui-ergonomics\\baseline-runtime",
+      "descriptor_sha256": "555018cbe65fe0d2e47d5781380c837db3332a67e1897594c756488f6ab4da4b",
+      "wasm_sha256": "7bb3757a120a228c4cb52a32330ad988e4f8261dc9e360ce7261915a5907d2d7",
+      "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+      "runtime_packages": {
+        "@unone/ui": "0.1.0"
+      },
+      "manifest_source_commit": "b776403b8055187fa8ac2faad0a5e852fa2a9f52",
+      "manifest_source_dirty": true,
+      "profile": "release",
+      "dev_tools": false
+    },
+    "current": {
+      "path": "D:\\TSProject\\Voidwake\\game\\runtime",
+      "descriptor_sha256": "f496a3a4592b3ee669c35cedf86b64874584f09a471cd908e2fa2ffb1589ec31",
+      "wasm_sha256": "8a481e4fe92d5d3ea78846eb1171597270455bf64f66978ba9e001b618711462",
+      "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+      "runtime_packages": {
+        "@unone/ui": "0.2.0"
+      },
+      "manifest_source_commit": "859826ecdac50f5722cc66a226123039d4675e2e",
+      "manifest_source_dirty": true,
+      "profile": "release",
+      "dev_tools": false
+    }
+  },
+  "inputs": {
+    "baseline": {
+      "path": "D:\\TSProject\\Voidwake\\engine\\artifacts\\ui-ergonomics\\baseline-player\\content\\project.json",
+      "sha256": "f1c5742f875f9af28a17beb00223e228e3829170613b28928636bf6664b34c3a",
+      "script_sha256": "dec66e43e47a705112c36703e3d423b3d3c435623c33c6fea8c92b499e4ba9b6",
+      "runtime_packages": {
+        "@unone/ui": "0.1.0"
+      }
+    },
+    "current": {
+      "path": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\dist\\player\\content\\project.json",
+      "sha256": "653c5e8633ad55697cee6cde74028e5bb24c651d4b212115e7c29589babdecb0",
+      "script_sha256": "79c65da0d6947c595b87094494eaae46e50e4fea4938e20e36cf95f26c946471",
+      "runtime_packages": {
+        "@unone/ui": "0.2.0"
+      }
+    }
+  },
+  "comparison": {
+    "mode": "exact",
+    "normalized_fields": [],
+    "expected_font_substitutions": []
+  },
+  "seed": 42,
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "aspect": 1.6,
+      "frames_per_payload": 3337,
+      "natural_death_frames": 632,
+      "cases": [
+        {
+          "name": "menu-start",
+          "frame": 0,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "240f4f497c72d3f6eae21708347eb265729e7db00e3e9da7627be7df3a34c42d",
+          "current_ui_sha256": "240f4f497c72d3f6eae21708347eb265729e7db00e3e9da7627be7df3a34c42d",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "menu-frame-1",
+          "frame": 1,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "240f4f497c72d3f6eae21708347eb265729e7db00e3e9da7627be7df3a34c42d",
+          "current_ui_sha256": "240f4f497c72d3f6eae21708347eb265729e7db00e3e9da7627be7df3a34c42d",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "playing-start",
+          "frame": 2,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "current_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "baseline_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda",
+          "current_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda"
+        },
+        {
+          "name": "playing-moved",
+          "frame": 47,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "current_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "baseline_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd",
+          "current_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd"
+        },
+        {
+          "name": "paused",
+          "frame": 48,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "09620bfd8126a830b8d86ade29eb63c777147a2307b6ea8812e9b19e31437387",
+          "current_ui_sha256": "09620bfd8126a830b8d86ade29eb63c777147a2307b6ea8812e9b19e31437387",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "pause-frozen-120-input-frames",
+          "frame": 168,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "09620bfd8126a830b8d86ade29eb63c777147a2307b6ea8812e9b19e31437387",
+          "current_ui_sha256": "09620bfd8126a830b8d86ade29eb63c777147a2307b6ea8812e9b19e31437387",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "resumed",
+          "frame": 169,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "current_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "baseline_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e",
+          "current_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e"
+        },
+        {
+          "name": "abandon-confirmation",
+          "frame": 173,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "ada4a2094a152d6a8a978363d11741d22dd9f1703aed131d8a58ad7cd820658a",
+          "current_ui_sha256": "ada4a2094a152d6a8a978363d11741d22dd9f1703aed131d8a58ad7cd820658a",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandon-cancelled",
+          "frame": 175,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "09620bfd8126a830b8d86ade29eb63c777147a2307b6ea8812e9b19e31437387",
+          "current_ui_sha256": "09620bfd8126a830b8d86ade29eb63c777147a2307b6ea8812e9b19e31437387",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandoned-menu",
+          "frame": 179,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "240f4f497c72d3f6eae21708347eb265729e7db00e3e9da7627be7df3a34c42d",
+          "current_ui_sha256": "240f4f497c72d3f6eae21708347eb265729e7db00e3e9da7627be7df3a34c42d",
+          "baseline_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a",
+          "current_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a"
+        },
+        {
+          "name": "auto-fire-disabled",
+          "frame": 183,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8d95a09567bde4bbb69da1fbcfcf9e049c3dd34bf92875c0ce6f26d6fc729d8c",
+          "current_ui_sha256": "8d95a09567bde4bbb69da1fbcfcf9e049c3dd34bf92875c0ce6f26d6fc729d8c",
+          "baseline_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97",
+          "current_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97"
+        },
+        {
+          "name": "abilities-used",
+          "frame": 187,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "dfe332e455821304608dd5a19a60a1797c8516d0d21c2d986c299c39700f6da7",
+          "current_ui_sha256": "dfe332e455821304608dd5a19a60a1797c8516d0d21c2d986c299c39700f6da7",
+          "baseline_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6",
+          "current_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6"
+        },
+        {
+          "name": "sound-toggled",
+          "frame": 189,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "52fe431a69abf53f8b0842c39f7533d24da3a00b7ed46f61892a4079cf43703a",
+          "current_ui_sha256": "52fe431a69abf53f8b0842c39f7533d24da3a00b7ed46f61892a4079cf43703a",
+          "baseline_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666",
+          "current_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666"
+        },
+        {
+          "name": "restarted",
+          "frame": 191,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "7cfd9171abfb29d29055d0ba3b3bd49ba74d7898c84fe028306ea095ee12fac8",
+          "current_ui_sha256": "7cfd9171abfb29d29055d0ba3b3bd49ba74d7898c84fe028306ea095ee12fac8",
+          "baseline_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233",
+          "current_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233"
+        },
+        {
+          "name": "upgrade-2500",
+          "frame": 2500,
+          "phase": "upgrade",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "174d26844e52fd6890bbbf8ca47ad692ed5b842e8ac1ccbb3c2d8021c26c6a05",
+          "current_ui_sha256": "174d26844e52fd6890bbbf8ca47ad692ed5b842e8ac1ccbb3c2d8021c26c6a05",
+          "baseline_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9",
+          "current_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9"
+        },
+        {
+          "name": "upgrade-selected",
+          "frame": 2501,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "b4e703aee2223a7cacd99da9edd8a74d1c7aae166938eae81fe0d6e29c82d9ff",
+          "current_ui_sha256": "b4e703aee2223a7cacd99da9edd8a74d1c7aae166938eae81fe0d6e29c82d9ff",
+          "baseline_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5",
+          "current_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5"
+        },
+        {
+          "name": "held-choice-installs-once",
+          "frame": 2511,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "b4e703aee2223a7cacd99da9edd8a74d1c7aae166938eae81fe0d6e29c82d9ff",
+          "current_ui_sha256": "b4e703aee2223a7cacd99da9edd8a74d1c7aae166938eae81fe0d6e29c82d9ff",
+          "baseline_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33",
+          "current_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33"
+        },
+        {
+          "name": "natural-gameover",
+          "frame": 634,
+          "phase": "gameover",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "503b7fb46a53c7d8ae505d879dd391d083a2a05e351a2ee833db675c80eb95a7",
+          "current_ui_sha256": "503b7fb46a53c7d8ae505d879dd391d083a2a05e351a2ee833db675c80eb95a7",
+          "baseline_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721",
+          "current_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721"
+        },
+        {
+          "name": "restart-after-gameover",
+          "frame": 635,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "current_ui_sha256": "342b6c9a4d30f09d0472f55adeeee856718b99200b55ee9e0606659e7634a14c",
+          "baseline_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b",
+          "current_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "aspect": 1.1538461538461537,
+      "frames_per_payload": 3337,
+      "natural_death_frames": 632,
+      "cases": [
+        {
+          "name": "menu-start",
+          "frame": 0,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "current_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "menu-frame-1",
+          "frame": 1,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "current_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "playing-start",
+          "frame": 2,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda",
+          "current_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda"
+        },
+        {
+          "name": "playing-moved",
+          "frame": 47,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd",
+          "current_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd"
+        },
+        {
+          "name": "paused",
+          "frame": 48,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "current_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "pause-frozen-120-input-frames",
+          "frame": 168,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "current_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "resumed",
+          "frame": 169,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e",
+          "current_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e"
+        },
+        {
+          "name": "abandon-confirmation",
+          "frame": 173,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6527b1bbff80795378e31039abc8f6829f462d26256e9dfa5adf5c7c10ae147c",
+          "current_ui_sha256": "6527b1bbff80795378e31039abc8f6829f462d26256e9dfa5adf5c7c10ae147c",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandon-cancelled",
+          "frame": 175,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "current_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandoned-menu",
+          "frame": 179,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "current_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "baseline_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a",
+          "current_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a"
+        },
+        {
+          "name": "auto-fire-disabled",
+          "frame": 183,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "cae58d81003fa01a749bde3e65029df369733293789c87a2b05221ee1c736c2c",
+          "current_ui_sha256": "cae58d81003fa01a749bde3e65029df369733293789c87a2b05221ee1c736c2c",
+          "baseline_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97",
+          "current_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97"
+        },
+        {
+          "name": "abilities-used",
+          "frame": 187,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "a7dfaafccb1e46e704433f50fb74afc8e73496d91fd7bf32c343d70f1fe66491",
+          "current_ui_sha256": "a7dfaafccb1e46e704433f50fb74afc8e73496d91fd7bf32c343d70f1fe66491",
+          "baseline_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6",
+          "current_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6"
+        },
+        {
+          "name": "sound-toggled",
+          "frame": 189,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3ab3bcfcdaefabf5c5bef061ec98d016869c8eaca5b2ddcc5048068d174805b4",
+          "current_ui_sha256": "3ab3bcfcdaefabf5c5bef061ec98d016869c8eaca5b2ddcc5048068d174805b4",
+          "baseline_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666",
+          "current_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666"
+        },
+        {
+          "name": "restarted",
+          "frame": 191,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "1faf3e77dfbd1e5180a1c2f80244ba9c997f1faa50da43f6ca1dc7573febd3ad",
+          "current_ui_sha256": "1faf3e77dfbd1e5180a1c2f80244ba9c997f1faa50da43f6ca1dc7573febd3ad",
+          "baseline_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233",
+          "current_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233"
+        },
+        {
+          "name": "upgrade-2500",
+          "frame": 2500,
+          "phase": "upgrade",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6859fcff090f1a35b32e1d409a391d07f23226f8a67fdb9a5dc1a7519a472775",
+          "current_ui_sha256": "6859fcff090f1a35b32e1d409a391d07f23226f8a67fdb9a5dc1a7519a472775",
+          "baseline_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9",
+          "current_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9"
+        },
+        {
+          "name": "upgrade-selected",
+          "frame": 2501,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "current_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "baseline_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5",
+          "current_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5"
+        },
+        {
+          "name": "held-choice-installs-once",
+          "frame": 2511,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "current_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "baseline_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33",
+          "current_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33"
+        },
+        {
+          "name": "natural-gameover",
+          "frame": 634,
+          "phase": "gameover",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "f2afb0077dc6f62b422a0e046c4b9011a42d31d089e5ab9335bb82e640117ca0",
+          "current_ui_sha256": "f2afb0077dc6f62b422a0e046c4b9011a42d31d089e5ab9335bb82e640117ca0",
+          "baseline_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721",
+          "current_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721"
+        },
+        {
+          "name": "restart-after-gameover",
+          "frame": 635,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b",
+          "current_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "aspect": 0.46208530805687204,
+      "frames_per_payload": 3337,
+      "natural_death_frames": 632,
+      "cases": [
+        {
+          "name": "menu-start",
+          "frame": 0,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "current_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "menu-frame-1",
+          "frame": 1,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "current_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "playing-start",
+          "frame": 2,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda",
+          "current_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda"
+        },
+        {
+          "name": "playing-moved",
+          "frame": 47,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd",
+          "current_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd"
+        },
+        {
+          "name": "paused",
+          "frame": 48,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "current_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "pause-frozen-120-input-frames",
+          "frame": 168,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "current_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "resumed",
+          "frame": 169,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e",
+          "current_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e"
+        },
+        {
+          "name": "abandon-confirmation",
+          "frame": 173,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6527b1bbff80795378e31039abc8f6829f462d26256e9dfa5adf5c7c10ae147c",
+          "current_ui_sha256": "6527b1bbff80795378e31039abc8f6829f462d26256e9dfa5adf5c7c10ae147c",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandon-cancelled",
+          "frame": 175,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "current_ui_sha256": "c25094febf780f6782e0762e3e6d5e950672a4d5c0055a5022443ed0dc537669",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandoned-menu",
+          "frame": 179,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "current_ui_sha256": "0084b43a0936fe85c5379b1a0e4b4b7a78f99ca8d15ad3e16c30eba5c49ceb7b",
+          "baseline_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a",
+          "current_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a"
+        },
+        {
+          "name": "auto-fire-disabled",
+          "frame": 183,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "cae58d81003fa01a749bde3e65029df369733293789c87a2b05221ee1c736c2c",
+          "current_ui_sha256": "cae58d81003fa01a749bde3e65029df369733293789c87a2b05221ee1c736c2c",
+          "baseline_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97",
+          "current_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97"
+        },
+        {
+          "name": "abilities-used",
+          "frame": 187,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "a7dfaafccb1e46e704433f50fb74afc8e73496d91fd7bf32c343d70f1fe66491",
+          "current_ui_sha256": "a7dfaafccb1e46e704433f50fb74afc8e73496d91fd7bf32c343d70f1fe66491",
+          "baseline_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6",
+          "current_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6"
+        },
+        {
+          "name": "sound-toggled",
+          "frame": 189,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3ab3bcfcdaefabf5c5bef061ec98d016869c8eaca5b2ddcc5048068d174805b4",
+          "current_ui_sha256": "3ab3bcfcdaefabf5c5bef061ec98d016869c8eaca5b2ddcc5048068d174805b4",
+          "baseline_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666",
+          "current_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666"
+        },
+        {
+          "name": "restarted",
+          "frame": 191,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "1faf3e77dfbd1e5180a1c2f80244ba9c997f1faa50da43f6ca1dc7573febd3ad",
+          "current_ui_sha256": "1faf3e77dfbd1e5180a1c2f80244ba9c997f1faa50da43f6ca1dc7573febd3ad",
+          "baseline_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233",
+          "current_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233"
+        },
+        {
+          "name": "upgrade-2500",
+          "frame": 2500,
+          "phase": "upgrade",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6859fcff090f1a35b32e1d409a391d07f23226f8a67fdb9a5dc1a7519a472775",
+          "current_ui_sha256": "6859fcff090f1a35b32e1d409a391d07f23226f8a67fdb9a5dc1a7519a472775",
+          "baseline_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9",
+          "current_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9"
+        },
+        {
+          "name": "upgrade-selected",
+          "frame": 2501,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "current_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "baseline_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5",
+          "current_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5"
+        },
+        {
+          "name": "held-choice-installs-once",
+          "frame": 2511,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "current_ui_sha256": "6729ba318c5ea6f72f24687697b1621b09f4349641c80f98d07e45fdee0b6f2b",
+          "baseline_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33",
+          "current_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33"
+        },
+        {
+          "name": "natural-gameover",
+          "frame": 634,
+          "phase": "gameover",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "f2afb0077dc6f62b422a0e046c4b9011a42d31d089e5ab9335bb82e640117ca0",
+          "current_ui_sha256": "f2afb0077dc6f62b422a0e046c4b9011a42d31d089e5ab9335bb82e640117ca0",
+          "baseline_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721",
+          "current_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721"
+        },
+        {
+          "name": "restart-after-gameover",
+          "frame": 635,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "current_ui_sha256": "8ae6c6497bc6dfe9a5ea3ddc820cd8191b05a6b29396c9696b1db3f06d1b5808",
+          "baseline_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b",
+          "current_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b"
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Headless real-WASM equality proves published semantic UI and game observations. It does not prove browser pixels, font rasterization, browser input routing, shader presentation or GPU behavior.",
+    "Each unmodified project export runs on its corresponding production runtime in a separate VM/module. The only added host envelope field is the normal viewport_aspect; input uses the official input-frame ABI.",
+    "Package versions are recorded from hashed runtime descriptors and actual project declarations. No script, config, game state or extra observation is injected to query metadata.",
+    "Both runtime descriptors report source_dirty=true. Their source_commit values identify build checkout bases, not immutable final source snapshots; exact JS/WASM hashes identify the modules tested."
+  ],
+  "inputs_unchanged": {
+    "baseline": true,
+    "current": true
+  },
+  "runtimes_unchanged": {
+    "baseline": true,
+    "current": true
+  },
+  "total_real_wasm_ticks": 20022,
+  "finished_utc": "2026-10-16T04:34:53.250Z"
+}

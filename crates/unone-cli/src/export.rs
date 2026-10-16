@@ -102,6 +102,12 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             && manifest["preview_tools"].as_bool().unwrap_or(false) == development,
         "runtime variant mismatch; build -Player (production) or -Player -Development (development)"
     );
+    // Select compatibility before reading/executing authored game content or
+    // creating output, just as portable SDK selection does. A source exporter
+    // must not pair a new package declaration with a stale cached runtime.
+    let (package_config, _) = unone_engine::ProjectPaths::discover(project)
+        .map_err(|error| anyhow::anyhow!(error.explanation))?;
+    validate_runtime_packages(&package_config.runtime_packages, &manifest)?;
     let mut files: Vec<(String, Vec<u8>)> = Vec::new();
     for (field, hash) in [("javascript", "javascript_sha256"), ("wasm", "wasm_sha256")] {
         let name = manifest[field]
@@ -142,6 +148,9 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         files.push((format!("runtime/{name}"), bytes));
     }
     let (config, settings, assets, content) = content(project)?;
+    // Validate the configuration actually serialized into this export as well,
+    // in case authoring files changed after the early compatibility preflight.
+    validate_runtime_packages(&config.runtime_packages, &manifest)?;
     files.extend(content);
     let compiled = manifest["compiled_systems"].as_array()
         .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
@@ -326,9 +335,112 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     Ok(report)
 }
 
+/// Runtime descriptors are compatibility metadata. This gate does not execute
+/// the selected WASM and cannot certify its implementation or visual output.
+fn validate_runtime_packages(
+    required: &std::collections::BTreeMap<String, String>,
+    descriptor: &Value,
+) -> Result<()> {
+    let available = crate::sdk::descriptor_packages(descriptor).context(
+        "RUNTIME_PACKAGES_INVALID: runtime.json runtime_packages must be a string-to-string object; rebuild or select a matching runtime and keep project declarations intact",
+    )?;
+    let missing = crate::sdk::package_version_gaps(required, &available);
+    ensure!(missing.is_empty(),
+        "RUNTIME_PACKAGE_UNAVAILABLE: runtime.json package mismatches [{}]. Rebuild or select a runtime supporting every required exact package version and pass its directory using --runtime; keep project runtime_packages declarations intact",
+        missing.iter().map(|(name, gap)| format!("{name}: expected {}, found {}", gap.expected, gap.found.as_deref().unwrap_or("<missing>"))).collect::<Vec<_>>().join(", ")
+    );
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn package_metadata_gate_uses_generic_exact_versions_and_validates_present_maps() {
+        use std::collections::BTreeMap;
+        let required = BTreeMap::from([("@example/reusable-controls".into(), "7.4.2".into())]);
+        validate_runtime_packages(&required, &json!({"runtime_packages":{"@example/reusable-controls":"7.4.2","@other/library":"2.0.0"}})).unwrap();
+        for (descriptor, found) in [
+            (json!({}), "<missing>"),
+            (json!({"runtime_packages":{}}), "<missing>"),
+            (json!({"runtime_packages":{"@example/reusable-controls":"7.4.1"}}), "7.4.1"),
+        ] {
+            let message = validate_runtime_packages(&required, &descriptor).unwrap_err().to_string();
+            assert!(message.contains("RUNTIME_PACKAGE_UNAVAILABLE"));
+            assert!(message.contains(&format!("@example/reusable-controls: expected 7.4.2, found {found}")));
+            assert!(message.contains("keep project runtime_packages declarations intact"));
+        }
+        validate_runtime_packages(&BTreeMap::new(), &json!({})).unwrap();
+        for descriptor in [
+            json!({"runtime_packages":null}),
+            json!({"runtime_packages":["@example/reusable-controls"]}),
+            json!({"runtime_packages":{"@example/reusable-controls":7}}),
+        ] {
+            // Explicit malformed metadata is not a legacy descriptor, even if
+            // this project happens not to request a package.
+            let error = validate_runtime_packages(&BTreeMap::new(), &descriptor).unwrap_err();
+            assert!(error.to_string().contains("RUNTIME_PACKAGES_INVALID"));
+        }
+    }
+
+    fn package_export_fixture(directory: &Path) -> (PathBuf, PathBuf, Value) {
+        let runtime = directory.join("runtime");
+        fs::create_dir(&runtime).unwrap();
+        let javascript = b"// packaging fixture; not an executable runtime";
+        let wasm = b"\0asm\x01\0\0\0";
+        fs::write(runtime.join("fixture.js"), javascript).unwrap();
+        fs::write(runtime.join("fixture.wasm"), wasm).unwrap();
+        let descriptor = json!({"profile":"release","dev_tools":false,"preview_tools":false,
+            "javascript":"fixture.js","javascript_sha256":digest(javascript),
+            "wasm":"fixture.wasm","wasm_sha256":digest(wasm),
+            "compiled_systems":unone_engine::SystemSettings::default().enabled_ids()});
+        let repo = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        (runtime, repo, descriptor)
+    }
+
+    #[test]
+    fn direct_web_export_rejects_package_mismatch_before_loading_game_or_creating_output() {
+        let directory = tempfile::tempdir().unwrap();
+        let (runtime, repo, mut descriptor) = package_export_fixture(directory.path());
+        let required = json!({"@example/reusable-controls":"7.4.2"});
+        let project = json!({"name":"package preflight","entry_script":"missing.luau","runtime_packages":required});
+        let config = serde_json::to_vec_pretty(&project).unwrap();
+        fs::write(directory.path().join("project.unone.json"), &config).unwrap();
+        for (index, packages) in [None, Some(json!({"@example/reusable-controls":"7.4.1"})), Some(json!({"@example/reusable-controls":7}))].into_iter().enumerate() {
+            descriptor.as_object_mut().unwrap().remove("runtime_packages");
+            if let Some(packages) = packages { descriptor["runtime_packages"] = packages; }
+            fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+            let output = directory.path().join(format!("rejected-{index}"));
+            let message = web_with_templates(directory.path(), &output, Some(&runtime), false, &repo).unwrap_err().to_string();
+            assert!(message.contains(if index == 2 { "RUNTIME_PACKAGES_INVALID" } else { "RUNTIME_PACKAGE_UNAVAILABLE" }), "{message}");
+            assert!(!output.exists());
+            assert_eq!(fs::read(directory.path().join("project.unone.json")).unwrap(), config);
+        }
+    }
+
+    #[test]
+    fn direct_web_export_accepts_exact_metadata_and_legacy_projects_without_package_requirements() {
+        let directory = tempfile::tempdir().unwrap();
+        let (runtime, repo, mut descriptor) = package_export_fixture(directory.path());
+        let packages = unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default());
+        assert!(!packages.is_empty());
+        fs::write(directory.path().join("main.luau"), "local Game={}\nfunction Game.start(_api) end\nfunction Game.update(_api,_dt) end\nreturn Game\n").unwrap();
+        let config_path = directory.path().join("project.unone.json");
+        fs::write(&config_path, serde_json::to_vec(&json!({"name":"exact packages","entry_script":"main.luau","runtime_packages":packages})).unwrap()).unwrap();
+        descriptor["runtime_packages"] = serde_json::to_value(&packages).unwrap();
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        let output = directory.path().join("exact");
+        web_with_templates(directory.path(), &output, Some(&runtime), false, &repo).unwrap();
+        assert_eq!(serde_json::from_slice::<Value>(&fs::read(output.join("content/project.json")).unwrap()).unwrap()["config"]["runtime_packages"], serde_json::to_value(&packages).unwrap());
+
+        fs::write(&config_path, serde_json::to_vec(&json!({"name":"legacy project","entry_script":"main.luau"})).unwrap()).unwrap();
+        descriptor.as_object_mut().unwrap().remove("runtime_packages");
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        let legacy_output = directory.path().join("legacy");
+        web_with_templates(directory.path(), &legacy_output, Some(&runtime), false, &repo).unwrap();
+        assert!(legacy_output.join("index.html").exists());
+    }
+
     #[test]
     fn web_generation_pins_all_resources_and_changes_on_any_input() {
         let input=vec![("runtime/core.js".into(),b"js".to_vec()),("runtime/core.wasm".into(),b"wasm".to_vec()),("web/player/main.js".into(),b"host".to_vec()),("content/project.json".into(),b"project".to_vec())];

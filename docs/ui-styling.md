@@ -2,9 +2,10 @@
 
 Start reusable controls with the official [`@unone/ui` package](ui-components.md),
 a versioned pure Luau kit bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.1.0"}` in `project.unone.json`, inspect
+`"runtime_packages":{"@unone/ui":"0.2.0"}` in `project.unone.json`, inspect
 `ui.components.info`, and call `api.ui.components.create(theme?)`. The returned
-kit constructs typed text/button/panel/image leaves and component wrappers for
+kit constructs typed text/button/slider/combobox/panel/image leaves, component
+and screen wrappers, plus the existing scroll helpers through one namespace for
 the existing `api.ui.setRoot` transport. Themes, content, state, action meanings
 and geometry remain project-owned. Custom Luau factories remain valid.
 The official player owns font loading, glyph shaping and painting.
@@ -18,8 +19,13 @@ For the canonical leaf contract, search `"font size"`, `"text alignment"`,
 `game schema ui`. `"responsive"` leads to `ui.getViewport`. CLI and MCP share the
 same index. Regenerate strict types with `game api typings` and use a matching
 SDK after upgrading; new projects inline the canonical contract.
-`component` is an existing tree node kind; `ui.component(props)` is a method on
-the kit returned by `create`, while `api.ui.component()` does not exist.
+All constructors are also directly callable on `api.ui.components` with no
+theme defaults. `component` is an existing tree node kind;
+`api.ui.components.component(props)` and `kit.component(props)` construct it,
+while `api.ui.component()` does not exist. Search `"button click"` for
+`input.wasPressed(action)` instead of guessing an `onClick` property. Use the
+[canonical typed upgrade flow](ui-components.md#keep-the-official-types-when-upgrading)
+instead of handwritten `ui:any` wrappers.
 
 ## Coordinates and defaults
 
@@ -98,6 +104,10 @@ Catalog family names are aliases and need not match internal font metadata.
 Family/weight pairs must be unique. TTF and OTF are the shared Web/native catalog
 formats. `ui.font_family` selects the default family; when omitted the first
 catalog family is used, then `sans-serif` if the catalog is empty.
+For predictable CJK and symbols, package a licensed fallback face and use an
+explicit family list on text styles, such as `font_family="Reading UI, CJK UI"`.
+Register the fallback's required weights in the same catalog. A family list is
+not a network download and does not guarantee an installed host font exists.
 Export verifies project-relative paths and copies the declared files
 into the content package. Web waits for FontFace loading before starting the
 player; native registers the same aliases and weights in its font database.
@@ -106,6 +116,18 @@ project's responsibility; keep the font license beside the source asset.
 Export copies the declared font faces. Include their accompanying license
 notices in the distribution too; neighboring source files are not copied
 automatically.
+
+Check the actual rendered strings against the packaged fonts, including Chinese
+characters, arrows, punctuation and ellipsis. FontFace `loaded` status and a
+successful export only show that the file is usable, not that it contains those
+glyphs. The existing `node scripts/verify-ui-example-browser.mjs --export <player-dir>
+--plan <plan.json> --out <evidence-dir>` records real player input, Canvas text
+and screenshots, then invokes `scripts/audit-ui-fonts.py` against font cmap
+tables. Set `requirePackagedGlyphCoverage: true` in the project's QA plan to make
+missing packaged glyphs fail the audit. The audit covers observed text, so visit
+every relevant screen/state and inspect the screenshots; it cannot prove an
+unvisited string or visual shaping quality. Native appearance requires separate
+native player validation.
 
 The older `ui.font_source` plus `ui.font_family` declaration remains supported.
 For shared target output prefer the catalog, which can express several families

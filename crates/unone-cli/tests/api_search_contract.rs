@@ -325,7 +325,6 @@ fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
         "shared components",
         "reusable components",
         "component styling",
-        "button component",
         "card component",
         "官方UI套件",
         "共用元件",
@@ -359,7 +358,7 @@ fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
                 .unwrap()
                 .contains("docs/ui-components.md")
         );
-        assert!(entry["when_to_use"].as_str().unwrap().contains("0.1.0"));
+        assert!(entry["when_to_use"].as_str().unwrap().contains("0.2.0"));
         assert!(
             entry["returns"]
                 .as_str()
@@ -409,11 +408,8 @@ fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
     }
     let index = cli_search(&project_root, "");
     let matches = index["value"]["matches"].as_array().unwrap();
-    assert!(
-        !matches
-            .iter()
-            .any(|api| api["name"] == "ui.components.button" || api["name"] == "ui.component")
-    );
+    assert!(matches.iter().any(|api| api["name"] == "ui.components.button"));
+    assert!(!matches.iter().any(|api| api["name"] == "ui.component"));
     for query in [
         "entity size",
         "physics3d overlap",
@@ -438,6 +434,43 @@ fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
         } else {
             assert!(matches.is_empty(), "{query}");
         }
+    }
+}
+
+#[test]
+fn ui_control_and_action_queries_have_precise_cli_mcp_parity() {
+    let project_root = unique_fixture_root("UI control action discovery");
+    for (queries, expected) in [
+        (&["button click", "button pressed", "按鈕點擊", "按钮点击", "按一下", "按下瞬間"][..], "input.wasPressed"),
+        (&["button released", "release", "放開", "放开"][..], "input.wasReleased"),
+        (&["button hold", "長按", "长按"][..], "input.isDown"),
+        (&["create button", "button component", "建立按鈕", "建立按钮"][..], "ui.components.button"),
+        (&["slider component", "滑桿"][..], "ui.components.slider"),
+        (&["combobox", "下拉選單"][..], "ui.components.combobox"),
+        (&["scroll view", "scrollview"][..], "ui.components.scrollView"),
+        (&["virtual list", "虛擬清單"][..], "ui.components.virtualList"),
+        (&["virtual grid", "虛擬網格"][..], "ui.components.virtualGrid"),
+        (&["UI types", "UI 型別"][..], "ui.components.create"),
+        (&["component relative coordinates", "相對座標"][..], "ui.components.component"),
+    ] {
+        for query in queries {
+            let result = cli_search(&project_root, query);
+            assert_eq!(result, mcp_search(&project_root, query), "{query}");
+            assert_eq!(result["diagnostics"], json!([]));
+            assert_eq!(result["value"]["matches"][0]["name"], expected, "{query}");
+        }
+    }
+    for name in ["input.wasPressed", "input.wasReleased", "ui.components.text", "ui.components.button", "ui.components.slider", "ui.components.combobox", "ui.components.panel", "ui.components.image", "ui.components.component", "ui.components.screen", "ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid"] {
+        let result = cli_search(&project_root, name);
+        assert_eq!(result, mcp_search(&project_root, name), "{name}");
+        assert_eq!(result["value"]["matches"].as_array().unwrap().len(), 1);
+        assert_eq!(result["value"]["matches"][0]["name"], name);
+    }
+    for query in ["button click unfindable", "particle hold", "entity release", "UI package unfindable"] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query), "{query}");
+        assert!(result["value"]["matches"].as_array().unwrap().is_empty(), "{query}");
+        assert_eq!(result["diagnostics"][0]["code"], "API_SEARCH_EMPTY");
     }
 }
 

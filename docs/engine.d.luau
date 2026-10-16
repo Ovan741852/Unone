@@ -9,6 +9,8 @@
 -- `game check --types` to mean anything.
 -- Official SDK-bundled Luau packages use typed API namespaces such as
 -- api.ui.components; declare their exact runtime_packages versions in the project.
+-- Refresh an existing marked type block without replacing game code with:
+--     game --project <root> api typings --update-script <project-relative-script>
 --
 -- Game-owned models, ViewModels, Views and save schemas belong in the game.
 
@@ -49,6 +51,10 @@ export type Instances3DApi = {
 
 export type InputApi = {
     isDown: (action: string) -> boolean,
+    -- Non-consuming edges for the current simulation tick. Read in update;
+    -- multiple reads return the same result. Held actions press only once.
+    wasPressed: (action: string) -> boolean,
+    wasReleased: (action: string) -> boolean,
     getPointerPosition: () -> Vec2,
     getScreenPointerPosition: () -> Vec2,
     isPointerDown: () -> boolean,
@@ -161,9 +167,9 @@ export type UiApi = {
     getViewport: () -> {aspect: number},
     -- Helpers return a real scroll_view node. Content is local top-left/y-down;
     -- viewport uses explicit left/top; never pass a stage x/y rect here.
-    scrollView: (options: UiScrollOptions) -> any,
-    virtualList: (options: UiVirtualOptions) -> any,
-    virtualGrid: (options: UiVirtualGridOptions) -> any,
+    scrollView: (options: UiScrollOptions) -> UiScrollNode,
+    virtualList: <T>(options: UiVirtualOptions<T>) -> UiScrollNode,
+    virtualGrid: <T>(options: UiVirtualGridOptions<T>) -> UiScrollNode,
     -- Actual host ceilings and the last valid tree's node/subtree usage.
     inspect: () -> ObservationValue,
 }
@@ -211,6 +217,8 @@ export type UiPanelNode = UiPlacement & {
     kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
 }
 export type UiComponentNode = UiPlacement & {
+    -- Grouping does not transform children: their coordinates remain in the
+    -- current stage/scroll space, with no relative-placement or style inheritance.
     kind: "component", id: string, component: string, children: {UiNode}?,
 }
 export type UiScrollNode = UiPlacement & {
@@ -225,12 +233,19 @@ export type UiScreen = {kind: "screen", id: string, node: string, children: {UiN
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
     text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
+    slider: UiStyle?, combobox: UiStyle?,
 }
 export type UiComponentTextProps = UiPlacement & {
     id: string, text: string?, style: UiStyle?,
 }
 export type UiComponentButtonProps = UiPlacement & {
     id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComponentSliderProps = UiPlacement & {
+    id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComponentComboBoxProps = UiPlacement & {
+    id: string, text: string?, action: string, expanded: boolean?, style: UiStyle?,
 }
 export type UiComponentPanelProps = UiPlacement & {
     id: string, style: UiStyle?, background_for: UiBackgroundScope?,
@@ -248,12 +263,23 @@ export type UiComponentSurface = {
 export type UiComponentProps = UiPlacement & {
     id: string, component: string, children: {UiNode}?, surface: UiComponentSurface?,
 }
+export type UiComponentScreenProps = {
+    id: string, node: string, children: {UiNode}, budget: UiBudget?,
+}
 export type UiComponentKit = {
     text: (props: UiComponentTextProps) -> UiTextNode,
     button: (props: UiComponentButtonProps) -> UiButtonNode,
+    slider: (props: UiComponentSliderProps) -> UiSliderNode,
+    combobox: (props: UiComponentComboBoxProps) -> UiComboBoxNode,
     panel: (props: UiComponentPanelProps) -> UiPanelNode,
     image: (props: UiComponentImageProps) -> UiImageNode,
     component: (props: UiComponentProps) -> UiComponentNode,
+    screen: (props: UiComponentScreenProps) -> UiScreen,
+    -- Same engine-owned live helpers as UiApi. Scroll content is local
+    -- top-left/y-down; the viewport uses left/top/width/height.
+    scrollView: (options: UiScrollOptions) -> UiScrollNode,
+    virtualList: <T>(options: UiVirtualOptions<T>) -> UiScrollNode,
+    virtualGrid: <T>(options: UiVirtualGridOptions<T>) -> UiScrollNode,
     id: (instanceId: string, role: string) -> string,
     composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
 }
@@ -261,7 +287,9 @@ export type UiComponentsInfo = {
     name: string, version: string, kind: string, entry: string,
     api: string, license: string, declared: boolean,
 }
-export type UiComponentsApi = {
+-- Direct constructors use default styles. create(theme) supplies the same
+-- constructor methods with explicitly authored per-kind style defaults.
+export type UiComponentsApi = UiComponentKit & {
     info: () -> UiComponentsInfo,
     create: (theme: UiComponentsTheme?) -> UiComponentKit,
     composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
@@ -269,17 +297,19 @@ export type UiComponentsApi = {
 }
 export type UiViewport = {left: number, top: number, width: number, height: number}
 export type UiScrollOptions = {
-    id: string, viewport: UiViewport, content: {any}?,
+    id: string, viewport: UiViewport, content: {UiNode}?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
 }
-export type UiVirtualOptions = {
-    id: string, viewport: UiViewport, items: {any}, key: string | ((any, number) -> string),
+-- Give T your project row type to check keys and render callbacks.
+-- Bare options keep the legacy any default for existing projects.
+export type UiVirtualOptions<T = any> = {
+    id: string, viewport: UiViewport, items: {T}, key: string | ((T, number) -> string),
     rowHeight: number, gapY: number?,
-    renderItem: (any, number, string) -> {any},
+    renderItem: (T, number, string) -> {UiNode},
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
 }
-export type UiVirtualGridOptions = UiVirtualOptions & {
+export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
     columns: number, columnWidth: number, gapX: number?,
 }
 

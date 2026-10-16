@@ -1,0 +1,255 @@
+{
+  "baseline": "859826ecdac50f5722cc66a226123039d4675e2e",
+  "fork_turns": "none",
+  "boundary": "official immutable SDK docs/API only, no implementation reads; instruction enforced",
+  "files": [
+    {
+      "path": "sdk/bin/game.exe",
+      "sha256": "47e333e192187ef5fd11aa330f533e5fcfed6de24315aa512c233ad9fa719dc6"
+    },
+    {
+      "path": "sdk/docs/decisions/0038-shared-ui-styling.md",
+      "sha256": "e815a00830548c1575e09f9012a2fa5be8c3d3eceae5cc7c8232c2dcc36f5410"
+    },
+    {
+      "path": "sdk/docs/decisions/0039-component-background-intent.md",
+      "sha256": "606c069895535c70d23abe4f46c40e1f839cc05b66a70928d565fc9c3f210977"
+    },
+    {
+      "path": "sdk/docs/decisions/0040-official-ui-package.md",
+      "sha256": "96650faa0a9e34b1b8f0834f64193b35786897f0c5a00c868592d4e11549acda"
+    },
+    {
+      "path": "sdk/docs/engine.d.luau",
+      "sha256": "7ea733fd2d9a4094f0372802b186ee254f342d66e77d2fb431b61d22a5ce3086"
+    },
+    {
+      "path": "sdk/docs/formal-ui-host.md",
+      "sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9"
+    },
+    {
+      "path": "sdk/docs/project.schema.json",
+      "sha256": "35b3fd8d65bee76c42d6b6353cf7e95fdd1c1c6a13768b9666bf234838c0654e"
+    },
+    {
+      "path": "sdk/docs/ui-components.md",
+      "sha256": "b8b6df8b851cc81325bb2b258f4449164427bb0e40521e6b9d08dd32f6faee4c"
+    },
+    {
+      "path": "sdk/docs/ui-scroll.md",
+      "sha256": "a950e096501b7fdd6e0c93f49b72f652e9185f74956a4a716c1c556b7b19d7f6"
+    },
+    {
+      "path": "sdk/docs/ui-slice-and-budget.md",
+      "sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55"
+    },
+    {
+      "path": "sdk/docs/ui-styling.md",
+      "sha256": "9b2f369ca5c2654bb0d2ade257a325b467e4e33da025249db9d4395a2e62e697"
+    },
+    {
+      "path": "sdk/docs/ui.schema.json",
+      "sha256": "e902169a4b17d550a0227fcc56fcc045f6f28f525e607f538e38e55912f5e902"
+    },
+    {
+      "path": "sdk/packages/unone-ui/package.unone.json",
+      "sha256": "7ddf6671a0dfcb434dd74d4df532a90b1f543996516ef19dfe4426041e78d7bc"
+    },
+    {
+      "path": "sdk/packages/unone-ui/README.md",
+      "sha256": "9cd64fb009d2296de2570bd6f309d52f7f673046d9411ae38cec1e65d4eb4e22"
+    },
+    {
+      "path": "sdk/packages/unone-ui/src/components.luau",
+      "sha256": "e0e841d73b8f5e93fb36325741eee4b1b976e00321f3641ca4aa1cef7e48e8ff"
+    },
+    {
+      "path": "sdk/runtimes/web-production-0/runtime.json",
+      "sha256": "3f885fe1c4c2b9c22c94f0b9ae7f527febf0431932bca41e24ae78e9f3ff5fbe"
+    },
+    {
+      "path": "sdk/runtimes/web-production-0/unone-player.js",
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "sdk/runtimes/web-production-0/unone_player.wasm",
+      "sha256": "f0dd2bd9c028410d5bb299030b498fe8a5000c8973de2a294ece5abd5a198da3"
+    },
+    {
+      "path": "sdk/scripts/pack-native-android.ps1",
+      "sha256": "87d05d09703efeeaf05bd3b91b358d5781ae0d1176498f1acc15c7af385ff6d4"
+    },
+    {
+      "path": "sdk/sdk.json",
+      "sha256": "e2be4ffb23478d804f1473fa081638729a504f7d4229866acce286d2486c85c5"
+    },
+    {
+      "path": "sdk/templates/web/developer/api.js",
+      "sha256": "b2cf35e109daad233870e5b15cdcc0614f98eb96e9b4e1d90ccab6842ffcc236"
+    },
+    {
+      "path": "sdk/templates/web/developer/main.js",
+      "sha256": "af5fd4b1e7b43bd557ffb381ba9fa33725d5a0338deca9ad17425836aa347aa3"
+    },
+    {
+      "path": "sdk/templates/web/developer/panel.css",
+      "sha256": "21d3cb0544dc27a2b4bc96405cac4cef6427b484e89aa39bf74b06639d3b29aa"
+    },
+    {
+      "path": "sdk/templates/web/developer/panel.js",
+      "sha256": "e81dd68f4f852a328f03ed752e0760f5aae1abdf67c5db55fa7d22256109b117"
+    },
+    {
+      "path": "sdk/templates/web/player/index.html",
+      "sha256": "1b836256177d6cd8495c839dbcf251585a71bee5082d023a59f89a235cf681a3"
+    },
+    {
+      "path": "sdk/templates/web/player/main.js",
+      "sha256": "d3c2d2cd9dc20835734fe028401f062943f60d9716d0f748f06c20714ebe96e3"
+    },
+    {
+      "path": "sdk/templates/web/renderer/bloom.js",
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "sdk/templates/web/renderer/effekseer.js",
+      "sha256": "a9129aabc2794e0c15c580ddfde7dd2b90fea95c712e827e33de1e32af6afe4c"
+    },
+    {
+      "path": "sdk/templates/web/renderer/instances3d.js",
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "sdk/templates/web/renderer/mesh.js",
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "sdk/templates/web/renderer/particles.js",
+      "sha256": "57e65b72ef948dd32072d73c68fa7194226dc64493bae1fd9319388851da17f2"
+    },
+    {
+      "path": "sdk/templates/web/renderer/shader-materials.js",
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "sdk/templates/web/renderer/three.js",
+      "sha256": "d3b7b55043a40f61b79aaa90a59b483d0614b7d7cbc94a48fdbe6b3d9de0ad29"
+    },
+    {
+      "path": "sdk/templates/web/shared/asset-encoding.js",
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "sdk/templates/web/shared/async-scheduler.mjs",
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "sdk/templates/web/shared/audio-playback.js",
+      "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618"
+    },
+    {
+      "path": "sdk/templates/web/shared/canvas-ui.mjs",
+      "sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51"
+    },
+    {
+      "path": "sdk/templates/web/shared/fixed-step-scheduler.mjs",
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "sdk/templates/web/shared/host-input.js",
+      "sha256": "6b6bcc9be7486c6723a69d6f35331ae2f1b3434de6488ac1a2a502b8413dfd87"
+    },
+    {
+      "path": "sdk/templates/web/shared/instance-transfer.mjs",
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "sdk/templates/web/shared/job-binary.mjs",
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "sdk/templates/web/shared/job-pool.mjs",
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "sdk/templates/web/shared/job-worker.js",
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "sdk/templates/web/shared/load-project.js",
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "sdk/templates/web/shared/presentation-interpolation.mjs",
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "sdk/templates/web/shared/profile-window.js",
+      "sha256": "0c014e50f1450e63fe6a237e32eac0bcf95721d22b21c1415fa217100093c21e"
+    },
+    {
+      "path": "sdk/templates/web/shared/renderer-selection.mjs",
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "sdk/templates/web/shared/runtime-backend.mjs",
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "sdk/templates/web/shared/runtime-core.mjs",
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "sdk/templates/web/shared/runtime-worker.js",
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-contract.mjs",
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-geometry.mjs",
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-scroll.mjs",
+      "sha256": "fde1941b01fa28ceb56deb2c0666c74a94f3cbdd5a1b762ea3f8af93d6d16ef5"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-style.mjs",
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-tree.js",
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "sdk/templates/web/shared/webgpu-snapshot.js",
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "sdk/templates/web/vendor/effekseer/effekseer.js",
+      "sha256": "592327d692ea681a731efc7ddc874a3e86aaf0f4b719a0f66767d233c2fd867b"
+    },
+    {
+      "path": "sdk/templates/web/vendor/effekseer/effekseer.wasm",
+      "sha256": "f9689b3721fc815e2d4b0fbcd6daedf9e0b307038d40a6c5b17c0037508ad686"
+    },
+    {
+      "path": "sdk/templates/web/vendor/effekseer/LICENSE",
+      "sha256": "3bb9a8e1207233813ef7727bb39e4142494cb62e852d73e43390cbe81c45c149"
+    },
+    {
+      "path": "sdk/templates/web/vendor/rapier/LICENSE",
+      "sha256": "86ae51c591e742d80ce56823d35e2e176b53e38a99bd8499c85dae31ef4fe1f7"
+    },
+    {
+      "path": "sdk/templates/web/vendor/three/LICENSE",
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "sdk/templates/web/vendor/three/three.player.min.js",
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    }
+  ]
+}

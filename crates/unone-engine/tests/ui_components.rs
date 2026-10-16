@@ -10,7 +10,7 @@ fn load(body: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
 fn load_script(source: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
     let mut config = json!({"name":"ui-components","entry_script":"main.luau","systems":{"ui":true}});
     if declared {
-        config["runtime_packages"] = json!({"@unone/ui":"0.1.0"});
+        config["runtime_packages"] = json!({"@unone/ui":"0.2.0"});
     }
     let config: ProjectConfig = serde_json::from_value(config).unwrap();
     EngineRuntime::load_source_project(SourceProject {
@@ -34,16 +34,19 @@ function Game.start(api)
             return {ui.text({id=prefix..item.key,text=item.name,rect={x=0,y=0,width=20,height=8}})}
         end
     end
-    local list=api.ui.virtualList({id='list',viewport={left=10,top=10,width=40,height=20},
-        items=items,key='key',rowHeight=10,renderItem=row('list_')})
-    local grid=api.ui.virtualGrid({id='grid',viewport={left=55,top=10,width=40,height=20},
-        items=items,key='key',rowHeight=10,columns=2,columnWidth=20,renderItem=row('grid_')})
+    local keyCalls=0
+    local function itemKey(item) keyCalls+=1;return item.key end
+    local list=ui.virtualList({id='list',viewport={left=10,top=10,width=40,height=20},
+        items=items,key=itemKey,rowHeight=10,renderItem=row('list_')})
+    local grid=api.ui.components.virtualGrid({id='grid',viewport={left=55,top=10,width=40,height=20},
+        items=items,key=itemKey,rowHeight=10,columns=2,columnWidth=20,renderItem=row('grid_')})
+    assert(keyCalls==20)
     local ordinary=ui.text({id='ordinary',text='Unmanaged',rect={x=10,y=10,width=20,height=8}})
     local parent=ui.component({id='container',component='test.container',rect={x=0,y=0,width=100,height=100},
         children={list,grid,ordinary}})
     assert(parent.children[1]==list and parent.children[2]==grid)
     assert(parent.children[3]~=ordinary and parent.children[3].rect~=ordinary.rect)
-    api.ui.setRoot({kind='screen',id='screen',node='virtual',children={parent}})
+    api.ui.setRoot(ui.screen({id='screen',node='virtual',children={parent}}))
     api.observation.set('updates',updates)
 end
 function Game.update(api)
@@ -85,13 +88,17 @@ fn undeclared_projects_can_inspect_metadata_but_cannot_use_the_package() {
     let runtime = load(r#"
 local c=api.ui.components
 local info=c.info()
-assert(info.name=='@unone/ui' and info.version=='0.1.0' and info.declared==false)
+assert(info.name=='@unone/ui' and info.version=='0.2.0' and info.declared==false)
 info.version='changed'
-assert(c.info().version=='0.1.0')
-for _,call in ipairs({function()c.create()end,function()c.id('a','b')end,function()c.composeStyle()end}) do
+assert(c.info().version=='0.2.0')
+local calls={function()c.create()end,function()c.id('a','b')end,function()c.composeStyle()end}
+for _,name in ipairs({'text','button','slider','combobox','panel','image','component','screen','scrollView','virtualList','virtualGrid'}) do
+    table.insert(calls,function()c[name]({})end)
+end
+for _,call in ipairs(calls) do
     local ok,message=pcall(call)
     assert(not ok and string.find(message,'UI_PACKAGE_NOT_DECLARED',1,true))
-    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.1.0',1,true))
+    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.2.0',1,true))
 end
 api.observation.set('declared',c.info().declared)
 "#, false).unwrap();
@@ -130,6 +137,138 @@ api.ui.setRoot({kind='screen',id='screen',node='test',children={card,
     assert!(card["children"][1].get("style").is_none());
     assert_eq!(card["children"][2]["action"], "Apply");
     assert_eq!(value["children"][1]["asset"], "asset://art");
+}
+
+#[test]
+fn direct_and_themed_entries_cover_every_canonical_control_and_screen() {
+    let runtime = load(r#"
+local c=api.ui.components
+local ui=c.create()
+local function equivalent(a,b)
+    if type(a)~='table' or type(b)~='table' then return a==b end
+    for k,v in pairs(a) do if not equivalent(v,b[k]) then return false end end
+    for k in pairs(b) do if a[k]==nil then return false end end
+    return true
+end
+local bounds={x=10,y=20,width=20,height=10}
+local cases={
+    {'text',{id='text',text='Text',rect=bounds}},
+    {'button',{id='button',text='Apply',action='Apply',rect=bounds}},
+    {'slider',{id='slider',text='Volume',action='Volume',rect=bounds}},
+    {'combobox',{id='combobox',text='Quality',action='Quality',expanded=true,rect=bounds}},
+    {'panel',{id='panel',rect=bounds}},
+    {'image',{id='image',asset='asset://image',rect=bounds}},
+    {'component',{id='component',component='test.card',rect=bounds,children={}}},
+    {'screen',{id='screen',node='test',children={},budget={max_nodes=20}}},
+    {'scrollView',{id='scroll',viewport={left=5,top=5,width=30,height=20},
+        content={{kind='text',id='scroll_text',text='Local',rect={x=0,y=0,width=10,height=5}}}}},
+}
+for _,case in ipairs(cases) do
+    local direct=c[case[1]](case[2])
+    local themed=ui[case[1]](case[2])
+    assert(equivalent(direct,themed),'entry mismatch '..case[1])
+end
+local theme={slider={background={0.1,0.2,0.3,1},padding={left=1,right=2}},
+    combobox={font_size=2,color={0.2,0.4,0.6,1}}}
+local styled=c.create(theme)
+theme.slider.background[1]=0.9;theme.combobox.font_size=99
+local slider=styled.slider({id='volume',text='Volume',action='Volume',rect=bounds,
+    style={padding={left=3}}})
+local combo=styled.combobox({id='quality',text='High',action='Quality',expanded=true,
+    rect={x=50,y=20,width=20,height=10}})
+assert(slider.style.background[1]==0.1 and slider.style.padding.left==3 and slider.style.padding.right==2)
+assert(combo.style.font_size==2 and combo.expanded==true)
+assert(c.slider({id='plain',action='Plain',rect=bounds}).style==nil)
+local children={slider,combo}
+local screen=c.screen({id='controls',node='test',children=children})
+assert(screen.children~=children and screen.children[1]~=slider)
+children[1].text='Mutated';assert(screen.children[1].text=='Volume')
+api.ui.setRoot(screen)
+api.observation.set('parity_checks',#cases)
+"#, true).unwrap();
+    let tree = serde_json::to_value(runtime.observe().ui.unwrap()).unwrap();
+    assert_eq!(runtime.semantic_observations()["parity_checks"], 9);
+    assert_eq!(tree["children"][0]["kind"], "slider");
+    assert_eq!(tree["children"][0]["action"], "Volume");
+    assert_eq!(tree["children"][1]["kind"], "combobox");
+    assert_eq!(tree["children"][1]["expanded"], true);
+}
+
+#[test]
+fn helper_forwarders_keep_existing_contracts_and_compatibility_entries() {
+    let values = observed(r#"
+local c=api.ui.components
+local ui=c.create()
+local function checkScroll(factory,id)
+    local options={id=id,viewport={left=10,top=5,width=40,height=20},
+        axis='both',resetKey='catalog',wheelRect={left=1,top=2,width=3,height=4},
+        content={ui.text({id=id..'_text',text='Local',rect={x=0,y=0,width=10,height=5}})}}
+    local node=factory(options)
+    assert(node.kind=='scroll_view' and node.viewport==options.viewport and node.children==options.content)
+    assert(node.scroll.axis=='both' and node.scroll.reset_key=='catalog' and node.scroll.wheel_rect.y==94)
+    return node
+end
+local a=checkScroll(c.scrollView,'direct')
+local b=checkScroll(ui.scrollView,'kit')
+local legacy=checkScroll(api.ui.scrollView,'legacy')
+local items={{key='stable-a',name='A'},{key='stable-b',name='B'}}
+local callbacks=0
+local function options(id)
+    return {id=id,viewport={left=10,top=10,width=40,height=20},items=items,
+        key=function(item,index)assert(items[index]==item);return item.key end,
+        rowHeight=10,renderItem=function(item,index,key)
+            callbacks+=1;assert(items[index]==item and key==item.key)
+            return {ui.text({id=id..'_'..key,text=item.name,rect={x=0,y=0,width=20,height=8}})}
+        end}
+end
+for _,factory in ipairs({c.virtualList,ui.virtualList,api.ui.virtualList}) do
+    local id='list_'..callbacks
+    local list=factory(options(id))
+    assert(list.kind=='scroll_view' and list.children[1].children[1].text=='A')
+end
+for _,factory in ipairs({c.virtualGrid,ui.virtualGrid,api.ui.virtualGrid}) do
+    local id='grid_'..callbacks
+    local spec=options(id);spec.columns=2;spec.columnWidth=20
+    local grid=factory(spec)
+    assert(grid.scroll.virtual_items.columns==2 and grid.children[2].children[1].text=='B')
+end
+assert(callbacks==12)
+api.observation.set('callbacks',callbacks)
+api.observation.set('scrolls',{a,b,legacy})
+"#);
+    assert_eq!(values["callbacks"], 12);
+    assert_eq!(values["scrolls"][0]["scroll"], values["scrolls"][2]["scroll"]);
+}
+
+#[test]
+fn familiar_but_unsupported_callback_and_layout_props_have_actionable_errors() {
+    let values = observed(r#"
+local c=api.ui.components
+local ui=c.create()
+local cases={
+    {function()ui.button({onClick=function()end})end,'wasPressed(action)'},
+    {function()c.slider({onChange=function()end})end,'no UI callbacks or automatic value binding'},
+    {function()ui.combobox({onPress=function()end})end,'isDown(action)'},
+    {function()c.component({layout='column'})end,'stage coordinates'},
+    {function()ui.text({placement={rect={}}})end,'flatten placement fields'},
+    {function()c.text({kind='text'})end,'constructor supplies kind'},
+    {function()c.button({fontSize=2})end,'font_size'},
+    {function()ui.screen({id='screen',node='test',children={},layout='row'})end,'automatic layout'},
+    {function()c.scrollView({onClick=function()end})end,'wasPressed(action)'},
+    {function()ui.virtualList({onChange=function()end})end,'automatic value binding'},
+    {function()c.virtualGrid({placement={}})end,'flatten placement fields'},
+    {function()ui.virtualList({columns=2})end,'use virtualGrid'},
+    {function()ui.screen({id='screen',node='test',children={[2]={}}})end,'UI_COMPONENT_CHILDREN'},
+    {function()c.create({screen={}})end,'UI_COMPONENT_PROP'},
+    {function()ui.slider({id='s',action='Slide',rect={},style={fontSize=2}})end,'font_size'},
+}
+for _,case in ipairs(cases) do
+    local ok,message=pcall(case[1])
+    assert(not ok and string.find(tostring(message),case[2],1,true),tostring(message))
+end
+api.observation.set('diagnostics',#cases)
+"#);
+    assert_eq!(values["diagnostics"], 15);
 }
 
 #[test]

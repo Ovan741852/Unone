@@ -356,10 +356,12 @@ enum ApiCommand {
     Describe {
         name: String,
     },
-    /// Print the engine's canonical Luau type contract, or write it to a file.
+    /// Print canonical Luau types, write a contract file, or refresh an explicitly marked script block.
     Typings {
-        #[arg(long, help = "Write the type contract to this path instead of stdout")]
+        #[arg(long, conflicts_with = "update_script", help = "Write the type contract to this path instead of stdout")]
         output: Option<PathBuf>,
+        #[arg(long, conflicts_with = "output", help = "Refresh exactly one marked API type block in this existing project-relative script")]
+        update_script: Option<String>,
     },
 }
 
@@ -914,7 +916,10 @@ fn run() -> Result<ExitCode> {
             ApiCommand::Search { meaning } => {
                 print_result(api_search_result(&cli.project, &meaning), cli.json)
             }
-            ApiCommand::Typings { output } => {
+            ApiCommand::Typings { output, update_script } => {
+                if let Some(script) = update_script {
+                    return print_result(unone_engine::update_api_typings(&cli.project, &script), cli.json);
+                }
                 let types = unone_engine::api_typings();
                 let Some(path) = output else {
                     if cli.json {

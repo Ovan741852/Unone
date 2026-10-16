@@ -1,6 +1,6 @@
 {
   "name": "VOIDWAKE · 深空餘燼",
-  "runtime_packages": {"@unone/ui":"0.1.0"},
+  "runtime_packages": {"@unone/ui":"0.2.0"},
   "entry_script": "main.luau",
   "main_scene": "scene.json",
   "asset_manifest": "assets.json",

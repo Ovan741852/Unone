@@ -1,0 +1,26 @@
+{
+  "baseline": "859826ecdac50f5722cc66a226123039d4675e2e",
+  "version": "2.1.280 (Claude Code)",
+  "command": [
+    "C:/Users/maverickchiu/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "1",
+    "--disable-slash-commands"
+  ],
+  "timeout_seconds": 55,
+  "exit_code": 124,
+  "duration_seconds": 56.3,
+  "diff_sha256": "0f3ff03148a43cf3da48a8b6d5fe928ffe7e48a4a06cbe41a675a1859577873d",
+  "diff_bytes": 224388,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "status": "not a completed review"
+}

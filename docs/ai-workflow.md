@@ -260,7 +260,7 @@ fails with `VERIFY_STEP_NOT_IMPLEMENTED` rather than silently never running.
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json check --types
 ```
 
-The entry script produced by `project init` **inlines the engine's Luau type contract**, so `check --types` really rejects an API that does not exist (the engine runtime has no module require, so a single-file game must carry its own types). After an engine upgrade, use `game api typings --output <path>` to obtain the latest contract, or `game api typings` to print it. Tests protect the type contract and API index from drifting apart.
+The entry script produced by `project init` **inlines the engine's Luau type contract**, so `check --types` really rejects an API that does not exist (the engine runtime has no module require, so a single-file game must carry its own types). Use the canonical `EngineApi`, `UiApi` and `UiComponentKit` rather than handwritten `ui:any` shims. After an engine upgrade, run `game --project <game-root> api typings --update-script gameplay.luau` to replace only the explicitly marked canonical block; surrounding game code is preserved. New entries include own-line `-- BEGIN UNONE API TYPES` / `-- END UNONE API TYPES` markers. Missing, duplicate or malformed markers fail without writing. For older unmarked entries, print the contract with `game api typings` and review its initial integration; do not guess a replacement region. `--output <path>` writes a complete contract to a dedicated file, never an existing game entry script, and conflicts with `--update-script`. Tests protect the type contract and API index from drifting apart.
 
 `check` guarantees Luau syntax and the Engine entrypoint contract: it confirms that the entry script returns a `Game` table with `start` and `update` functions. `--!strict` is reported as contract metadata. Only `--types` invokes the official `luau-analyze`; `bin/game.exe` in an engine package automatically looks for `bin/luau-analyze.exe` beside it. During engine development or when replacing the tool, set `UNONE_LUAU_ANALYZER` to the analyzer executable path. If the tool is missing, the command returns `LUAU_ANALYZER_NOT_FOUND` instead of hiding the lack of type checking.
 
@@ -357,17 +357,31 @@ which ships as pure Luau with Core and the portable SDK. Search
 `game api search "UI package"`, `"shared components"`, `"button component"`,
 `"card component"`, `"官方UI套件"`, `"共用元件"` or `"主題樣式"`; describe
 `ui.components.info` and `ui.components.create`. Declare the exact bundled version
-in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.1.0"}`. `info()` is
+in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.2.0"}`. `info()` is
 available before declaration and reports the name, version and `declared` flag.
 No npm install, import or filesystem module loader is involved.
 
 `api.ui.components.create(theme?)` returns a typed kit with `text`, `button`,
-`panel`, `image`, `component`, `id` and `composeStyle` methods. These construct
-existing nodes for `api.ui.setRoot`; call `ui.button(props)` on the returned kit,
-not `api.ui.components.button`. Props use explicit flattened `rect` or
+`slider`, `combobox`, `panel`, `image`, `component`, `screen`, `scrollView`,
+`virtualList`, `virtualGrid`, `id` and `composeStyle` methods. Every constructor
+also exists directly on `api.ui.components`, without theme defaults; both
+`kit.button(props)` and `api.ui.components.button(props)` are valid. These
+construct existing nodes for `api.ui.setRoot`, which remains the explicit
+publication step. Leaf/component props use explicit flattened `rect` or
 `anchor`+`size` fields. Per-kind theme styles are copied, overrides win, padding
 merges by edge and RGBA arrays replace. The project owns themes, content, state,
 action meanings, screen flow and geometry. Custom Luau factories remain valid.
+
+Search `"create button"` / `"建立按鈕"`, `"slider component"` / `"滑桿"`,
+`"combobox"` / `"下拉選單"` and `"scroll view"` / `"虛擬清單"` for the actual
+constructor descriptors. Search `"button click"` / `"button pressed"` /
+`"按下瞬間"` for `input.wasPressed(action)`, `"release"` / `"放開"` for
+`input.wasReleased(action)`, and `"hold"` / `"長按"` for `input.isDown(action)`.
+Edges compare the current action snapshot to the previous successful tick;
+repeated reads do not consume them. There are no `onClick`/`onChange` function
+props. Slider values, drag mapping, combobox options and model changes remain
+project-owned. Read the [action lifecycle](ui-components.md#read-semantic-actions)
+before inventing callback or event-queue behavior.
 
 For font and canonical leaf details, search `"font size"`, `"text alignment"`,
 `"border padding"` or `"字體"`, describe `ui.setRoot`, and inspect `game schema ui`.
@@ -389,6 +403,16 @@ for canonical scope checks. Strict inspection exempts only later fully contained
 descendants; foreground collisions, partial coverage, unrelated siblings and
 later occlusion remain findings. Keep exact-pair version-1 overlap policies for
 skin layers that need them. See [the scope contract](ui-styling.md#explicit-background-scopes).
+
+Component children do not gain a relative origin: stage coordinates stay
+0..100/y-up. Scroll content uses its existing local top-left/y-down contract;
+the package's scroll wrappers preserve lifecycle, registration and host limits.
+No constructor moves or reflows children. Search `"component relative coordinates"`
+when a container assumption is unclear. For font coverage, use packaged fallback
+faces and the [existing cmap audit](ui-styling.md#package-a-font-catalog) alongside
+real player screenshots. A pasted `<body data-player-...>` is diagnostic HTML,
+not the Canvas pixels; use screenshots for appearance and the runtime's published
+tree plus `ui.components.info()` for semantic/package evidence.
 
 ## 3.4 Declarative particles (default visual-effects path)
 

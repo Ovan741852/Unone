@@ -3,14 +3,24 @@
 Current scope (2026-10-16): the implemented official
 [`@unone/ui` package](ui-components.md) is a versioned pure Luau component kit,
 bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.1.0"}` and discover `ui.components.info` /
+`"runtime_packages":{"@unone/ui":"0.2.0"}` and discover `ui.components.info` /
 `ui.components.create`. Its returned kit constructs existing typed leaves and
-component nodes, copies per-kind theme styles, composes instance IDs and can
+component/screen nodes and all canonical leaf controls, copies per-kind theme
+styles, composes instance IDs and can
 prepend a scoped panel/image surface. It has no manager, binding lifecycle,
 reactive scheduler, hardcoded theme, layout policy or business behavior. Themes,
 content, state, actions and geometry remain project-owned; custom Luau factories
 remain valid. This package is implemented; the manager/reactive architecture
 below remains a proposal.
+
+The module and themed kit share constructor names, including slider, combobox
+and the existing scroll helpers. `input.wasPressed` / `wasReleased` are shared
+non-consuming semantic action edges; `isDown` is held state. They replace repeated
+edge bookkeeping, not the project's commands or model rules. Search
+`"button click"` / `"按下瞬間"` for the public action contract. Keep canonical
+`EngineApi`, `UiApi` and `UiComponentKit` types and use the
+[safe marked-block refresh](ui-components.md#keep-the-official-types-when-upgrading)
+when upgrading. No new manager, reactive binding or automatic layout is implied.
 
 [ADR 0038](decisions/0038-shared-ui-styling.md) extends the Core transport with
 shared font/box styles and a decorative panel primitive. Use the

@@ -1,0 +1,4 @@
+{"viewport":"desktop","ok":true,"cases":19,"frames_per_payload":3337,"natural_death_frames":632}
+{"viewport":"intermediate","ok":true,"cases":19,"frames_per_payload":3337,"natural_death_frames":632}
+{"viewport":"portrait","ok":true,"cases":19,"frames_per_payload":3337,"natural_death_frames":632}
+{"ok":true,"total_real_wasm_ticks":20022,"compared_cases":57,"errors":[]}

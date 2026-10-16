@@ -1,0 +1,741 @@
+{
+  "ok": true,
+  "title": "Independent frozen Aster Observatory UI acceptance",
+  "requirePackagedGlyphCoverage": true,
+  "export": "D:\\TSProject\\Voidwake\\engine\\_Games\\observatory-settings\\dist\\player",
+  "url": "http://127.0.0.1:5876/",
+  "errors": [],
+  "checks": [
+    "desktop: actual official renderer selected",
+    "desktop: no fatal player diagnostic",
+    "desktop: actual production WASM advances",
+    "desktop: declared Observatory Reading 400 face loaded",
+    "desktop: declared Observatory Reading 700 face loaded",
+    "desktop: declared Observatory Display 400 face loaded",
+    "desktop: declared Observatory Display 700 face loaded",
+    "desktop: declared Observatory Data 400 face loaded",
+    "desktop: repeated component subtree identity exists",
+    "desktop: multiple packaged families actually paint glyphs",
+    "desktop: weight 400 actually paints glyphs",
+    "desktop: weight 700 actually paints glyphs",
+    "desktop: text automatically wraps beyond its explicit newlines",
+    "desktop: overlong label visibly paints ellipsis",
+    "desktop: intended complete text fits its authored box",
+    "desktop: sound-off has no fatal diagnostic",
+    "desktop: select-moon has no fatal diagnostic",
+    "desktop: level-increase has no fatal diagnostic",
+    "desktop: level-decrease has no fatal diagnostic",
+    "desktop: level-drag has no fatal diagnostic",
+    "desktop: apply-settings has no fatal diagnostic",
+    "desktop: reset-defaults has no fatal diagnostic",
+    "desktop: apply-defaults has no fatal diagnostic",
+    "desktop: select-meteor has no fatal diagnostic",
+    "desktop: select-deep has no fatal diagnostic",
+    "desktop: no browser, asset or compiler errors",
+    "intermediate: actual official renderer selected",
+    "intermediate: no fatal player diagnostic",
+    "intermediate: actual production WASM advances",
+    "intermediate: declared Observatory Reading 400 face loaded",
+    "intermediate: declared Observatory Reading 700 face loaded",
+    "intermediate: declared Observatory Display 400 face loaded",
+    "intermediate: declared Observatory Display 700 face loaded",
+    "intermediate: declared Observatory Data 400 face loaded",
+    "intermediate: repeated component subtree identity exists",
+    "intermediate: multiple packaged families actually paint glyphs",
+    "intermediate: weight 400 actually paints glyphs",
+    "intermediate: weight 700 actually paints glyphs",
+    "intermediate: text automatically wraps beyond its explicit newlines",
+    "intermediate: overlong label visibly paints ellipsis",
+    "intermediate: intended complete text fits its authored box",
+    "intermediate: sound-off has no fatal diagnostic",
+    "intermediate: select-moon has no fatal diagnostic",
+    "intermediate: level-increase has no fatal diagnostic",
+    "intermediate: level-decrease has no fatal diagnostic",
+    "intermediate: level-drag has no fatal diagnostic",
+    "intermediate: apply-settings has no fatal diagnostic",
+    "intermediate: reset-defaults has no fatal diagnostic",
+    "intermediate: apply-defaults has no fatal diagnostic",
+    "intermediate: select-meteor has no fatal diagnostic",
+    "intermediate: select-deep has no fatal diagnostic",
+    "intermediate: no browser, asset or compiler errors",
+    "portrait: actual official renderer selected",
+    "portrait: no fatal player diagnostic",
+    "portrait: actual production WASM advances",
+    "portrait: declared Observatory Reading 400 face loaded",
+    "portrait: declared Observatory Reading 700 face loaded",
+    "portrait: declared Observatory Display 400 face loaded",
+    "portrait: declared Observatory Display 700 face loaded",
+    "portrait: declared Observatory Data 400 face loaded",
+    "portrait: repeated component subtree identity exists",
+    "portrait: multiple packaged families actually paint glyphs",
+    "portrait: weight 400 actually paints glyphs",
+    "portrait: weight 700 actually paints glyphs",
+    "portrait: overlong label visibly paints ellipsis",
+    "portrait: intended complete text fits its authored box",
+    "portrait: sound-off has no fatal diagnostic",
+    "portrait: select-moon has no fatal diagnostic",
+    "portrait: level-increase has no fatal diagnostic",
+    "portrait: level-decrease has no fatal diagnostic",
+    "portrait: level-drag has no fatal diagnostic",
+    "portrait: apply-settings has no fatal diagnostic",
+    "portrait: reset-defaults has no fatal diagnostic",
+    "portrait: apply-defaults has no fatal diagnostic",
+    "portrait: select-meteor has no fatal diagnostic",
+    "portrait: select-deep has no fatal diagnostic",
+    "portrait: no browser, asset or compiler errors"
+  ],
+  "limitations": [
+    "Screenshots require human visual review; geometry and metadata alone do not establish visual quality.",
+    "The read-only WASM ABI observer currently requires a main-thread production runtime.",
+    "Browser font registration does not prove character coverage; local export fonts are independently audited through their cmap."
+  ],
+  "raw_report": {
+    "path": "artifacts/ui-ergonomics/observatory-browser/browser-report.json",
+    "bytes": 2903370,
+    "sha256": "13dc9ac9a80b066fdc06587e8f51429b70a0f9735ad6007826eadf1d427b29d0"
+  },
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound_toggle_action",
+            "kind": "button",
+            "text": "開啟  ON",
+            "action": "ToggleSound",
+            "point": {
+              "x": 1195.2,
+              "y": 234
+            }
+          },
+          "before_observations_sha256": "cfe7e18bfb348386bc5b08dcc822843fe5827fd52db9baf601b49b895a5bfb20",
+          "after_observations_sha256": "39f0a8e40885ae01949fc4fc28f9edb311bafdc9a81ee3e5e1cbb140bb9d5325"
+        },
+        {
+          "name": "select-moon",
+          "interaction": {
+            "id": "mode_1_action",
+            "kind": "button",
+            "text": "月面\nMOON",
+            "action": "ModeMoon",
+            "point": {
+              "x": 967.68,
+              "y": 436.5
+            }
+          },
+          "before_observations_sha256": "39f0a8e40885ae01949fc4fc28f9edb311bafdc9a81ee3e5e1cbb140bb9d5325",
+          "after_observations_sha256": "89f87c05243597920d9224cf0fd10b5e7b657a41f3112b32f4fc591a5f576a87"
+        },
+        {
+          "name": "level-increase",
+          "interaction": {
+            "id": "level_plus_action",
+            "kind": "button",
+            "text": "+",
+            "action": "LevelUp",
+            "point": {
+              "x": 1260,
+              "y": 643.5
+            }
+          },
+          "before_observations_sha256": "89f87c05243597920d9224cf0fd10b5e7b657a41f3112b32f4fc591a5f576a87",
+          "after_observations_sha256": "4515cd931bf0422c30d9d6d50bdb6da7c951b400618ea6322dd2b6eb5b0ad63a"
+        },
+        {
+          "name": "level-decrease",
+          "interaction": {
+            "id": "level_minus_action",
+            "kind": "button",
+            "text": "−",
+            "action": "LevelDown",
+            "point": {
+              "x": 957.6,
+              "y": 643.5
+            }
+          },
+          "before_observations_sha256": "4515cd931bf0422c30d9d6d50bdb6da7c951b400618ea6322dd2b6eb5b0ad63a",
+          "after_observations_sha256": "8ead558a0eb479c0ab823be6933835d5072ef903d67e348eca01470e9b2a9f65"
+        },
+        {
+          "name": "level-drag",
+          "interaction": {
+            "drag": "level_slider",
+            "from": 0.2,
+            "to": 0.8
+          },
+          "before_observations_sha256": "8ead558a0eb479c0ab823be6933835d5072ef903d67e348eca01470e9b2a9f65",
+          "after_observations_sha256": "56dee24a69bc33e8ba3ae29d5065158540d36d888745b786bcfe5f3874aedcc7"
+        },
+        {
+          "name": "apply-settings",
+          "interaction": {
+            "id": "apply_action",
+            "kind": "button",
+            "text": "套用變更 / APPLY",
+            "action": "Apply",
+            "point": {
+              "x": 1137.6,
+              "y": 783
+            }
+          },
+          "before_observations_sha256": "56dee24a69bc33e8ba3ae29d5065158540d36d888745b786bcfe5f3874aedcc7",
+          "after_observations_sha256": "78947cdcf6e2e42ef82a1db3d606ef76fd8a3c09fc485ff891fd36a8fad3005a"
+        },
+        {
+          "name": "reset-defaults",
+          "interaction": {
+            "id": "reset_action",
+            "kind": "button",
+            "text": "重設 / RESET",
+            "action": "Reset",
+            "point": {
+              "x": 712.8,
+              "y": 783
+            }
+          },
+          "before_observations_sha256": "78947cdcf6e2e42ef82a1db3d606ef76fd8a3c09fc485ff891fd36a8fad3005a",
+          "after_observations_sha256": "a93a3b790f93fee57d9e99a526df162de29e3ed63261cd78f42aada7df063286"
+        },
+        {
+          "name": "apply-defaults",
+          "interaction": {
+            "id": "apply_action",
+            "kind": "button",
+            "text": "套用變更 / APPLY",
+            "action": "Apply",
+            "point": {
+              "x": 1137.6,
+              "y": 783
+            }
+          },
+          "before_observations_sha256": "a93a3b790f93fee57d9e99a526df162de29e3ed63261cd78f42aada7df063286",
+          "after_observations_sha256": "dd596ef75394b5ab77eda1c0e489a98e4bb0ddfbfe4b4b28dcf182d1a0d1e2ca"
+        },
+        {
+          "name": "select-meteor",
+          "interaction": {
+            "id": "mode_3_action",
+            "kind": "button",
+            "text": "流星\nMETEOR",
+            "action": "ModeMeteor",
+            "point": {
+              "x": 1232.64,
+              "y": 436.5
+            }
+          },
+          "before_observations_sha256": "dd596ef75394b5ab77eda1c0e489a98e4bb0ddfbfe4b4b28dcf182d1a0d1e2ca",
+          "after_observations_sha256": "d78fc6912feeba1dc7693dad39c138d572ae8fcf0bcddf2275679baff517f59f"
+        },
+        {
+          "name": "select-deep",
+          "interaction": {
+            "id": "mode_2_action",
+            "kind": "button",
+            "text": "深空\nDEEP",
+            "action": "ModeDeep",
+            "point": {
+              "x": 1100.16,
+              "y": 436.5
+            }
+          },
+          "before_observations_sha256": "d78fc6912feeba1dc7693dad39c138d572ae8fcf0bcddf2275679baff517f59f",
+          "after_observations_sha256": "b2ba8c5475c7ca143c83cdb1d9f44d4645f787584ec0992a12883e35ddf55f60"
+        }
+      ],
+      "errors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound_toggle_action",
+            "kind": "button",
+            "text": "開啟  ON",
+            "action": "ToggleSound",
+            "point": {
+              "x": 846.6,
+              "y": 229.84
+            }
+          },
+          "before_observations_sha256": "cfe7e18bfb348386bc5b08dcc822843fe5827fd52db9baf601b49b895a5bfb20",
+          "after_observations_sha256": "39f0a8e40885ae01949fc4fc28f9edb311bafdc9a81ee3e5e1cbb140bb9d5325"
+        },
+        {
+          "name": "select-moon",
+          "interaction": {
+            "id": "mode_1_action",
+            "kind": "button",
+            "text": "月面\nMOON",
+            "action": "ModeMoon",
+            "point": {
+              "x": 685.44,
+              "y": 428.74
+            }
+          },
+          "before_observations_sha256": "39f0a8e40885ae01949fc4fc28f9edb311bafdc9a81ee3e5e1cbb140bb9d5325",
+          "after_observations_sha256": "89f87c05243597920d9224cf0fd10b5e7b657a41f3112b32f4fc591a5f576a87"
+        },
+        {
+          "name": "level-increase",
+          "interaction": {
+            "id": "level_plus_action",
+            "kind": "button",
+            "text": "+",
+            "action": "LevelUp",
+            "point": {
+              "x": 892.5,
+              "y": 632.06
+            }
+          },
+          "before_observations_sha256": "89f87c05243597920d9224cf0fd10b5e7b657a41f3112b32f4fc591a5f576a87",
+          "after_observations_sha256": "4515cd931bf0422c30d9d6d50bdb6da7c951b400618ea6322dd2b6eb5b0ad63a"
+        },
+        {
+          "name": "level-decrease",
+          "interaction": {
+            "id": "level_minus_action",
+            "kind": "button",
+            "text": "−",
+            "action": "LevelDown",
+            "point": {
+              "x": 678.3,
+              "y": 632.06
+            }
+          },
+          "before_observations_sha256": "4515cd931bf0422c30d9d6d50bdb6da7c951b400618ea6322dd2b6eb5b0ad63a",
+          "after_observations_sha256": "8ead558a0eb479c0ab823be6933835d5072ef903d67e348eca01470e9b2a9f65"
+        },
+        {
+          "name": "level-drag",
+          "interaction": {
+            "drag": "level_slider",
+            "from": 0.2,
+            "to": 0.8
+          },
+          "before_observations_sha256": "8ead558a0eb479c0ab823be6933835d5072ef903d67e348eca01470e9b2a9f65",
+          "after_observations_sha256": "f5dd4fe310e487a904ccbbb044fe677c500f27abecea589db2858a227d9baa00"
+        },
+        {
+          "name": "apply-settings",
+          "interaction": {
+            "id": "apply_action",
+            "kind": "button",
+            "text": "套用變更 / APPLY",
+            "action": "Apply",
+            "point": {
+              "x": 805.8,
+              "y": 769.08
+            }
+          },
+          "before_observations_sha256": "56dee24a69bc33e8ba3ae29d5065158540d36d888745b786bcfe5f3874aedcc7",
+          "after_observations_sha256": "78947cdcf6e2e42ef82a1db3d606ef76fd8a3c09fc485ff891fd36a8fad3005a"
+        },
+        {
+          "name": "reset-defaults",
+          "interaction": {
+            "id": "reset_action",
+            "kind": "button",
+            "text": "重設 / RESET",
+            "action": "Reset",
+            "point": {
+              "x": 504.9,
+              "y": 769.08
+            }
+          },
+          "before_observations_sha256": "78947cdcf6e2e42ef82a1db3d606ef76fd8a3c09fc485ff891fd36a8fad3005a",
+          "after_observations_sha256": "a93a3b790f93fee57d9e99a526df162de29e3ed63261cd78f42aada7df063286"
+        },
+        {
+          "name": "apply-defaults",
+          "interaction": {
+            "id": "apply_action",
+            "kind": "button",
+            "text": "套用變更 / APPLY",
+            "action": "Apply",
+            "point": {
+              "x": 805.8,
+              "y": 769.08
+            }
+          },
+          "before_observations_sha256": "a93a3b790f93fee57d9e99a526df162de29e3ed63261cd78f42aada7df063286",
+          "after_observations_sha256": "dd596ef75394b5ab77eda1c0e489a98e4bb0ddfbfe4b4b28dcf182d1a0d1e2ca"
+        },
+        {
+          "name": "select-meteor",
+          "interaction": {
+            "id": "mode_3_action",
+            "kind": "button",
+            "text": "流星\nMETEOR",
+            "action": "ModeMeteor",
+            "point": {
+              "x": 873.1200000000001,
+              "y": 428.74
+            }
+          },
+          "before_observations_sha256": "dd596ef75394b5ab77eda1c0e489a98e4bb0ddfbfe4b4b28dcf182d1a0d1e2ca",
+          "after_observations_sha256": "d78fc6912feeba1dc7693dad39c138d572ae8fcf0bcddf2275679baff517f59f"
+        },
+        {
+          "name": "select-deep",
+          "interaction": {
+            "id": "mode_2_action",
+            "kind": "button",
+            "text": "深空\nDEEP",
+            "action": "ModeDeep",
+            "point": {
+              "x": 779.28,
+              "y": 428.74
+            }
+          },
+          "before_observations_sha256": "d78fc6912feeba1dc7693dad39c138d572ae8fcf0bcddf2275679baff517f59f",
+          "after_observations_sha256": "b2ba8c5475c7ca143c83cdb1d9f44d4645f787584ec0992a12883e35ddf55f60"
+        }
+      ],
+      "errors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound_toggle_action",
+            "kind": "button",
+            "text": "開啟  ON",
+            "action": "ToggleSound",
+            "point": {
+              "x": 298.35,
+              "y": 365.03
+            }
+          },
+          "before_observations_sha256": "4bd5c50673fd4fe4566b51e0846985cd4fbaa790ad8ac4fb05051fe842b1295d",
+          "after_observations_sha256": "955c8ebd33ebb95f24d1bbbd31aa3c727e75f1f4525922ee6ba93d08a4c0acb7"
+        },
+        {
+          "name": "select-moon",
+          "interaction": {
+            "id": "mode_1_action",
+            "kind": "button",
+            "text": "月面\nMOON",
+            "action": "ModeMoon",
+            "point": {
+              "x": 182.13,
+              "y": 510.62
+            }
+          },
+          "before_observations_sha256": "955c8ebd33ebb95f24d1bbbd31aa3c727e75f1f4525922ee6ba93d08a4c0acb7",
+          "after_observations_sha256": "74143a347087e79fc2d377a856bf5fab25f0fd6e4f5e6fc0aab2c7b47cabf31d"
+        },
+        {
+          "name": "level-increase",
+          "interaction": {
+            "id": "level_plus_action",
+            "kind": "button",
+            "text": "+",
+            "action": "LevelUp",
+            "point": {
+              "x": 327.6,
+              "y": 633
+            }
+          },
+          "before_observations_sha256": "74143a347087e79fc2d377a856bf5fab25f0fd6e4f5e6fc0aab2c7b47cabf31d",
+          "after_observations_sha256": "5c16a098e1922c531ee7376d8d2f73df58bbec55c9f29f78dade96c5df34fa5d"
+        },
+        {
+          "name": "level-decrease",
+          "interaction": {
+            "id": "level_minus_action",
+            "kind": "button",
+            "text": "−",
+            "action": "LevelDown",
+            "point": {
+              "x": 179.4,
+              "y": 633
+            }
+          },
+          "before_observations_sha256": "5c16a098e1922c531ee7376d8d2f73df58bbec55c9f29f78dade96c5df34fa5d",
+          "after_observations_sha256": "0be972670f7b23e23281df2d9f720e99526aaccaf10e264433c4ef10bb3adb6f"
+        },
+        {
+          "name": "level-drag",
+          "interaction": {
+            "drag": "level_slider",
+            "from": 0.2,
+            "to": 0.8
+          },
+          "before_observations_sha256": "0be972670f7b23e23281df2d9f720e99526aaccaf10e264433c4ef10bb3adb6f",
+          "after_observations_sha256": "f3a5d9fcd1ef0bb09f546472690d1a27d60ca56cd2f7a91f99c3686ea60df332"
+        },
+        {
+          "name": "apply-settings",
+          "interaction": {
+            "id": "apply_action",
+            "kind": "button",
+            "text": "套用變更 / APPLY",
+            "action": "Apply",
+            "point": {
+              "x": 267.15,
+              "y": 746.94
+            }
+          },
+          "before_observations_sha256": "eb47804500e5d633697ba7a51654177e09e5bc59e17885bb800f61665d6fec5c",
+          "after_observations_sha256": "1cc18294fb12ffe00756ce601e4a8f8887787203fa4442ceed681d27c954dd51"
+        },
+        {
+          "name": "reset-defaults",
+          "interaction": {
+            "id": "reset_action",
+            "kind": "button",
+            "text": "重設 / RESET",
+            "action": "Reset",
+            "point": {
+              "x": 89.7,
+              "y": 746.94
+            }
+          },
+          "before_observations_sha256": "1cc18294fb12ffe00756ce601e4a8f8887787203fa4442ceed681d27c954dd51",
+          "after_observations_sha256": "4cdd6946603f0b1617e13c99255adfa16f96d52988ccc851d9ab4371e6eef055"
+        },
+        {
+          "name": "apply-defaults",
+          "interaction": {
+            "id": "apply_action",
+            "kind": "button",
+            "text": "套用變更 / APPLY",
+            "action": "Apply",
+            "point": {
+              "x": 267.15,
+              "y": 746.94
+            }
+          },
+          "before_observations_sha256": "4cdd6946603f0b1617e13c99255adfa16f96d52988ccc851d9ab4371e6eef055",
+          "after_observations_sha256": "e38abd94ee769d5310eca2c9cb869b8dcdd08de12e6228220910fb7e23633dd6"
+        },
+        {
+          "name": "select-meteor",
+          "interaction": {
+            "id": "mode_3_action",
+            "kind": "button",
+            "text": "流星\nMETEOR",
+            "action": "ModeMeteor",
+            "point": {
+              "x": 312.39000000000004,
+              "y": 510.62
+            }
+          },
+          "before_observations_sha256": "e38abd94ee769d5310eca2c9cb869b8dcdd08de12e6228220910fb7e23633dd6",
+          "after_observations_sha256": "3944588514fbf9e40189e51ae58e2a646f12b5cc74019aac5746f9e5bd7ff0fb"
+        },
+        {
+          "name": "select-deep",
+          "interaction": {
+            "id": "mode_2_action",
+            "kind": "button",
+            "text": "深空\nDEEP",
+            "action": "ModeDeep",
+            "point": {
+              "x": 247.26000000000005,
+              "y": 510.62
+            }
+          },
+          "before_observations_sha256": "3944588514fbf9e40189e51ae58e2a646f12b5cc74019aac5746f9e5bd7ff0fb",
+          "after_observations_sha256": "d312871edc880dc0339e0cdb5030316430acba1f541d148fdc9e31c35715a10c"
+        }
+      ],
+      "errors": [],
+      "failedRequests": []
+    }
+  ],
+  "font_audit": {
+    "ok": true,
+    "strict": true,
+    "text_samples": 57,
+    "note": "Unproven means no explicitly selected packaged face contains the codepoint; system fallback may still paint it.",
+    "faces": 5
+  },
+  "screenshots": [
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-apply-defaults.png",
+      "bytes": 92959,
+      "sha256": "599b5a926b9188021536fb2e0e42b160d4e0985bfdc6fa87d77b538e5731c42e"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-apply-settings.png",
+      "bytes": 92326,
+      "sha256": "d61f5d3f163dd31b2585ebe31edb17b01fabec9f6d5df769aff15ee521f94432"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-initial.png",
+      "bytes": 101273,
+      "sha256": "99385494e2c1169d1d99b5ddc7136f2b7ebdfae8d28343b7a909caf59dc40b0b"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-level-decrease.png",
+      "bytes": 91870,
+      "sha256": "a8b1df12f69883ca3a1d764fa5cf76a65b5ab4d55efa47022ec4383bb58d34f6"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-level-drag.png",
+      "bytes": 92016,
+      "sha256": "d7d494c1f55c57ee03ec56aeb409793be11d39e78f270800e711183073d37a17"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-level-increase.png",
+      "bytes": 91537,
+      "sha256": "759f329c36f0957f091e52818340da54eb2007c9d395803b0b41bc7d4a0a2f0a"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-reset-defaults.png",
+      "bytes": 94420,
+      "sha256": "e07d307784663fd4845bba16567f7a4c46a9f19b9f3a8d3839017e79db4b3d99"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-select-deep.png",
+      "bytes": 92703,
+      "sha256": "3b4af3db72a01049277b062577258ef447945ebf9c33ee69690660ebac52d01a"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-select-meteor.png",
+      "bytes": 92812,
+      "sha256": "cf2f136be8c8e4481a679ab2ab29088020ccf311fa49753e157eb6dfb39f649d"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-select-moon.png",
+      "bytes": 92852,
+      "sha256": "7ecd470d124d1ef4ca4acf02e6cc01d882ee92457df2db8adfaf9be1a9814e91"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/desktop-sound-off.png",
+      "bytes": 92649,
+      "sha256": "4905ccef5b43b122ece7035fd04cabd89f00477f7c31b52c952ce777d435b3cb"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-apply-defaults.png",
+      "bytes": 88325,
+      "sha256": "1b4ff8ca415b85f48d41147abac1df6de29f45687bbec264688340ed7a49e9ba"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-apply-settings.png",
+      "bytes": 87204,
+      "sha256": "c1d77d39667f878b7d901f0f2ce2430d1760f696ffdea08422c72f36499236a1"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-initial.png",
+      "bytes": 93137,
+      "sha256": "ba586a471326eb2663f003e0330f90e9db4ba4f591806af2c19a1be9224f3d54"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-level-decrease.png",
+      "bytes": 87316,
+      "sha256": "a951ce1bb308babeebf57e18f274274484c510b9b789c67910ad7e39a82c0c02"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-level-drag.png",
+      "bytes": 87325,
+      "sha256": "a8416dabe752a7919aaf5807ea83b75df5975abec5857513801bac457fc6559f"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-level-increase.png",
+      "bytes": 86847,
+      "sha256": "9274f474a655cd993eeab9a9140e460c148fa472354a1b9450da945ac5f5b892"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-reset-defaults.png",
+      "bytes": 90070,
+      "sha256": "03602fc6b17d8ba99ecd9113c0801eb1bd0a12bb5df177903a3c723454b866e3"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-select-deep.png",
+      "bytes": 88203,
+      "sha256": "cabcd94225db58112e2189c890175873160f7196bc52be1444f241557543bd05"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-select-meteor.png",
+      "bytes": 88338,
+      "sha256": "1fb74d5f8d21a3bc8c548fc5929f26ccf64131bc1e6c1dda1bdf8603a2e6e5d1"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-select-moon.png",
+      "bytes": 88254,
+      "sha256": "d30bd84e99101eeb5e77134d95d33ef9e2ccb52c95924f3264e4a79a9857266e"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/intermediate-sound-off.png",
+      "bytes": 88431,
+      "sha256": "b24ea0f4ccff2d8be53867cfe9279dfaeda9a8f9aa4ec9075cfb2268c5134a38"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-apply-defaults.png",
+      "bytes": 58764,
+      "sha256": "51ec61571c55e6b346a62093c9a0e798506cc29a384af3fea153803fb2b32277"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-apply-settings.png",
+      "bytes": 58784,
+      "sha256": "31555b4d16339f207afd7f602974998fc1eff7a0fb203c8c6744955d11ac6a87"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-initial.png",
+      "bytes": 60178,
+      "sha256": "e4a1329ef37ea2f18570a5fb7f6c7d4b3bdbe27afc16f45954cb7b84870487dc"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-level-decrease.png",
+      "bytes": 59072,
+      "sha256": "52a7331441c677f944ca28fb98ee4e1da66af5f3cc98590c9cc242f0e0e6112f"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-level-drag.png",
+      "bytes": 59230,
+      "sha256": "5cda9d7edc85173f00e3329853b3923090aaf9e3ba29ab75315a34b23776f44e"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-level-increase.png",
+      "bytes": 58805,
+      "sha256": "3ecff315865b303b8f3fea1cf91fbd39fa9b1c22398a6f4a1199e793194c0c4b"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-reset-defaults.png",
+      "bytes": 60428,
+      "sha256": "848994dab43afabdedf50e7bb035d17756a554e65706247ffeceabbb996885b4"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-select-deep.png",
+      "bytes": 59242,
+      "sha256": "2ca23370a5a85dc5d2f0cd16b3824dc3a9758e531478bafdb168238288bfda73"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-select-meteor.png",
+      "bytes": 59944,
+      "sha256": "747be98631fa52a1ea60064944a5076ddc6846d578d08ca99bf091e107cf2ef0"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-select-moon.png",
+      "bytes": 59956,
+      "sha256": "5d6fe355b9ab9a52b6b7cc8be0a99921ac6027e61d495988b12f30b04b175165"
+    },
+    {
+      "path": "artifacts/ui-ergonomics/observatory-browser/portrait-sound-off.png",
+      "bytes": 59415,
+      "sha256": "b130783b3d99001654c3722bebb4e98559de2f58f50481c569c20120ac6145b4"
+    }
+  ]
+}

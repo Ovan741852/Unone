@@ -223,15 +223,11 @@ fn init_with_writer<W: InitFileWriter>(
 /// what makes `game check --types` able to reject a call to an API that does
 /// not exist; a scaffold typed `any` reports success for anything.
 fn scaffold_script() -> String {
-    let types = crate::api::typings()
-        .lines()
-        .filter(|line| !line.trim_start().starts_with("--"))
-        .collect::<Vec<_>>()
-        .join("\n");
+    let types = crate::api_typings_block();
     format!(
         "--!strict
 -- Engine type contract, inlined by `project init`.
--- Refresh it after an engine upgrade with `game api typings`.
+-- Refresh after upgrades with `game api typings --update-script scripts/main.luau`.
 {}
 
 -- Game code starts here. Rules, numbers, ViewModels and save schemas are
@@ -239,6 +235,8 @@ fn scaffold_script() -> String {
 -- Presentation defaults to the official player. Author scene particle_effects
 -- and use api.particle for VFX; use api.shader for custom materials.
 -- Discover contracts with `game api search particle` / `game api search shader`.
+-- For UI, search `game api search \"UI package\"` / `game api search \"button click\"`.
+-- Use api.input.wasPressed(action) for one activation; isDown(action) is held state.
 local Game = {{}}
 
 function Game.start(api: EngineApi)
@@ -435,11 +433,19 @@ impl InitFileWriter for StdInitFileWriter {
 }
 
 fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
+    // The starter declares its own concrete needs, independent of the global
+    // defaults retained for existing projects or any particular SDK runtime.
+    let systems: std::collections::BTreeMap<String,bool> = crate::systems::search("").into_iter()
+        .filter(|system|system.optional)
+        .map(|system|{
+            let enabled=matches!(system.id.as_str(),"camera2d"|"ui"|"particle");
+            (system.id,enabled)
+        }).collect();
     let mut config_bytes = serde_json::to_vec_pretty(&serde_json::json!({
         "name": name,
         "entry_script": "scripts/main.luau",
         "main_scene": "scenes/main.scene.json",
-        "systems": {"particle": true},
+        "systems": systems,
         "test_files": [
             "tests/bootstrap-idle.test.json",
             "tests/bootstrap-input.test.json",
@@ -452,7 +458,7 @@ fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
         InitFileSpec {
             project_relative_path: "AGENTS.md",
             role: "authoring_instructions",
-            bytes: b"# Game authoring contract\n\nUse Unone's official player and renderer by default. Keep gameplay in Luau and use engine APIs for presentation. Do not obtain a WebGL/OpenGL context or write a separate browser host for an ordinary game.\n\nBefore adding effects, run `game api search particle`, `game api describe particle.play`, `game api search shader`, and `game systems list --json`. Author scene `particle_effects` for explosions, thrusters, sparks, smoke, trails and auras. Keep the particle system enabled when using these effects. Custom shaders go through scene `shader_materials` and `api.shader.*`; the engine owns GPU compilation and rendering. Use presentation Bloom when appropriate.\n\n`player.presentation.json` selects `renderer_mode: official`. Replace the renderer only as an explicitly selected extension for a stated project requirement, never merely to add effects or shaders: select `renderer_mode: custom`, set `renderer_module`, and list the entry plus local dependencies in `renderer_files`. This trusted Web extension is not a sandbox and does not claim official renderer coverage. Report the selected mode in validation.\n\nRun verify for the scaffold, then `game project preflight --target web` and `game project prepare --target web --output <new-output-directory>` to obtain an official player export and launch descriptor. Inspect SDK availability if preflight reports a missing runtime. The starter tests only check onboarding and movement; add game-specific acceptance and inspect rendered output before delivery.\n".to_vec(),
+            bytes: b"# Game authoring contract\n\nUse Unone's official player and renderer by default. Keep gameplay in Luau and use engine APIs for presentation. Do not obtain a WebGL/OpenGL context or write a separate browser host for an ordinary game.\n\nThe starter explicitly enables camera2d, ui and particle, and disables optional systems it does not use. Core world, input and observation remain required. Enable additional systems only when the game's actual API or scene needs them; inspect `game systems list --json`. Existing projects keep their own declarations and engine defaults.\n\nStart shared UI with `game api search \"UI package\"`, `game api describe ui.components.info` and `game api describe ui.components.create`. Declare the exact reported @unone/ui version in project runtime_packages, and use the typed kit for controls, themes and explicit component surfaces. The official SDK includes docs/ui-components.md. Keep themes, geometry, state and action meanings in game Luau; component children retain authored coordinates.\n\nSearch `game api search \"button click\"` before implementing activation. Use api.input.wasPressed(action) for one activation, isDown(action) for held state and wasReleased(action) for release. These are read-only tick snapshots, not callbacks or consuming event queues. Keep canonical EngineApi types; after an SDK upgrade refresh the marked block with `game api typings --update-script scripts/main.luau`. Keep game-owned types and rules outside that block; do not replace the UI or EngineApi with any.\n\nBefore adding effects, run `game api search particle`, `game api describe particle.play`, `game api search shader`, and `game systems list --json`. Author scene `particle_effects` for explosions, thrusters, sparks, smoke, trails and auras. Keep the particle system enabled when using these effects. Custom shaders go through scene `shader_materials` and `api.shader.*`; the engine owns GPU compilation and rendering. Use presentation Bloom when appropriate.\n\n`player.presentation.json` selects `renderer_mode: official`. Replace the renderer only as an explicitly selected extension for a stated project requirement, never merely to add effects or shaders: select `renderer_mode: custom`, set `renderer_module`, and list the entry plus local dependencies in `renderer_files`. This trusted Web extension is not a sandbox and does not claim official renderer coverage. Report the selected mode in validation.\n\nRun verify for the scaffold, then `game project preflight --target web` and `game project prepare --target web --output <new-output-directory>` to obtain an official player export and launch descriptor. Inspect SDK availability if preflight reports a missing runtime. The starter tests only check onboarding and movement; add game-specific acceptance and inspect rendered output before delivery.\n".to_vec(),
         },
         InitFileSpec {
             project_relative_path: "player.presentation.json",
@@ -992,7 +998,7 @@ fn suggested_next_actions(root: &Path) -> Vec<ProjectInitAction> {
         action(&["verify"], "Verify the unmodified official-player starter; these movement smoke tests are not game acceptance or renderer evidence.", vec![]),
         action(&["api", "search", "particle"], "Discover declarative particle APIs before implementing explosions, thrusters, sparks, smoke or trails.", vec![]),
         action(&["api", "search", "shader"], "Discover the engine-owned shader API; custom materials do not require replacing the renderer.", vec![]),
-        action(&["systems", "list"], "Inspect available engine systems before disabling or reimplementing them; this starter enables native particles.", vec![]),
+        action(&["systems", "list"], "Inspect available engine systems; this starter explicitly enables camera2d, ui and particle. Enable additional systems for actual game needs.", vec![]),
         action(&["project", "preflight", "--target", "web"], "Read-only discovery of a compatible official player runtime; inspect the SDK if no installed runtime is available.", vec![0]),
         action(&["project", "prepare", "--target", "web", "--output", &path_string(&root.join("dist/player"))], "Verify, synchronize declared assets and export the official player with a trusted launch descriptor. Use a fresh output directory on later prepares; renderer replacement must be an explicitly selected extension for a stated project requirement.", vec![0, 4]),
     ]
@@ -1164,6 +1170,7 @@ mod tests {
         let script = fs::read_to_string(directory.path().join("scripts/main.luau")).unwrap();
         assert!(script.starts_with("--!strict\n"));
         assert!(script.contains("export type EngineApi"));
+        assert!(script.contains(&crate::api_typings_block()));
         assert!(script.contains("api.input.isDown(\"Right\")"));
         assert!(script.contains("position.x += dt"));
         assert!(script.contains("api.particle.play(\"starter_sparks\""));
@@ -1219,6 +1226,50 @@ mod tests {
         assert!(report.main_scene.expect("main scene").exists);
         assert_eq!(report.test_files.len(), 2);
         assert!(report.test_files.iter().all(|file| file.exists));
+    }
+
+    #[test]
+    fn starter_declares_its_minimal_optional_needs_and_supports_typed_ui() {
+        let directory=tempdir().unwrap();
+        assert!(init(directory.path(),"minimal-starter").ok);
+        let (mut config,paths)=crate::ProjectPaths::discover(directory.path()).unwrap();
+        for system in crate::systems::search("") {
+            if system.optional {
+                assert_eq!(config.systems.get(&system.id),Some(&matches!(system.id.as_str(),"camera2d"|"ui"|"particle")),"{}",system.id);
+            } else {
+                assert!(!config.systems.contains_key(&system.id),"required core stays implicit: {}",system.id);
+            }
+        }
+        let settings=crate::SystemSettings::from_config(&config).unwrap();
+        assert_eq!(settings.enabled_ids(),["camera2d","input","observation","particle","ui","world"]);
+        // The new starter policy must not change undeclared legacy projects.
+        let legacy=crate::SystemSettings::from_config(&crate::ProjectConfig::default()).unwrap();
+        assert_eq!(legacy,crate::SystemSettings::default());
+        for system in ["camera3d","physics2d","save","random","audio"] {assert!(legacy.is_enabled(system));}
+
+        // An ordinary typed UI can be added without requesting unrelated
+        // physics, save or 3D features from a minimal official SDK runtime.
+        config.runtime_packages=crate::compiled_runtime_packages(&settings);
+        fs::write(&paths.config,serde_json::to_vec_pretty(&config).unwrap()).unwrap();
+        let source=fs::read_to_string(&paths.entry_script).unwrap()
+            .replace("function Game.start(api: EngineApi)",r#"function Game.start(api: EngineApi)
+    local ui=api.ui.components.create()
+    api.ui.setRoot({kind="screen",id="screen",node="starter-ui",children={
+        ui.button({id="continue",text="Continue",action="Continue",rect={x=10,y=10,width=40,height=12}})
+    }})"#)
+            .replace("function Game.update(api: EngineApi, dt: number)",r#"function Game.update(api: EngineApi, dt: number)
+    api.observation.set("activated",api.input.wasPressed("Continue"))"#);
+        fs::write(&paths.entry_script,source).unwrap();
+        let mut runtime=crate::EngineRuntime::load(directory.path()).unwrap();
+        assert!(runtime.observe().ui.is_some());
+        assert!(!runtime.observe().particles.is_empty());
+        runtime.set_input("Continue",true);
+        runtime.tick().unwrap();
+        assert_eq!(runtime.semantic_observations()["activated"],true);
+        runtime.tick().unwrap();
+        assert_eq!(runtime.semantic_observations()["activated"],false);
+        let instructions=fs::read_to_string(directory.path().join("AGENTS.md")).unwrap();
+        for expected in ["camera2d, ui and particle","ui.components.create","wasPressed(action)","--update-script scripts/main.luau"] {assert!(instructions.contains(expected),"missing {expected}");}
     }
 
     #[test]
