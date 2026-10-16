@@ -120,10 +120,16 @@ automatically.
 Check the actual rendered strings against the packaged fonts, including Chinese
 characters, arrows, punctuation and ellipsis. FontFace `loaded` status and a
 successful export only show that the file is usable, not that it contains those
-glyphs. The existing `node scripts/verify-ui-example-browser.mjs --export <player-dir>
---plan <plan.json> --out <evidence-dir>` records real player input, Canvas text
-and screenshots, then invokes `scripts/audit-ui-fonts.py` against font cmap
-tables. Set `requirePackagedGlyphCoverage: true` in the project's QA plan to make
+glyphs. Newly packed SDKs include `scripts/verify-ui-example-browser.mjs` and
+`scripts/audit-ui-fonts.py`. These optional tools require Node.js 22+, Playwright
+with an installed browser, and Python with `fontTools` for the font audit; they
+do not add a mandatory project `verify` gate. From the SDK root (or using the
+browser script's absolute path), run
+`node scripts/verify-ui-example-browser.mjs --export <player-dir> --plan <plan.json> --out <evidence-dir>`.
+It records real player input, Canvas text and screenshots, then invokes the cmap
+audit. See [the runnable plan and external-tool setup](ui-components.md#optional-browser-observation-tools)
+for a minimal `{}` plan, project-specific interaction matchers, `--python` and
+Playwright module/browser selection. Set `requirePackagedGlyphCoverage: true` in the project's QA plan to make
 missing packaged glyphs fail the audit. The audit covers observed text, so visit
 every relevant screen/state and inspect the screenshots; it cannot prove an
 unvisited string or visual shaping quality. Native appearance requires separate
@@ -253,15 +259,17 @@ local children: {UiNode} = {}
 table.insert(children,title)
 ```
 
-The complete [observatory settings example](../_Games/observatory-settings/README.md)
+The source-checkout example `_Games/observatory-settings/README.md` (not bundled
+in the SDK)
 demonstrates reusable cards, several font families/weights, selection, a draggable
 level control, Apply/Reset state, wrapping and ellipsis in the official player.
 It was first authored from a precompiled SDK and public documentation without
 access to engine source or existing games; see the
 [bounded usability validation](reviews/2026-10-16-ui-authoring-usability.md).
 
-MVVM, screen managers, themes and binding lifecycles stay in Luau/SDKs; see the
-[UI architecture proposal](ui-mvvm-architecture.md). Existing
+MVVM, screen managers, themes and binding lifecycles stay in Luau/SDKs; the
+source-checkout reference `docs/ui-mvvm-architecture.md` is an architecture
+proposal, not a bundled SDK file. Existing
 [nine-slice/budget](ui-slice-and-budget.md) and [scroll helpers](ui-scroll.md)
 continue to compose with styled leaves. Native scrolling remains explicitly
 unsupported; styling does not change that capability boundary.

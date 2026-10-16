@@ -221,7 +221,13 @@ Canvas hosts without a controller project offset zero. The legacy DOM and
 native hosts currently report `UI_HOST_CAPABILITY_UNSUPPORTED`; native input,
 screen-reader certification and variable-height virtualization are not claimed.
 
-## Runnable checks
+## Source-checkout developer checks
+
+The following are engine-source developer tests and fixtures. They require a
+source checkout and its development toolchains; these paths are not bundled SDK
+files or consumer CLI subcommands. SDK consumers use `game verify`, target
+preflight/prepare and the [optional exported-player observer](ui-components.md#optional-browser-observation-tools).
+Structural and headless checks do not prove rendered pixels.
 
 - `node --test web/shared/ui-scroll.test.mjs web/shared/ui-scroll-host.test.mjs web/shared/canvas-ui.test.mjs web/shared/runtime-core.test.mjs`
   checks shared projection, controller lifecycle, 100,000-key bounds and UI-only transport.

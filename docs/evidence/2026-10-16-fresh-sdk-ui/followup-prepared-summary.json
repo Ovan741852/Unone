@@ -1,0 +1,51 @@
+{
+  "source_sha256": "6d63cc7191d66e92d3ace0b6a17513bbcbdaa96cc1026866f5e6465fe39ee747",
+  "export_root": "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup\\dist\\player",
+  "release_root": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/",
+  "renderer_mode": "official",
+  "verify": {
+    "project": "Harbor Settings",
+    "steps": [
+      {
+        "name": "types",
+        "status": "passed",
+        "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+        "command": "game check --types",
+        "diagnostics": []
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "0 declared, 0 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:settings-collapsed",
+        "status": "passed",
+        "summary": "0 findings; nodes: settings/background, settings/eyebrow, settings/title, settings/subtitle, audio/surface, audio/heading, audio/label, audio/value, audio/level, audio/fill, audio/remainder, quality/surface, quality/heading, quality/choice, quality/help, presets/surface, presets/heading, presets/title, presets/list, presets/selection, probe/surface, probe/heading, probe/hold, probe/counts, probe/state, probe/help, settings/apply, settings/reset, settings/footer",
+        "command": "game ui preview --strict --frames 1 --seed 42",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:settings-expanded",
+        "status": "passed",
+        "summary": "0 findings; nodes: settings/background, settings/eyebrow, settings/title, settings/subtitle, audio/surface, audio/heading, audio/label, audio/value, audio/level, audio/fill, audio/remainder, quality/surface, quality/heading, quality/choice, quality/option/Eco, quality/option/Balanced, quality/option/Studio, presets/surface, presets/heading, presets/title, presets/list, presets/selection, probe/surface, probe/heading, probe/hold, probe/counts, probe/state, probe/help, settings/apply, settings/reset, settings/footer",
+        "command": "game ui preview --strict --frames 1 --seed 42 --input-sequence tests/expanded.input.json",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "passed",
+        "summary": "8/8 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": []
+      }
+    ],
+    "passed": 5,
+    "failed": 0,
+    "not_applicable": 0,
+    "step_source": "default"
+  },
+  "source_design_and_operation_changed": false
+}

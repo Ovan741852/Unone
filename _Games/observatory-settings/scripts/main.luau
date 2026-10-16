@@ -243,10 +243,14 @@ export type UiComponentTextProps = UiPlacement & {
 export type UiComponentButtonProps = UiPlacement & {
     id: string, text: string?, action: string, style: UiStyle?,
 }
+-- Common invented value/binding props are absent; state belongs to the project.
+-- Unknown fields and placement combinations still require runtime validation.
 export type UiComponentSliderProps = UiPlacement & {
+    value: never?, min: never?, max: never?, step: never?, onChange: never?,
     id: string, text: string?, action: string, style: UiStyle?,
 }
 export type UiComponentComboBoxProps = UiPlacement & {
+    value: never?, options: never?, selected: never?, onChange: never?,
     id: string, text: string?, action: string, expanded: boolean?, style: UiStyle?,
 }
 export type UiComponentPanelProps = UiPlacement & {

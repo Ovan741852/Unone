@@ -1,0 +1,62 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "reader_b_releases": 2,
+          "reader_b_presses": 2,
+          "presses": 2,
+          "last_release_b": true,
+          "held": false,
+          "mismatches": 0,
+          "last_release_a": true,
+          "hold_ticks": 0,
+          "reader_a_presses": 2,
+          "total_held_ticks": 5,
+          "reader_a_releases": 2,
+          "releases": 2,
+          "last_press_a": false,
+          "last_press_b": false
+        },
+        "key": "input_probe"
+      }
+    }
+  ],
+  "input": {},
+  "frames": 7,
+  "name": "two-readers-two-full-cycles",
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "ProbeHold": true
+      }
+    },
+    {
+      "actions": {
+        "ProbeHold": true
+      }
+    },
+    {
+      "actions": {
+        "ProbeHold": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "ProbeHold": true
+      }
+    },
+    {
+      "actions": {
+        "ProbeHold": true
+      }
+    },
+    {
+      "actions": {}
+    }
+  ]
+}

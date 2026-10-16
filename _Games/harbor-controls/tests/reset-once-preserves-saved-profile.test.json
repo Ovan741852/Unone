@@ -1,0 +1,67 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "expanded": false,
+          "preset_label": "Morning / Calm",
+          "volume": 72,
+          "dirty": true,
+          "applied_quality": "Studio",
+          "apply_count": 1,
+          "reset_count": 1,
+          "applied_volume": 50,
+          "preset": "morning-calm",
+          "applied_preset": "morning-calm",
+          "quality": "Balanced"
+        },
+        "key": "settings"
+      }
+    }
+  ],
+  "input": {},
+  "frames": 6,
+  "name": "reset-once-preserves-saved-profile",
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "Quality_Studio": true
+      }
+    },
+    {
+      "actions": {},
+      "pointer": {
+        "screen_position": {
+          "x": 26.0,
+          "y": 60.0
+        },
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {
+        "ApplySettings": true
+      }
+    },
+    {
+      "actions": {
+        "ResetSettings": true
+      }
+    },
+    {
+      "actions": {
+        "ResetSettings": true
+      }
+    },
+    {
+      "actions": {
+        "ResetSettings": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,479 @@
+{
+  "schema": "unone.fresh-ui-browser-handoff.v1",
+  "status": "frozen, pending independent browser QA",
+  "source_root": "D:/TSProject/UnoneFreshUi-20261016/example",
+  "source_entry": "scripts/main.luau",
+  "source_entry_sha256": "0cbb25bb37fa4e0fde26b32674009d6d081a3dcc8bfda9fbbca506acef68e57a",
+  "export_root": "D:/TSProject/UnoneFreshUi-20261016/example/dist/player-final",
+  "entry": "index.html",
+  "release_root": "releases/486df17578ee5384f53b8c665018c9e47787acfb034ee8edd76ed7cb997d20d5/",
+  "renderer_mode": "official",
+  "runtime_id": "web-production-0",
+  "package": {
+    "version": "0.2.0",
+    "name": "@unone/ui",
+    "declared": true
+  },
+  "screen_id": "harbor-settings",
+  "route": "settings",
+  "coordinate_contract": {
+    "scroll_viewport": "left/top/y-down/width/height in containing space",
+    "row_rect": "x=0,y=0,width=list viewport width,height=row_height, local top-left/y-down",
+    "stage": "x/y-up/width/height, normalized 0..100",
+    "stage_pixel_conversion": "left=x/100*stageWidth; top=(100-y-height)/100*stageHeight"
+  },
+  "controls": [
+    {
+      "id": "audio/level",
+      "kind": "slider",
+      "action": "AdjustLevel",
+      "behavior": "Project maps normalized screen pointer to 0..100 while captured. Numeric value is project-owned."
+    },
+    {
+      "id": "quality/choice",
+      "kind": "combobox",
+      "action": "ToggleQuality",
+      "behavior": "Press edge toggles project expanded flag."
+    },
+    {
+      "id": "quality/option/Eco",
+      "kind": "button",
+      "action": "Quality_Eco",
+      "behavior": "Select Eco and close."
+    },
+    {
+      "id": "quality/option/Balanced",
+      "kind": "button",
+      "action": "Quality_Balanced",
+      "behavior": "Select Balanced and close."
+    },
+    {
+      "id": "quality/option/Studio",
+      "kind": "button",
+      "action": "Quality_Studio",
+      "behavior": "Select Studio and close."
+    },
+    {
+      "id": "probe/hold",
+      "kind": "button",
+      "action": "ProbeHold",
+      "behavior": "Two readers independently query press/release/held; UI displays counters and held state."
+    },
+    {
+      "id": "settings/apply",
+      "kind": "button",
+      "action": "ApplySettings",
+      "behavior": "One press copies current project values into applied profile and increments apply_count."
+    },
+    {
+      "id": "settings/reset",
+      "kind": "button",
+      "action": "ResetSettings",
+      "behavior": "One press restores 72/Balanced/morning-calm and increments reset_count. Applied profile is retained."
+    },
+    {
+      "kind": "button",
+      "id_pattern": "preset/<space-key>-<mood-key>",
+      "action_pattern": "SelectPreset_<space-key>-<mood-key>",
+      "behavior": "Select stable project key; virtual callback only reads selected snapshot."
+    }
+  ],
+  "layouts": {
+    "desktop": {
+      "requested_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "condition": "aspect >= 1.35",
+      "audio/level": {
+        "x": 8,
+        "y": 58,
+        "width": 36,
+        "height": 5
+      },
+      "quality/choice": {
+        "x": 8,
+        "y": 35,
+        "width": 36,
+        "height": 5.5
+      },
+      "quality/option/Eco": {
+        "x": 8,
+        "y": 28,
+        "width": 11.466666666666667,
+        "height": 5
+      },
+      "quality/option/Balanced": {
+        "x": 20.26666666666667,
+        "y": 28,
+        "width": 11.466666666666667,
+        "height": 5
+      },
+      "quality/option/Studio": {
+        "x": 32.53333333333333,
+        "y": 28,
+        "width": 11.466666666666667,
+        "height": 5
+      },
+      "probe/hold": {
+        "x": 51,
+        "y": 14.5,
+        "width": 13,
+        "height": 6
+      },
+      "settings/apply": {
+        "x": 6,
+        "y": 13,
+        "width": 25,
+        "height": 6
+      },
+      "settings/reset": {
+        "x": 33,
+        "y": 13,
+        "width": 13,
+        "height": 6
+      },
+      "presets/list": {
+        "left": 51,
+        "top": 36,
+        "width": 41,
+        "height": 25
+      },
+      "row_height": 5.3,
+      "gap_y": 0.6
+    },
+    "medium": {
+      "requested_viewport": {
+        "width": 1020,
+        "height": 884
+      },
+      "condition": "0.8 <= aspect < 1.35",
+      "audio/level": {
+        "x": 7,
+        "y": 58,
+        "width": 39,
+        "height": 5
+      },
+      "quality/choice": {
+        "x": 7,
+        "y": 35,
+        "width": 39,
+        "height": 5.5
+      },
+      "quality/option/Eco": {
+        "x": 7,
+        "y": 28,
+        "width": 12.466666666666667,
+        "height": 5
+      },
+      "quality/option/Balanced": {
+        "x": 20.26666666666667,
+        "y": 28,
+        "width": 12.466666666666667,
+        "height": 5
+      },
+      "quality/option/Studio": {
+        "x": 33.53333333333333,
+        "y": 28,
+        "width": 12.466666666666667,
+        "height": 5
+      },
+      "probe/hold": {
+        "x": 53,
+        "y": 14.5,
+        "width": 13,
+        "height": 6
+      },
+      "settings/apply": {
+        "x": 5,
+        "y": 13,
+        "width": 26,
+        "height": 6
+      },
+      "settings/reset": {
+        "x": 33,
+        "y": 13,
+        "width": 15,
+        "height": 6
+      },
+      "presets/list": {
+        "left": 53,
+        "top": 36,
+        "width": 40,
+        "height": 25
+      },
+      "row_height": 5.3,
+      "gap_y": 0.6
+    },
+    "portrait": {
+      "requested_viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "condition": "aspect < 0.8",
+      "audio/level": {
+        "x": 8,
+        "y": 68.4,
+        "width": 84,
+        "height": 3.6
+      },
+      "quality/choice": {
+        "x": 8,
+        "y": 55,
+        "width": 84,
+        "height": 4.8
+      },
+      "quality/option/Eco": {
+        "x": 8,
+        "y": 49.7,
+        "width": 27,
+        "height": 4.2
+      },
+      "quality/option/Balanced": {
+        "x": 36.5,
+        "y": 49.7,
+        "width": 27,
+        "height": 4.2
+      },
+      "quality/option/Studio": {
+        "x": 65,
+        "y": 49.7,
+        "width": 27,
+        "height": 4.2
+      },
+      "probe/hold": {
+        "x": 8,
+        "y": 10.6,
+        "width": 28,
+        "height": 4.2
+      },
+      "settings/apply": {
+        "x": 5,
+        "y": 2.2,
+        "width": 56,
+        "height": 4.8
+      },
+      "settings/reset": {
+        "x": 64,
+        "y": 2.2,
+        "width": 31,
+        "height": 4.8
+      },
+      "presets/list": {
+        "left": 8,
+        "top": 61.2,
+        "width": 84,
+        "height": 13.6
+      },
+      "row_height": 4.9,
+      "gap_y": 0.6
+    }
+  },
+  "virtual_list": {
+    "first": "morning-calm",
+    "last": "travel-creative",
+    "action_prefix": "SelectPreset_",
+    "stable_keys": [
+      "morning-calm",
+      "morning-balanced",
+      "morning-clear",
+      "morning-deep",
+      "morning-warm",
+      "morning-quiet",
+      "morning-night",
+      "morning-flow",
+      "morning-light",
+      "morning-creative",
+      "evening-calm",
+      "evening-balanced",
+      "evening-clear",
+      "evening-deep",
+      "evening-warm",
+      "evening-quiet",
+      "evening-night",
+      "evening-flow",
+      "evening-light",
+      "evening-creative",
+      "studio-calm",
+      "studio-balanced",
+      "studio-clear",
+      "studio-deep",
+      "studio-warm",
+      "studio-quiet",
+      "studio-night",
+      "studio-flow",
+      "studio-light",
+      "studio-creative",
+      "garden-calm",
+      "garden-balanced",
+      "garden-clear",
+      "garden-deep",
+      "garden-warm",
+      "garden-quiet",
+      "garden-night",
+      "garden-flow",
+      "garden-light",
+      "garden-creative",
+      "library-calm",
+      "library-balanced",
+      "library-clear",
+      "library-deep",
+      "library-warm",
+      "library-quiet",
+      "library-night",
+      "library-flow",
+      "library-light",
+      "library-creative",
+      "harbor-calm",
+      "harbor-balanced",
+      "harbor-clear",
+      "harbor-deep",
+      "harbor-warm",
+      "harbor-quiet",
+      "harbor-night",
+      "harbor-flow",
+      "harbor-light",
+      "harbor-creative",
+      "hillside-calm",
+      "hillside-balanced",
+      "hillside-clear",
+      "hillside-deep",
+      "hillside-warm",
+      "hillside-quiet",
+      "hillside-night",
+      "hillside-flow",
+      "hillside-light",
+      "hillside-creative",
+      "rain-calm",
+      "rain-balanced",
+      "rain-clear",
+      "rain-deep",
+      "rain-warm",
+      "rain-quiet",
+      "rain-night",
+      "rain-flow",
+      "rain-light",
+      "rain-creative",
+      "sunrise-calm",
+      "sunrise-balanced",
+      "sunrise-clear",
+      "sunrise-deep",
+      "sunrise-warm",
+      "sunrise-quiet",
+      "sunrise-night",
+      "sunrise-flow",
+      "sunrise-light",
+      "sunrise-creative",
+      "moonlight-calm",
+      "moonlight-balanced",
+      "moonlight-clear",
+      "moonlight-deep",
+      "moonlight-warm",
+      "moonlight-quiet",
+      "moonlight-night",
+      "moonlight-flow",
+      "moonlight-light",
+      "moonlight-creative",
+      "weekend-calm",
+      "weekend-balanced",
+      "weekend-clear",
+      "weekend-deep",
+      "weekend-warm",
+      "weekend-quiet",
+      "weekend-night",
+      "weekend-flow",
+      "weekend-light",
+      "weekend-creative",
+      "travel-calm",
+      "travel-balanced",
+      "travel-clear",
+      "travel-deep",
+      "travel-warm",
+      "travel-quiet",
+      "travel-night",
+      "travel-flow",
+      "travel-light",
+      "travel-creative"
+    ],
+    "count": 120,
+    "reset_key": "all-presets",
+    "id": "presets/list",
+    "row_node_prefix": "preset/",
+    "pure_callback": true
+  },
+  "observation_fields": {
+    "settings": [
+      "volume",
+      "quality",
+      "preset",
+      "preset_label",
+      "expanded",
+      "dirty",
+      "apply_count",
+      "reset_count",
+      "applied_volume",
+      "applied_quality",
+      "applied_preset"
+    ],
+    "input_probe": [
+      "presses",
+      "releases",
+      "held",
+      "hold_ticks",
+      "total_held_ticks",
+      "reader_a_presses",
+      "reader_b_presses",
+      "reader_a_releases",
+      "reader_b_releases",
+      "mismatches",
+      "last_press_a",
+      "last_press_b",
+      "last_release_a",
+      "last_release_b"
+    ],
+    "layout": [
+      "name",
+      "aspect",
+      "compact",
+      "slider",
+      "combobox",
+      "list",
+      "probe",
+      "apply",
+      "reset"
+    ],
+    "other": [
+      "preset_count",
+      "tick",
+      "ui_package"
+    ]
+  },
+  "baseline": {
+    "dirty": false,
+    "preset_count": 120,
+    "expanded": false,
+    "presses": 0,
+    "preset": "morning-calm",
+    "volume": 72,
+    "held": false,
+    "quality": "Balanced",
+    "mismatches": 0,
+    "releases": 0
+  },
+  "acceptance": {
+    "strict_findings": 0,
+    "passed": 8,
+    "real_browser_status": "pending",
+    "strict_previews": [
+      "settings-collapsed",
+      "settings-expanded"
+    ],
+    "deterministic_cases": 8
+  },
+  "restrictions": [
+    "Do not modify frozen project/export.",
+    "Use real browser input and screenshots.",
+    "Do not substitute a renderer or another SDK/runtime.",
+    "Record actual held state while pointer is down; a click pulse is not sustained hold evidence."
+  ]
+}

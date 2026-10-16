@@ -1,0 +1,59 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "expanded": false,
+          "preset_label": "Morning / Calm",
+          "volume": 0,
+          "dirty": true,
+          "applied_quality": "Balanced",
+          "apply_count": 0,
+          "reset_count": 0,
+          "applied_volume": 72,
+          "preset": "morning-calm",
+          "applied_preset": "morning-calm",
+          "quality": "Balanced"
+        },
+        "key": "settings"
+      }
+    }
+  ],
+  "input": {},
+  "frames": 3,
+  "name": "slider-lower-clamp-zero-width-fill-safe",
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {},
+      "pointer": {
+        "screen_position": {
+          "x": 26.0,
+          "y": 60.0
+        },
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {},
+      "pointer": {
+        "screen_position": {
+          "x": 4.0,
+          "y": 60.0
+        },
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {}
+    }
+  ]
+}

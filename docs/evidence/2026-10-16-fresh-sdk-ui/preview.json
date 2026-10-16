@@ -1,0 +1,9 @@
+{
+  "url": "http://127.0.0.1:8344/",
+  "renderer_mode": "official",
+  "renderer": "three-webgl",
+  "release_root": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/",
+  "export_manifest_sha256": "48008e3f51d09c4f12de5cfa4e5e84dc232733b28a541290e516be92a6c95fc6",
+  "source_integration": "Only marked canonical types differ from independent author source; outside bytes identical.",
+  "note": "Relative CLI output initially landed at engine/dist/player; exact verified official directory was moved intact to the example dist/player, without rewriting exported files."
+}

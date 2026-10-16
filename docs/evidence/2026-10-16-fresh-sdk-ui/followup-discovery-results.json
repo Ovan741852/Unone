@@ -1,0 +1,558 @@
+[
+  {
+    "query": "settings screen",
+    "matches": [
+      "ui.components.screen",
+      "ui.components.create",
+      "ui.components.info"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "調整音量",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "選擇品質",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "按住按鈕",
+    "matches": [
+      "input.isDown",
+      "ui.components.button"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "可捲動清單",
+    "matches": [
+      "ui.components.scrollView",
+      "ui.components.virtualList",
+      "ui.components.create",
+      "ui.components.info"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-scroll.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "responsive layout",
+    "matches": [
+      "ui.setRoot",
+      "ui.getViewport"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-scroll.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "文字字重",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-scroll.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "pointer position",
+    "matches": [
+      "input.getPointerPosition",
+      "input.getScreenPointerPosition"
+    ],
+    "guide_paths": [],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "system font",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-scroll.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "兩個讀者按下瞬間",
+    "matches": [
+      "input.wasPressed",
+      "ui.components.button"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "create button",
+    "matches": [
+      "ui.components.button",
+      "ui.components.create",
+      "ui.components.info"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "下拉選單",
+    "matches": [
+      "ui.components.combobox",
+      "ui.components.create",
+      "ui.components.info"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "虛擬清單",
+    "matches": [
+      "ui.components.virtualList",
+      "ui.components.create",
+      "ui.components.info"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-scroll.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "按下瞬間",
+    "matches": [
+      "input.wasPressed",
+      "ui.components.button"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "放開",
+    "matches": [
+      "input.wasReleased",
+      "ui.components.button"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "長按",
+    "matches": [
+      "input.isDown",
+      "ui.components.button"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "字體",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ],
+    "guide_paths": [
+      "docs/ui-components.md",
+      "docs/ui-scroll.md",
+      "docs/ui-styling.md"
+    ],
+    "recovery": [],
+    "diagnostic_codes": [],
+    "exit_code": 0
+  },
+  {
+    "query": "ui.components.slider.extra",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "input.wasPressedFoobar",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "audio.wasPressed",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "physics.slider",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "save.virtualList",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "SelectPreset_travel-creative",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  },
+  {
+    "query": "海港晨間預設",
+    "matches": [],
+    "guide_paths": [],
+    "recovery": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "List the systems actually enabled for this caller project; argv is bound to the canonical project root.",
+        "diagnostic": null
+      }
+    ],
+    "diagnostic_codes": [
+      "API_SEARCH_EMPTY"
+    ],
+    "exit_code": 0
+  }
+]

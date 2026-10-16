@@ -1,0 +1,73 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "expanded": false,
+          "preset_label": "Morning / Calm",
+          "volume": 100,
+          "dirty": true,
+          "applied_quality": "Balanced",
+          "apply_count": 0,
+          "reset_count": 0,
+          "applied_volume": 72,
+          "preset": "morning-calm",
+          "applied_preset": "morning-calm",
+          "quality": "Balanced"
+        },
+        "key": "settings"
+      }
+    }
+  ],
+  "input": {},
+  "frames": 4,
+  "name": "slider-screen-pointer-capture-and-upper-clamp",
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {},
+      "pointer": {
+        "screen_position": {
+          "x": 17.0,
+          "y": 60.0
+        },
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {},
+      "pointer": {
+        "screen_position": {
+          "x": 35.0,
+          "y": 60.0
+        },
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {},
+      "pointer": {
+        "screen_position": {
+          "x": 80.0,
+          "y": 60.0
+        },
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true
+      }
+    },
+    {
+      "actions": {}
+    }
+  ]
+}

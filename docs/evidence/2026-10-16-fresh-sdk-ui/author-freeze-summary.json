@@ -1,0 +1,18 @@
+{
+  "frozen_at_utc": "2026-10-16T04:51:45.1129152Z",
+  "source_root": "D:/TSProject/UnoneFreshUi-20261016/example",
+  "selected_export": "D:/TSProject/UnoneFreshUi-20261016/example/dist/player-final",
+  "release_root": "releases/486df17578ee5384f53b8c665018c9e47787acfb034ee8edd76ed7cb997d20d5/",
+  "source_files": 16,
+  "selected_export_files": 72,
+  "all_project_files": 166,
+  "evidence_files": 162,
+  "source_entry_sha256": "0cbb25bb37fa4e0fde26b32674009d6d081a3dcc8bfda9fbbca506acef68e57a",
+  "source_manifest_sha256": "cbe51d9dd6fa5d95368c0efbab4cc5b3884e65708c0d4e4544cade8a3b041217",
+  "export_manifest_sha256": "4188aa0a36d83d67e8eda1e50c34df337303b2ed3cea287155ecf873cbf7fb67",
+  "project_manifest_sha256": "6ac284f518ae788c2ad66838bf826ba8f6dec59e3ae8bda45eb664cb3aa4f010",
+  "evidence_manifest_sha256": "f15d814509fea49a3d2084a73a7e045376c448cf938ccb76f0eab1c861af9ca1",
+  "sdk_input_manifest_sha256": "5eb6e84db0dd90cc58cc86d7511988da0d0054c3a9d37e95ca891368e56bb9f7",
+  "browser_visual_acceptance": "pending independent QA",
+  "read_only_after_freeze": true
+}

@@ -41,6 +41,11 @@ The [observatory settings example](_Games/observatory-settings/README.md) was
 authored independently using only a precompiled SDK, official docs and API
 discovery, then checked with real player interactions at three viewport shapes.
 
+The [Harbor Controls example](_Games/harbor-controls/README.md) repeats that
+exercise with a fresh-context author and the newer SDK: slider, combobox,
+120-row virtual list, press/release/held semantics and canonical row types.
+The SDK root README and optional browser/font tools are bundled with its guides.
+
 [ScrollView / VirtualList / VirtualGrid](docs/ui-scroll.md) provide Web clipped
 scroll content and fixed-cell virtualization. The guide covers the local
 coordinate rule, stable keys, UI-only materialization and unsupported native hosts.

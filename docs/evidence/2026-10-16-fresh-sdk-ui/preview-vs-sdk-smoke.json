@@ -1,0 +1,10 @@
+{
+  "canonical_preview": "_Games/harbor-controls/dist/player",
+  "sdk_only_followup": "D:/TSProject/UnoneFreshUi-20261016/followup/dist/player",
+  "files": 72,
+  "identical_except_export_path_metadata": true,
+  "differing_files": [],
+  "same_release_root": "releases/e0016f3283178200f6f12298d33e69cc093223f9da805fb29ddf8c0ea7b7421a/",
+  "note": "The SDK browser smoke executed a player export byte-identical to the live preview, including all content, runtime, templates and export.json.",
+  "all_files_identical": true
+}

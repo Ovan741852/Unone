@@ -70,6 +70,20 @@ the package or that a player rendered the result. Refresh the SDK, regenerate
 `game api typings`, prepare/export and inspect the official target player.
 New `project init` entries already inline the current canonical type contract.
 
+### What strict types do and do not prove
+
+Slider `value`/`min`/`max`/`step`/`onChange` and combobox
+`value`/`options`/`selected`/`onChange` are typed as absent (`never?`). They are not
+binding APIs; author the model, option nodes and updates in project Luau. An
+ordinary numeric value or callback in those fields fails strict analysis.
+
+Luau uses structural table types, not an exact object schema. Strict analysis
+alone does not reject every unknown field or prove the conditional placement
+rule. Always supply `rect` or `anchor` plus `size`, then run `verify` and inspect
+the actual official player. Missing/mixed placement and unknown props are
+rejected by the shared constructor/runtime validation. Do not cast to `any` to
+bypass a diagnostic or treat a successful type check as a runnable UI proof.
+
 ## Keep the official types when upgrading
 
 Use `EngineApi` for `Game.start`/`Game.update`, `UiApi` for the publication API,
@@ -279,8 +293,9 @@ readable type, overlap and real input at the target viewport sizes. See
 font face does not prove coverage for CJK, punctuation or arrows. The existing
 `scripts/verify-ui-example-browser.mjs` observer can record real Web input,
 screenshots, Canvas text and semantic snapshots; its local-export path runs
-`scripts/audit-ui-fonts.py` against packaged font cmap tables. A project's plan
-can require packaged glyph coverage. Inspect the screenshots as well as reports.
+`scripts/audit-ui-fonts.py` against packaged font cmap tables. Both scripts are
+included in newly packed SDKs. A project's plan can require packaged glyph
+coverage. Inspect the screenshots as well as reports.
 
 A pasted `<body data-player-...>` block is a host diagnostic HTML snapshot. It
 can identify the official renderer and expose timings, but Canvas pixels are
@@ -289,3 +304,63 @@ UI package version. Use a screenshot to assess appearance, the read-only runtime
 snapshot for the published tree/actions, and `ui.components.info()` for package
 metadata. Do not replace the renderer or reconstruct the UI with DOM to make
 these diagnostics readable.
+
+### Optional browser observation tools
+
+These tools are optional and do not add a mandatory project `verify` gate.
+External prerequisites are **Node.js 22+**, **Playwright with an installed
+browser** (its Chromium or a compatible installed browser), and **Python with
+`fontTools`** for the font audit invoked by `--export`. The observer currently
+requires a main-thread production Web runtime and an already published UI tree.
+Prepare the official Web export first; the observer serves a local export itself.
+
+From the SDK root, save `{}` as `browser-plan.json` and run the following,
+replacing the export/evidence paths:
+
+```powershell
+node scripts/verify-ui-example-browser.mjs --export 'D:/Exports/my-game-web' --plan browser-plan.json --out 'D:/Evidence/my-game-ui'
+```
+
+Or use the script's absolute path from any directory. Plan, export and evidence
+paths are relative to the working directory unless absolute. Playwright must be
+resolvable from the script: when installed elsewhere, set
+`$env:UNONE_PLAYWRIGHT_MODULE = 'D:/Tools/browser-qa/node_modules/playwright'`
+to that installation. To use an installed Edge browser, set
+`$env:UNONE_BROWSER_CHANNEL = 'msedge'`; otherwise Playwright uses its Chromium.
+If `python` does not select the environment with `fontTools`, add
+`--python 'D:/Tools/python/python.exe'` with its actual interpreter path.
+
+The minimal `{}` plan visits desktop, intermediate and portrait sizes, records
+screenshots, requires the official renderer and an advancing production runtime,
+checks any declared font faces load, and rejects browser/asset errors. It does
+not require packaged fonts, repeated components, wrapping or ellipsis. Font cmap
+coverage is reported for a local export but becomes a failing requirement only
+with `"requirePackagedGlyphCoverage": true`. This does not measure shaping or
+prove appearance; review the screenshots.
+
+To exercise a project action, replace **every `REPLACE_...` value** below with an
+actual initial label, a unique public control ID and the resulting visible label.
+`click` is a semantic node matcher; `name` labels the evidence step. This example
+expects the same action to be available at all three viewport sizes.
+
+```json
+{
+  "title": "Project UI acceptance",
+  "initialExpect": {"text": ["REPLACE_WITH_INITIAL_LABEL"]},
+  "steps": [
+    {
+      "name": "activate-primary-action",
+      "click": {"kind": "button", "id": "REPLACE_WITH_CONTROL_ID"},
+      "expect": {"text": ["REPLACE_WITH_RESULT_LABEL"]}
+    }
+  ]
+}
+```
+
+The tool sends real pointer input and reads the resulting runtime tree; a match
+does not change game state itself. Keep action handling in project Luau. For a
+separate rerun of the audit with a recorded browser report:
+
+```powershell
+python scripts/audit-ui-fonts.py --export 'D:/Exports/my-game-web' --report 'D:/Evidence/my-game-ui/browser-report.json' --output 'D:/Evidence/my-game-ui/font-coverage.json'
+```

@@ -649,6 +649,9 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
     for (path, source) in unone_engine::runtime_package_files() {
         files.push((path.to_string(), source.as_bytes().to_vec()));
     }
+    for (path, source) in authoring_files() {
+        files.push((path.to_string(), source.as_bytes().to_vec()));
+    }
     for name in template_files() {
         files.push((
             format!("templates/web/{name}"),
@@ -733,6 +736,17 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
         fs::remove_dir_all(output)?;
     }
     result
+}
+
+// Keep the public entry guide and its optional validation tools together. They
+// come from the CLI's compiled authoring contract, like the package guides, so a
+// different template checkout cannot silently replace the documented tools.
+fn authoring_files() -> [(&'static str, &'static str); 3] {
+    [
+        ("README.md", include_str!("../../../docs/sdk-readme.md")),
+        ("scripts/verify-ui-example-browser.mjs", include_str!("../../../scripts/verify-ui-example-browser.mjs")),
+        ("scripts/audit-ui-fonts.py", include_str!("../../../scripts/audit-ui-fonts.py")),
+    ]
 }
 
 fn native_export(
@@ -1001,6 +1015,51 @@ mod tests {
             assert!(safe(root.path(), path).is_err());
         }
         assert!(serde_json::from_value::<Manifest>(json!({"typo":1})).is_err());
+    }
+    #[test]
+    #[cfg(not(debug_assertions))]
+    fn packed_sdk_contains_documented_ui_tools_without_requiring_them_in_older_sdks() {
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("templates");
+        // These bytes only exercise packaging/inventory, never player execution.
+        for name in template_files().into_iter().map(|name| format!("web/{name}"))
+            .chain(["scripts/pack-native-android.ps1".to_owned()])
+        {
+            let path = source.join(name);
+            fs::create_dir_all(path.parent().unwrap()).unwrap();
+            fs::write(path, b"packaging fixture").unwrap();
+        }
+        let runtime = temp.path().join("runtime");
+        fs::create_dir(&runtime).unwrap();
+        let javascript = b"packaging fixture, not executable";
+        let wasm = b"packaging fixture, not executable";
+        fs::write(runtime.join("player.js"), javascript).unwrap();
+        fs::write(runtime.join("player.wasm"), wasm).unwrap();
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&json!({
+            "profile":"release", "dev_tools":false, "preview_tools":false,
+            "javascript":"player.js", "javascript_sha256":hash(javascript),
+            "wasm":"player.wasm", "wasm_sha256":hash(wasm),
+            "compiled_systems":["world","input","observation"]
+        })).unwrap()).unwrap();
+        let output = temp.path().join("sdk");
+        pack(&source, &[runtime], &output).unwrap();
+        let mut manifest = load(&output).unwrap();
+        let added = ["README.md", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py"];
+        for name in added {
+            assert!(manifest.files.iter().any(|file| file.path == name), "missing documented SDK entry: {name}");
+            assert!(output.join(name).is_file());
+        }
+        // Newly shipped tools receive the same integrity checks as every SDK file.
+        let tool = output.join("scripts/audit-ui-fonts.py");
+        let original = fs::read(&tool).unwrap();
+        fs::write(&tool, b"changed tool").unwrap();
+        assert!(inspect(Some(&output)).unwrap_err().to_string().contains("SDK_HASH_MISMATCH"));
+        fs::write(&tool, original).unwrap();
+        // They are author conveniences, not new runtime/SDK schema requirements.
+        manifest.files.retain(|file| !added.contains(&file.path.as_str()));
+        for name in added { fs::remove_file(output.join(name)).unwrap(); }
+        fs::write(output.join(NAME), serde_json::to_vec_pretty(&manifest).unwrap()).unwrap();
+        assert!(inspect(Some(&output)).is_ok());
     }
     #[test]
     fn unsupported_target_never_creates_output() {

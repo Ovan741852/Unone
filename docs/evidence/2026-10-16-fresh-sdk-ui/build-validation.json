@@ -1,0 +1,111 @@
+{
+  "workspace_command": "cargo test --workspace --release",
+  "passed": 458,
+  "failed": 0,
+  "ignored": 3,
+  "after_final_aliases": [
+    "cargo test -p unone-engine --release api::tests",
+    "cargo test -p unone-cli --release --test api_search_contract"
+  ],
+  "clippy_command": "cargo clippy --workspace --all-targets --release -- -D warnings",
+  "logs": [
+    {
+      "path": "artifacts/ui-fresh-round2/workspace-tests.txt",
+      "bytes": 45307,
+      "sha256": "ff16cfae32f3d1abacaa5c62e2670fd9f57634eb6326b9b88b220c921caeea8c",
+      "tail": [
+        "   Doc-tests unone_engine",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "",
+        "   Doc-tests unone_mobile_ffi",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        ""
+      ]
+    },
+    {
+      "path": "artifacts/ui-fresh-round2/api-tests-final.txt",
+      "bytes": 4473,
+      "sha256": "d3255b5edaf369eea370b942043b2d317f17b9bda3b4dacd05aaa7c69c71cab3",
+      "tail": [
+        "     Running tests\\ui_components.rs (D:/TSProject/Voidwake/game/tools/build/native\\release\\deps\\ui_components-9abe5786a0f24eba.exe)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s",
+        "",
+        "     Running tests\\ui_styles.rs (D:/TSProject/Voidwake/game/tools/build/native\\release\\deps\\ui_styles-9f39375b451208b4.exe)",
+        "",
+        "running 0 tests",
+        "",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s",
+        ""
+      ]
+    },
+    {
+      "path": "artifacts/ui-fresh-round2/search-contract-final.txt",
+      "bytes": 1536,
+      "sha256": "27289eae6898dd21a5a5ae1fa16663749bf09075e165c82e28aa56df220d4970",
+      "tail": [
+        "test invalid_project_keeps_matching_and_full_index_global_but_blocks_no_match_systems ... ok",
+        "test relative_caller_project_is_canonicalized_before_systems_argv_runs_elsewhere ... ok",
+        "test visual_search_guides_cli_and_mcp_to_native_particle_authoring ... ok",
+        "test systems_action_is_bound_to_the_caller_project_across_cwds ... ok",
+        "test cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index ... ok",
+        "test typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract ... ok",
+        "test shared_component_search_has_cli_mcp_parity_and_typed_package_guidance ... ok",
+        "test composed_ui_queries_preserve_cli_mcp_parity_and_complete_word_isolation ... ok",
+        "test ui_control_and_action_queries_have_precise_cli_mcp_parity ... ok",
+        "",
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.95s",
+        ""
+      ]
+    },
+    {
+      "path": "artifacts/ui-fresh-round2/clippy.txt",
+      "bytes": 4164,
+      "sha256": "70eb241262e63a6431c9c11f284f2a46ec8d3910ac8b67c37920e94ce49745ff",
+      "tail": [
+        "360 ~             \"\u5171\u4eabui\u7ec4\u4ef6\",",
+        "361 ~             \"ui\u5143\u4ef6\",",
+        "362 ~             \"ui\u7d44\u4ef6\",",
+        "363 ~             \"ui\u7ec4\u4ef6\",",
+        "364 ~             \"\u4e3b\u984c\u6a23\u5f0f\",",
+        "365 ~             \"\u4e3b\u9898\u6837\u5f0f\",",
+        "366 ~         ].contains(&term);",
+        "    |",
+        "",
+        "error: could not compile `unone-engine` (lib) due to 3 previous errors",
+        "warning: build failed, waiting for other jobs to finish...",
+        "error: could not compile `unone-engine` (lib test) due to 3 previous errors"
+      ]
+    },
+    {
+      "path": "artifacts/ui-fresh-round2/clippy-final.txt",
+      "bytes": 626,
+      "sha256": "2521658db7f1dcdeb91307ce2f0f05d631f3c731c349a77157e1b26d4e237c83",
+      "tail": [
+        "    Checking unone-engine v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-engine)",
+        "    Checking unone-mobile-ffi v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-mobile-ffi)",
+        "    Checking unone-cli v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-cli)",
+        "    Checking unone-web-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-web-smoke)",
+        "    Checking unone-web-live-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-web-live-smoke)",
+        "    Checking unone-mobile-android-smoke v0.1.0 (D:\\TSProject\\Voidwake\\engine\\crates\\unone-mobile-android-smoke)",
+        "    Finished `release` profile [optimized] target(s) in 42.73s"
+      ]
+    },
+    {
+      "path": "artifacts/ui-fresh-round2/build-cli-final.txt",
+      "bytes": 63,
+      "sha256": "a128e0c48ba7361a48e5d1bb805c30ce01ddffdfc1da3326d8155983a6a6589b",
+      "tail": [
+        "    Finished `release` profile [optimized] target(s) in 7.13s"
+      ]
+    }
+  ]
+}

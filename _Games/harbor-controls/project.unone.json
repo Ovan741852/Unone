@@ -1,0 +1,46 @@
+{
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "name": "Harbor Settings",
+  "runtime_packages": {
+    "@unone/ui": "0.2.0"
+  },
+  "systems": {
+    "audio": false,
+    "camera2d": false,
+    "camera3d": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": false,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "spine": false,
+    "ui": true
+  },
+  "test_files": [
+    "tests/settings-defaults.test.json",
+    "tests/hold-six-ticks-one-edge.test.json",
+    "tests/two-readers-two-full-cycles.test.json",
+    "tests/combobox-held-only-opens-once.test.json",
+    "tests/choose-last-semantic-key-and-apply-once.test.json",
+    "tests/slider-screen-pointer-capture-and-upper-clamp.test.json",
+    "tests/slider-lower-clamp-zero-width-fill-safe.test.json",
+    "tests/reset-once-preserves-saved-profile.test.json"
+  ],
+  "ui_previews": [
+    {
+      "frames": 1,
+      "name": "settings-collapsed",
+      "seed": 42
+    },
+    {
+      "frames": 1,
+      "input_sequence": "tests/expanded.input.json",
+      "name": "settings-expanded",
+      "seed": 42
+    }
+  ]
+}

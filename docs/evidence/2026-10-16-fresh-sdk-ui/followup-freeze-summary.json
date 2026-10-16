@@ -1,0 +1,18 @@
+{
+  "frozen_at_utc": "2026-10-16T05:10:08.8045630Z",
+  "source_root": "D:/TSProject/UnoneFreshUi-20261016/followup",
+  "export_root": "D:/TSProject/UnoneFreshUi-20261016/followup/dist/player",
+  "source_entry_sha256": "6d63cc7191d66e92d3ace0b6a17513bbcbdaa96cc1026866f5e6465fe39ee747",
+  "source_files": 16,
+  "export_files": 72,
+  "all_project_files": 92,
+  "evidence_files": 130,
+  "source_manifest_sha256": "793f441e729ea83380d8b94c2928b081951ca16619cb275ea4e778514cd37d91",
+  "export_manifest_sha256": "ecd6712a080c28797e8fdd40dcfafe1a3250bd467841c50496760207c203fee6",
+  "project_manifest_sha256": "b2108e5204566cb2dfcf9058a562036d0a3803f15c7f666059adc1041a189f58",
+  "evidence_manifest_sha256": "33f3ccc3700957669b2152e1e6608b2ef784d3901ad3952be85ced9502f6d226",
+  "sdk_input_sha256": "2765d396fe08ba9d578f898b41c939ed68b9154ceb007c6dad020fbe9926852d",
+  "upgraded_body_bytes_unchanged": true,
+  "original_freezes_unchanged": true,
+  "browser_packaged_tool_smoke": "12 checks, 0 errors, initial states only; does not replace independent 363-check QA"
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "valid-rect",
+    "expected_pass": true,
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "valid-anchor",
+    "expected_pass": true,
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "remaining-missing-placement",
+    "expected_pass": true,
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "invalid-value",
+    "expected_pass": false,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-fresh-round2/type-probes/invalid-value.luau(460,78): TypeError: Expected this to be 'never?', but got 'number'\n"
+  },
+  {
+    "name": "invalid-options",
+    "expected_pass": false,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-fresh-round2/type-probes/invalid-options.luau(460,84): TypeError: Expected this to be 'never?', but got '{string}'\n"
+  },
+  {
+    "name": "invalid-onchange",
+    "expected_pass": false,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-fresh-round2/type-probes/invalid-onchange.luau(460,81): TypeError: Expected this to be 'never?', but got '(...any) -> ()'\n"
+  },
+  {
+    "name": "invalid-action-callback",
+    "expected_pass": false,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "./artifacts/ui-fresh-round2/type-probes/invalid-action-callback.luau(460,31): TypeError: Expected this to be 'string', but got '(...any) -> ()'\n"
+  }
+]

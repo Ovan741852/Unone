@@ -1,0 +1,10 @@
+{
+  "before_sha256": "0cbb25bb37fa4e0fde26b32674009d6d081a3dcc8bfda9fbbca506acef68e57a",
+  "after_sha256": "6d63cc7191d66e92d3ace0b6a17513bbcbdaa96cc1026866f5e6465fe39ee747",
+  "source_changed": true,
+  "outside_block_bytes_identical": true,
+  "prefix_sha256": "37e170a65c477a9f27812c8cba7b2bf83240bc59cf7a3b41dce17e266481f4c5",
+  "project_body_sha256": "e88500c7e65e22c245b94de3612ef391de54abccdcd2a30770c6393e53312263",
+  "prefix_bytes": 67,
+  "project_body_bytes": 17961
+}

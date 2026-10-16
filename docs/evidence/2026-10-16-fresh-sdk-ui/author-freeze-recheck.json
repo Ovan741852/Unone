@@ -1,0 +1,25 @@
+[
+  {
+    "manifest": "source.json",
+    "count": 16,
+    "unchanged": true,
+    "failures": []
+  },
+  {
+    "manifest": "export-final.json",
+    "count": 72,
+    "unchanged": true,
+    "failures": []
+  },
+  {
+    "manifest": "sdk-input.json",
+    "count": 61,
+    "unchanged": true,
+    "failures": []
+  },
+  {
+    "manifest": "initial sdk snapshot including sdk.json",
+    "count": 62,
+    "unchanged": true
+  }
+]

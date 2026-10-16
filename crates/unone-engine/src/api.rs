@@ -112,48 +112,67 @@ fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
     let has = |aliases: &[&str]| terms.iter().any(|term| aliases.contains(term));
     let press = ["click", "clicked", "pressed", "press", "onclick", "buttonclick", "buttonpressed", "按鈕點擊", "按钮点击", "點擊", "点击", "按一下", "按下", "按下瞬間", "按下瞬间", "單次觸發", "单次触发"];
     let release = ["release", "released", "放開", "放开", "釋放", "释放"];
-    let hold = ["hold", "held", "holding", "長按", "长按", "持續按住", "持续按住"];
-    let context = ["button", "buttons", "input", "action", "actions", "semantic", "event", "events", "once", "ui", "was", "just", "per", "activation", "按鈕", "按钮", "動作", "动作"];
-    let action_intent = if has(&press) { Some(("input.wasPressed", &press[..])) }
-        else if has(&release) { Some(("input.wasReleased", &release[..])) }
-        else if has(&hold) { Some(("input.isDown", &hold[..])) }
+    let hold = ["hold", "held", "holding", "長按", "长按", "按住", "持續按住", "持续按住"];
+    let context = ["button", "buttons", "input", "action", "actions", "semantic", "event", "events", "once", "ui", "was", "just", "per", "activation", "down", "reader", "readers", "read", "reads", "reading", "multiple", "two", "both", "repeated", "same", "snapshot", "按鈕", "按钮", "動作", "动作", "讀者", "读者", "讀取", "读取", "多個", "多个", "兩個", "两个", "重複", "重复", "同時", "同时", "如何", "使用"];
+    let action_vocabulary = [&press[..], &release[..], &hold[..], &context[..]].concat();
+    let action_tokens = fully_segment_ui_terms(terms, &action_vocabulary);
+    let action_terms = action_tokens.as_deref().unwrap_or(terms);
+    let has_action = |aliases: &[&str]| action_terms.iter().any(|term| aliases.contains(term));
+    let action_intent = if has_action(&press) { Some(("input.wasPressed", &press[..])) }
+        else if has_action(&release) { Some(("input.wasReleased", &release[..])) }
+        else if has_action(&hold) { Some(("input.isDown", &hold[..])) }
         else { None };
     if let Some((name, aliases)) = action_intent {
-        if !terms.iter().all(|term| aliases.contains(term) || context.contains(term)) {
+        if !action_terms.iter().all(|term| aliases.contains(term) || context.contains(term)) {
             return Some(Vec::new());
         }
         return Some([name, "ui.components.button"].into_iter().filter_map(describe).collect());
+    }
+    // Font configuration is shared node style. "system" is accepted only with
+    // an actual font/style term, never as a standalone UI intent.
+    let font_terms = ["font", "fonts", "typeface", "typography", "font_family", "font_size", "font_weight", "line_height", "letter_spacing", "text_align", "vertical_align", "weight", "字體", "字体", "字型", "字級", "字号", "字重", "樣式", "样式", "排版", "style", "styles", "styling"];
+    let font_context = ["ui", "text", "texts", "label", "labels", "system", "default", "family", "size", "line", "height", "spacing", "alignment", "bold", "normal", "regular", "medium", "light", "semibold", "文字", "系統", "系统", "預設", "预设", "默認", "默认", "大小", "粗細", "粗细", "與", "与", "和", "如何", "調整", "调整", "使用"];
+    if let Some(tokens) = fully_segment_ui_terms(terms, &[&font_terms[..], &font_context[..]].concat())
+        && tokens.iter().any(|term| font_terms.contains(term)) && !is_ui_components_query(terms) {
+        return Some(["ui.setRoot", "ui.inspect"].into_iter().filter_map(describe).collect());
     }
     let constructors: &[(&str, &[&str])] = &[
         ("button", &["button", "buttons", "createbutton", "建立按鈕", "建立按钮", "按鈕元件", "按钮组件", "按鈕", "按钮"]),
         ("slider", &["slider", "sliders", "slidercomponent", "滑桿", "滑杆", "滑塊", "滑块"]),
         ("combobox", &["combobox", "comboboxcomponent", "dropdown", "下拉選單", "下拉选单", "下拉框"]),
-        ("scrollView", &["scrollview", "scroll_view", "捲動容器", "滚动容器"]),
+        ("scrollView", &["scrollview", "scroll_view", "scrollable", "捲動", "滾動", "滚动", "捲動容器", "滚动容器"]),
         ("virtualList", &["virtuallist", "virtual_list", "虛擬清單", "虚拟清单", "虛擬列表", "虚拟列表"]),
         ("virtualGrid", &["virtualgrid", "virtual_grid", "虛擬網格", "虚拟网格"]),
-        ("screen", &["screen", "螢幕根節點", "屏幕根节点"]),
+        ("screen", &["screen", "screens", "螢幕根節點", "屏幕根节点", "畫面", "画面", "界面"]),
         ("panel", &["panel", "panels", "建立面板"]),
         ("image", &["image", "images", "建立圖片", "建立图片"]),
         ("text", &["text", "建立文字"]),
     ];
     let modifiers = ["create", "build", "constructor", "constructors", "component", "components", "control", "controls", "widget", "widgets", "ui", "shared", "reusable", "official", "package", "kit", "建立", "元件", "組件", "组件"];
-    let phrase = terms.join(" ");
     for (method, aliases) in constructors {
         let words = match *method {
-            "scrollView" => &["scroll", "view"][..],
-            "virtualList" => &["virtual", "list"][..],
-            "virtualGrid" => &["virtual", "grid"][..],
+            "scrollView" => &["scroll", "view", "list", "lists", "content", "可", "清單", "清单", "列表", "容器", "內容", "内容"][..],
+            "virtualList" => &["virtual", "list", "虛擬", "虚拟", "清單", "清单", "列表"][..],
+            "virtualGrid" => &["virtual", "grid", "虛擬", "虚拟", "網格", "网格"][..],
+            "screen" => &["settings", "preferences", "設定", "设定", "設置", "设置", "偏好"][..],
             _ => &[],
         };
-        let phrase_match = !words.is_empty() && phrase.contains(&words.join(" "));
-        if !has(aliases) && !phrase_match { continue; }
+        let vocabulary = [*aliases, &modifiers[..], words].concat();
+        let Some(tokens) = fully_segment_ui_terms(terms, &vocabulary) else { continue; };
+        let phrase_match = match *method {
+            "scrollView" => tokens.contains(&"scroll") && tokens.iter().any(|term| ["view", "list", "lists", "content"].contains(term)),
+            "virtualList" => (tokens.contains(&"virtual") && tokens.contains(&"list")) || (tokens.iter().any(|term| ["虛擬", "虚拟"].contains(term)) && tokens.iter().any(|term| ["清單", "清单", "列表"].contains(term))),
+            "virtualGrid" => (tokens.contains(&"virtual") && tokens.contains(&"grid")) || (tokens.iter().any(|term| ["虛擬", "虚拟"].contains(term)) && tokens.iter().any(|term| ["網格", "网格"].contains(term))),
+            _ => false,
+        };
+        if !tokens.iter().any(|term| aliases.contains(term)) && !phrase_match { continue; }
         // Preserve established typography, panel-background and screen-space
         // searches. Bare control names and explicit constructor questions use
         // the uniform package entrypoint.
-        if !terms.iter().all(|term| aliases.contains(term) || modifiers.contains(term) || (phrase_match && words.contains(term))) {
-            continue;
-        }
         let name = format!("ui.components.{method}");
+        if *method == "scrollView" {
+            return Some([name.as_str(), "ui.components.virtualList", "ui.components.create", "ui.components.info"].into_iter().filter_map(describe).collect());
+        }
         return Some([name.as_str(), "ui.components.create", "ui.components.info"].into_iter().filter_map(describe).collect());
     }
     if has(&["relative", "coordinates", "coordinate", "相對座標", "相对坐标", "元件座標", "组件坐标"])
@@ -167,6 +186,47 @@ fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
         return Some(["ui.components.create", "ui.setRoot"].into_iter().filter_map(describe).collect());
     }
     None
+}
+
+/// Segment only against the current capability family's finite vocabulary.
+/// English tokens stay whole; Chinese authoring phrases may omit spaces. The
+/// dynamic program must consume every byte, so known substrings cannot hide an
+/// unknown word or turn a cross-domain query into an OR match.
+fn fully_segment_ui_terms<'a>(terms: &[&'a str], vocabulary: &[&str]) -> Option<Vec<&'a str>> {
+    let mut tokens = Vec::new();
+    for term in terms {
+        if vocabulary.contains(term) {
+            tokens.push(*term);
+            continue;
+        }
+        if term.is_ascii() {
+            return None;
+        }
+        let mut previous = vec![None; term.len() + 1];
+        for start in 0..term.len() {
+            if start != 0 && previous[start].is_none() {
+                continue;
+            }
+            for word in vocabulary {
+                if term[start..].starts_with(word) {
+                    let end = start + word.len();
+                    if previous[end].is_none() {
+                        previous[end] = Some(start);
+                    }
+                }
+            }
+        }
+        previous[term.len()]?;
+        let mut end = term.len();
+        let mut parts = Vec::new();
+        while end > 0 {
+            let start = previous[end]?;
+            parts.push(&term[start..end]);
+            end = start;
+        }
+        tokens.extend(parts.into_iter().rev());
+    }
+    Some(tokens)
 }
 
 fn is_search_filler(word: &str) -> bool {
@@ -226,8 +286,7 @@ fn is_ui_components_query(terms: &[&str]) -> bool {
                     "主題樣式",
                     "主题样式",
                 ]
-                .iter()
-                .any(|alias| term.contains(alias))
+                .contains(term)
         })
         || (terms.iter().any(|term| {
             matches!(
@@ -304,8 +363,7 @@ fn search_term_score(
             "主題樣式",
             "主题样式",
         ]
-        .iter()
-        .any(|alias| term.contains(alias));
+        .contains(&term);
         if package_term {
             return match descriptor.name.as_str() {
                 "ui.components.create" => Some(400),
@@ -440,7 +498,7 @@ fn search_term_score(
             | "ui元件"
             | "ui組件"
             | "ui组件"
-    ) || [
+    ) || fully_segment_ui_terms(&[term], &[
         "字體",
         "字体",
         "字級",
@@ -467,9 +525,15 @@ fn search_term_score(
         "元件重叠",
         "組件重疊",
         "组件重叠",
-    ]
-    .iter()
-    .any(|alias| term.contains(alias));
+        "大小",
+        "與",
+        "与",
+        "和",
+        "如何",
+        "處理",
+        "处理",
+    ])
+    .is_some_and(|tokens| tokens.iter().any(|token| !["大小", "與", "与", "和", "如何", "處理", "处理"].contains(token)));
     if ui_style_intent {
         let ui_score = match descriptor.name.as_str() {
             "ui.setRoot" => Some(200),
@@ -2637,6 +2701,48 @@ mod tests {
         assert!(pressed.side_effects.iter().any(|text| text.contains("never consumes")));
         assert!(describe("input.isActionJustPressed").is_none());
         assert!(describe("ui.component").is_none());
+    }
+
+    #[test]
+    fn composed_ui_queries_consume_known_words_within_one_capability_family() {
+        for (queries, expected) in [
+            (&["按住按鈕", "按住 按鈕", "如何使用按住按鈕", "hold down button", "held semantic button"][..], "input.isDown"),
+            (&["兩個讀者按下瞬間", "多個讀者重複讀取按下瞬間", "multiple readers press", "two readers read button press", "both readers same snapshot pressed"][..], "input.wasPressed"),
+            (&["可捲動清單", "建立可捲動清單", "可滚动列表", "scrollable list", "create shared scrollable list", "scroll list"][..], "ui.components.scrollView"),
+            (&["文字字重", "文字 字重", "系統字體字重", "system font", "default system font family", "text font weight"][..], "ui.setRoot"),
+            (&["settings screen", "preferences screen", "設定畫面", "設置界面", "建立偏好設定畫面"][..], "ui.components.screen"),
+        ] {
+            for query in queries {
+                let matches = search(query);
+                assert_eq!(matches.first().map(|api| api.name.as_str()), Some(expected), "{query}");
+                assert!(matches.iter().all(|api| api.name.starts_with("ui.") || api.name.starts_with("input.")), "{query}");
+                if expected == "ui.components.scrollView" {
+                    assert!(matches.iter().any(|api| api.name == "ui.components.virtualList"), "{query}");
+                    assert!(matches[0].when_to_use.contains("docs/ui-scroll.md"), "{query}");
+                } else if expected == "ui.setRoot" {
+                    assert!(matches[0].when_to_use.contains("docs/ui-styling.md"), "{query}");
+                }
+                assert!(search(&format!("{query} unfindable")).is_empty(), "{query}");
+            }
+        }
+        for query in [
+            "按住按鈕未知", "未知按住按鈕", "兩個讀者未知按下瞬間",
+            "可捲動未知清單", "文字字重未知", "系統未知字體",
+            "字體未知", "未知元件重疊", "共用UI元件未知",
+            "settings screen unfindable", "設定畫面未知",
+            "particle hold", "entity release", "particle scrollable list",
+            "entity system font", "button click unfindable", "UI package unfindable",
+            "調整音量", "選擇品質",
+        ] {
+            assert!(search(query).is_empty(), "{query}");
+        }
+        assert_ne!(search("system").first().map(|api| api.name.as_str()), Some("ui.setRoot"));
+        assert!(!search("settings").iter().any(|api| api.name == "ui.components.screen"));
+        for name in ["input.isDown", "input.wasPressed", "ui.components.scrollView", "ui.components.virtualList", "ui.setRoot"] {
+            let matches = search(name);
+            assert_eq!(matches.len(), 1, "{name}");
+            assert_eq!(matches[0].name, name);
+        }
     }
 
     #[test]

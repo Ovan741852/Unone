@@ -1,0 +1,32 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "reader_b_releases": 0,
+          "reader_b_presses": 1,
+          "presses": 1,
+          "last_release_b": false,
+          "held": true,
+          "mismatches": 0,
+          "last_release_a": false,
+          "hold_ticks": 6,
+          "reader_a_presses": 1,
+          "total_held_ticks": 6,
+          "reader_a_releases": 0,
+          "releases": 0,
+          "last_press_a": false,
+          "last_press_b": false
+        },
+        "key": "input_probe"
+      }
+    }
+  ],
+  "input": {
+    "ProbeHold": true
+  },
+  "frames": 6,
+  "name": "hold-six-ticks-one-edge",
+  "seed": 42,
+  "input_sequence": []
+}

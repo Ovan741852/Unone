@@ -460,7 +460,7 @@ fn ui_control_and_action_queries_have_precise_cli_mcp_parity() {
             assert_eq!(result["value"]["matches"][0]["name"], expected, "{query}");
         }
     }
-    for name in ["input.wasPressed", "input.wasReleased", "ui.components.text", "ui.components.button", "ui.components.slider", "ui.components.combobox", "ui.components.panel", "ui.components.image", "ui.components.component", "ui.components.screen", "ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid"] {
+    for name in ["input.isDown", "input.wasPressed", "input.wasReleased", "ui.setRoot", "ui.components.text", "ui.components.button", "ui.components.slider", "ui.components.combobox", "ui.components.panel", "ui.components.image", "ui.components.component", "ui.components.screen", "ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid"] {
         let result = cli_search(&project_root, name);
         assert_eq!(result, mcp_search(&project_root, name), "{name}");
         assert_eq!(result["value"]["matches"].as_array().unwrap().len(), 1);
@@ -472,6 +472,63 @@ fn ui_control_and_action_queries_have_precise_cli_mcp_parity() {
         assert!(result["value"]["matches"].as_array().unwrap().is_empty(), "{query}");
         assert_eq!(result["diagnostics"][0]["code"], "API_SEARCH_EMPTY");
     }
+}
+
+#[test]
+fn composed_ui_queries_preserve_cli_mcp_parity_and_complete_word_isolation() {
+    let project_root = unique_fixture_root("composed UI discovery");
+    for (queries, expected) in [
+        (&["按住按鈕", "如何使用按住按鈕", "hold down button"][..], "input.isDown"),
+        (&["兩個讀者按下瞬間", "多個讀者重複讀取按下瞬間", "multiple readers press", "two readers read button press"][..], "input.wasPressed"),
+        (&["可捲動清單", "建立可捲動清單", "scrollable list", "create shared scrollable list"][..], "ui.components.scrollView"),
+        (&["文字字重", "系統字體字重", "system font", "default system font family", "text font weight"][..], "ui.setRoot"),
+        (&["settings screen", "preferences screen", "設定畫面", "建立偏好設定畫面"][..], "ui.components.screen"),
+    ] {
+        for query in queries {
+            let result = cli_search(&project_root, query);
+            assert_eq!(result, mcp_search(&project_root, query), "{query}");
+            assert_eq!(result["ok"], true, "{query}");
+            assert_eq!(result["diagnostics"], json!([]), "{query}");
+            let matches = result["value"]["matches"].as_array().unwrap();
+            assert_eq!(matches[0]["name"], expected, "{query}");
+            assert!(matches.iter().all(|api| {
+                let name = api["name"].as_str().unwrap();
+                name.starts_with("ui.") || name.starts_with("input.")
+            }), "{query}");
+            if expected == "ui.components.scrollView" {
+                assert!(matches.iter().any(|api| api["name"] == "ui.components.virtualList"), "{query}");
+                assert!(matches[0]["when_to_use"].as_str().unwrap().contains("docs/ui-scroll.md"));
+            } else if expected == "ui.setRoot" {
+                assert!(matches[0]["when_to_use"].as_str().unwrap().contains("docs/ui-styling.md"));
+            }
+        }
+    }
+    for query in [
+        "按住按鈕未知", "兩個讀者未知按下瞬間", "可捲動未知清單",
+        "文字字重未知", "系統未知字體", "未知元件重疊", "共用UI元件未知",
+        "hold down button unfindable", "multiple readers press unfindable",
+        "scrollable list unfindable", "system font unfindable",
+        "settings screen unfindable", "設定畫面未知",
+        "particle hold", "entity release", "particle scrollable list", "entity system font",
+        "button click unfindable", "UI package unfindable", "調整音量", "選擇品質",
+    ] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query), "{query}");
+        assert_eq!(result["ok"], true, "{query}");
+        assert_eq!(result["value"]["matches"], json!([]), "{query}");
+        assert_eq!(result["diagnostics"][0]["code"], "API_SEARCH_EMPTY", "{query}");
+        assert_eq!(result["diagnostics"][0]["facts"]["query"], query);
+        let full_index = suggested_action(&result, "search_api_index");
+        assert_eq!(full_index["ready"], true, "{query}");
+        assert!(action_argv(full_index).iter().any(String::is_empty), "{query}");
+        assert_all_action_readiness(&result);
+    }
+    let system = cli_search(&project_root, "system");
+    assert_eq!(system, mcp_search(&project_root, "system"));
+    assert_ne!(system["value"]["matches"][0]["name"], "ui.setRoot");
+    let settings = cli_search(&project_root, "settings");
+    assert_eq!(settings, mcp_search(&project_root, "settings"));
+    assert!(!settings["value"]["matches"].as_array().unwrap().iter().any(|api| api["name"] == "ui.components.screen"));
 }
 
 #[test]

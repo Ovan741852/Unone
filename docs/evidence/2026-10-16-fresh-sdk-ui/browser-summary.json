@@ -1,0 +1,851 @@
+{
+  "completed_at_utc": "2026-10-16T04:58:34.378Z",
+  "status": "PASS on this Windows host; system font portability remains unproven",
+  "browser": {
+    "channel": "msedge",
+    "realBrowser": true,
+    "version": "155.0.4283.45"
+  },
+  "official_export": "D:\\TSProject\\UnoneFreshUi-20261016\\example\\dist\\player-final",
+  "checks": {
+    "passed": 363,
+    "failed": 0,
+    "actual_input_steps": 48
+  },
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 25,
+          "x": 6,
+          "y": 13
+        },
+        "aspect": 1.6,
+        "combobox": {
+          "height": 5.5,
+          "width": 36,
+          "x": 8,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 51,
+          "top": 36,
+          "width": 41
+        },
+        "name": "desktop",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 51,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 13,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 36,
+          "x": 8,
+          "y": 58
+        }
+      },
+      "errors": [],
+      "failedRequests": [],
+      "httpErrors": [],
+      "probe": [
+        {
+          "phase": "probe-cycle-1-down",
+          "tick": 75,
+          "held": true,
+          "hold_ticks": 16,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 0,
+          "reader_b_presses": 1,
+          "reader_b_releases": 0,
+          "releases": 0,
+          "total_held_ticks": 16
+        },
+        {
+          "phase": "probe-cycle-1-held",
+          "tick": 98,
+          "held": true,
+          "hold_ticks": 39,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 0,
+          "reader_b_presses": 1,
+          "reader_b_releases": 0,
+          "releases": 0,
+          "total_held_ticks": 39
+        },
+        {
+          "phase": "probe-cycle-1",
+          "tick": 110,
+          "held": false,
+          "hold_ticks": 0,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 1,
+          "reader_b_presses": 1,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 46
+        },
+        {
+          "phase": "probe-cycle-2-down",
+          "tick": 136,
+          "held": true,
+          "hold_ticks": 16,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 1,
+          "reader_b_presses": 2,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 62
+        },
+        {
+          "phase": "probe-cycle-2-held",
+          "tick": 158,
+          "held": true,
+          "hold_ticks": 38,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 1,
+          "reader_b_presses": 2,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 84
+        },
+        {
+          "phase": "probe-cycle-2",
+          "tick": 185,
+          "held": false,
+          "hold_ticks": 0,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 2,
+          "reader_b_presses": 2,
+          "reader_b_releases": 2,
+          "releases": 2,
+          "total_held_ticks": 98
+        }
+      ],
+      "virtual": [
+        {
+          "phase": "initial",
+          "first": 1,
+          "last": 6,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": false,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Balanced",
+            "reset_count": 0,
+            "volume": 72
+          }
+        },
+        {
+          "phase": "virtual-wheel-end",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": true,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "virtual-visible-last-select",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": true,
+            "expanded": false,
+            "preset": "travel-creative",
+            "preset_label": "Travel / Creative",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "apply-held-once",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "travel-creative",
+            "applied_quality": "Studio",
+            "applied_volume": 100,
+            "apply_count": 1,
+            "dirty": false,
+            "expanded": false,
+            "preset": "travel-creative",
+            "preset_label": "Travel / Creative",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "reset-held-once",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "travel-creative",
+            "applied_quality": "Studio",
+            "applied_volume": 100,
+            "apply_count": 1,
+            "dirty": true,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Balanced",
+            "reset_count": 1,
+            "volume": 72
+          }
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 26,
+          "x": 5,
+          "y": 13
+        },
+        "aspect": 1.1538461538461535,
+        "combobox": {
+          "height": 5.5,
+          "width": 39,
+          "x": 7,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 53,
+          "top": 36,
+          "width": 40
+        },
+        "name": "medium",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 53,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 15,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 39,
+          "x": 7,
+          "y": 58
+        }
+      },
+      "errors": [],
+      "failedRequests": [],
+      "httpErrors": [],
+      "probe": [
+        {
+          "phase": "probe-cycle-1-down",
+          "tick": 70,
+          "held": true,
+          "hold_ticks": 16,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 0,
+          "reader_b_presses": 1,
+          "reader_b_releases": 0,
+          "releases": 0,
+          "total_held_ticks": 16
+        },
+        {
+          "phase": "probe-cycle-1-held",
+          "tick": 91,
+          "held": true,
+          "hold_ticks": 37,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 0,
+          "reader_b_presses": 1,
+          "reader_b_releases": 0,
+          "releases": 0,
+          "total_held_ticks": 37
+        },
+        {
+          "phase": "probe-cycle-1",
+          "tick": 104,
+          "held": false,
+          "hold_ticks": 0,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 1,
+          "reader_b_presses": 1,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 44
+        },
+        {
+          "phase": "probe-cycle-2-down",
+          "tick": 127,
+          "held": true,
+          "hold_ticks": 16,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 1,
+          "reader_b_presses": 2,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 60
+        },
+        {
+          "phase": "probe-cycle-2-held",
+          "tick": 147,
+          "held": true,
+          "hold_ticks": 36,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 1,
+          "reader_b_presses": 2,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 80
+        },
+        {
+          "phase": "probe-cycle-2",
+          "tick": 158,
+          "held": false,
+          "hold_ticks": 0,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 2,
+          "reader_b_presses": 2,
+          "reader_b_releases": 2,
+          "releases": 2,
+          "total_held_ticks": 86
+        }
+      ],
+      "virtual": [
+        {
+          "phase": "initial",
+          "first": 1,
+          "last": 6,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": false,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Balanced",
+            "reset_count": 0,
+            "volume": 72
+          }
+        },
+        {
+          "phase": "virtual-wheel-end",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": true,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "virtual-visible-last-select",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": true,
+            "expanded": false,
+            "preset": "travel-creative",
+            "preset_label": "Travel / Creative",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "apply-held-once",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "travel-creative",
+            "applied_quality": "Studio",
+            "applied_volume": 100,
+            "apply_count": 1,
+            "dirty": false,
+            "expanded": false,
+            "preset": "travel-creative",
+            "preset_label": "Travel / Creative",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "reset-held-once",
+          "first": 115,
+          "last": 120,
+          "materialized": 6,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "travel-creative",
+            "applied_quality": "Studio",
+            "applied_volume": 100,
+            "apply_count": 1,
+            "dirty": true,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Balanced",
+            "reset_count": 1,
+            "volume": 72
+          }
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "layout": {
+        "apply": {
+          "height": 4.8,
+          "width": 56,
+          "x": 5,
+          "y": 2.2
+        },
+        "aspect": 0.462085308056872,
+        "combobox": {
+          "height": 4.8,
+          "width": 84,
+          "x": 8,
+          "y": 55
+        },
+        "compact": true,
+        "list": {
+          "height": 13.6,
+          "left": 8,
+          "top": 61.2,
+          "width": 84
+        },
+        "name": "portrait",
+        "probe": {
+          "height": 4.2,
+          "width": 28,
+          "x": 8,
+          "y": 10.599999999999998
+        },
+        "reset": {
+          "height": 4.8,
+          "width": 31,
+          "x": 64,
+          "y": 2.2
+        },
+        "slider": {
+          "height": 3.6,
+          "width": 84,
+          "x": 8,
+          "y": 68.4
+        }
+      },
+      "errors": [],
+      "failedRequests": [],
+      "httpErrors": [],
+      "probe": [
+        {
+          "phase": "probe-cycle-1-down",
+          "tick": 70,
+          "held": true,
+          "hold_ticks": 16,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 0,
+          "reader_b_presses": 1,
+          "reader_b_releases": 0,
+          "releases": 0,
+          "total_held_ticks": 16
+        },
+        {
+          "phase": "probe-cycle-1-held",
+          "tick": 90,
+          "held": true,
+          "hold_ticks": 36,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 0,
+          "reader_b_presses": 1,
+          "reader_b_releases": 0,
+          "releases": 0,
+          "total_held_ticks": 36
+        },
+        {
+          "phase": "probe-cycle-1",
+          "tick": 99,
+          "held": false,
+          "hold_ticks": 0,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 1,
+          "reader_a_presses": 1,
+          "reader_a_releases": 1,
+          "reader_b_presses": 1,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 40
+        },
+        {
+          "phase": "probe-cycle-2-down",
+          "tick": 120,
+          "held": true,
+          "hold_ticks": 15,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 1,
+          "reader_b_presses": 2,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 55
+        },
+        {
+          "phase": "probe-cycle-2-held",
+          "tick": 139,
+          "held": true,
+          "hold_ticks": 34,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 1,
+          "reader_b_presses": 2,
+          "reader_b_releases": 1,
+          "releases": 1,
+          "total_held_ticks": 74
+        },
+        {
+          "phase": "probe-cycle-2",
+          "tick": 147,
+          "held": false,
+          "hold_ticks": 0,
+          "last_press_a": false,
+          "last_press_b": false,
+          "last_release_a": false,
+          "last_release_b": false,
+          "mismatches": 0,
+          "presses": 2,
+          "reader_a_presses": 2,
+          "reader_a_releases": 2,
+          "reader_b_presses": 2,
+          "reader_b_releases": 2,
+          "releases": 2,
+          "total_held_ticks": 78
+        }
+      ],
+      "virtual": [
+        {
+          "phase": "initial",
+          "first": 1,
+          "last": 4,
+          "materialized": 4,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": false,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Balanced",
+            "reset_count": 0,
+            "volume": 72
+          }
+        },
+        {
+          "phase": "virtual-wheel-end",
+          "first": 117,
+          "last": 120,
+          "materialized": 4,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": true,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "virtual-visible-last-select",
+          "first": 117,
+          "last": 120,
+          "materialized": 4,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "morning-calm",
+            "applied_quality": "Balanced",
+            "applied_volume": 72,
+            "apply_count": 0,
+            "dirty": true,
+            "expanded": false,
+            "preset": "travel-creative",
+            "preset_label": "Travel / Creative",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "apply-held-once",
+          "first": 117,
+          "last": 120,
+          "materialized": 4,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "travel-creative",
+            "applied_quality": "Studio",
+            "applied_volume": 100,
+            "apply_count": 1,
+            "dirty": false,
+            "expanded": false,
+            "preset": "travel-creative",
+            "preset_label": "Travel / Creative",
+            "quality": "Studio",
+            "reset_count": 0,
+            "volume": 100
+          }
+        },
+        {
+          "phase": "reset-held-once",
+          "first": 117,
+          "last": 120,
+          "materialized": 4,
+          "model_count": 120,
+          "settings": {
+            "applied_preset": "travel-creative",
+            "applied_quality": "Studio",
+            "applied_volume": 100,
+            "apply_count": 1,
+            "dirty": true,
+            "expanded": false,
+            "preset": "morning-calm",
+            "preset_label": "Morning / Calm",
+            "quality": "Balanced",
+            "reset_count": 1,
+            "volume": 72
+          }
+        }
+      ]
+    }
+  ],
+  "fonts": {
+    "packaged_faces": 0,
+    "packaged_cmap_passed": false,
+    "strict": false,
+    "text_samples": 60,
+    "unproven_codepoints": 88,
+    "configured_canvas_font_stack": "Segoe UI, Microsoft JhengHei, sans-serif",
+    "visual_result_on_this_host": "English and Traditional Chinese were legible in reviewed screenshots; no tofu or text clipping outside deliberate scroll clipping was observed.",
+    "portability": "No packaged fonts. This is not proof of cmap coverage or identical appearance on other hosts."
+  },
+  "visual_review": {
+    "method": "Independently opened actual PNGs with view_image; no image manipulation or contact sheet inference.",
+    "reviewed_screenshots": [
+      "initial/desktop-initial.png",
+      "initial/intermediate-initial.png",
+      "initial/portrait-initial.png",
+      "validation/desktop-quality-expanded.png",
+      "validation/desktop-probe-cycle-1-held.png",
+      "validation/desktop-virtual-visible-last-select.png",
+      "validation/desktop-apply-held-once.png",
+      "validation/desktop-reset-held-once.png",
+      "validation/intermediate-quality-expanded.png",
+      "validation/intermediate-probe-cycle-1-held.png",
+      "validation/intermediate-virtual-visible-last-select.png",
+      "validation/intermediate-apply-held-once.png",
+      "validation/intermediate-reset-held-once.png",
+      "validation/portrait-quality-expanded.png",
+      "validation/portrait-probe-cycle-1-held.png",
+      "validation/portrait-virtual-visible-last-select.png",
+      "validation/portrait-apply-held-once.png",
+      "validation/portrait-reset-held-once.png",
+      "validation/desktop-retain-on-resize-portrait.png",
+      "validation/desktop-retain-on-resize-medium.png",
+      "validation/desktop-retain-on-resize-desktop.png"
+    ],
+    "findings": [],
+    "scroll_clipping": "Partial rows at viewport edges are deliberate scroll clipping; controls, labels, footer selection and actions remain contained."
+  },
+  "limitations": [
+    "Keyboard navigation and touch were not exercised.",
+    "Raw held-reader A/B booleans are not separately published; the author exposes held plus mismatch count. Separately published press/release counters prove both actual input readers saw both cycles.",
+    "Snapshots are taken after a 250 ms sustained hold; last_press/last_release booleans usually return false by those later frames. No claim is made that a delayed capture caught the single edge tick.",
+    "A real Microsoft Edge browser was run headless with its official rendering engine; no mock browser, substituted runtime, injected actions, game API writes or manual materialization was used."
+  ],
+  "hash_label_clarification": "4188aa0a36d83d67e8eda1e50c34df337303b2ed3cea287155ecf873cbf7fb67 is freeze/export-final.json manifest SHA; exported export.json is 34330f787698a310ffc8989757823476486dba6e0b7b59e0cc60c9f354914c8d. Both frozen manifest and files verified."
+}

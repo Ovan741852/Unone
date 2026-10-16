@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "plan": "{}",
+  "checks": [
+    "desktop: actual official renderer selected",
+    "desktop: no fatal player diagnostic",
+    "desktop: actual production WASM advances",
+    "desktop: no browser, asset or compiler errors",
+    "intermediate: actual official renderer selected",
+    "intermediate: no fatal player diagnostic",
+    "intermediate: actual production WASM advances",
+    "intermediate: no browser, asset or compiler errors",
+    "portrait: actual official renderer selected",
+    "portrait: no fatal player diagnostic",
+    "portrait: actual production WASM advances",
+    "portrait: no browser, asset or compiler errors"
+  ],
+  "errors": [],
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "initial_frame": 49,
+      "renderer": "official",
+      "layout": "desktop"
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "initial_frame": 48,
+      "renderer": "official",
+      "layout": "medium"
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "initial_frame": 48,
+      "renderer": "official",
+      "layout": "portrait"
+    }
+  ],
+  "font_audit_exit_code": 0,
+  "font_audit_raw_stdout": "{\"ok\": false, \"strict\": false, \"faces\": 0, \"text_samples\": 30, \"unproven_codepoints\": 85}\r\n",
+  "packaged_coverage_ok": false,
+  "packaged_coverage_strict": false,
+  "packaged_faces": 0,
+  "note": "Unproven means no explicitly selected packaged face contains the codepoint; system fallback may still paint it.",
+  "scope": "SDK-packaged-tool smoke, initial screens only; does not replace independent 363-check browser QA."
+}

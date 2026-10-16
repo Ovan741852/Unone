@@ -1,0 +1,29 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "expanded": true,
+          "preset_label": "Morning / Calm",
+          "volume": 72,
+          "dirty": false,
+          "applied_quality": "Balanced",
+          "apply_count": 0,
+          "reset_count": 0,
+          "applied_volume": 72,
+          "preset": "morning-calm",
+          "applied_preset": "morning-calm",
+          "quality": "Balanced"
+        },
+        "key": "settings"
+      }
+    }
+  ],
+  "input": {
+    "ToggleQuality": true
+  },
+  "frames": 5,
+  "name": "combobox-held-only-opens-once",
+  "seed": 42,
+  "input_sequence": []
+}

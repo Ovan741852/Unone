@@ -1,0 +1,203 @@
+[
+  {
+    "command": "003-update-canonical-types",
+    "exit_code": 0,
+    "ok": true,
+    "diagnostics": []
+  },
+  {
+    "command": "004-valid-rect-types-runtime",
+    "exit_code": 0,
+    "ok": true,
+    "diagnostics": []
+  },
+  {
+    "command": "004-valid-rect-types",
+    "exit_code": 0,
+    "ok": true,
+    "diagnostics": []
+  },
+  {
+    "command": "005-slider-value-types",
+    "exit_code": 1,
+    "ok": false,
+    "diagnostics": [
+      {
+        "code": "LUAU_TYPECHECK_FAILED",
+        "severity": "ERROR",
+        "summary": "Luau static analyzer found type or lint issues",
+        "explanation": "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+        "facts": {
+          "exit_code": 1,
+          "files": [
+            "D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau"
+          ],
+          "output": "D:/TSProject/UnoneFreshUi-20261016/followup/scripts/main.luau:645.26-645.31: TypeError: Expected this to be 'never?', but got 'number'",
+          "tool": "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe"
+        },
+        "likely_causes": [],
+        "suggested_actions": [
+          {
+            "action": "fix_typecheck",
+            "description": "Fix Luau type or lint issues using the files, line numbers, and messages in the output.",
+            "command": "game check --types --json"
+          }
+        ],
+        "source": null
+      }
+    ]
+  },
+  {
+    "command": "006-slider-onChange-types",
+    "exit_code": 1,
+    "ok": false,
+    "diagnostics": [
+      {
+        "code": "LUAU_TYPECHECK_FAILED",
+        "severity": "ERROR",
+        "summary": "Luau static analyzer found type or lint issues",
+        "explanation": "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+        "facts": {
+          "exit_code": 1,
+          "files": [
+            "D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau"
+          ],
+          "output": "D:/TSProject/UnoneFreshUi-20261016/followup/scripts/main.luau:645.29-645.60: TypeError: Expected this to be 'never?', but got '(number) -> ()'",
+          "tool": "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe"
+        },
+        "likely_causes": [],
+        "suggested_actions": [
+          {
+            "action": "fix_typecheck",
+            "description": "Fix Luau type or lint issues using the files, line numbers, and messages in the output.",
+            "command": "game check --types --json"
+          }
+        ],
+        "source": null
+      }
+    ]
+  },
+  {
+    "command": "007-combobox-options-types",
+    "exit_code": 1,
+    "ok": false,
+    "diagnostics": [
+      {
+        "code": "LUAU_TYPECHECK_FAILED",
+        "severity": "ERROR",
+        "summary": "Luau static analyzer found type or lint issues",
+        "explanation": "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+        "facts": {
+          "exit_code": 1,
+          "files": [
+            "D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau"
+          ],
+          "output": "D:/TSProject/UnoneFreshUi-20261016/followup/scripts/main.luau:666.30-666.56: TypeError: Expected this to be 'never?', but got '{string}'",
+          "tool": "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe"
+        },
+        "likely_causes": [],
+        "suggested_actions": [
+          {
+            "action": "fix_typecheck",
+            "description": "Fix Luau type or lint issues using the files, line numbers, and messages in the output.",
+            "command": "game check --types --json"
+          }
+        ],
+        "source": null
+      }
+    ]
+  },
+  {
+    "command": "008-valid-anchor-types-runtime",
+    "exit_code": 0,
+    "ok": true,
+    "diagnostics": []
+  },
+  {
+    "command": "008-valid-anchor-types",
+    "exit_code": 0,
+    "ok": true,
+    "diagnostics": []
+  },
+  {
+    "command": "009-virtual-row-typo-types",
+    "exit_code": 1,
+    "ok": false,
+    "diagnostics": [
+      {
+        "code": "LUAU_TYPECHECK_FAILED",
+        "severity": "ERROR",
+        "summary": "Luau static analyzer found type or lint issues",
+        "explanation": "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+        "facts": {
+          "exit_code": 1,
+          "files": [
+            "D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau"
+          ],
+          "output": "D:/TSProject/UnoneFreshUi-20261016/followup/scripts/main.luau:700.55-700.64: TypeError: Key 'lable' not found in table 'PresetRow'",
+          "tool": "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe"
+        },
+        "likely_causes": [],
+        "suggested_actions": [
+          {
+            "action": "fix_typecheck",
+            "description": "Fix Luau type or lint issues using the files, line numbers, and messages in the output.",
+            "command": "game check --types --json"
+          }
+        ],
+        "source": null
+      }
+    ]
+  },
+  {
+    "command": "010-missing-placement-types-runtime",
+    "exit_code": 1,
+    "ok": false,
+    "diagnostics": [
+      {
+        "code": "LUAU_RUNTIME_ERROR",
+        "severity": "ERROR",
+        "summary": "Luau script could not be loaded or executed",
+        "explanation": "runtime error: ui.setRoot node 'audio/level' needs either a rect or an anchor — this engine build accepts node placement as                          rect{x,y,width,height} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up\nstack traceback:\n\t[C]: in ?\n\tengine/ui-scroll:95: in function 'setRoot'\n\t[string \"\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau\"]:754: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau\"]:773: in function 'start'\n",
+        "facts": {
+          "message": "runtime error: ui.setRoot node 'audio/level' needs either a rect or an anchor — this engine build accepts node placement as                          rect{x,y,width,height} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up\nstack traceback:\n\t[C]: in ?\n\tengine/ui-scroll:95: in function 'setRoot'\n\t[string \"\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau\"]:754: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau\"]:773: in function 'start'\n",
+          "runtime": "Luau",
+          "script": "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau"
+        },
+        "likely_causes": [
+          "The entry script syntax or Engine API calls do not satisfy the current contract",
+          "The script uses a missing Entity or field at runtime"
+        ],
+        "suggested_actions": [
+          {
+            "action": "check_script",
+            "description": "Check the entry script contract first.",
+            "command": "game check --json"
+          },
+          {
+            "action": "inspect_project",
+            "description": "Confirm the scene and Entity ids.",
+            "command": "game project inspect --json"
+          }
+        ],
+        "source": {
+          "file": "\\\\?\\D:\\TSProject\\UnoneFreshUi-20261016\\followup\\scripts\\main.luau",
+          "line": 754,
+          "column": null
+        }
+      }
+    ]
+  },
+  {
+    "command": "010-missing-placement-types",
+    "exit_code": 0,
+    "ok": true,
+    "diagnostics": []
+  },
+  {
+    "command": "011-restored-valid-types",
+    "exit_code": 0,
+    "ok": true,
+    "diagnostics": []
+  }
+]

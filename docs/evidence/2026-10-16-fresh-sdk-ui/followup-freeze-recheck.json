@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "manifest": "source.json",
+      "files": 16,
+      "unchanged": true
+    },
+    {
+      "manifest": "export.json",
+      "files": 72,
+      "unchanged": true
+    }
+  ],
+  "command_records": 48,
+  "final_sdk_inventory_files": 64,
+  "all_final_sdk_file_hashes_match": true
+}

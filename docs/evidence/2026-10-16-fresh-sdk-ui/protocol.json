@@ -1,0 +1,38 @@
+{
+  "baseline_commit": "aaffcf37ac3886a89c7cde167a1519f4ae87e1a4",
+  "sdk_snapshot_sha256": "dab46d7f57a9084a43c467db4192150b8ba2731410fad8572056fb0a851fcb5d",
+  "fresh_author": {
+    "fork_turns": "none",
+    "inputs": [
+      "Immutable public SDK",
+      "Empty project directory",
+      "Requested UI/interaction outcomes",
+      "Opaque official analyzer path"
+    ],
+    "isolation": "instruction-enforced; not OS sandbox",
+    "forbidden": [
+      "Engine/package implementation source",
+      "Other projects/history/agents",
+      "Previous conversation",
+      "Web research",
+      "Custom host/renderer",
+      "Handwritten EngineApi or ui:any"
+    ]
+  },
+  "acceptance": {
+    "authored": [
+      "Shared controls and reusable styles",
+      "Non-consuming press/release/held semantics",
+      "Typed virtual data rows",
+      "Safe canonical type refresh",
+      "Normal verify and official project prepare"
+    ],
+    "independent": [
+      "Real pointer/hold/release/drag/dropdown/wheel/visible-row selection",
+      "Actual official production WASM",
+      "Read-only observation ABI",
+      "Three viewports and screenshot inspection",
+      "Source/export/SDK hashes unchanged"
+    ]
+  }
+}

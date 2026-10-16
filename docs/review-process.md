@@ -50,6 +50,12 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: a second fresh-context SDK-only UI author, independent real-browser
+  acceptance and shared fixes for composed operation queries, forbidden binding
+  props and SDK guide/tool inventory. The bounded Claude attempt failed with
+  error_max_turns and remains incomplete:
+  [record](reviews/2026-10-16-fresh-sdk-ui.md).
+
 - 2026-10-16: official UI control parity, operation search, input edges, safe type
   refresh, generic rows and matching runtime gates; independent source review,
   SDK-only fresh author and real official-player acceptance. The prescribed

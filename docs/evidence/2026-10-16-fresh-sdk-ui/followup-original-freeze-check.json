@@ -1,0 +1,17 @@
+{
+  "original_project": {
+    "manifest": "D:/TSProject/UnoneFreshUi-20261016/author-evidence/freeze/project-all.json",
+    "checked": 166,
+    "changed": [],
+    "unchanged": true
+  },
+  "original_evidence": {
+    "manifest": "D:/TSProject/UnoneFreshUi-20261016/author-evidence/freeze/author-evidence.json",
+    "checked": 162,
+    "changed": [],
+    "unchanged": true
+  },
+  "original_sdk_manifest_unchanged": true,
+  "original_sdk_cli_unchanged": true,
+  "original_directories_written": false
+}

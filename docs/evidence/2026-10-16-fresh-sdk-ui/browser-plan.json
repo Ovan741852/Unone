@@ -1,0 +1,410 @@
+{
+  "title": "Independent frozen official player actual input and responsive QA",
+  "requirePackagedGlyphCoverage": false,
+  "sourceRoots": [
+    "D:/TSProject/UnoneFreshUi-20261016/example"
+  ],
+  "frozenManifests": [
+    "D:/TSProject/UnoneFreshUi-20261016/author-evidence/freeze/source.json",
+    "D:/TSProject/UnoneFreshUi-20261016/author-evidence/freeze/export-final.json"
+  ],
+  "equalObservationGroups": [
+    [
+      "/input_probe/reader_a_presses",
+      "/input_probe/reader_b_presses"
+    ],
+    [
+      "/input_probe/reader_a_releases",
+      "/input_probe/reader_b_releases"
+    ],
+    [
+      "/input_probe/last_press_a",
+      "/input_probe/last_press_b"
+    ],
+    [
+      "/input_probe/last_release_a",
+      "/input_probe/last_release_b"
+    ]
+  ],
+  "initialExpect": {
+    "observations": {
+      "/settings/volume": 72,
+      "/settings/quality": "Balanced",
+      "/settings/preset": "morning-calm",
+      "/input_probe/mismatches": 0
+    }
+  },
+  "hashLabelClarification": "4188aa0a36d83d67e8eda1e50c34df337303b2ed3cea287155ecf873cbf7fb67 is freeze/export-final.json manifest SHA; exported export.json is 34330f787698a310ffc8989757823476486dba6e0b7b59e0cc60c9f354914c8d. Both frozen manifest and files verified.",
+  "steps": [
+    {
+      "name": "probe-cycle-1",
+      "hold": {
+        "control": {
+          "id": "probe/hold"
+        },
+        "delay": 250,
+        "downExpect": {
+          "observations": {
+            "/input_probe/held": true,
+            "/input_probe/presses": 1,
+            "/input_probe/releases": 0,
+            "/input_probe/reader_a_presses": 1,
+            "/input_probe/reader_b_presses": 1,
+            "/input_probe/mismatches": 0
+          },
+          "increased": [
+            "/input_probe/total_held_ticks"
+          ]
+        },
+        "heldExpect": {
+          "observations": {
+            "/input_probe/held": true,
+            "/input_probe/presses": 1,
+            "/input_probe/releases": 0,
+            "/input_probe/mismatches": 0
+          },
+          "increased": [
+            "/input_probe/hold_ticks",
+            "/input_probe/total_held_ticks"
+          ]
+        }
+      },
+      "expect": {
+        "observations": {
+          "/input_probe/held": false,
+          "/input_probe/presses": 1,
+          "/input_probe/releases": 1,
+          "/input_probe/reader_a_releases": 1,
+          "/input_probe/reader_b_releases": 1,
+          "/input_probe/hold_ticks": 0,
+          "/input_probe/mismatches": 0
+        }
+      }
+    },
+    {
+      "name": "probe-cycle-2",
+      "hold": {
+        "control": {
+          "id": "probe/hold"
+        },
+        "delay": 250,
+        "downExpect": {
+          "observations": {
+            "/input_probe/held": true,
+            "/input_probe/presses": 2,
+            "/input_probe/releases": 1,
+            "/input_probe/reader_a_presses": 2,
+            "/input_probe/reader_b_presses": 2,
+            "/input_probe/mismatches": 0
+          },
+          "increased": [
+            "/input_probe/total_held_ticks"
+          ]
+        },
+        "heldExpect": {
+          "observations": {
+            "/input_probe/held": true,
+            "/input_probe/presses": 2,
+            "/input_probe/releases": 1,
+            "/input_probe/mismatches": 0
+          },
+          "increased": [
+            "/input_probe/hold_ticks",
+            "/input_probe/total_held_ticks"
+          ]
+        }
+      },
+      "expect": {
+        "observations": {
+          "/input_probe/held": false,
+          "/input_probe/presses": 2,
+          "/input_probe/releases": 2,
+          "/input_probe/reader_a_releases": 2,
+          "/input_probe/reader_b_releases": 2,
+          "/input_probe/hold_ticks": 0,
+          "/input_probe/mismatches": 0
+        }
+      }
+    },
+    {
+      "name": "slider-75",
+      "drag": {
+        "control": {
+          "id": "audio/level"
+        },
+        "from": 0.25,
+        "to": 0.75
+      },
+      "expect": {
+        "observations": {
+          "/settings/volume": 75,
+          "/settings/dirty": true
+        }
+      }
+    },
+    {
+      "name": "slider-capture-clamp",
+      "drag": {
+        "control": {
+          "id": "audio/level"
+        },
+        "from": 0.75,
+        "to": 1.25
+      },
+      "expect": {
+        "observations": {
+          "/settings/volume": 100
+        }
+      }
+    },
+    {
+      "name": "quality-expanded",
+      "click": {
+        "id": "quality/choice"
+      },
+      "expect": {
+        "observations": {
+          "/settings/expanded": true
+        },
+        "text": [
+          "Eco",
+          "Balanced",
+          "Studio"
+        ]
+      }
+    },
+    {
+      "name": "quality-studio",
+      "click": {
+        "id": "quality/option/Studio"
+      },
+      "expect": {
+        "observations": {
+          "/settings/quality": "Studio",
+          "/settings/expanded": false
+        }
+      }
+    },
+    {
+      "name": "virtual-wheel-end",
+      "wheel": {
+        "control": {
+          "id": "presets/list"
+        },
+        "deltaY": 100000
+      },
+      "expect": {
+        "text": [
+          "Travel / Creative"
+        ]
+      }
+    },
+    {
+      "name": "virtual-visible-last-select",
+      "clickVisibleText": {
+        "control": {
+          "id": "preset/travel-creative"
+        },
+        "within": {
+          "id": "presets/list"
+        }
+      },
+      "expect": {
+        "observations": {
+          "/settings/preset": "travel-creative",
+          "/settings/preset_label": "Travel / Creative"
+        }
+      }
+    },
+    {
+      "name": "apply-held-once",
+      "hold": {
+        "control": {
+          "id": "settings/apply"
+        },
+        "delay": 250,
+        "downExpect": {
+          "observations": {
+            "/settings/apply_count": 1,
+            "/settings/dirty": false,
+            "/settings/applied_volume": 100,
+            "/settings/applied_quality": "Studio",
+            "/settings/applied_preset": "travel-creative"
+          }
+        },
+        "heldExpect": {
+          "observations": {
+            "/settings/apply_count": 1
+          },
+          "unchanged": [
+            "/settings/apply_count"
+          ]
+        }
+      },
+      "expect": {
+        "observations": {
+          "/settings/apply_count": 1,
+          "/settings/dirty": false
+        }
+      }
+    },
+    {
+      "name": "quality-expanded-after-apply",
+      "click": {
+        "id": "quality/choice"
+      },
+      "expect": {
+        "observations": {
+          "/settings/expanded": true
+        }
+      }
+    },
+    {
+      "name": "quality-eco-dirty",
+      "click": {
+        "id": "quality/option/Eco"
+      },
+      "expect": {
+        "observations": {
+          "/settings/quality": "Eco",
+          "/settings/expanded": false,
+          "/settings/dirty": true
+        }
+      }
+    },
+    {
+      "name": "reset-held-once",
+      "hold": {
+        "control": {
+          "id": "settings/reset"
+        },
+        "delay": 250,
+        "downExpect": {
+          "observations": {
+            "/settings/reset_count": 1,
+            "/settings/volume": 72,
+            "/settings/quality": "Balanced",
+            "/settings/preset": "morning-calm",
+            "/settings/applied_volume": 100,
+            "/settings/applied_quality": "Studio",
+            "/settings/applied_preset": "travel-creative"
+          }
+        },
+        "heldExpect": {
+          "observations": {
+            "/settings/reset_count": 1
+          },
+          "unchanged": [
+            "/settings/reset_count"
+          ]
+        }
+      },
+      "expect": {
+        "observations": {
+          "/settings/reset_count": 1,
+          "/settings/dirty": true,
+          "/settings/apply_count": 1
+        }
+      }
+    },
+    {
+      "name": "changed-before-resize",
+      "drag": {
+        "control": {
+          "id": "audio/level"
+        },
+        "from": 0.25,
+        "to": 0.75
+      },
+      "expect": {
+        "observations": {
+          "/settings/volume": 75
+        }
+      }
+    },
+    {
+      "name": "retain-on-resize-portrait",
+      "resize": {
+        "width": 390,
+        "height": 844
+      },
+      "expect": {
+        "observations": {
+          "/layout/name": "portrait",
+          "/settings/volume": 75,
+          "/settings/quality": "Balanced",
+          "/settings/preset": "morning-calm",
+          "/settings/applied_volume": 100,
+          "/settings/applied_quality": "Studio",
+          "/settings/applied_preset": "travel-creative",
+          "/settings/apply_count": 1,
+          "/settings/reset_count": 1
+        },
+        "unchanged": [
+          "/settings/volume",
+          "/settings/quality",
+          "/settings/preset",
+          "/settings/applied_volume",
+          "/settings/applied_quality",
+          "/settings/applied_preset"
+        ]
+      }
+    },
+    {
+      "name": "retain-on-resize-medium",
+      "resize": {
+        "width": 1020,
+        "height": 884
+      },
+      "expect": {
+        "observations": {
+          "/layout/name": "medium",
+          "/settings/volume": 75,
+          "/settings/quality": "Balanced",
+          "/settings/preset": "morning-calm",
+          "/settings/applied_volume": 100,
+          "/settings/applied_quality": "Studio",
+          "/settings/applied_preset": "travel-creative",
+          "/settings/apply_count": 1,
+          "/settings/reset_count": 1
+        },
+        "unchanged": [
+          "/settings/volume",
+          "/settings/quality",
+          "/settings/preset",
+          "/settings/applied_volume",
+          "/settings/applied_quality",
+          "/settings/applied_preset"
+        ]
+      }
+    },
+    {
+      "name": "retain-on-resize-desktop",
+      "resize": {
+        "width": 1440,
+        "height": 900
+      },
+      "expect": {
+        "observations": {
+          "/layout/name": "desktop",
+          "/settings/volume": 75,
+          "/settings/quality": "Balanced",
+          "/settings/preset": "morning-calm",
+          "/settings/applied_volume": 100,
+          "/settings/applied_quality": "Studio",
+          "/settings/applied_preset": "travel-creative",
+          "/settings/apply_count": 1,
+          "/settings/reset_count": 1
+        },
+        "unchanged": [
+          "/settings/volume",
+          "/settings/quality",
+          "/settings/preset",
+          "/settings/applied_volume",
+          "/settings/applied_quality",
+          "/settings/applied_preset"
+        ]
+      }
+    }
+  ]
+}

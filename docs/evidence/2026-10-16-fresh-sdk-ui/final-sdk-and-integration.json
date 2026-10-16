@@ -1,0 +1,43 @@
+{
+  "sdk_manifest_sha256": "90264c5ddaa5a0c75b5f0a1ce5e38d738ca28577d93b1446e8a8d8d4731a6b42",
+  "sdk_files_verified": 64,
+  "new_bundled_authoring_files": [
+    "README.md",
+    "scripts/verify-ui-example-browser.mjs",
+    "scripts/audit-ui-fonts.py"
+  ],
+  "readme_local_links_resolve": [
+    "docs/ui-components.md",
+    "docs/ui-styling.md",
+    "docs/ui-scroll.md",
+    "docs/formal-ui-host.md",
+    "packages/unone-ui/package.unone.json",
+    "docs/ui-components.md#optional-browser-observation-tools"
+  ],
+  "javascript_syntax_exit": 0,
+  "python_syntax": "passed with ast.parse, no cache write",
+  "maintained_example_outside_types_unchanged": true,
+  "outside_types_sha256": "138b03e94a58b0be70238b7ae7397310b675c57f56ecea0015755f7cf9de5c9d",
+  "runtimes": [
+    {
+      "id": "web-production-0",
+      "target": "web",
+      "variant": "production",
+      "path": "runtimes/web-production-0",
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "ui",
+        "world"
+      ],
+      "runtime_packages": {
+        "@unone/ui": "0.2.0"
+      },
+      "bytes": 1838661
+    }
+  ]
+}

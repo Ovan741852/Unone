@@ -1,0 +1,64 @@
+{
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "expanded": false,
+          "preset_label": "Travel / Creative",
+          "volume": 72,
+          "dirty": false,
+          "applied_quality": "Studio",
+          "apply_count": 1,
+          "reset_count": 0,
+          "applied_volume": 72,
+          "preset": "travel-creative",
+          "applied_preset": "travel-creative",
+          "quality": "Studio"
+        },
+        "key": "settings"
+      }
+    }
+  ],
+  "input": {},
+  "frames": 8,
+  "name": "choose-last-semantic-key-and-apply-once",
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "ToggleQuality": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "Quality_Studio": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "SelectPreset_travel-creative": true
+      }
+    },
+    {
+      "actions": {
+        "ApplySettings": true
+      }
+    },
+    {
+      "actions": {
+        "ApplySettings": true
+      }
+    },
+    {
+      "actions": {
+        "ApplySettings": true
+      }
+    }
+  ]
+}

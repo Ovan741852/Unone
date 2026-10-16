@@ -1,0 +1,86 @@
+{
+  "root": "D:\\TSProject\\UnoneFreshUi-20261016\\followup",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 2829,
+      "sha256": "cc4e1db2a4d19e9a90f395d119c1de210ebc51fcd054eb0830a169884ac772fa"
+    },
+    {
+      "path": "bundles/manifest.json",
+      "bytes": 779,
+      "sha256": "e7e2834b6193b4ed4307f0bcc5b98a45a8615246f731786f986b9fcc0c5d45b0"
+    },
+    {
+      "path": "player.presentation.json",
+      "bytes": 108,
+      "sha256": "76536e62b7f841d67f8cdc1eb651129508855b487c5630c5c189732ec879e23f"
+    },
+    {
+      "path": "project.unone.json",
+      "bytes": 1199,
+      "sha256": "129bcfd412edc9c3a67f1aa15f45ebb97593d8147bd02088b2cee059812022de"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1400,
+      "sha256": "45987af604271f996ed77ced8f2d5c5cff53aed0c34478b75dc8973688e8bcbe"
+    },
+    {
+      "path": "scenes/main.scene.json",
+      "bytes": 17,
+      "sha256": "91ac143676104ed0d283896fc0fe88759fe1366b4c3ffbbec07500f6e8cc2ec9"
+    },
+    {
+      "path": "scripts/main.luau",
+      "bytes": 38423,
+      "sha256": "6d63cc7191d66e92d3ace0b6a17513bbcbdaa96cc1026866f5e6465fe39ee747"
+    },
+    {
+      "path": "tests/choose-last-semantic-key-and-apply-once.test.json",
+      "bytes": 1184,
+      "sha256": "e4b35369db7effb3c8a423859c9d816a352c01ef5f12825bc2fe98381057acd8"
+    },
+    {
+      "path": "tests/combobox-held-only-opens-once.test.json",
+      "bytes": 658,
+      "sha256": "97dbcbed419d1af282befe0e66b3e6c0c40871fba3ad8f6027982050304e65d3"
+    },
+    {
+      "path": "tests/expanded.input.json",
+      "bytes": 70,
+      "sha256": "47c333fcd97246ac37fa70eea71b213a091f0e41e49591c1e3e7a9f15083d352"
+    },
+    {
+      "path": "tests/hold-six-ticks-one-edge.test.json",
+      "bytes": 720,
+      "sha256": "077e2c075f5579df2c7031539105fd535b2a860eda3c096c9a0c56b56f54c520"
+    },
+    {
+      "path": "tests/reset-once-preserves-saved-profile.test.json",
+      "bytes": 1254,
+      "sha256": "76e64a8bfb6cd02332ffd12ee7e224412884b9058a62a4ec8f99e739c8476323"
+    },
+    {
+      "path": "tests/settings-defaults.test.json",
+      "bytes": 1274,
+      "sha256": "0ce6784a8c09ed93aa1af3eb90266a132110851fe7428983125e7351838fd3a0"
+    },
+    {
+      "path": "tests/slider-lower-clamp-zero-width-fill-safe.test.json",
+      "bytes": 1164,
+      "sha256": "14bec4d2a5e464eaf385dcfb843f9fe82be6816ed9a5e30528ff2fca8e201b15"
+    },
+    {
+      "path": "tests/slider-screen-pointer-capture-and-upper-clamp.test.json",
+      "bytes": 1418,
+      "sha256": "1927845a089aff9a62da936ec4a80b637812619ed507d5110ae1cb7d66c775d1"
+    },
+    {
+      "path": "tests/two-readers-two-full-cycles.test.json",
+      "bytes": 1126,
+      "sha256": "bac89929b0a2b1827bfe8c53114d0334bb17335e1af8227088d631ec4f6d5031"
+    }
+  ],
+  "count": 16
+}
