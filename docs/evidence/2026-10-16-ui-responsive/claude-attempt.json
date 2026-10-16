@@ -1,0 +1,41 @@
+{
+  "baseline": "4442a5e46df21faa50ff7db47999f40eaaa56df2",
+  "version": "2.1.280 (Claude Code)",
+  "command": [
+    "C:/Users/maverickchiu/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "2",
+    "--disable-slash-commands"
+  ],
+  "timeout_seconds": 55,
+  "duration_seconds": 60.6,
+  "exit_code": 124,
+  "status": "not a completed review",
+  "diff_sha256": "34d430a70ec40d97fe99564788bfebd8b3141c44b0ad44418c104c5e7192449c",
+  "diff_bytes": 61276,
+  "prompt_sha256": "49aee81092e2512813cbc8305c746f2dce9200f5b31989c42930df689d938096",
+  "prompt_bytes": 95601,
+  "scope": [
+    "packages/unone-ui/src/components.luau",
+    "crates/unone-engine/src/engine.d.luau",
+    "crates/unone-engine/src/api.rs",
+    "_Games/harbor-controls/scripts/main.luau"
+  ],
+  "context_files": [
+    "crates/unone-engine/tests/ui_responsive.rs",
+    "docs/ui-responsive.md"
+  ],
+  "stdout_bytes": 0,
+  "stderr_bytes": 0
+}

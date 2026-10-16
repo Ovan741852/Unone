@@ -2,16 +2,18 @@
 
 Official pure Luau UI constructors and controls, versioned with the portable Unone SDK.
 The package returns ordinary existing UI nodes and uses the official player.
-It supplies no colors, fonts, responsive rules, automatic layout or application
-rules. Shared control mechanics belong to the package: use `createSlider` for
-numeric values and pointer dragging.
+It supplies no default colors, fonts, breakpoints or application rules. Shared
+mechanics belong to the package: use `createSlider` for numeric values and
+pointer dragging, and `createResponsiveLayout` for explicit authored breakpoint
+selection and slot/row/column/grid geometry. Components never arrange children
+implicitly.
 The [full component guide](../../docs/ui-components.md), style contract and
 canonical strict types accompany the portable SDK's verified package inventory.
 
 Declare the exact installed version in `project.unone.json`:
 
 ```json
-{"runtime_packages":{"@unone/ui":"0.3.0"}}
+{"runtime_packages":{"@unone/ui":"0.4.0"}}
 ```
 
 The SDK includes the manifest and source at `packages/unone-ui/`. The matching
@@ -49,6 +51,7 @@ implementation; they are not documentation-only aliases.
 | `text(props)` | `UiTextNode` |
 | `button(props)` | `UiButtonNode` |
 | `createSlider(options)` | Persistent `UiSliderControl`; preferred interactive numeric slider |
+| `createResponsiveLayout<T>(options)` | Pure `UiResponsiveLayout<T>`; authored variants and named geometry |
 | `slider(props)` | Low-level compatible `UiSliderNode`; no numeric controller |
 | `combobox(props)` | `UiComboBoxNode` |
 | `panel(props)` | `UiPanelNode` |
@@ -79,6 +82,21 @@ The [complete lifecycle and typed example](../../docs/ui-components.md#interacti
 cover defaults, step/endpoints, vertical/reverse direction, hit padding,
 `setValue`/`cancel` and virtual-row purity. `view` produces a node; it does not
 advance input, choose artwork or perform layout.
+
+For responsive geometry search `"responsive layout"` / `"breakpoints"` /
+`"row column grid layout"` / `"自適應排版"`, then describe
+`ui.components.createResponsiveLayout`. Create one model from canonical
+`UiResponsiveLayoutOptions<T>` and retain it. In the pure View call
+`model.resolve(api.ui.getViewport(),bounds?)`; publish leaves using named
+`result.rect(id)` and scroll helpers using `result.viewport(id)`. The project
+declares semantic groups, strictly increasing aspect thresholds beginning at
+`0`, fixed/grow regions and typed `values` (for example font sizes). The package
+selects the highest inclusive threshold and resolves explicit rows, columns and
+equal-cell grids. Use `space="scroll"` for local content. Layout padding/gaps
+use per-axis rectangle units, independently of vertical style units. This does
+not transform nodes, measure text, infer a font scale or wrap children. Unknown
+fields and overflow are diagnostics. See the
+[complete typed responsive guide](../../docs/ui-responsive.md).
 
 The low-level `slider(props)` remains compatible with its `id`, optional `text`,
 `action`, `style` and placement fields. It does not accept numeric value props;
@@ -140,7 +158,8 @@ project's responsibility.
 
 Unknown constructor/theme/style fields and sparse children fail explicitly.
 Unsupported callback, nested `placement` and automatic `layout` props include
-actionable guidance toward the canonical action/placement contracts.
+actionable guidance toward the canonical action/placement contracts and explicit
+`createResponsiveLayout` helper.
 Copying rejects cycles, unsupported values, nesting above 64 levels and work
 above 131072 visited values. These are bounded authoring checks; `api.ui.setRoot`
 remains authoritative for numeric values, required fields, placement, IDs,

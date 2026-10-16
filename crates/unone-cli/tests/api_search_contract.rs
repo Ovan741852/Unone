@@ -313,7 +313,7 @@ fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
     }
     assert_eq!(
         cli_search(&project_root, "responsive")["value"]["matches"][0]["name"],
-        "ui.getViewport"
+        "ui.components.createResponsiveLayout"
     );
 }
 
@@ -358,7 +358,7 @@ fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
                 .unwrap()
                 .contains("docs/ui-components.md")
         );
-        assert!(entry["when_to_use"].as_str().unwrap().contains("0.3.0"));
+        assert!(entry["when_to_use"].as_str().unwrap().contains("0.4.0"));
         assert!(
             entry["returns"]
                 .as_str()
@@ -460,7 +460,7 @@ fn ui_control_and_action_queries_have_precise_cli_mcp_parity() {
             assert_eq!(result["value"]["matches"][0]["name"], expected, "{query}");
         }
     }
-    for name in ["input.getSliderInteraction", "ui.components.createSlider", "input.isDown", "input.wasPressed", "input.wasReleased", "ui.setRoot", "ui.components.text", "ui.components.button", "ui.components.slider", "ui.components.combobox", "ui.components.panel", "ui.components.image", "ui.components.component", "ui.components.screen", "ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid"] {
+    for name in ["input.getSliderInteraction", "ui.components.createSlider", "ui.components.createResponsiveLayout", "input.isDown", "input.wasPressed", "input.wasReleased", "ui.setRoot", "ui.components.text", "ui.components.button", "ui.components.slider", "ui.components.combobox", "ui.components.panel", "ui.components.image", "ui.components.component", "ui.components.screen", "ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid"] {
         let result = cli_search(&project_root, name);
         assert_eq!(result, mcp_search(&project_root, name), "{name}");
         assert_eq!(result["value"]["matches"].as_array().unwrap().len(), 1);
@@ -471,6 +471,32 @@ fn ui_control_and_action_queries_have_precise_cli_mcp_parity() {
         assert_eq!(result, mcp_search(&project_root, query), "{query}");
         assert!(result["value"]["matches"].as_array().unwrap().is_empty(), "{query}");
         assert_eq!(result["diagnostics"][0]["code"], "API_SEARCH_EMPTY");
+    }
+}
+
+#[test]
+fn responsive_layout_discovery_has_typed_cli_mcp_parity_and_intent_isolation() {
+    let project_root = unique_fixture_root("responsive UI discovery");
+    for query in ["responsive", "responsive layout", "adaptive UI layout", "breakpoints", "row column grid layout", "responsive layout types", "scroll responsive layout", "自適應排版", "自适应布局", "響應式斷點", "响应式断点", "如何使用自適應排版", "橫排", "直排", "網格", "ui.components.createResponsiveLayout"] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query), "{query}");
+        assert_eq!(result["diagnostics"], json!([]));
+        let entry = &result["value"]["matches"][0];
+        assert_eq!(entry["name"], "ui.components.createResponsiveLayout", "{query}");
+        assert_eq!(entry["parameters"][0]["type_name"], "UiResponsiveLayoutOptions<T>");
+        assert!(entry["when_to_use"].as_str().unwrap().contains("docs/ui-responsive.md"));
+        assert!(entry["returns"].as_str().unwrap().contains("UiResponsiveLayout<T>"));
+    }
+    for query in ["responsive layout unfindable", "particle responsive", "entity row", "virtual responsive layout", "自適應未知排版", "responsive click", "responsive wrap"] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query), "{query}");
+        assert!(result["value"]["matches"].as_array().unwrap().is_empty(), "{query}");
+        assert_eq!(result["diagnostics"][0]["code"], "API_SEARCH_EMPTY");
+    }
+    for (query, expected) in [("virtual grid", "ui.components.virtualGrid"), ("font size", "ui.setRoot"), ("viewport", "ui.getViewport")] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query));
+        assert_eq!(result["value"]["matches"][0]["name"], expected);
     }
 }
 

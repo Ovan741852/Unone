@@ -1,0 +1,43 @@
+{
+  "finding": "All six production screenshots were explicitly inspected with view_image. Desktop and medium preserve the two-column card hierarchy, typography, margins and action buttons; portrait preserves readable single-column cards and controls. Gesture screenshots show 23 percent, Studio and Press 1 / Release 1; live-reflow screenshots preserve 36 percent, Balanced and the selected Morning / Calm preset. No error overlay or unintended clipping observed. Partly visible virtual rows at viewport boundaries are intentionally clipped.",
+  "limits": "Windows installed-font rendering and browser mouse input only; no claim of hardware touch testing, packaged glyph coverage or native appearance.",
+  "reviewed": [
+    {
+      "sha256": "e6273412c72f59e416f114d7a3ee5833d961364a6842b51d84ccf4c1a4eb7882",
+      "reviewed_with": "view_image",
+      "bytes": 63146,
+      "file": "after-1440x900.png"
+    },
+    {
+      "sha256": "be6d9303a18e6c056f0d3f0882890a3973561910aafb72a51a18b9f23e24acbf",
+      "reviewed_with": "view_image",
+      "bytes": 59295,
+      "file": "after-1020x884.png"
+    },
+    {
+      "sha256": "ece3afacd8edaf5b8c2bcd1c71539af49ca82d8cd5e7e57f70ceba5d2022324f",
+      "reviewed_with": "view_image",
+      "bytes": 38812,
+      "file": "after-390x844.png"
+    },
+    {
+      "sha256": "294421dd97e34c4dbb372f9d47aaacfa29ad88dbb92f92c64fbd7b3c736088ff",
+      "reviewed_with": "view_image",
+      "bytes": 63726,
+      "file": "responsive-1440x900.png"
+    },
+    {
+      "sha256": "cbab30623189d4b2afd2a7da48cda587012c4f88c0317a56caba45e2ca77eb82",
+      "reviewed_with": "view_image",
+      "bytes": 59734,
+      "file": "responsive-1020x884.png"
+    },
+    {
+      "sha256": "c19c3feec942cc1c447c210d96a5da653f7fcf93846bd7e2f03d70bcd08dd830",
+      "reviewed_with": "view_image",
+      "bytes": 39428,
+      "file": "responsive-390x844.png"
+    }
+  ],
+  "status": "passed"
+}

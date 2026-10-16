@@ -1,0 +1,6 @@
+{
+  "pass": true,
+  "assertions": 47,
+  "resizes": 4,
+  "exportUnchanged": true
+}

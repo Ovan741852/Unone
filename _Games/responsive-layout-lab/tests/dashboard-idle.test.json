@@ -1,0 +1,1 @@
+{"name":"dashboard-idle","frames":3,"input":{},"assertions":[{"observation":{"key":"refresh_count","equals":0}},{"observation":{"key":"ui_variant","equals":"wide"}},{"observation":{"key":"ui_columns","equals":4}}]}

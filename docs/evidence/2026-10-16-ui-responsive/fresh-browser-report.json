@@ -1,0 +1,2071 @@
+{
+  "url": "http://127.0.0.1:8345/",
+  "exportRoot": "D:/TSProject/Voidwake/engine/_Games/responsive-layout-lab/dist/player",
+  "phase": "fresh-sdk-only-generic-responsive-example",
+  "observer": "Only production WASM observation ptr/len and memory reads. Physical mouse events and browser viewport changes; no input ABI writes, source/export changes or private layout helper calls.",
+  "assertions": [
+    {
+      "pass": true,
+      "message": "Fresh production example boots with zero refreshes"
+    },
+    {
+      "pass": true,
+      "message": "Production Core confirms declared official UI 0.4.0"
+    },
+    {
+      "pass": true,
+      "message": "Official three-webgl and a nonempty actual canvas render the example"
+    },
+    {
+      "pass": true,
+      "message": "wide 1440×900: correct variant, aspect and declared columns"
+    },
+    {
+      "pass": true,
+      "message": "wide: live resize preserves the refresh counter"
+    },
+    {
+      "pass": true,
+      "message": "wide: all four grid cells have positive finite bounds inside the stage and cards region"
+    },
+    {
+      "pass": true,
+      "message": "wide: grid cells do not overlap"
+    },
+    {
+      "pass": true,
+      "message": "wide: equal cells use the declared row-major columns and gaps"
+    },
+    {
+      "pass": true,
+      "message": "wide: actual published component bounds match all four shared grid regions"
+    },
+    {
+      "pass": true,
+      "message": "wide: each real title, metric and description occupies a positive contained card region"
+    },
+    {
+      "pass": true,
+      "message": "wide: toolbar keeps the fixed refresh width and gives the remainder to activity"
+    },
+    {
+      "pass": true,
+      "message": "wide: actual button and activity use those shared toolbar regions"
+    },
+    {
+      "pass": true,
+      "message": "wide: a physical held press refreshes exactly once"
+    },
+    {
+      "pass": true,
+      "message": "wide: release outside adds no repeat and the visible activity text reflects state"
+    },
+    {
+      "pass": true,
+      "message": "medium 900×900: correct variant, aspect and declared columns"
+    },
+    {
+      "pass": true,
+      "message": "medium: live resize preserves the refresh counter"
+    },
+    {
+      "pass": true,
+      "message": "medium: all four grid cells have positive finite bounds inside the stage and cards region"
+    },
+    {
+      "pass": true,
+      "message": "medium: grid cells do not overlap"
+    },
+    {
+      "pass": true,
+      "message": "medium: equal cells use the declared row-major columns and gaps"
+    },
+    {
+      "pass": true,
+      "message": "medium: actual published component bounds match all four shared grid regions"
+    },
+    {
+      "pass": true,
+      "message": "medium: each real title, metric and description occupies a positive contained card region"
+    },
+    {
+      "pass": true,
+      "message": "medium: toolbar keeps the fixed refresh width and gives the remainder to activity"
+    },
+    {
+      "pass": true,
+      "message": "medium: actual button and activity use those shared toolbar regions"
+    },
+    {
+      "pass": true,
+      "message": "medium: a physical held press refreshes exactly once"
+    },
+    {
+      "pass": true,
+      "message": "medium: release outside adds no repeat and the visible activity text reflects state"
+    },
+    {
+      "pass": true,
+      "message": "narrow 390×844: correct variant, aspect and declared columns"
+    },
+    {
+      "pass": true,
+      "message": "narrow: live resize preserves the refresh counter"
+    },
+    {
+      "pass": true,
+      "message": "narrow: all four grid cells have positive finite bounds inside the stage and cards region"
+    },
+    {
+      "pass": true,
+      "message": "narrow: grid cells do not overlap"
+    },
+    {
+      "pass": true,
+      "message": "narrow: equal cells use the declared row-major columns and gaps"
+    },
+    {
+      "pass": true,
+      "message": "narrow: actual published component bounds match all four shared grid regions"
+    },
+    {
+      "pass": true,
+      "message": "narrow: each real title, metric and description occupies a positive contained card region"
+    },
+    {
+      "pass": true,
+      "message": "narrow: toolbar keeps the fixed refresh width and gives the remainder to activity"
+    },
+    {
+      "pass": true,
+      "message": "narrow: actual button and activity use those shared toolbar regions"
+    },
+    {
+      "pass": true,
+      "message": "narrow: a physical held press refreshes exactly once"
+    },
+    {
+      "pass": true,
+      "message": "narrow: release outside adds no repeat and the visible activity text reflects state"
+    },
+    {
+      "pass": true,
+      "message": "wide 1440×900: correct variant, aspect and declared columns"
+    },
+    {
+      "pass": true,
+      "message": "wide: live resize preserves the refresh counter"
+    },
+    {
+      "pass": true,
+      "message": "wide: all four grid cells have positive finite bounds inside the stage and cards region"
+    },
+    {
+      "pass": true,
+      "message": "wide: grid cells do not overlap"
+    },
+    {
+      "pass": true,
+      "message": "wide: equal cells use the declared row-major columns and gaps"
+    },
+    {
+      "pass": true,
+      "message": "wide: actual published component bounds match all four shared grid regions"
+    },
+    {
+      "pass": true,
+      "message": "wide: each real title, metric and description occupies a positive contained card region"
+    },
+    {
+      "pass": true,
+      "message": "wide: toolbar keeps the fixed refresh width and gives the remainder to activity"
+    },
+    {
+      "pass": true,
+      "message": "wide: actual button and activity use those shared toolbar regions"
+    },
+    {
+      "pass": true,
+      "message": "All actual JavaScript modules and WASM have correct MIME types"
+    },
+    {
+      "pass": true,
+      "message": "Live example has no HTTP, request, page, console or player errors"
+    }
+  ],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:8345/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/player/main.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/renderer-selection.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/three.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/canvas-ui.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-scroll.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/host-input.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/async-scheduler.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/presentation-interpolation.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/asset-encoding.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/shader-materials.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/mesh.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-backend.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/webgpu-snapshot.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/instances3d.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-geometry.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/bloom.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-style.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-core.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/instance-transfer.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-contract.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-binary.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/load-project.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-pool.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/project.json",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/presentation.json",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/assets.json",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone-player.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone_player.wasm",
+      "status": 200,
+      "contentType": "application/wasm"
+    },
+    {
+      "url": "http://127.0.0.1:8345/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/three.player.min.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    }
+  ],
+  "console": [
+    {
+      "type": "info",
+      "text": "UNONE_PLAYER_READY {\"runtime_ready_ms\":1654.1000000014901,\"renderer_mode\":\"official\",\"renderer\":\"three-webgl\",\"renderer_module\":null,\"first_presented_ms\":1904.5,\"backend\":\"main\",\"resources\":[{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/player/main.js\",\"transfer_bytes\":10778,\"encoded_bytes\":10478,\"duration_ms\":561.7000000029802},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/three.js\",\"transfer_bytes\":15313,\"encoded_bytes\":15013,\"duration_ms\":710.7999999970198},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/renderer-selection.mjs\",\"transfer_bytes\":2938,\"encoded_bytes\":2638,\"duration_ms\":710.6000000014901},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/canvas-ui.mjs\",\"transfer_bytes\":12953,\"encoded_bytes\":12653,\"duration_ms\":734.4000000022352},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-scroll.mjs\",\"transfer_bytes\":18406,\"encoded_bytes\":18106,\"duration_ms\":735.8000000007451},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/host-input.js\",\"transfer_bytes\":6157,\"encoded_bytes\":5857,\"duration_ms\":735.8000000007451},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/async-scheduler.mjs\",\"transfer_bytes\":2202,\"encoded_bytes\":1902,\"duration_ms\":736.7000000029802},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/presentation-interpolation.mjs\",\"transfer_bytes\":4000,\"encoded_bytes\":3700,\"duration_ms\":774.2000000029802},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-backend.mjs\",\"transfer_bytes\":2806,\"encoded_bytes\":2506,\"duration_ms\":779.9000000022352},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/asset-encoding.js\",\"transfer_bytes\":1329,\"encoded_bytes\":1029,\"duration_ms\":776.6999999992549},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/webgpu-snapshot.js\",\"transfer_bytes\":20374,\"encoded_bytes\":20074,\"duration_ms\":779.8999999985099},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/shader-materials.js\",\"transfer_bytes\":5098,\"encoded_bytes\":4798,\"duration_ms\":63.899999998509884},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/mesh.js\",\"transfer_bytes\":1648,\"encoded_bytes\":1348,\"duration_ms\":65.20000000298023},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/instances3d.js\",\"transfer_bytes\":5764,\"encoded_bytes\":5464,\"duration_ms\":118.60000000149012},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/bloom.js\",\"transfer_bytes\":7584,\"encoded_bytes\":7284,\"duration_ms\":118.80000000074506},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-geometry.mjs\",\"transfer_bytes\":4703,\"encoded_bytes\":4403,\"duration_ms\":96},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-style.mjs\",\"transfer_bytes\":10227,\"encoded_bytes\":9927,\"duration_ms\":99.30000000074506},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-core.mjs\",\"transfer_bytes\":5149,\"encoded_bytes\":4849,\"duration_ms\":55.600000001490116},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/instance-transfer.mjs\",\"transfer_bytes\":3447,\"encoded_bytes\":3147,\"duration_ms\":55.5},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-contract.mjs\",\"transfer_bytes\":615,\"encoded_bytes\":315,\"duration_ms\":67.39999999850988},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-binary.mjs\",\"transfer_bytes\":6707,\"encoded_bytes\":6407,\"duration_ms\":63.19999999925494},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-pool.mjs\",\"transfer_bytes\":7087,\"encoded_bytes\":6787,\"duration_ms\":74.80000000074506},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/load-project.js\",\"transfer_bytes\":1520,\"encoded_bytes\":1220,\"duration_ms\":74.60000000149012},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/project.json\",\"transfer_bytes\":33462,\"encoded_bytes\":33162,\"duration_ms\":42.30000000074506},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/assets.json\",\"transfer_bytes\":325,\"encoded_bytes\":25,\"duration_ms\":41.899999998509884},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/presentation.json\",\"transfer_bytes\":608,\"encoded_bytes\":308,\"duration_ms\":41.69999999925494},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone-player.js\",\"transfer_bytes\":88584,\"encoded_bytes\":88284,\"duration_ms\":45.5},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone_player.wasm\",\"transfer_bytes\":1790721,\"encoded_bytes\":1790421,\"duration_ms\":53.600000001490116},{\"path\":\"/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/three.player.min.js\",\"transfer_bytes\":492537,\"encoded_bytes\":492237,\"duration_ms\":52.399999998509884}]}"
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [],
+  "runs": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "variant": "wide",
+      "expectedCountBefore": 0,
+      "before": {
+        "refresh_count": 0,
+        "ui_aspect": 1.6,
+        "ui_columns": 4,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 73,
+            "x": 23,
+            "y": 75
+          },
+          "automations": {
+            "height": 58.5,
+            "width": 21.65000000000001,
+            "x": 74.35,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 58.5,
+            "width": 21.649999999999995,
+            "x": 27.45,
+            "y": 9.5
+          },
+          "refresh": {
+            "height": 7,
+            "width": 17,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 4,
+            "y": 9.5
+          }
+        },
+        "ui_variant": "wide"
+      },
+      "held": {
+        "refresh_count": 1,
+        "ui_aspect": 1.6,
+        "ui_columns": 4,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 73,
+            "x": 23,
+            "y": 75
+          },
+          "automations": {
+            "height": 58.5,
+            "width": 21.65000000000001,
+            "x": 74.35,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 58.5,
+            "width": 21.649999999999995,
+            "x": 27.45,
+            "y": 9.5
+          },
+          "refresh": {
+            "height": 7,
+            "width": 17,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 4,
+            "y": 9.5
+          }
+        },
+        "ui_variant": "wide"
+      },
+      "after": {
+        "refresh_count": 1,
+        "ui_aspect": 1.6,
+        "ui_columns": 4,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 73,
+            "x": 23,
+            "y": 75
+          },
+          "automations": {
+            "height": 58.5,
+            "width": 21.65000000000001,
+            "x": 74.35,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 58.5,
+            "width": 21.649999999999995,
+            "x": 27.45,
+            "y": 9.5
+          },
+          "refresh": {
+            "height": 7,
+            "width": 17,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 4,
+            "y": 9.5
+          }
+        },
+        "ui_variant": "wide"
+      }
+    },
+    {
+      "viewport": {
+        "width": 900,
+        "height": 900
+      },
+      "variant": "medium",
+      "expectedCountBefore": 1,
+      "before": {
+        "refresh_count": 1,
+        "ui_aspect": 1,
+        "ui_columns": 2,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 66,
+            "x": 30,
+            "y": 75
+          },
+          "automations": {
+            "height": 28.34999999999999,
+            "width": 45.1,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 28.35,
+            "width": 45.1,
+            "x": 50.9,
+            "y": 39.65
+          },
+          "refresh": {
+            "height": 7,
+            "width": 24,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 28.34999999999999,
+            "width": 45.1,
+            "x": 4,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 28.35,
+            "width": 45.1,
+            "x": 4,
+            "y": 39.65
+          }
+        },
+        "ui_variant": "medium"
+      },
+      "held": {
+        "refresh_count": 2,
+        "ui_aspect": 1,
+        "ui_columns": 2,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 66,
+            "x": 30,
+            "y": 75
+          },
+          "automations": {
+            "height": 28.34999999999999,
+            "width": 45.1,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 28.35,
+            "width": 45.1,
+            "x": 50.9,
+            "y": 39.65
+          },
+          "refresh": {
+            "height": 7,
+            "width": 24,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 28.34999999999999,
+            "width": 45.1,
+            "x": 4,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 28.35,
+            "width": 45.1,
+            "x": 4,
+            "y": 39.65
+          }
+        },
+        "ui_variant": "medium"
+      },
+      "after": {
+        "refresh_count": 2,
+        "ui_aspect": 1,
+        "ui_columns": 2,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 66,
+            "x": 30,
+            "y": 75
+          },
+          "automations": {
+            "height": 28.34999999999999,
+            "width": 45.1,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 28.35,
+            "width": 45.1,
+            "x": 50.9,
+            "y": 39.65
+          },
+          "refresh": {
+            "height": 7,
+            "width": 24,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 28.34999999999999,
+            "width": 45.1,
+            "x": 4,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 28.35,
+            "width": 45.1,
+            "x": 4,
+            "y": 39.65
+          }
+        },
+        "ui_variant": "medium"
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "variant": "narrow",
+      "expectedCountBefore": 2,
+      "before": {
+        "refresh_count": 2,
+        "ui_aspect": 0.462085308056872,
+        "ui_columns": 1,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 52,
+            "x": 44,
+            "y": 75
+          },
+          "automations": {
+            "height": 13.275000000000006,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 13.275,
+            "width": 92,
+            "x": 4,
+            "y": 39.65
+          },
+          "refresh": {
+            "height": 7,
+            "width": 38,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 13.275000000000006,
+            "width": 92,
+            "x": 4,
+            "y": 24.57499999999999
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 13.275,
+            "width": 92,
+            "x": 4,
+            "y": 54.725
+          }
+        },
+        "ui_variant": "narrow"
+      },
+      "held": {
+        "refresh_count": 3,
+        "ui_aspect": 0.462085308056872,
+        "ui_columns": 1,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 52,
+            "x": 44,
+            "y": 75
+          },
+          "automations": {
+            "height": 13.275000000000006,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 13.275,
+            "width": 92,
+            "x": 4,
+            "y": 39.65
+          },
+          "refresh": {
+            "height": 7,
+            "width": 38,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 13.275000000000006,
+            "width": 92,
+            "x": 4,
+            "y": 24.57499999999999
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 13.275,
+            "width": 92,
+            "x": 4,
+            "y": 54.725
+          }
+        },
+        "ui_variant": "narrow"
+      },
+      "after": {
+        "refresh_count": 3,
+        "ui_aspect": 0.462085308056872,
+        "ui_columns": 1,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 52,
+            "x": 44,
+            "y": 75
+          },
+          "automations": {
+            "height": 13.275000000000006,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 13.275,
+            "width": 92,
+            "x": 4,
+            "y": 39.65
+          },
+          "refresh": {
+            "height": 7,
+            "width": 38,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 13.275000000000006,
+            "width": 92,
+            "x": 4,
+            "y": 24.57499999999999
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 13.275,
+            "width": 92,
+            "x": 4,
+            "y": 54.725
+          }
+        },
+        "ui_variant": "narrow"
+      }
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "variant": "wide",
+      "expectedCountBefore": 3,
+      "before": {
+        "refresh_count": 3,
+        "ui_aspect": 1.6,
+        "ui_columns": 4,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 73,
+            "x": 23,
+            "y": 75
+          },
+          "automations": {
+            "height": 58.5,
+            "width": 21.65000000000001,
+            "x": 74.35,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 58.5,
+            "width": 21.649999999999995,
+            "x": 27.45,
+            "y": 9.5
+          },
+          "refresh": {
+            "height": 7,
+            "width": 17,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 4,
+            "y": 9.5
+          }
+        },
+        "ui_variant": "wide"
+      },
+      "after": {
+        "refresh_count": 3,
+        "ui_aspect": 1.6,
+        "ui_columns": 4,
+        "ui_package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "ui_regions": {
+          "activity": {
+            "height": 7,
+            "width": 73,
+            "x": 23,
+            "y": 75
+          },
+          "automations": {
+            "height": 58.5,
+            "width": 21.65000000000001,
+            "x": 74.35,
+            "y": 9.5
+          },
+          "cards": {
+            "height": 58.5,
+            "width": 92,
+            "x": 4,
+            "y": 9.5
+          },
+          "inbox": {
+            "height": 58.5,
+            "width": 21.649999999999995,
+            "x": 27.45,
+            "y": 9.5
+          },
+          "refresh": {
+            "height": 7,
+            "width": 17,
+            "x": 4,
+            "y": 75
+          },
+          "reports": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 50.9,
+            "y": 9.5
+          },
+          "toolbar": {
+            "height": 7,
+            "width": 92,
+            "x": 4,
+            "y": 75
+          },
+          "workspaces": {
+            "height": 58.5,
+            "width": 21.65,
+            "x": 4,
+            "y": 9.5
+          }
+        },
+        "ui_variant": "wide"
+      }
+    }
+  ],
+  "screenshots": [
+    "fresh-1440x900.png",
+    "fresh-900x900.png",
+    "fresh-390x844.png"
+  ],
+  "exportBefore": [
+    {
+      "path": "content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "content/presentation.json",
+      "bytes": 308,
+      "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94"
+    },
+    {
+      "path": "content/project.json",
+      "bytes": 33162,
+      "sha256": "2e7316e879e40bfd297ccd5460203b3220d747e3238e521b8369a745a580b7f6"
+    },
+    {
+      "path": "export.json",
+      "bytes": 14967,
+      "sha256": "79aef7df6b6c76153f867e7a5e264db0e28da01d782003f230c8b67e49d1b651"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1172,
+      "sha256": "818a48ffab6ea507ce765fa5856bc5b0114aad49dba89e481ce35aa42deb7976"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/presentation.json",
+      "bytes": 308,
+      "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/project.json",
+      "bytes": 33162,
+      "sha256": "2e7316e879e40bfd297ccd5460203b3220d747e3238e521b8369a745a580b7f6"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    }
+  ],
+  "initial": {
+    "project": "Layout Lab",
+    "observations": {
+      "refresh_count": 0,
+      "ui_aspect": 1.6,
+      "ui_columns": 4,
+      "ui_package": {
+        "declared": true,
+        "name": "@unone/ui",
+        "version": "0.4.0"
+      },
+      "ui_regions": {
+        "activity": {
+          "height": 7,
+          "width": 73,
+          "x": 23,
+          "y": 75
+        },
+        "automations": {
+          "height": 58.5,
+          "width": 21.65000000000001,
+          "x": 74.35,
+          "y": 9.5
+        },
+        "cards": {
+          "height": 58.5,
+          "width": 92,
+          "x": 4,
+          "y": 9.5
+        },
+        "inbox": {
+          "height": 58.5,
+          "width": 21.649999999999995,
+          "x": 27.45,
+          "y": 9.5
+        },
+        "refresh": {
+          "height": 7,
+          "width": 17,
+          "x": 4,
+          "y": 75
+        },
+        "reports": {
+          "height": 58.5,
+          "width": 21.65,
+          "x": 50.9,
+          "y": 9.5
+        },
+        "toolbar": {
+          "height": 7,
+          "width": 92,
+          "x": 4,
+          "y": 75
+        },
+        "workspaces": {
+          "height": 58.5,
+          "width": 21.65,
+          "x": 4,
+          "y": 9.5
+        }
+      },
+      "ui_variant": "wide"
+    }
+  },
+  "boot": {
+    "renderer": "official",
+    "metrics": {
+      "runtime_ready_ms": 1654.1000000014901,
+      "renderer_mode": "official",
+      "renderer": "three-webgl",
+      "renderer_module": null,
+      "first_presented_ms": 1904.5,
+      "backend": "main",
+      "resources": [
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/player/main.js",
+          "transfer_bytes": 10778,
+          "encoded_bytes": 10478,
+          "duration_ms": 561.7000000029802
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/three.js",
+          "transfer_bytes": 15313,
+          "encoded_bytes": 15013,
+          "duration_ms": 710.7999999970198
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/renderer-selection.mjs",
+          "transfer_bytes": 2938,
+          "encoded_bytes": 2638,
+          "duration_ms": 710.6000000014901
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/canvas-ui.mjs",
+          "transfer_bytes": 12953,
+          "encoded_bytes": 12653,
+          "duration_ms": 734.4000000022352
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-scroll.mjs",
+          "transfer_bytes": 18406,
+          "encoded_bytes": 18106,
+          "duration_ms": 735.8000000007451
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/host-input.js",
+          "transfer_bytes": 6157,
+          "encoded_bytes": 5857,
+          "duration_ms": 735.8000000007451
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/async-scheduler.mjs",
+          "transfer_bytes": 2202,
+          "encoded_bytes": 1902,
+          "duration_ms": 736.7000000029802
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/presentation-interpolation.mjs",
+          "transfer_bytes": 4000,
+          "encoded_bytes": 3700,
+          "duration_ms": 774.2000000029802
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-backend.mjs",
+          "transfer_bytes": 2806,
+          "encoded_bytes": 2506,
+          "duration_ms": 779.9000000022352
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/asset-encoding.js",
+          "transfer_bytes": 1329,
+          "encoded_bytes": 1029,
+          "duration_ms": 776.6999999992549
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/webgpu-snapshot.js",
+          "transfer_bytes": 20374,
+          "encoded_bytes": 20074,
+          "duration_ms": 779.8999999985099
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/shader-materials.js",
+          "transfer_bytes": 5098,
+          "encoded_bytes": 4798,
+          "duration_ms": 63.899999998509884
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/mesh.js",
+          "transfer_bytes": 1648,
+          "encoded_bytes": 1348,
+          "duration_ms": 65.20000000298023
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/instances3d.js",
+          "transfer_bytes": 5764,
+          "encoded_bytes": 5464,
+          "duration_ms": 118.60000000149012
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/bloom.js",
+          "transfer_bytes": 7584,
+          "encoded_bytes": 7284,
+          "duration_ms": 118.80000000074506
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-geometry.mjs",
+          "transfer_bytes": 4703,
+          "encoded_bytes": 4403,
+          "duration_ms": 96
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-style.mjs",
+          "transfer_bytes": 10227,
+          "encoded_bytes": 9927,
+          "duration_ms": 99.30000000074506
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-core.mjs",
+          "transfer_bytes": 5149,
+          "encoded_bytes": 4849,
+          "duration_ms": 55.600000001490116
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/instance-transfer.mjs",
+          "transfer_bytes": 3447,
+          "encoded_bytes": 3147,
+          "duration_ms": 55.5
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-contract.mjs",
+          "transfer_bytes": 615,
+          "encoded_bytes": 315,
+          "duration_ms": 67.39999999850988
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-binary.mjs",
+          "transfer_bytes": 6707,
+          "encoded_bytes": 6407,
+          "duration_ms": 63.19999999925494
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-pool.mjs",
+          "transfer_bytes": 7087,
+          "encoded_bytes": 6787,
+          "duration_ms": 74.80000000074506
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/load-project.js",
+          "transfer_bytes": 1520,
+          "encoded_bytes": 1220,
+          "duration_ms": 74.60000000149012
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/project.json",
+          "transfer_bytes": 33462,
+          "encoded_bytes": 33162,
+          "duration_ms": 42.30000000074506
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/assets.json",
+          "transfer_bytes": 325,
+          "encoded_bytes": 25,
+          "duration_ms": 41.899999998509884
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/presentation.json",
+          "transfer_bytes": 608,
+          "encoded_bytes": 308,
+          "duration_ms": 41.69999999925494
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone-player.js",
+          "transfer_bytes": 88584,
+          "encoded_bytes": 88284,
+          "duration_ms": 45.5
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone_player.wasm",
+          "transfer_bytes": 1790721,
+          "encoded_bytes": 1790421,
+          "duration_ms": 53.600000001490116
+        },
+        {
+          "path": "/releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/three.player.min.js",
+          "transfer_bytes": 492537,
+          "encoded_bytes": 492237,
+          "duration_ms": 52.399999998509884
+        }
+      ]
+    },
+    "canvases": [
+      {
+        "width": 1440,
+        "height": 900,
+        "css": {
+          "width": 1440,
+          "height": 900
+        }
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "css": {
+          "width": 1440,
+          "height": 900
+        }
+      }
+    ]
+  },
+  "mime": {
+    "javascript": 25,
+    "wasm": 1,
+    "bad": []
+  },
+  "finalStatus": {
+    "status": "",
+    "fatal": null,
+    "renderer": "official"
+  },
+  "pass": true,
+  "exportAfter": [
+    {
+      "path": "content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "content/presentation.json",
+      "bytes": 308,
+      "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94"
+    },
+    {
+      "path": "content/project.json",
+      "bytes": 33162,
+      "sha256": "2e7316e879e40bfd297ccd5460203b3220d747e3238e521b8369a745a580b7f6"
+    },
+    {
+      "path": "export.json",
+      "bytes": 14967,
+      "sha256": "79aef7df6b6c76153f867e7a5e264db0e28da01d782003f230c8b67e49d1b651"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1172,
+      "sha256": "818a48ffab6ea507ce765fa5856bc5b0114aad49dba89e481ce35aa42deb7976"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/presentation.json",
+      "bytes": 308,
+      "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/project.json",
+      "bytes": 33162,
+      "sha256": "2e7316e879e40bfd297ccd5460203b3220d747e3238e521b8369a745a580b7f6"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    }
+  ],
+  "exportUnchanged": true
+}

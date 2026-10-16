@@ -50,6 +50,12 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: explicit shared responsive UI regions, authored aspect variants,
+  strict type ergonomics, numerical bounds and fresh SDK-only authoring. Release
+  checks, final SDK inventory and 244 actual-player assertions passed; the bounded
+  Claude attempt timed out without output and remains incomplete:
+  [record](reviews/2026-10-16-responsive-ui-layout.md).
+
 - 2026-10-16: official persistent slider models, normalized host input and
   optional Web scroll inertia. Independent source review corrected boundary,
   projection, capture metadata and coast lifecycle issues; release, native,

@@ -1,0 +1,127 @@
+{
+  "query": "responsive layout",
+  "matches": [
+    {
+      "name": "ui.components.createResponsiveLayout",
+      "category": "ui",
+      "purpose": "Create the official reusable responsive layout model: select an authored aspect breakpoint and resolve explicit slot/row/column/grid regions without changing UI nodes.",
+      "when_to_use": "Default for responsive layout, adaptive layout, breakpoints, row/column/grid, 自適應排版 and 響應式斷點. Available on api.ui.components and the themed kit. Declare @unone/ui 0.4.0; use canonical UiResponsiveLayoutOptions<T>, UiResponsiveLayout<T>, UiLayoutNode and UiViewport from game api typings. Read docs/ui-responsive.md for a complete typed lifecycle and coordinate examples.",
+      "when_not_to_use": "No implicit component layout, text measurement, wrapping, CSS, inferred breakpoints, node transformation, renderer replacement or application rules. Project Luau chooses semantic groups, thresholds, content and styles; this shared model owns selection and geometry arithmetic.",
+      "parameters": [
+        {
+          "name": "options",
+          "type_name": "UiResponsiveLayoutOptions<T>",
+          "meaning": "space='stage' (default) or 'scroll'; dense nonempty variants={name,minAspect,layout,values:T}. First minAspect=0, then strictly ascending finite thresholds; unique nonblank names. UiLayoutNode is {id,kind='slot'|'row'|'column'|'grid',size?,grow?,padding?,gap?,columns?,children?}. Explicit positive size fixes a row/column child's main-axis extent; otherwise positive grow defaults to 1. No size+grow, root sizing or grid-child sizing. Grid requires columns integer 1..256 and equal cells. Slot rejects container-only fields. IDs are unique within each variant."
+        }
+      ],
+      "returns": "UiResponsiveLayout<T>; resolve({aspect:number},bounds?:UiViewport)->{variant:string,values:T,rect(id)->UiRect,viewport(id)->UiViewport}. Bounds default {left=0,top=0,width=100,height=100}.",
+      "side_effects": [
+        "Create a pure Luau model with copied options; return defensive geometry/value copies"
+      ],
+      "frame_semantics": "Create once, retain it, and resolve in a pure View or virtual renderItem. Resolve selects the highest minAspect <= viewport.aspect, inclusively. Row proceeds left-to-right; column and grid rows proceed top-to-bottom. Container regions are outer bounds; padding affects only children. Lengths use per-axis rectangle units, independently of vertical UiStyle units. Stage rect is y-up and viewport is top-left/y-down; scroll rect and viewport are local top-left/y-down. Stage bounds fit 0..100; scroll bounds may extend beyond 100. No simulation tick, RNG, publication, node cloning or virtual-registry mutation.",
+      "common_errors": [
+        "Unknown fields, non-finite numbers, unordered/missing fallback thresholds, duplicate names/IDs, invalid node combinations, non-positive cells and overflowing fixed sizes/gaps/padding fail explicitly. No silent clipping or fallback to a different variant. Call result.viewport(id) for scroll helper viewport; result.rect(id) for leaves. Font size is a project-authored values field, not calculated from geometry. Do not duplicate breakpoint tests and rectangle arithmetic per project or add layout props to component constructors."
+      ],
+      "example": "local layout = api.ui.components.createResponsiveLayout({variants={{name=\"base\",minAspect=0,layout={id=\"root\",kind=\"row\",gap=2,children={{id=\"main\",kind=\"slot\",grow=2},{id=\"aside\",kind=\"slot\"}}},values={fontSize=2}}}}); local resolved = layout.resolve(api.ui.getViewport()); local title = api.ui.components.text({id=\"title\",text=\"Settings\",rect=resolved.rect(\"main\"),style={font_size=resolved.values.fontSize}})",
+      "related_apis": [
+        "ui.components.create",
+        "ui.getViewport",
+        "ui.components.scrollView",
+        "ui.components.virtualGrid",
+        "ui.setRoot"
+      ]
+    },
+    {
+      "name": "ui.components.create",
+      "category": "ui",
+      "purpose": "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
+      "when_to_use": "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.4.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createResponsiveLayout/createSlider/text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control and createResponsiveLayout for opt-in responsive geometry. Direct module constructors use no theme defaults.",
+      "when_not_to_use": "No hardcoded theme, implicit layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau; opt-in createResponsiveLayout handles shared breakpoint selection and row/column/grid arithmetic from authored definitions. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
+      "parameters": [
+        {
+          "name": "theme",
+          "type_name": "UiComponentsTheme?",
+          "meaning": "Optional per-kind UiStyle defaults: text, button, panel, image, slider, combobox only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order. screen takes id/node/children and optional budget; scroll helpers retain their existing options and local top-left/y-down content contract."
+        }
+      ],
+      "returns": "UiComponentKit; createResponsiveLayout<T> -> UiResponsiveLayout<T> (create once, resolve in View); createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
+      "side_effects": [
+        "Construct pure Luau tables; does not publish UI or mutate props/theme"
+      ],
+      "frame_semantics": "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
+      "common_errors": [
+        "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.4.0\"} to project.unone.json; info() remains available for discovery.",
+        "Both api.ui.components.button and kit.button exist. api.ui.component and onClick do not exist; publish with ui.setRoot and read semantic action edges with input.wasPressed.",
+        "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
+        "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content."
+      ],
+      "example": "local ui = api.ui.components.create({button={font_size=2,background={0.1,0.2,0.3,1}}}); local button = ui.button({id=ui.id(\"menu\",\"apply\"),text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}}); api.ui.setRoot({kind=\"screen\",id=\"settings\",node=\"settings\",children={button}})",
+      "related_apis": [
+        "ui.components.info",
+        "ui.components.createResponsiveLayout",
+        "ui.components.composeStyle",
+        "ui.components.id",
+        "ui.setRoot",
+        "ui.getViewport"
+      ]
+    },
+    {
+      "name": "ui.getViewport",
+      "category": "ui",
+      "purpose": "Read the host-reported viewport aspect ratio; feed it to ui.components.createResponsiveLayout for shared authored responsive composition.",
+      "when_to_use": "Advanced environment observation, or input to layout.resolve(api.ui.getViewport()). Start responsive authoring at ui.components.createResponsiveLayout and docs/ui-responsive.md instead of copying breakpoint conditionals. The host reports the actual stage aspect; headless callers may set it through the runtime viewport boundary.",
+      "when_not_to_use": "This environment getter does not itself choose rectangles, reflow content or report device pixels. Project-authored responsive models own layout policy; do not use font raster metrics as simulation input.",
+      "parameters": [],
+      "returns": "{aspect:number}; width divided by height.",
+      "side_effects": [
+        "Read-only host viewport observation"
+      ],
+      "frame_semantics": "Reads the current runtime viewport aspect without advancing a frame or mutating the UI tree.",
+      "common_errors": [],
+      "example": "local resolved = responsiveLayout.resolve(api.ui.getViewport()); api.observation.set(\"ui_variant\", resolved.variant)",
+      "related_apis": [
+        "ui.components.createResponsiveLayout",
+        "ui.setRoot",
+        "ui.inspect"
+      ]
+    },
+    {
+      "name": "ui.setRoot",
+      "category": "ui",
+      "purpose": "Publish a declarative UI tree with reusable typography/box styles and explicit scoped card backgrounds. Image/panel background_for metadata declares screen or ancestor-component background intent for overlap diagnostics. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
+      "when_to_use": "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Start reusable controls with the official @unone/ui package: ui.components.info then ui.components.create returns a typed kit. See docs/ui-components.md. Custom Luau factories may also return the existing component tree; component is a node kind, not api.ui.component(). A reusable card function carries background_for={component=id} on its own background leaf, keeping that intent beside its internal leaves instead of repeating their IDs in external overlap policies. Use background_for={screen=true} for a screen background. Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
+      "when_not_to_use": "No implicit layout, CSS, platform widgets, data binding or game rules. For opt-in authored breakpoint/row/column/grid composition, use ui.components.createResponsiveLayout and pass its resolved rectangles to leaves. The game authors semantic grouping, ViewModels, reusable components, content and action meanings. Styles are local to leaves and never inherited from components.",
+      "parameters": [
+        {
+          "name": "root",
+          "type_name": "UiScreen",
+          "meaning": "A screen root with text, button, slider, combobox, image, panel, component and scroll_view children. Image/panel may declare background_for={screen=true} OR background_for={component=\"ancestor_id\"}: exactly one scope, an actual component ancestor in the same coordinate space, and a background rectangle fitting that scope. Overlap diagnostics exempt only later fully contained descendants of the declared scope; foreground collisions, partial coverage, unrelated siblings and later occluding backgrounds remain findings. Exact-pair v1 overlap policies remain available for deliberate skin layers. Leaf style supports font_family/font_size/font_weight/line_height/letter_spacing/color/text_align/vertical_align/wrap/overflow/padding/background/border_color/border_width/border_radius/opacity; image and panel allow only box fields. Font sizes, padding, letter spacing and borders use vertical design units (1 unit = 1% viewport height); a styled leaf defaults to font_size=2 and never auto-shrinks. Omit style for legacy text fitting. Optional budget.max_nodes overrides the default (query ui.inspect). Image slice uses source-pixel borders and vertical-unit destination borders; slice replaces fit. Stage rects fit 0..100; scroll content uses non-negative local top-left/y-down coordinates."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Replace the game-owned UI tree for the current frame"
+      ],
+      "frame_semantics": "The latest validated tree is immediately visible in observations and Web/native host snapshots. Validation covers schema, style bounds, coordinates and node budgets; host glyph metrics are presentation and do not change simulation state.",
+      "common_errors": [
+        "root kind must be screen",
+        "child kind supports text, button, slider (action + optional value text), combobox (action + optional selected text + expanded boolean, default false), image (stable asset:// or texture:// id + fit + optional alt), panel (decorative box with optional style, no text/action/children), component (name + children), or scroll_view (prefer the scrollView/virtualList/virtualGrid helpers); skinned controls expose semantic/action nodes inside game-authored component skins; a skinned slider may expose stable track, fill, handler and semantic nodes, while a skinned combobox exposes field, value, arrow, popup and option nodes with selection and popup state controlled by the UI author",
+        "node ids must be globally unique; all rects finite, dimensions positive; stage rects fit 0..100, local scroll content uses non-negative x/y with no anchors",
+        "UI_STYLE_INVALID: RGBA outside 0..1, out-of-range style values, unsupported typography on image/panel, style inheritance on containers, or wrap=word combined with overflow=ellipsis; unknown fields are structural errors that name the unsupported field",
+        "UI_BACKGROUND_KIND / UI_BACKGROUND_SCOPE / UI_BACKGROUND_BOUNDS: background_for is only for image/panel leaves; choose exactly screen=true or an actual ancestor component ID, keep the same coordinate space, and fit the background inside its scope. This metadata does not reorder, move, clip, inherit style or excuse collisions between foreground controls/text."
+      ],
+      "example": "api.ui.setRoot({kind=\"screen\",id=\"menu\",node=\"settings\",children={{kind=\"text\",id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4,font_weight=700,text_align=\"start\",vertical_align=\"middle\",color={0.9,0.95,1,1}}}}})",
+      "related_apis": [
+        "ui.components.create",
+        "ui.components.info",
+        "ui.components.createResponsiveLayout",
+        "ui.inspect",
+        "ui.getViewport",
+        "ui.scrollView",
+        "observation.set",
+        "input.getScreenPointerPosition"
+      ]
+    }
+  ],
+  "suggested_next_actions": []
+}

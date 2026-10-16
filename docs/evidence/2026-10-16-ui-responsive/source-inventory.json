@@ -1,0 +1,172 @@
+{
+  "schema": "unone.responsive-layout-source-inventory.v1",
+  "baseline": "4442a5e46df21faa50ff7db47999f40eaaa56df2",
+  "note": "Read-only final working-tree identities of selected source, guides and maintained consumers. Fresh Lab source includes a post-browser EOF-only normalization; source-byte identity with served content is not claimed. This is not a claim that every file was reviewed by Claude.",
+  "files": [
+    {
+      "path": "_Games/harbor-controls/project.unone.json",
+      "bytes": 1311,
+      "sha256": "fe7dbcfba634b7362f3482f999c39d5ffb5e2d66b271a2f8d4e73fbd6cfdfaca"
+    },
+    {
+      "path": "_Games/harbor-controls/scripts/main.luau",
+      "bytes": 44735,
+      "sha256": "d4d363b0c8da78dc5e86955be34c850e41d96c0253260de2f4801d2e384de3f3"
+    },
+    {
+      "path": "_Games/observatory-settings/project.unone.json",
+      "bytes": 987,
+      "sha256": "2c9d211b64adb298450b18288f4d38e6259102b32cf53f97b16011598ea2644c"
+    },
+    {
+      "path": "_Games/observatory-settings/scripts/main.luau",
+      "bytes": 37479,
+      "sha256": "64bb24598bcbbd9700299322fae0750d4f1bfb5abdcd67e6d98cbc763f818b76"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/AGENTS.md",
+      "bytes": 2829,
+      "sha256": "cc4e1db2a4d19e9a90f395d119c1de210ebc51fcd054eb0830a169884ac772fa"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/player.presentation.json",
+      "bytes": 44,
+      "sha256": "d3fdcbb01341cac7b9a3a2b4dab0715cb1eb00cfb9df7bc3b0f6e8f2f29a6bc1"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/project.unone.json",
+      "bytes": 588,
+      "sha256": "fe347bcf8e93a889faa92483b8ad4e7b38bad48e776cc1bfdca48bee91d09675"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/README.md",
+      "bytes": 1167,
+      "sha256": "d5edc41fc473c63d0419f51d7a2b64c744956f7d3fc13da99a0c9ab790b5943b"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/scenes/main.scene.json",
+      "bytes": 17,
+      "sha256": "91ac143676104ed0d283896fc0fe88759fe1366b4c3ffbbec07500f6e8cc2ec9"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/scripts/main.luau",
+      "bytes": 31504,
+      "sha256": "8a6c131f5c704df9a28a5a37e2ae00c546cd59ad3b81f8988948c7c5e62540c0"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/tests/dashboard-held-refresh.test.json",
+      "bytes": 147,
+      "sha256": "3ecc650c0cca6dd75a79dce0c47e918ae5642124355ef3f0e96d9f8b28054be6"
+    },
+    {
+      "path": "_Games/responsive-layout-lab/tests/dashboard-idle.test.json",
+      "bytes": 216,
+      "sha256": "cafdfa60cd3415e99bfcc57882d276e9f4ba7b25e0717793e86c06752c23326e"
+    },
+    {
+      "path": "_Games/voidwake/main.luau",
+      "bytes": 69167,
+      "sha256": "9d1a50ade5aad590485278ac4adda6aaa0177b6e1f53a66bc32aee3fb3b044df"
+    },
+    {
+      "path": "_Games/voidwake/project.unone.json",
+      "bytes": 1708,
+      "sha256": "d3f1d7e83c9a3e0e61725edca62768875ec70c80c5f3b7affc89668d2e4ac8a0"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 10405,
+      "sha256": "e43b7ae08c0dec483bfcd53c5c80b64639c638bea9a086f20eb88eed470061bb"
+    },
+    {
+      "path": "crates/unone-cli/tests/api_search_contract.rs",
+      "bytes": 34232,
+      "sha256": "1ef49fc2bf727e8aeb181628ba831d563c5e4b64435b4f2c91191a5307595d05"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "bytes": 173463,
+      "sha256": "1bfa2523494a5eca404cb71df97f4c7bbd79ded5fc030079ef5cde4982e7f97a"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "bytes": 23700,
+      "sha256": "bf99e3dd2a84da0815bcfaa218e4c290472e21cafecd21282fbedd8da558832d"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime_packages.rs",
+      "bytes": 6370,
+      "sha256": "5ac10ee5c9b5095605014848c51bd19968f760d3be06f6fc20643c8e78c1212b"
+    },
+    {
+      "path": "crates/unone-engine/tests/ui_components.rs",
+      "bytes": 21255,
+      "sha256": "cdf9360e0057a8511e97804c45f83af9ff4976f189f6af50fb67a14e2deb7ff7"
+    },
+    {
+      "path": "crates/unone-engine/tests/ui_responsive.rs",
+      "bytes": 21548,
+      "sha256": "d4c4e091fdf0636f6579ecb0a142cd27c8021a2041a952b112a27df412c8ba9d"
+    },
+    {
+      "path": "docs/ai-workflow.md",
+      "bytes": 61919,
+      "sha256": "6a53c52dfe317576edffc209a80638378fa8cd8ca97badb68d828bc67963ec82"
+    },
+    {
+      "path": "docs/decisions/0043-explicit-responsive-ui-layout.md",
+      "bytes": 3343,
+      "sha256": "a56d2899e9099d27d52086d5a5c3d968e9672bb995ba2dea885b20a15172021e"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "bytes": 23700,
+      "sha256": "bf99e3dd2a84da0815bcfaa218e4c290472e21cafecd21282fbedd8da558832d"
+    },
+    {
+      "path": "docs/sdk-readme.md",
+      "bytes": 9668,
+      "sha256": "edee16fefc531d9c42eee9940e3730409d6c4c96cf25062e951c003ded0b6fc4"
+    },
+    {
+      "path": "docs/ui-components.md",
+      "bytes": 29599,
+      "sha256": "ed9a198b5777c25b01213a2460b7dca6c74240837b8c5c58ee13ffd615cc39fe"
+    },
+    {
+      "path": "docs/ui-mvvm-architecture.md",
+      "bytes": 16518,
+      "sha256": "1d1b7be7f0fd0d8ab384e5fb8abfa5fa80bad6732d4b0eb7288553ce0f304b9c"
+    },
+    {
+      "path": "docs/ui-responsive.md",
+      "bytes": 12375,
+      "sha256": "670ab21cbd35be7dc5449b545be3dbd95923447be9e35c39750647870d1ac427"
+    },
+    {
+      "path": "docs/ui-scroll.md",
+      "bytes": 17660,
+      "sha256": "8500cc159a39f677321ec6b7ef77f16645cf17d1e27e8af611f2b430d6aebf4b"
+    },
+    {
+      "path": "docs/ui-styling.md",
+      "bytes": 18292,
+      "sha256": "8c44d2590af44232638b03c1d9a00602c48dcee7efa07fa6c52cb1094bb81880"
+    },
+    {
+      "path": "packages/unone-ui/package.unone.json",
+      "bytes": 186,
+      "sha256": "de5bb92db2f2f84333b1e6f4cefcdae353b87fe8113c87e6c59345faec1ecefd"
+    },
+    {
+      "path": "packages/unone-ui/README.md",
+      "bytes": 9886,
+      "sha256": "c5ec492bacd08b34976abc79d3bf2c94204b1a46263e80253ca7a67fef6674a5"
+    },
+    {
+      "path": "packages/unone-ui/src/components.luau",
+      "bytes": 36001,
+      "sha256": "bbbbf570b99d4eef5abb7d68d4047c9f918939ae1d493d775f3db9f39ec232d9"
+    }
+  ]
+}

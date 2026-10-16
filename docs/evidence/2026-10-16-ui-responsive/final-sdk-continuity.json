@@ -1,0 +1,39 @@
+{
+  "schema": "unone.responsive-layout-final-sdk-continuity.v1",
+  "initial_sdk": "D:/TSProject/UnoneResponsive-20261016/sdk",
+  "final_sdk": "D:/TSProject/UnoneResponsive-20261016/sdk-final",
+  "changed_inventory_files": [
+    {
+      "path": "README.md",
+      "initial_sha256": "bb1c905e5e3b9d9a3205062d1939ebf42fddddf9c9b0f41492d9d173e7fe3a25",
+      "final_sha256": "edee16fefc531d9c42eee9940e3730409d6c4c96cf25062e951c003ded0b6fc4",
+      "initial_bytes": 9496,
+      "final_bytes": 9668
+    },
+    {
+      "path": "bin/game.exe",
+      "initial_sha256": "522d151e873500b67d4bddf47780d479729ddee5a51afca59bf3f927172515ee",
+      "final_sha256": "8b200e78c6d4bc65cbd335369c7ce18f61e800fa5cdbbe5f8be934c5ff00e083",
+      "initial_bytes": 29030912,
+      "final_bytes": 29031424
+    }
+  ],
+  "note": "Only bundled SDK README and rebuilt CLI bytes change after the strict metadata example correction. Runtime/package/type/host bytes remain matched.",
+  "harbor": {
+    "initial_release": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/",
+    "final_release": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/",
+    "release_identical": true,
+    "files": 71,
+    "manifest_file_hashes_and_lengths_identical": true,
+    "official_renderer": "official",
+    "runtime_package": "0.4.0"
+  },
+  "payload_scope": "Only the 71 exporter-inventory payload files are compared. The export metadata descriptor is outside that inventory and may differ in SDK-selection paths.",
+  "fresh_example": {
+    "initial_release": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/",
+    "final_release": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/",
+    "release_identical": true,
+    "payload_files": 71,
+    "payload_hashes_and_lengths_identical": true
+  }
+}

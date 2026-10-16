@@ -1,0 +1,66 @@
+{
+  "schema": "unone.responsive-layout-browser-artifacts.v1",
+  "note": "Read-only hashes of original browser evidence and all six inspected PNGs. Raw JSON reports copied separately; PNGs remain in ignored artifacts.",
+  "files": [
+    {
+      "path": "artifacts/ui-responsive/browser/after-1020x884.png",
+      "bytes": 59295,
+      "sha256": "be6d9303a18e6c056f0d3f0882890a3973561910aafb72a51a18b9f23e24acbf",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/after-1440x900.png",
+      "bytes": 63146,
+      "sha256": "e6273412c72f59e416f114d7a3ee5833d961364a6842b51d84ccf4c1a4eb7882",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/after-390x844.png",
+      "bytes": 38812,
+      "sha256": "ece3afacd8edaf5b8c2bcd1c71539af49ca82d8cd5e7e57f70ceba5d2022324f",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/after.json",
+      "bytes": 587746,
+      "sha256": "503a5fe5834bfcdd742bda7198578f8d47642517436af578b70f7ac2348f27c7",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/responsive-1020x884.png",
+      "bytes": 59734,
+      "sha256": "cbab30623189d4b2afd2a7da48cda587012c4f88c0317a56caba45e2ca77eb82",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/responsive-1440x900.png",
+      "bytes": 63726,
+      "sha256": "294421dd97e34c4dbb372f9d47aaacfa29ad88dbb92f92c64fbd7b3c736088ff",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/responsive-390x844.png",
+      "bytes": 39428,
+      "sha256": "c19c3feec942cc1c447c210d96a5da653f7fcf93846bd7e2f03d70bcd08dd830",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/responsive.json",
+      "bytes": 115534,
+      "sha256": "594486f5013da831ad1d3ad3cdf0824c5ec2d5067a66b6ce166039be54891eaf",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/summary.json",
+      "bytes": 46065,
+      "sha256": "6e6dc2cdc18e10a5db3895fbb845253e6bf1cd045a13e5574f4b465a7fb54b26",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/browser/visual-review.json",
+      "bytes": 1949,
+      "sha256": "c1f76962db6c46c686552e0c7bbabcab1a9bdf6ad109177598e1aa590e4f215b",
+      "png_copied_to_evidence": false
+    }
+  ]
+}

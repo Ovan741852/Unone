@@ -38,6 +38,15 @@ does not implement numeric interaction. For release scrolling search
 `scroll inertia` / `慣性捲動`; shared scroll helpers accept `inertia=true` and
 `deceleration=8` (s^-1). Read the bundled UI guides for defaults and host limits.
 
+For responsive composition, search `responsive layout` / `自適應排版` and use
+`ui.components.createResponsiveLayout`. Create a retained model from typed
+variants, then call `resolve(api.ui.getViewport(),bounds?)` in a pure View.
+Use named `rect(id)` for leaves and `viewport(id)` for scroll helpers. The shared
+package handles explicit breakpoint and row/column/grid arithmetic; the project
+authors semantic groups, thresholds and typed style values. Read
+[the responsive guide](docs/ui-responsive.md) for defaults, coordinates and a
+complete strict example. Components never lay out their children implicitly.
+
 ## Create, check and prepare a project
 
 Before strict verification, make the official **`luau-analyze` executable**
@@ -88,27 +97,34 @@ serving `.mjs` as `text/plain` prevents the official player modules from loading
 
 ## Author shared UI with the bundled contract
 
-Read [shared components](docs/ui-components.md), [typography and fonts](docs/ui-styling.md),
+Read [shared components](docs/ui-components.md), [responsive layouts](docs/ui-responsive.md), [typography and fonts](docs/ui-styling.md),
 [scroll collections](docs/ui-scroll.md) and [host support](docs/formal-ui-host.md).
 These paths are inside this SDK. The package manifest is
 [packages/unone-ui/package.unone.json](packages/unone-ui/package.unone.json).
 
 Discover `ui.components.info`, then call `api.ui.components.info()` in Luau to
 read the bundled `name`, `version` and `declared` flag; it works before package
-declaration. For example, publish the result with
-`api.observation.set("ui_package", api.ui.components.info())` in `Game.start`
-and inspect `game --project <game-root> --json run --frames 1` with this SDK's CLI.
+declaration. Project named API records into a portable observation literal so
+canonical strict Luau types remain compatible:
+
+```luau
+local info = api.ui.components.info()
+api.observation.set("ui_package", {name=info.name,version=info.version,declared=info.declared})
+```
+
+Use this in `Game.start`, then inspect
+`game --project <game-root> --json run --frames 1` with this SDK's CLI.
 Copy that exact version into `project.unone.json`'s
 `runtime_packages["@unone/ui"]`, preserving the project's other fields. This
 selects a bundled pure Luau package; it does not install an npm module.
 
 Both `api.ui.components` and the kit returned by `create(theme?)` construct
 typed text, button, slider, combobox, panel, image, component and screen nodes,
-plus scroll wrappers. Publish the result with `api.ui.setRoot`. Leaf/component
+plus `createSlider`, `createResponsiveLayout` and scroll wrappers. Publish the result with `api.ui.setRoot`. Leaf/component
 props use `rect` **or** `anchor` plus `size` directly; screen uses
 `id`/`node`/`children` and has no placement. Components preserve child coordinates:
 stage coordinates are 0..100/y-up, while scroll content is local top-left/y-down.
-Project Luau owns themes, geometry, responsive choices, selected values, action
+Project Luau owns themes, semantic groups, authored responsive choices, selected values, action
 meanings and model changes. A slider has no `value`/`onChange` props; a combobox
 does not create options automatically.
 

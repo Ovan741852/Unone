@@ -2,3 +2,4 @@
 docs/audits/**/raw/* -text -whitespace
 # Preserve exact command/browser captures and their byte-addressed manifests.
 docs/evidence/2026-10-16-slider-controls-inertia/* -text -whitespace
+docs/evidence/2026-10-16-ui-responsive/* -text -whitespace

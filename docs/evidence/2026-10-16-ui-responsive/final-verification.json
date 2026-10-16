@@ -1,0 +1,32 @@
+{
+  "sdk": "D:/TSProject/UnoneResponsive-20261016/sdk-final",
+  "inventory_files": 68,
+  "all_hashes_and_lengths_match": true,
+  "source_parity_files": [
+    "packages/unone-ui/src/components.luau",
+    "packages/unone-ui/package.unone.json",
+    "docs/engine.d.luau",
+    "docs/ui-responsive.md",
+    "docs/ui-components.md",
+    "docs/ui-styling.md"
+  ],
+  "final_cli_sha256": "8b200e78c6d4bc65cbd335369c7ce18f61e800fa5cdbbe5f8be934c5ff00e083",
+  "exports": [
+    {
+      "project": "harbor-controls",
+      "release": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/",
+      "files": 71,
+      "browser_tested_payload_files_identical": true
+    },
+    {
+      "project": "responsive-layout-lab",
+      "release": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/",
+      "files": 71,
+      "browser_tested_payload_files_identical": true
+    }
+  ],
+  "browser_assertions": 244,
+  "workspace_passed": 487,
+  "workspace_ignored": 3,
+  "web_passed": 53
+}

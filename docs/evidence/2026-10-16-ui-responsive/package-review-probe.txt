@@ -1,0 +1,6 @@
+missing_values_accepted	true
+values_snapshot_independent	true
+metatable_rejected	true	true
+scroll_rect_local_y	120
+scroll_viewport_local_top	120
+unknown_id_rejected	true	true

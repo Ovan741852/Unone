@@ -3,17 +3,18 @@
 Current scope (2026-10-16): the implemented official
 [`@unone/ui` package](ui-components.md) is a versioned pure Luau component kit,
 bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.3.0"}` and discover `ui.components.info` /
+`"runtime_packages":{"@unone/ui":"0.4.0"}` and discover `ui.components.info` /
 `ui.components.create`. Its returned kit constructs existing typed leaves and
 component/screen nodes and all canonical leaf controls, copies per-kind theme
 styles, composes instance IDs and can
 prepend a scoped panel/image surface. It has no manager, binding lifecycle,
-reactive scheduler, hardcoded theme, layout policy or business behavior. Themes,
+reactive scheduler, hardcoded theme, implicit layout policy or business behavior. Themes,
 content, application state, actions and geometry remain project-owned; custom Luau factories
 remain valid. This package is implemented; the manager/reactive architecture
 below remains a proposal.
 
 The module and themed kit share constructor names, including `createSlider`,
+`createResponsiveLayout`,
 the low-level slider leaf, combobox
 and the existing scroll helpers. `input.wasPressed` / `wasReleased` are shared
 non-consuming semantic action edges; `isDown` is held state. They replace repeated
@@ -21,7 +22,18 @@ edge bookkeeping, not the project's commands or model rules. Search
 `"button click"` / `"按下瞬間"` for the public action contract. Keep canonical
 `EngineApi`, `UiApi` and `UiComponentKit` types and use the
 [safe marked-block refresh](ui-components.md#keep-the-official-types-when-upgrading)
-when upgrading. No new manager, reactive binding or automatic layout is implied.
+when upgrading. Component construction never implies layout or reactive binding.
+
+`createResponsiveLayout<T>` is also implemented in the official pure Luau package,
+independently of the manager proposal below. Projects declare semantic groups,
+aspect thresholds, slot/row/column/grid trees and complete typed presentation
+values. The shared model owns inclusive variant selection, fixed/grow sizing,
+padding/gaps and explicit stage/scroll coordinate conversion. Create once, then
+resolve in the pure View using `api.ui.getViewport()`; pass named rectangles to
+leaves and named viewports to scroll helpers. It neither measures text nor
+publishes/mutates nodes or a virtual registry. Search `"responsive layout"` /
+`"自適應排版"` and read [the implemented contract](ui-responsive.md). This
+explicit shared arithmetic introduces no theme, application rules or scheduler.
 
 `createSlider` is an implemented shared control, not part of the manager proposal
 below. Its persistent Luau model owns numeric range/step/value and drag state;

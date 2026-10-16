@@ -1,0 +1,76 @@
+{
+  "task": "Fresh portable SDK consumer responsive authoring probe",
+  "sdk": "D:/TSProject/UnoneResponsive-20261016/sdk",
+  "package": "@unone/ui 0.4.0",
+  "project": "D:/TSProject/Voidwake/engine/_Games/responsive-layout-lab",
+  "ready_export": "D:/TSProject/Voidwake/engine/_Games/responsive-layout-lab/dist/player",
+  "scope": {
+    "engine_source_read": false,
+    "previous_examples_or_reviews_read": false,
+    "sdk_mutated": false,
+    "custom_renderer": false,
+    "dom_or_css_ui": false,
+    "authored_any_or_casts": false,
+    "manual_viewport_branch_geometry": false,
+    "http_server_or_browser_started": false
+  },
+  "discovery": [
+    {"step":1,"source":"SDK README.md","outcome":"Immediately found responsive layout discovery query, createResponsiveLayout, and linked docs/ui-responsive.md."},
+    {"step":2,"command":"game --sdk <sdk> api search 'responsive layout'","first_hit":"ui.components.createResponsiveLayout","evidence":"01-search-responsive-layout.json","outcome":"Found official geometry model, generic canonical types, explicit threshold contract, row/column/grid rules and guide reference."},
+    {"step":3,"command":"game --sdk <sdk> api search 'button click'","first_hit":"input.wasPressed","evidence":"02-search-button-click.json","outcome":"Used semantic action edge in Game.update; retained count outside View/layout."},
+    {"step":4,"command":"game --sdk <sdk> api describe ui.components.createResponsiveLayout","evidence":"03-describe-responsive.json","outcome":"Confirmed retained model, pure resolve and named rect/viewport lookup."},
+    {"step":5,"command":"game --sdk <sdk> api describe observation.set","evidence":"04-describe-observation.json","outcome":"Published state, active variant/aspect/column count and resolved bounds."},
+    {"step":6,"command":"game --sdk <sdk> api describe ui.components.info","evidence":"11-describe-info.json","outcome":"Discovered exact bundled package version. Its example led to the strict typing confusion recorded below."},
+    {"step":7,"command":"game --sdk <sdk> api describe ui.components.create","evidence":"12-describe-create.json","outcome":"Confirmed themed controls and component surface with scoped background."},
+    {"step":8,"command":"game --sdk <sdk> api search 'test observation'","first_hit":"observation.set","outcome":"Used observation assertions after reading generated official test schema."},
+    {"step":9,"command":"game --sdk <sdk> api typings --output <evidence>/canonical-api.d.luau","outcome":"Saved canonical API types; authored entry retains generated canonical marked block."},
+    {"step":10,"command":"game --sdk <sdk> schema test --output <evidence>/test.schema.json","outcome":"Located observation assertion shape for idle and held-action tests."}
+  ],
+  "confusions_and_corrections": [
+    {
+      "kind":"documentation_example_not_strictly_typed",
+      "source":"SDK README.md:108 and api describe ui.components.info example",
+      "suggestion":"api.observation.set(\"ui_package\", api.ui.components.info())",
+      "result":"Strict official luau-analyze rejected UiComponentsInfo as not assignable to recursive ObservationValue.",
+      "exact_diagnostic":"scripts/main.luau:651.38-651.61: TypeError: Expected this to be 't1 where t1 = (boolean | number | string | { [string]: t1 } | {t1})?' but got 'UiComponentsInfo'",
+      "repro_evidence":"05-first-typecheck-failure.json",
+      "correction":"Copied packageInfo.name, .version and .declared explicitly into a serializable observation table. No any or cast.",
+      "layout_api_blocked":false
+    },
+    {
+      "kind":"author_typography_review",
+      "result":"Before browser QA, noticed a compact description had 2.075 units height versus 2.16 authored line height.",
+      "correction":"Reduced compact metric row from 5 to 4.6 layout units, preserving metric line height and giving description 2.475 units. Re-prepared to a fresh output directory path after archiving previous export.",
+      "layout_api_blocked":false
+    }
+  ],
+  "authored_layout": {
+    "variants":[
+      {"name":"narrow","minAspect":0,"columns":1,"fixedToolbarActionWidth":38},
+      {"name":"medium","minAspect":0.85,"columns":2,"fixedToolbarActionWidth":24},
+      {"name":"wide","minAspect":1.45,"columns":4,"fixedToolbarActionWidth":17}
+    ],
+    "toolbar":"Row: fixed action slot, gap 2, default-grow activity slot consumes all remaining width.",
+    "cards":"Equal-cell grid; reusable summaryCard uses a second retained official responsive model resolved into each cell's viewport bounds.",
+    "reading_order":["heading","subtitle","toolbar refresh","toolbar activity","section label","Workspaces title/value/description","Inbox title/value/description","Reports title/value/description","Automations title/value/description","footer"],
+    "state":"refreshCount module local changes only on RefreshDashboard press edge, independent of layout resolution.",
+    "theme":"Project-owned navy/teal UiComponentsTheme; official text, panel, button, component and screen constructors only."
+  },
+  "validation": {
+    "strict_analysis":"passed",
+    "verify":"4/4 default gates passed, 0 layout findings, 2/2 deterministic tests",
+    "tests":["idle count zero and default wide/4-column selection","held RefreshDashboard for 60 frames activates exactly once"],
+    "preflight":"compatible official production web runtime",
+    "prepare":"ready; final prepare independently reran and passed all 4 verification gates",
+    "evidence":["07-verify.json","08-preflight.json","10-final-prepare.json"],
+    "visual_quality":"Pending coordinated root browser QA. No pixels claimed from headless checks."
+  },
+  "browser_handoff": {
+    "button_id":"refresh_button",
+    "button_action":"RefreshDashboard",
+    "observations":["refresh_count","ui_variant","ui_columns","ui_aspect","ui_regions","ui_package"],
+    "region_names":["toolbar","refresh","activity","cards","workspaces","inbox","reports","automations"],
+    "suggested_viewports":[{"width":390,"height":844},{"width":900,"height":900},{"width":1440,"height":900}],
+    "checks":["At 0.85 and 1.45 aspect, higher variant is inclusive","All four cells are equal within each active grid","Toolbar width equals fixed button + gap + remaining activity","Click then resize narrow/medium/wide and back without reload; refresh_count stays stable","Inspect actual title, metric and description typography in all variants"]
+  }
+}

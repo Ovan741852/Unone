@@ -1,7 +1,7 @@
 # ScrollView and virtual collections (Web)
 
 Start with the official [`@unone/ui` package](ui-components.md), declaring
-`"runtime_packages":{"@unone/ui":"0.3.0"}` in `project.unone.json`. Use
+`"runtime_packages":{"@unone/ui":"0.4.0"}` in `project.unone.json`. Use
 `api.ui.components.scrollView` for small, irregular authored content,
 `api.ui.components.virtualList` for long fixed-height rows, or
 `api.ui.components.virtualGrid` for fixed-size cells. The same methods exist on
@@ -37,6 +37,17 @@ Keep canonical `EngineApi`, `UiComponentKit` and `UiNode` types from
   an infinite pan/zoom surface.
 - Ordinary ScrollView never arranges your content. Its extent is measured from
   the supplied rectangles. Do not set contentHeight, maxScroll or itemCount.
+
+For responsive viewport placement, search `"responsive layout"` / `"自適應排版"`
+and use `ui.components.createResponsiveLayout`. Its `result.viewport(id)` already
+uses the required top-left/y-down format; do not pass its stage `rect(id)` as a
+viewport or convert y again. To arrange finite local content, create a separate
+model with `space="scroll"` and resolve explicit local bounds, which may extend
+beyond 100. Use that result's `rect(id)` for local leaves. Layout lengths are
+per-axis stage rectangle units, not percent of the scroll viewport or style
+vertical units. A virtual row uses cell-local bounds; the virtual helper adds
+the row offset. Geometry resolution preserves the registered live node and
+adds no capability to the native player. See [the full responsive contract](ui-responsive.md).
 
 ```luau
 local ui = api.ui.components

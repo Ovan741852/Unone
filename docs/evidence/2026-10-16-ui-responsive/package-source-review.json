@@ -1,0 +1,15 @@
+{
+  "result": "package-review-probe.txt",
+  "frozen_history_modified": false,
+  "source_sha256": "4a3a91d41e38c77e7acce7a2ef734272f88ca11e85b5ad23d639e9308292bf91",
+  "scope": "Independent read-only review of current shared layout implementation and docs",
+  "finding": "Missing variant.values accepted as nil while guide says required; reported to root. Snapshot predates any final guard fix.",
+  "source": "packages/unone-ui/src/components.luau",
+  "probe": "package-review-probe.luau",
+  "verified": [
+    "source and resolved nested values mutation isolation",
+    "metatable rejection before traversal",
+    "scroll-local rect and viewport coordinates",
+    "unknown ID diagnostic contains variant"
+  ]
+}

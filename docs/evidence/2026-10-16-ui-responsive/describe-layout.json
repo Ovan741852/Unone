@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "value": {
+    "name": "ui.components.createResponsiveLayout",
+    "category": "ui",
+    "purpose": "Create the official reusable responsive layout model: select an authored aspect breakpoint and resolve explicit slot/row/column/grid regions without changing UI nodes.",
+    "when_to_use": "Default for responsive layout, adaptive layout, breakpoints, row/column/grid, 自適應排版 and 響應式斷點. Available on api.ui.components and the themed kit. Declare @unone/ui 0.4.0; use canonical UiResponsiveLayoutOptions<T>, UiResponsiveLayout<T>, UiLayoutNode and UiViewport from game api typings. Read docs/ui-responsive.md for a complete typed lifecycle and coordinate examples.",
+    "when_not_to_use": "No implicit component layout, text measurement, wrapping, CSS, inferred breakpoints, node transformation, renderer replacement or application rules. Project Luau chooses semantic groups, thresholds, content and styles; this shared model owns selection and geometry arithmetic.",
+    "parameters": [
+      {
+        "name": "options",
+        "type_name": "UiResponsiveLayoutOptions<T>",
+        "meaning": "space='stage' (default) or 'scroll'; dense nonempty variants={name,minAspect,layout,values:T}. First minAspect=0, then strictly ascending finite thresholds; unique nonblank names. UiLayoutNode is {id,kind='slot'|'row'|'column'|'grid',size?,grow?,padding?,gap?,columns?,children?}. Explicit positive size fixes a row/column child's main-axis extent; otherwise positive grow defaults to 1. No size+grow, root sizing or grid-child sizing. Grid requires columns integer 1..256 and equal cells. Slot rejects container-only fields. IDs are unique within each variant."
+      }
+    ],
+    "returns": "UiResponsiveLayout<T>; resolve({aspect:number},bounds?:UiViewport)->{variant:string,values:T,rect(id)->UiRect,viewport(id)->UiViewport}. Bounds default {left=0,top=0,width=100,height=100}.",
+    "side_effects": [
+      "Create a pure Luau model with copied options; return defensive geometry/value copies"
+    ],
+    "frame_semantics": "Create once, retain it, and resolve in a pure View or virtual renderItem. Resolve selects the highest minAspect <= viewport.aspect, inclusively. Row proceeds left-to-right; column and grid rows proceed top-to-bottom. Container regions are outer bounds; padding affects only children. Lengths use per-axis rectangle units, independently of vertical UiStyle units. Stage rect is y-up and viewport is top-left/y-down; scroll rect and viewport are local top-left/y-down. Stage bounds fit 0..100; scroll bounds may extend beyond 100. No simulation tick, RNG, publication, node cloning or virtual-registry mutation.",
+    "common_errors": [
+      "Unknown fields, non-finite numbers, unordered/missing fallback thresholds, duplicate names/IDs, invalid node combinations, non-positive cells and overflowing fixed sizes/gaps/padding fail explicitly. No silent clipping or fallback to a different variant. Call result.viewport(id) for scroll helper viewport; result.rect(id) for leaves. Font size is a project-authored values field, not calculated from geometry. Do not duplicate breakpoint tests and rectangle arithmetic per project or add layout props to component constructors."
+    ],
+    "example": "local layout = api.ui.components.createResponsiveLayout({variants={{name=\"base\",minAspect=0,layout={id=\"root\",kind=\"row\",gap=2,children={{id=\"main\",kind=\"slot\",grow=2},{id=\"aside\",kind=\"slot\"}}},values={fontSize=2}}}}); local resolved = layout.resolve(api.ui.getViewport()); local title = api.ui.components.text({id=\"title\",text=\"Settings\",rect=resolved.rect(\"main\"),style={font_size=resolved.values.fontSize}})",
+    "related_apis": [
+      "ui.components.create",
+      "ui.getViewport",
+      "ui.components.scrollView",
+      "ui.components.virtualGrid",
+      "ui.setRoot"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

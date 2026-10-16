@@ -1,0 +1,3283 @@
+{
+  "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified&mime=fixed",
+  "phase": "official-ui-responsive-layout",
+  "contract": {
+    "package": "0.4.0",
+    "observer": "Production WASM observation ptr/len memory reads only; no simulation/input writes or private layout methods",
+    "gestures": "Physical Playwright mouse; viewport resize through browser surface only",
+    "baseline": "Exact three pre-existing Harbor designs, including control artwork and typography"
+  },
+  "assertions": [
+    {
+      "pass": true,
+      "message": "initial desktop: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "initial desktop: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "initial desktop: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "initial desktop: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "initial desktop: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "initial desktop: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "Production Core exposes official package 0.4.0"
+    },
+    {
+      "pass": true,
+      "message": "Official three-webgl player remains active"
+    },
+    {
+      "pass": true,
+      "message": "Official slider owns a physical held pointer before reflow"
+    },
+    {
+      "pass": true,
+      "message": "held-slider reflow: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "held-slider reflow: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "held-slider reflow: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "held-slider reflow: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "held-slider reflow: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "held-slider reflow: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "Reflow cancels slider capture without leaking a world pointer"
+    },
+    {
+      "pass": true,
+      "message": "Still-held motion after reflow cannot reactivate a cancelled slider"
+    },
+    {
+      "pass": true,
+      "message": "portrait: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "portrait: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "portrait: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "portrait: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "portrait: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "portrait: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "portrait: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "medium: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "medium: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "medium: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "medium: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "medium: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "medium: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "medium: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "desktop-restored: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "desktop-restored: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "desktop-restored: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "desktop-restored: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "desktop-restored: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "desktop-restored: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "desktop-restored: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "below-0.8: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "below-0.8: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "below-0.8: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "below-0.8: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "below-0.8: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "below-0.8: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "below-0.8: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "exact-0.8: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "exact-0.8: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "exact-0.8: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "exact-0.8: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "exact-0.8: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "exact-0.8: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "exact-0.8: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "below-1.35: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "below-1.35: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "below-1.35: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "below-1.35: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "below-1.35: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "below-1.35: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "below-1.35: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "exact-1.35: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "exact-1.35: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "exact-1.35: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "exact-1.35: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "exact-1.35: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "exact-1.35: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "exact-1.35: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "coast prerequisite: correct declared variant and viewport aspect"
+    },
+    {
+      "pass": true,
+      "message": "coast prerequisite: all four shared-partition card bounds preserve the original design"
+    },
+    {
+      "pass": true,
+      "message": "coast prerequisite: shared action row preserves both button bounds"
+    },
+    {
+      "pass": true,
+      "message": "coast prerequisite: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+    },
+    {
+      "pass": true,
+      "message": "coast prerequisite: project typography tokens remain unchanged"
+    },
+    {
+      "pass": true,
+      "message": "coast prerequisite: authored cards remain inside stage bounds"
+    },
+    {
+      "pass": true,
+      "message": "coast prerequisite: resize preserves all project settings state"
+    },
+    {
+      "pass": true,
+      "message": "Inertia resize test starts far from the content edge"
+    },
+    {
+      "pass": true,
+      "message": "Physical scroll flick produces measurable motion before resize"
+    },
+    {
+      "pass": true,
+      "message": "Changing viewport dimensions cancels inertia instead of reviving old velocity"
+    },
+    {
+      "pass": true,
+      "message": "Responsive reflow and inertial drag preserve project settings and never select a row"
+    },
+    {
+      "pass": true,
+      "message": "Actual JS/MJS/WASM responses retain valid MIME types"
+    },
+    {
+      "pass": true,
+      "message": "No HTTP, request, page, console or player errors across live reflows"
+    }
+  ],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified&mime=fixed",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/player/main.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/three.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/renderer-selection.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/canvas-ui.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/host-input.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/async-scheduler.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-scroll.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-backend.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/asset-encoding.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/presentation-interpolation.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/shader-materials.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/mesh.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/webgpu-snapshot.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-geometry.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/bloom.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/instances3d.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-style.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-core.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/instance-transfer.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-contract.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/load-project.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-binary.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-pool.mjs",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/project.json",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/assets.json",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/presentation.json",
+      "status": 200,
+      "contentType": "application/json"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone-player.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone_player.wasm",
+      "status": 200,
+      "contentType": "application/wasm"
+    },
+    {
+      "url": "http://127.0.0.1:8344/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/vendor/three/three.player.min.js",
+      "status": 200,
+      "contentType": "text/javascript"
+    }
+  ],
+  "console": [
+    {
+      "type": "info",
+      "text": "UNONE_PLAYER_READY {\"runtime_ready_ms\":1899.2000000029802,\"renderer_mode\":\"official\",\"renderer\":\"three-webgl\",\"renderer_module\":null,\"first_presented_ms\":2151.5,\"backend\":\"main\",\"resources\":[{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/player/main.js\",\"transfer_bytes\":10778,\"encoded_bytes\":10478,\"duration_ms\":693.1999999992549},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/three.js\",\"transfer_bytes\":15313,\"encoded_bytes\":15013,\"duration_ms\":583.6000000014901},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/renderer-selection.mjs\",\"transfer_bytes\":2938,\"encoded_bytes\":2638,\"duration_ms\":675},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/canvas-ui.mjs\",\"transfer_bytes\":12953,\"encoded_bytes\":12653,\"duration_ms\":703.8000000007451},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/host-input.js\",\"transfer_bytes\":6157,\"encoded_bytes\":5857,\"duration_ms\":706.4000000022352},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/async-scheduler.mjs\",\"transfer_bytes\":2202,\"encoded_bytes\":1902,\"duration_ms\":706.3000000007451},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-scroll.mjs\",\"transfer_bytes\":18406,\"encoded_bytes\":18106,\"duration_ms\":706.2000000029802},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-backend.mjs\",\"transfer_bytes\":2806,\"encoded_bytes\":2506,\"duration_ms\":922.5},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/asset-encoding.js\",\"transfer_bytes\":1329,\"encoded_bytes\":1029,\"duration_ms\":923.2999999970198},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/presentation-interpolation.mjs\",\"transfer_bytes\":4000,\"encoded_bytes\":3700,\"duration_ms\":922.8999999985099},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/webgpu-snapshot.js\",\"transfer_bytes\":20374,\"encoded_bytes\":20074,\"duration_ms\":923.8000000007451},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/shader-materials.js\",\"transfer_bytes\":5098,\"encoded_bytes\":4798,\"duration_ms\":335.6000000014901},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/mesh.js\",\"transfer_bytes\":1648,\"encoded_bytes\":1348,\"duration_ms\":335.1000000014901},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/instances3d.js\",\"transfer_bytes\":5764,\"encoded_bytes\":5464,\"duration_ms\":390.29999999701977},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/bloom.js\",\"transfer_bytes\":7584,\"encoded_bytes\":7284,\"duration_ms\":390.80000000074506},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-geometry.mjs\",\"transfer_bytes\":4703,\"encoded_bytes\":4403,\"duration_ms\":274.30000000074506},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-style.mjs\",\"transfer_bytes\":10227,\"encoded_bytes\":9927,\"duration_ms\":274.0999999977648},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-core.mjs\",\"transfer_bytes\":5149,\"encoded_bytes\":4849,\"duration_ms\":54},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/instance-transfer.mjs\",\"transfer_bytes\":3447,\"encoded_bytes\":3147,\"duration_ms\":54.600000001490116},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-contract.mjs\",\"transfer_bytes\":615,\"encoded_bytes\":315,\"duration_ms\":21.600000001490116},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-binary.mjs\",\"transfer_bytes\":6707,\"encoded_bytes\":6407,\"duration_ms\":30.100000001490116},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-pool.mjs\",\"transfer_bytes\":7087,\"encoded_bytes\":6787,\"duration_ms\":31.800000000745058},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/load-project.js\",\"transfer_bytes\":1520,\"encoded_bytes\":1220,\"duration_ms\":29.899999998509884},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/project.json\",\"transfer_bytes\":47833,\"encoded_bytes\":47533,\"duration_ms\":37.100000001490116},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/assets.json\",\"transfer_bytes\":325,\"encoded_bytes\":25,\"duration_ms\":36.600000001490116},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/presentation.json\",\"transfer_bytes\":646,\"encoded_bytes\":346,\"duration_ms\":36.30000000074506},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone-player.js\",\"transfer_bytes\":88584,\"encoded_bytes\":88284,\"duration_ms\":56.20000000298023},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone_player.wasm\",\"transfer_bytes\":1790721,\"encoded_bytes\":1790421,\"duration_ms\":34.19999999925494},{\"path\":\"/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/vendor/three/three.player.min.js\",\"transfer_bytes\":492537,\"encoded_bytes\":492237,\"duration_ms\":34.5}]}"
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [],
+  "resizes": [
+    {
+      "label": "initial desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 25,
+          "x": 6,
+          "y": 13
+        },
+        "aspect": 1.6,
+        "combobox": {
+          "height": 5.5,
+          "width": 36,
+          "x": 8,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 51,
+          "top": 36,
+          "width": 41
+        },
+        "name": "desktop",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 51,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 13,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 36,
+          "x": 8,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 36,
+          "x": 8,
+          "y": 55.55
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": false,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 72
+      },
+      "frame": 39,
+      "cards": {
+        "audio": {
+          "height": 23,
+          "width": 40,
+          "x": 6,
+          "y": 52
+        },
+        "quality": {
+          "height": 25,
+          "width": 40,
+          "x": 6,
+          "y": 24
+        },
+        "presets": {
+          "height": 42,
+          "width": 45,
+          "x": 49,
+          "y": 33
+        },
+        "probe": {
+          "height": 19,
+          "width": 45,
+          "x": 49,
+          "y": 11
+        }
+      }
+    },
+    {
+      "label": "held-slider reflow",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": {
+        "apply": {
+          "height": 4.799999999999997,
+          "width": 56,
+          "x": 5,
+          "y": 2.200000000000003
+        },
+        "aspect": 0.462085308056872,
+        "combobox": {
+          "height": 4.8,
+          "width": 84,
+          "x": 8,
+          "y": 55
+        },
+        "compact": true,
+        "list": {
+          "height": 13.6,
+          "left": 8,
+          "top": 61.2,
+          "width": 84
+        },
+        "name": "portrait",
+        "probe": {
+          "height": 4.2,
+          "width": 28,
+          "x": 8,
+          "y": 10.599999999999998
+        },
+        "reset": {
+          "height": 4.799999999999997,
+          "width": 31,
+          "x": 64,
+          "y": 2.200000000000003
+        },
+        "slider": {
+          "height": 3.6,
+          "width": 84,
+          "x": 8,
+          "y": 68.4
+        },
+        "slider_track": {
+          "height": 0.28,
+          "width": 84,
+          "x": 8,
+          "y": 67.62
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 64,
+      "cards": {
+        "audio": {
+          "height": 14,
+          "width": 90,
+          "x": 5,
+          "y": 67
+        },
+        "quality": {
+          "height": 17,
+          "width": 90,
+          "x": 5,
+          "y": 48
+        },
+        "presets": {
+          "height": 24.5,
+          "width": 90,
+          "x": 5,
+          "y": 21.5
+        },
+        "probe": {
+          "height": 10.5,
+          "width": 90,
+          "x": 5,
+          "y": 9
+        }
+      }
+    },
+    {
+      "label": "portrait",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": {
+        "apply": {
+          "height": 4.799999999999997,
+          "width": 56,
+          "x": 5,
+          "y": 2.200000000000003
+        },
+        "aspect": 0.462085308056872,
+        "combobox": {
+          "height": 4.8,
+          "width": 84,
+          "x": 8,
+          "y": 55
+        },
+        "compact": true,
+        "list": {
+          "height": 13.6,
+          "left": 8,
+          "top": 61.2,
+          "width": 84
+        },
+        "name": "portrait",
+        "probe": {
+          "height": 4.2,
+          "width": 28,
+          "x": 8,
+          "y": 10.599999999999998
+        },
+        "reset": {
+          "height": 4.799999999999997,
+          "width": 31,
+          "x": 64,
+          "y": 2.200000000000003
+        },
+        "slider": {
+          "height": 3.6,
+          "width": 84,
+          "x": 8,
+          "y": 68.4
+        },
+        "slider_track": {
+          "height": 0.28,
+          "width": 84,
+          "x": 8,
+          "y": 67.62
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 93,
+      "cards": {
+        "audio": {
+          "height": 14,
+          "width": 90,
+          "x": 5,
+          "y": 67
+        },
+        "quality": {
+          "height": 17,
+          "width": 90,
+          "x": 5,
+          "y": 48
+        },
+        "presets": {
+          "height": 24.5,
+          "width": 90,
+          "x": 5,
+          "y": 21.5
+        },
+        "probe": {
+          "height": 10.5,
+          "width": 90,
+          "x": 5,
+          "y": 9
+        }
+      }
+    },
+    {
+      "label": "medium",
+      "viewport": {
+        "width": 1020,
+        "height": 884
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 26,
+          "x": 5,
+          "y": 13
+        },
+        "aspect": 1.1538461538461535,
+        "combobox": {
+          "height": 5.5,
+          "width": 39,
+          "x": 7,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 53,
+          "top": 36,
+          "width": 40
+        },
+        "name": "medium",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 53,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 15,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 39,
+          "x": 7,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 39,
+          "x": 7,
+          "y": 55.55
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 117,
+      "cards": {
+        "audio": {
+          "height": 23,
+          "width": 43,
+          "x": 5,
+          "y": 52
+        },
+        "quality": {
+          "height": 25,
+          "width": 43,
+          "x": 5,
+          "y": 24
+        },
+        "presets": {
+          "height": 42,
+          "width": 44,
+          "x": 51,
+          "y": 33
+        },
+        "probe": {
+          "height": 19,
+          "width": 44,
+          "x": 51,
+          "y": 11
+        }
+      }
+    },
+    {
+      "label": "desktop-restored",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 25,
+          "x": 6,
+          "y": 13
+        },
+        "aspect": 1.6,
+        "combobox": {
+          "height": 5.5,
+          "width": 36,
+          "x": 8,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 51,
+          "top": 36,
+          "width": 41
+        },
+        "name": "desktop",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 51,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 13,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 36,
+          "x": 8,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 36,
+          "x": 8,
+          "y": 55.55
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 141,
+      "cards": {
+        "audio": {
+          "height": 23,
+          "width": 40,
+          "x": 6,
+          "y": 52
+        },
+        "quality": {
+          "height": 25,
+          "width": 40,
+          "x": 6,
+          "y": 24
+        },
+        "presets": {
+          "height": 42,
+          "width": 45,
+          "x": 49,
+          "y": 33
+        },
+        "probe": {
+          "height": 19,
+          "width": 45,
+          "x": 49,
+          "y": 11
+        }
+      }
+    },
+    {
+      "label": "below-0.8",
+      "viewport": {
+        "width": 799,
+        "height": 1000
+      },
+      "layout": {
+        "apply": {
+          "height": 4.799999999999997,
+          "width": 56,
+          "x": 5,
+          "y": 2.200000000000003
+        },
+        "aspect": 0.799,
+        "combobox": {
+          "height": 4.8,
+          "width": 84,
+          "x": 8,
+          "y": 55
+        },
+        "compact": true,
+        "list": {
+          "height": 13.6,
+          "left": 8,
+          "top": 61.2,
+          "width": 84
+        },
+        "name": "portrait",
+        "probe": {
+          "height": 4.2,
+          "width": 28,
+          "x": 8,
+          "y": 10.599999999999998
+        },
+        "reset": {
+          "height": 4.799999999999997,
+          "width": 31,
+          "x": 64,
+          "y": 2.200000000000003
+        },
+        "slider": {
+          "height": 3.6,
+          "width": 84,
+          "x": 8,
+          "y": 68.4
+        },
+        "slider_track": {
+          "height": 0.28,
+          "width": 84,
+          "x": 8,
+          "y": 67.62
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 162,
+      "cards": {
+        "audio": {
+          "height": 14,
+          "width": 90,
+          "x": 5,
+          "y": 67
+        },
+        "quality": {
+          "height": 17,
+          "width": 90,
+          "x": 5,
+          "y": 48
+        },
+        "presets": {
+          "height": 24.5,
+          "width": 90,
+          "x": 5,
+          "y": 21.5
+        },
+        "probe": {
+          "height": 10.5,
+          "width": 90,
+          "x": 5,
+          "y": 9
+        }
+      }
+    },
+    {
+      "label": "exact-0.8",
+      "viewport": {
+        "width": 800,
+        "height": 1000
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 26,
+          "x": 5,
+          "y": 13
+        },
+        "aspect": 0.8,
+        "combobox": {
+          "height": 5.5,
+          "width": 39,
+          "x": 7,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 53,
+          "top": 36,
+          "width": 40
+        },
+        "name": "medium",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 53,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 15,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 39,
+          "x": 7,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 39,
+          "x": 7,
+          "y": 55.55
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 177,
+      "cards": {
+        "audio": {
+          "height": 23,
+          "width": 43,
+          "x": 5,
+          "y": 52
+        },
+        "quality": {
+          "height": 25,
+          "width": 43,
+          "x": 5,
+          "y": 24
+        },
+        "presets": {
+          "height": 42,
+          "width": 44,
+          "x": 51,
+          "y": 33
+        },
+        "probe": {
+          "height": 19,
+          "width": 44,
+          "x": 51,
+          "y": 11
+        }
+      }
+    },
+    {
+      "label": "below-1.35",
+      "viewport": {
+        "width": 1349,
+        "height": 1000
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 26,
+          "x": 5,
+          "y": 13
+        },
+        "aspect": 1.349,
+        "combobox": {
+          "height": 5.5,
+          "width": 39,
+          "x": 7,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 53,
+          "top": 36,
+          "width": 40
+        },
+        "name": "medium",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 53,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 15,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 39,
+          "x": 7,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 39,
+          "x": 7,
+          "y": 55.55
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 192,
+      "cards": {
+        "audio": {
+          "height": 23,
+          "width": 43,
+          "x": 5,
+          "y": 52
+        },
+        "quality": {
+          "height": 25,
+          "width": 43,
+          "x": 5,
+          "y": 24
+        },
+        "presets": {
+          "height": 42,
+          "width": 44,
+          "x": 51,
+          "y": 33
+        },
+        "probe": {
+          "height": 19,
+          "width": 44,
+          "x": 51,
+          "y": 11
+        }
+      }
+    },
+    {
+      "label": "exact-1.35",
+      "viewport": {
+        "width": 1350,
+        "height": 1000
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 25,
+          "x": 6,
+          "y": 13
+        },
+        "aspect": 1.35,
+        "combobox": {
+          "height": 5.5,
+          "width": 36,
+          "x": 8,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 51,
+          "top": 36,
+          "width": 41
+        },
+        "name": "desktop",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 51,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 13,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 36,
+          "x": 8,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 36,
+          "x": 8,
+          "y": 55.55
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 208,
+      "cards": {
+        "audio": {
+          "height": 23,
+          "width": 40,
+          "x": 6,
+          "y": 52
+        },
+        "quality": {
+          "height": 25,
+          "width": 40,
+          "x": 6,
+          "y": 24
+        },
+        "presets": {
+          "height": 42,
+          "width": 45,
+          "x": 49,
+          "y": 33
+        },
+        "probe": {
+          "height": 19,
+          "width": 45,
+          "x": 49,
+          "y": 11
+        }
+      }
+    },
+    {
+      "label": "coast prerequisite",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 25,
+          "x": 6,
+          "y": 13
+        },
+        "aspect": 1.6,
+        "combobox": {
+          "height": 5.5,
+          "width": 36,
+          "x": 8,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 51,
+          "top": 36,
+          "width": 41
+        },
+        "name": "desktop",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 51,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 13,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 36,
+          "x": 8,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 36,
+          "x": 8,
+          "y": 55.55
+        }
+      },
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "frame": 223,
+      "cards": {
+        "audio": {
+          "height": 23,
+          "width": 40,
+          "x": 6,
+          "y": 52
+        },
+        "quality": {
+          "height": 25,
+          "width": 40,
+          "x": 6,
+          "y": 24
+        },
+        "presets": {
+          "height": 42,
+          "width": 45,
+          "x": 49,
+          "y": 33
+        },
+        "probe": {
+          "height": 19,
+          "width": 45,
+          "x": 49,
+          "y": 11
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    "responsive-390x844.png",
+    "responsive-1020x884.png",
+    "responsive-1440x900.png"
+  ],
+  "exportRoot": "D:/TSProject/Voidwake/engine/_Games/harbor-controls/dist/player",
+  "exportBefore": [
+    {
+      "path": "content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "content/project.json",
+      "bytes": 47533,
+      "sha256": "7139987307dc5a6fbdf06fe971af7413c134cf49765664dd24ada61a353822a1"
+    },
+    {
+      "path": "export.json",
+      "bytes": 14972,
+      "sha256": "0e9b442896d6af6009b226a6e54ef602bc0661038e400e39362b06c1854af385"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1172,
+      "sha256": "37cec39eac3f8f4b7d4daa95888cff173dc950ae16bf79b4b8c34fda419e9c57"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/content/project.json",
+      "bytes": 41528,
+      "sha256": "ca3e9e67c6f88582e6ceb73b38658f2bbd5d2426318cc45da00f3e6612a03c72"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/runtime/runtime.json",
+      "bytes": 897,
+      "sha256": "db47bda64054084b1fa7c7e5638ade88672cd71d5cdedecd8e4f398ec5448b16"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/runtime/unone_player.wasm",
+      "bytes": 1750377,
+      "sha256": "8a481e4fe92d5d3ea78846eb1171597270455bf64f66978ba9e001b618711462"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/player/main.js",
+      "bytes": 10451,
+      "sha256": "4e370b99d564a4efb573bf0773fc85b3fbcf0644a2663a6e17533a43ac4f73d5"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/canvas-ui.mjs",
+      "bytes": 10842,
+      "sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/host-input.js",
+      "bytes": 3658,
+      "sha256": "6b6bcc9be7486c6723a69d6f35331ae2f1b3434de6488ac1a2a502b8413dfd87"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-scroll.mjs",
+      "bytes": 15470,
+      "sha256": "d6be5cbc43adb0a3ea91bfa609017e9f5882ff852844fb54f784b58b61fcf8af"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/project.json",
+      "bytes": 47533,
+      "sha256": "7139987307dc5a6fbdf06fe971af7413c134cf49765664dd24ada61a353822a1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/content/project.json",
+      "bytes": 43114,
+      "sha256": "8ac3002442693121bf7f1e82ec670818594e66e83b47ee1bb979dbbdb2b3ab77"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "5be0eea3c18a9971f380f91ac8a3d06369ffd6e89ae79a775ea3ca7aa422564f"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/runtime/unone_player.wasm",
+      "bytes": 1772961,
+      "sha256": "63ce77f5e98161152e84243bf88a49491f4d0e9d2067791e5b655873fa22da69"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    }
+  ],
+  "boot": {
+    "renderer": "official",
+    "metrics": {
+      "runtime_ready_ms": 1899.2000000029802,
+      "renderer_mode": "official",
+      "renderer": "three-webgl",
+      "renderer_module": null,
+      "first_presented_ms": 2151.5,
+      "backend": "main",
+      "resources": [
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/player/main.js",
+          "transfer_bytes": 10778,
+          "encoded_bytes": 10478,
+          "duration_ms": 693.1999999992549
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/three.js",
+          "transfer_bytes": 15313,
+          "encoded_bytes": 15013,
+          "duration_ms": 583.6000000014901
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/renderer-selection.mjs",
+          "transfer_bytes": 2938,
+          "encoded_bytes": 2638,
+          "duration_ms": 675
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/canvas-ui.mjs",
+          "transfer_bytes": 12953,
+          "encoded_bytes": 12653,
+          "duration_ms": 703.8000000007451
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/host-input.js",
+          "transfer_bytes": 6157,
+          "encoded_bytes": 5857,
+          "duration_ms": 706.4000000022352
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/async-scheduler.mjs",
+          "transfer_bytes": 2202,
+          "encoded_bytes": 1902,
+          "duration_ms": 706.3000000007451
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-scroll.mjs",
+          "transfer_bytes": 18406,
+          "encoded_bytes": 18106,
+          "duration_ms": 706.2000000029802
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-backend.mjs",
+          "transfer_bytes": 2806,
+          "encoded_bytes": 2506,
+          "duration_ms": 922.5
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/asset-encoding.js",
+          "transfer_bytes": 1329,
+          "encoded_bytes": 1029,
+          "duration_ms": 923.2999999970198
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/presentation-interpolation.mjs",
+          "transfer_bytes": 4000,
+          "encoded_bytes": 3700,
+          "duration_ms": 922.8999999985099
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/webgpu-snapshot.js",
+          "transfer_bytes": 20374,
+          "encoded_bytes": 20074,
+          "duration_ms": 923.8000000007451
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/shader-materials.js",
+          "transfer_bytes": 5098,
+          "encoded_bytes": 4798,
+          "duration_ms": 335.6000000014901
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/mesh.js",
+          "transfer_bytes": 1648,
+          "encoded_bytes": 1348,
+          "duration_ms": 335.1000000014901
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/instances3d.js",
+          "transfer_bytes": 5764,
+          "encoded_bytes": 5464,
+          "duration_ms": 390.29999999701977
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/bloom.js",
+          "transfer_bytes": 7584,
+          "encoded_bytes": 7284,
+          "duration_ms": 390.80000000074506
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-geometry.mjs",
+          "transfer_bytes": 4703,
+          "encoded_bytes": 4403,
+          "duration_ms": 274.30000000074506
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-style.mjs",
+          "transfer_bytes": 10227,
+          "encoded_bytes": 9927,
+          "duration_ms": 274.0999999977648
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-core.mjs",
+          "transfer_bytes": 5149,
+          "encoded_bytes": 4849,
+          "duration_ms": 54
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/instance-transfer.mjs",
+          "transfer_bytes": 3447,
+          "encoded_bytes": 3147,
+          "duration_ms": 54.600000001490116
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-contract.mjs",
+          "transfer_bytes": 615,
+          "encoded_bytes": 315,
+          "duration_ms": 21.600000001490116
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-binary.mjs",
+          "transfer_bytes": 6707,
+          "encoded_bytes": 6407,
+          "duration_ms": 30.100000001490116
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-pool.mjs",
+          "transfer_bytes": 7087,
+          "encoded_bytes": 6787,
+          "duration_ms": 31.800000000745058
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/load-project.js",
+          "transfer_bytes": 1520,
+          "encoded_bytes": 1220,
+          "duration_ms": 29.899999998509884
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/project.json",
+          "transfer_bytes": 47833,
+          "encoded_bytes": 47533,
+          "duration_ms": 37.100000001490116
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/assets.json",
+          "transfer_bytes": 325,
+          "encoded_bytes": 25,
+          "duration_ms": 36.600000001490116
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/presentation.json",
+          "transfer_bytes": 646,
+          "encoded_bytes": 346,
+          "duration_ms": 36.30000000074506
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone-player.js",
+          "transfer_bytes": 88584,
+          "encoded_bytes": 88284,
+          "duration_ms": 56.20000000298023
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone_player.wasm",
+          "transfer_bytes": 1790721,
+          "encoded_bytes": 1790421,
+          "duration_ms": 34.19999999925494
+        },
+        {
+          "path": "/releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/vendor/three/three.player.min.js",
+          "transfer_bytes": 492537,
+          "encoded_bytes": 492237,
+          "duration_ms": 34.5
+        }
+      ]
+    }
+  },
+  "sliderHeld": {
+    "input_probe": {
+      "held": false,
+      "hold_ticks": 0,
+      "last_press_a": false,
+      "last_press_b": false,
+      "last_release_a": false,
+      "last_release_b": false,
+      "mismatches": 0,
+      "presses": 0,
+      "reader_a_presses": 0,
+      "reader_a_releases": 0,
+      "reader_b_presses": 0,
+      "reader_b_releases": 0,
+      "releases": 0,
+      "total_held_ticks": 0
+    },
+    "layout": {
+      "apply": {
+        "height": 6,
+        "width": 25,
+        "x": 6,
+        "y": 13
+      },
+      "aspect": 1.6,
+      "combobox": {
+        "height": 5.5,
+        "width": 36,
+        "x": 8,
+        "y": 35
+      },
+      "compact": false,
+      "list": {
+        "height": 25,
+        "left": 51,
+        "top": 36,
+        "width": 41
+      },
+      "name": "desktop",
+      "probe": {
+        "height": 6,
+        "width": 13,
+        "x": 51,
+        "y": 14.5
+      },
+      "reset": {
+        "height": 6,
+        "width": 13,
+        "x": 33,
+        "y": 13
+      },
+      "slider": {
+        "height": 5,
+        "width": 36,
+        "x": 8,
+        "y": 58
+      },
+      "slider_track": {
+        "height": 0.45,
+        "width": 36,
+        "x": 8,
+        "y": 55.55
+      }
+    },
+    "preset_count": 120,
+    "settings": {
+      "applied_preset": "morning-calm",
+      "applied_quality": "Balanced",
+      "applied_volume": 72,
+      "apply_count": 0,
+      "dirty": true,
+      "expanded": false,
+      "preset": "morning-calm",
+      "preset_label": "Morning / Calm",
+      "quality": "Balanced",
+      "reset_count": 0,
+      "volume": 36
+    },
+    "slider": {
+      "cancelled": false,
+      "changed": false,
+      "dragging": true,
+      "released": false,
+      "started": false,
+      "value": 36
+    },
+    "tick": 48,
+    "ui_input": {
+      "world_pointer_down": false
+    },
+    "ui_package": {
+      "declared": true,
+      "name": "@unone/ui",
+      "version": "0.4.0"
+    }
+  },
+  "sliderAfterResize": {
+    "input_probe": {
+      "held": false,
+      "hold_ticks": 0,
+      "last_press_a": false,
+      "last_press_b": false,
+      "last_release_a": false,
+      "last_release_b": false,
+      "mismatches": 0,
+      "presses": 0,
+      "reader_a_presses": 0,
+      "reader_a_releases": 0,
+      "reader_b_presses": 0,
+      "reader_b_releases": 0,
+      "releases": 0,
+      "total_held_ticks": 0
+    },
+    "layout": {
+      "apply": {
+        "height": 4.799999999999997,
+        "width": 56,
+        "x": 5,
+        "y": 2.200000000000003
+      },
+      "aspect": 0.462085308056872,
+      "combobox": {
+        "height": 4.8,
+        "width": 84,
+        "x": 8,
+        "y": 55
+      },
+      "compact": true,
+      "list": {
+        "height": 13.6,
+        "left": 8,
+        "top": 61.2,
+        "width": 84
+      },
+      "name": "portrait",
+      "probe": {
+        "height": 4.2,
+        "width": 28,
+        "x": 8,
+        "y": 10.599999999999998
+      },
+      "reset": {
+        "height": 4.799999999999997,
+        "width": 31,
+        "x": 64,
+        "y": 2.200000000000003
+      },
+      "slider": {
+        "height": 3.6,
+        "width": 84,
+        "x": 8,
+        "y": 68.4
+      },
+      "slider_track": {
+        "height": 0.28,
+        "width": 84,
+        "x": 8,
+        "y": 67.62
+      }
+    },
+    "preset_count": 120,
+    "settings": {
+      "applied_preset": "morning-calm",
+      "applied_quality": "Balanced",
+      "applied_volume": 72,
+      "apply_count": 0,
+      "dirty": true,
+      "expanded": false,
+      "preset": "morning-calm",
+      "preset_label": "Morning / Calm",
+      "quality": "Balanced",
+      "reset_count": 0,
+      "volume": 36
+    },
+    "slider": {
+      "cancelled": false,
+      "changed": false,
+      "dragging": false,
+      "released": false,
+      "started": false,
+      "value": 36
+    },
+    "tick": 64,
+    "ui_input": {
+      "world_pointer_down": false
+    },
+    "ui_package": {
+      "declared": true,
+      "name": "@unone/ui",
+      "version": "0.4.0"
+    }
+  },
+  "coast": {
+    "before": {
+      "top": 0,
+      "height": 6367,
+      "client": 225,
+      "at": 6944
+    },
+    "released": {
+      "top": 128,
+      "height": 6367,
+      "client": 225,
+      "at": 7384
+    },
+    "beforeResize": {
+      "top": 156,
+      "height": 6367,
+      "client": 225,
+      "at": 7480.10000000149
+    },
+    "afterResize": {
+      "top": 156,
+      "height": 6253,
+      "client": 221,
+      "at": 7610.800000000745
+    },
+    "later": {
+      "top": 156,
+      "height": 6253,
+      "client": 221,
+      "at": 7812.300000000745
+    }
+  },
+  "mime": {
+    "javascript": 25,
+    "wasm": 1,
+    "bad": []
+  },
+  "finalStatus": {
+    "status": "",
+    "fatal": null,
+    "renderer": "official"
+  },
+  "pass": true,
+  "exportAfter": [
+    {
+      "path": "content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "content/project.json",
+      "bytes": 47533,
+      "sha256": "7139987307dc5a6fbdf06fe971af7413c134cf49765664dd24ada61a353822a1"
+    },
+    {
+      "path": "export.json",
+      "bytes": 14972,
+      "sha256": "0e9b442896d6af6009b226a6e54ef602bc0661038e400e39362b06c1854af385"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1172,
+      "sha256": "37cec39eac3f8f4b7d4daa95888cff173dc950ae16bf79b4b8c34fda419e9c57"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/content/project.json",
+      "bytes": 41528,
+      "sha256": "ca3e9e67c6f88582e6ceb73b38658f2bbd5d2426318cc45da00f3e6612a03c72"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/runtime/runtime.json",
+      "bytes": 897,
+      "sha256": "db47bda64054084b1fa7c7e5638ade88672cd71d5cdedecd8e4f398ec5448b16"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/runtime/unone_player.wasm",
+      "bytes": 1750377,
+      "sha256": "8a481e4fe92d5d3ea78846eb1171597270455bf64f66978ba9e001b618711462"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/player/main.js",
+      "bytes": 10451,
+      "sha256": "4e370b99d564a4efb573bf0773fc85b3fbcf0644a2663a6e17533a43ac4f73d5"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/canvas-ui.mjs",
+      "bytes": 10842,
+      "sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/host-input.js",
+      "bytes": 3658,
+      "sha256": "6b6bcc9be7486c6723a69d6f35331ae2f1b3434de6488ac1a2a502b8413dfd87"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-scroll.mjs",
+      "bytes": 15470,
+      "sha256": "d6be5cbc43adb0a3ea91bfa609017e9f5882ff852844fb54f784b58b61fcf8af"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/888f0370bcd2165f851227632a7419d592889d7c3514ca7059424ca206b08f3a/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/content/project.json",
+      "bytes": 47533,
+      "sha256": "7139987307dc5a6fbdf06fe971af7413c134cf49765664dd24ada61a353822a1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/content/assets.json",
+      "bytes": 25,
+      "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/content/presentation.json",
+      "bytes": 346,
+      "sha256": "1bb7f17e91fb248a8f45d529d23fad971b6d2b0ec38ab4601691ee01d8482d02"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/content/project.json",
+      "bytes": 43114,
+      "sha256": "8ac3002442693121bf7f1e82ec670818594e66e83b47ee1bb979dbbdb2b3ab77"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "5be0eea3c18a9971f380f91ac8a3d06369ffd6e89ae79a775ea3ca7aa422564f"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/runtime/unone_player.wasm",
+      "bytes": 1772961,
+      "sha256": "63ce77f5e98161152e84243bf88a49491f4d0e9d2067791e5b655873fa22da69"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "releases/c303df1081b7346b1bd41e00d7fe2d53bbac85a3c4672176d40768b41822f6d1/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "runtime/runtime.json",
+      "bytes": 835,
+      "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+    },
+    {
+      "path": "runtime/unone-player.js",
+      "bytes": 88284,
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "runtime/unone_player.wasm",
+      "bytes": 1790421,
+      "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+    },
+    {
+      "path": "web/player/main.js",
+      "bytes": 10478,
+      "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+    },
+    {
+      "path": "web/renderer/bloom.js",
+      "bytes": 7284,
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 15013,
+      "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+    },
+    {
+      "path": "web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "web/shared/renderer-selection.mjs",
+      "bytes": 2638,
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "bytes": 2506,
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "bytes": 4849,
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "bytes": 1507,
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "web/shared/ui-style.mjs",
+      "bytes": 9927,
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "web/shared/webgpu-snapshot.js",
+      "bytes": 20074,
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    }
+  ],
+  "exportUnchanged": true
+}

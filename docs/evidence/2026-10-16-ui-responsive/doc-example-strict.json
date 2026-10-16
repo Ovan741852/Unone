@@ -1,0 +1,16 @@
+{
+  "schema": "unone.responsive-layout-doc-strict.v1",
+  "executor": "/root/responsive_discovery_docs",
+  "command": [
+    "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe",
+    "D:/TSProject/Voidwake/engine/artifacts/responsive-layout/docs/responsive-example.luau"
+  ],
+  "exit_code": 0,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "reconstruction": "Concatenate --!strict newline, exact canonical engine.d.luau bytes, newline, and the first Luau fenced code block from docs/ui-responsive.md.",
+  "probe_bytes": 26396,
+  "probe_sha256": "82d3f37089972b39d18178cac4569bb72aed3706e30b036b228903cd41ca2c53",
+  "guide_sha256": "670ab21cbd35be7dc5449b545be3dbd95923447be9e35c39750647870d1ac427",
+  "types_sha256": "bf99e3dd2a84da0815bcfaa218e4c290472e21cafecd21282fbedd8da558832d"
+}

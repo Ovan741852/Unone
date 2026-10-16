@@ -1,0 +1,272 @@
+{
+  "schema": "unone.responsive-layout-validation.v1",
+  "baseline": "4442a5e46df21faa50ff7db47999f40eaaa56df2",
+  "branch": "main",
+  "execution": {
+    "executor": "Main task agent (root), except strict documentation entry probe and explicitly attributed independent probes",
+    "evidence_writer": "/root/responsive_discovery_docs",
+    "environment": {
+      "CARGO_TARGET_DIR": "D:/TSProject/Voidwake/game/tools/build/native",
+      "analyzer": "D:/TSProject/Voidwake/engine/.toolcache/luau-0.734/luau-analyze.exe"
+    },
+    "note": "Raw outputs are copied byte-for-byte. Empty strict-analysis stdout is not by itself an exit-code record; results below also rely on the executing agent's reported exit status."
+  },
+  "checks": [
+    {
+      "name": "workspace-release-initial",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--release"
+      ],
+      "status": "failed",
+      "log": "workspace-tests-initial-stale-guidance-failure.txt",
+      "reason": "Two legacy expected diagnostic substrings in the component guidance regression were stale after the message began naming createResponsiveLayout. The test now requires the explicit official helper route; this was not a product-code correction."
+    },
+    {
+      "name": "workspace-release-final",
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--release"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "passed": 487,
+      "failed": 0,
+      "ignored": 3,
+      "responsive_regressions": 13,
+      "log": "workspace-tests-final.txt"
+    },
+    {
+      "name": "workspace-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "clippy.txt"
+    },
+    {
+      "name": "release-cli",
+      "command": [
+        "cargo",
+        "build",
+        "-p",
+        "unone-cli",
+        "--release"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log": "build-cli.txt"
+    },
+    {
+      "name": "web-regressions",
+      "command": [
+        "node",
+        "--test",
+        "web/shared/canvas-ui.test.mjs",
+        "web/shared/host-contract.test.mjs",
+        "web/shared/player-pointer.test.mjs",
+        "web/shared/ui-scroll.test.mjs",
+        "web/shared/ui-scroll-host.test.mjs",
+        "web/shared/runtime-core.test.mjs"
+      ],
+      "status": "passed",
+      "passed": 53,
+      "failed": 0,
+      "log": "node-tests.txt"
+    },
+    {
+      "name": "strict-package",
+      "status": "passed",
+      "exit_code": 0,
+      "log": "strict-package-final.txt"
+    },
+    {
+      "name": "strict-maintained-examples",
+      "status": "passed",
+      "exit_code": 0,
+      "scope": [
+        "Harbor Controls",
+        "Observatory Settings",
+        "VOIDWAKE"
+      ],
+      "log": "strict-examples-final.txt"
+    },
+    {
+      "name": "strict-complete-documentation-entry",
+      "status": "passed",
+      "exit_code": 0,
+      "executor": "/root/responsive_discovery_docs",
+      "scope": "Canonical engine.d.luau concatenated with the complete first Luau entry body in docs/ui-responsive.md, then analyzed with --!strict and no any/per-node casts.",
+      "record": "doc-example-strict.json"
+    },
+    {
+      "name": "production-wasm",
+      "status": "passed",
+      "exit_code": 0,
+      "command_script": "build-web-runtime.ps1",
+      "log": "build-web-runtime.txt",
+      "runtime": "runtime.json",
+      "note": "Release build has no dev-tools or preview-tools; reduced-system dead-code warnings remain distinct from strict all-feature workspace Clippy."
+    },
+    {
+      "name": "initial-sdk-pack-and-inspect",
+      "status": "passed",
+      "exit_code": 0,
+      "sdk": "D:/TSProject/UnoneResponsive-20261016/sdk",
+      "log": "sdk-initial-inspect.json",
+      "independent_inventory_record": "sdk-initial-inventory-verification.json",
+      "independently_matched_files": 68,
+      "independent_inventory_mismatches": 0
+    },
+    {
+      "name": "maintained-project-prepare",
+      "status": "passed",
+      "projects": [
+        {
+          "name": "Harbor Controls",
+          "status": "ready",
+          "exit_code": 0,
+          "passed_gates": 5,
+          "log": "prepare-harbor-controls.json"
+        },
+        {
+          "name": "Observatory Settings",
+          "status": "ready",
+          "exit_code": 0,
+          "passed_gates": 4,
+          "log": "prepare-observatory-settings.json"
+        },
+        {
+          "name": "VOIDWAKE",
+          "status": "ready",
+          "exit_code": 0,
+          "passed_gates": 7,
+          "log": "prepare-voidwake.json"
+        }
+      ]
+    },
+    {
+      "name": "exported-player-parity",
+      "status": "passed",
+      "cli": "D:/TSProject/UnoneResponsive-20261016/sdk/bin/game.exe",
+      "projects": [
+        {
+          "name": "Harbor Controls",
+          "compared_frames": 9,
+          "log": "parity-harbor.txt"
+        },
+        {
+          "name": "VOIDWAKE",
+          "compared_frames": 10,
+          "log": "parity-voidwake.txt"
+        }
+      ],
+      "scope": "Bounded CLI versus exported official WASM comparisons, not native GUI acceptance."
+    },
+    {
+      "name": "fresh-sdk-only-responsive-consumer",
+      "status": "passed",
+      "project": "_Games/responsive-layout-lab",
+      "sdk": "D:/TSProject/UnoneResponsive-20261016/sdk",
+      "passed_gates": 4,
+      "deterministic_tests": 2,
+      "prepare": "ready",
+      "report": "fresh-sdk-usability-report.json",
+      "original_type_error": "fresh-sdk-05-first-typecheck-failure.json",
+      "scope": "Fresh-context SDK-only author with no engine-source or prior-example reads; exact limits are self-recorded in the raw author report."
+    },
+    {
+      "name": "post-usability-guidance-correction",
+      "status": "passed",
+      "strict_snippet_exit_code": 0,
+      "strict_log": "package-info-strict.txt",
+      "correction": "SDK README and ui.components.info descriptor example copy name/version/declared into a portable observation literal. No runtime, host, package or canonical type behavior changes.",
+      "cli_rebuild_exit_code": 0,
+      "cli_rebuild_log": "build-cli-doc-fix.txt",
+      "final_api_example": "describe-info-final.json",
+      "final_sdk": "D:/TSProject/UnoneResponsive-20261016/sdk-final",
+      "final_sdk_pack_and_inspect_exit_code": 0,
+      "final_sdk_inspect": "sdk-inspect-final.json",
+      "independent_inventory": "sdk-inventory-verification.json",
+      "independently_matched_files": 68,
+      "independent_inventory_mismatches": 0,
+      "final_cli_sha256": "8b200e78c6d4bc65cbd335369c7ce18f61e800fa5cdbbe5f8be934c5ff00e083",
+      "continuity": "final-sdk-continuity.json",
+      "final_prepare": [
+        {
+          "project": "Harbor Controls",
+          "exit_code": 0,
+          "passed_gates": 5,
+          "log": "prepare-harbor-controls-final.json"
+        },
+        {
+          "project": "Layout Lab",
+          "exit_code": 0,
+          "passed_gates": 4,
+          "deterministic_tests": 2,
+          "log": "prepare-responsive-layout-lab-final.json"
+        }
+      ],
+      "payload_identity": "Each final-SDK export has the same browser-tested release and identical hashes/lengths for all 71 exporter-inventory payload files. The export metadata descriptor is not in that inventory and its SDK-selection paths may differ."
+    },
+    {
+      "name": "actual-url-browser",
+      "status": "passed",
+      "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified&mime=fixed",
+      "assertions": 197,
+      "failed": 0,
+      "release": "b249a80048b22a7e681d87a8ce063e694ad6a90cf28be324a6ff0434afeda95f",
+      "package": "0.4.0",
+      "unchanged_export_files": 142,
+      "summary": "browser-summary.json",
+      "raw": [
+        "browser-responsive.json",
+        "browser-gestures.json"
+      ],
+      "artifacts": "browser-artifacts.json",
+      "visual_review": "browser-visual-review.json",
+      "scope": "Playwright msedge headless on Windows, physical mouse gestures and browser viewport resizing; six screenshots inspected. No hardware-touch or native-appearance claim."
+    },
+    {
+      "name": "fresh-sdk-example-actual-browser",
+      "status": "passed",
+      "url": "http://127.0.0.1:8345/",
+      "assertions": 47,
+      "failed": 0,
+      "release": "ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb",
+      "package": "0.4.0",
+      "unchanged_export_files": 72,
+      "summary": "fresh-browser-summary.json",
+      "raw": "fresh-browser-report.json",
+      "visual_review": "fresh-browser-visual-review.json",
+      "artifacts": "fresh-browser-artifacts.json",
+      "scope": "Physical button clicks, retained count during live resizing, 1/2/4 equal-column grids, fixed/grow toolbar and authored variant selection; three screenshots inspected in Windows msedge headless."
+    },
+    {
+      "name": "fresh-source-eof-normalization",
+      "status": "passed",
+      "passed_gates": 4,
+      "deterministic_tests": 2,
+      "log": "verify-fresh-eof-normalized.json",
+      "scope": "Only final source EOF whitespace normalized after browser acceptance. Existing exports remain immutable; no source-byte identity with served script is claimed after normalization."
+    }
+  ],
+  "total_browser_assertions": 244,
+  "limitations": [
+    "No completed Claude review; the attempt timed out with no output.",
+    "Independent architecture review was read-only source review, not test execution.",
+    "No native GUI, native scroll, physical mobile or every composition acceptance is claimed."
+  ]
+}

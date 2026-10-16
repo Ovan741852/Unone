@@ -1,0 +1,19 @@
+{
+  "reviewer": "/root/responsive_architecture",
+  "scope": "Read-only source review; no build or test execution by the reviewer",
+  "baseline": "4442a5e46df21faa50ff7db47999f40eaaa56df2",
+  "finding": {
+    "file": "packages/unone-ui/src/components.luau",
+    "description": "Tolerance floored at 1 and shared across axes admitted meaningful fixed-size overflow on tiny valid bounds.",
+    "reproduction": "row sizes 6e-19,6e-19; bounds left=0,top=0,width=1e-18,height=1; the second fixed region was silently shortened from 6e-19 to 4e-19",
+    "disposition": "Fixed: separate allocated-edge tolerance per axis; fixed-size budget tolerance derives only from actual main-axis lengths, without a unit floor or cross-axis/origin magnitude.",
+    "regression": "tiny_axis_overflow_is_not_hidden_by_origin_or_cross_axis_roundoff"
+  },
+  "final_reviewer_response": "已確認修正有效。固定尺寸誤差現在依主軸實際長度計算，原本 1e-18 bounds 的 20% 溢出會正確報 UI_LAYOUT_OVERFLOW；巨大交叉軸也不會放大容許值。0.1 + 0.2 的合理浮點誤差處理仍保留，既有累積分配與邊界修正沒有明顯新問題。缺少 values 的 guard 與測試 helper 也已修正。本次唯讀複查無剩餘具體發現，未 build、未編輯；以目前版本結束 review。",
+  "other_confirmed_fixes": [
+    "Strict Core publication originally rejected fractional equal column3 and row6 layouts; cumulative spans and bounded arithmetic edge correction fix this without relaxing Core.",
+    "Missing required variant.values now fails early with UI_LAYOUT_VALUES; false, 0 and string payloads remain valid.",
+    "Recursive discriminated unions widened ordinary nested kind literals in strict Luau; a canonical recursive record accepts the authored example without any or per-node casts. Kind-dependent constraints remain factory diagnostics."
+  ],
+  "limits": "Source review is separate from executable tests and actual official-player acceptance. Exact reviewer report content above was recorded by the root agent."
+}

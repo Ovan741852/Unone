@@ -168,7 +168,7 @@ export type UiApi = {
     components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     -- Current host width/height ratio, also used by anchored placement.
-    -- Read-only environment data; selecting a layout remains game code.
+    -- Read-only environment data; pass to components.createResponsiveLayout().resolve.
     getViewport: () -> {aspect: number},
     -- Helpers return a real scroll_view node. Content is local top-left/y-down;
     -- viewport uses explicit left/top; never pass a stage x/y rect here.
@@ -263,7 +263,7 @@ export type UiScrollNode = UiPlacement & {
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
--- @unone/ui: pure constructors. All positions/order remain explicitly authored.
+-- @unone/ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
     text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
@@ -304,7 +304,39 @@ export type UiComponentProps = UiPlacement & {
 export type UiComponentScreenProps = {
     id: string, node: string, children: {UiNode}, budget: UiBudget?,
 }
+-- Layout lengths use normalized stage units per axis, like rect/viewport.
+-- They are NOT font/anchor vertical units. No intrinsic text measurement.
+-- A recursive record preserves contextual literal inference in strict Luau.
+-- The factory validates kind-dependent fields (grid columns, slot children,
+-- root sizing) and reports UI_LAYOUT_* errors before publishing anything.
+export type UiLayoutNode = {
+    id: string, kind: "slot" | "row" | "column" | "grid",
+    size: number?, grow: number?, children: {UiLayoutNode}?,
+    gap: number?, padding: UiInsets?, columns: number?,
+    rect: never?, style: never?, flex: never?, wrap: never?, direction: never?,
+}
+export type UiResponsiveVariant<T> = {
+    name: string, minAspect: number, layout: UiLayoutNode, values: T,
+}
+export type UiResponsiveLayoutOptions<T> = {
+    space: ("stage" | "scroll")?, variants: {UiResponsiveVariant<T>},
+    onResize: never?, breakpoints: never?,
+}
+export type UiResponsiveLayoutResult<T> = {
+    variant: string, values: T,
+    -- Fresh canonical copies; stage rect is y-up, scroll rect is y-down.
+    rect: (id: string) -> UiRect,
+    -- Top-left/y-down in either space; suitable for ScrollView viewport.
+    viewport: (id: string) -> UiViewport,
+}
+export type UiResponsiveLayout<T> = {
+    -- Pure: highest minAspect <= viewport.aspect, fallback first (minAspect=0).
+    -- Stage bounds stay inside 0..100; scroll bounds may extend beyond 100.
+    resolve: (viewport: {aspect: number}, bounds: UiViewport?) -> UiResponsiveLayoutResult<T>,
+}
 export type UiComponentKit = {
+    -- Create once with authored groups/thresholds; resolve each View for reflow.
+    createResponsiveLayout: <T>(options: UiResponsiveLayoutOptions<T>) -> UiResponsiveLayout<T>,
     -- Preferred complete numeric slider: reusable state plus semantic host capture.
     createSlider: (options: UiSliderOptions) -> UiSliderControl,
     text: (props: UiComponentTextProps) -> UiTextNode,
@@ -493,7 +525,7 @@ export type Game = {
 }
 -- END UNONE API TYPES
 
--- Project-owned settings, action meanings and explicit viewport compositions.
+-- Project-owned settings, action meanings and authored responsive compositions.
 -- Ordinary component children stay in stage coordinates; only virtual rows
 -- below use local top-left/y-down coordinates.
 type PresetRow = {key: string, label: string, category: string}
@@ -501,6 +533,10 @@ type Geometry = {
     name: string, compact: boolean, audio: UiRect, quality: UiRect,
     library: UiRect, probe: UiRect, slider: UiRect, sliderTrack: UiRect, combo: UiRect,
     apply: UiRect, reset: UiRect, probeButton: UiRect, list: UiViewport,
+}
+type LayoutValues = {
+    compact: boolean, slider: UiRect, sliderTrack: UiRect, combo: UiRect,
+    probeButton: UiRect, list: UiViewport,
 }
 
 local Game = {}
@@ -548,6 +584,7 @@ local holdTicks = 0
 local totalHeldTicks = 0
 local tick = 0
 local volumeControl: UiSliderControl? = nil
+local responsiveLayout: UiResponsiveLayout<LayoutValues>? = nil
 local pressA = false
 local pressB = false
 local releaseA = false
@@ -582,42 +619,6 @@ local function stageRect(left: number, top: number, width: number, height: numbe
     return {x=left,y=100-top-height,width=width,height=height}
 end
 
-local function geometry(aspect: number): Geometry
-    if aspect < 0.8 then
-        return {
-            name="portrait", compact=true,
-            audio=stageRect(5,19,90,14), quality=stageRect(5,35,90,17),
-            library=stageRect(5,54,90,24.5), probe=stageRect(5,80.5,90,10.5),
-            slider=stageRect(8,28,84,3.6), sliderTrack=stageRect(8,32.1,84,0.28),
-            combo=stageRect(8,40.2,84,4.8),
-            apply=stageRect(5,93,56,4.8), reset=stageRect(64,93,31,4.8),
-            probeButton=stageRect(8,85.2,28,4.2),
-            list={left=8,top=61.2,width=84,height=13.6},
-        }
-    elseif aspect < 1.35 then
-        return {
-            name="medium", compact=false,
-            audio=stageRect(5,25,43,23), quality=stageRect(5,51,43,25),
-            library=stageRect(51,25,44,42), probe=stageRect(51,70,44,19),
-            slider=stageRect(7,37,39,5), sliderTrack=stageRect(7,44,39,0.45),
-            combo=stageRect(7,59.5,39,5.5),
-            apply=stageRect(5,81,26,6), reset=stageRect(33,81,15,6),
-            probeButton=stageRect(53,79.5,13,6),
-            list={left=53,top=36,width=40,height=25},
-        }
-    end
-    return {
-        name="desktop", compact=false,
-        audio=stageRect(6,25,40,23), quality=stageRect(6,51,40,25),
-        library=stageRect(49,25,45,42), probe=stageRect(49,70,45,19),
-        slider=stageRect(8,37,36,5), sliderTrack=stageRect(8,44,36,0.45),
-        combo=stageRect(8,59.5,36,5.5),
-        apply=stageRect(6,81,25,6), reset=stageRect(33,81,13,6),
-        probeButton=stageRect(51,79.5,13,6),
-        list={left=51,top=36,width=41,height=25},
-    }
-end
-
 local function selectedLabel(): string
     for _, row in ipairs(rows) do
         if row.key == selectedKey then return row.label end
@@ -627,7 +628,18 @@ end
 
 local function publish(api: EngineApi)
     local aspect = api.ui.getViewport().aspect
-    local g = geometry(aspect)
+    local model = responsiveLayout
+    assert(model, "Responsive layout must be created in Game.start")
+    local resolved = model.resolve(api.ui.getViewport())
+    local values = resolved.values
+    local g: Geometry = {
+        name=resolved.variant, compact=values.compact,
+        audio=resolved.rect("audio"),quality=resolved.rect("quality"),
+        library=resolved.rect("library"),probe=resolved.rect("probe"),
+        apply=resolved.rect("apply"),reset=resolved.rect("reset"),
+        slider=values.slider,sliderTrack=values.sliderTrack,combo=values.combo,
+        probeButton=values.probeButton,list=values.list,
+    }
     local compact = g.compact
     local ui: UiComponentKit = api.ui.components.create({
         text=textBase, button=buttonBase, slider=buttonBase,
@@ -809,6 +821,66 @@ function Game.start(api: EngineApi)
     volumeControl = api.ui.components.create({slider=buttonBase}).createSlider({
         id="audio/level",value=volume,min=0,max=100,step=1,
     })
+    -- The project declares the visual groups and breakpoints; the official
+    -- package selects a variant, partitions its regions and converts spaces.
+    -- These plain layout nodes never become interactive UI/tree elements.
+    local layoutOptions: UiResponsiveLayoutOptions<LayoutValues> = {variants={
+        {name="portrait",minAspect=0,values={
+            compact=true,
+            slider=stageRect(8,28,84,3.6),sliderTrack=stageRect(8,32.1,84,0.28),
+            combo=stageRect(8,40.2,84,4.8),probeButton=stageRect(8,85.2,28,4.2),
+            list={left=8,top=61.2,width=84,height=13.6},
+        },layout={id="body",kind="column",padding={left=5,right=5,top=19,bottom=2.2},gap=2,children={
+            {id="audio",kind="slot",size=14},
+            {id="quality",kind="slot",size=17},
+            {id="library",kind="slot",size=24.5},
+            {id="probe",kind="slot",size=10.5},
+            {id="actions",kind="row",size=4.8,gap=3,children={
+                {id="apply",kind="slot",size=56},{id="reset",kind="slot",grow=1},
+            }},
+        }}},
+        {name="medium",minAspect=0.8,values={
+            compact=false,
+            slider=stageRect(7,37,39,5),sliderTrack=stageRect(7,44,39,0.45),
+            combo=stageRect(7,59.5,39,5.5),probeButton=stageRect(53,79.5,13,6),
+            list={left=53,top=36,width=40,height=25},
+        },layout={id="body",kind="row",padding={left=5,right=5,top=25,bottom=11},gap=3,children={
+            {id="left",kind="column",size=43,children={
+                {id="audio",kind="slot",size=23},
+                {id="audio-gap",kind="slot",size=3},
+                {id="quality",kind="slot",size=25},
+                {id="quality-gap",kind="slot",size=5},
+                {id="actions",kind="row",size=6,gap=2,children={
+                    {id="apply",kind="slot",size=26},{id="reset",kind="slot",size=15},
+                }},
+                {id="left-tail",kind="slot",grow=1},
+            }},
+            {id="right",kind="column",grow=1,gap=3,children={
+                {id="library",kind="slot",size=42},{id="probe",kind="slot",grow=1},
+            }},
+        }}},
+        {name="desktop",minAspect=1.35,values={
+            compact=false,
+            slider=stageRect(8,37,36,5),sliderTrack=stageRect(8,44,36,0.45),
+            combo=stageRect(8,59.5,36,5.5),probeButton=stageRect(51,79.5,13,6),
+            list={left=51,top=36,width=41,height=25},
+        },layout={id="body",kind="row",padding={left=6,right=6,top=25,bottom=11},gap=3,children={
+            {id="left",kind="column",size=40,children={
+                {id="audio",kind="slot",size=23},
+                {id="audio-gap",kind="slot",size=3},
+                {id="quality",kind="slot",size=25},
+                {id="quality-gap",kind="slot",size=5},
+                {id="actions",kind="row",size=6,gap=2,children={
+                    {id="apply",kind="slot",size=25},{id="reset",kind="slot",size=13},
+                }},
+                {id="left-tail",kind="slot",grow=1},
+            }},
+            {id="right",kind="column",grow=1,gap=3,children={
+                {id="library",kind="slot",size=42},{id="probe",kind="slot",grow=1},
+            }},
+        }}},
+    }}
+    responsiveLayout = api.ui.components.createResponsiveLayout(layoutOptions)
     publish(api)
 end
 

@@ -1,0 +1,49 @@
+{
+  "runtime_packages": {
+    "@unone/ui": "0.4.0"
+  },
+  "cargo_features": [
+    "audio",
+    "camera2d",
+    "particle",
+    "random",
+    "ui"
+  ],
+  "source_commit": "4442a5e46df21faa50ff7db47999f40eaaa56df2",
+  "preview_tools": false,
+  "source_dirty": true,
+  "compiled_systems": [
+    "audio",
+    "camera2d",
+    "input",
+    "observation",
+    "particle",
+    "random",
+    "ui",
+    "world"
+  ],
+  "javascript": "unone-player.js",
+  "wasm": "unone_player.wasm",
+  "exports": [
+    "init",
+    "alloc",
+    "load_project",
+    "set_save_payload",
+    "set_input_frame",
+    "set_viewport_aspect",
+    "set_instance_transport",
+    "tick",
+    "jobs_request",
+    "jobs_binary",
+    "ui_request",
+    "observation_ptr",
+    "observation_len"
+  ],
+  "profile": "release",
+  "dev_tools": false,
+  "wasm_sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da",
+  "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+  "emscripten": "3.1.74",
+  "rust": "1.95.0",
+  "wasm_bytes": 1790421
+}

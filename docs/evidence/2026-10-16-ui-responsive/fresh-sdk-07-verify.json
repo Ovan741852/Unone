@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "value": {
+    "project": "Layout Lab",
+    "steps": [
+      {
+        "name": "types",
+        "status": "passed",
+        "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+        "command": "game check --types",
+        "diagnostics": []
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "0 declared, 0 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout",
+        "status": "passed",
+        "summary": "0 findings; nodes: background, heading, subtitle, refresh_button, activity, section, card/workspaces/surface, workspaces/title, workspaces/value, workspaces/description, card/inbox/surface, inbox/title, inbox/value, inbox/description, card/reports/surface, reports/title, reports/value, reports/description, card/automations/surface, automations/title, automations/value, automations/description, footer",
+        "command": "game ui preview --strict --frames 1 --seed 42",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "passed",
+        "summary": "2/2 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": []
+      }
+    ],
+    "passed": 4,
+    "failed": 0,
+    "not_applicable": 0,
+    "step_source": "default"
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 4 gates in the default order: 4 passed, 0 failed, 0 not applicable"
+  ]
+}

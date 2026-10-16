@@ -61,7 +61,7 @@ local function fields(value: any, allowed: Fields, path: string)
             elseif path=="virtualList" and (key=="columns" or key=="columnWidth" or key=="gapX") then
                 hint = "; use virtualGrid for columns, columnWidth and gapX"
             elseif key=="layout" or key=="relative" or key=="flex" or key=="gap" or key=="grid" then
-                hint = "; author rect or anchor+size explicitly; components keep children in stage coordinates and do not provide automatic layout; only scroll content uses local coordinates"
+                hint = "; use createResponsiveLayout(...).resolve(api.ui.getViewport()) and pass resolved.rect(id) explicitly; constructors do not lay out children; scroll content uses local coordinates"
             elseif key=="kind" then
                 hint = "; the named constructor supplies kind"
             elseif key=="fontSize" then
@@ -166,6 +166,288 @@ local function sliderRect(value: any, label: string): any
     return result
 end
 
+-- Explicit, pure geometry plans. The solver never publishes UI, measures text,
+-- mutates authored nodes, changes styles, or advances simulation/input state.
+local layoutOptionFields: Fields = {space=true,variants=true}
+local layoutVariantFields: Fields = {name=true,minAspect=true,layout=true,values=true}
+local layoutNodeFields: Fields = {id=true,kind=true,size=true,grow=true,padding=true,gap=true,columns=true,children=true}
+local layoutViewportFields: Fields = {aspect=true}
+local layoutBoundsFields: Fields = {left=true,top=true,width=true,height=true}
+type LayoutAllocatedBounds = {left: number,top: number,right: number,bottom: number,epsilonX: number,epsilonY: number}
+
+local function layoutFields(value: any, allowed: Fields, path: string)
+    assert(type(value)=="table", "UI_LAYOUT_PROPS: "..path.." must be a table")
+    assert(getmetatable(value)==nil,"UI_LAYOUT_PROPS: "..path.." must be a plain table without metatables")
+    for key in pairs(value) do
+        assert(type(key)=="string" and allowed[key],
+            "UI_LAYOUT_PROP: unknown "..path.." field "..tostring(key).."; use explicit slot/row/column/grid plans, then pass resolved.rect(id) or resolved.viewport(id) to constructors")
+    end
+end
+
+local function layoutNumber(value: any, label: string): number
+    assert(type(value)=="number" and value==value and math.abs(value)<math.huge,
+        "UI_LAYOUT_NUMBER: "..label.." must be finite")
+    return value
+end
+
+local function layoutArray(value: any, path: string): number
+    assert(type(value)=="table", "UI_LAYOUT_ARRAY: "..path.." must be a non-empty dense array")
+    assert(getmetatable(value)==nil,"UI_LAYOUT_ARRAY: "..path.." must be a plain dense array without metatables")
+    local count, maximum = 0, 0
+    for key in pairs(value) do
+        assert(type(key)=="number" and key>=1 and key%1==0 and key<=4096,
+            "UI_LAYOUT_ARRAY: "..path.." must use consecutive integer keys starting at 1 (at most 4096 entries)")
+        count += 1
+        maximum = math.max(maximum,key)
+    end
+    assert(count>0 and count==maximum,"UI_LAYOUT_ARRAY: "..path.." must be a non-empty dense array without holes")
+    return count
+end
+
+local function layoutIdentifier(value: any, label: string): string
+    assert(type(value)=="string" and string.find(value,"%S")~=nil,
+        "UI_LAYOUT_ID: "..label.." must be a nonblank string")
+    return value
+end
+
+-- Values are portable author data, copied independently of layout structure.
+-- Shared references are permitted; active recursion cycles are not.
+local function layoutCopier(): (any) -> any
+    local active: {[any]: boolean} = {}
+    local remaining = 131072
+    local function visit(value: any, depth: number): any
+        remaining -= 1
+        assert(remaining>=0 and depth<=32,"UI_LAYOUT_COPY: values exceed copy limits (depth 32, work 131072)")
+        local kind = type(value)
+        if kind~="table" then
+            assert(kind=="nil" or kind=="string" or kind=="boolean" or kind=="number",
+                "UI_LAYOUT_COPY: values must contain portable data, not functions or engine objects")
+            if kind=="number" then layoutNumber(value,"values number") end
+            return value
+        end
+        assert(getmetatable(value)==nil,"UI_LAYOUT_COPY: values must be plain portable tables without metatables")
+        assert(not active[value],"UI_LAYOUT_COPY: cyclic values are not portable")
+        active[value] = true
+        local result: any = {}
+        for key, child in pairs(value) do
+            assert(type(key)=="string" or (type(key)=="number" and key==key and math.abs(key)<math.huge),
+                "UI_LAYOUT_COPY: values keys must be strings or finite numbers")
+            remaining -= 1
+            assert(remaining>=0,"UI_LAYOUT_COPY: values exceed copy work limit 131072")
+            result[key] = visit(child,depth+1)
+        end
+        active[value] = nil
+        return result
+    end
+    return function(value: any): any return visit(value,0) end
+end
+
+local function responsiveLayout(options: any): any
+    layoutFields(options,layoutOptionFields,"createResponsiveLayout")
+    local space = if options.space==nil then "stage" else options.space
+    assert(space=="stage" or space=="scroll","UI_LAYOUT_SPACE: space must be stage or scroll")
+    layoutArray(options.variants,"variants")
+    local snapshots: {any} = {}
+    local names: {[string]: boolean} = {}
+    local active: {[any]: boolean} = {}
+    local nodeCount, previousAspect = 0, -1
+    local cloneValues = layoutCopier()
+    local function nodeSnapshot(node: any, ids: {[string]: boolean}, depth: number, parentKind: string?): any
+        assert(depth<=32,"UI_LAYOUT_LIMIT: layout depth must not exceed 32")
+        nodeCount += 1
+        assert(nodeCount<=4096,"UI_LAYOUT_LIMIT: all variants together must not exceed 4096 layout nodes")
+        layoutFields(node,layoutNodeFields,"layout node")
+        assert(getmetatable(node)==nil,"UI_LAYOUT_PROPS: layout nodes must be plain tables")
+        assert(not active[node],"UI_LAYOUT_CYCLE: layout children contain a cycle")
+        active[node] = true
+        local id = layoutIdentifier(node.id,"node id")
+        assert(not ids[id],"UI_LAYOUT_DUPLICATE_ID: node id "..id.." occurs twice in one variant")
+        ids[id] = true
+        local kind = node.kind
+        assert(kind=="slot" or kind=="row" or kind=="column" or kind=="grid",
+            "UI_LAYOUT_KIND: "..id.." kind must be slot, row, column or grid")
+        assert(node.size==nil or node.grow==nil,"UI_LAYOUT_FLEX: "..id.." cannot specify both size and grow")
+        assert(parentKind~=nil or (node.size==nil and node.grow==nil),
+            "UI_LAYOUT_FLEX: root size/grow are not used; pass resolve(viewport,bounds) to size the root")
+        assert(parentKind~="grid" or (node.size==nil and node.grow==nil),
+            "UI_LAYOUT_FLEX: direct grid children use equal cells and cannot specify size/grow")
+        local snapshot: any = {id=id,kind=kind}
+        if node.size~=nil then
+            snapshot.size = layoutNumber(node.size,id..".size")
+            assert(snapshot.size>0,"UI_LAYOUT_FLEX: size must be positive")
+        elseif node.grow~=nil then
+            snapshot.grow = layoutNumber(node.grow,id..".grow")
+            assert(snapshot.grow>0,"UI_LAYOUT_FLEX: grow must be positive")
+        end
+        if kind=="slot" then
+            assert(node.children==nil and node.padding==nil and node.gap==nil and node.columns==nil,
+                "UI_LAYOUT_SLOT: slots cannot have children, padding, gap or columns; use a container")
+        else
+            snapshot.padding = {left=0,top=0,right=0,bottom=0}
+            if node.padding~=nil then
+                layoutFields(node.padding,insetFields,id..".padding")
+                for edge in pairs(insetFields) do
+                    if node.padding[edge]~=nil then
+                        local length = layoutNumber(node.padding[edge],id..".padding."..edge)
+                        assert(length>=0,"UI_LAYOUT_PADDING: padding edges must be non-negative")
+                        snapshot.padding[edge] = length
+                    end
+                end
+            end
+            snapshot.gap = if node.gap==nil then 0 else layoutNumber(node.gap,id..".gap")
+            assert(snapshot.gap>=0,"UI_LAYOUT_GAP: gap must be non-negative")
+            if kind=="grid" then
+                local columns = layoutNumber(node.columns,id..".columns")
+                assert(columns>=1 and columns%1==0 and columns<=256,
+                    "UI_LAYOUT_COLUMNS: grid columns must be an integer in 1..256 (declared columns remain reserved)")
+                snapshot.columns = columns
+            else
+                assert(node.columns==nil,"UI_LAYOUT_COLUMNS: only grid containers accept columns")
+            end
+            layoutArray(node.children,id..".children")
+            snapshot.children = {}
+            for _, child in ipairs(node.children) do
+                table.insert(snapshot.children,nodeSnapshot(child,ids,depth+1,kind))
+            end
+        end
+        active[node] = nil
+        return snapshot
+    end
+    for index, variant in ipairs(options.variants) do
+        layoutFields(variant,layoutVariantFields,"variants["..index.."]")
+        local name = layoutIdentifier(variant.name,"variant name")
+        assert(not names[name],"UI_LAYOUT_VARIANT: variant names must be unique")
+        names[name] = true
+        local minimum = layoutNumber(variant.minAspect,name..".minAspect")
+        assert(minimum>=0 and minimum>previousAspect and (index~=1 or minimum==0),
+            "UI_LAYOUT_VARIANT: variants must be strictly ascending by minAspect, with the first exactly 0")
+        previousAspect = minimum
+        assert(variant.values~=nil,"UI_LAYOUT_VALUES: each variant requires values; use values={} when no style/content values are needed")
+        table.insert(snapshots,{name=name,minAspect=minimum,
+            layout=nodeSnapshot(variant.layout,{},1,nil),values=cloneValues(variant.values)})
+    end
+    local model: any = {}
+    model.resolve = function(viewport: any, bounds: any?): any
+        layoutFields(viewport,layoutViewportFields,"resolve viewport")
+        local aspect = layoutNumber(viewport.aspect,"viewport.aspect")
+        assert(aspect>0,"UI_LAYOUT_VIEWPORT: viewport.aspect must be positive; pass api.ui.getViewport()")
+        local area = if bounds==nil then {left=0,top=0,width=100,height=100} else bounds
+        layoutFields(area,layoutBoundsFields,"resolve bounds")
+        local left, top = layoutNumber(area.left,"bounds.left"), layoutNumber(area.top,"bounds.top")
+        local width, height = layoutNumber(area.width,"bounds.width"), layoutNumber(area.height,"bounds.height")
+        assert(left>=0 and top>=0 and width>0 and height>0,
+            "UI_LAYOUT_BOUNDS: bounds require non-negative left/top and positive width/height")
+        local right, bottom = layoutNumber(left+width,"bounds right"), layoutNumber(top+height,"bounds bottom")
+        assert(right>left and bottom>top,"UI_LAYOUT_BOUNDS: bounds are too small to represent at this origin")
+        assert(space=="scroll" or (right<=100 and bottom<=100),
+            "UI_LAYOUT_BOUNDS: stage bounds must stay in 0..100; use space='scroll' for scroll content")
+        local chosen = snapshots[1]
+        for _, candidate in ipairs(snapshots) do
+            if candidate.minAspect<=aspect then chosen = candidate else break end
+        end
+        local areas: {[string]: any} = {}
+        local function solve(node: any, x: number, y: number, w: number, h: number, parent: LayoutAllocatedBounds?)
+            layoutNumber(x,node.id..".left");layoutNumber(y,node.id..".top")
+            layoutNumber(w,node.id..".width");layoutNumber(h,node.id..".height")
+            local edgeRight = layoutNumber(x+w,node.id.." right")
+            local edgeBottom = layoutNumber(y+h,node.id.." bottom")
+            if parent~=nil then
+                -- Only repair accumulated IEEE-754 roundoff against already
+                -- allocated edges. Meaningful overflow still fails; this does
+                -- not shrink authored sizes or loosen the Core rect validator.
+                assert(x>=parent.left-parent.epsilonX and y>=parent.top-parent.epsilonY
+                    and edgeRight<=parent.right+parent.epsilonX and edgeBottom<=parent.bottom+parent.epsilonY,
+                    "UI_LAYOUT_OVERFLOW: "..node.id.." exceeds its allocated container bounds")
+                x = math.clamp(x,parent.left,parent.right)
+                y = math.clamp(y,parent.top,parent.bottom)
+                edgeRight = math.clamp(edgeRight,parent.left,parent.right)
+                edgeBottom = math.clamp(edgeBottom,parent.top,parent.bottom)
+                w = edgeRight-x
+                h = edgeBottom-y
+            end
+            assert(x>=0 and y>=0 and w>0 and h>0,
+                "UI_LAYOUT_OVERFLOW: "..node.id.." has no positive layout area; reduce fixed sizes, padding or gaps")
+            areas[node.id] = {left=x,top=y,width=w,height=h}
+            if node.kind=="slot" then return end
+            local padding = node.padding
+            local innerX, innerY = x+padding.left, y+padding.top
+            local innerRight, innerBottom = edgeRight-padding.right, edgeBottom-padding.bottom
+            local innerW, innerH = innerRight-innerX, innerBottom-innerY
+            layoutNumber(innerX,node.id.." inner left");layoutNumber(innerY,node.id.." inner top")
+            layoutNumber(innerW,node.id.." inner width");layoutNumber(innerH,node.id.." inner height")
+            assert(innerW>0 and innerH>0,"UI_LAYOUT_OVERFLOW: "..node.id.." padding leaves no positive content area")
+            local children: {any} = node.children
+            local count = #children
+            local roundoff = count*8*2.220446049250313e-16
+            local childBounds = {left=innerX,top=innerY,right=innerRight,bottom=innerBottom,
+                epsilonX=math.max(math.abs(innerX),math.abs(innerRight))*roundoff,
+                epsilonY=math.max(math.abs(innerY),math.abs(innerBottom))*roundoff}
+            if node.kind=="grid" then
+                local columns, rows = node.columns, math.ceil(count/node.columns)
+                local cellW = layoutNumber((innerW-node.gap*(columns-1))/columns,node.id.." grid cell width")
+                local cellH = layoutNumber((innerH-node.gap*(rows-1))/rows,node.id.." grid cell height")
+                assert(cellW>0 and cellH>0,"UI_LAYOUT_OVERFLOW: "..node.id.." grid gaps leave no positive cells")
+                for index, child in ipairs(children) do
+                    local column, row = (index-1)%columns, math.floor((index-1)/columns)
+                    local childX, childY = innerX+column*(cellW+node.gap), innerY+row*(cellH+node.gap)
+                    local childRight = if column==columns-1 then innerRight else childX+cellW
+                    local childBottom = if row==rows-1 then innerBottom else childY+cellH
+                    solve(child,childX,childY,childRight-childX,childBottom-childY,childBounds)
+                end
+            else
+                local horizontal = node.kind=="row"
+                local availableLength = layoutNumber((if horizontal then innerW else innerH)-node.gap*(count-1),node.id.." available length")
+                local fixed, weight = 0, 0
+                for _, child in ipairs(children) do
+                    if child.size~=nil then fixed += child.size else weight += child.grow or 1 end
+                end
+                layoutNumber(fixed,node.id.." fixed size sum");layoutNumber(weight,node.id.." grow weight sum")
+                local remainder = layoutNumber(availableLength-fixed,node.id.." remaining length")
+                -- Budget precision depends on this axis's lengths, not its
+                -- origin or the cross axis. Tiny valid bounds must not hide
+                -- meaningful overflow behind a stage-sized tolerance.
+                local budgetTolerance = math.max(math.abs(availableLength),math.abs(fixed))*roundoff
+                if remainder<0 and remainder>=-budgetTolerance then remainder=0 end
+                assert(remainder>=0 and (weight==0 or remainder>0),
+                    "UI_LAYOUT_OVERFLOW: "..node.id.." fixed sizes and gaps exceed the available axis or leave zero area for grow children")
+                local origin = if horizontal then innerX else innerY
+                local usedFixed, usedWeight = 0, 0
+                for index, child in ipairs(children) do
+                    -- Allocate cumulative spans, rather than repeatedly adding
+                    -- fractional widths. The final grow edge conserves space.
+                    local childStart = origin+usedFixed+node.gap*(index-1)
+                        +(if weight==0 then 0 else remainder*(usedWeight/weight))
+                    if child.size~=nil then usedFixed+=child.size else usedWeight+=child.grow or 1 end
+                    local childEnd = origin+usedFixed+node.gap*(index-1)
+                        +(if weight==0 then 0 else remainder*(usedWeight/weight))
+                    local length = layoutNumber(childEnd-childStart,node.id.." child length")
+                    if horizontal then solve(child,childStart,innerY,length,innerH,childBounds)
+                    else solve(child,innerX,childStart,innerW,length,childBounds) end
+                end
+            end
+        end
+        solve(chosen.layout,left,top,width,height,nil)
+        local resolved: any = {variant=chosen.name,values=layoutCopier()(chosen.values)}
+        local function find(id: string): any
+            layoutIdentifier(id,"resolved region id")
+            local region = areas[id]
+            assert(region~=nil,"UI_LAYOUT_ID: no region named "..id.." in variant "..chosen.name)
+            return region
+        end
+        resolved.viewport = function(id: string): any
+            local region = find(id)
+            return {left=region.left,top=region.top,width=region.width,height=region.height}
+        end
+        resolved.rect = function(id: string): any
+            local region = find(id)
+            return {x=region.left,y=if space=="stage" then 100-(region.top+region.height) else region.top,
+                width=region.width,height=region.height}
+        end
+        return resolved
+    end
+    return model
+end
+
 local function makeKit(theme: any?): any
     if theme~=nil then
         fields(theme,themeFields,"theme")
@@ -173,6 +455,7 @@ local function makeKit(theme: any?): any
     end
     local defaults = if theme==nil then {} else copy(theme)
     local kit: any = {}
+    kit.createResponsiveLayout = function(options: any): any available();return responsiveLayout(options) end
     local function leaf(kind: string, props: any): any
         available()
         fields(props,leafFields[kind],kind)

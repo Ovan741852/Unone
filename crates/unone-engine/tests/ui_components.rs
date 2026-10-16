@@ -10,7 +10,7 @@ fn load(body: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
 fn load_script(source: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
     let mut config = json!({"name":"ui-components","entry_script":"main.luau","systems":{"ui":true}});
     if declared {
-        config["runtime_packages"] = json!({"@unone/ui":"0.3.0"});
+        config["runtime_packages"] = json!({"@unone/ui":"0.4.0"});
     }
     let config: ProjectConfig = serde_json::from_value(config).unwrap();
     EngineRuntime::load_source_project(SourceProject {
@@ -112,9 +112,9 @@ fn undeclared_projects_can_inspect_metadata_but_cannot_use_the_package() {
     let runtime = load(r#"
 local c=api.ui.components
 local info=c.info()
-assert(info.name=='@unone/ui' and info.version=='0.3.0' and info.declared==false)
+assert(info.name=='@unone/ui' and info.version=='0.4.0' and info.declared==false)
 info.version='changed'
-assert(c.info().version=='0.3.0')
+assert(c.info().version=='0.4.0')
 local calls={function()c.create()end,function()c.id('a','b')end,function()c.composeStyle()end}
 for _,name in ipairs({'text','button','slider','combobox','panel','image','component','screen','scrollView','virtualList','virtualGrid'}) do
     table.insert(calls,function()c[name]({})end)
@@ -122,7 +122,7 @@ end
 for _,call in ipairs(calls) do
     local ok,message=pcall(call)
     assert(not ok and string.find(message,'UI_PACKAGE_NOT_DECLARED',1,true))
-    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.3.0',1,true))
+    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.4.0',1,true))
 end
 api.observation.set('declared',c.info().declared)
 "#, false).unwrap();
@@ -273,11 +273,11 @@ local cases={
     {function()ui.button({onClick=function()end})end,'wasPressed(action)'},
     {function()c.slider({onChange=function()end})end,'no UI callbacks or automatic value binding'},
     {function()ui.combobox({onPress=function()end})end,'isDown(action)'},
-    {function()c.component({layout='column'})end,'stage coordinates'},
+    {function()c.component({layout='column'})end,'createResponsiveLayout'},
     {function()ui.text({placement={rect={}}})end,'flatten placement fields'},
     {function()c.text({kind='text'})end,'constructor supplies kind'},
     {function()c.button({fontSize=2})end,'font_size'},
-    {function()ui.screen({id='screen',node='test',children={},layout='row'})end,'automatic layout'},
+    {function()ui.screen({id='screen',node='test',children={},layout='row'})end,'createResponsiveLayout'},
     {function()c.scrollView({onClick=function()end})end,'wasPressed(action)'},
     {function()ui.virtualList({onChange=function()end})end,'automatic value binding'},
     {function()c.virtualGrid({placement={}})end,'flatten placement fields'},

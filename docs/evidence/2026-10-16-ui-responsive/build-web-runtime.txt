@@ -1,0 +1,196 @@
+emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5)
+Copyright (C) 2014 the Emscripten authors (see AUTHORS.txt)
+This is free and open source software under the MIT license.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    Blocking waiting for file lock on package cache
+   Compiling unone-engine v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-engine)
+warning: unused import: `ApiState`
+ --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\runtime\bindings\physics.rs:2:13
+  |
+2 | use super::{ApiState, Lua, Table, Value};
+  |             ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `crate::world::Vec2`
+ --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\runtime\bindings\physics.rs:3:5
+  |
+3 | use crate::world::Vec2;
+  |     ^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `std::rc::Rc`
+ --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\runtime\bindings\physics.rs:4:5
+  |
+4 | use std::rc::Rc;
+  |     ^^^^^^^^^^^
+
+warning: unused import: `Vec2`
+ --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\runtime\bindings\presentation.rs:2:20
+  |
+2 | use crate::world::{Vec2, Vec3};
+  |                    ^^^^
+
+warning: struct `Pose3D` is never constructed
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\rigid3d.rs:243:12
+    |
+243 | pub struct Pose3D {
+    |            ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Query3DFilter` is never constructed
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\rigid3d.rs:803:12
+    |
+803 | pub struct Query3DFilter {
+    |            ^^^^^^^^^^^^^
+
+warning: struct `Ray3D` is never constructed
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\rigid3d.rs:844:12
+    |
+844 | pub struct Ray3D {
+    |            ^^^^^
+
+warning: struct `Cast3D` is never constructed
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\rigid3d.rs:853:12
+    |
+853 | pub struct Cast3D {
+    |            ^^^^^^
+
+warning: struct `Overlap3D` is never constructed
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\rigid3d.rs:863:12
+    |
+863 | pub struct Overlap3D {
+    |            ^^^^^^^^^
+
+warning: struct `QueryHit3D` is never constructed
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\rigid3d.rs:870:12
+    |
+870 | pub struct QueryHit3D {
+    |            ^^^^^^^^^^
+
+warning: field `save_payload` is never read
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\runtime.rs:210:5
+    |
+196 | struct ApiState {
+    |        -------- field in this struct
+...
+210 |     save_payload: Rc<RefCell<Option<serde_json::Value>>>,
+    |     ^^^^^^^^^^^^
+    |
+    = note: `ApiState` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: function `decode` is never used
+  --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\runtime\bindings\physics.rs:54:4
+   |
+54 | fn decode<T: serde::de::DeserializeOwned>(value: Table) -> mlua::Result<T> {
+   |    ^^^^^^
+
+warning: function `encode` is never used
+  --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\runtime\bindings\physics.rs:60:4
+   |
+60 | fn encode<T: serde::Serialize>(lua: &Lua, value: T) -> mlua::Result<Value> {
+   |    ^^^^^^
+
+warning: constant `MAX_LIVE_EFFECTS` is never used
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\world.rs:715:7
+    |
+715 | const MAX_LIVE_EFFECTS: usize = 256;
+    |       ^^^^^^^^^^^^^^^^
+
+warning: field `next_effect_handle` is never read
+   --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\world.rs:898:5
+    |
+884 | pub(crate) struct World {
+    |                   ----- field in this struct
+...
+898 |     next_effect_handle: u64,
+    |     ^^^^^^^^^^^^^^^^^^
+    |
+    = note: `World` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: multiple methods are never used
+    --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\world.rs:1225:19
+     |
+ 905 | impl World {
+     | ---------- methods in this implementation
+...
+1225 |     pub(crate) fn play_animation(
+     |                   ^^^^^^^^^^^^^^
+...
+1278 |     pub(crate) fn stop_animation(&mut self, id: &str) -> Result<(), String> {
+     |                   ^^^^^^^^^^^^^^
+...
+1289 |     pub(crate) fn spawn_effect(
+     |                   ^^^^^^^^^^^^
+...
+1328 |     pub(crate) fn stop_effect(&mut self, handle: &str) -> Result<bool, String> {
+     |                   ^^^^^^^^^^^
+...
+1545 |     pub(crate) fn set_camera3d_position(&mut self, position: Vec3) -> Result<(), String> {
+     |                   ^^^^^^^^^^^^^^^^^^^^^
+...
+1555 |     pub(crate) fn set_camera3d_target(&mut self, target: Vec3) -> Result<(), String> {
+     |                   ^^^^^^^^^^^^^^^^^^^
+...
+1592 |     pub(crate) fn apply_impulse(&mut self, id: &str, impulse: Vec2) -> Result<(), String> {
+     |                   ^^^^^^^^^^^^^
+
+warning: function `resolve_circle_pair` is never used
+    --> D:\TSProject\Voidwake\engine\crates\unone-engine\src\world.rs:1697:4
+     |
+1697 | fn resolve_circle_pair(
+     |    ^^^^^^^^^^^^^^^^^^^
+
+warning: `unone-engine` (lib) generated 17 warnings (run `cargo fix --lib -p unone-engine` to apply 4 suggestions)
+   Compiling unone-player v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-player)
+    Finished `release` profile [optimized] target(s) in 2m 14s
+{
+  "runtime_packages": {
+    "@unone/ui": "0.4.0"
+  },
+  "cargo_features": [
+    "audio",
+    "camera2d",
+    "particle",
+    "random",
+    "ui"
+  ],
+  "source_commit": "4442a5e46df21faa50ff7db47999f40eaaa56df2",
+  "preview_tools": false,
+  "source_dirty": true,
+  "compiled_systems": [
+    "audio",
+    "camera2d",
+    "input",
+    "observation",
+    "particle",
+    "random",
+    "ui",
+    "world"
+  ],
+  "javascript": "unone-player.js",
+  "wasm": "unone_player.wasm",
+  "exports": [
+    "init",
+    "alloc",
+    "load_project",
+    "set_save_payload",
+    "set_input_frame",
+    "set_viewport_aspect",
+    "set_instance_transport",
+    "tick",
+    "jobs_request",
+    "jobs_binary",
+    "ui_request",
+    "observation_ptr",
+    "observation_len"
+  ],
+  "profile": "release",
+  "dev_tools": false,
+  "wasm_sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da",
+  "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+  "emscripten": "3.1.74",
+  "rust": "1.95.0",
+  "wasm_bytes": 1790421
+}

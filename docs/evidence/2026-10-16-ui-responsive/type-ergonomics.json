@@ -1,0 +1,7 @@
+{
+  "diagnostic": "Recursive discriminated-union intersection widens nested literal kind to string. Flat recursive input record fixes inference while shared constructor validates kind-specific fields. No any casts.",
+  "afterExit": 0,
+  "beforeExit": 1,
+  "afterProbe": "main-type-current-probe.luau",
+  "beforeProbe": "main-type-probe.luau"
+}

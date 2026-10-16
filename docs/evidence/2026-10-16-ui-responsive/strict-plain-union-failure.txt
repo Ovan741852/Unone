@@ -1,0 +1,96 @@
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(841,13): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(842,13): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(843,13): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(844,13): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(846,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(846,50): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ grow: number, id: string, kind: "slot" }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(856,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(857,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(858,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(859,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(861,21): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(861,54): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(863,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ grow: number, id: string, kind: "slot" }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(866,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(866,52): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ grow: number, id: string, kind: "slot" }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(876,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(877,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(878,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(879,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(881,21): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(881,54): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(883,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ grow: number, id: string, kind: "slot" }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(886,17): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ id: string, kind: "slot", size: number }'
+./artifacts/ui-responsive/harbor-plain-union-probe.luau(886,52): TypeError: Expected this to be
+	'UiLayoutGrid | UiLayoutSlot | UiLayoutStack'
+but got
+	'{ grow: number, id: string, kind: "slot" }'

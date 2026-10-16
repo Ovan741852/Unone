@@ -110,6 +110,19 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
 /// adding an unknown word cannot turn a query into a broad OR search.
 fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
     let has = |aliases: &[&str]| terms.iter().any(|term| aliases.contains(term));
+    // Explicit responsive composition uses the shared opt-in model. Keep this
+    // vocabulary separate from virtual collections and typography: "virtual
+    // grid" and "font layout" must retain their established capability routes.
+    let responsive = ["responsive", "adaptive", "breakpoint", "breakpoints", "layout", "layouts", "createresponsivelayout", "row", "rows", "column", "columns", "grid", "自適應", "自适应", "響應式", "响应式", "斷點", "断点", "排版", "佈局", "布局", "橫排", "横排", "直排", "網格", "网格"];
+    let responsive_context = ["ui", "official", "shared", "reusable", "package", "kit", "create", "build", "component", "components", "control", "controls", "composition", "arrange", "arrangement", "container", "slot", "slots", "padding", "gap", "grow", "fixed", "size", "bounds", "region", "regions", "stage", "scroll", "viewport", "aspect", "portrait", "landscape", "compact", "wide", "resolve", "variant", "variants", "select", "selection", "threshold", "thresholds", "types", "typed", "typings", "官方", "共用", "套件", "建立", "元件", "組件", "组件", "容器", "區域", "区域", "間距", "间距", "內距", "内距", "比例", "螢幕", "屏幕", "直向", "橫向", "横向", "設定", "设置", "如何", "使用", "型別", "类型", "與", "与", "和"];
+    if let Some(tokens) = fully_segment_ui_terms(terms, &[&responsive[..], &responsive_context[..]].concat())
+        && tokens.iter().any(|term| responsive.contains(term)) {
+        return Some(["ui.components.createResponsiveLayout", "ui.components.create", "ui.getViewport", "ui.setRoot"].into_iter().filter_map(describe).collect());
+    }
+    if has(&["responsive", "adaptive", "breakpoint", "breakpoints", "createresponsivelayout"])
+        || terms.iter().any(|term| ["自適應", "自适应", "響應式", "响应式", "斷點", "断点"].iter().any(|alias| term.contains(alias))) {
+        return Some(Vec::new());
+    }
     // A complete numeric control is the default slider route. The old semantic
     // leaf remains exactly addressable, but does not implement drag/value state.
     let slider = ["slider", "sliders", "createslider", "slidercomponent", "滑桿", "滑杆", "滑塊", "滑块"];
@@ -1836,7 +1849,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "UiSliderInteraction? = {phase:'start'|'drag'|'end'|'cancel',ratio:number in 0..1}; nil when no event was delivered this tick.",
             vec!["Read-only; multiple reads never consume the event"],
             "The current tick snapshot is stable. Successful ticks consume pending events; a following tick without input has nil, while a failed tick preserves pending events for retry. Hosts retain start/end/cancel order and coalesce adjacent drag samples.",
-            vec!["Use matching 0.3.0 SDK/Core/player templates. ui_sliders frames reject unknown phase, non-finite/out-of-range ratio, blank/oversized ID and more than 256 controls."],
+            vec!["Use matching 0.4.0 SDK/Core/player templates. ui_sliders frames reject unknown phase, non-finite/out-of-range ratio, blank/oversized ID and more than 256 controls."],
             "local event = api.input.getSliderInteraction(\"volume\") -- advanced: ordinary code uses volume.update(api.input)",
             vec!["ui.components.createSlider", "ui.components.slider"],
         ),
@@ -1946,7 +1959,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui",
             "Publish a declarative UI tree with reusable typography/box styles and explicit scoped card backgrounds. Image/panel background_for metadata declares screen or ancestor-component background intent for overlap diagnostics. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
             "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Start reusable controls with the official @unone/ui package: ui.components.info then ui.components.create returns a typed kit. See docs/ui-components.md. Custom Luau factories may also return the existing component tree; component is a node kind, not api.ui.component(). A reusable card function carries background_for={component=id} on its own background leaf, keeping that intent beside its internal leaves instead of repeating their IDs in external overlap policies. Use background_for={screen=true} for a screen background. Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
-            "No automatic layout, CSS, platform widgets, data binding or game rules. The game authors rectangles, semantic grouping, ViewModels, reusable components, content and action meanings. Styles are local to leaves and never inherited from components. Use ui.getViewport for authored responsive choices.",
+            "No implicit layout, CSS, platform widgets, data binding or game rules. For opt-in authored breakpoint/row/column/grid composition, use ui.components.createResponsiveLayout and pass its resolved rectangles to leaves. The game authors semantic grouping, ViewModels, reusable components, content and action meanings. Styles are local to leaves and never inherited from components.",
             vec![parameter(
                 "root",
                 "UiScreen",
@@ -1966,6 +1979,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec![
                 "ui.components.create",
                 "ui.components.info",
+                "ui.components.createResponsiveLayout",
                 "ui.inspect",
                 "ui.getViewport",
                 "ui.scrollView",
@@ -1984,14 +1998,28 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["Read-only package metadata"],
             "Does not publish UI or advance a frame. Reports the version bundled with this runtime/SDK.",
             vec![],
-            "local package = api.ui.components.info(); api.observation.set(\"ui_package\", package)",
+            "local info = api.ui.components.info(); api.observation.set(\"ui_package\", {name=info.name,version=info.version,declared=info.declared})",
             vec!["ui.components.create", "ui.setRoot"],
+        ),
+        descriptor(
+            "ui.components.createResponsiveLayout",
+            "ui",
+            "Create the official reusable responsive layout model: select an authored aspect breakpoint and resolve explicit slot/row/column/grid regions without changing UI nodes.",
+            "Default for responsive layout, adaptive layout, breakpoints, row/column/grid, 自適應排版 and 響應式斷點. Available on api.ui.components and the themed kit. Declare @unone/ui 0.4.0; use canonical UiResponsiveLayoutOptions<T>, UiResponsiveLayout<T>, UiLayoutNode and UiViewport from game api typings. Read docs/ui-responsive.md for a complete typed lifecycle and coordinate examples.",
+            "No implicit component layout, text measurement, wrapping, CSS, inferred breakpoints, node transformation, renderer replacement or application rules. Project Luau chooses semantic groups, thresholds, content and styles; this shared model owns selection and geometry arithmetic.",
+            vec![parameter("options", "UiResponsiveLayoutOptions<T>", "space='stage' (default) or 'scroll'; dense nonempty variants={name,minAspect,layout,values:T}. First minAspect=0, then strictly ascending finite thresholds; unique nonblank names. UiLayoutNode is {id,kind='slot'|'row'|'column'|'grid',size?,grow?,padding?,gap?,columns?,children?}. Explicit positive size fixes a row/column child's main-axis extent; otherwise positive grow defaults to 1. No size+grow, root sizing or grid-child sizing. Grid requires columns integer 1..256 and equal cells. Slot rejects container-only fields. IDs are unique within each variant.")],
+            "UiResponsiveLayout<T>; resolve({aspect:number},bounds?:UiViewport)->{variant:string,values:T,rect(id)->UiRect,viewport(id)->UiViewport}. Bounds default {left=0,top=0,width=100,height=100}.",
+            vec!["Create a pure Luau model with copied options; return defensive geometry/value copies"],
+            "Create once, retain it, and resolve in a pure View or virtual renderItem. Resolve selects the highest minAspect <= viewport.aspect, inclusively. Row proceeds left-to-right; column and grid rows proceed top-to-bottom. Container regions are outer bounds; padding affects only children. Lengths use per-axis rectangle units, independently of vertical UiStyle units. Stage rect is y-up and viewport is top-left/y-down; scroll rect and viewport are local top-left/y-down. Stage bounds fit 0..100; scroll bounds may extend beyond 100. No simulation tick, RNG, publication, node cloning or virtual-registry mutation.",
+            vec!["Unknown fields, non-finite numbers, unordered/missing fallback thresholds, duplicate names/IDs, invalid node combinations, non-positive cells and overflowing fixed sizes/gaps/padding fail explicitly. No silent clipping or fallback to a different variant. Call result.viewport(id) for scroll helper viewport; result.rect(id) for leaves. Font size is a project-authored values field, not calculated from geometry. Do not duplicate breakpoint tests and rectangle arithmetic per project or add layout props to component constructors."],
+            "local layout = api.ui.components.createResponsiveLayout({variants={{name=\"base\",minAspect=0,layout={id=\"root\",kind=\"row\",gap=2,children={{id=\"main\",kind=\"slot\",grow=2},{id=\"aside\",kind=\"slot\"}}},values={fontSize=2}}}}); local resolved = layout.resolve(api.ui.getViewport()); local title = api.ui.components.text({id=\"title\",text=\"Settings\",rect=resolved.rect(\"main\"),style={font_size=resolved.values.fontSize}})",
+            vec!["ui.components.create", "ui.getViewport", "ui.components.scrollView", "ui.components.virtualGrid", "ui.setRoot"],
         ),
         descriptor(
             "ui.components.createSlider",
             "ui",
             "Create the official reusable numeric Slider control with host-owned hit testing/capture and package-owned range, step, value and gesture lifecycle.",
-            "Default for slider, slider drag, slider value, volume slider, 滑桿拖曳 and 滑桿數值. Available on api.ui.components and the themed kit. Declare @unone/ui 0.3.0 and use canonical UiSliderOptions, UiSliderControl, UiSliderViewProps and UiSliderUpdate from game api typings.",
+            "Default for slider, slider drag, slider value, volume slider, 滑桿拖曳 and 滑桿數值. Available on api.ui.components and the themed kit. Declare @unone/ui 0.4.0 and use canonical UiSliderOptions, UiSliderControl, UiSliderViewProps and UiSliderUpdate from game api typings.",
             "Not a callback, automatic layout or game settings binding. Create once; keep whether/when to apply a setting in the project. Use the low-level slider leaf only when deliberately implementing another control protocol.",
             vec![parameter("options", "UiSliderOptions", "id and finite value required; min=0, max=1 (max>min), optional positive step snaps relative to min, both endpoints reachable; axis='horizontal'|'vertical' (default horizontal), reverse=false.")],
             "UiSliderControl with view(props)->UiSliderNode; update(api.input)->{value,changed,dragging,started,released,cancelled}; getValue(); setValue(value); cancel().",
@@ -2005,18 +2033,18 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui.components.create",
             "ui",
             "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
-            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.3.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createSlider/text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control; slider is the low-level compatibility leaf. Direct module constructors use no theme defaults.",
-            "No hardcoded theme, layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
+            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.4.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createResponsiveLayout/createSlider/text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control and createResponsiveLayout for opt-in responsive geometry. Direct module constructors use no theme defaults.",
+            "No hardcoded theme, implicit layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau; opt-in createResponsiveLayout handles shared breakpoint selection and row/column/grid arithmetic from authored definitions. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
             vec![parameter(
                 "theme",
                 "UiComponentsTheme?",
                 "Optional per-kind UiStyle defaults: text, button, panel, image, slider, combobox only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order. screen takes id/node/children and optional budget; scroll helpers retain their existing options and local top-left/y-down content contract.",
             )],
-            "UiComponentKit; createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
+            "UiComponentKit; createResponsiveLayout<T> -> UiResponsiveLayout<T> (create once, resolve in View); createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
             vec!["Construct pure Luau tables; does not publish UI or mutate props/theme"],
             "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
             vec![
-                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.3.0\"} to project.unone.json; info() remains available for discovery.",
+                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.4.0\"} to project.unone.json; info() remains available for discovery.",
                 "Both api.ui.components.button and kit.button exist. api.ui.component and onClick do not exist; publish with ui.setRoot and read semantic action edges with input.wasPressed.",
                 "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
                 "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content.",
@@ -2024,6 +2052,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "local ui = api.ui.components.create({button={font_size=2,background={0.1,0.2,0.3,1}}}); local button = ui.button({id=ui.id(\"menu\",\"apply\"),text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}}); api.ui.setRoot({kind=\"screen\",id=\"settings\",node=\"settings\",children={button}})",
             vec![
                 "ui.components.info",
+                "ui.components.createResponsiveLayout",
                 "ui.components.composeStyle",
                 "ui.components.id",
                 "ui.setRoot",
@@ -2080,16 +2109,16 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "ui.getViewport",
             "ui",
-            "Read the host-reported viewport aspect ratio for game-authored responsive UI composition.",
-            "Choose portrait or landscape arrangements, readable typography and semantic groups in Luau. See docs/ui-styling.md. The host reports the actual stage aspect; headless callers may set it through the runtime viewport boundary.",
-            "This does not choose rectangles, reflow content, add a layout solver or report device pixels. The game owns layout policy; do not use font raster metrics as simulation input.",
+            "Read the host-reported viewport aspect ratio; feed it to ui.components.createResponsiveLayout for shared authored responsive composition.",
+            "Advanced environment observation, or input to layout.resolve(api.ui.getViewport()). Start responsive authoring at ui.components.createResponsiveLayout and docs/ui-responsive.md instead of copying breakpoint conditionals. The host reports the actual stage aspect; headless callers may set it through the runtime viewport boundary.",
+            "This environment getter does not itself choose rectangles, reflow content or report device pixels. Project-authored responsive models own layout policy; do not use font raster metrics as simulation input.",
             vec![],
             "{aspect:number}; width divided by height.",
             vec!["Read-only host viewport observation"],
             "Reads the current runtime viewport aspect without advancing a frame or mutating the UI tree.",
             vec![],
-            "local viewport = api.ui.getViewport(); local compact = viewport.aspect < 1; api.observation.set(\"compact_ui\", compact)",
-            vec!["ui.setRoot", "ui.inspect"],
+            "local resolved = responsiveLayout.resolve(api.ui.getViewport()); api.observation.set(\"ui_variant\", resolved.variant)",
+            vec!["ui.components.createResponsiveLayout", "ui.setRoot", "ui.inspect"],
         ),
         descriptor(
             "ui.inspect",
@@ -2397,14 +2426,14 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     ] {
         result.push(descriptor(
             &format!("ui.components.{method}"), "ui", purpose,
-            "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.3.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
-            "No callbacks, automatic layout, inherited container styles or project behavior. api.ui.component does not exist. Constructors return canonical data; ui.setRoot publishes it.",
+            "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.4.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
+            "No callbacks, implicit layout, inherited container styles or project behavior. For explicit authored responsive geometry use ui.components.createResponsiveLayout, then pass its rect results to leaves. api.ui.component does not exist. Constructors return canonical data; ui.setRoot publishes it.",
             vec![parameter("props", props, "Canonical typed props without kind. Leaf/component placement is flattened rect OR anchor+size. screen uses id/node/children/budget, without placement. Component children retain stage coordinates (0..100, y-up); scroll content uses its documented local top-left/y-down contract. action is a semantic string, never an onClick function.")],
             returns, vec!["Copy authored props and applicable theme styles; no UI publication"],
             "The module uses no theme defaults; a created kit snapshots its per-kind defaults. No simulation step. component/screen preserve registered virtual view handles; ordinary authored data is copied. Styles and bounds are validated at setRoot.",
             vec!["UI_PACKAGE_NOT_DECLARED requires the exact bundled package version. Unknown props such as onClick or nested placement are rejected. Use input.wasPressed for one activation per press; input.isDown deliberately remains true while held."],
             example,
-            vec!["ui.components.create", "ui.components.info", "ui.setRoot", "input.wasPressed", "input.isDown"],
+            vec!["ui.components.create", "ui.components.info", "ui.components.createResponsiveLayout", "ui.setRoot", "input.wasPressed", "input.isDown"],
         ));
     }
     for (method, options, purpose, example) in [
@@ -2414,7 +2443,7 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     ] {
         result.push(descriptor(
             &format!("ui.components.{method}"), "ui", purpose,
-            "Declare @unone/ui 0.3.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
+            "Declare @unone/ui 0.4.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
             "No theme style for scroll containers, automatic responsive layout, native scroll support or gameplay callback. Virtual renderItem is UI-pure and never advances Game.update or consumes RNG.",
             vec![parameter("options", options, "Viewport belongs to its containing space; content uses local top-left/y-down coordinates. Optional inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1) configure Web host-only release motion; no elastic overscroll. Stable item keys and explicit fixed row/cell sizes are required for virtualization.")],
             "UiScrollNode (also a UiNode); preserve registered virtualList/virtualGrid handles when composing a screen/component.",
@@ -2542,7 +2571,7 @@ mod tests {
             assert!(found[0].when_to_use.contains("docs/ui-styling.md"));
             assert!(found[0].related_apis.contains(&"ui.getViewport".to_owned()));
         }
-        for query in ["viewport", "responsive", "portrait", "螢幕比例"] {
+        for query in ["viewport", "portrait", "螢幕比例"] {
             assert_eq!(search(query)[0].name, "ui.getViewport", "{query}");
         }
         assert_eq!(search("ui.setRoot").len(), 1);
@@ -2731,7 +2760,7 @@ mod tests {
         for query in ["button click unfindable", "particle hold", "entity release", "UI package unfindable", "ECS元件"] {
             assert!(search(query).is_empty(), "{query}");
         }
-        for method in ["text", "button", "slider", "createSlider", "combobox", "panel", "image", "component", "screen", "scrollView", "virtualList", "virtualGrid"] {
+        for method in ["text", "button", "slider", "createSlider", "createResponsiveLayout", "combobox", "panel", "image", "component", "screen", "scrollView", "virtualList", "virtualGrid"] {
             let name = format!("ui.components.{method}");
             let found = search(&name);
             assert_eq!(found.len(), 1, "{name}");
@@ -2743,6 +2772,30 @@ mod tests {
         assert!(pressed.side_effects.iter().any(|text| text.contains("never consumes")));
         assert!(describe("input.isActionJustPressed").is_none());
         assert!(describe("ui.component").is_none());
+    }
+
+    #[test]
+    fn responsive_intents_discover_the_shared_model_without_cross_family_matches() {
+        for query in ["responsive", "responsive layout", "adaptive UI layout", "breakpoints", "row", "column", "grid", "row column grid layout", "create shared responsive layout", "responsive layout types", "scroll responsive layout", "自適應", "自適應排版", "自适应布局", "響應式斷點", "响应式断点", "如何使用自適應排版", "橫排", "直排", "網格"] {
+            let found = search(query);
+            assert_eq!(found.first().map(|api| api.name.as_str()), Some("ui.components.createResponsiveLayout"), "{query}");
+            assert!(found.iter().all(|api| api.name.starts_with("ui.")), "{query}");
+            assert!(found[0].when_to_use.contains("docs/ui-responsive.md"));
+            assert!(found[0].when_to_use.contains("UiResponsiveLayoutOptions<T>"));
+            assert!(found[0].returns.contains("UiResponsiveLayout<T>"));
+            assert!(search(&format!("{query} unfindable")).is_empty(), "{query}");
+        }
+        for query in ["particle responsive", "entity row", "virtual responsive layout", "自適應未知排版", "responsive click", "responsive wrap"] {
+            assert!(search(query).is_empty(), "{query}");
+        }
+        assert_eq!(search("virtual grid")[0].name, "ui.components.virtualGrid");
+        assert_eq!(search("font size")[0].name, "ui.setRoot");
+        assert_eq!(search("viewport")[0].name, "ui.getViewport");
+        let exact = search("ui.components.createResponsiveLayout");
+        assert_eq!(exact.len(), 1);
+        assert_eq!(exact[0].parameters[0].type_name, "UiResponsiveLayoutOptions<T>");
+        assert!(exact[0].frame_semantics.contains("highest minAspect <= viewport.aspect"));
+        assert!(describe("ui.components.create").unwrap().returns.contains("UiResponsiveLayout<T>"));
     }
 
     #[test]

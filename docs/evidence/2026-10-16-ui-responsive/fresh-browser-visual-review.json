@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "limits": "Windows browser rasterization and physical mouse only; not a hardware-touch or native-player appearance test.",
+  "reviewed": [
+    {
+      "sha256": "a32630769615f1d64d4ac8d5644c1b6b2009772a79b5a1971a31ff54175fc49e",
+      "reviewed_with": "view_image",
+      "file": "fresh-1440x900.png",
+      "bytes": 46668
+    },
+    {
+      "sha256": "6612ebddb76e02baf8b6a76a840bfa4a8f742fa2af1c1e8fb83116534518b87e",
+      "reviewed_with": "view_image",
+      "file": "fresh-900x900.png",
+      "bytes": 42215
+    },
+    {
+      "sha256": "d2ece3d15f166c95c91083c45367f98bcaa2fc97f1196c0295fe44c3b0d1081f",
+      "reviewed_with": "view_image",
+      "file": "fresh-390x844.png",
+      "bytes": 30507
+    }
+  ],
+  "finding": "All three production screenshots were explicitly inspected with view_image. The dashboard changes from four equal columns to a two-by-two grid to one vertical column. Titles, metrics and complete descriptions remain readable inside each card. The fixed Refresh button and remaining-width activity field stay separate; counts progress 1, 2, 3. No unintended clipping, overlap or error overlay observed."
+}

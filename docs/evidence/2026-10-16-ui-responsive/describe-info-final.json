@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "value": {
+    "name": "ui.components.info",
+    "category": "ui",
+    "purpose": "Discover the official @unone/ui package name, version and whether this project declared it.",
+    "when_to_use": "Before using shared components or checking a UI package version. Available without a runtime_packages declaration; see docs/ui-components.md and ui.components.create.",
+    "when_not_to_use": "This reports the bundled package, not an npm registry or installed module. It does not enable a package or prove host visual support.",
+    "parameters": [],
+    "returns": "UiComponentsInfo: {name:string, version:string, kind:string, entry:string, api:string, license:string, declared:boolean}.",
+    "side_effects": [
+      "Read-only package metadata"
+    ],
+    "frame_semantics": "Does not publish UI or advance a frame. Reports the version bundled with this runtime/SDK.",
+    "common_errors": [],
+    "example": "local info = api.ui.components.info(); api.observation.set(\"ui_package\", {name=info.name,version=info.version,declared=info.declared})",
+    "related_apis": [
+      "ui.components.create",
+      "ui.setRoot"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

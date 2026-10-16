@@ -7,7 +7,9 @@ for shared components, button components, card components and theme styles.
 The project owns themes, content, application state, action meanings and geometry.
 For an interactive numeric slider, start with `createSlider`: the official
 control owns reusable drag/value mechanics, while the project decides what that
-value means.
+value means. For responsive composition, use `createResponsiveLayout` to share
+breakpoint selection and row/column/grid geometry from authored definitions;
+see [the typed responsive guide](ui-responsive.md).
 
 ## Discover and declare
 
@@ -26,6 +28,8 @@ game api search "slider value"
 game api search "滑桿拖曳"
 game api search "scroll inertia"
 game api search "捲動慣性"
+game api search "responsive layout"
+game api search "自適應排版"
 game api search "下拉選單"
 game api search "virtual list"
 game api search "button click"
@@ -34,6 +38,7 @@ game api describe ui.components.info
 game api describe ui.components.create
 game api describe ui.components.button
 game api describe ui.components.createSlider
+game api describe ui.components.createResponsiveLayout
 game api describe input.wasPressed
 game api typings
 ```
@@ -41,7 +46,10 @@ game api typings
 CLI and MCP discovery share the same index. These searches lead to actual
 `ui.components.create` / `ui.components.info` entrypoints. Control queries lead
 directly to callable `ui.components.button`, `createSlider`, `combobox`, `scrollView`,
-`virtualList` or `virtualGrid` descriptors. `"button click"`, `"button pressed"`,
+`virtualList` or `virtualGrid` descriptors. `"responsive layout"`, `"breakpoints"`,
+`"row column grid layout"` and `"自適應排版"` lead to
+`ui.components.createResponsiveLayout`, with types and coordinates rather than a
+bare viewport getter. `"button click"`, `"button pressed"`,
 `"按鈕點擊"`, `"按钮点击"`, `"按一下"` and `"按下瞬間"` lead to
 `input.wasPressed`; `"release"` / `"放開"` lead to `input.wasReleased`, while
 `"hold"` / `"長按"` lead to `input.isDown`. `"UI types"` / `"UI 型別"`
@@ -56,7 +64,7 @@ Declare the exact bundled version in `project.unone.json`:
 ```json
 {
   "runtime_packages": {
-    "@unone/ui": "0.3.0"
+    "@unone/ui": "0.4.0"
   }
 }
 ```
@@ -65,7 +73,7 @@ This is a project configuration fragment; keep the project's other fields.
 `api.ui.components.info()` returns `UiComponentsInfo`: the bundled manifest
 metadata (`name`, `version`, `kind`, `entry`, `api`, `license`) plus `declared`.
 This works before a project declares the package. The package name is `@unone/ui`
-and its current version is `0.3.0`. Calling other package helpers without declaring the
+and its current version is `0.4.0`. Calling other package helpers without declaring the
 package reports `UI_PACKAGE_NOT_DECLARED` with the required fix. Unknown package
 names, unsupported versions and disabled declarations fail explicitly at load.
 Use the version shipped with the selected Core/SDK; there is no npm installation,
@@ -161,7 +169,9 @@ api.ui.setRoot(ui.screen({id="menu",node="menu",children={
 ```
 
 The numbers and action names above are project choices. The package supplies no
-default palette, fonts, layout, responsive policy, manager or business behavior.
+default palette, fonts, breakpoint policy, manager or business behavior. Its
+opt-in responsive model resolves authored region trees; components never arrange
+their children implicitly.
 A custom Luau factory such as `actionCard` composes the official kit; existing
 factories that return canonical nodes directly remain valid.
 
@@ -172,6 +182,7 @@ factories that return canonical nodes directly remain valid.
 | `ui.text(props)` | `UiTextNode`; canonical text fields including `id`, `text`, placement and optional `style`. |
 | `ui.button(props)` | `UiButtonNode`; canonical button fields including `id`, `text`, `action`, placement and optional `style`. |
 | `ui.createSlider(options)` | `UiSliderControl`; persistent numeric control with `view`, `update`, `getValue`, `setValue` and `cancel`. Preferred interactive slider. |
+| `ui.createResponsiveLayout<T>(options)` | `UiResponsiveLayout<T>`; create once, then pure `resolve(viewport,bounds?)` selects authored variants and returns named rectangles/viewports and typed values. [Full contract](ui-responsive.md). |
 | `ui.slider(props)` | `UiSliderNode`; low-level compatible semantic leaf with `id`, optional `text`, `action`, placement and optional `style`. It does not create a numeric controller. |
 | `ui.combobox(props)` | `UiComboBoxNode`; `id`, optional `text`, semantic `action`, optional `expanded`, placement and optional `style`. The project authors the option list and selected value. |
 | `ui.panel(props)` | `UiPanelNode`; canonical decorative panel fields, placement, optional box style and `background_for`. |
@@ -197,7 +208,8 @@ needed. `api.ui.component` does not exist. Props omit `kind`; each constructor c
 canonical kind. Placement is **flattened**: pass `rect={...}` or both
 `anchor="top_right",size={...}` directly on props, exactly as in `UiPlacement`.
 A nested `placement` table, missing placement, or both forms is invalid for a
-leaf/component. `createSlider` takes control configuration, and its `view`
+leaf/component. Responsive geometry is an explicit model result passed to these
+placement fields, never a `layout` prop on a component. `createSlider` takes control configuration, and its `view`
 requires an explicit `rect` in the current coordinate space. `screen` instead uses root props, and scroll wrappers retain
 their `viewport` options. All canonical leaf fields remain available; virtual
 wrappers retain the existing engine-managed scroll registry and add no gameplay
@@ -209,8 +221,13 @@ does not place it at `x=45`. In stage space children keep 0..100 coordinates wit
 y pointing up. Scroll content instead uses local top-left coordinates with y
 pointing down; its viewport belongs to the containing coordinate space. Follow
 [the scroll contract](ui-scroll.md) rather than adding a component-relative
-transform. Child order is retained. Use `api.ui.getViewport()` in the
-project's View to choose a responsive composition and explicit dimensions.
+transform. Child order is retained. Call
+`responsiveModel.resolve(api.ui.getViewport())` in the project's pure View, then
+use `result.rect(id)` for leaves and `result.viewport(id)` for scroll helpers.
+Declare semantic groups and thresholds once; the official package performs the
+shared selection and region arithmetic. Stage/scroll choice is explicit on the
+model and does not transform a UI node. Read [responsive layouts](ui-responsive.md)
+for fixed/grow sizing, equal-cell grids, padding/gaps, typed values and diagnostics.
 
 ## Read semantic actions
 

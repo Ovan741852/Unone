@@ -1,0 +1,7 @@
+    Checking unone-engine v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-engine)
+    Checking unone-mobile-ffi v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-mobile-ffi)
+    Checking unone-cli v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-cli)
+    Checking unone-web-live-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-web-live-smoke)
+    Checking unone-mobile-android-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-mobile-android-smoke)
+    Checking unone-web-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-web-smoke)
+    Finished `release` profile [optimized] target(s) in 1m 22s

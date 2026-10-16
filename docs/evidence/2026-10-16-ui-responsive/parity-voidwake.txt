@@ -1,0 +1,2 @@
+{"ok":true,"mode":"exported-player","export":"C:\\Users\\MAVERI~1\\AppData\\Local\\Temp\\unone-player-parity-XPMEDF\\player","cli":"D:\\TSProject\\UnoneResponsive-20261016\\sdk\\bin\\game.exe","wasm":"C:\\Users\\MAVERI~1\\AppData\\Local\\Temp\\unone-player-parity-XPMEDF\\player\\runtime\\unone-player.js","compared_frames":10,"audio_omission_detected":true}
+{"ok":true,"selected_project_export_verified":"D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake"}

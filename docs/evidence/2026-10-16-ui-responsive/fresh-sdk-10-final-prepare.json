@@ -1,0 +1,565 @@
+{
+  "ok": true,
+  "value": {
+    "schema": "unone.project-prepare.v1",
+    "status": "ready",
+    "target": "web",
+    "project": "D:/TSProject/Voidwake/engine/_Games/responsive-layout-lab",
+    "output": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\responsive-layout-lab\\dist\\player",
+    "sync": {
+      "project_root": "D:/TSProject/Voidwake/engine/_Games/responsive-layout-lab",
+      "status": "synced",
+      "pack": {
+        "project_root": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\responsive-layout-lab",
+        "manifest_path": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\responsive-layout-lab\\bundles\\manifest.json",
+        "manifest_version": 2,
+        "manifest_changed": true,
+        "project_config_changed": false,
+        "bundles": [
+          {
+            "id": "project",
+            "version": "1",
+            "source": "project.unone.json",
+            "sha256": "fe347bcf8e93a889faa92483b8ad4e7b38bad48e776cc1bfdca48bee91d09675",
+            "size_bytes": 588,
+            "dependencies": []
+          },
+          {
+            "id": "script",
+            "version": "1",
+            "source": "scripts/main.luau",
+            "sha256": "027d9f999edbfa493212f964529e0cb50336799ff5aaa5efff6e68abac3972e7",
+            "size_bytes": 31507,
+            "dependencies": [
+              "project"
+            ]
+          },
+          {
+            "id": "scene",
+            "version": "1",
+            "source": "scenes/main.scene.json",
+            "sha256": "91ac143676104ed0d283896fc0fe88759fe1366b4c3ffbbec07500f6e8cc2ec9",
+            "size_bytes": 17,
+            "dependencies": [
+              "project"
+            ]
+          }
+        ]
+      },
+      "verify": {
+        "project": "Layout Lab",
+        "steps": [
+          {
+            "name": "types",
+            "status": "passed",
+            "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+            "command": "game check --types",
+            "diagnostics": []
+          },
+          {
+            "name": "assets",
+            "status": "passed",
+            "summary": "0 declared, 0 scene references, ready_for_packaging true",
+            "command": "game asset inspect --strict",
+            "diagnostics": []
+          },
+          {
+            "name": "layout",
+            "status": "passed",
+            "summary": "0 findings; nodes: background, heading, subtitle, refresh_button, activity, section, card/workspaces/surface, workspaces/title, workspaces/value, workspaces/description, card/inbox/surface, inbox/title, inbox/value, inbox/description, card/reports/surface, reports/title, reports/value, reports/description, card/automations/surface, automations/title, automations/value, automations/description, footer",
+            "command": "game ui preview --strict --frames 1 --seed 42",
+            "diagnostics": []
+          },
+          {
+            "name": "tests",
+            "status": "passed",
+            "summary": "2/2 deterministic cases passed",
+            "command": "game test",
+            "diagnostics": []
+          }
+        ],
+        "passed": 4,
+        "failed": 0,
+        "not_applicable": 0,
+        "step_source": "default"
+      },
+      "activation": {
+        "manifest_version": 2,
+        "valid": true,
+        "entries": [
+          {
+            "id": "project",
+            "source": "project.unone.json",
+            "source_exists": true,
+            "size_valid": true,
+            "hash_valid": true,
+            "cached": true,
+            "cache_valid": true,
+            "available": true,
+            "error": null
+          },
+          {
+            "id": "script",
+            "source": "scripts/main.luau",
+            "source_exists": true,
+            "size_valid": true,
+            "hash_valid": true,
+            "cached": true,
+            "cache_valid": true,
+            "available": true,
+            "error": null
+          },
+          {
+            "id": "scene",
+            "source": "scenes/main.scene.json",
+            "source_exists": true,
+            "size_valid": true,
+            "hash_valid": true,
+            "cached": true,
+            "cache_valid": true,
+            "available": true,
+            "error": null
+          }
+        ],
+        "active_generation": 2,
+        "active_bundles": {
+          "project": "fe347bcf8e93a889faa92483b8ad4e7b38bad48e776cc1bfdca48bee91d09675",
+          "scene": "91ac143676104ed0d283896fc0fe88759fe1366b4c3ffbbec07500f6e8cc2ec9",
+          "script": "027d9f999edbfa493212f964529e0cb50336799ff5aaa5efff6e68abac3972e7"
+        }
+      }
+    },
+    "export": {
+      "cache_policy": {
+        "deployment": "publish complete generation before index; retain old generations for open clients",
+        "index.html": "no-cache, must-revalidate",
+        "legacy_aliases": "unversioned files retained for existing CLI inspection tools; browser entry uses only release_root",
+        "releases/": "public, max-age=31536000, immutable"
+      },
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "ui",
+        "world"
+      ],
+      "dev_tools": false,
+      "enabled_systems": [
+        "input",
+        "observation",
+        "ui",
+        "world"
+      ],
+      "files": [
+        {
+          "bytes": 25,
+          "path": "content/assets.json",
+          "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+        },
+        {
+          "bytes": 308,
+          "path": "content/presentation.json",
+          "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94"
+        },
+        {
+          "bytes": 33162,
+          "path": "content/project.json",
+          "sha256": "2e7316e879e40bfd297ccd5460203b3220d747e3238e521b8369a745a580b7f6"
+        },
+        {
+          "bytes": 1172,
+          "path": "index.html",
+          "sha256": "818a48ffab6ea507ce765fa5856bc5b0114aad49dba89e481ce35aa42deb7976"
+        },
+        {
+          "bytes": 25,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/assets.json",
+          "sha256": "9b5f45c8676b3ce41c78a9a99b0fb1d08bd32f4f519587c00f8d51d388d6bf8b"
+        },
+        {
+          "bytes": 308,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/presentation.json",
+          "sha256": "ae2621e77c81ba554966d5fb385b5e1bd31325e3171a2922abdfe8ed5c6d3b94"
+        },
+        {
+          "bytes": 33162,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/content/project.json",
+          "sha256": "2e7316e879e40bfd297ccd5460203b3220d747e3238e521b8369a745a580b7f6"
+        },
+        {
+          "bytes": 835,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/runtime.json",
+          "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+        },
+        {
+          "bytes": 88284,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone-player.js",
+          "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+        },
+        {
+          "bytes": 1790421,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/runtime/unone_player.wasm",
+          "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+        },
+        {
+          "bytes": 10478,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/player/main.js",
+          "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+        },
+        {
+          "bytes": 7284,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/bloom.js",
+          "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+        },
+        {
+          "bytes": 5464,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/instances3d.js",
+          "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+        },
+        {
+          "bytes": 1348,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/mesh.js",
+          "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+        },
+        {
+          "bytes": 4798,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/shader-materials.js",
+          "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+        },
+        {
+          "bytes": 15013,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/renderer/three.js",
+          "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+        },
+        {
+          "bytes": 1029,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/asset-encoding.js",
+          "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+        },
+        {
+          "bytes": 1902,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/async-scheduler.mjs",
+          "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+        },
+        {
+          "bytes": 12653,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/canvas-ui.mjs",
+          "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+        },
+        {
+          "bytes": 11767,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/fixed-step-scheduler.mjs",
+          "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+        },
+        {
+          "bytes": 5857,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/host-input.js",
+          "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+        },
+        {
+          "bytes": 3147,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/instance-transfer.mjs",
+          "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+        },
+        {
+          "bytes": 6407,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-binary.mjs",
+          "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+        },
+        {
+          "bytes": 6787,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-pool.mjs",
+          "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+        },
+        {
+          "bytes": 771,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/job-worker.js",
+          "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+        },
+        {
+          "bytes": 1220,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/load-project.js",
+          "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+        },
+        {
+          "bytes": 3700,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/presentation-interpolation.mjs",
+          "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+        },
+        {
+          "bytes": 2638,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/renderer-selection.mjs",
+          "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+        },
+        {
+          "bytes": 2506,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-backend.mjs",
+          "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+        },
+        {
+          "bytes": 4849,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-core.mjs",
+          "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+        },
+        {
+          "bytes": 1507,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/runtime-worker.js",
+          "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+        },
+        {
+          "bytes": 315,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-contract.mjs",
+          "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+        },
+        {
+          "bytes": 4403,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-geometry.mjs",
+          "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+        },
+        {
+          "bytes": 18106,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-scroll.mjs",
+          "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+        },
+        {
+          "bytes": 9927,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-style.mjs",
+          "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+        },
+        {
+          "bytes": 7868,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/ui-tree.js",
+          "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+        },
+        {
+          "bytes": 20074,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/shared/webgpu-snapshot.js",
+          "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+        },
+        {
+          "bytes": 1102,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/LICENSE",
+          "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+        },
+        {
+          "bytes": 492237,
+          "path": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/web/vendor/three/three.player.min.js",
+          "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+        },
+        {
+          "bytes": 835,
+          "path": "runtime/runtime.json",
+          "sha256": "7d6f5d899a7c6d2300fe9bb4edb56d1ec0656d0216dbf6d1c2eb48c44508dd38"
+        },
+        {
+          "bytes": 88284,
+          "path": "runtime/unone-player.js",
+          "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+        },
+        {
+          "bytes": 1790421,
+          "path": "runtime/unone_player.wasm",
+          "sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da"
+        },
+        {
+          "bytes": 10478,
+          "path": "web/player/main.js",
+          "sha256": "7c96bcd7b44a6776b0c1cd737496f1aac4cf73dc18ab7bc67de2993b578631a1"
+        },
+        {
+          "bytes": 7284,
+          "path": "web/renderer/bloom.js",
+          "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+        },
+        {
+          "bytes": 5464,
+          "path": "web/renderer/instances3d.js",
+          "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+        },
+        {
+          "bytes": 1348,
+          "path": "web/renderer/mesh.js",
+          "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+        },
+        {
+          "bytes": 4798,
+          "path": "web/renderer/shader-materials.js",
+          "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+        },
+        {
+          "bytes": 15013,
+          "path": "web/renderer/three.js",
+          "sha256": "d77c889775119e45c72309f2ee609b310b8b4c3f6a2c33a9e9de7de0b0843503"
+        },
+        {
+          "bytes": 1029,
+          "path": "web/shared/asset-encoding.js",
+          "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+        },
+        {
+          "bytes": 1902,
+          "path": "web/shared/async-scheduler.mjs",
+          "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+        },
+        {
+          "bytes": 12653,
+          "path": "web/shared/canvas-ui.mjs",
+          "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+        },
+        {
+          "bytes": 11767,
+          "path": "web/shared/fixed-step-scheduler.mjs",
+          "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+        },
+        {
+          "bytes": 5857,
+          "path": "web/shared/host-input.js",
+          "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+        },
+        {
+          "bytes": 3147,
+          "path": "web/shared/instance-transfer.mjs",
+          "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+        },
+        {
+          "bytes": 6407,
+          "path": "web/shared/job-binary.mjs",
+          "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+        },
+        {
+          "bytes": 6787,
+          "path": "web/shared/job-pool.mjs",
+          "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+        },
+        {
+          "bytes": 771,
+          "path": "web/shared/job-worker.js",
+          "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+        },
+        {
+          "bytes": 1220,
+          "path": "web/shared/load-project.js",
+          "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+        },
+        {
+          "bytes": 3700,
+          "path": "web/shared/presentation-interpolation.mjs",
+          "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+        },
+        {
+          "bytes": 2638,
+          "path": "web/shared/renderer-selection.mjs",
+          "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+        },
+        {
+          "bytes": 2506,
+          "path": "web/shared/runtime-backend.mjs",
+          "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+        },
+        {
+          "bytes": 4849,
+          "path": "web/shared/runtime-core.mjs",
+          "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+        },
+        {
+          "bytes": 1507,
+          "path": "web/shared/runtime-worker.js",
+          "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+        },
+        {
+          "bytes": 315,
+          "path": "web/shared/ui-contract.mjs",
+          "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+        },
+        {
+          "bytes": 4403,
+          "path": "web/shared/ui-geometry.mjs",
+          "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+        },
+        {
+          "bytes": 18106,
+          "path": "web/shared/ui-scroll.mjs",
+          "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+        },
+        {
+          "bytes": 9927,
+          "path": "web/shared/ui-style.mjs",
+          "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+        },
+        {
+          "bytes": 7868,
+          "path": "web/shared/ui-tree.js",
+          "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+        },
+        {
+          "bytes": 20074,
+          "path": "web/shared/webgpu-snapshot.js",
+          "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+        },
+        {
+          "bytes": 1102,
+          "path": "web/vendor/three/LICENSE",
+          "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+        },
+        {
+          "bytes": 492237,
+          "path": "web/vendor/three/three.player.min.js",
+          "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+        }
+      ],
+      "preview_tools": false,
+      "profile": "release",
+      "project": "Layout Lab",
+      "release_root": "releases/ae61e55ea184109094d77d88d3b4d0d99a88e5d67200ee4cd3e5e78eb87f4ebb/",
+      "renderer": "three-webgl",
+      "renderer_mode": "official",
+      "renderer_module": null,
+      "sdk_selection": {
+        "descriptor": "\\\\?\\D:\\TSProject\\UnoneResponsive-20261016\\sdk\\runtimes\\web-production-0\\runtime.json",
+        "engine_version": "0.1.0",
+        "family": "web-wasm",
+        "readiness": null,
+        "runtime_id": "web-production-0",
+        "runtime_packages": {
+          "@unone/ui": "0.4.0"
+        },
+        "runtime_root": "\\\\?\\D:\\TSProject\\UnoneResponsive-20261016\\sdk\\runtimes\\web-production-0",
+        "target": "web",
+        "variant": "production",
+        "verified": true
+      },
+      "total_bytes": 5157556,
+      "variant": "production",
+      "version": 1
+    },
+    "runtime": {
+      "descriptor": "\\\\?\\D:\\TSProject\\UnoneResponsive-20261016\\sdk\\runtimes\\web-production-0\\runtime.json",
+      "engine_version": "0.1.0",
+      "family": "web-wasm",
+      "readiness": null,
+      "runtime_id": "web-production-0",
+      "runtime_packages": {
+        "@unone/ui": "0.4.0"
+      },
+      "runtime_root": "\\\\?\\D:\\TSProject\\UnoneResponsive-20261016\\sdk\\runtimes\\web-production-0",
+      "target": "web",
+      "variant": "production",
+      "verified": true
+    },
+    "launch": {
+      "entry": "index.html",
+      "kind": "static",
+      "root": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\responsive-layout-lab\\dist\\player"
+    }
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 4 gates in the default order: 4 passed, 0 failed, 0 not applicable",
+    "active bundle generation 2 created",
+    "project sync completed",
+    "project prepared for web in D:/TSProject/Voidwake/engine/_Games/responsive-layout-lab/dist/player"
+  ]
+}

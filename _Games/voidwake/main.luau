@@ -172,7 +172,7 @@ export type UiApi = {
     components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     -- Current host width/height ratio, also used by anchored placement.
-    -- Read-only environment data; selecting a layout remains game code.
+    -- Read-only environment data; pass to components.createResponsiveLayout().resolve.
     getViewport: () -> {aspect: number},
     -- Helpers return a real scroll_view node. Content is local top-left/y-down;
     -- viewport uses explicit left/top; never pass a stage x/y rect here.
@@ -267,7 +267,7 @@ export type UiScrollNode = UiPlacement & {
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
--- @unone/ui: pure constructors. All positions/order remain explicitly authored.
+-- @unone/ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
     text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
@@ -308,7 +308,39 @@ export type UiComponentProps = UiPlacement & {
 export type UiComponentScreenProps = {
     id: string, node: string, children: {UiNode}, budget: UiBudget?,
 }
+-- Layout lengths use normalized stage units per axis, like rect/viewport.
+-- They are NOT font/anchor vertical units. No intrinsic text measurement.
+-- A recursive record preserves contextual literal inference in strict Luau.
+-- The factory validates kind-dependent fields (grid columns, slot children,
+-- root sizing) and reports UI_LAYOUT_* errors before publishing anything.
+export type UiLayoutNode = {
+    id: string, kind: "slot" | "row" | "column" | "grid",
+    size: number?, grow: number?, children: {UiLayoutNode}?,
+    gap: number?, padding: UiInsets?, columns: number?,
+    rect: never?, style: never?, flex: never?, wrap: never?, direction: never?,
+}
+export type UiResponsiveVariant<T> = {
+    name: string, minAspect: number, layout: UiLayoutNode, values: T,
+}
+export type UiResponsiveLayoutOptions<T> = {
+    space: ("stage" | "scroll")?, variants: {UiResponsiveVariant<T>},
+    onResize: never?, breakpoints: never?,
+}
+export type UiResponsiveLayoutResult<T> = {
+    variant: string, values: T,
+    -- Fresh canonical copies; stage rect is y-up, scroll rect is y-down.
+    rect: (id: string) -> UiRect,
+    -- Top-left/y-down in either space; suitable for ScrollView viewport.
+    viewport: (id: string) -> UiViewport,
+}
+export type UiResponsiveLayout<T> = {
+    -- Pure: highest minAspect <= viewport.aspect, fallback first (minAspect=0).
+    -- Stage bounds stay inside 0..100; scroll bounds may extend beyond 100.
+    resolve: (viewport: {aspect: number}, bounds: UiViewport?) -> UiResponsiveLayoutResult<T>,
+}
 export type UiComponentKit = {
+    -- Create once with authored groups/thresholds; resolve each View for reflow.
+    createResponsiveLayout: <T>(options: UiResponsiveLayoutOptions<T>) -> UiResponsiveLayout<T>,
     -- Preferred complete numeric slider: reusable state plus semantic host capture.
     createSlider: (options: UiSliderOptions) -> UiSliderControl,
     text: (props: UiComponentTextProps) -> UiTextNode,

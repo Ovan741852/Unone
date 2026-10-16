@@ -1,0 +1,42 @@
+{
+  "schema": "unone.responsive-layout-fresh-browser-artifacts.v1",
+  "note": "Hashes of three inspected PNGs and original raw reports. PNGs remain in ignored artifacts; JSON reports copied separately.",
+  "files": [
+    {
+      "path": "artifacts/ui-responsive/fresh-browser/fresh-1440x900.png",
+      "bytes": 46668,
+      "sha256": "a32630769615f1d64d4ac8d5644c1b6b2009772a79b5a1971a31ff54175fc49e",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/fresh-browser/fresh-390x844.png",
+      "bytes": 30507,
+      "sha256": "d2ece3d15f166c95c91083c45367f98bcaa2fc97f1196c0295fe44c3b0d1081f",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/fresh-browser/fresh-900x900.png",
+      "bytes": 42215,
+      "sha256": "6612ebddb76e02baf8b6a76a840bfa4a8f742fa2af1c1e8fb83116534518b87e",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/fresh-browser/report.json",
+      "bytes": 72023,
+      "sha256": "d0069e06768196e4361c5d6cb05a0afb10041b66944ef8b6079f710e297bf841",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/fresh-browser/summary.json",
+      "bytes": 21175,
+      "sha256": "a45c1027937ece00e2b180cbaa4e2ae6fe1e4cfb77ecc6f71f581b8b7d10e6b8",
+      "png_copied_to_evidence": false
+    },
+    {
+      "path": "artifacts/ui-responsive/fresh-browser/visual-review.json",
+      "bytes": 1184,
+      "sha256": "c51bc00b2253f8632e4d4389eefb126ad3fa1a978b86636f92ad6ede34893e88",
+      "png_copied_to_evidence": false
+    }
+  ]
+}

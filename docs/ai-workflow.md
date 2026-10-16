@@ -357,12 +357,12 @@ which ships as pure Luau with Core and the portable SDK. Search
 `game api search "UI package"`, `"shared components"`, `"button component"`,
 `"card component"`, `"官方UI套件"`, `"共用元件"` or `"主題樣式"`; describe
 `ui.components.info` and `ui.components.create`. Declare the exact bundled version
-in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.3.0"}`. `info()` is
+in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.4.0"}`. `info()` is
 available before declaration and reports the name, version and `declared` flag.
 No npm install, import or filesystem module loader is involved.
 
 `api.ui.components.create(theme?)` returns a typed kit with `text`, `button`,
-`createSlider`, low-level `slider`, `combobox`, `panel`, `image`, `component`, `screen`, `scrollView`,
+`createSlider`, `createResponsiveLayout`, low-level `slider`, `combobox`, `panel`, `image`, `component`, `screen`, `scrollView`,
 `virtualList`, `virtualGrid`, `id` and `composeStyle` methods. Every constructor
 also exists directly on `api.ui.components`, without theme defaults; both
 `kit.button(props)` and `api.ui.components.button(props)` are valid. These
@@ -408,11 +408,29 @@ Search `"scroll inertia"` / `"deceleration"` / `"捲動慣性"` for
 seconds and must be finite in `(0,100]`. There is no elastic overscroll. Follow
 [the scroll contract](ui-scroll.md) for cancellation and host limits.
 
+For responsive UI, search `"responsive layout"`, `"adaptive UI layout"`,
+`"breakpoints"`, `"row column grid layout"` or `"自適應排版"` and describe
+`ui.components.createResponsiveLayout`. Use canonical
+`UiResponsiveLayoutOptions<T>` / `UiResponsiveLayout<T>` and retain a model created
+once from explicit semantic regions. In the pure View call
+`model.resolve(api.ui.getViewport(),bounds?)`; pass `result.rect(id)` to leaves
+and `result.viewport(id)` to scroll helpers. Projects own thresholds and complete
+typed `values` records, including font-size choices. The package owns highest
+inclusive aspect selection, fixed/grow row/column sizing, equal-cell grids and
+explicit stage/scroll conversion. The first threshold is `0`; later thresholds
+strictly increase. Stage bounds fit `0..100`; explicit `space="scroll"` supports
+local content beyond that range. Lengths are per-axis rectangle units, not style
+vertical units or parent percentages. Do not copy breakpoint conditionals and
+geometry arithmetic per project, add `layout` props to components, mutate virtual
+nodes or assume text measurement/automatic wrapping. Read the
+[complete typed lifecycle](ui-responsive.md) and verify at boundaries and
+intermediate aspects in the official player.
+
 For font and canonical leaf details, search `"font size"`, `"text alignment"`,
 `"border padding"` or `"字體"`, describe `ui.setRoot`, and inspect `game schema ui`.
 The [style guide](ui-styling.md) covers vertical design units, explicit sizes,
-font catalogs and host limits. `api.ui.getViewport()` exposes the current aspect
-for project-authored responsive choices. Refresh `game api typings` and the SDK
+font catalogs and host limits. `api.ui.getViewport()` supplies the current aspect
+to the shared responsive model. Refresh `game api typings` and the SDK
 when upgrading. A package declaration needs a runtime containing that version;
 SDK preflight rejects older runtimes. Standard `verify` / `prepare` remain
 authoring gates. Inspect the exported official player at the target sizes to

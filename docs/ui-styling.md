@@ -2,10 +2,10 @@
 
 Start reusable controls with the official [`@unone/ui` package](ui-components.md),
 a versioned pure Luau kit bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.3.0"}` in `project.unone.json`, inspect
+`"runtime_packages":{"@unone/ui":"0.4.0"}` in `project.unone.json`, inspect
 `ui.components.info`, and call `api.ui.components.create(theme?)`. The returned
 kit constructs typed text/button/slider/combobox/panel/image leaves, component
-and screen wrappers, the `createSlider` numeric control, plus the existing scroll
+and screen wrappers, the `createSlider` numeric control, `createResponsiveLayout`, plus the existing scroll
 helpers through one namespace for the existing `api.ui.setRoot` transport.
 Themes, content, application state, action meanings
 and geometry remain project-owned. Custom Luau factories remain valid.
@@ -17,7 +17,10 @@ Search `game api search "UI package"`, `"shared components"`, `"button component
 For the canonical leaf contract, search `"font size"`, `"text alignment"`,
 `"border padding"`, `"card background"`, `"component overlap"`, `"字體"`,
 `"排版"`, `"卡片背景"` or `"元件重疊"`, describe `ui.setRoot`, and inspect
-`game schema ui`. `"responsive"` leads to `ui.getViewport`. CLI and MCP share the
+`game schema ui`. `"responsive layout"`, `"breakpoints"` and `"自適應排版"` lead
+to `ui.components.createResponsiveLayout`; read [the typed guide](ui-responsive.md)
+for shared selection and region arithmetic. `ui.getViewport` supplies its aspect
+input. CLI and MCP share the
 same index. Regenerate strict types with `game api typings` and use a matching
 SDK after upgrading; new projects inline the canonical contract.
 Search `"slider drag"` / `"slider value"` / `"滑桿拖曳"` for
@@ -252,13 +255,23 @@ Do not enlarge or move the artwork to compensate for a separate project-owned
 hit test. See [interactive sliders](ui-components.md#interactive-sliders) for
 stage/scroll coordinates, vertical/reverse direction and cancellation behavior.
 
-Use the returned viewport aspect to select a game-authored composition:
+Create a retained official responsive model from authored variants, then resolve
+it in the View:
 
 ```luau
-local compact = api.ui.getViewport().aspect < 1
--- Choose a meaningful compact arrangement in your View function.
--- The engine does not move, resize or reorder these groups automatically.
+local resolved = responsiveModel.resolve(api.ui.getViewport())
+local title = ui.text({id="title",text="Settings",rect=resolved.rect("heading"),
+    style={font_size=resolved.values.fontSize}})
 ```
+
+This fragment assumes a model with a `heading` slot and a typed `fontSize` value;
+the [complete lifecycle example](ui-responsive.md#create-once-resolve-in-a-pure-view)
+shows its declaration. The project chooses semantic groups, thresholds and font
+sizes. The package owns inclusive breakpoint selection and explicit row, column
+and grid arithmetic. It does not measure text, choose a type scale or reflow
+nodes implicitly. Layout padding/gaps use per-axis rectangle units; style
+padding and fonts retain vertical design units. A component's children still
+keep their coordinates.
 
 Inspect the actual player at intermediate aspect ratios as well as desktop and
 portrait. Explicit font sizes can clip at a narrower width even when the same

@@ -67,6 +67,7 @@ pub fn runtime_package_files() -> Vec<(&'static str, &'static str)> {
         ("docs/ui-components.md", include_str!("../../../docs/ui-components.md")),
         ("docs/ui-styling.md", include_str!("../../../docs/ui-styling.md")),
         ("docs/ui-scroll.md", include_str!("../../../docs/ui-scroll.md")),
+        ("docs/ui-responsive.md", include_str!("../../../docs/ui-responsive.md")),
         ("docs/formal-ui-host.md", include_str!("../../../docs/formal-ui-host.md")),
         ("docs/ui-slice-and-budget.md", include_str!("../../../docs/ui-slice-and-budget.md")),
         ("docs/ui.schema.json", include_str!("../../../docs/ui.schema.json")),
@@ -75,6 +76,7 @@ pub fn runtime_package_files() -> Vec<(&'static str, &'static str)> {
         ("docs/decisions/0039-component-background-intent.md", include_str!("../../../docs/decisions/0039-component-background-intent.md")),
         ("docs/decisions/0040-official-ui-package.md", include_str!("../../../docs/decisions/0040-official-ui-package.md")),
         ("docs/decisions/0042-official-slider-input-and-scroll-inertia.md", include_str!("../../../docs/decisions/0042-official-slider-input-and-scroll-inertia.md")),
+        ("docs/decisions/0043-explicit-responsive-ui-layout.md", include_str!("../../../docs/decisions/0043-explicit-responsive-ui-layout.md")),
     ]
 }
 
@@ -86,7 +88,7 @@ mod tests {
     fn exact_versions_and_system_ownership_are_checked_without_loading_game_code() {
         let settings = SystemSettings::default();
         let available = compiled_runtime_packages(&settings);
-        assert_eq!(available.get("@unone/ui").unwrap(), "0.3.0");
+        assert_eq!(available.get("@unone/ui").unwrap(), "0.4.0");
         validate_runtime_packages(&available, &settings).unwrap();
         for required in [
             BTreeMap::from([("@unone/ui".into(), "99.0.0".into())]),

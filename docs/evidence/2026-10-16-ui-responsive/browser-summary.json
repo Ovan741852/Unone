@@ -1,0 +1,1834 @@
+{
+  "url": "http://127.0.0.1:8344/?sdk=fresh-ui-verified&mime=fixed",
+  "phase": "official-ui-responsive-layout",
+  "pass": true,
+  "browser": "Playwright Microsoft Edge channel msedge, headless; production official player",
+  "contract": {
+    "package": "0.4.0",
+    "observer": "Production WASM observation ptr/len memory reads only; no simulation/input writes or private layout methods",
+    "gestures": "Physical Playwright mouse; viewport resize through browser surface only",
+    "baseline": "Exact three pre-existing Harbor designs, including control artwork and typography"
+  },
+  "typeErgonomics": {
+    "diagnostic": "Recursive discriminated-union intersection widens nested literal kind to string. Flat recursive input record fixes inference while shared constructor validates kind-specific fields. No any casts.",
+    "afterExit": 0,
+    "beforeExit": 1,
+    "afterProbe": "main-type-current-probe.luau",
+    "beforeProbe": "main-type-probe.luau"
+  },
+  "assertions": 197,
+  "regression": {
+    "pass": true,
+    "runs": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "pass": true,
+        "assertions": 38,
+        "package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 25,
+            "x": 6,
+            "y": 13
+          },
+          "aspect": 1.6,
+          "combobox": {
+            "height": 5.5,
+            "width": 36,
+            "x": 8,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 51,
+            "top": 36,
+            "width": 41
+          },
+          "name": "desktop",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 51,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 13,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 36,
+            "x": 8,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 36,
+            "x": 8,
+            "y": 55.55
+          }
+        },
+        "errors": {
+          "console": [],
+          "page": [],
+          "request": [],
+          "http": []
+        },
+        "mime": {
+          "javascript": 25,
+          "wasm": 1,
+          "bad": []
+        }
+      },
+      {
+        "viewport": {
+          "width": 1020,
+          "height": 884
+        },
+        "pass": true,
+        "assertions": 38,
+        "package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 26,
+            "x": 5,
+            "y": 13
+          },
+          "aspect": 1.1538461538461535,
+          "combobox": {
+            "height": 5.5,
+            "width": 39,
+            "x": 7,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 53,
+            "top": 36,
+            "width": 40
+          },
+          "name": "medium",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 53,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 15,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 39,
+            "x": 7,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 39,
+            "x": 7,
+            "y": 55.55
+          }
+        },
+        "errors": {
+          "console": [],
+          "page": [],
+          "request": [],
+          "http": []
+        },
+        "mime": {
+          "javascript": 25,
+          "wasm": 1,
+          "bad": []
+        }
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "pass": true,
+        "assertions": 38,
+        "package": {
+          "declared": true,
+          "name": "@unone/ui",
+          "version": "0.4.0"
+        },
+        "layout": {
+          "apply": {
+            "height": 4.799999999999997,
+            "width": 56,
+            "x": 5,
+            "y": 2.200000000000003
+          },
+          "aspect": 0.462085308056872,
+          "combobox": {
+            "height": 4.8,
+            "width": 84,
+            "x": 8,
+            "y": 55
+          },
+          "compact": true,
+          "list": {
+            "height": 13.6,
+            "left": 8,
+            "top": 61.2,
+            "width": 84
+          },
+          "name": "portrait",
+          "probe": {
+            "height": 4.2,
+            "width": 28,
+            "x": 8,
+            "y": 10.599999999999998
+          },
+          "reset": {
+            "height": 4.799999999999997,
+            "width": 31,
+            "x": 64,
+            "y": 2.200000000000003
+          },
+          "slider": {
+            "height": 3.6,
+            "width": 84,
+            "x": 8,
+            "y": 68.4
+          },
+          "slider_track": {
+            "height": 0.28,
+            "width": 84,
+            "x": 8,
+            "y": 67.62
+          }
+        },
+        "errors": {
+          "console": [],
+          "page": [],
+          "request": [],
+          "http": []
+        },
+        "mime": {
+          "javascript": 25,
+          "wasm": 1,
+          "bad": []
+        }
+      }
+    ],
+    "lifecycle": {
+      "pass": true,
+      "assertions": [
+        {
+          "pass": true,
+          "message": "Physical row drag activates before platform pause"
+        },
+        {
+          "pass": true,
+          "message": "Still-held movement after pause/resume does not continue the cancelled drag"
+        },
+        {
+          "pass": true,
+          "message": "Cancelled platform drag does not select a row on release"
+        },
+        {
+          "pass": true,
+          "message": "Lifecycle probe has no page, request or console errors"
+        }
+      ]
+    },
+    "exportUnchanged": true
+  },
+  "responsive": {
+    "pass": true,
+    "assertions": [
+      {
+        "pass": true,
+        "message": "initial desktop: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "initial desktop: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "initial desktop: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "initial desktop: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "initial desktop: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "initial desktop: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "Production Core exposes official package 0.4.0"
+      },
+      {
+        "pass": true,
+        "message": "Official three-webgl player remains active"
+      },
+      {
+        "pass": true,
+        "message": "Official slider owns a physical held pointer before reflow"
+      },
+      {
+        "pass": true,
+        "message": "held-slider reflow: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "held-slider reflow: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "held-slider reflow: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "held-slider reflow: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "held-slider reflow: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "held-slider reflow: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "Reflow cancels slider capture without leaking a world pointer"
+      },
+      {
+        "pass": true,
+        "message": "Still-held motion after reflow cannot reactivate a cancelled slider"
+      },
+      {
+        "pass": true,
+        "message": "portrait: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "portrait: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "portrait: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "portrait: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "portrait: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "portrait: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "portrait: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "medium: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "medium: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "medium: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "medium: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "medium: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "medium: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "medium: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "desktop-restored: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "desktop-restored: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "desktop-restored: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "desktop-restored: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "desktop-restored: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "desktop-restored: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "desktop-restored: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "below-0.8: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "below-0.8: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "below-0.8: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "below-0.8: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "below-0.8: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "below-0.8: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "below-0.8: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "exact-0.8: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "exact-0.8: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "exact-0.8: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "exact-0.8: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "exact-0.8: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "exact-0.8: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "exact-0.8: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "below-1.35: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "below-1.35: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "below-1.35: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "below-1.35: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "below-1.35: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "below-1.35: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "below-1.35: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "exact-1.35: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "exact-1.35: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "exact-1.35: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "exact-1.35: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "exact-1.35: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "exact-1.35: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "exact-1.35: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "coast prerequisite: correct declared variant and viewport aspect"
+      },
+      {
+        "pass": true,
+        "message": "coast prerequisite: all four shared-partition card bounds preserve the original design"
+      },
+      {
+        "pass": true,
+        "message": "coast prerequisite: shared action row preserves both button bounds"
+      },
+      {
+        "pass": true,
+        "message": "coast prerequisite: slider artwork, combobox and ScrollView viewport preserve their authored positions"
+      },
+      {
+        "pass": true,
+        "message": "coast prerequisite: project typography tokens remain unchanged"
+      },
+      {
+        "pass": true,
+        "message": "coast prerequisite: authored cards remain inside stage bounds"
+      },
+      {
+        "pass": true,
+        "message": "coast prerequisite: resize preserves all project settings state"
+      },
+      {
+        "pass": true,
+        "message": "Inertia resize test starts far from the content edge"
+      },
+      {
+        "pass": true,
+        "message": "Physical scroll flick produces measurable motion before resize"
+      },
+      {
+        "pass": true,
+        "message": "Changing viewport dimensions cancels inertia instead of reviving old velocity"
+      },
+      {
+        "pass": true,
+        "message": "Responsive reflow and inertial drag preserve project settings and never select a row"
+      },
+      {
+        "pass": true,
+        "message": "Actual JS/MJS/WASM responses retain valid MIME types"
+      },
+      {
+        "pass": true,
+        "message": "No HTTP, request, page, console or player errors across live reflows"
+      }
+    ],
+    "resizes": [
+      {
+        "label": "initial desktop",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 25,
+            "x": 6,
+            "y": 13
+          },
+          "aspect": 1.6,
+          "combobox": {
+            "height": 5.5,
+            "width": 36,
+            "x": 8,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 51,
+            "top": 36,
+            "width": 41
+          },
+          "name": "desktop",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 51,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 13,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 36,
+            "x": 8,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 36,
+            "x": 8,
+            "y": 55.55
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": false,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 72
+        },
+        "frame": 39,
+        "cards": {
+          "audio": {
+            "height": 23,
+            "width": 40,
+            "x": 6,
+            "y": 52
+          },
+          "quality": {
+            "height": 25,
+            "width": 40,
+            "x": 6,
+            "y": 24
+          },
+          "presets": {
+            "height": 42,
+            "width": 45,
+            "x": 49,
+            "y": 33
+          },
+          "probe": {
+            "height": 19,
+            "width": 45,
+            "x": 49,
+            "y": 11
+          }
+        }
+      },
+      {
+        "label": "held-slider reflow",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "layout": {
+          "apply": {
+            "height": 4.799999999999997,
+            "width": 56,
+            "x": 5,
+            "y": 2.200000000000003
+          },
+          "aspect": 0.462085308056872,
+          "combobox": {
+            "height": 4.8,
+            "width": 84,
+            "x": 8,
+            "y": 55
+          },
+          "compact": true,
+          "list": {
+            "height": 13.6,
+            "left": 8,
+            "top": 61.2,
+            "width": 84
+          },
+          "name": "portrait",
+          "probe": {
+            "height": 4.2,
+            "width": 28,
+            "x": 8,
+            "y": 10.599999999999998
+          },
+          "reset": {
+            "height": 4.799999999999997,
+            "width": 31,
+            "x": 64,
+            "y": 2.200000000000003
+          },
+          "slider": {
+            "height": 3.6,
+            "width": 84,
+            "x": 8,
+            "y": 68.4
+          },
+          "slider_track": {
+            "height": 0.28,
+            "width": 84,
+            "x": 8,
+            "y": 67.62
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 64,
+        "cards": {
+          "audio": {
+            "height": 14,
+            "width": 90,
+            "x": 5,
+            "y": 67
+          },
+          "quality": {
+            "height": 17,
+            "width": 90,
+            "x": 5,
+            "y": 48
+          },
+          "presets": {
+            "height": 24.5,
+            "width": 90,
+            "x": 5,
+            "y": 21.5
+          },
+          "probe": {
+            "height": 10.5,
+            "width": 90,
+            "x": 5,
+            "y": 9
+          }
+        }
+      },
+      {
+        "label": "portrait",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "layout": {
+          "apply": {
+            "height": 4.799999999999997,
+            "width": 56,
+            "x": 5,
+            "y": 2.200000000000003
+          },
+          "aspect": 0.462085308056872,
+          "combobox": {
+            "height": 4.8,
+            "width": 84,
+            "x": 8,
+            "y": 55
+          },
+          "compact": true,
+          "list": {
+            "height": 13.6,
+            "left": 8,
+            "top": 61.2,
+            "width": 84
+          },
+          "name": "portrait",
+          "probe": {
+            "height": 4.2,
+            "width": 28,
+            "x": 8,
+            "y": 10.599999999999998
+          },
+          "reset": {
+            "height": 4.799999999999997,
+            "width": 31,
+            "x": 64,
+            "y": 2.200000000000003
+          },
+          "slider": {
+            "height": 3.6,
+            "width": 84,
+            "x": 8,
+            "y": 68.4
+          },
+          "slider_track": {
+            "height": 0.28,
+            "width": 84,
+            "x": 8,
+            "y": 67.62
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 93,
+        "cards": {
+          "audio": {
+            "height": 14,
+            "width": 90,
+            "x": 5,
+            "y": 67
+          },
+          "quality": {
+            "height": 17,
+            "width": 90,
+            "x": 5,
+            "y": 48
+          },
+          "presets": {
+            "height": 24.5,
+            "width": 90,
+            "x": 5,
+            "y": 21.5
+          },
+          "probe": {
+            "height": 10.5,
+            "width": 90,
+            "x": 5,
+            "y": 9
+          }
+        }
+      },
+      {
+        "label": "medium",
+        "viewport": {
+          "width": 1020,
+          "height": 884
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 26,
+            "x": 5,
+            "y": 13
+          },
+          "aspect": 1.1538461538461535,
+          "combobox": {
+            "height": 5.5,
+            "width": 39,
+            "x": 7,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 53,
+            "top": 36,
+            "width": 40
+          },
+          "name": "medium",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 53,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 15,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 39,
+            "x": 7,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 39,
+            "x": 7,
+            "y": 55.55
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 117,
+        "cards": {
+          "audio": {
+            "height": 23,
+            "width": 43,
+            "x": 5,
+            "y": 52
+          },
+          "quality": {
+            "height": 25,
+            "width": 43,
+            "x": 5,
+            "y": 24
+          },
+          "presets": {
+            "height": 42,
+            "width": 44,
+            "x": 51,
+            "y": 33
+          },
+          "probe": {
+            "height": 19,
+            "width": 44,
+            "x": 51,
+            "y": 11
+          }
+        }
+      },
+      {
+        "label": "desktop-restored",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 25,
+            "x": 6,
+            "y": 13
+          },
+          "aspect": 1.6,
+          "combobox": {
+            "height": 5.5,
+            "width": 36,
+            "x": 8,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 51,
+            "top": 36,
+            "width": 41
+          },
+          "name": "desktop",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 51,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 13,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 36,
+            "x": 8,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 36,
+            "x": 8,
+            "y": 55.55
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 141,
+        "cards": {
+          "audio": {
+            "height": 23,
+            "width": 40,
+            "x": 6,
+            "y": 52
+          },
+          "quality": {
+            "height": 25,
+            "width": 40,
+            "x": 6,
+            "y": 24
+          },
+          "presets": {
+            "height": 42,
+            "width": 45,
+            "x": 49,
+            "y": 33
+          },
+          "probe": {
+            "height": 19,
+            "width": 45,
+            "x": 49,
+            "y": 11
+          }
+        }
+      },
+      {
+        "label": "below-0.8",
+        "viewport": {
+          "width": 799,
+          "height": 1000
+        },
+        "layout": {
+          "apply": {
+            "height": 4.799999999999997,
+            "width": 56,
+            "x": 5,
+            "y": 2.200000000000003
+          },
+          "aspect": 0.799,
+          "combobox": {
+            "height": 4.8,
+            "width": 84,
+            "x": 8,
+            "y": 55
+          },
+          "compact": true,
+          "list": {
+            "height": 13.6,
+            "left": 8,
+            "top": 61.2,
+            "width": 84
+          },
+          "name": "portrait",
+          "probe": {
+            "height": 4.2,
+            "width": 28,
+            "x": 8,
+            "y": 10.599999999999998
+          },
+          "reset": {
+            "height": 4.799999999999997,
+            "width": 31,
+            "x": 64,
+            "y": 2.200000000000003
+          },
+          "slider": {
+            "height": 3.6,
+            "width": 84,
+            "x": 8,
+            "y": 68.4
+          },
+          "slider_track": {
+            "height": 0.28,
+            "width": 84,
+            "x": 8,
+            "y": 67.62
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 162,
+        "cards": {
+          "audio": {
+            "height": 14,
+            "width": 90,
+            "x": 5,
+            "y": 67
+          },
+          "quality": {
+            "height": 17,
+            "width": 90,
+            "x": 5,
+            "y": 48
+          },
+          "presets": {
+            "height": 24.5,
+            "width": 90,
+            "x": 5,
+            "y": 21.5
+          },
+          "probe": {
+            "height": 10.5,
+            "width": 90,
+            "x": 5,
+            "y": 9
+          }
+        }
+      },
+      {
+        "label": "exact-0.8",
+        "viewport": {
+          "width": 800,
+          "height": 1000
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 26,
+            "x": 5,
+            "y": 13
+          },
+          "aspect": 0.8,
+          "combobox": {
+            "height": 5.5,
+            "width": 39,
+            "x": 7,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 53,
+            "top": 36,
+            "width": 40
+          },
+          "name": "medium",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 53,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 15,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 39,
+            "x": 7,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 39,
+            "x": 7,
+            "y": 55.55
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 177,
+        "cards": {
+          "audio": {
+            "height": 23,
+            "width": 43,
+            "x": 5,
+            "y": 52
+          },
+          "quality": {
+            "height": 25,
+            "width": 43,
+            "x": 5,
+            "y": 24
+          },
+          "presets": {
+            "height": 42,
+            "width": 44,
+            "x": 51,
+            "y": 33
+          },
+          "probe": {
+            "height": 19,
+            "width": 44,
+            "x": 51,
+            "y": 11
+          }
+        }
+      },
+      {
+        "label": "below-1.35",
+        "viewport": {
+          "width": 1349,
+          "height": 1000
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 26,
+            "x": 5,
+            "y": 13
+          },
+          "aspect": 1.349,
+          "combobox": {
+            "height": 5.5,
+            "width": 39,
+            "x": 7,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 53,
+            "top": 36,
+            "width": 40
+          },
+          "name": "medium",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 53,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 15,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 39,
+            "x": 7,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 39,
+            "x": 7,
+            "y": 55.55
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 192,
+        "cards": {
+          "audio": {
+            "height": 23,
+            "width": 43,
+            "x": 5,
+            "y": 52
+          },
+          "quality": {
+            "height": 25,
+            "width": 43,
+            "x": 5,
+            "y": 24
+          },
+          "presets": {
+            "height": 42,
+            "width": 44,
+            "x": 51,
+            "y": 33
+          },
+          "probe": {
+            "height": 19,
+            "width": 44,
+            "x": 51,
+            "y": 11
+          }
+        }
+      },
+      {
+        "label": "exact-1.35",
+        "viewport": {
+          "width": 1350,
+          "height": 1000
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 25,
+            "x": 6,
+            "y": 13
+          },
+          "aspect": 1.35,
+          "combobox": {
+            "height": 5.5,
+            "width": 36,
+            "x": 8,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 51,
+            "top": 36,
+            "width": 41
+          },
+          "name": "desktop",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 51,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 13,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 36,
+            "x": 8,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 36,
+            "x": 8,
+            "y": 55.55
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 208,
+        "cards": {
+          "audio": {
+            "height": 23,
+            "width": 40,
+            "x": 6,
+            "y": 52
+          },
+          "quality": {
+            "height": 25,
+            "width": 40,
+            "x": 6,
+            "y": 24
+          },
+          "presets": {
+            "height": 42,
+            "width": 45,
+            "x": 49,
+            "y": 33
+          },
+          "probe": {
+            "height": 19,
+            "width": 45,
+            "x": 49,
+            "y": 11
+          }
+        }
+      },
+      {
+        "label": "coast prerequisite",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "layout": {
+          "apply": {
+            "height": 6,
+            "width": 25,
+            "x": 6,
+            "y": 13
+          },
+          "aspect": 1.6,
+          "combobox": {
+            "height": 5.5,
+            "width": 36,
+            "x": 8,
+            "y": 35
+          },
+          "compact": false,
+          "list": {
+            "height": 25,
+            "left": 51,
+            "top": 36,
+            "width": 41
+          },
+          "name": "desktop",
+          "probe": {
+            "height": 6,
+            "width": 13,
+            "x": 51,
+            "y": 14.5
+          },
+          "reset": {
+            "height": 6,
+            "width": 13,
+            "x": 33,
+            "y": 13
+          },
+          "slider": {
+            "height": 5,
+            "width": 36,
+            "x": 8,
+            "y": 58
+          },
+          "slider_track": {
+            "height": 0.45,
+            "width": 36,
+            "x": 8,
+            "y": 55.55
+          }
+        },
+        "settings": {
+          "applied_preset": "morning-calm",
+          "applied_quality": "Balanced",
+          "applied_volume": 72,
+          "apply_count": 0,
+          "dirty": true,
+          "expanded": false,
+          "preset": "morning-calm",
+          "preset_label": "Morning / Calm",
+          "quality": "Balanced",
+          "reset_count": 0,
+          "volume": 36
+        },
+        "frame": 223,
+        "cards": {
+          "audio": {
+            "height": 23,
+            "width": 40,
+            "x": 6,
+            "y": 52
+          },
+          "quality": {
+            "height": 25,
+            "width": 40,
+            "x": 6,
+            "y": 24
+          },
+          "presets": {
+            "height": 42,
+            "width": 45,
+            "x": 49,
+            "y": 33
+          },
+          "probe": {
+            "height": 19,
+            "width": 45,
+            "x": 49,
+            "y": 11
+          }
+        }
+      }
+    ],
+    "sliderHeld": {
+      "input_probe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 0,
+        "reader_a_presses": 0,
+        "reader_a_releases": 0,
+        "reader_b_presses": 0,
+        "reader_b_releases": 0,
+        "releases": 0,
+        "total_held_ticks": 0
+      },
+      "layout": {
+        "apply": {
+          "height": 6,
+          "width": 25,
+          "x": 6,
+          "y": 13
+        },
+        "aspect": 1.6,
+        "combobox": {
+          "height": 5.5,
+          "width": 36,
+          "x": 8,
+          "y": 35
+        },
+        "compact": false,
+        "list": {
+          "height": 25,
+          "left": 51,
+          "top": 36,
+          "width": 41
+        },
+        "name": "desktop",
+        "probe": {
+          "height": 6,
+          "width": 13,
+          "x": 51,
+          "y": 14.5
+        },
+        "reset": {
+          "height": 6,
+          "width": 13,
+          "x": 33,
+          "y": 13
+        },
+        "slider": {
+          "height": 5,
+          "width": 36,
+          "x": 8,
+          "y": 58
+        },
+        "slider_track": {
+          "height": 0.45,
+          "width": 36,
+          "x": 8,
+          "y": 55.55
+        }
+      },
+      "preset_count": 120,
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "slider": {
+        "cancelled": false,
+        "changed": false,
+        "dragging": true,
+        "released": false,
+        "started": false,
+        "value": 36
+      },
+      "tick": 48,
+      "ui_input": {
+        "world_pointer_down": false
+      },
+      "ui_package": {
+        "declared": true,
+        "name": "@unone/ui",
+        "version": "0.4.0"
+      }
+    },
+    "sliderAfterResize": {
+      "input_probe": {
+        "held": false,
+        "hold_ticks": 0,
+        "last_press_a": false,
+        "last_press_b": false,
+        "last_release_a": false,
+        "last_release_b": false,
+        "mismatches": 0,
+        "presses": 0,
+        "reader_a_presses": 0,
+        "reader_a_releases": 0,
+        "reader_b_presses": 0,
+        "reader_b_releases": 0,
+        "releases": 0,
+        "total_held_ticks": 0
+      },
+      "layout": {
+        "apply": {
+          "height": 4.799999999999997,
+          "width": 56,
+          "x": 5,
+          "y": 2.200000000000003
+        },
+        "aspect": 0.462085308056872,
+        "combobox": {
+          "height": 4.8,
+          "width": 84,
+          "x": 8,
+          "y": 55
+        },
+        "compact": true,
+        "list": {
+          "height": 13.6,
+          "left": 8,
+          "top": 61.2,
+          "width": 84
+        },
+        "name": "portrait",
+        "probe": {
+          "height": 4.2,
+          "width": 28,
+          "x": 8,
+          "y": 10.599999999999998
+        },
+        "reset": {
+          "height": 4.799999999999997,
+          "width": 31,
+          "x": 64,
+          "y": 2.200000000000003
+        },
+        "slider": {
+          "height": 3.6,
+          "width": 84,
+          "x": 8,
+          "y": 68.4
+        },
+        "slider_track": {
+          "height": 0.28,
+          "width": 84,
+          "x": 8,
+          "y": 67.62
+        }
+      },
+      "preset_count": 120,
+      "settings": {
+        "applied_preset": "morning-calm",
+        "applied_quality": "Balanced",
+        "applied_volume": 72,
+        "apply_count": 0,
+        "dirty": true,
+        "expanded": false,
+        "preset": "morning-calm",
+        "preset_label": "Morning / Calm",
+        "quality": "Balanced",
+        "reset_count": 0,
+        "volume": 36
+      },
+      "slider": {
+        "cancelled": false,
+        "changed": false,
+        "dragging": false,
+        "released": false,
+        "started": false,
+        "value": 36
+      },
+      "tick": 64,
+      "ui_input": {
+        "world_pointer_down": false
+      },
+      "ui_package": {
+        "declared": true,
+        "name": "@unone/ui",
+        "version": "0.4.0"
+      }
+    },
+    "coast": {
+      "before": {
+        "top": 0,
+        "height": 6367,
+        "client": 225,
+        "at": 6944
+      },
+      "released": {
+        "top": 128,
+        "height": 6367,
+        "client": 225,
+        "at": 7384
+      },
+      "beforeResize": {
+        "top": 156,
+        "height": 6367,
+        "client": 225,
+        "at": 7480.10000000149
+      },
+      "afterResize": {
+        "top": 156,
+        "height": 6253,
+        "client": 221,
+        "at": 7610.800000000745
+      },
+      "later": {
+        "top": 156,
+        "height": 6253,
+        "client": 221,
+        "at": 7812.300000000745
+      }
+    },
+    "mime": {
+      "javascript": 25,
+      "wasm": 1,
+      "bad": []
+    },
+    "errors": {
+      "console": [],
+      "page": [],
+      "request": [],
+      "http": [],
+      "player": {
+        "status": "",
+        "fatal": null,
+        "renderer": "official"
+      }
+    },
+    "exportUnchanged": true
+  },
+  "visual": {
+    "finding": "All six production screenshots were explicitly inspected with view_image. Desktop and medium preserve the two-column card hierarchy, typography, margins and action buttons; portrait preserves readable single-column cards and controls. Gesture screenshots show 23 percent, Studio and Press 1 / Release 1; live-reflow screenshots preserve 36 percent, Balanced and the selected Morning / Calm preset. No error overlay or unintended clipping observed. Partly visible virtual rows at viewport boundaries are intentionally clipped.",
+    "limits": "Windows installed-font rendering and browser mouse input only; no claim of hardware touch testing, packaged glyph coverage or native appearance.",
+    "reviewed": [
+      {
+        "sha256": "e6273412c72f59e416f114d7a3ee5833d961364a6842b51d84ccf4c1a4eb7882",
+        "reviewed_with": "view_image",
+        "bytes": 63146,
+        "file": "after-1440x900.png"
+      },
+      {
+        "sha256": "be6d9303a18e6c056f0d3f0882890a3973561910aafb72a51a18b9f23e24acbf",
+        "reviewed_with": "view_image",
+        "bytes": 59295,
+        "file": "after-1020x884.png"
+      },
+      {
+        "sha256": "ece3afacd8edaf5b8c2bcd1c71539af49ca82d8cd5e7e57f70ceba5d2022324f",
+        "reviewed_with": "view_image",
+        "bytes": 38812,
+        "file": "after-390x844.png"
+      },
+      {
+        "sha256": "294421dd97e34c4dbb372f9d47aaacfa29ad88dbb92f92c64fbd7b3c736088ff",
+        "reviewed_with": "view_image",
+        "bytes": 63726,
+        "file": "responsive-1440x900.png"
+      },
+      {
+        "sha256": "cbab30623189d4b2afd2a7da48cda587012c4f88c0317a56caba45e2ca77eb82",
+        "reviewed_with": "view_image",
+        "bytes": 59734,
+        "file": "responsive-1020x884.png"
+      },
+      {
+        "sha256": "c19c3feec942cc1c447c210d96a5da653f7fcf93846bd7e2f03d70bcd08dd830",
+        "reviewed_with": "view_image",
+        "bytes": 39428,
+        "file": "responsive-390x844.png"
+      }
+    ],
+    "status": "passed"
+  },
+  "export": {
+    "root": "D:/TSProject/Voidwake/engine/_Games/harbor-controls/dist/player",
+    "files": 142,
+    "bytes": 10312009,
+    "sha256Unchanged": true,
+    "evidence": [
+      "after-export-before-sha256.json",
+      "after-export-after-sha256.json",
+      "responsive-export-before-sha256.json",
+      "responsive-export-after-sha256.json"
+    ]
+  },
+  "sourceHashes": [
+    {
+      "file": "gesture-regression.cjs",
+      "sha256": "43aed83e689b1c2de142f25839c24b38cbc04c84266ce3f605b8493b89d7bc72"
+    },
+    {
+      "file": "responsive.cjs",
+      "sha256": "4e98354898196e1513975e21eab1e9ec1002e2be6f47ebec56ae40373d7909cc"
+    },
+    {
+      "file": "summarize.cjs",
+      "sha256": "15fdb5105797c1ccfe32105ea3644516c40d963c09184d558aa6a3508610da30"
+    }
+  ],
+  "scope": "All primary gestures are physical Playwright mouse input. Gesture regression separately labels synthetic platform pause/resume probes. Responsive reflow uses actual browser viewport changes and read-only observations. No exported file, renderer, WASM input state or private layout helper was mutated. Hardware touch and native player appearance are not covered."
+}

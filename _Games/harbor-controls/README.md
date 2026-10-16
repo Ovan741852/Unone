@@ -3,14 +3,20 @@
 A fresh-context SDK-only author built this UI from an empty project using public
 search/describe/schema/typings commands and the bundled official guides. The
 maintained copy keeps its game-owned design, interaction rules and strict types.
-Every control and surface uses the official `@unone/ui` 0.3.0 kit and player.
+Every control and surface uses the official `@unone/ui` 0.4.0 kit and player.
 
 Audio level, display choice, Apply/Reset, input counters and 120 semantic-key
 presets are project state. They do not change hardware volume/display settings
 or persist data. Three explicit compositions target desktop, intermediate and
-portrait viewports. Virtual rows use `UiVirtualOptions<PresetRow>`; two separate
+portrait viewports. One persistent official `createResponsiveLayout` model,
+typed as `UiResponsiveLayout<LayoutValues>`, selects those project-authored
+variants at aspect ratios `0.8` and `1.35`.
+Shared row/column partitions provide the card and action-button rectangles;
+the project supplies its colors, typography, spacing and control details.
+Virtual rows use `UiVirtualOptions<PresetRow>`; two separate
 input readers publish non-consuming press/release/held results each update.
-There is no HTML overlay, custom renderer or automatic layout system.
+The official layout package returns ordinary rectangles for the existing UI
+transport; it does not add an HTML overlay or replace the renderer.
 
 ## Prepare with an official SDK
 
