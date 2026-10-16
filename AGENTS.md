@@ -68,6 +68,14 @@ component leaves with typed styles and declare licensed faces in
 `presentation.ui.fonts`. Use `api.ui.getViewport()` for game-authored responsive
 choices. A font/style request does not authorize replacing the official player.
 
+Keep ordinary background ownership inside reusable component functions: search
+`game api search "card background"` / `"component overlap"` and declare
+`background_for` on the existing image/panel leaf. It must refer to the screen or
+an actual ancestor component in the same coordinate space. This is explicit
+validation intent, never a layout rule. Retain strict foreground/partial overlap
+checks; use exact-pair policies only for deliberate art/skin layers that do not
+meet containing-background semantics.
+
 For UI layout, responsive grouping, hierarchy and visual composition, default to
 semantic AI reasoning rather than mechanical coordinate rules. Infer groups from
 task, role, reading order, interaction focus, lifecycle and safe-area constraints;

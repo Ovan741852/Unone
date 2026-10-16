@@ -1,0 +1,67 @@
+TIME: 2026-10-16T10:10:55.9974422+08:00
+ENV: UNONE_LUAU_ANALYZER=D:\TSProject\Voidwake\engine\.toolcache\luau-0.734\luau-analyze.exe
+COMMAND: & 'D:\TSProject\UnoneUiBackground-20261016\sdk\bin\game.exe' --sdk 'D:\TSProject\UnoneUiBackground-20261016\sdk' --json api search 'font size'
+EXIT: 0
+{
+  "ok": true,
+  "value": {
+    "query": "font size",
+    "matches": [
+      {
+        "name": "ui.setRoot",
+        "category": "ui",
+        "purpose": "Publish a declarative UI tree with reusable typography/box styles and explicit scoped card backgrounds. Image/panel background_for metadata declares screen or ancestor-component background intent for overlap diagnostics. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
+        "when_to_use": "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Reuse existing component trees through Luau helper functions; component is a node kind, not api.ui.component(). A reusable card function carries background_for={component=id} on its own background leaf, keeping that intent beside its internal leaves instead of repeating their IDs in external overlap policies. Use background_for={screen=true} for a screen background. Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
+        "when_not_to_use": "No automatic layout, CSS, platform widgets, data binding or game rules. The game authors rectangles, semantic grouping, ViewModels, reusable components, content and action meanings. Styles are local to leaves and never inherited from components. Use ui.getViewport for authored responsive choices.",
+        "parameters": [
+          {
+            "name": "root",
+            "type_name": "UiScreen",
+            "meaning": "A screen root with text, button, slider, combobox, image, panel, component and scroll_view children. Image/panel may declare background_for={screen=true} OR background_for={component=\"ancestor_id\"}: exactly one scope, an actual component ancestor in the same coordinate space, and a background rectangle fitting that scope. Overlap diagnostics exempt only later fully contained descendants of the declared scope; foreground collisions, partial coverage, unrelated siblings and later occluding backgrounds remain findings. Exact-pair v1 overlap policies remain available for deliberate skin layers. Leaf style supports font_family/font_size/font_weight/line_height/letter_spacing/color/text_align/vertical_align/wrap/overflow/padding/background/border_color/border_width/border_radius/opacity; image and panel allow only box fields. Font sizes, padding, letter spacing and borders use vertical design units (1 unit = 1% viewport height); a styled leaf defaults to font_size=2 and never auto-shrinks. Omit style for legacy text fitting. Optional budget.max_nodes overrides the default (query ui.inspect). Image slice uses source-pixel borders and vertical-unit destination borders; slice replaces fit. Stage rects fit 0..100; scroll content uses non-negative local top-left/y-down coordinates."
+          }
+        ],
+        "returns": "(): no additional data on success.",
+        "side_effects": [
+          "Replace the game-owned UI tree for the current frame"
+        ],
+        "frame_semantics": "The latest validated tree is immediately visible in observations and Web/native host snapshots. Validation covers schema, style bounds, coordinates and node budgets; host glyph metrics are presentation and do not change simulation state.",
+        "common_errors": [
+          "root kind must be screen",
+          "child kind supports text, button, slider (action + optional value text), combobox (action + optional selected text + expanded boolean, default false), image (stable asset:// or texture:// id + fit + optional alt), panel (decorative box with optional style, no text/action/children), component (name + children), or scroll_view (prefer the scrollView/virtualList/virtualGrid helpers); skinned controls expose semantic/action nodes inside game-authored component skins; a skinned slider may expose stable track, fill, handler and semantic nodes, while a skinned combobox exposes field, value, arrow, popup and option nodes with selection and popup state controlled by the UI author",
+          "node ids must be globally unique; all rects finite, dimensions positive; stage rects fit 0..100, local scroll content uses non-negative x/y with no anchors",
+          "UI_STYLE_INVALID: RGBA outside 0..1, out-of-range style values, unsupported typography on image/panel, style inheritance on containers, or wrap=word combined with overflow=ellipsis; unknown fields are structural errors that name the unsupported field",
+          "UI_BACKGROUND_KIND / UI_BACKGROUND_SCOPE / UI_BACKGROUND_BOUNDS: background_for is only for image/panel leaves; choose exactly screen=true or an actual ancestor component ID, keep the same coordinate space, and fit the background inside its scope. This metadata does not reorder, move, clip, inherit style or excuse collisions between foreground controls/text."
+        ],
+        "example": "api.ui.setRoot({kind=\"screen\",id=\"menu\",node=\"settings\",children={{kind=\"text\",id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4,font_weight=700,text_align=\"start\",vertical_align=\"middle\",color={0.9,0.95,1,1}}}}})",
+        "related_apis": [
+          "ui.inspect",
+          "ui.getViewport",
+          "ui.scrollView",
+          "observation.set",
+          "input.getScreenPointerPosition"
+        ]
+      },
+      {
+        "name": "ui.inspect",
+        "category": "ui",
+        "purpose": "Read the actual UI contract, effective node budget, logical/leaf counts, upper bound on render regions and top-level subtree counts.",
+        "when_to_use": "Before building a large screen or diagnosing UI_NODE_LIMIT; query instead of guessing host limits.",
+        "when_not_to_use": "Not GPU timing or texture-memory measurement; render regions are not draw calls. Host diagnostics measure rendering cost.",
+        "parameters": [],
+        "returns": "{contract: UiContract, usage: UiUsage?}; usage is nil before setRoot.",
+        "side_effects": [
+          "Read-only inspection"
+        ],
+        "frame_semantics": "Reports the latest successfully published tree; a failed setRoot preserves it.",
+        "common_errors": [],
+        "example": "local report = api.ui.inspect(); api.observation.set(\"ui_budget\", report)",
+        "related_apis": [
+          "ui.setRoot"
+        ]
+      }
+    ],
+    "suggested_next_actions": []
+  },
+  "diagnostics": [],
+  "effects": []
+}

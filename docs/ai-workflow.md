@@ -355,7 +355,8 @@ Use `api.save.set(value)`/`api.save.get()` only when GAME_PLAN requires persiste
 The official UI already has reusable `component` trees and shared text, button,
 image, slider and combobox leaves. Extend these leaves with typed `style`; do not
 introduce a competing game-owned HTML/GPU UI system. Search `game api search
-"font size"`, `"component styling"`, `"共用元件"` or `"字體"`, describe `ui.setRoot`,
+"font size"`, `"component styling"`, `"card background"`, `"component overlap"`,
+`"共用元件"`, `"卡片背景"`, `"元件重疊"` or `"字體"`, describe `ui.setRoot`,
 and inspect `game schema ui` before authoring. The
 [current typography/style guide](ui-styling.md) covers units, defaults, font
 catalogs, component examples and target limits.
@@ -368,6 +369,18 @@ exposes the current aspect for game-authored portrait/landscape choices without
 adding automatic placement. Refresh `game api typings` when upgrading a project.
 Inspect the exported official player's typography at the target sizes; headless
 tree validation does not prove glyph coverage, visual hierarchy or font metrics.
+
+Carry a card's background intent inside its existing reusable Luau component
+function: put `background_for={component=id}` on an earlier image/panel leaf,
+where `id` is its actual ancestor component node ID. A screen background uses
+`background_for={screen=true}`. The parser validates the ancestor, coordinate
+space and background bounds. Strict inspection exempts only later descendants
+of that scope fully contained by the background; it still reports foreground
+collisions, partial coverage, unrelated siblings and later occlusion. This adds
+no factory, automatic placement, draw-order rule or inheritance. Keep exact-pair
+version-1 overlap policies for deliberate skin layers that require them; do not
+claim that background metadata removes every policy. See the
+[scope contract](ui-styling.md#explicit-background-scopes).
 
 ## 3.4 Declarative particles (default visual-effects path)
 
@@ -531,7 +544,15 @@ For projects with UI, `verify` renders only the **opening screen** by default (1
 
 Each declaration becomes an independent `layout:<name>` gate. **Each step lists the node IDs actually present on that screen**. If two declarations list exactly the same nodes, they almost certainly ran the same screen twice, creating a gate that proves nothing. The engine reports this fact but does not judge it for you.
 
-There is currently one finding: `UI_NODES_OVERLAP` (two node rects intersect; the diagram marks the intersection with `#` and reports the overlapping design-space units). For a project with UI, `--strict` turns it into `ok=false` and a non-zero exit code; use it for handoff and release. A project without UI is `not_applicable` in `verify`; running `ui preview --strict` directly may still return `UI_TREE_NOT_PUBLISHED`, and you do not need to add UI for that reason. The finding includes a recommendation for **which axis and direction to move**, not just that two boxes intersect.
+`UI_NODES_OVERLAP` reports two node rectangles intersecting; the diagram marks
+the intersection with `#`. Explicit scoped backgrounds accept only their later,
+fully contained descendants, and exact-pair policies accept only their validated
+artwork pairs. Remaining collisions still make `--strict` return `ok=false` and
+a non-zero exit code. A project without UI is `not_applicable` in `verify`;
+direct `ui preview --strict` may return `UI_TREE_NOT_PUBLISHED`, so do not add UI
+for that reason. Overlap findings recommend an axis and direction for review;
+the engine does not move the nodes. Diagnostic work limits can also make an
+inspection incomplete; they do not certify a clean layout.
 
 The node table also includes `text fit`: a rough estimate of how many times the
 text occupies the declared width. It assumes a 16:9 viewport and 0.5 character
@@ -541,7 +562,9 @@ is never a pass/fail verdict. Above 1.0 calls for visual review and an authored
 size/wrap/clip choice; styled text never auto-shrinks. The entry conditions for
 adding a rule are in Decision 0029.
 
-It checks only **structure**: no overlap and enough room. It does not, and is not intended to, judge whether the screen looks good. The world layer (sprites and entity positions) does not yet have a corresponding textual check.
+It checks only **structure**: rectangle intersections and explicit background
+intent, rather than visual quality or measured glyph coverage. The world layer
+(sprites and entity positions) does not yet have a corresponding textual check.
 
 ## 3.7 Find what one change changed
 

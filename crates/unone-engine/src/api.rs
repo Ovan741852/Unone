@@ -177,6 +177,17 @@ fn search_term_score(descriptor: &ApiDescriptor, term: &str) -> Option<u32> {
             | "height"
             | "component"
             | "components"
+            | "card"
+            | "cards"
+            | "panel"
+            | "panels"
+            | "backgrounds"
+            | "background_for"
+            | "scope"
+            | "scoped"
+            | "ancestor"
+            | "overlap"
+            | "overlaps"
             | "reusable"
             | "shared"
             | "skinning"
@@ -207,6 +218,18 @@ fn search_term_score(descriptor: &ApiDescriptor, term: &str) -> Option<u32> {
             | "行距"
             | "字距"
             | "共用元件"
+            | "卡片背景"
+            | "面板背景"
+            | "元件背景"
+            | "組件背景"
+            | "组件背景"
+            | "元件重疊"
+            | "元件重叠"
+            | "組件重疊"
+            | "组件重叠"
+            | "背景"
+            | "重疊"
+            | "重叠"
             | "元件"
             | "組件"
             | "组件"
@@ -240,6 +263,15 @@ fn search_term_score(descriptor: &ApiDescriptor, term: &str) -> Option<u32> {
         "内距",
         "共用元件",
         "共用组件",
+        "卡片背景",
+        "面板背景",
+        "元件背景",
+        "組件背景",
+        "组件背景",
+        "元件重疊",
+        "元件重叠",
+        "組件重疊",
+        "组件重叠",
     ]
     .iter()
     .any(|alias| term.contains(alias));
@@ -266,6 +298,8 @@ fn search_term_score(descriptor: &ApiDescriptor, term: &str) -> Option<u32> {
                 | "size"
                 | "line"
                 | "height"
+                | "overlap"
+                | "overlaps"
         ) {
             return None;
         }
@@ -1595,13 +1629,13 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "ui.setRoot",
             "ui",
-            "Publish a declarative UI tree with reusable font, typography, alignment, wrapping, RGBA color, padding, background, border and opacity styles. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
-            "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Reuse the existing component tree through Luau helper functions; component is a node kind, not api.ui.component(). Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
+            "Publish a declarative UI tree with reusable typography/box styles and explicit scoped card backgrounds. Image/panel background_for metadata declares screen or ancestor-component background intent for overlap diagnostics. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
+            "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Reuse existing component trees through Luau helper functions; component is a node kind, not api.ui.component(). A reusable card function carries background_for={component=id} on its own background leaf, keeping that intent beside its internal leaves instead of repeating their IDs in external overlap policies. Use background_for={screen=true} for a screen background. Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
             "No automatic layout, CSS, platform widgets, data binding or game rules. The game authors rectangles, semantic grouping, ViewModels, reusable components, content and action meanings. Styles are local to leaves and never inherited from components. Use ui.getViewport for authored responsive choices.",
             vec![parameter(
                 "root",
                 "UiScreen",
-                "A screen root with text, button, slider, combobox, image, panel, component and scroll_view children. Leaf style supports font_family/font_size/font_weight/line_height/letter_spacing/color/text_align/vertical_align/wrap/overflow/padding/background/border_color/border_width/border_radius/opacity; image and panel allow only box fields. Font sizes, padding, letter spacing and borders use vertical design units (1 unit = 1% viewport height); a styled leaf defaults to font_size=2 and never auto-shrinks. Omit style for legacy text fitting. Optional budget.max_nodes overrides the default (query ui.inspect). Image slice uses source-pixel borders and vertical-unit destination borders; slice replaces fit. Stage rects fit 0..100; scroll content uses non-negative local top-left/y-down coordinates.",
+                "A screen root with text, button, slider, combobox, image, panel, component and scroll_view children. Image/panel may declare background_for={screen=true} OR background_for={component=\"ancestor_id\"}: exactly one scope, an actual component ancestor in the same coordinate space, and a background rectangle fitting that scope. Overlap diagnostics exempt only later fully contained descendants of the declared scope; foreground collisions, partial coverage, unrelated siblings and later occluding backgrounds remain findings. Exact-pair v1 overlap policies remain available for deliberate skin layers. Leaf style supports font_family/font_size/font_weight/line_height/letter_spacing/color/text_align/vertical_align/wrap/overflow/padding/background/border_color/border_width/border_radius/opacity; image and panel allow only box fields. Font sizes, padding, letter spacing and borders use vertical design units (1 unit = 1% viewport height); a styled leaf defaults to font_size=2 and never auto-shrinks. Omit style for legacy text fitting. Optional budget.max_nodes overrides the default (query ui.inspect). Image slice uses source-pixel borders and vertical-unit destination borders; slice replaces fit. Stage rects fit 0..100; scroll content uses non-negative local top-left/y-down coordinates.",
             )],
             "(): no additional data on success.",
             vec!["Replace the game-owned UI tree for the current frame"],
@@ -1611,6 +1645,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
                 "child kind supports text, button, slider (action + optional value text), combobox (action + optional selected text + expanded boolean, default false), image (stable asset:// or texture:// id + fit + optional alt), panel (decorative box with optional style, no text/action/children), component (name + children), or scroll_view (prefer the scrollView/virtualList/virtualGrid helpers); skinned controls expose semantic/action nodes inside game-authored component skins; a skinned slider may expose stable track, fill, handler and semantic nodes, while a skinned combobox exposes field, value, arrow, popup and option nodes with selection and popup state controlled by the UI author",
                 "node ids must be globally unique; all rects finite, dimensions positive; stage rects fit 0..100, local scroll content uses non-negative x/y with no anchors",
                 "UI_STYLE_INVALID: RGBA outside 0..1, out-of-range style values, unsupported typography on image/panel, style inheritance on containers, or wrap=word combined with overflow=ellipsis; unknown fields are structural errors that name the unsupported field",
+                "UI_BACKGROUND_KIND / UI_BACKGROUND_SCOPE / UI_BACKGROUND_BOUNDS: background_for is only for image/panel leaves; choose exactly screen=true or an actual ancestor component ID, keep the same coordinate space, and fit the background inside its scope. This metadata does not reorder, move, clip, inherit style or excuse collisions between foreground controls/text.",
             ],
             "api.ui.setRoot({kind=\"screen\",id=\"menu\",node=\"settings\",children={{kind=\"text\",id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4,font_weight=700,text_align=\"start\",vertical_align=\"middle\",color={0.9,0.95,1,1}}}}})",
             vec![
@@ -2064,6 +2099,23 @@ mod tests {
                 .iter()
                 .any(|api| api.name == "entity.getTransform2D")
         );
+    }
+
+    #[test]
+    fn scoped_background_intents_discover_composition_without_hiding_world_queries() {
+        for query in ["card background", "component overlap", "reusable card backgrounds", "background_for", "ancestor background scope", "卡片背景", "元件重疊", "共用元件", "如何處理元件重疊", "组件重叠"] {
+            let matches = search(query);
+            assert_eq!(matches.first().map(|api| api.name.as_str()), Some("ui.setRoot"), "{query}");
+            assert!(matches.iter().all(|api| api.name.starts_with("ui.")), "{query}");
+            let api = &matches[0];
+            assert!(api.when_to_use.contains("background_for={component=id}"));
+            assert!(api.parameters[0].meaning.contains("later fully contained descendants"));
+            assert!(api.parameters[0].meaning.contains("Exact-pair v1"));
+            assert!(api.common_errors.iter().any(|error| error.contains("actual ancestor component ID")));
+        }
+        assert_eq!(search("ui.setRoot").len(), 1);
+        assert!(search("physics3d overlap").iter().any(|api| api.name.starts_with("physics3d.")));
+        assert!(search("ECS元件").is_empty());
     }
 
     #[test]

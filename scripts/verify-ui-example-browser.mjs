@@ -7,7 +7,7 @@ import {createServer} from 'node:http';
 import {readFileSync,writeFileSync,mkdirSync,realpathSync} from 'node:fs';
 import {resolve,join,extname,sep,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {parseArgs} from 'node:util';
+import {parseArgs,isDeepStrictEqual} from 'node:util';
 import {spawnSync} from 'node:child_process';
 const {values}=parseArgs({options:{export:{type:'string'},url:{type:'string'},out:{type:'string'},plan:{type:'string'},python:{type:'string',default:'python'}}});
 if(!values.export&&!values.url)throw Error('Use --export <official-export-directory> or --url <official-player-url>');
@@ -37,7 +37,7 @@ async function waitExpect(page,expect,before){
  const began=Date.now();let latest;
  do{latest=await snapshot(page);const texts=flatten(latest?.world?.ui?.children).map(n=>n.text).filter(Boolean);
   const observed=latest.world.observations,previous=before.world.observations;
-  const matches=(expect.text??[]).every(t=>texts.includes(t))&&(expect.textIncludes??[]).every(t=>texts.some(v=>v.includes(t)))&&Object.entries(expect.observations??{}).every(([path,value])=>JSON.stringify(pointer(observed,path))===JSON.stringify(value))&&(expect.changed??[]).every(path=>JSON.stringify(pointer(observed,path))!==JSON.stringify(pointer(previous,path)))&&(expect.equalPaths??[]).every(([a,b])=>JSON.stringify(pointer(observed,a))===JSON.stringify(pointer(observed,b)))&&(expect.increased??[]).every(path=>pointer(observed,path)>pointer(previous,path))&&(expect.decreased??[]).every(path=>pointer(observed,path)<pointer(previous,path));
+  const matches=(expect.text??[]).every(t=>texts.includes(t))&&(expect.textIncludes??[]).every(t=>texts.some(v=>v.includes(t)))&&Object.entries(expect.observations??{}).every(([path,value])=>isDeepStrictEqual(pointer(observed,path),value))&&(expect.changed??[]).every(path=>!isDeepStrictEqual(pointer(observed,path),pointer(previous,path)))&&(expect.equalPaths??[]).every(([a,b])=>isDeepStrictEqual(pointer(observed,a),pointer(observed,b)))&&(expect.increased??[]).every(path=>pointer(observed,path)>pointer(previous,path))&&(expect.decreased??[]).every(path=>pointer(observed,path)<pointer(previous,path));
   if(matches)return latest;await page.waitForTimeout(60);
  }while(Date.now()-began<8000);
  throw Error('Public UI outcome did not appear: '+JSON.stringify({expect,observations:latest?.world?.observations,text:flatten(latest?.world?.ui?.children).map(n=>n.text).filter(Boolean)}));

@@ -10,8 +10,9 @@ The initial UI and state logic came from a fresh AI author using an immutable
 portable SDK and its public CLI/type/documentation surface, without reading engine
 source or receiving implementation hints. Independent visual acceptance later
 identified a clipped heading at an intermediate aspect ratio; the author corrected
-its type size through the same documented API. This integrated copy preserves that corrected
-`scripts/main.luau`, including the canonical type prelude from `project init`.
+its type size through the same documented API. The current copy retains those
+authored coordinates, typography and state behavior, with the background-intent
+refactor described below and the matching canonical strict type prelude.
 The launcher, documentation and ignore rules are integration files. The parent
 validation's real desktop/portrait browser evidence is recorded separately;
 the source tests below do not certify rendered pixels or mobile performance.
@@ -87,12 +88,31 @@ $Sdk = 'C:/Tools/UnoneSDK'
 & "$Sdk/bin/game.exe" --sdk $Sdk --project . --json verify
 ```
 
-From the repository root, replace `--project .` with
+Use a current SDK whose CLI and Web runtime both support `background_for`.
+An older runtime rejects the field; updating types alone does not update the
+player. From the repository root, replace `--project .` with
 `--project ./_Games/observatory-settings`. Verification includes strict types,
-the reviewed desktop overlap policy and nine deterministic interaction cases:
+the explicit component backgrounds, six reviewed slider-skin overlap pairs and
+nine deterministic interaction cases:
 defaults, held-toggle edges, draft changes, Apply, Reset, slider maximum/clamping,
 and the lower/upper bounds. The CLI layout preview uses its desktop reference
 aspect; actual portrait rendering and pointer interaction require browser QA.
+
+## Backgrounds belong to their components
+
+`settingCard` declares its own surface with
+`background_for={component=id}`. Three card instances reuse that declaration;
+the preset card does the same. The full-screen panel explicitly uses
+`background_for={screen=true}`. These five instances replace 62 external pairs;
+the policy file contains only six deliberate slider-skin pairs instead of 68.
+The factory no longer exposes every label/control ID to an external policy.
+
+The inspector only accepts later, fully contained leaves of the declared scope.
+Text/control collisions and protruding content still fail. This metadata does
+not alter rectangles, paint order, typography or interactions. All responsive
+choices remain in the example's Luau code. See the shared
+[background contract](../../docs/ui-styling.md) and
+[design decision](../../docs/decisions/0039-component-background-intent.md).
 
 ## Reproduce real-player acceptance
 

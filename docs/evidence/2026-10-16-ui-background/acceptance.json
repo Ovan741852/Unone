@@ -1,0 +1,202 @@
+{
+  "baseline": "c64790748a00d239d181f120959854c49c7494d0",
+  "source_hashes": {
+    "crates/unone-engine/src/ui.rs": "5a2f90f88ebc4c411f379b4dd79e7c961282714456de7a3dab5fcca095b10327",
+    "crates/unone-engine/src/layout.rs": "13d2573b64ec589f741083f1f40a5fc0cf84cf87c646365d202d98786b6d89f1",
+    "crates/unone-engine/src/engine.d.luau": "6fbdb095ddc489dd859483388f318809c4c7c4d382f882a71501e9237bfb0598",
+    "crates/unone-engine/src/api.rs": "ee6f78f32cf4b194c760bccfb1f720e8a41294093cdb1593cfea513aeb9dfd86",
+    "docs/ui.schema.json": "e902169a4b17d550a0227fcc56fcc045f6f28f525e607f538e38e55912f5e902",
+    "_Games/observatory-settings/scripts/main.luau": "e194ce200be042a8f85a6d5d1b8e728719b0a67ff325c0130266778cf12c51ad",
+    "_Games/observatory-settings/tests/desktop-overlaps.json": "6bc9a2104cfa67a94b435864bb4b256238a6f29e42d5d07e3d39b9f834cd05d2",
+    "scripts/verify-ui-example-browser.mjs": "f8be1be6a5315dd269d8274faf9a99d45a1409898095e12c196835e5340ad073"
+  },
+  "workspace": {
+    "passed": 417,
+    "failed": 0,
+    "ignored": 3,
+    "test_log_sha256": "dfecbe8024d4c2c55140c6ed81b225c462937634859ae6eaceb91281a84ae87f",
+    "clippy": "passed",
+    "clippy_log_sha256": "91922dca730ddb76316e2340cad9950ef80c69257fbc7d03121c5557898df192"
+  },
+  "example": {
+    "prepare_ready": true,
+    "verify": {
+      "project": "Aster Observatory",
+      "steps": [
+        {
+          "name": "types",
+          "status": "passed",
+          "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+          "command": "game check --types",
+          "diagnostics": []
+        },
+        {
+          "name": "assets",
+          "status": "passed",
+          "summary": "0 declared, 0 scene references, ready_for_packaging true",
+          "command": "game asset inspect --strict",
+          "diagnostics": []
+        },
+        {
+          "name": "layout:desktop",
+          "status": "passed",
+          "summary": "0 findings; nodes: night_background, brand, header_rule, station_id, display_title, chinese_title, section_label, intro_paragraph, preset_surface, preset_label, preset_mode, preset_values, sound_card_surface, sound_card_index, sound_card_title, sound_card_description, sound_toggle_action, mode_card_surface, mode_card_index, mode_card_title, mode_card_description, mode_1_action, mode_2_action, mode_3_action, level_card_surface, level_card_index, level_card_title, level_card_description, level_value, level_minus_action, level_track, level_fill, level_thumb, level_slider, level_plus_action, reset_action, apply_action, draft_badge, applied_counter, status_line",
+          "command": "game ui preview --strict --frames 1 --seed 42 --overlap-policy tests/desktop-overlaps.json",
+          "diagnostics": []
+        },
+        {
+          "name": "tests",
+          "status": "passed",
+          "summary": "9/9 deterministic cases passed",
+          "command": "game test",
+          "diagnostics": []
+        }
+      ],
+      "passed": 4,
+      "failed": 0,
+      "not_applicable": 0,
+      "step_source": "default"
+    },
+    "strict_layout_readable": true,
+    "allowed_pairs": 68,
+    "typed_pairs": 62,
+    "external_pairs": 6,
+    "browser": {
+      "ok": true,
+      "checks": 77,
+      "viewports": [
+        {
+          "name": "desktop",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "name": "intermediate",
+          "width": 1020,
+          "height": 884
+        },
+        {
+          "name": "portrait",
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "real_input_sequences": 30,
+      "font_coverage_ok": true,
+      "text_samples": 54,
+      "browser_report_sha256": "75ddad9351c4c06b4f66c113d22159e67305529cfeccae2c2be2c06b512c3729"
+    },
+    "migration_equivalence": {
+      "ok": true,
+      "comparisons": [
+        {
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "initial_leaf_tree_unchanged": true,
+          "initial_pixels_equal": true,
+          "difference_bbox": null
+        },
+        {
+          "viewport": {
+            "name": "intermediate",
+            "width": 1020,
+            "height": 884
+          },
+          "initial_leaf_tree_unchanged": true,
+          "initial_pixels_equal": true,
+          "difference_bbox": null
+        },
+        {
+          "viewport": {
+            "name": "portrait",
+            "width": 390,
+            "height": 844
+          },
+          "initial_leaf_tree_unchanged": true,
+          "initial_pixels_equal": true,
+          "difference_bbox": null
+        }
+      ],
+      "original_pairs": 68,
+      "current_approved_pairs": 68,
+      "same_approved_pairs": true,
+      "typed_pairs": 62,
+      "remaining_external_pairs": 6
+    }
+  },
+  "fresh_probe": {
+    "fork_turns": "none",
+    "browser_ok": true,
+    "browser_checks": 30,
+    "real_input_sequences": 9,
+    "limitations": [
+      "Desktop composition; additional small-viewport input checks do not certify responsive typography.",
+      "System fonts only; no packaged-font glyph-coverage claim."
+    ],
+    "browser_report_sha256": "b8789d99c773d936169fe7ea7b64f551a0e64ee10d9d67a151960086126f1b24",
+    "earlier_failed_qa": "Coordinator compared JSON objects with order-sensitive JSON.stringify; corrected to isDeepStrictEqual without changing author source or expectations. Raw failure retained under artifacts/ui-background/fresh-browser.",
+    "immutable_inputs_reverified": true,
+    "recorded_calls": 30,
+    "project_source_hashes": {
+      "AGENTS.md": "4f31c1dae1a9ac419107e5c051d3a5e4e2114b147d0fe54226a5ef0d63e7d5ec",
+      "player.presentation.json": "041ce1ae86ef5e607b350989a816a8433a19bd32ae9ca3e2853524d2ae4c1749",
+      "project.unone.json": "c5f9383304360f5fa75a312516a90e19afca81ecad15d7231601f8850e2aaf24",
+      "scenes/main.scene.json": "5c04cfb32256f23453309108c79d01f68c3d9ab81d253d9bd01d446ef99de433",
+      "scripts/main.luau": "5d3927483ddff40fb2bbb9cca8fb0acbd915159b0dba19c1c62625537d19f438",
+      "tests/settings-held.test.json": "297fb3fa9f67279d945d0a35488a25d9b2cd9cd23276a0c8068a0e2998577377",
+      "tests/settings-idle.test.json": "6080eff9982befbed72004a75f1dd64034d7a756489e2eeffc40392c44a928e0",
+      "tests/settings-independent.test.json": "a748e4db651d6d53aa89a8fd840ad8e3eb1784b202139901346c80be530ef736"
+    }
+  },
+  "runtime": {
+    "wasm": "unone_player.wasm",
+    "preview_tools": false,
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "ui",
+      "world"
+    ],
+    "exports": [
+      "init",
+      "alloc",
+      "load_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_instance_transport",
+      "tick",
+      "jobs_request",
+      "jobs_binary",
+      "ui_request",
+      "observation_ptr",
+      "observation_len"
+    ],
+    "source_commit": "c64790748a00d239d181f120959854c49c7494d0",
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "particle",
+      "random",
+      "ui"
+    ],
+    "emscripten": "3.1.74",
+    "profile": "release",
+    "wasm_sha256": "d97577cb4451b88c4ae22e5b32f0c213a831a042326d6ed07e5330a6e4386dc5",
+    "source_dirty": true,
+    "dev_tools": false,
+    "javascript": "unone-player.js",
+    "source_repository": "https://github.com/Ovan741852/Unone.git",
+    "rust": "1.95.0",
+    "wasm_bytes": 1716050,
+    "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+  },
+  "local_evidence": "artifacts/ui-background (generated and ignored)"
+}

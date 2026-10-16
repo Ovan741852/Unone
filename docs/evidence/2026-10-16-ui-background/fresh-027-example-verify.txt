@@ -1,0 +1,48 @@
+TIME: 2026-10-16T10:14:07.0685411+08:00
+ENV: UNONE_LUAU_ANALYZER=D:\TSProject\Voidwake\engine\.toolcache\luau-0.734\luau-analyze.exe
+COMMAND: & 'D:\TSProject\UnoneUiBackground-20261016\sdk\bin\game.exe' --sdk 'D:\TSProject\UnoneUiBackground-20261016\sdk' --project 'D:\TSProject\UnoneUiBackground-20261016\project' --json verify
+EXIT: 0
+{
+  "ok": true,
+  "value": {
+    "project": "Signal Settings",
+    "steps": [
+      {
+        "name": "types",
+        "status": "passed",
+        "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+        "command": "game check --types",
+        "diagnostics": []
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "0 declared, 0 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout",
+        "status": "passed",
+        "summary": "0 findings; nodes: screen_background, screen_title, screen_subtitle, ambience_background, ambience_label, ambience_description, ambience_count, ambience_button, motion_background, motion_label, motion_description, motion_count, motion_button, screen_footer",
+        "command": "game ui preview --strict --frames 1 --seed 42",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "passed",
+        "summary": "3/3 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": []
+      }
+    ],
+    "passed": 4,
+    "failed": 0,
+    "not_applicable": 0,
+    "step_source": "default"
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 4 gates in the default order: 4 passed, 0 failed, 0 not applicable"
+  ]
+}

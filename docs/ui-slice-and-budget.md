@@ -36,6 +36,18 @@ api.observation.set("ui_budget", report)
 UnoneUI 0.5.0 的 `UI.image(spec)`／`ui.generate(image, spec)` 同樣接收 `slice`。
 無需安裝插件也能直接使用 Core API；UI 架構不是強制依賴。
 
+## Reusable background intent
+
+A sliced image can also declare `background_for={component="ancestor_id"}` or
+`background_for={screen=true}`. This is explicit background metadata on the
+existing image/panel leaf; it adds no logical nodes and changes neither slicing
+nor drawing order. Keep it inside the reusable Luau component function so each
+instance carries its own intent. The background must fit its scope in the same
+coordinate space. Only later descendants fully contained by that background
+receive the scoped overlap exemption; foreground collisions and partial coverage
+remain findings. Version-1 exact-pair policies still support deliberately layered
+skins. See [the current scope contract](ui-styling.md#explicit-background-scopes).
+
 ## 預算不等於效能
 
 唯一來源是 `crates/unone-engine/src/ui-contract.json`，Rust 直接讀取；Web 與插件

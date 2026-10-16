@@ -8,7 +8,8 @@ screen flow. The official player owns font loading, glyph shaping and painting.
 See [formal host support](formal-ui-host.md) and [ADR 0038](decisions/0038-shared-ui-styling.md).
 
 Start discovery with `game api search "font size"`, `"text alignment"`,
-`"border padding"`, `"component styling"`, `"字體"`, `"排版"` or `"共用元件"`,
+`"border padding"`, `"component styling"`, `"card background"`,
+`"component overlap"`, `"字體"`, `"排版"`, `"卡片背景"`, `"元件重疊"` or `"共用元件"`,
 then describe `ui.setRoot` and inspect `game schema ui`.
 `game api search "responsive"` leads to `ui.getViewport`. CLI and MCP search
 use the same index. Regenerate strict types with `game api typings` after
@@ -137,21 +138,66 @@ api.ui.setRoot({kind="screen",id="settings",node="settings",children={
 }})
 ```
 
-A separate reading card demonstrates independent text hierarchy and wrapping:
+A reusable reading card keeps its decorative background intent beside its own
+text hierarchy and wrapping. `background_for` is metadata on the image or panel
+leaf, separate from `style.background` which paints a fill:
 
 ```luau
+local function readingCard(id: string, heading: string, body: string): UiNode
+    return {
+        kind="component",id=id,component="ui.reading_card",
+        rect={x=10,y=10,width=80,height=80},
+        children={
+            {kind="panel",id=id.."_paper",rect={x=10,y=10,width=80,height=80},
+             background_for={component=id},
+             style={background={0.03,0.04,0.06,0.95},border_radius=1}},
+            {kind="text",id=id.."_heading",text=heading,rect={x=15,y=70,width=70,height=12},
+             style={font_family="Display UI",font_size=4.5,font_weight=700,
+                text_align="start",vertical_align="middle",color={1,0.9,0.65,1}}},
+            {kind="text",id=id.."_body",text=body,rect={x=15,y=20,width=70,height=45},
+             style={font_family="Reading UI",font_size=2,text_align="start",
+                vertical_align="top",line_height=1.5,wrap="word",color={0.8,0.85,0.9,1}}},
+        },
+    }
+end
 api.ui.setRoot({kind="screen",id="reading",node="article",children={
-    {kind="panel",id="paper",rect={x=10,y=10,width=80,height=80},
-     style={background={0.03,0.04,0.06,0.95},border_radius=1}},
-    {kind="text",id="heading",text="Field notes",rect={x=15,y=70,width=70,height=12},
-     style={font_family="Display UI",font_size=4.5,font_weight=700,
-        text_align="start",vertical_align="middle",color={1,0.9,0.65,1}}},
-    {kind="text",id="body",text="A short report can keep a readable type size while its paragraph wraps inside an authored rectangle.",
-     rect={x=15,y=20,width=70,height=45},style={font_family="Reading UI",font_size=2,
-        text_align="start",vertical_align="top",line_height=1.5,wrap="word",
-        color={0.8,0.85,0.9,1}}},
+    readingCard("notes","Field notes",
+        "A short report keeps a readable type size while its paragraph wraps inside an authored rectangle."),
 }})
 ```
+
+### Explicit background scopes
+
+An `image` or `panel` may declare exactly one `background_for` scope:
+
+- `{component="ancestor_id"}` names an actual ancestor component's **node ID**,
+  such as `notes` above, rather than its component name `ui.reading_card`.
+- `{screen=true}` declares a screen background in the screen's coordinate space.
+
+The parser checks that the background fits its scope and uses the same coordinate
+space. A declaration cannot target a sibling, an unrelated component, or an
+ancestor across a scroll coordinate boundary. Other leaf kinds cannot declare
+background intent. Omit the field when a leaf is ordinary foreground artwork.
+
+Strict layout diagnostics exempt an overlapping pair only when the background
+comes first, the other leaf belongs to that declared scope, and the other leaf's
+whole rectangle fits inside the background. Foreground text/control collisions,
+partly covered leaves, unrelated siblings outside a component scope, and a later
+background occluding an earlier leaf remain findings. Invalid scope declarations
+fail before publishing the tree: `UI_BACKGROUND_KIND` rejects unsupported node
+kinds, `UI_BACKGROUND_SCOPE` reports an invalid scope/ancestor or coordinate
+space, and `UI_BACKGROUND_BOUNDS` reports a background outside its scope.
+Structural errors can use the general `ui.setRoot` tree-parse diagnostic.
+These rules do not move, resize, clip, reorder
+or inherit styles; hosts keep the same authored drawing and input behavior.
+
+Put the declaration inside the reusable Luau function so every instance carries
+its background intent with its internal IDs. Normal card backgrounds then need
+no external list of internal background/text pairs. Existing version-1 exact-pair
+overlap policies remain available for deliberate layers that do not meet scope
+containment, such as a slider's track/fill/handle skin. They retain their existing
+validation and do not waive foreground text/control collisions; see
+[the host overlap contract](formal-ui-host.md#intentional-art-overlaps-without-disabling-strict-checks).
 
 Use the returned viewport aspect to select a game-authored composition:
 

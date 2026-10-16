@@ -1,0 +1,314 @@
+[
+  {
+    "file": "001-discovery.txt",
+    "sha256": "ab4957af79aa155f0a9de7e55fd5caf69a2a808f961d5d5340760d9deb2049b0",
+    "header": [
+      "TIME: 2026-10-16T10:09:55.7007523+08:00",
+      "COMMAND: Get-ChildItem -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk','D:\\TSProject\\UnoneUiBackground-20261016\\official-docs' -Force | Select-Object FullName,Mode",
+      "EXIT: 0",
+      ""
+    ]
+  },
+  {
+    "file": "002-doc-entry.txt",
+    "sha256": "27c3ea55fe42ae2f82fd7063fe4cca08dbb987b20ef7ca5477c468fb7aaba372",
+    "header": [
+      "TIME: 2026-10-16T10:10:12.0768766+08:00",
+      "COMMAND: Get-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\README.md','D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\AGENTS.md'",
+      "EXIT: 0",
+      "# Unone"
+    ]
+  },
+  {
+    "file": "003-cli-help.txt",
+    "sha256": "09729a19428b4d69ef1ccb526d321da9c5e69dd7fe813f195ce81d51c1693678",
+    "header": [
+      "TIME: 2026-10-16T10:10:19.0146535+08:00",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --help",
+      "EXIT: 0",
+      "Unone AI-native game developer CLI"
+    ]
+  },
+  {
+    "file": "004-author-guides.txt",
+    "sha256": "686319affcc63c85e2de5c00ff126e7ab781c35f7a4e6653a2d155af6a93052e",
+    "header": [
+      "TIME: 2026-10-16T10:10:39.1080894+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: Get-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\docs\\portable-sdk.md','D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\docs\\ui-styling.md','D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\docs\\ai-workflow.md','D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\docs\\player-export.md'",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "005-sdk-inspect.txt",
+    "sha256": "a9605aef76d3cfdbd47746abf6d4f8897f571bd3e719e0c268e08100046e649b",
+    "header": [
+      "TIME: 2026-10-16T10:10:56.1435215+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --json sdk inspect",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "006-search-card-background.txt",
+    "sha256": "9d9e5e148b6875d4adc598dff1788680f7b19b4e276ab05b759a842b57fcd686",
+    "header": [
+      "TIME: 2026-10-16T10:10:55.9891461+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --json api search 'card background'",
+      "EXIT: 0"
+    ],
+    "committed_copy": "fresh-006-search-card-background.txt",
+    "committed_copy_sha256": "4fdac69c92e05ced6b2c9d3ed89ae60f20085128e7696343433e18e03f066a3f",
+    "copy_normalization": "Terminal blank lines removed and CRLF normalized to LF; original raw byte hash is retained above."
+  },
+  {
+    "file": "007-search-component-overlap.txt",
+    "sha256": "4e44bfd8c2c0f4ee87d45fd8f5d4f87ed6d91ccfe9e5d796d01168e0954128aa",
+    "header": [
+      "TIME: 2026-10-16T10:10:56.0029982+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --json api search 'component overlap'",
+      "EXIT: 0"
+    ],
+    "committed_copy": "fresh-007-search-component-overlap.txt",
+    "committed_copy_sha256": "073f09971295e321790cd44d12cbdbe723c7f081374a672a1237879a01fcff72",
+    "copy_normalization": "Terminal blank lines removed and CRLF normalized to LF; original raw byte hash is retained above."
+  },
+  {
+    "file": "008-search-font-size.txt",
+    "sha256": "f2478b1bd21cf9ae7f5d0dbb1ca1d411262df13c38541ca3ba74cf2a17478232",
+    "header": [
+      "TIME: 2026-10-16T10:10:55.9974422+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --json api search 'font size'",
+      "EXIT: 0"
+    ],
+    "committed_copy": "fresh-008-search-font-size.txt",
+    "committed_copy_sha256": "af17cecc61072cc83d38b9ab98b2fc64a0eb7f928860d79ca7b6aa2f1bc0afb2",
+    "copy_normalization": "Terminal blank lines removed and CRLF normalized to LF; original raw byte hash is retained above."
+  },
+  {
+    "file": "009-project-init.txt",
+    "sha256": "4157b028a07e481c8584f6841796d589c7fb48b44c89d7b8ce5d05e0cdc3a21a",
+    "header": [
+      "TIME: 2026-10-16T10:10:56.0277582+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json project init --name 'Signal Settings'",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "010-project-files.txt",
+    "sha256": "de4aab37463989ec1f62561ad48ee6bdad672f9d8a77df4b28f968e9a6242704",
+    "header": [
+      "TIME: 2026-10-16T10:11:12.3867058+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: Get-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\project\\AGENTS.md','D:\\TSProject\\UnoneUiBackground-20261016\\project\\project.unone.json','D:\\TSProject\\UnoneUiBackground-20261016\\project\\player.presentation.json','D:\\TSProject\\UnoneUiBackground-20261016\\project\\scripts\\main.luau','D:\\TSProject\\UnoneUiBackground-20261016\\project\\scenes\\main.scene.json','D:\\TSProject\\UnoneUiBackground-20261016\\project\\tests\\bootstrap-idle.test.json','D:\\TSProject\\UnoneUiBackground-20261016\\project\\tests\\bootstrap-input.test.json'",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "011-ui-schema.txt",
+    "sha256": "85685b4113e31e5eeb7f3c7bda0a9b1e4b5b6f1a1c8d8a5f73a7a75dcf908c08",
+    "header": [
+      "TIME: 2026-10-16T10:11:12.4618006+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json schema ui",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "012-setroot-describe.txt",
+    "sha256": "d25c3cb39682584687e6266ad6685824ac99c7c8914e66e74997bf1501cd792d",
+    "header": [
+      "TIME: 2026-10-16T10:11:12.4330875+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json api describe ui.setRoot",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "013-typings-help.txt",
+    "sha256": "553fa2e0dac70b57554e1cd6b3f44cb63ec12d8f01e1bc1cbee169e0f1cada67",
+    "header": [
+      "TIME: 2026-10-16T10:11:12.4706677+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' api typings --help",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "014-platform-snapshot.txt",
+    "sha256": "4e59881515ee3df02b85817d33e3aef0bf27ddfe1a6f5c5783040f4100ee3d13",
+    "header": [
+      "TIME: 2026-10-16T10:11:12.5192421+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json platform snapshot",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "015-scaffold-verify.txt",
+    "sha256": "b0f13b8549faa449f84185128e0c14df0e0a2f007d78694f17a07150319adc3a",
+    "header": [
+      "TIME: 2026-10-16T10:11:28.9840992+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json verify",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "016-systems-list.txt",
+    "sha256": "583d9652afed6a725c12ed7fbb5a581091fbe2dda53171cb00838cca1fd33b11",
+    "header": [
+      "TIME: 2026-10-16T10:11:28.9347940+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json systems list",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "017-input-describe.txt",
+    "sha256": "fa3d7f545f357014538c076e738eabb35456738d20e7f01ad1afd8566e8e8cb2",
+    "header": [
+      "TIME: 2026-10-16T10:11:28.9299661+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json api describe input.isDown",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "018-doc-targeted-search.txt",
+    "sha256": "8507cfead5b8269da55b43c79098b72772673102022753bfc63c3eeb5a1fc103",
+    "header": [
+      "TIME: 2026-10-16T10:11:29.0009214+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: rg -n -A 20 -B 4 'Explicit background scopes|layout_checks|ui_actions|observation|input_sequence|project prepare' 'D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\docs\\ui-styling.md' 'D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\docs\\ai-workflow.md'",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "019-schema-help.txt",
+    "sha256": "01c4b88912c08118c9454b15d7842ddeccc52ddc2438b4a98ee6ebf7a57019f3",
+    "header": [
+      "TIME: 2026-10-16T10:11:28.9299276+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' schema --help",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "020-test-guide.txt",
+    "sha256": "385a8a319396c1563d1ce5c7ba88345639c33c87f38e7722dc4fb4208c33ce6c",
+    "header": [
+      "TIME: 2026-10-16T10:11:44.3340438+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: Get-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\official-docs\\docs\\ai-workflow.md' | Select-Object -Skip 265 -First 78",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "021-test-schema.txt",
+    "sha256": "ec8532ae4448de16aef7c1b6d8aebc32f5104bb67eae9985d41d0c3bd7de93af",
+    "header": [
+      "TIME: 2026-10-16T10:11:44.4015672+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json schema test",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "022-scaffold-preflight.txt",
+    "sha256": "ac565c32d56daf23c43b4603d493265373ec9a5a31ff72b8179d47f1131adee1",
+    "header": [
+      "TIME: 2026-10-16T10:11:44.5637319+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json project preflight --target web",
+      "EXIT: 1"
+    ]
+  },
+  {
+    "file": "023-systems-help.txt",
+    "sha256": "540aa0b7f7f6b69f6a2c98520734876fa371f2dcddef3986e4c2ab1d6689eff2",
+    "header": [
+      "TIME: 2026-10-16T10:11:44.4856129+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' systems --help",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "024-schema-scope-extract.txt",
+    "sha256": "2792ab7791dbd499eac01c1ab3584e6e9f333e53d7b18a57dfc794cb4194c6ad",
+    "header": [
+      "TIME: 2026-10-16T10:11:44.4239239+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: $record = Get-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\author-evidence\\011-ui-schema.txt' -Raw; $json = $record.Substring($record.IndexOf('{')) | ConvertFrom-Json; $json.value.'$defs'.UiBackgroundScope | ConvertTo-Json -Depth 10; $json.value.'$defs'.RawUiNode.properties.background_for | ConvertTo-Json -Depth 10",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "025-empty-scene.txt",
+    "sha256": "25f68d9a3b652830a57b75b2803de6203ff19fa309c2f12b1826b14a1e7fe6be",
+    "header": [
+      "TIME: 2026-10-16T10:13:42.9211032+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: Set-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\project\\scenes\\main.scene.json' -Value '{\\",
+      "EXIT: 1"
+    ]
+  },
+  {
+    "file": "026-empty-scene-corrected.txt",
+    "sha256": "596dace9ae14f3ddfa08f453cf63582d900acc1297f9ae1f3f635d75bc784798",
+    "header": [
+      "TIME: 2026-10-16T10:14:05.5317229+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: Set-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\project\\scenes\\main.scene.json' -Value '{\"entities\": []}'",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "027-example-verify.txt",
+    "sha256": "011f48d3f533dfe30831588a5c8329fa3a70cddee0c038b0358691876052a2e5",
+    "header": [
+      "TIME: 2026-10-16T10:14:07.0685411+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json verify",
+      "EXIT: 0"
+    ],
+    "committed_copy": "fresh-027-example-verify.txt",
+    "committed_copy_sha256": "18d7b98c0ef211f3ba474c67790ff308ad91b3dc1a4b0aa4ed3596c6f241da37",
+    "copy_normalization": "Terminal blank lines removed and CRLF normalized to LF; original raw byte hash is retained above."
+  },
+  {
+    "file": "028-example-preflight.txt",
+    "sha256": "5e2cc325152c002bab4a9f79eb459ec08474e6891a5108523797a1964e72dc60",
+    "header": [
+      "TIME: 2026-10-16T10:14:07.1208110+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json project preflight --target web",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "029-web-prepare.txt",
+    "sha256": "f402de06ae1356bc5c5a25a89c0196eb65336919ed732b9a048340e93bd9152f",
+    "header": [
+      "TIME: 2026-10-16T10:14:19.7933548+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: & 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk\\bin\\game.exe' --sdk 'D:\\TSProject\\UnoneUiBackground-20261016\\sdk' --project 'D:\\TSProject\\UnoneUiBackground-20261016\\project' --json project prepare --target web --output 'D:\\TSProject\\UnoneUiBackground-20261016\\project\\dist\\web'",
+      "EXIT: 0"
+    ]
+  },
+  {
+    "file": "030-evidence-summary.txt",
+    "sha256": "461c6f02b151a4feeccf2efb263fbf0198b62a583ce045fc5c88a2865c3a72de",
+    "header": [
+      "TIME: 2026-10-16T10:15:04.7989926+08:00",
+      "ENV: UNONE_LUAU_ANALYZER=D:\\TSProject\\Voidwake\\engine\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "COMMAND: $first = Get-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\author-evidence\\001-discovery.txt' -TotalCount 1; $last = Get-Content -LiteralPath 'D:\\TSProject\\UnoneUiBackground-20261016\\author-evidence\\029-web-prepare.txt' -TotalCount 1; $first; $last; Get-Date -Format o; foreach ($name in '006-search-card-background','007-search-component-overlap','008-search-font-size') { $record = Get-Content -LiteralPath ('D:\\TSProject\\UnoneUiBackground-20261016\\author-evidence\\' + $name + '.txt') -Raw; $json = $record.Substring($record.IndexOf('{')) | ConvertFrom-Json; [pscustomobject]@{Query=$json.value.query; Matches=($json.value.matches.name -join ', ')} }",
+      "EXIT: 0"
+    ]
+  }
+]

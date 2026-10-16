@@ -16,7 +16,7 @@
 
 use serde::Serialize;
 
-use crate::ui::{UiNode, UiRect, UiTree};
+use crate::ui::{UiBackgroundScope, UiNode, UiRect, UiTree};
 
 /// Default grid. Character cells are about twice as tall as they are wide, so
 /// twice as many columns as rows keeps the square design space square.
@@ -76,6 +76,9 @@ pub struct LayoutReport {
 
 /// Explicit per-screen art layering. Never permits a button to hide another
 /// interactive node: the earlier/background node must be an image or panel.
+/// Repeated ordered pairs share one evidence entry, retaining the first reason.
+/// Typed background and external policy evidence share the same output limit;
+/// errors leave the entire report unchanged.
 pub fn apply_overlap_policy(
     report: &mut LayoutReport,
     policy: &serde_json::Value,
@@ -100,10 +103,22 @@ pub fn apply_overlap_policy(
     let Some(pairs) = policy.screens.get(&report.screen) else {
         return Ok(());
     };
+    let evidence_limit = crate::ui::ui_contract().max_layout_findings;
+    if report.allowed_overlaps.len() > evidence_limit {
+        return Err(format!(
+            "UI_LAYOUT_WORK_LIMIT: allowed-overlap evidence already exceeds max_layout_findings={evidence_limit}; the report was not changed"
+        ));
+    }
     let mut approved = Vec::new();
+    let mut seen_pairs = std::collections::BTreeSet::new();
     for pair in pairs {
         if pair.reason.trim().is_empty() {
             return Err("UI_OVERLAP_REASON_REQUIRED".into());
+        }
+        // Every occurrence must have a reason. The remaining validation is the
+        // same for repeated IDs because report mutation happens only at commit.
+        if !seen_pairs.insert((&pair.behind, &pair.front)) {
+            continue;
         }
         let behind = report
             .nodes
@@ -124,6 +139,11 @@ pub fn apply_overlap_policy(
             .iter()
             .find(|f| f.code == "UI_NODES_OVERLAP" && f.nodes == ids)
             .ok_or("UI_OVERLAP_POLICY_STALE: pair does not currently overlap")?;
+        if report.allowed_overlaps.len() + approved.len() >= evidence_limit {
+            return Err(format!(
+                "UI_LAYOUT_WORK_LIMIT: typed background and external policy overlap evidence would exceed max_layout_findings={evidence_limit}; the report was not changed"
+            ));
+        }
         let mut finding = finding.clone();
         finding.code = "UI_INTENTIONAL_ART_OVERLAP".into();
         finding.resolution = pair.reason.clone();
@@ -174,6 +194,85 @@ fn overlap(left: &UiRect, right: &UiRect) -> Option<(f64, f64)> {
     (x > 0.01 && y > 0.01).then_some((x, y))
 }
 
+/// Inspection needs the actual component instances, not merely matching names:
+/// component wrappers share stage coordinates but define explicit ownership.
+struct InspectionLeaf<'a> {
+    node: &'a UiNode,
+    components: Vec<&'a UiNode>,
+}
+
+fn inspection_leaves<'a>(
+    children: &'a [UiNode],
+    components: &mut Vec<&'a UiNode>,
+    output: &mut Vec<InspectionLeaf<'a>>,
+) {
+    for node in children {
+        if let UiNode::Component { children, .. } = node {
+            components.push(node);
+            inspection_leaves(children, components, output);
+            components.pop();
+        } else {
+            // A scroll viewport is a stage leaf. Its local content belongs to
+            // the clipped host projection, just as in UiNode::leaf_nodes.
+            output.push(InspectionLeaf {
+                node,
+                components: components.clone(),
+            });
+        }
+    }
+}
+
+fn contains_rect(outer: &UiRect, inner: &UiRect) -> bool {
+    const EPSILON: f64 = 1e-8;
+    [outer, inner].iter().all(|rect| {
+        [rect.x, rect.y, rect.width, rect.height]
+            .iter()
+            .all(|value| value.is_finite())
+            && rect.width > 0.0
+            && rect.height > 0.0
+    }) && inner.x >= outer.x - EPSILON
+        && inner.y >= outer.y - EPSILON
+        && inner.x + inner.width <= outer.x + outer.width + EPSILON
+        && inner.y + inner.height <= outer.y + outer.height + EPSILON
+}
+
+/// The caller supplies only earlier/later pairs. Neither this declaration nor
+/// the geometry changes paint order, layout, clipping, or input ownership.
+fn declared_background_reason(
+    behind: &InspectionLeaf<'_>,
+    front: &InspectionLeaf<'_>,
+) -> Option<String> {
+    let background = behind.node.background_for()?;
+    if !matches!(behind.node, UiNode::Image { .. } | UiNode::Panel { .. })
+        || !contains_rect(behind.node.rect(), front.node.rect())
+    {
+        return None;
+    }
+    let scope = match background {
+        UiBackgroundScope::Screen { screen: true } => {
+            let stage = UiRect { x: 0.0, y: 0.0, width: 100.0, height: 100.0 };
+            if !contains_rect(&stage, behind.node.rect()) {
+                return None;
+            }
+            "screen".to_string()
+        }
+        UiBackgroundScope::Component { component } => {
+            let owner = behind.components.iter().rev().find(|node| node.id() == component.as_str())?;
+            if !contains_rect(owner.rect(), behind.node.rect())
+                || !front.components.iter().any(|node| std::ptr::eq(*node, *owner))
+            {
+                return None;
+            }
+            format!("component '{component}'")
+        }
+        UiBackgroundScope::Screen { screen: false } => return None,
+    };
+    Some(format!(
+        "Explicit background_for declares '{}' as the background of {scope}; '{}' is painted later, belongs to that scope and is fully contained by the background.",
+        behind.node.id(), front.node.id()
+    ))
+}
+
 /// Approximate width; styled font sizing is independent of the node height.
 fn needed_width(text: &str, rect: &UiRect, style: Option<&crate::UiStyle>) -> f64 {
     let characters = text.lines().map(|line| line.chars().count()).max().unwrap_or(0) as f64;
@@ -187,13 +286,13 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
     let cols = cols.clamp(16, 400);
     let rows = rows.clamp(8, 200);
     let mut findings = Vec::new();
+    let mut allowed_overlaps = Vec::new();
     let mut leaves = Vec::new();
-    for node in &tree.children {
-        node.leaf_nodes(&mut leaves);
-    }
+    inspection_leaves(&tree.children, &mut Vec::new(), &mut leaves);
     let mut nodes = Vec::with_capacity(leaves.len());
 
-    for node in &leaves {
+    for leaf in &leaves {
+        let node = leaf.node;
         let (kind, id, rect, text, action, asset) = node_parts(node);
         // Out-of-bounds rects cannot reach here: UiTree::from_json already
         // rejects anything outside the 0..100 design space.
@@ -217,17 +316,31 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
 
     let mut comparisons = 0usize;
     'pairs: for (index, left) in leaves.iter().enumerate() {
-        let (_, left_id, left_rect, _, _, _) = node_parts(left);
+        let (_, left_id, left_rect, _, _, _) = node_parts(left.node);
         for right in leaves.iter().skip(index + 1) {
             comparisons += 1;
             if comparisons > crate::ui::ui_contract().max_layout_comparisons
                 || findings.len() >= crate::ui::ui_contract().max_layout_findings
+                || allowed_overlaps.len() >= crate::ui::ui_contract().max_layout_findings
             {
-                findings.push(LayoutFinding{code:"UI_LAYOUT_WORK_LIMIT".into(),detail:format!("Inspection incomplete: comparisons={comparisons}, findings={}; the full UI tree is retained",findings.len()),nodes:Vec::new(),resolution:"Inspect one component/subtree at a time. This is a diagnostic work limit, not a rendering node limit or a passing layout result.".into()});
+                findings.push(LayoutFinding{code:"UI_LAYOUT_WORK_LIMIT".into(),detail:format!("Inspection incomplete: comparisons={comparisons}, findings={}, allowed_overlaps={}; the full UI tree is retained",findings.len(),allowed_overlaps.len()),nodes:Vec::new(),resolution:"Inspect one component/subtree at a time. Findings and allowed-overlap evidence are each bounded by max_layout_findings. This is a diagnostic work limit, not a rendering node limit or a passing layout result.".into()});
                 break 'pairs;
             }
-            let (_, right_id, right_rect, _, _, _) = node_parts(right);
+            let (_, right_id, right_rect, _, _, _) = node_parts(right.node);
             if let Some((x, y)) = overlap(left_rect, right_rect) {
+                // Classify explicit ownership before accumulating collision
+                // findings. Art beneath a whole component is declared once.
+                if let Some(reason) = declared_background_reason(left, right) {
+                    allowed_overlaps.push(LayoutFinding {
+                        code: "UI_INTENTIONAL_ART_OVERLAP".into(),
+                        detail: format!(
+                            "'{left_id}' and '{right_id}' overlap by {x:.1} x {y:.1} (design-space units), as declared by background_for."
+                        ),
+                        nodes: vec![left_id.to_string(), right_id.to_string()],
+                        resolution: reason,
+                    });
+                    continue;
+                }
                 // Move along whichever axis needs the smaller change, and say
                 // which way: y grows upward in this design space.
                 let resolution = if x <= y {
@@ -268,7 +381,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
 
     LayoutReport {
         usage:tree.usage(),
-        allowed_overlaps:Vec::new(),
+        allowed_overlaps,
         screen: tree.id.clone(),
         cols,
         rows,
@@ -392,6 +505,12 @@ pub fn to_markdown(report: &LayoutReport) -> String {
             ));
         }
     }
+    if !report.allowed_overlaps.is_empty() {
+        out.push_str(&format!("\n### {} intentional art overlaps\n\n", report.allowed_overlaps.len()));
+        for finding in &report.allowed_overlaps {
+            out.push_str(&format!("- **{}** {} → {}\n", finding.code, finding.detail, finding.resolution));
+        }
+    }
     for assumption in &report.assumptions {
         out.push_str(&format!("\n> {assumption}\n"));
     }
@@ -445,6 +564,238 @@ mod tests {
             "children": children,
         }))
         .unwrap()
+    }
+
+    fn mixed_background_policy(
+        typed_count: usize,
+        external_count: usize,
+    ) -> (super::LayoutReport, serde_json::Value) {
+        // Disjoint surfaces let each label contribute exactly one intended
+        // overlap, through either the typed or the external policy path.
+        let mut children = vec![
+            serde_json::json!({"kind":"panel","id":"typed","background_for":{"screen":true},"rect":{"x":0,"y":0,"width":45,"height":100}}),
+            serde_json::json!({"kind":"image","id":"art","asset":"asset://art","rect":{"x":50,"y":0,"width":45,"height":100}}),
+        ];
+        for (prefix, offset, count) in [("typed", 0.0, typed_count), ("external", 50.0, external_count)] {
+            children.extend((0..count).map(|index| serde_json::json!({
+                "kind":"text", "id":format!("{prefix}{index}"), "text":"Label",
+                "rect":{"x":offset+1.0+(index%20) as f64*2.0,"y":1.0+(index/20) as f64*2.0,"width":1,"height":1}
+            })));
+        }
+        let tree = tree(serde_json::Value::Array(children));
+        let policy = serde_json::json!({"version":1,"screens":{"test":(0..external_count).map(|index| serde_json::json!({
+            "behind":"art", "front":format!("external{index}"), "reason":"Reviewed artwork beneath the label"
+        })).collect::<Vec<_>>()}});
+        (inspect(&tree, 16, 8), policy)
+    }
+
+    #[test]
+    fn typed_and_external_overlap_evidence_share_the_exact_output_cap() {
+        let limit = crate::ui::ui_contract().max_layout_findings;
+        let (mut report, policy) = mixed_background_policy(limit / 2, limit - limit / 2);
+        assert_eq!(report.allowed_overlaps.len(), limit / 2);
+        assert_eq!(report.findings.len(), limit - limit / 2);
+        super::apply_overlap_policy(&mut report, &policy).unwrap();
+        assert_eq!(report.allowed_overlaps.len(), limit);
+        assert!(report.findings.is_empty());
+        assert!(report.readable);
+    }
+
+    #[test]
+    fn combined_overlap_evidence_overflow_leaves_the_entire_report_unchanged() {
+        let limit = crate::ui::ui_contract().max_layout_findings;
+        let (mut report, policy) = mixed_background_policy(limit / 2, limit - limit / 2 + 1);
+        let before = serde_json::to_value(&report).unwrap();
+        let error = super::apply_overlap_policy(&mut report, &policy).unwrap_err();
+        assert!(error.starts_with("UI_LAYOUT_WORK_LIMIT:"), "{error}");
+        assert_eq!(serde_json::to_value(&report).unwrap(), before);
+        assert!(!report.readable);
+    }
+
+    #[test]
+    fn duplicate_external_pairs_cannot_amplify_evidence_at_the_combined_cap() {
+        let limit = crate::ui::ui_contract().max_layout_findings;
+        let (mut report, mut policy) = mixed_background_policy(limit / 2, limit - limit / 2);
+        let pairs = policy["screens"]["test"].as_array_mut().unwrap();
+        let originals = pairs.clone();
+        pairs.extend(originals.clone());
+        pairs.extend(originals);
+        // The same ordered pair still records the first authored reason.
+        pairs[limit - limit / 2]["reason"] = serde_json::json!("Repeated explanation");
+        super::apply_overlap_policy(&mut report, &policy).unwrap();
+        assert_eq!(report.allowed_overlaps.len(), limit);
+        assert!(report.allowed_overlaps.iter().filter(|finding| finding.nodes[0] == "art").all(|finding| {
+            finding.resolution == "Reviewed artwork beneath the label"
+        }));
+        assert!(report.readable);
+    }
+
+    #[test]
+    fn invalid_duplicate_reason_is_rejected_without_partial_policy_mutation() {
+        let (mut report, mut policy) = mixed_background_policy(1, 1);
+        let pairs = policy["screens"]["test"].as_array_mut().unwrap();
+        let mut duplicate = pairs[0].clone();
+        duplicate["reason"] = serde_json::json!("  ");
+        pairs.push(duplicate);
+        let before = serde_json::to_value(&report).unwrap();
+        assert_eq!(super::apply_overlap_policy(&mut report, &policy).unwrap_err(), "UI_OVERLAP_REASON_REQUIRED");
+        assert_eq!(serde_json::to_value(&report).unwrap(), before);
+    }
+
+    #[test]
+    fn declared_screen_background_covers_later_leaves_with_auditable_evidence() {
+        let tree = tree(serde_json::json!([
+            {"kind":"panel","id":"backdrop","background_for":{"screen":true},"rect":{"x":0,"y":0,"width":100,"height":100}},
+            {"kind":"text","id":"title","text":"Title","rect":{"x":5,"y":70,"width":30,"height":10}},
+            {"kind":"component","id":"actions","component":"ui.actions","rect":{"x":5,"y":5,"width":40,"height":20},"children":[
+                {"kind":"button","id":"go","action":"Go","text":"Go","rect":{"x":5,"y":5,"width":30,"height":10}}
+            ]}
+        ]));
+        let report = inspect(&tree, 16, 8);
+        assert!(report.readable, "{:?}", report.findings);
+        assert_eq!(report.allowed_overlaps.len(), 2);
+        assert_eq!(report.allowed_overlaps[0].nodes, ["backdrop", "title"]);
+        assert_eq!(report.allowed_overlaps[1].nodes, ["backdrop", "go"]);
+        assert!(report.allowed_overlaps.iter().all(|finding| {
+            finding.code == "UI_INTENTIONAL_ART_OVERLAP"
+                && finding.resolution.contains("background_for")
+                && finding.resolution.contains("screen")
+        }));
+        assert!(super::to_markdown(&report).contains("intentional art overlaps"));
+    }
+
+    #[test]
+    fn declared_component_background_reaches_nested_descendants_only() {
+        let tree = tree(serde_json::json!([
+            {"kind":"component","id":"card","component":"ui.card","rect":{"x":0,"y":0,"width":60,"height":60},"children":[
+                {"kind":"component","id":"art","component":"ui.art","rect":{"x":0,"y":0,"width":60,"height":60},"children":[
+                    {"kind":"image","id":"surface","asset":"asset://card","background_for":{"component":"card"},"rect":{"x":0,"y":0,"width":60,"height":60}}
+                ]},
+                {"kind":"component","id":"contents","component":"ui.contents","rect":{"x":5,"y":5,"width":50,"height":50},"children":[
+                    {"kind":"text","id":"title","text":"Title","rect":{"x":5,"y":40,"width":30,"height":10}},
+                    {"kind":"button","id":"go","action":"Go","text":"Go","rect":{"x":5,"y":5,"width":30,"height":10}}
+                ]}
+            ]},
+            {"kind":"component","id":"sibling","component":"ui.sibling","rect":{"x":40,"y":20,"width":10,"height":10},"children":[
+                {"kind":"text","id":"outside","text":"Outside","rect":{"x":40,"y":20,"width":10,"height":10}}
+            ]}
+        ]));
+        let report = inspect(&tree, 16, 8);
+        assert_eq!(report.allowed_overlaps.len(), 2);
+        assert!(report.allowed_overlaps.iter().all(|finding| {
+            finding.resolution.contains("component 'card'")
+        }));
+        assert_eq!(report.findings.len(), 1);
+        assert_eq!(report.findings[0].nodes, ["surface", "outside"]);
+        assert!(!report.readable, "a same-coordinate sibling is outside the declared scope");
+    }
+
+    #[test]
+    fn background_declaration_preserves_partial_and_foreground_collisions() {
+        let tree = tree(serde_json::json!([
+            {"kind":"panel","id":"surface","background_for":{"screen":true},"rect":{"x":0,"y":0,"width":30,"height":30}},
+            {"kind":"text","id":"partial","text":"Partial","rect":{"x":25,"y":20,"width":10,"height":5}},
+            {"kind":"text","id":"label","text":"Label","rect":{"x":5,"y":5,"width":10,"height":5}},
+            {"kind":"button","id":"button","action":"Go","text":"Go","rect":{"x":5,"y":5,"width":10,"height":5}}
+        ]));
+        let report = inspect(&tree, 16, 8);
+        assert_eq!(report.allowed_overlaps.len(), 2);
+        assert_eq!(report.findings.len(), 2);
+        assert!(report.findings.iter().any(|finding| finding.nodes == ["surface", "partial"]));
+        assert!(report.findings.iter().any(|finding| finding.nodes == ["label", "button"]));
+        assert!(!report.readable);
+    }
+
+    #[test]
+    fn exact_art_policy_still_supports_partial_pairs_alongside_declared_backgrounds() {
+        let tree = tree(serde_json::json!([
+            {"kind":"panel","id":"backdrop","background_for":{"screen":true},"rect":{"x":0,"y":0,"width":100,"height":100}},
+            {"kind":"image","id":"art","asset":"asset://art","rect":{"x":0,"y":0,"width":30,"height":30}},
+            {"kind":"button","id":"partial","action":"Go","text":"Go","rect":{"x":25,"y":20,"width":10,"height":5}}
+        ]));
+        let mut report = inspect(&tree, 16, 8);
+        assert_eq!(report.allowed_overlaps.len(), 2);
+        assert_eq!(report.findings.len(), 1);
+        super::apply_overlap_policy(&mut report, &serde_json::json!({"version":1,"screens":{"test":[
+            {"behind":"art","front":"partial","reason":"Explicitly reviewed partial artwork beneath the input"}
+        ]}})).unwrap();
+        assert!(report.readable);
+        assert_eq!(report.allowed_overlaps.len(), 3);
+        assert_eq!(report.allowed_overlaps[2].nodes, ["art", "partial"]);
+        assert_eq!(report.allowed_overlaps[2].resolution, "Explicitly reviewed partial artwork beneath the input");
+    }
+
+    #[test]
+    fn later_declared_background_cannot_waive_its_occlusion_of_earlier_content() {
+        let tree = tree(serde_json::json!([
+            {"kind":"text","id":"earlier","text":"Earlier","rect":{"x":5,"y":70,"width":30,"height":10}},
+            {"kind":"panel","id":"late","background_for":{"screen":true},"style":{"background":[0,0,0,1]},"rect":{"x":0,"y":0,"width":100,"height":100}},
+            {"kind":"button","id":"later","action":"Go","text":"Go","rect":{"x":5,"y":5,"width":30,"height":10}}
+        ]));
+        let report = inspect(&tree, 16, 8);
+        assert_eq!(report.allowed_overlaps.len(), 1);
+        assert_eq!(report.allowed_overlaps[0].nodes, ["late", "later"]);
+        assert_eq!(report.findings.len(), 1);
+        assert_eq!(report.findings[0].nodes, ["earlier", "late"]);
+        assert!(!report.readable);
+    }
+
+    #[test]
+    fn background_inspection_stops_at_the_scroll_coordinate_boundary() {
+        let tree = tree(serde_json::json!([
+            {"kind":"panel","id":"backdrop","background_for":{"screen":true},"rect":{"x":0,"y":0,"width":100,"height":100}},
+            {"kind":"scroll_view","id":"viewport","viewport":{"left":20,"top":20,"width":40,"height":40},"scroll":{"axis":"vertical"},"children":[
+                {"kind":"component","id":"local_card","component":"ui.card","rect":{"x":0,"y":0,"width":30,"height":30},"children":[
+                    {"kind":"panel","id":"local_surface","background_for":{"component":"local_card"},"rect":{"x":0,"y":0,"width":30,"height":30}},
+                    {"kind":"text","id":"local_label","text":"Local","rect":{"x":5,"y":5,"width":20,"height":5}}
+                ]}
+            ]}
+        ]));
+        let report = inspect(&tree, 16, 8);
+        assert_eq!(report.nodes.len(), 2);
+        assert_eq!(report.nodes[1].id, "viewport");
+        assert_eq!(report.allowed_overlaps.len(), 1);
+        assert_eq!(report.allowed_overlaps[0].nodes, ["backdrop", "viewport"]);
+        assert!(report.assumptions.iter().any(|assumption| assumption.contains("local/virtual content")));
+    }
+
+    #[test]
+    fn intentional_background_evidence_is_bounded_without_claiming_a_pass() {
+        // Every pair is intentional, so the collision finding limit alone
+        // would not bound either output or the work needed to retain evidence.
+        let count = 2 + (2.0 * crate::ui::ui_contract().max_layout_findings as f64).sqrt().ceil() as usize;
+        let tree = tree(serde_json::json!((0..count).map(|index| serde_json::json!({
+            "kind":"panel", "id":format!("surface{index}"), "background_for":{"screen":true},
+            "rect":{"x":0,"y":0,"width":100,"height":100}
+        })).collect::<Vec<_>>()));
+        let mut report = inspect(&tree, 16, 8);
+        assert_eq!(report.nodes.len(), count);
+        assert_eq!(report.allowed_overlaps.len(), crate::ui::ui_contract().max_layout_findings);
+        assert_eq!(report.findings.len(), 1);
+        assert_eq!(report.findings[0].code, "UI_LAYOUT_WORK_LIMIT");
+        assert!(report.findings[0].detail.contains("allowed_overlaps="));
+        super::apply_overlap_policy(&mut report, &serde_json::json!({"version":1,"screens":{"test":[]}})).unwrap();
+        assert!(!report.readable, "an external art policy cannot clear an incomplete inspection");
+    }
+
+    #[test]
+    fn background_declarations_do_not_bypass_the_pair_comparison_budget() {
+        // Enough non-overlapping leaves exceed the pair budget without
+        // exhausting either findings or intentional-overlap output.
+        let mut children = vec![serde_json::json!({
+            "kind":"panel","id":"surface","background_for":{"screen":true},
+            "rect":{"x":0,"y":0,"width":1,"height":1}
+        })];
+        children.extend((0..1500).map(|index| serde_json::json!({
+            "kind":"text", "id":format!("label{index}"), "text":"x",
+            "rect":{"x":2.0+(index%95) as f64,"y":2.0+(index/95) as f64,"width":0.5,"height":0.5}
+        })));
+        let tree = tree(serde_json::Value::Array(children));
+        let report = inspect(&tree, 16, 8);
+        assert!(report.allowed_overlaps.is_empty());
+        assert_eq!(report.findings.len(), 1);
+        assert_eq!(report.findings[0].code, "UI_LAYOUT_WORK_LIMIT");
+        assert!(!report.readable);
     }
 
     #[test]

@@ -50,6 +50,11 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: explicit background ownership on existing UI leaves, reusable
+  component validation and the observatory migration. Independent source review,
+  bounded parser/layout regressions and real official-player acceptance are
+  recorded; the bounded Claude attempt timed out without a response:
+  [record](reviews/2026-10-16-component-backgrounds.md).
 - 2026-10-16: fresh-context, SDK-only UI authoring and an independent SDK recovery
   probe. Real official-player input/font/viewport checks passed; shared SDK
   diagnostic/recovery fixes and reproducible example/tooling are recorded. The

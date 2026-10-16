@@ -260,6 +260,14 @@ fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
         "text alignment",
         "border padding",
         "component styling",
+        "card background",
+        "component overlap",
+        "reusable card backgrounds",
+        "background_for",
+        "ancestor background scope",
+        "卡片背景",
+        "元件重疊",
+        "如何處理元件重疊",
         "字體 字級 排版 樣式",
         "共用元件",
         "共用UI元件",
@@ -290,6 +298,8 @@ fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
                 .unwrap()
                 .contains("font_size=2")
         );
+        assert!(entry["when_to_use"].as_str().unwrap().contains("background_for={component=id}"));
+        assert!(entry["parameters"][0]["meaning"].as_str().unwrap().contains("Exact-pair v1"));
         assert!(
             entry["related_apis"]
                 .as_array()

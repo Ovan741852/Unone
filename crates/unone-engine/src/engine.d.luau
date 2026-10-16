@@ -197,11 +197,16 @@ export type UiComboBoxNode = UiPlacement & {
     expanded: boolean?, style: UiStyle?,
 }
 -- Image and panel styles accept box fields; typography requires a text leaf.
+-- A decorative surface may explicitly belong to its screen or an ancestor
+-- component in the same coordinate space. This never changes placement/order.
+export type UiBackgroundScope = {screen: true} | {component: string}
 export type UiImageNode = UiPlacement & {
     kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?,
+    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
 }
-export type UiPanelNode = UiPlacement & {kind: "panel", id: string, style: UiStyle?}
+export type UiPanelNode = UiPlacement & {
+    kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+}
 export type UiComponentNode = UiPlacement & {
     kind: "component", id: string, component: string, children: {UiNode}?,
 }

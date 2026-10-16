@@ -159,11 +159,14 @@ export type UiComboBoxNode = UiPlacement & {
     kind: "combobox", id: string, text: string?, action: string,
     expanded: boolean?, style: UiStyle?,
 }
+export type UiBackgroundScope = {screen: true} | {component: string}
 export type UiImageNode = UiPlacement & {
     kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?,
+    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
 }
-export type UiPanelNode = UiPlacement & {kind: "panel", id: string, style: UiStyle?}
+export type UiPanelNode = UiPlacement & {
+    kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+}
 export type UiComponentNode = UiPlacement & {
     kind: "component", id: string, component: string, children: {UiNode}?,
 }
@@ -344,8 +347,8 @@ end
 local function label(id: string, text: string, r: UiRect, size: number, color: UiColor, family: string?, weight: number?): UiNode
     return {kind="text",id=id,text=text,rect=r,style=textStyle(size,color,family,weight)}
 end
-local function panel(id: string,r: UiRect,fill: UiColor,radius: number,border: UiColor?,opacity: number?): UiNode
-    return {kind="panel",id=id,rect=r,style={background=fill,border_radius=radius,
+local function panel(id: string,r: UiRect,fill: UiColor,radius: number,border: UiColor?,opacity: number?,backgroundFor: UiBackgroundScope?): UiNode
+    return {kind="panel",id=id,rect=r,background_for=backgroundFor,style={background=fill,border_radius=radius,
         border_width=if border then 0.10 else 0,border_color=border,opacity=opacity or 1}}
 end
 local function actionButton(id: string,text: string,action: string,r: UiRect,selected: boolean,small: boolean?): UiNode
@@ -367,7 +370,7 @@ local function settingCard(id: string,index: string,title: string,description: s
     local descriptionNode: UiNode = {kind="text",id=id.."_description",text=description,
         rect=rect(r.x+p,r.y+1.8,if compact then 29 else 21.5,3.3),style=descriptionStyle}
     local children: {UiNode} = {
-        panel(id.."_surface",r,{0.055,0.091,0.121,0.94},0.95,LINE),
+        panel(id.."_surface",r,{0.055,0.091,0.121,0.94},0.95,LINE,nil,{component=id}),
         label(id.."_index",index,rect(r.x+p,r.y+r.height-3.0,30,1.8),1.0,MUTED,DATA),
         label(id.."_title",title,rect(r.x+p,r.y+r.height-7.3,if compact then 29 else 21,3.7),if compact then 1.85 else 2.2,WHITE,READING,700),
         descriptionNode,
@@ -401,7 +404,7 @@ local function publish(api: EngineApi)
     local compact = aspect < 1.1
     previousAspect = aspect
     local nodes: {UiNode} = {
-        panel("night_background",rect(0,0,100,100),INK,0),
+        panel("night_background",rect(0,0,100,100),INK,0,nil,nil,{screen=true}),
         label("brand","ASTER / 星序觀測站",rect(6,if compact then 94 else 92,70,3),2.1,WHITE,READING,700),
         panel("header_rule",rect(6,if compact then 92 else 88,88,0.1),LINE,0),
     }
@@ -422,10 +425,13 @@ local function publish(api: EngineApi)
         rect=if compact then rect(6,65,88,8.5) else rect(6,39,27,14),style=paragraphStyle}
     table.insert(nodes,introNode)
     if not compact then
-        table.insert(nodes,panel("preset_surface",rect(6,22,27,14),{0.08,0.14,0.17,0.65},0.8,LINE,0.88))
-        table.insert(nodes,label("preset_label","TONIGHT'S PRESET",rect(8,32,23,2.2),1.1,MUTED,DATA))
-        table.insert(nodes,label("preset_mode",modeNames[draft.mode],rect(8,27.2,23,3.5),1.8,WHITE,READING,700))
-        table.insert(nodes,label("preset_values",(if draft.sound then "SOUND ON" else "SOUND OFF").."  /  LEVEL "..tostring(draft.level),rect(8,23.8,23,2),1.2,MINT,DATA))
+        local preset: UiNode = {kind="component",id="preset_card",component="observatory.preset",rect=rect(6,22,27,14),children={
+            panel("preset_surface",rect(6,22,27,14),{0.08,0.14,0.17,0.65},0.8,LINE,0.88,{component="preset_card"}),
+            label("preset_label","TONIGHT'S PRESET",rect(8,32,23,2.2),1.1,MUTED,DATA),
+            label("preset_mode",modeNames[draft.mode],rect(8,27.2,23,3.5),1.8,WHITE,READING,700),
+            label("preset_values",(if draft.sound then "SOUND ON" else "SOUND OFF").."  /  LEVEL "..tostring(draft.level),rect(8,23.8,23,2),1.2,MINT,DATA),
+        }}
+        table.insert(nodes,preset)
     end
     local soundRect=if compact then rect(6,50,88,13) else rect(38,65,56,18)
     table.insert(nodes,settingCard("sound_card","01 / SOUND","環境聲音","Quiet focus. Clear signals.",soundRect,compact,{

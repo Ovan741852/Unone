@@ -1,0 +1,24 @@
+Authoring-tool failures (not engine API failures)
+
+1. First apply_patch attempt failed before editing because it both deleted and
+   added the same scene path in one patch. Exact tool output:
+   Script error:
+   apply_patch verification failed: invalid patch: multiple operations target D:\TSProject\UnoneUiBackground-20261016\project\scenes\main.scene.json
+   Correction: update game/config/tests normally, then replace the scene in one
+   separate Set-Content operation.
+
+2. Evidence 025 used incorrect nested JSON/shell quoting. Exact tool output:
+MethodInvocationException: D:\TSProject\UnoneUiBackground-20261016\author-evidence\Audit.ps1:5
+Line |
+   5 |  $outputItems = & ([scriptblock]::Create($Command)) *>&1
+     |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | 使用 "1" 引數: "位於 行:1 char:106 + … UnoneUiBackground-20261016\project\scenes\main.scene.json' -Value '{\ +
+     | ~~~ 字串缺少結尾字元: '。" 呼叫 “Create” 時發生例外狀況
+
+EXIT: 1
+
+   The 025 log records the actual parsed command and exit 1, but its raw output
+   field is empty because ScriptBlock.Create failed before command redirection.
+   This file preserves the tool-reported error. Correction 026 used literal
+   PowerShell quoting generated with doubled single quotes, wrote valid scene
+   JSON, and returned exit 0. Audit.ps1 was also adjusted to capture parse errors.

@@ -1,12 +1,15 @@
 # UI Manager / MVVM 架構提案
 
-Current scope (2026-10-15): [ADR 0038](decisions/0038-shared-ui-styling.md)
+Current scope (2026-10-16): [ADR 0038](decisions/0038-shared-ui-styling.md)
 extends the existing Core UI transport with shared typed font/box styles and a
 decorative panel primitive. Use [the implemented style API](ui-styling.md) on
 existing component leaves. This supersedes the earlier blanket "no new UI
 primitive" restriction; it does not add MVVM, a manager, reactive bindings,
 game-specific widgets or automatic layout to Core. The architecture proposal
 below remains guidance for game/SDK responsibility and future lifecycle work.
+The explicit background ownership in [ADR 0039](decisions/0039-component-background-intent.md)
+keeps validation intent inside those existing Luau component functions without
+changing this lifecycle/ownership boundary or adding automatic placement.
 
 這是建立在 [ADR 0004](decisions/0004-mvvm-presentation-boundary.md) 上的
 UI 專用提案。四層是責任分法，不代表每個小畫面都必須建立四個檔案或四個

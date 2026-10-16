@@ -404,6 +404,41 @@ fn virtual_keys<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<String>, D
     serde_json::from_value(value).map_err(serde::de::Error::custom)
 }
 
+/// Explicit decorative ownership for overlap diagnostics. This declares intent;
+/// it does not change coordinates, paint order, input or component styles.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(untagged, deny_unknown_fields)]
+pub enum UiBackgroundScope {
+    Screen {
+        #[serde(deserialize_with = "background_screen_true", serialize_with = "serialize_background_screen")]
+        #[cfg_attr(feature = "dev-tools", schemars(schema_with = "background_screen_schema"))]
+        screen: bool,
+    },
+    Component { component: String },
+}
+
+fn background_screen_true<'de, D: serde::Deserializer<'de>>(d: D) -> Result<bool, D::Error> {
+    if bool::deserialize(d)? {
+        Ok(true)
+    } else {
+        Err(serde::de::Error::custom("background_for.screen must be true"))
+    }
+}
+
+fn serialize_background_screen<S: serde::Serializer>(value: &bool, serializer: S) -> Result<S::Ok, S::Error> {
+    if *value {
+        serializer.serialize_bool(true)
+    } else {
+        Err(serde::ser::Error::custom("background_for.screen must be true"))
+    }
+}
+
+#[cfg(feature = "dev-tools")]
+fn background_screen_schema(_: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    schemars::json_schema!({"type": "boolean", "const": true})
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "kind")]
 pub enum UiNode {
@@ -442,6 +477,8 @@ pub enum UiNode {
         alt: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         style: Option<UiStyle>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        background_for: Option<UiBackgroundScope>,
     },
     /// A semantic slider input. The leaf owns no artwork: put it inside a
     /// reusable slider component beside stable `track`, `fill`, and `handler`
@@ -476,6 +513,8 @@ pub enum UiNode {
         rect: UiRect,
         #[serde(skip_serializing_if = "Option::is_none")]
         style: Option<UiStyle>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        background_for: Option<UiBackgroundScope>,
     },
     /// A reusable semantic component instance. Core owns the tree boundary and
     /// validates its children, while the host decides how the component is
@@ -562,6 +601,15 @@ impl UiNode {
             Self::Text { style, .. } | Self::Button { style, .. } | Self::Image { style, .. }
             | Self::Slider { style, .. } | Self::ComboBox { style, .. } | Self::Panel { style, .. } => style.as_ref(),
             Self::Component { .. } | Self::ScrollView { .. } => None,
+        }
+    }
+
+    pub fn background_for(&self) -> Option<&UiBackgroundScope> {
+        match self {
+            Self::Image { background_for, .. } | Self::Panel { background_for, .. } => {
+                background_for.as_ref()
+            }
+            _ => None,
         }
     }
 
@@ -667,6 +715,8 @@ struct RawUiNode {
     scroll: Option<UiScroll>,
     #[serde(default)]
     style: Option<UiStyle>,
+    #[serde(default)]
+    background_for: Option<UiBackgroundScope>,
 }
 
 /// Anchored offsets and sizes are in vertical units: percent of the viewport
@@ -888,6 +938,9 @@ impl UiTree {
                 if let Some(family) = n["style"]["font_family"].as_str() {
                     bytes += family.len();
                 }
+                if let Some(component) = n["background_for"]["component"].as_str() {
+                    bytes += component.len();
+                }
                 if let Some(keys) = n["scroll"]["virtual_items"]["keys"].as_array() {
                     if keys.len() > 100_000 { return Err(format!("UI_VIRTUAL_ITEM_LIMIT: {path}; maximum 100000 keys")); }
                     bytes += keys.iter().filter_map(|k| k.as_str()).map(str::len).sum::<usize>();
@@ -921,6 +974,7 @@ impl UiTree {
         for raw_node in raw.children {
             children.push(parse_node(raw_node, aspect, &mut ids, &mut node_count, 1, false)?);
         }
+        validate_background_scopes(&children, &mut Vec::new(), false)?;
 
         Ok(Self {
             kind: raw.kind,
@@ -961,6 +1015,12 @@ fn parse_node(
     if raw_node.slice.is_some() && raw_node.kind != "image" {
         return Err(format!(
             "UI_SLICE_INVALID: node '{}' is not an image",
+            raw_node.id
+        ));
+    }
+    if raw_node.background_for.is_some() && !matches!(raw_node.kind.as_str(), "image" | "panel") {
+        return Err(format!(
+            "UI_BACKGROUND_KIND: node '{}' only supports background_for on image or panel",
             raw_node.id
         ));
     }
@@ -1075,7 +1135,7 @@ fn parse_node(
                 || raw_node.children.is_some()
             {
                 return Err(format!(
-                    "ui.setRoot image node '{id}' only accepts asset, fit, alt, optional style and placement"
+                    "ui.setRoot image node '{id}' only accepts asset, fit, alt, optional style, background_for and placement"
                 ));
             }
             let asset = raw_node
@@ -1104,15 +1164,16 @@ fn parse_node(
                 slice: raw_node.slice,
                 alt: raw_node.alt,
                 style: raw_node.style,
+                background_for: raw_node.background_for,
             })
         }
         "panel" => {
             if raw_node.text.is_some() || raw_node.action.is_some() || raw_node.asset.is_some()
                 || raw_node.fit.is_some() || raw_node.alt.is_some() || raw_node.component.is_some()
                 || raw_node.children.is_some() {
-                return Err(format!("ui.setRoot panel node '{id}' only accepts style and placement"));
+                return Err(format!("ui.setRoot panel node '{id}' only accepts style, background_for and placement"));
             }
-            Ok(UiNode::Panel { id, rect, style: raw_node.style })
+            Ok(UiNode::Panel { id, rect, style: raw_node.style, background_for: raw_node.background_for })
         }
         "component" => {
             if raw_node.text.is_some()
@@ -1183,6 +1244,61 @@ fn parse_node(
     }
 }
 
+fn validate_background_scopes<'a>(
+    nodes: &'a [UiNode],
+    ancestors: &mut Vec<(&'a str, UiRect)>,
+    local: bool,
+) -> Result<(), String> {
+    for node in nodes {
+        if let Some(scope) = node.background_for() {
+            let bounds = match scope {
+                UiBackgroundScope::Screen { .. } if local => {
+                    return Err(format!(
+                        "UI_BACKGROUND_SCOPE: node '{}' cannot target screen across a scroll content boundary",
+                        node.id()
+                    ));
+                }
+                UiBackgroundScope::Screen { .. } => UiRect {
+                    x: 0.0, y: 0.0, width: 100.0, height: 100.0,
+                },
+                UiBackgroundScope::Component { component } => {
+                    ancestors.iter().rev().find(|(id, _)| *id == component.as_str()).map(|(_, rect)| *rect)
+                        .ok_or_else(|| format!(
+                            "UI_BACKGROUND_SCOPE: node '{}' background_for.component '{}' must name an ancestor component in the same coordinate space",
+                            node.id(), component
+                        ))?
+                }
+            };
+            let rect = node.rect();
+            let epsilon = 1e-8;
+            let dx = rect.x - bounds.x;
+            let dy = rect.y - bounds.y;
+            // Differences avoid overflowing right/bottom sums in local scroll
+            // coordinates, which deliberately have no stage-size ceiling.
+            if dx < -epsilon || dy < -epsilon
+                || rect.width > bounds.width + epsilon - dx
+                || rect.height > bounds.height + epsilon - dy {
+                return Err(format!(
+                    "UI_BACKGROUND_BOUNDS: node '{}' must fit inside its declared background_for scope",
+                    node.id()
+                ));
+            }
+        }
+        match node {
+            UiNode::Component { id, rect, children, .. } => {
+                ancestors.push((id, *rect));
+                validate_background_scopes(children, ancestors, local)?;
+                ancestors.pop();
+            }
+            UiNode::ScrollView { children, .. } => {
+                validate_background_scopes(children, &mut Vec::new(), true)?;
+            }
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
 fn ensure_non_empty(label: &str, value: &str) -> Result<(), String> {
     if value.trim().is_empty() {
         return Err(format!("ui.setRoot {label} must not be empty"));
@@ -1239,7 +1355,148 @@ fn validate_rect(rect: UiRect) -> Result<(), String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{UI_REFERENCE_ASPECT, UiNode, UiRect, UiTree};
+    use super::{UI_REFERENCE_ASPECT, UiBackgroundScope, UiNode, UiRect, UiTree};
+
+    fn background_panel(scope: serde_json::Value) -> serde_json::Value {
+        serde_json::json!({"kind":"panel","id":"surface",
+            "rect":{"x":12,"y":12,"width":16,"height":16},"background_for":scope})
+    }
+
+    fn background_component(children: Vec<serde_json::Value>) -> serde_json::Value {
+        serde_json::json!({"kind":"component","id":"card","component":"test.card",
+            "rect":{"x":10,"y":10,"width":20,"height":20},"children":children})
+    }
+
+    fn background_screen(children: Vec<serde_json::Value>) -> serde_json::Value {
+        serde_json::json!({"kind":"screen","id":"screen","node":"settings","children":children})
+    }
+
+    #[test]
+    fn background_ownership_roundtrips_without_changing_order_or_placement() {
+        let mut image = background_panel(serde_json::json!({"component":"card"}));
+        image["kind"] = "image".into();
+        image["asset"] = "asset://card".into();
+        let mut value = background_screen(vec![
+            background_panel(serde_json::json!({"screen":true})),
+            background_component(vec![image]),
+            serde_json::json!({"kind":"panel","id":"plain","rect":{"x":0,"y":0,"width":1,"height":1}}),
+        ]);
+        value["children"][0]["id"] = "backdrop".into();
+        // Root and component ids have always been separate namespaces. Explicit
+        // scope objects preserve the distinction even when their ids match.
+        value["id"] = "card".into();
+        let tree = UiTree::from_json(value).unwrap();
+        assert_eq!(tree.children[0].background_for(), Some(&UiBackgroundScope::Screen { screen: true }));
+        assert_eq!(tree.children[1].children()[0].background_for(),
+            Some(&UiBackgroundScope::Component { component: "card".into() }));
+        assert!(tree.children[2].background_for().is_none());
+        let serialized = serde_json::to_value(&tree).unwrap();
+        assert_eq!(serialized["children"][0]["id"], "backdrop");
+        assert_eq!(serialized["children"][0]["background_for"], serde_json::json!({"screen":true}));
+        assert_eq!(serialized["children"][1]["children"][0]["background_for"], serde_json::json!({"component":"card"}));
+        assert_eq!(*tree.children[1].children()[0].rect(), UiRect {x:12.0,y:12.0,width:16.0,height:16.0});
+        assert!(serialized["children"][2].get("background_for").is_none());
+        assert!(serde_json::to_value(UiBackgroundScope::Screen { screen: false }).is_err());
+    }
+
+    #[test]
+    fn background_ownership_rejects_ambiguous_scopes_and_inapplicable_nodes() {
+        for scope in [
+            serde_json::json!({"screen":false}),
+            serde_json::json!({"screen":true,"component":"card"}),
+            serde_json::json!({"screen":true,"extra":true}),
+            serde_json::json!({"component":"card","extra":true}),
+            serde_json::json!({}), serde_json::json!("screen"),
+            serde_json::json!({"screen":"true"}),
+        ] {
+            assert!(UiTree::from_json(background_screen(vec![background_panel(scope.clone())])).is_err(), "accepted {scope}");
+        }
+        for kind in ["text", "button", "slider", "combobox", "component", "scroll_view"] {
+            let mut node = background_panel(serde_json::json!({"screen":true}));
+            node["kind"] = kind.into();
+            let error = UiTree::from_json(background_screen(vec![node])).unwrap_err();
+            assert!(error.contains("UI_BACKGROUND_KIND"), "{kind}: {error}");
+        }
+        let mut root = background_screen(vec![]);
+        root["background_for"] = serde_json::json!({"screen":true});
+        assert!(UiTree::from_json(root).unwrap_err().contains("unknown field `background_for`"));
+    }
+
+    #[test]
+    fn background_component_scope_requires_an_actual_ancestor() {
+        for target in ["", "missing", "screen", "surface", "sibling", "descendant"] {
+            let mut card = background_component(vec![background_panel(serde_json::json!({"component":target}))]);
+            card["children"].as_array_mut().unwrap().push(serde_json::json!({
+                "kind":"component","id":"descendant","component":"test.child",
+                "rect":{"x":12,"y":12,"width":1,"height":1},"children":[]}));
+            let sibling = serde_json::json!({"kind":"component","id":"sibling","component":"test.sibling",
+                "rect":{"x":10,"y":10,"width":20,"height":20},"children":[]});
+            let error = UiTree::from_json(background_screen(vec![sibling, card])).unwrap_err();
+            assert!(error.contains("UI_BACKGROUND_SCOPE") && error.contains("ancestor"), "{target}: {error}");
+        }
+        let error = UiTree::from_json(background_screen(vec![background_panel(serde_json::json!({"component":"screen"}))])).unwrap_err();
+        assert!(error.contains("UI_BACKGROUND_SCOPE"));
+        // A non-immediate ancestor is valid without making nested coordinates local.
+        let nested = serde_json::json!({"kind":"component","id":"inner","component":"test.inner",
+            "rect":{"x":12,"y":12,"width":16,"height":16},
+            "children":[background_panel(serde_json::json!({"component":"card"}))]});
+        assert!(UiTree::from_json(background_screen(vec![background_component(vec![nested])])).is_ok());
+    }
+
+    #[test]
+    fn background_ownership_cannot_cross_scroll_coordinate_boundaries() {
+        let scroll = |children: Vec<serde_json::Value>| serde_json::json!({"kind":"scroll_view","id":"scroller",
+            "viewport":{"left":10,"top":10,"width":30,"height":30},"scroll":{},"children":children});
+        for scope in [serde_json::json!({"screen":true}), serde_json::json!({"component":"card"})] {
+            let value = background_screen(vec![background_component(vec![scroll(vec![background_panel(scope)])])]);
+            assert!(UiTree::from_json(value).unwrap_err().contains("UI_BACKGROUND_SCOPE"));
+        }
+        // A component inside local content may own a local decorative surface.
+        let local = scroll(vec![background_component(vec![background_panel(serde_json::json!({"component":"card"}))])]);
+        assert!(UiTree::from_json(background_screen(vec![local])).is_ok());
+        let mut nested = scroll(vec![background_panel(serde_json::json!({"component":"card"}))]);
+        nested["id"] = "nested_scroller".into();
+        let local = scroll(vec![background_component(vec![nested])]);
+        assert!(UiTree::from_json(background_screen(vec![local])).unwrap_err().contains("UI_BACKGROUND_SCOPE"));
+    }
+
+    #[test]
+    fn background_surface_must_fit_scope_without_changing_the_authored_rect() {
+        for rect in [
+            serde_json::json!({"x":9,"y":12,"width":16,"height":16}),
+            serde_json::json!({"x":12,"y":9,"width":16,"height":16}),
+            serde_json::json!({"x":12,"y":12,"width":19,"height":16}),
+            serde_json::json!({"x":12,"y":12,"width":16,"height":19}),
+        ] {
+            let mut panel = background_panel(serde_json::json!({"component":"card"}));
+            panel["rect"] = rect;
+            let error = UiTree::from_json(background_screen(vec![background_component(vec![panel])])).unwrap_err();
+            assert!(error.contains("UI_BACKGROUND_BOUNDS"), "{error}");
+        }
+        let mut panel = background_panel(serde_json::json!({"component":"card"}));
+        panel["rect"] = serde_json::json!({"x":10.0-1e-9,"y":10.0,"width":20.0+2e-9,"height":20.0});
+        let tree = UiTree::from_json(background_screen(vec![background_component(vec![panel.clone()])])).unwrap();
+        assert_eq!(serde_json::to_value(tree).unwrap()["children"][0]["children"][0]["rect"], panel["rect"]);
+    }
+
+    #[test]
+    fn background_component_reference_counts_toward_the_string_budget() {
+        let target = "x".repeat(super::ui_contract().max_string_bytes + 1);
+        let error = UiTree::from_json(background_screen(vec![background_panel(serde_json::json!({"component":target}))])).unwrap_err();
+        assert!(error.contains("UI_STRING_LIMIT"), "{error}");
+    }
+
+    #[cfg(feature = "dev-tools")]
+    #[test]
+    fn background_scope_schema_matches_exact_runtime_objects() {
+        let schema = serde_json::to_value(schemars::schema_for!(UiBackgroundScope)).unwrap();
+        let variants = schema["anyOf"].as_array().unwrap();
+        assert_eq!(variants.len(), 2);
+        for variant in variants {
+            assert_eq!(variant["additionalProperties"], false);
+        }
+        assert_eq!(variants[0]["properties"]["screen"]["const"], true);
+    }
 
     #[test]
     fn configurable_budget_counts_wrappers_and_preserves_large_screens() {

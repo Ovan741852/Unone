@@ -1,0 +1,36 @@
+{
+  "baseline": "c64790748a00d239d181f120959854c49c7494d0",
+  "version": "2.1.280 (Claude Code)",
+  "command": [
+    "C:/Users/maverickchiu/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "1",
+    "--disable-slash-commands"
+  ],
+  "timeout_seconds": 60,
+  "exit_code": 124,
+  "duration_seconds": 65.18,
+  "diff_sha256": "ff657e2093d36ae4c8aaa7e5a9cefc4b307cedb4d03b4addde54d16e9ecef57e",
+  "files": [
+    "crates/unone-engine/src/ui.rs",
+    "crates/unone-engine/src/layout.rs",
+    "crates/unone-engine/src/lib.rs",
+    "crates/unone-engine/src/engine.d.luau",
+    "docs/ui.schema.json",
+    "crates/unone-engine/src/api.rs",
+    "docs/ui-styling.md",
+    "docs/formal-ui-host.md",
+    "_Games/observatory-settings/scripts/main.luau",
+    "_Games/observatory-settings/tests/desktop-overlaps.json"
+  ],
+  "stdout_bytes": 0,
+  "stderr_bytes": 0
+}

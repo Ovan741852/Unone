@@ -63,7 +63,28 @@ acceptance. See [defaults, limits and examples](ui-styling.md).
 
 ## Intentional art overlaps without disabling strict checks
 
-`game ui preview --strict --overlap-policy policy.json` accepts exact ordered pairs:
+For reusable component backgrounds, declare intent inside the Luau function that
+returns the existing component tree. An earlier `image` or `panel` leaf may have
+`background_for={component="ancestor_id"}`; the ID must name an actual component
+ancestor in the same coordinate space. `background_for={screen=true}` instead
+declares a background in screen coordinates. Exactly one scope is required, and
+the background rectangle must fit that scope. A component name, sibling ID,
+unrelated component or cross-scroll ancestor cannot stand in for that scope.
+
+Strict inspection exempts only later descendants of the declared scope whose
+entire rectangles fit within the background. Foreground collisions, partial
+coverage, siblings outside a component scope and later backgrounds occluding
+earlier leaves still produce findings. Scope metadata changes neither rendering
+order nor input, placement, clipping or style inheritance. See the
+[reusable card example](ui-styling.md#reuse-existing-components).
+Accepted scoped pairs remain visible in `allowed_overlaps` as
+`UI_INTENTIONAL_ART_OVERLAP` with their explicit scope reason.
+
+The declaration travels with each component instance, so ordinary card
+backgrounds do not require an external policy naming every internal leaf.
+Version-1 exact-pair policies remain supported for deliberately layered artwork,
+including slider skins that do not meet scoped containment.
+`game ui preview --strict --overlap-policy policy.json` accepts those exact ordered pairs:
 
 ```json
 {"version":1,"screens":{"menu":[{"behind":"start_art","front":"start_button","reason":"PNG artwork beneath transparent input target"}]}}
@@ -77,6 +98,14 @@ button/button collisions cannot be waived by this artwork policy. Approved pairs
 remain in `allowed_overlaps` as `UI_INTENTIONAL_ART_OVERLAP`; remaining findings
 still determine readability. A panel's background is not a reason to disable
 unrelated overlap checks.
+
+Typed background declarations and exact-pair policies share the bounded
+`allowed_overlaps` evidence budget (`max_layout_findings` from the UI contract).
+Exceeding it returns `UI_LAYOUT_WORK_LIMIT`; it cannot turn an incomplete
+inspection into a pass. Repeated ordered policy pairs produce one entry using
+the first reason; every supplied reason must still be nonempty. A policy error
+leaves the report unchanged. Remove old exact pairs that a typed declaration
+already covers: they are stale rather than a second approval of the same pair.
 
 ## Build and acceptance
 

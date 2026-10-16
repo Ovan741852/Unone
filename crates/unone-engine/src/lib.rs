@@ -117,7 +117,7 @@ pub use systems::{
     SystemState, SystemStatus, compiled_systems, describe as describe_system,
     search as search_systems,
 };
-pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiImageFit, UiNode, UiRect, UiTree, UiSlice, UiBudget, UiUsage, UiStyle, UiInsets, UiTextAlign, UiVerticalAlign, UiTextWrap, UiTextOverflow, ui_contract};
+pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiBackgroundScope, UiImageFit, UiNode, UiRect, UiTree, UiSlice, UiBudget, UiUsage, UiStyle, UiInsets, UiTextAlign, UiVerticalAlign, UiTextWrap, UiTextOverflow, ui_contract};
 #[cfg(feature = "dev-tools")]
 pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use world::{

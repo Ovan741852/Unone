@@ -72,6 +72,17 @@
             "null"
           ]
         },
+        "background_for": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiBackgroundScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "children": {
           "items": {
             "$ref": "#/$defs/RawUiNode"
@@ -226,6 +237,36 @@
         "bottom_right"
       ],
       "type": "string"
+    },
+    "UiBackgroundScope": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "screen": {
+              "const": true,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "screen"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "component": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "component"
+          ],
+          "type": "object"
+        }
+      ],
+      "description": "Explicit decorative ownership for overlap diagnostics. This declares intent;\nit does not change coordinates, paint order, input or component styles."
     },
     "UiBudget": {
       "additionalProperties": false,

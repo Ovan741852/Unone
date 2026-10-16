@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "comparisons": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "initial_leaf_tree_unchanged": true,
+      "initial_pixels_equal": true,
+      "difference_bbox": null
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "initial_leaf_tree_unchanged": true,
+      "initial_pixels_equal": true,
+      "difference_bbox": null
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "initial_leaf_tree_unchanged": true,
+      "initial_pixels_equal": true,
+      "difference_bbox": null
+    }
+  ],
+  "original_pairs": 68,
+  "current_approved_pairs": 68,
+  "same_approved_pairs": true,
+  "typed_pairs": 62,
+  "remaining_external_pairs": 6
+}
