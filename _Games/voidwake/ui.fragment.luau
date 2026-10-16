@@ -1,7 +1,8 @@
--- Game-owned design tokens on the shared official UI component/style contract.
+-- Game-owned design tokens composed with the official @unone/ui package.
 -- No host CSS, raw canvas calls, or game-specific engine branches.
 local abandonPrompt = false
 local function updateUi(api: EngineApi)
+ local ui=api.ui.components.create()
  local nodes: {any} = {}
  local compact=api.ui.getViewport().aspect<1.4
  local mint={.74,.89,.84,1}
@@ -11,49 +12,49 @@ local function updateUi(api: EngineApi)
  local function rect(x:number,y:number,w:number,h:number):any return {x=x,y=y,width=w,height=h} end
  local function component(id:string,kind:string,x:number,y:number,w:number,h:number,build:()->())
   local parent=nodes;nodes={};build();local children=nodes;nodes=parent
-  table.insert(nodes,{kind="component",id=id,component=kind,rect=rect(x,y,w,h),children=children})
+  table.insert(nodes,(ui.component({id=id,component=kind,rect=rect(x,y,w,h),children=children})))
  end
  local function panel(name:string,x:number,y:number,w:number,h:number)
-  table.insert(nodes,{kind="panel",id=name,rect=rect(x,y,w,h),style={
-   background={.025,.065,.085,.72},border_color=edgeColor,border_width=.07,border_radius=.18}})
+  table.insert(nodes,(ui.panel({id=name,rect=rect(x,y,w,h),style={
+   background={.025,.065,.085,.72},border_color=edgeColor,border_width=.07,border_radius=.18}})))
  end
  local function rule(name:string,x:number,y:number,w:number,color:any?)
-  table.insert(nodes,{kind="panel",id=name,rect=rect(x,y,w,.08),style={background=color or edgeColor}})
+  table.insert(nodes,(ui.panel({id=name,rect=rect(x,y,w,.08),style={background=color or edgeColor}})))
  end
  local tokens:any={
   brand={font_family="Barlow Condensed",font_size=3.5,font_weight=700,letter_spacing=.38,color=ivory},
-  comms={font_family="Share Tech Mono",font_size=.8,letter_spacing=.18},
-  eyebrow={font_family="Share Tech Mono",font_size=1,letter_spacing=.25,color=mint},
+  comms={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.8,letter_spacing=.18},
+  eyebrow={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1,letter_spacing=.25,color=mint},
   menu_title={font_size=5.7,font_weight=700,letter_spacing=.15,color=ivory},
   menu_title_accent={font_size=5.7,font_weight=700,letter_spacing=.15,color=mint},
   menu_story={font_size=1.4,line_height=2.0,color={.58,.68,.67,1}},
   mission={font_size=1.45,font_weight=600,letter_spacing=.12,color=ivory},
   mission_meta={font_size=1,letter_spacing=.08},
   menu_controls={font_size=.85},
-  ship_tag={font_family="Share Tech Mono",font_size=.8,letter_spacing=.18,color=mint},
+  ship_tag={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.8,letter_spacing=.18,color=mint},
   ship_name={font_family="Barlow Condensed",font_size=3.7,font_weight=600,letter_spacing=.3,color=ivory},
   ship_class={font_size=1.05,letter_spacing=.12},
-  vessel={font_family="Share Tech Mono",font_size=1.05,letter_spacing=.12,color=ivory},
+  vessel={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.05,letter_spacing=.12,color=ivory},
   sector={font_size=1.6,font_weight=600,color=ivory},
-  clock={font_family="Share Tech Mono",font_size=1.6,color=ivory},
-  route={font_family="Share Tech Mono",font_size=1.1,letter_spacing=.1,color=mint},
-  salvage={font_family="Share Tech Mono",font_size=.9,letter_spacing=.08},
+  clock={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.6,color=ivory},
+  route={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,letter_spacing=.1,color=mint},
+  salvage={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.9,letter_spacing=.08},
   paused_title={font_size=4.3,font_weight=600,color=ivory,text_align="center",letter_spacing=.3},
   paused_copy={font_size=1.3,text_align="center"},
   upgrade_title={font_size=4.1,font_weight=600,text_align="center",color=ivory,letter_spacing=.3},
   upgrade_copy={font_size=1.3,text_align="center"},
   result_title={font_size=4.3,font_weight=600,text_align="center",color=ivory,letter_spacing=.3},
   result_copy={font_size=1.3,text_align="center"},
-  result_stats={font_family="Share Tech Mono",font_size=1.6,text_align="center",color=mint},
-  footer={font_family="Share Tech Mono",font_size=.75,letter_spacing=.13},
-  engine_mark={font_family="Share Tech Mono",font_size=.75,letter_spacing=.13,text_align="end"},
+  result_stats={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.6,text_align="center",color=mint},
+  footer={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.75,letter_spacing=.13},
+  engine_mark={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.75,letter_spacing=.13,text_align="end"},
   flight_hint={font_size=.8,text_align="center",color={.32,.47,.49,1}},
  }
  local function text(name:string,value:string,x:number,y:number,w:number,h:number)
-  local style:any={font_family="Noto Sans TC",font_size=1.1,font_weight=400,color=muted,
+  local style:any={font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,font_weight=400,color=muted,
    text_align="start",vertical_align="middle",line_height=1.5,letter_spacing=0,overflow="clip"}
   for k,v in pairs(tokens[name] or {}) do style[k]=v end
-  if string.sub(name,1,7)=="rarity_" then style.font_family="Share Tech Mono";style.font_size=.9;style.color=mint;style.letter_spacing=.18 end
+  if string.sub(name,1,7)=="rarity_" then style.font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental";style.font_size=.9;style.color=mint;style.letter_spacing=.18 end
   if string.sub(name,1,12)=="choice_name_" then style.font_size=2.1;style.font_weight=600;style.color=ivory end
   if string.sub(name,1,12)=="choice_desc_" then style.font_size=1.15;style.line_height=1.8 end
   if compact then
@@ -61,30 +62,30 @@ local function updateUi(api: EngineApi)
    if name=="menu_story" then style.font_size=1.35 end
    if name=="paused_title" or name=="upgrade_title" or name=="result_title" then style.font_size=3.0 end
   end
-  table.insert(nodes,{kind="text",id=name,text=value,rect=rect(x,y,w,h),style=style})
+  table.insert(nodes,(ui.text({id=name,text=value,rect=rect(x,y,w,h),style=style})))
  end
  local function button(name:string,label:string,action:string,x:number,y:number,w:number,h:number)
   local primary=action=="Start" or action=="Resume" or action=="Restart"
   component(name.."_component","ActionButton",x,y,w,h,function()
-   table.insert(nodes,{kind="button",id=name,text=label,action=action,rect=rect(x,y,w,h),style={
-    font_family="Noto Sans TC",font_size=primary and 1.55 or (compact and 1.2 or 1.25),font_weight=primary and 600 or 400,
+   table.insert(nodes,(ui.button({id=name,text=label,action=action,rect=rect(x,y,w,h),style={
+    font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=primary and 1.55 or (compact and 1.2 or 1.25),font_weight=primary and 600 or 400,
     color=primary and {.035,.12,.14,1} or mint,background=primary and mint or {.025,.085,.105,.40},
     border_color=primary and mint or edgeColor,border_width=.07,border_radius=.1,
-    padding={left=1.4,right=1.4,top=.3,bottom=.3},text_align="start",vertical_align="middle",letter_spacing=primary and .18 or .04}})
+    padding={left=1.4,right=1.4,top=.3,bottom=.3},text_align="start",vertical_align="middle",letter_spacing=primary and .18 or .04}})))
   end)
  end
  local function statBar(name:string,title:string,current:number,maximum:number,x:number,y:number,w:number,color:any)
   component(name.."_component","StatBar",x,y,w,3,function()
    text(name.."_label",title,x,y,w*.16,3)
-   table.insert(nodes,{kind="panel",id=name.."_track",rect=rect(x+w*.19,y+1.3,w*.51,.35),style={background={.4,.6,.6,.17}}})
-   if current>0 then table.insert(nodes,{kind="panel",id=name.."_fill",rect=rect(x+w*.19,y+1.3,math.max(.01,w*.51*clamp(current/math.max(1,maximum),0,1)),.35),style={background=color}}) end
-   table.insert(nodes,{kind="text",id=name.."_value",text=math.ceil(current).." / "..maximum,rect=rect(x+w*.73,y,w*.27,3),style={font_family="Share Tech Mono",font_size=compact and .95 or 1.1,color=ivory,text_align="end"}})
+   table.insert(nodes,(ui.panel({id=name.."_track",rect=rect(x+w*.19,y+1.3,w*.51,.35),style={background={.4,.6,.6,.17}}})))
+   if current>0 then table.insert(nodes,(ui.panel({id=name.."_fill",rect=rect(x+w*.19,y+1.3,math.max(.01,w*.51*clamp(current/math.max(1,maximum),0,1)),.35),style={background=color}}))) end
+   table.insert(nodes,(ui.text({id=name.."_value",text=math.ceil(current).." / "..maximum,rect=rect(x+w*.73,y,w*.27,3),style={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=compact and .95 or 1.1,color=ivory,text_align="end"}})))
   end)
  end
  local function timer(t:number):string return string.format("%02d:%02d",math.floor(t/60),math.floor(t%60)) end
  local phase=S.phase
  if phase=="paused" or phase=="upgrade" or phase=="gameover" or phase=="victory" then
-  table.insert(nodes,{kind="panel",id="modal_shade",rect=rect(0,0,100,100),style={background={.015,.04,.06,.82}}})
+  table.insert(nodes,(ui.panel({id="modal_shade",rect=rect(0,0,100,100),style={background={.015,.04,.06,.82}}})))
  end
  text("brand","VOIDWAKE",compact and 5 or 3.1,92.4,compact and 48 or 16,4.8)
  if not compact then text("comms","SYSTEM ONLINE   /   FLIGHT SYSTEMS",43,94,37,1.7) end

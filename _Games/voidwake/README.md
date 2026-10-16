@@ -3,10 +3,12 @@
 A top-down space roguelike authored in Luau and presented by the official Unone
 player. Clear three sectors, choose upgrades, and defeat the capital ship.
 
-This example uses the same reusable engine UI components, typography/styles,
-declared font faces, particle effects, and sprite Shader API available to any
-Unone project. Gameplay and the screen composition remain game code. There is
-no game-owned renderer, HTML overlay, GPU context, or copied player runtime.
+This example declares the official `@unone/ui` 0.1.0 package and composes its
+text, button, panel and component constructors through `api.ui.components.create()`.
+The same package, typography/styles, declared font faces, particle effects and
+sprite Shader API are available to any Unone project. Gameplay and the screen
+composition remain game code. There is no game-owned renderer, HTML overlay,
+GPU context, or copied player runtime.
 
 ## Build and run
 
@@ -57,6 +59,25 @@ tests and four UI previews cover the menu, flight HUD, pause screen and upgrade 
 explicitly names decorative background layers; it does not waive overlapping
 controls or text. Visual layout choices belong to `ui.fragment.luau`, using the
 shared [UI styling API](../../docs/ui-styling.md) and existing semantic components.
+The [official package contract](../../docs/ui-components.md) documents the exact
+`runtime_packages` declaration and SDK/runtime compatibility checks. The package
+constructs the existing tree while retaining type sizes, colors, positions,
+IDs, action meanings and child order; project factories still own the
+mission introduction, vessel card, stat bars and upgrade cards. Decorative
+background leaves keep their existing IDs and overlap policies.
+
+After exporting, the real-browser acceptance plan exercises pointer/keyboard
+actions at desktop, intermediate and portrait sizes and audits the packaged
+font glyphs. With Playwright available (or `UNONE_PLAYWRIGHT_MODULE` pointing
+to its installed module), run from the repository root:
+
+```powershell
+node scripts/verify-ui-example-browser.mjs --export _Games/voidwake/dist/player --plan _Games/voidwake/tests/browser-plan.json --out artifacts/voidwake-browser
+python _Games/voidwake/tools/build-supplemental-fonts.py --check
+```
+
+Screenshots in the browser output are separate visual acceptance evidence;
+headless replay and structural preview alone do not establish appearance.
 
 All PNG artwork was created with ImageGen; exact prompts and generation IDs are
 recorded in [ART-PROMPTS.md](ART-PROMPTS.md). The original synthesized WAV assets
@@ -69,6 +90,10 @@ python _Games/voidwake/tools/generate-audio.py --check
 Only the font faces declared by `player.presentation.json` are included. Their
 SIL Open Font License files are under `fonts/`. They are packaged locally by
 Unone, with no font network request during play.
+Explicit fallback lists preserve the original Latin faces and package the CJK
+and symbol fallbacks. Small, separately named Noto supplemental subsets cover
+previously missing pause, upgrade, result and touch-arrow glyphs; the original
+three Noto subsets remain unchanged. See [font provenance and rebuild checks](fonts/README.txt).
 
 ## Controls
 

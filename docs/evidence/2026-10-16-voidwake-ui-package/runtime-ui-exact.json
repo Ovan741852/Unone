@@ -1,0 +1,704 @@
+{
+  "ok": true,
+  "started_utc": "2026-10-16T03:33:34.613Z",
+  "runtime": {
+    "path": "D:\\TSProject\\Voidwake\\game\\runtime",
+    "wasm_sha256": "7bb3757a120a228c4cb52a32330ad988e4f8261dc9e360ce7261915a5907d2d7",
+    "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+    "runtime_packages": {
+      "@unone/ui": "0.1.0"
+    },
+    "manifest_source_commit": "b776403b8055187fa8ac2faad0a5e852fa2a9f52",
+    "manifest_source_dirty": true
+  },
+  "inputs": {
+    "baseline": {
+      "path": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-ui-package\\baseline-player\\content\\project.json",
+      "sha256": "2cf5f32dd327ca9a1489836dd1769939a220513e80bb533b8fb068eba2673129",
+      "script_sha256": "037d3c0e853b14d48b54513a2aa0417e44c5759c8471faa4df8610f1770caf49"
+    },
+    "current": {
+      "path": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\.unone\\ui-package-player-20261016\\content\\project.json",
+      "sha256": "53d563287daee2dff7d53b96da9420285e86fdf7ebcc39d622b630387dbcf080",
+      "script_sha256": "9b6ce6e0bc0cd537d3bb7450156bddb36cee6014d1e9cd4296261f6f97bd6ec8"
+    }
+  },
+  "seed": 42,
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "aspect": 1.6,
+      "frames_per_payload": 3337,
+      "natural_death_frames": 632,
+      "cases": [
+        {
+          "name": "menu-start",
+          "frame": 0,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "05864a22c945c37dc3944cdbd950af105fea4f5f5a3fd786bb4088f88316eb97",
+          "current_ui_sha256": "05864a22c945c37dc3944cdbd950af105fea4f5f5a3fd786bb4088f88316eb97",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "menu-frame-1",
+          "frame": 1,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "05864a22c945c37dc3944cdbd950af105fea4f5f5a3fd786bb4088f88316eb97",
+          "current_ui_sha256": "05864a22c945c37dc3944cdbd950af105fea4f5f5a3fd786bb4088f88316eb97",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "playing-start",
+          "frame": 2,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "current_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "baseline_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda",
+          "current_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda"
+        },
+        {
+          "name": "playing-moved",
+          "frame": 47,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "current_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "baseline_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd",
+          "current_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd"
+        },
+        {
+          "name": "paused",
+          "frame": 48,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3dcce51b9eb3ac530240a90a0780b00a96a59b66fc87a7d65e184af4f3293e06",
+          "current_ui_sha256": "3dcce51b9eb3ac530240a90a0780b00a96a59b66fc87a7d65e184af4f3293e06",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "pause-frozen-120-input-frames",
+          "frame": 168,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3dcce51b9eb3ac530240a90a0780b00a96a59b66fc87a7d65e184af4f3293e06",
+          "current_ui_sha256": "3dcce51b9eb3ac530240a90a0780b00a96a59b66fc87a7d65e184af4f3293e06",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "resumed",
+          "frame": 169,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "current_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "baseline_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e",
+          "current_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e"
+        },
+        {
+          "name": "abandon-confirmation",
+          "frame": 173,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "96189328bb3d3cdfb7dde8dd58dff3f2f65ff5b62186340d244571890e6c2780",
+          "current_ui_sha256": "96189328bb3d3cdfb7dde8dd58dff3f2f65ff5b62186340d244571890e6c2780",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandon-cancelled",
+          "frame": 175,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3dcce51b9eb3ac530240a90a0780b00a96a59b66fc87a7d65e184af4f3293e06",
+          "current_ui_sha256": "3dcce51b9eb3ac530240a90a0780b00a96a59b66fc87a7d65e184af4f3293e06",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandoned-menu",
+          "frame": 179,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "05864a22c945c37dc3944cdbd950af105fea4f5f5a3fd786bb4088f88316eb97",
+          "current_ui_sha256": "05864a22c945c37dc3944cdbd950af105fea4f5f5a3fd786bb4088f88316eb97",
+          "baseline_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a",
+          "current_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a"
+        },
+        {
+          "name": "auto-fire-disabled",
+          "frame": 183,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "5d2ec5ef3905b919a62c7d3b5ac24474f8f310d75e33de5591be3409dd1d27cb",
+          "current_ui_sha256": "5d2ec5ef3905b919a62c7d3b5ac24474f8f310d75e33de5591be3409dd1d27cb",
+          "baseline_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97",
+          "current_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97"
+        },
+        {
+          "name": "abilities-used",
+          "frame": 187,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "4928844a7f9c6a9d828cb6678911596e4a621b0bd206ab2d95460799139da9f9",
+          "current_ui_sha256": "4928844a7f9c6a9d828cb6678911596e4a621b0bd206ab2d95460799139da9f9",
+          "baseline_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6",
+          "current_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6"
+        },
+        {
+          "name": "sound-toggled",
+          "frame": 189,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "06c26538caa3da933cf3239c256800e28d50bba168ba083ee91e40c17bf42f2d",
+          "current_ui_sha256": "06c26538caa3da933cf3239c256800e28d50bba168ba083ee91e40c17bf42f2d",
+          "baseline_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666",
+          "current_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666"
+        },
+        {
+          "name": "restarted",
+          "frame": 191,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3eb3ccdbc592228e7548b0dbb7cce7f0a51713c47e22b9a0b664a988f10e8032",
+          "current_ui_sha256": "3eb3ccdbc592228e7548b0dbb7cce7f0a51713c47e22b9a0b664a988f10e8032",
+          "baseline_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233",
+          "current_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233"
+        },
+        {
+          "name": "upgrade-2500",
+          "frame": 2500,
+          "phase": "upgrade",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "80f7610a0e69c6928a6a50fb86f241cf1536dab74198e57de1085449ade75400",
+          "current_ui_sha256": "80f7610a0e69c6928a6a50fb86f241cf1536dab74198e57de1085449ade75400",
+          "baseline_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9",
+          "current_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9"
+        },
+        {
+          "name": "upgrade-selected",
+          "frame": 2501,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "49c17fe6a5ab8ac6596d1330d3fa16fba2fa4bda36da3e599c5064681a0fb46b",
+          "current_ui_sha256": "49c17fe6a5ab8ac6596d1330d3fa16fba2fa4bda36da3e599c5064681a0fb46b",
+          "baseline_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5",
+          "current_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5"
+        },
+        {
+          "name": "held-choice-installs-once",
+          "frame": 2511,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "49c17fe6a5ab8ac6596d1330d3fa16fba2fa4bda36da3e599c5064681a0fb46b",
+          "current_ui_sha256": "49c17fe6a5ab8ac6596d1330d3fa16fba2fa4bda36da3e599c5064681a0fb46b",
+          "baseline_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33",
+          "current_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33"
+        },
+        {
+          "name": "natural-gameover",
+          "frame": 634,
+          "phase": "gameover",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "bcfcb0909ddcb6edf355cd697e371a282087e33a82563415869d583afcda74b1",
+          "current_ui_sha256": "bcfcb0909ddcb6edf355cd697e371a282087e33a82563415869d583afcda74b1",
+          "baseline_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721",
+          "current_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721"
+        },
+        {
+          "name": "restart-after-gameover",
+          "frame": 635,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "current_ui_sha256": "f1de80e788c66331be2645eba3fd6f99d249c92d2715b2c43fea29494247a455",
+          "baseline_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b",
+          "current_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "aspect": 1.1538461538461537,
+      "frames_per_payload": 3337,
+      "natural_death_frames": 632,
+      "cases": [
+        {
+          "name": "menu-start",
+          "frame": 0,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "current_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "menu-frame-1",
+          "frame": 1,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "current_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "playing-start",
+          "frame": 2,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda",
+          "current_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda"
+        },
+        {
+          "name": "playing-moved",
+          "frame": 47,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd",
+          "current_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd"
+        },
+        {
+          "name": "paused",
+          "frame": 48,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "current_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "pause-frozen-120-input-frames",
+          "frame": 168,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "current_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "resumed",
+          "frame": 169,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e",
+          "current_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e"
+        },
+        {
+          "name": "abandon-confirmation",
+          "frame": 173,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "768da2a15a96d6f5bcea8c35c83f50e25415c7079150be9a094a4aa858500e8c",
+          "current_ui_sha256": "768da2a15a96d6f5bcea8c35c83f50e25415c7079150be9a094a4aa858500e8c",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandon-cancelled",
+          "frame": 175,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "current_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandoned-menu",
+          "frame": 179,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "current_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "baseline_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a",
+          "current_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a"
+        },
+        {
+          "name": "auto-fire-disabled",
+          "frame": 183,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "478b9472e84863db8aefac1d04c68ddce1bf5ce5aae1c9e5b3673f4e898bca4d",
+          "current_ui_sha256": "478b9472e84863db8aefac1d04c68ddce1bf5ce5aae1c9e5b3673f4e898bca4d",
+          "baseline_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97",
+          "current_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97"
+        },
+        {
+          "name": "abilities-used",
+          "frame": 187,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de4cf5fb9f55d3451f52d16727bae477bd4794c03e918f723a5ebfa72e9ff6ed",
+          "current_ui_sha256": "de4cf5fb9f55d3451f52d16727bae477bd4794c03e918f723a5ebfa72e9ff6ed",
+          "baseline_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6",
+          "current_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6"
+        },
+        {
+          "name": "sound-toggled",
+          "frame": 189,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6daf8d85a0248a01aca36398b961d0975ddf102851bb494916f7b0a3ef558d48",
+          "current_ui_sha256": "6daf8d85a0248a01aca36398b961d0975ddf102851bb494916f7b0a3ef558d48",
+          "baseline_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666",
+          "current_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666"
+        },
+        {
+          "name": "restarted",
+          "frame": 191,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "d457875c270344a2b3fa74f83b9c80f794c072297ab388a9794f9211486bcbac",
+          "current_ui_sha256": "d457875c270344a2b3fa74f83b9c80f794c072297ab388a9794f9211486bcbac",
+          "baseline_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233",
+          "current_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233"
+        },
+        {
+          "name": "upgrade-2500",
+          "frame": 2500,
+          "phase": "upgrade",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "41a5837605e9c439bf55c3ba4d5fd63b756d267b7f730a317916ce8bf290cce3",
+          "current_ui_sha256": "41a5837605e9c439bf55c3ba4d5fd63b756d267b7f730a317916ce8bf290cce3",
+          "baseline_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9",
+          "current_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9"
+        },
+        {
+          "name": "upgrade-selected",
+          "frame": 2501,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "current_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "baseline_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5",
+          "current_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5"
+        },
+        {
+          "name": "held-choice-installs-once",
+          "frame": 2511,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "current_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "baseline_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33",
+          "current_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33"
+        },
+        {
+          "name": "natural-gameover",
+          "frame": 634,
+          "phase": "gameover",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "bd80267d0867fe3df1fd916b61040076bb4831eb6432aa746ce6edf07990748c",
+          "current_ui_sha256": "bd80267d0867fe3df1fd916b61040076bb4831eb6432aa746ce6edf07990748c",
+          "baseline_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721",
+          "current_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721"
+        },
+        {
+          "name": "restart-after-gameover",
+          "frame": 635,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b",
+          "current_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b"
+        }
+      ],
+      "ok": true
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "aspect": 0.46208530805687204,
+      "frames_per_payload": 3337,
+      "natural_death_frames": 632,
+      "cases": [
+        {
+          "name": "menu-start",
+          "frame": 0,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "current_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "menu-frame-1",
+          "frame": 1,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "current_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "baseline_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807",
+          "current_observations_sha256": "3e586fa90c58d146ba7f023bd26789d68e0827d4e858ac4cf1ee2ac31e8be807"
+        },
+        {
+          "name": "playing-start",
+          "frame": 2,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda",
+          "current_observations_sha256": "74288682257eb273f9767b0f7607d76ac162c498d2b9839cfdf845ffb362efda"
+        },
+        {
+          "name": "playing-moved",
+          "frame": 47,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd",
+          "current_observations_sha256": "6c40e6a183119195a8bc239cc405d519532c76060f9b8ea268aac4f7842266fd"
+        },
+        {
+          "name": "paused",
+          "frame": 48,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "current_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "pause-frozen-120-input-frames",
+          "frame": 168,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "current_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "baseline_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f",
+          "current_observations_sha256": "32223c1c9c24f55b3ed1fb095c59b2a28da7d433f887f76e5d11a7177457548f"
+        },
+        {
+          "name": "resumed",
+          "frame": 169,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e",
+          "current_observations_sha256": "6f34acd49f74f0ee257ffca5e62c0e8a3efb8d512eb71b60c96a7319a2cbe47e"
+        },
+        {
+          "name": "abandon-confirmation",
+          "frame": 173,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "768da2a15a96d6f5bcea8c35c83f50e25415c7079150be9a094a4aa858500e8c",
+          "current_ui_sha256": "768da2a15a96d6f5bcea8c35c83f50e25415c7079150be9a094a4aa858500e8c",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandon-cancelled",
+          "frame": 175,
+          "phase": "paused",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "current_ui_sha256": "99426ad638cb9c56d36ca3811152dece863ef8d121704890bcb70a22e329e183",
+          "baseline_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949",
+          "current_observations_sha256": "671f8c8bff9d5e2e4b472e301554c43c322d65fec975396ed341001741216949"
+        },
+        {
+          "name": "abandoned-menu",
+          "frame": 179,
+          "phase": "menu",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "current_ui_sha256": "96cf78d718d888b591d925dcec31467c81c62f462b1c32171b6ccaf3d82d3bd9",
+          "baseline_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a",
+          "current_observations_sha256": "e6bbdb0e814e6d48ae76d7440f4e96a85311c48a5840d955c177f7ef1ca3351a"
+        },
+        {
+          "name": "auto-fire-disabled",
+          "frame": 183,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "478b9472e84863db8aefac1d04c68ddce1bf5ce5aae1c9e5b3673f4e898bca4d",
+          "current_ui_sha256": "478b9472e84863db8aefac1d04c68ddce1bf5ce5aae1c9e5b3673f4e898bca4d",
+          "baseline_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97",
+          "current_observations_sha256": "fb5c31053a8a4959d6f0b355de95b9052829f94ee16a21e3144b0e5e30a67f97"
+        },
+        {
+          "name": "abilities-used",
+          "frame": 187,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de4cf5fb9f55d3451f52d16727bae477bd4794c03e918f723a5ebfa72e9ff6ed",
+          "current_ui_sha256": "de4cf5fb9f55d3451f52d16727bae477bd4794c03e918f723a5ebfa72e9ff6ed",
+          "baseline_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6",
+          "current_observations_sha256": "83d53b69786f2867f0b489b5a190062cbb7acf10bf4f8a63e079fd989a7a41c6"
+        },
+        {
+          "name": "sound-toggled",
+          "frame": 189,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "6daf8d85a0248a01aca36398b961d0975ddf102851bb494916f7b0a3ef558d48",
+          "current_ui_sha256": "6daf8d85a0248a01aca36398b961d0975ddf102851bb494916f7b0a3ef558d48",
+          "baseline_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666",
+          "current_observations_sha256": "e90ff5107069da3b241108f83eb0d3920029d869444a643869aa8d39c2f0c666"
+        },
+        {
+          "name": "restarted",
+          "frame": 191,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "d457875c270344a2b3fa74f83b9c80f794c072297ab388a9794f9211486bcbac",
+          "current_ui_sha256": "d457875c270344a2b3fa74f83b9c80f794c072297ab388a9794f9211486bcbac",
+          "baseline_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233",
+          "current_observations_sha256": "82306a530335ac8e07859be26e0c814e5ccbc0e20eb438ed2bb9afa0fe14e233"
+        },
+        {
+          "name": "upgrade-2500",
+          "frame": 2500,
+          "phase": "upgrade",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "41a5837605e9c439bf55c3ba4d5fd63b756d267b7f730a317916ce8bf290cce3",
+          "current_ui_sha256": "41a5837605e9c439bf55c3ba4d5fd63b756d267b7f730a317916ce8bf290cce3",
+          "baseline_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9",
+          "current_observations_sha256": "8d4fddee349ba457e27ee814e91520e69740d162c93c9894cc570e2fa32a00e9"
+        },
+        {
+          "name": "upgrade-selected",
+          "frame": 2501,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "current_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "baseline_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5",
+          "current_observations_sha256": "b317f7c741a6d90ce4c9a6fa33938ba9e625f73ac5a6cb30cfedb2f0959ba6a5"
+        },
+        {
+          "name": "held-choice-installs-once",
+          "frame": 2511,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "current_ui_sha256": "3f298cedb16a3264bf841c440444702a4c5cfe812219a74c04f2561e34b46aec",
+          "baseline_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33",
+          "current_observations_sha256": "af3c10d5ff9a42bdeba2291e2a82844775a07b307bd8668f6d7777662ccaec33"
+        },
+        {
+          "name": "natural-gameover",
+          "frame": 634,
+          "phase": "gameover",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "bd80267d0867fe3df1fd916b61040076bb4831eb6432aa746ce6edf07990748c",
+          "current_ui_sha256": "bd80267d0867fe3df1fd916b61040076bb4831eb6432aa746ce6edf07990748c",
+          "baseline_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721",
+          "current_observations_sha256": "49d479d166d737b3c1777f37eb096188d618f89a2bcc57634e25873317888721"
+        },
+        {
+          "name": "restart-after-gameover",
+          "frame": 635,
+          "phase": "playing",
+          "ui_equal": true,
+          "observations_equal": true,
+          "baseline_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "current_ui_sha256": "de374f9db7a7600d93160696c46a034e2ea24406486891dbf516aa61d0bfcac7",
+          "baseline_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b",
+          "current_observations_sha256": "bb132ab22e4d16c9e60c5dda210c7e7d742029c738786dad5ee95dcf932b6b4b"
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Headless real-WASM equality proves published semantic UI and game observations; it does not prove browser pixels, font rasterization, input routing, shader presentation, or GPU behavior.",
+    "Both payloads run on the same current production runtime. This isolates game UI authoring changes rather than comparing engine versions.",
+    "Viewport aspect is supplied through the normal host payload field. Actions are supplied only through the official input-frame ABI.",
+    "Runtime package version is recorded from the hashed runtime descriptor and required current project declaration; no script/state is injected to query extra observations."
+  ],
+  "total_real_wasm_ticks": 20022,
+  "finished_utc": "2026-10-16T03:35:38.471Z"
+}

@@ -1,0 +1,133 @@
+{
+  "baseline": "a6d733f624afafcea9da38f70269a050352d21de",
+  "scope": "VOIDWAKE project consumes official SDK-bundled @unone/ui 0.1.0; no engine, renderer or gameplay rule changes",
+  "project": "_Games/voidwake",
+  "preview_url": "http://127.0.0.1:8341/?ui=unone-ui-0.1.0",
+  "renderer_mode": "official",
+  "runtime_packages": {
+    "@unone/ui": "0.1.0"
+  },
+  "gates": {
+    "sdk_preflight": "compatible",
+    "project_verify_passed": 7,
+    "deterministic_tests": 10,
+    "strict_ui_previews": 4,
+    "browser_checks": 108,
+    "real_browser_input_sequences": 42,
+    "viewports": 3,
+    "font_cmap_audit": "passed",
+    "runtime_smoke_assertions": 27,
+    "runtime_smoke_ticks": 1501
+  },
+  "parity": {
+    "package_only_exact_ui_and_observation_cases": 57,
+    "final_ui_cases_with_only_expected_font_family_substitutions": 57,
+    "final_observations_exact": true,
+    "ticks_per_comparison_run": 20022,
+    "expected_substitutions": {
+      "Noto Sans TC": "Noto Sans TC, Noto Sans TC Supplemental",
+      "Share Tech Mono": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental"
+    },
+    "evidence": [
+      "runtime-ui-exact.json",
+      "runtime-ui-final.json"
+    ],
+    "limits": "Semantic UI/observation equality is not pixel equality; fullscene animation is not synchronized across browser captures."
+  },
+  "fonts": {
+    "baseline_audit_failed_unique_codepoints": [
+      "U+2190",
+      "U+2191",
+      "U+2192",
+      "U+2193",
+      "U+2197",
+      "U+2500",
+      "U+524D",
+      "U+597D",
+      "U+64CA",
+      "U+653E",
+      "U+68C4",
+      "U+6BC0",
+      "U+71C3"
+    ],
+    "final_unproven_codepoints": 0,
+    "original_noto_faces_byte_identical_to_baseline": true,
+    "supplemental_codepoints": 22,
+    "authored_non_ascii_codepoints_covered_all_three_weights": 236,
+    "implementation": "Existing explicit family stacks, distinct licensed missing-glyph-only supplemental faces; original Latin/Noto faces first."
+  },
+  "delivery": {
+    "official_export_release_root": "releases/aeb7a41397969b335e6f89682c5738cf604e12db913636640ce241ebd10066dd/",
+    "canonical_export_and_external_player_byte_identical": true,
+    "external_player_file_count": 124,
+    "external_authoring_source_matches_canonical": true,
+    "server_identity_verified": "voidwake / unone-official-player / official / three-webgl"
+  },
+  "commands": [
+    "game --sdk <sdk> --project _Games/voidwake --json project preflight --target web",
+    "game --project _Games/voidwake --json bundle pack --output .unone/bundles/manifest.json",
+    "game --project _Games/voidwake --json verify",
+    "./_Games/voidwake/export.ps1 -Cli <current-cli> -Runtime <matching-production-runtime>",
+    "node scripts/verify-ui-example-browser.mjs --export _Games/voidwake/dist/player --plan _Games/voidwake/tests/browser-plan.json --out artifacts/voidwake-ui-package/final-browser",
+    "python _Games/voidwake/tools/build-supplemental-fonts.py --check",
+    "node D:/TSProject/Voidwake/game/tools/test-runtime.mjs"
+  ],
+  "unchanged_inputs": [
+    {
+      "path": "_Games/voidwake/gameplay.luau",
+      "sha256": "19dfa589caa8bccadf215ec95f87b2a54499d7d434188278953db91571b73a1c"
+    },
+    {
+      "path": "_Games/voidwake/audio.fragment.luau",
+      "sha256": "0823ae9815e5547d5ab80f50f8d8d150ad24266b79f6dc72c0c8cf58cd6083c0"
+    },
+    {
+      "path": "_Games/voidwake/presentation.fragment.luau",
+      "sha256": "b47bc1958ac5f416de000a8991788a8b4fb4fbdce57da99377e7d3af17071de0"
+    },
+    {
+      "path": "_Games/voidwake/scene.json",
+      "sha256": "19ed417543ef77ea9cbecead31d2107ebc76da729d066d6af95435e54b5a9b90"
+    },
+    {
+      "path": "_Games/voidwake/assets.json",
+      "sha256": "588dda98c9085e6aafd40bfb22b87d8dde3bb3c69d0837ffdee96124cc87b643"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "artifacts/voidwake-ui-package/final-browser/desktop-initial.png",
+      "sha256": "7d40b20690abf60b0df04d8ffd658ff2a78c6b9e8690ecb36683f114a931e31f",
+      "visually_inspected": true
+    },
+    {
+      "path": "artifacts/voidwake-ui-package/final-browser/desktop-launch.png",
+      "sha256": "524cd27754e236a7a8121125fe1f0aa1f26ff528cc40ef46a0d5b580b1ebacd1",
+      "visually_inspected": true
+    },
+    {
+      "path": "artifacts/voidwake-ui-package/final-browser/desktop-pause.png",
+      "sha256": "bd4f8fa09e829e5ed21d9f7d7669c4085149771eb5fdd93ee3ee35c35195569a",
+      "visually_inspected": true
+    },
+    {
+      "path": "artifacts/voidwake-ui-package/final-browser/portrait-initial.png",
+      "sha256": "4c3121441e9a0d744aa7f92877a07b0841be2437542ed2a0bea855959f07fa87",
+      "visually_inspected": true
+    },
+    {
+      "path": "artifacts/voidwake-ui-package/final-browser/portrait-launch.png",
+      "sha256": "c335730965911b7b698731d5d1a240ed9959d1a41cde06889f46b47921654d16",
+      "visually_inspected": false
+    }
+  ],
+  "review": "Independent read-only source review found no concrete migration defect; real runtime comparisons validate the authored tree and observations.",
+  "limitations": [
+    "Core production WASM was reused from the preceding official package acceptance; its truthful descriptor records b776403 with source_dirty=true and its package version/hash. It was not rebuilt or relabeled as a clean current checkout.",
+    "The pre-migration browser run completed99 checks but failed strict packaged glyph coverage; it is retained as a baseline failure, not a passing final gate.",
+    "Native GPU output and full expedition victory were not rerun in this game-only migration.",
+    "Large raw browser reports, compiled SDK/runtime and screenshots are local ignored artifacts. Committed summaries retain raw hashes and outcomes.",
+    "The game retains its preexisting handwritten EngineApi ui:any authoring boundary; no whole-game type rewrite was introduced.",
+    "The preview-tab opening request was queued by the app; the live URL is separately available."
+  ]
+}

@@ -1,0 +1,1367 @@
+{
+  "ok": true,
+  "strict": true,
+  "faces": [
+    {
+      "family": "Noto Sans TC",
+      "source": "fonts/NotoSansTC-400.ttf",
+      "weight": 400,
+      "unicode_codepoints": 415,
+      "bytes": 115408
+    },
+    {
+      "family": "Noto Sans TC",
+      "source": "fonts/NotoSansTC-600.ttf",
+      "weight": 600,
+      "unicode_codepoints": 415,
+      "bytes": 115268
+    },
+    {
+      "family": "Noto Sans TC",
+      "source": "fonts/NotoSansTC-700.ttf",
+      "weight": 700,
+      "unicode_codepoints": 415,
+      "bytes": 115332
+    },
+    {
+      "family": "Noto Sans TC Supplemental",
+      "source": "fonts/NotoSansTC-Supplemental-400.ttf",
+      "weight": 400,
+      "unicode_codepoints": 22,
+      "bytes": 9428
+    },
+    {
+      "family": "Noto Sans TC Supplemental",
+      "source": "fonts/NotoSansTC-Supplemental-600.ttf",
+      "weight": 600,
+      "unicode_codepoints": 22,
+      "bytes": 9408
+    },
+    {
+      "family": "Noto Sans TC Supplemental",
+      "source": "fonts/NotoSansTC-Supplemental-700.ttf",
+      "weight": 700,
+      "unicode_codepoints": 22,
+      "bytes": 9396
+    },
+    {
+      "family": "Barlow Condensed",
+      "source": "fonts/a36a2df94698fcef.ttf",
+      "weight": 400,
+      "unicode_codepoints": 525,
+      "bytes": 80968
+    },
+    {
+      "family": "Barlow Condensed",
+      "source": "fonts/501f76ca195ed91f.ttf",
+      "weight": 600,
+      "unicode_codepoints": 525,
+      "bytes": 86636
+    },
+    {
+      "family": "Barlow Condensed",
+      "source": "fonts/d02cbe275f68b2e0.ttf",
+      "weight": 700,
+      "unicode_codepoints": 525,
+      "bytes": 87120
+    },
+    {
+      "family": "Share Tech Mono",
+      "source": "fonts/7d286d2b26f4813e.ttf",
+      "weight": 400,
+      "unicode_codepoints": 267,
+      "bytes": 41912
+    }
+  ],
+  "text_samples": 65,
+  "samples": [
+    {
+      "node": "brand",
+      "family": "Barlow Condensed",
+      "weight": 700,
+      "text": "VOIDWAKE",
+      "matched_faces": [
+        {
+          "family": "Barlow Condensed",
+          "weight": 700
+        }
+      ],
+      "required_codepoints": 8,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "comms",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SYSTEM ONLINE   /   FLIGHT SYSTEMS",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 13,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "sound",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SND ON",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 4,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "eyebrow",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "A DEEP SPACE ROGUELIKE",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 13,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "menu_title",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 700,
+      "text": "在黑暗之中，",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 700
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 700
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "menu_title_accent",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 700,
+      "text": "留下你的餘燼。",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 700
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 700
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "menu_story",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "訊號已消失。返航不在選項之中。\n駕駛最後一艘遊隼，穿越失落星區。\n每次躍遷，都是一場全新的遠征。",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 40,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "mission",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 600,
+      "text": "穿越寂靜邊境",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 600
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 600
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "mission_meta",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "4 個星區   ·   隨機強化   ·   永久死亡",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 13,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "launch",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 600,
+      "text": "啟動遠征  ↗",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 600
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 600
+        }
+      ],
+      "required_codepoints": 5,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "menu_controls",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "WASD 航行   ·   滑鼠射擊   ·   SPACE 閃避",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 16,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "ship_tag",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "YOUR VESSEL",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 8,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "ship_name",
+      "family": "Barlow Condensed",
+      "weight": 600,
+      "text": "PEREGRINE  MK. IV",
+      "matched_faces": [
+        {
+          "family": "Barlow Condensed",
+          "weight": 600
+        }
+      ],
+      "required_codepoints": 10,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "ship_class",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "遊隼級 · 深空攔截機",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 9,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "ship_serial",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "REG. UN-0741  /  READY FOR DEPLOYMENT",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 21,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "footer",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "DEEP SPACE NETWORK  ·  CONNECTED",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 13,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "engine_mark",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "POWERED BY UNONE ↗",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 11,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "sound",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SND OFF",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 5,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "sector",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 600,
+      "text": "SECTOR 01  /  蒼白星環",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 600
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 600
+        }
+      ],
+      "required_codepoints": 13,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "clock",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "00:00   /   擊毀 000",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 5,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "objective",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "躍遷窗口  40s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "route",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "01 ─── 02 ─── 03 ─── 04",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "salvage",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SALVAGE  0000    /    LV. 1",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 10,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "pause",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "Ⅱ  暫停",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 3,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "vessel",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "PEREGRINE / MK. IV",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 11,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "hull_label",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "船體",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 2,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "hull_value",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "100 / 100",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 3,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "shield_label",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "護盾",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 2,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "shield_value",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "60 / 60",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 3,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "xp",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "經驗 0 / 14 · LV. 1",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 10,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "weapon_status",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "AUTO TARGETING ONLINE",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 10,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "weapon",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "雙聯電磁炮  /  MK. 1",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 10,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "auto",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "F 自動 ON",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 5,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "burst",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "Q 脈衝 READY",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 8,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "dash",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SPACE 閃避",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "flight_hint",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "WASD 航行 · 滑鼠射擊 · Q 脈衝 · SPACE 閃避 · ESC 暫停",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 21,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "clock",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "00:00   /   擊毀 001",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "salvage",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SALVAGE  0005    /    LV. 1",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 11,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "weapon_status",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "MANUAL TARGETING",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 10,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "auto",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "F 自動 OFF",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 4,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "clock",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "00:01   /   擊毀 001",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "objective",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "躍遷窗口  39s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "burst",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "Q 脈衝 12s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "clock",
+      "family": "Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "00:02   /   擊毀 001",
+      "matched_faces": [
+        {
+          "family": "Share Tech Mono",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "objective",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "躍遷窗口  38s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "dash",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SPACE 2.3s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 9,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "paused_title",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 600,
+      "text": "航行已暫停",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 600
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 600
+        }
+      ],
+      "required_codepoints": 5,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "paused_copy",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "深空可以等待。\n準備好，再點燃你的引擎。",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 18,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "resume",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 600,
+      "text": "繼 續 航 行     ↗",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 600
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 600
+        }
+      ],
+      "required_codepoints": 5,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "abandon",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "放棄遠征",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 4,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "paused_title",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 600,
+      "text": "放棄本次遠征？",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 600
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 600
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "paused_copy",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "目前的強化與進度將會失去。",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 13,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "confirm_menu",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "確認放棄",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 4,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "cancel_abandon",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "返回遠征",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 4,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "burst",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "Q 脈衝 11s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 5,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "dash",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "SPACE 1.6s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 9,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "burst",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "Q 脈衝",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 3,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "dash",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "閃避 READY",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 7,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "up",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "↑",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 1,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "left",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "←",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 1,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "down",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "↓",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 1,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "right",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "→",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 1,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "dash",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "閃避 2.3s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "dash",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "閃避 1.8s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    },
+    {
+      "node": "dash",
+      "family": "Noto Sans TC, Noto Sans TC Supplemental",
+      "weight": 400,
+      "text": "閃避 1.9s",
+      "matched_faces": [
+        {
+          "family": "Noto Sans TC",
+          "weight": 400
+        },
+        {
+          "family": "Noto Sans TC Supplemental",
+          "weight": 400
+        }
+      ],
+      "required_codepoints": 6,
+      "packaged_coverage_proven": true,
+      "unproven": []
+    }
+  ],
+  "note": "Unproven means no explicitly selected packaged face contains the codepoint; system fallback may still paint it."
+}

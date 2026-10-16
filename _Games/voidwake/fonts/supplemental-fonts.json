@@ -1,0 +1,42 @@
+{
+  "family": "Noto Sans TC Supplemental",
+  "upstream_family_url": "https://github.com/google/fonts/tree/main/ofl/notosanstc",
+  "cached_source_filename": "NotoSansTC-VF.ttf",
+  "source_sha256": "c6481c5d93420aeac11087367dae56ae7492eb1989ce42f4ca5d5aa5e2db3116",
+  "license": "SIL Open Font License 1.1; see notosanstc-LICENSE.txt",
+  "fonttools_version": "4.56.0",
+  "codepoints": [
+    "U+2190",
+    "U+2191",
+    "U+2192",
+    "U+2193",
+    "U+2500",
+    "U+524D",
+    "U+55AE",
+    "U+597D",
+    "U+5EA7",
+    "U+62B5",
+    "U+653E",
+    "U+68C4",
+    "U+6D77",
+    "U+71C3",
+    "U+773C",
+    "U+8000",
+    "U+88AB",
+    "U+88C2",
+    "U+8C37",
+    "U+8D77",
+    "U+9053",
+    "U+958B"
+  ],
+  "original_faces_sha256": {
+    "NotoSansTC-400.ttf": "f3603ece9495cf209be49ab5f632a7e27ac940187afa4b3116feedf711026fde",
+    "NotoSansTC-600.ttf": "ab5a1cb5118f93341b0c48392fbba508d7317246ca6f9df0067bdbdfc07b78c5",
+    "NotoSansTC-700.ttf": "bbb975a7233215e5dc43a7494e5c4dc2ac21672eecc997478b33ed3d3e6d16a5"
+  },
+  "output_faces_sha256": {
+    "NotoSansTC-Supplemental-400.ttf": "4d48df0be8b03e5c1d0f2fa856b1931d2dcf12533d5ccaee3d58f2744c0e9cb9",
+    "NotoSansTC-Supplemental-600.ttf": "688d16dabf999b2ceb633ea73e502a06f1da39c23ede12d8b1af49dd78926f3b",
+    "NotoSansTC-Supplemental-700.ttf": "20c9d6098c849aa74e9082e356466331395efacc7a5e41adb8a48a1a603a5ac0"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "engine": "b776403b8055187fa8ac2faad0a5e852fa2a9f52",
+  "runtime_sha256": "7bb3757a120a228c4cb52a32330ad988e4f8261dc9e360ce7261915a5907d2d7",
+  "game_script_sha256": "dec66e43e47a705112c36703e3d423b3d3c435623c33c6fea8c92b499e4ba9b6",
+  "game_scene_sha256": "21e9749b2a0755061421d64b58eab126cc9182b31d295e647cc10f1a74bb2f12",
+  "semantic_assertions": 27,
+  "real_wasm_frames": 1501,
+  "checks": [
+    "menu",
+    "official semantic UI",
+    "original imagegen scene sprite",
+    "engine shader state",
+    "official ambience loop",
+    "native particle samples",
+    "engine dash audio",
+    "start",
+    "held movement",
+    "dash cooldown",
+    "burst cooldown",
+    "auto toggle",
+    "world y-up pointer aim/fire",
+    "pause freeze",
+    "resume",
+    "restart",
+    "abandon",
+    "raw official keyboard actions",
+    "official sound mixer",
+    "same-seed deterministic replay",
+    "different-seed content"
+  ]
+}

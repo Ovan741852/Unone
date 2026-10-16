@@ -1,0 +1,829 @@
+{
+  "ok": true,
+  "title": "VOIDWAKE official UI package migration",
+  "checks": [
+    "desktop: actual official renderer selected",
+    "desktop: no fatal player diagnostic",
+    "desktop: actual production WASM advances",
+    "desktop: declared Noto Sans TC 400 face loaded",
+    "desktop: declared Noto Sans TC 600 face loaded",
+    "desktop: declared Noto Sans TC 700 face loaded",
+    "desktop: declared Noto Sans TC Supplemental 400 face loaded",
+    "desktop: declared Noto Sans TC Supplemental 600 face loaded",
+    "desktop: declared Noto Sans TC Supplemental 700 face loaded",
+    "desktop: declared Barlow Condensed 400 face loaded",
+    "desktop: declared Barlow Condensed 600 face loaded",
+    "desktop: declared Barlow Condensed 700 face loaded",
+    "desktop: declared Share Tech Mono 400 face loaded",
+    "desktop: repeated component subtree identity exists",
+    "desktop: multiple packaged families actually paint glyphs",
+    "desktop: weight 400 actually paints glyphs",
+    "desktop: weight 600 actually paints glyphs",
+    "desktop: weight 700 actually paints glyphs",
+    "desktop: intended complete text fits its authored box",
+    "desktop: intended complete text fits its authored box",
+    "desktop: intended complete text fits its authored box",
+    "desktop: sound-off has no fatal diagnostic",
+    "desktop: sound-on has no fatal diagnostic",
+    "desktop: launch has no fatal diagnostic",
+    "desktop: auto-off has no fatal diagnostic",
+    "desktop: burst has no fatal diagnostic",
+    "desktop: dash has no fatal diagnostic",
+    "desktop: pause has no fatal diagnostic",
+    "desktop: abandon-prompt has no fatal diagnostic",
+    "desktop: cancel-abandon has no fatal diagnostic",
+    "desktop: resume has no fatal diagnostic",
+    "desktop: keyboard-pause has no fatal diagnostic",
+    "desktop: abandon-again has no fatal diagnostic",
+    "desktop: return-menu has no fatal diagnostic",
+    "desktop: keyboard-launch has no fatal diagnostic",
+    "desktop: no browser, asset or compiler errors",
+    "intermediate: actual official renderer selected",
+    "intermediate: no fatal player diagnostic",
+    "intermediate: actual production WASM advances",
+    "intermediate: declared Noto Sans TC 400 face loaded",
+    "intermediate: declared Noto Sans TC 600 face loaded",
+    "intermediate: declared Noto Sans TC 700 face loaded",
+    "intermediate: declared Noto Sans TC Supplemental 400 face loaded",
+    "intermediate: declared Noto Sans TC Supplemental 600 face loaded",
+    "intermediate: declared Noto Sans TC Supplemental 700 face loaded",
+    "intermediate: declared Barlow Condensed 400 face loaded",
+    "intermediate: declared Barlow Condensed 600 face loaded",
+    "intermediate: declared Barlow Condensed 700 face loaded",
+    "intermediate: declared Share Tech Mono 400 face loaded",
+    "intermediate: repeated component subtree identity exists",
+    "intermediate: multiple packaged families actually paint glyphs",
+    "intermediate: weight 400 actually paints glyphs",
+    "intermediate: weight 600 actually paints glyphs",
+    "intermediate: weight 700 actually paints glyphs",
+    "intermediate: intended complete text fits its authored box",
+    "intermediate: intended complete text fits its authored box",
+    "intermediate: intended complete text fits its authored box",
+    "intermediate: sound-off has no fatal diagnostic",
+    "intermediate: sound-on has no fatal diagnostic",
+    "intermediate: launch has no fatal diagnostic",
+    "intermediate: auto-off has no fatal diagnostic",
+    "intermediate: burst has no fatal diagnostic",
+    "intermediate: dash has no fatal diagnostic",
+    "intermediate: pause has no fatal diagnostic",
+    "intermediate: abandon-prompt has no fatal diagnostic",
+    "intermediate: cancel-abandon has no fatal diagnostic",
+    "intermediate: resume has no fatal diagnostic",
+    "intermediate: keyboard-pause has no fatal diagnostic",
+    "intermediate: abandon-again has no fatal diagnostic",
+    "intermediate: return-menu has no fatal diagnostic",
+    "intermediate: keyboard-launch has no fatal diagnostic",
+    "intermediate: no browser, asset or compiler errors",
+    "portrait: actual official renderer selected",
+    "portrait: no fatal player diagnostic",
+    "portrait: actual production WASM advances",
+    "portrait: declared Noto Sans TC 400 face loaded",
+    "portrait: declared Noto Sans TC 600 face loaded",
+    "portrait: declared Noto Sans TC 700 face loaded",
+    "portrait: declared Noto Sans TC Supplemental 400 face loaded",
+    "portrait: declared Noto Sans TC Supplemental 600 face loaded",
+    "portrait: declared Noto Sans TC Supplemental 700 face loaded",
+    "portrait: declared Barlow Condensed 400 face loaded",
+    "portrait: declared Barlow Condensed 600 face loaded",
+    "portrait: declared Barlow Condensed 700 face loaded",
+    "portrait: declared Share Tech Mono 400 face loaded",
+    "portrait: repeated component subtree identity exists",
+    "portrait: multiple packaged families actually paint glyphs",
+    "portrait: weight 400 actually paints glyphs",
+    "portrait: weight 600 actually paints glyphs",
+    "portrait: weight 700 actually paints glyphs",
+    "portrait: intended complete text fits its authored box",
+    "portrait: intended complete text fits its authored box",
+    "portrait: intended complete text fits its authored box",
+    "portrait: sound-off has no fatal diagnostic",
+    "portrait: sound-on has no fatal diagnostic",
+    "portrait: launch has no fatal diagnostic",
+    "portrait: auto-off has no fatal diagnostic",
+    "portrait: burst has no fatal diagnostic",
+    "portrait: dash has no fatal diagnostic",
+    "portrait: pause has no fatal diagnostic",
+    "portrait: abandon-prompt has no fatal diagnostic",
+    "portrait: cancel-abandon has no fatal diagnostic",
+    "portrait: resume has no fatal diagnostic",
+    "portrait: keyboard-pause has no fatal diagnostic",
+    "portrait: abandon-again has no fatal diagnostic",
+    "portrait: return-menu has no fatal diagnostic",
+    "portrait: keyboard-launch has no fatal diagnostic",
+    "portrait: no browser, asset or compiler errors"
+  ],
+  "errors": [],
+  "limitations": [
+    "Screenshots require human visual review; geometry and metadata alone do not establish visual quality.",
+    "The read-only WASM ABI observer currently requires a main-thread production runtime.",
+    "Browser font registration does not prove character coverage; local export fonts are independently audited through their cmap."
+  ],
+  "raw_report_sha256": "f0e6a3b9a923c54b05df1b7fcfd4a3428f6128212ee6711a0628d473a5defadf",
+  "raw_report_path": "artifacts/voidwake-ui-package/final-browser/browser-report.json",
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "errors": [],
+      "failedRequests": [],
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND ON",
+            "action": "Sound",
+            "point": {
+              "x": 1332,
+              "y": 49.5
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "sound-on",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND OFF",
+            "action": "Sound",
+            "point": {
+              "x": 1332,
+              "y": 49.5
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "launch",
+          "interaction": {
+            "id": "launch",
+            "kind": "button",
+            "text": "啟動遠征  ↗",
+            "action": "Start",
+            "point": {
+              "x": 339.84,
+              "y": 666
+            }
+          },
+          "phase": "playing",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "auto-off",
+          "interaction": {
+            "id": "auto",
+            "kind": "button",
+            "text": "F 自動 ON",
+            "action": "AutoFire",
+            "point": {
+              "x": 1015.2,
+              "y": 805.0499999999998
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "burst",
+          "interaction": {
+            "id": "burst",
+            "kind": "button",
+            "text": "Q 脈衝 READY",
+            "action": "Burst",
+            "point": {
+              "x": 1154.88,
+              "y": 805.0499999999998
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 0
+        },
+        {
+          "name": "dash",
+          "interaction": {
+            "id": "dash",
+            "kind": "button",
+            "text": "SPACE 閃避",
+            "action": "Dash",
+            "point": {
+              "x": 1306.08,
+              "y": 805.0499999999998
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "pause",
+          "interaction": {
+            "id": "pause",
+            "kind": "button",
+            "text": "Ⅱ  暫停",
+            "action": "Pause",
+            "point": {
+              "x": 1332,
+              "y": 220.5
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "abandon-prompt",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 720,
+              "y": 589.5
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "cancel-abandon",
+          "interaction": {
+            "id": "cancel_abandon",
+            "kind": "button",
+            "text": "返回遠征",
+            "action": "CancelAbandon",
+            "point": {
+              "x": 720,
+              "y": 589.5
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "resume",
+          "interaction": {
+            "id": "resume",
+            "kind": "button",
+            "text": "繼 續 航 行     ↗",
+            "action": "Resume",
+            "point": {
+              "x": 720,
+              "y": 508.5
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "keyboard-pause",
+          "interaction": {
+            "key": "Escape"
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "abandon-again",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 720,
+              "y": 589.5
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "return-menu",
+          "interaction": {
+            "id": "confirm_menu",
+            "kind": "button",
+            "text": "確認放棄",
+            "action": "Menu",
+            "point": {
+              "x": 720,
+              "y": 508.5
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "keyboard-launch",
+          "interaction": {
+            "key": "Enter"
+          },
+          "phase": "playing",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "errors": [],
+      "failedRequests": [],
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND ON",
+            "action": "Sound",
+            "point": {
+              "x": 882.3,
+              "y": 48.62
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "sound-on",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND OFF",
+            "action": "Sound",
+            "point": {
+              "x": 882.3,
+              "y": 48.62
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "launch",
+          "interaction": {
+            "id": "launch",
+            "kind": "button",
+            "text": "啟動遠征  ↗",
+            "action": "Start",
+            "point": {
+              "x": 510,
+              "y": 654.16
+            }
+          },
+          "phase": "playing",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "auto-off",
+          "interaction": {
+            "id": "auto",
+            "kind": "button",
+            "text": "F 自動 ON",
+            "action": "AutoFire",
+            "point": {
+              "x": 749.7,
+              "y": 751.4
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "burst",
+          "interaction": {
+            "id": "burst",
+            "kind": "button",
+            "text": "Q 脈衝",
+            "action": "Burst",
+            "point": {
+              "x": 637.5,
+              "y": 804.44
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 0
+        },
+        {
+          "name": "dash",
+          "interaction": {
+            "id": "dash",
+            "kind": "button",
+            "text": "閃避 READY",
+            "action": "Dash",
+            "point": {
+              "x": 867,
+              "y": 804.44
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "pause",
+          "interaction": {
+            "id": "pause",
+            "kind": "button",
+            "text": "Ⅱ  暫停",
+            "action": "Pause",
+            "point": {
+              "x": 882.3,
+              "y": 216.58
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "abandon-prompt",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 510,
+              "y": 579.02
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "cancel-abandon",
+          "interaction": {
+            "id": "cancel_abandon",
+            "kind": "button",
+            "text": "返回遠征",
+            "action": "CancelAbandon",
+            "point": {
+              "x": 510,
+              "y": 579.02
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "resume",
+          "interaction": {
+            "id": "resume",
+            "kind": "button",
+            "text": "繼 續 航 行     ↗",
+            "action": "Resume",
+            "point": {
+              "x": 510,
+              "y": 499.46
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "keyboard-pause",
+          "interaction": {
+            "key": "Escape"
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "abandon-again",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 510,
+              "y": 579.02
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "return-menu",
+          "interaction": {
+            "id": "confirm_menu",
+            "kind": "button",
+            "text": "確認放棄",
+            "action": "Menu",
+            "point": {
+              "x": 510,
+              "y": 499.46
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "keyboard-launch",
+          "interaction": {
+            "key": "Enter"
+          },
+          "phase": "playing",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "failedRequests": [],
+      "steps": [
+        {
+          "name": "sound-off",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND ON",
+            "action": "Sound",
+            "point": {
+              "x": 337.35,
+              "y": 46.42
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "sound-on",
+          "interaction": {
+            "id": "sound",
+            "kind": "button",
+            "text": "SND OFF",
+            "action": "Sound",
+            "point": {
+              "x": 337.35,
+              "y": 46.42
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "launch",
+          "interaction": {
+            "id": "launch",
+            "kind": "button",
+            "text": "啟動遠征  ↗",
+            "action": "Start",
+            "point": {
+              "x": 195,
+              "y": 624.56
+            }
+          },
+          "phase": "playing",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "auto-off",
+          "interaction": {
+            "id": "auto",
+            "kind": "button",
+            "text": "F 自動 ON",
+            "action": "AutoFire",
+            "point": {
+              "x": 286.65,
+              "y": 717.4
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "burst",
+          "interaction": {
+            "id": "burst",
+            "kind": "button",
+            "text": "Q 脈衝",
+            "action": "Burst",
+            "point": {
+              "x": 243.75,
+              "y": 768.04
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 0
+        },
+        {
+          "name": "dash",
+          "interaction": {
+            "id": "dash",
+            "kind": "button",
+            "text": "閃避 READY",
+            "action": "Dash",
+            "point": {
+              "x": 331.5,
+              "y": 768.04
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "pause",
+          "interaction": {
+            "id": "pause",
+            "kind": "button",
+            "text": "Ⅱ  暫停",
+            "action": "Pause",
+            "point": {
+              "x": 337.35,
+              "y": 206.78
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "abandon-prompt",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 195,
+              "y": 552.82
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "cancel-abandon",
+          "interaction": {
+            "id": "cancel_abandon",
+            "kind": "button",
+            "text": "返回遠征",
+            "action": "CancelAbandon",
+            "point": {
+              "x": 195,
+              "y": 552.82
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "resume",
+          "interaction": {
+            "id": "resume",
+            "kind": "button",
+            "text": "繼 續 航 行     ↗",
+            "action": "Resume",
+            "point": {
+              "x": 195,
+              "y": 476.86
+            }
+          },
+          "phase": "playing",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "keyboard-pause",
+          "interaction": {
+            "key": "Escape"
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "abandon-again",
+          "interaction": {
+            "id": "abandon",
+            "kind": "button",
+            "text": "放棄遠征",
+            "action": "Abandon",
+            "point": {
+              "x": 195,
+              "y": 552.82
+            }
+          },
+          "phase": "paused",
+          "autoFire": false,
+          "burstCount": 1,
+          "dashCount": 1
+        },
+        {
+          "name": "return-menu",
+          "interaction": {
+            "id": "confirm_menu",
+            "kind": "button",
+            "text": "確認放棄",
+            "action": "Menu",
+            "point": {
+              "x": 195,
+              "y": 476.86
+            }
+          },
+          "phase": "menu",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        },
+        {
+          "name": "keyboard-launch",
+          "interaction": {
+            "key": "Enter"
+          },
+          "phase": "playing",
+          "autoFire": true,
+          "burstCount": 0,
+          "dashCount": 0
+        }
+      ]
+    }
+  ]
+}

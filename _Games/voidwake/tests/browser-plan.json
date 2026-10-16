@@ -1,0 +1,25 @@
+{
+  "title": "VOIDWAKE official UI package migration",
+  "requirePackagedGlyphCoverage": true,
+  "requireRepeatedComponent": "ActionButton",
+  "minimumPaintedFontFamilies": 3,
+  "requiredPaintedWeights": [400, 600, 700],
+  "requireTextFits": [{"id":"menu_title"},{"id":"menu_title_accent"},{"id":"launch"}],
+  "initialExpect": {"observations":{"phase":"menu"}},
+  "steps": [
+    {"name":"sound-off","click":{"id":"sound"},"expect":{"text":["SND OFF"]}},
+    {"name":"sound-on","click":{"id":"sound"},"expect":{"text":["SND ON"]}},
+    {"name":"launch","click":{"id":"launch"},"expect":{"observations":{"phase":"playing"}}},
+    {"name":"auto-off","click":{"id":"auto"},"expect":{"observations":{"autoFire":false}}},
+    {"name":"burst","click":{"id":"burst"},"expect":{"observations":{"burstCount":1}}},
+    {"name":"dash","click":{"id":"dash"},"expect":{"observations":{"dashCount":1}}},
+    {"name":"pause","click":{"id":"pause"},"expect":{"observations":{"phase":"paused"},"text":["航行已暫停"]}},
+    {"name":"abandon-prompt","click":{"id":"abandon"},"expect":{"text":["放棄本次遠征？"]}},
+    {"name":"cancel-abandon","click":{"id":"cancel_abandon"},"expect":{"text":["航行已暫停"]}},
+    {"name":"resume","click":{"id":"resume"},"expect":{"observations":{"phase":"playing"}}},
+    {"name":"keyboard-pause","key":"Escape","expect":{"observations":{"phase":"paused"}}},
+    {"name":"abandon-again","click":{"id":"abandon"},"expect":{"text":["放棄本次遠征？"]}},
+    {"name":"return-menu","click":{"id":"confirm_menu"},"expect":{"observations":{"phase":"menu"}}},
+    {"name":"keyboard-launch","key":"Enter","expect":{"observations":{"phase":"playing"}}}
+  ]
+}

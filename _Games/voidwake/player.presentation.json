@@ -22,6 +22,21 @@
         "weight": 700
       },
       {
+        "source": "fonts/NotoSansTC-Supplemental-400.ttf",
+        "family": "Noto Sans TC Supplemental",
+        "weight": 400
+      },
+      {
+        "source": "fonts/NotoSansTC-Supplemental-600.ttf",
+        "family": "Noto Sans TC Supplemental",
+        "weight": 600
+      },
+      {
+        "source": "fonts/NotoSansTC-Supplemental-700.ttf",
+        "family": "Noto Sans TC Supplemental",
+        "weight": 700
+      },
+      {
         "source": "fonts/a36a2df94698fcef.ttf",
         "family": "Barlow Condensed",
         "weight": 400
