@@ -1,0 +1,8 @@
+{
+  "old_server_pid": 30584,
+  "live_root": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\dist\\player",
+  "variant": "production",
+  "renderer": "official",
+  "backup_root": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\.unone\\player-before-responsive-fx-54ffe3da2a73417cb3676d38291d09c7",
+  "old_server_command": "\"C:\\Program Files\\nodejs\\node.exe\" \"D:\\TSProject\\Voidwake\\game\\tools\\serve.mjs\" --port 8341"
+}

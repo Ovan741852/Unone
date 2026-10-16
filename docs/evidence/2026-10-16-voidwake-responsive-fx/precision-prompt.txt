@@ -1,0 +1,398 @@
+Independently review this fixed Unone Core JSON transport correction. Read-only supplied fixed diff; tools are disabled. Do not edit files or claim to execute tests. Report concrete correctness, portability, safety or lifecycle defects with file/line, failure scenario and correction. Separate confirmed findings from hypotheses/test gaps. This scope is distinct from the earlier game-art/UI review. Default serde_json 1.0.151 parsing was independently reproduced to lose one ULP from 93.80000000000001, 45.800000000000004 and 38.800000000000004. Luau buffer-written IEEE bits and pre-envelope canonical digests agree native/WASM. The Web bridge reparses canonical JSON to attach presentation instance metadata before publishing, exposing that parser loss. The fix enables the shared Core dependency feature float_roundtrip. No layout quantization or tolerance changes. Assess feature propagation into standalone player dependencies, exact-bit test adequacy, and real Web ABI regression. Baseline 074eca18cab0d2bb7f2655108b9427a72bfde44d
+
+FIXED DIFF:
+diff --git a/crates/unone-engine/Cargo.toml b/crates/unone-engine/Cargo.toml
+index 8588453..da5756f 100644
+--- a/crates/unone-engine/Cargo.toml
++++ b/crates/unone-engine/Cargo.toml
+@@ -31,11 +31,13 @@ effekseer = []
+ anyhow = "1"
+ base64 = "0.23"
+ mlua = { version = "0.11", features = ["luau", "vendored"] }
+ schemars = { version = "1", optional = true }
+ serde = { version = "1", features = ["derive"] }
+-serde_json = { version = "1", features = ["raw_value"] }
++# Canonical snapshots, saves and host presentation envelopes must preserve every
++# finite binary64 value through a JSON parse/serialize cycle on every host.
++serde_json = { version = "1", features = ["raw_value", "float_roundtrip"] }
+ sha2 = "0.10"
+ thiserror = "2"
+ rapier3d = { optional = true, version = "=0.26.1", default-features = false, features = ["dim3", "f32", "enhanced-determinism"] }
+ 
+ [dev-dependencies]
+
+--- /dev/null
++++ b/crates/unone-engine/tests/json_numeric_roundtrip.rs
+@@ -0,0 +1,61 @@
++use serde_json::Value;
++use unone_engine::{EngineRuntime, encode_observation, observation_digest};
++
++#[test]
++fn json_numeric_roundtrip_preserves_ieee_binary64_values() {
++    // The first three values reproduced an actual host-publication loss of one
++    // ULP. Tiny bounds must retain their scale; rounding UI geometry is not a fix.
++    for bits in [
++        0x4057_7333_3333_3334_u64,
++        0x4046_e666_6666_6667,
++        0x4043_6666_6666_6667,
++        0x0000_0000_0000_0001,
++        0x0010_0000_0000_0000,
++        0x3f50_624d_d2f1_a9fc,
++        0x7fef_ffff_ffff_ffff,
++        0x8000_0000_0000_0000,
++        0xc057_7333_3333_3334,
++    ] {
++        let original = f64::from_bits(bits);
++        let encoded = serde_json::to_string(&original).unwrap();
++        let parsed: f64 = serde_json::from_str(&encoded).unwrap();
++        let portable: Value = serde_json::from_str(&encoded).unwrap();
++        assert_eq!(parsed.to_bits(), bits, "typed JSON roundtrip: {encoded}");
++        assert_eq!(
++            portable.as_f64().unwrap().to_bits(),
++            bits,
++            "portable JSON value roundtrip: {encoded}"
++        );
++    }
++}
++
++#[test]
++fn canonical_observation_json_keeps_runtime_number_bits_and_digest() {
++    let runtime = EngineRuntime::load_source(
++        "canonical-numeric-roundtrip",
++        "main.luau",
++        r#"return {start=function(api)
++local padding=3.1
++api.observation.set('numbers',{
++    width=100-padding-padding, title=100-(54.12+.08),
++    tiny=1e-220, negative=-38.800000000000004,
++})
++end,update=function()end}"#,
++        None,
++    )
++    .unwrap();
++    let snapshot = runtime.observe();
++    let (raw, digest) = encode_observation(&snapshot).unwrap();
++    let decoded: Value = serde_json::from_str(raw.get()).unwrap();
++    for (name, original) in snapshot.observations["numbers"].as_object().unwrap() {
++        assert_eq!(
++            decoded["observations"]["numbers"][name]
++                .as_f64()
++                .unwrap()
++                .to_bits(),
++            original.as_f64().unwrap().to_bits(),
++            "canonical observation changed {name}"
++        );
++    }
++    assert_eq!(digest, observation_digest(&snapshot).unwrap());
++}
+
+diff --git a/crates/unone-web-live-smoke/src/main.rs b/crates/unone-web-live-smoke/src/main.rs
+index c4bf119..77c00fb 100644
+--- a/crates/unone-web-live-smoke/src/main.rs
++++ b/crates/unone-web-live-smoke/src/main.rs
+@@ -747,10 +747,79 @@ mod tests {
+         unone_web_set_screen_pointer, unone_web_tick,
+     };
+     use serde_json::json;
+     use unone_engine::InputFrame;
+ 
++    #[test]
++    fn web_publication_preserves_binary64_through_instance_envelope() {
++        // Publication reparses canonical JSON before adding instance transport
++        // metadata. That extra parse must not lose a ULP from ordinary geometry
++        // or from arbitrary semantic observations.
++        let script = r#"return {start=function(api)
++local padding=3.1
++local width=100-padding-padding
++local title=100-(54.12+.08)
++api.observation.set('numbers',{width=width,title=title,tiny=1e-220})
++api.ui.setRoot({kind='screen',id='precision',node='precision',children={
++    {kind='panel',id='computed',rect={x=padding,y=title,width=width,height=.08}},
++}})
++end,update=function()end}"#;
++        let payload = serde_json::to_vec(&json!({
++            "config":{"name":"json-precision","entry_script":"main.luau","systems":{"ui":true}},
++            "script":script,
++        }))
++        .unwrap();
++        let mut core = unone_engine::HostProject::parse(&payload)
++            .unwrap()
++            .into_runtime(42)
++            .unwrap();
++        assert_eq!(
++            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
++            0
++        );
++        for frame in 0..=1 {
++            if frame != 0 {
++                core.tick().unwrap();
++                assert_eq!(unone_web_tick(), 0);
++            }
++            let expected = core.observe();
++            let expected_numbers = &expected.observations["numbers"];
++            assert_eq!(
++                expected_numbers["width"].as_f64().unwrap().to_bits(),
++                0x4057_7333_3333_3334
++            );
++            for mode in [0, 1] {
++                assert_eq!(super::unone_web_set_instance_transport(mode), 0);
++                let actual: serde_json::Value = OUTPUT
++                    .with(|bytes| serde_json::from_slice(&bytes.borrow()).unwrap());
++                for name in ["width", "title", "tiny"] {
++                    assert_eq!(
++                        actual["world"]["observations"]["numbers"][name]
++                            .as_f64()
++                            .unwrap()
++                            .to_bits(),
++                        expected_numbers[name].as_f64().unwrap().to_bits(),
++                        "frame {frame}, instance mode {mode}, observation {name}"
++                    );
++                }
++                assert_eq!(
++                    actual["world"]["ui"]["children"][0]["rect"]["width"]
++                        .as_f64()
++                        .unwrap()
++                        .to_bits(),
++                    0x4057_7333_3333_3334
++                );
++                assert_eq!(
++                    actual["observation_digest"],
++                    unone_engine::observation_digest(&expected).unwrap()
++                );
++                assert_eq!(actual["world"], serde_json::to_value(&expected).unwrap());
++            }
++        }
++        assert_eq!(super::unone_web_set_instance_transport(0), 0);
++    }
++
+     #[test]
+     fn binary_job_abi_preserves_raw_bytes_and_rejects_invalid_framing() {
+         for length in [0usize,256,262144] {
+             let header=serde_json::to_vec(&json!({"kind":"execute","id":"test","path":"copy.luau","source":"return function(b)return b end"})).unwrap();
+             let data:Vec<u8>=(0..length).map(|i|i as u8).collect();
+
+--- /dev/null
++++ b/docs/issues/2026-10-16-web-json-float-roundtrip.md
+@@ -0,0 +1,77 @@
++# Web publication lost binary64 precision during its JSON envelope pass
++
++## Reproduction and ownership
++
++The Voidwake responsive-layout migration exposed a shared host transport defect.
++The native observation retained a computed width of `93.80000000000001`, while
++the Web player's published JSON contained `93.8`. Other observed examples were
++`45.800000000000004` becoming `45.8` and `38.800000000000004` becoming `38.8`.
++These small differences matter to exact replay/output comparisons even when
++they are invisible on screen.
++
++An isolated official-package probe published both the numeric values and their
++IEEE-754 encodings using `buffer.writef64` and `buffer.readu32`. The native and
++WASM VMs produced identical bits for the source literals, arithmetic and
++`createResponsiveLayout().resolve().rect()` output. Their canonical digests
++also matched before the Web presentation envelope. This rules out the layout
++solver and Luau arithmetic as the cause of the reproduced publication defect.
++
++| Encoded JSON number | Original binary64 bits | Bits after the default parser |
++| --- | --- | --- |
++| `93.80000000000001` | `4057733333333334` | `4057733333333333` |
++| `45.800000000000004` | `4046e66666666667` | `4046e66666666666` |
++| `38.800000000000004` | `4043666666666667` | `4043666666666666` |
++
++The same one-ULP loss was independently reproduced in a small native Rust
++program using the checkout's cached `serde_json 1.0.151` without the
++`float_roundtrip` feature. The Web bridge's `write_snapshot` path first creates
++and hashes canonical snapshot JSON, then parses it back into `serde_json::Value`
++to add instance presentation metadata. Its default parser could change a finite
++number during that extra pass, before the final player envelope was emitted.
++
++This is Core canonical-data and host-transport ownership. Game geometry must not
++be rounded to conceal it. No UI breakpoint, coordinate unit, overflow tolerance,
++responsive package version or gameplay rule changes for this correction.
++
++## Correction
++
++The shared `unone-engine` dependency enables `serde_json`'s `float_roundtrip`
++feature alongside `raw_value`. Cargo feature unification carries the same
++correct JSON conversion into the CLI, production player and other hosts that
++depend on Core, including the standalone player workspace. This also preserves
++finite binary64 values when other shared JSON boundaries read them.
++
++The correction preserves the existing JSON format and strict structural
++validation. It does not add an absolute rounding floor, accept a percentage
++overflow, modify tiny layout bounds, or exclude UI from acceptance comparisons.
++
++## Regression and verification scope
++
++- `json_numeric_roundtrip_preserves_ieee_binary64_values` checks typed and
++  portable-value JSON round trips by exact bits. It includes the three observed
++  failures, negative values, negative zero, the smallest subnormal, the smallest
++  normal and the largest finite double.
++- `canonical_observation_json_keeps_runtime_number_bits_and_digest` runs a real
++  Luau project, encodes its canonical snapshot and verifies that a JSON consumer
++  retains the published number bits and the Core digest contract.
++- `web_publication_preserves_binary64_through_instance_envelope` exercises the
++  actual Web FFI load/tick/publication path at frames zero and one, in both JSON
++  and memory instance modes. It checks exact observation and UI geometry bits,
++  full world values and agreement with Core's canonical digest.
++
++Targeted commands are:
++
++```powershell
++cargo test -p unone-engine --release --test json_numeric_roundtrip
++cargo test -p unone-web-live-smoke --release web_publication_preserves_binary64_through_instance_envelope
++```
++
++The final matching native/WASM production runtime and Voidwake acceptance are
++recorded with the enclosing game migration. The isolated probe establishes the
++specific JSON publication failure; it does not establish that every possible
++cross-platform numerical expression is deterministic.
++
++The [fixed reproduction evidence](../evidence/2026-10-16-json-float-roundtrip/manifest.json)
++contains raw default-parser output, the isolated native/WASM number-bit probe,
++its harness and the relevant runtime manifest. It was captured before the
++corrected runtime rebuild.
+
+EXACT CURRENT BRIDGE CONTEXT:
+fn write_snapshot(
+    project: &str,
+    snapshot: &WorldSnapshot,
+    save_payload: Option<serde_json::Value>,
+) -> Result<(), String> {
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let measuring = PUBLICATION_PROFILE.with(|p| p.borrow().active);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let encode_started = measuring.then(std::time::Instant::now);
+    let world = serde_json::value::to_raw_value(snapshot).map_err(|e| e.to_string())?;
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let encode_ms = encode_started
+        .map(|s| s.elapsed().as_secs_f64() * 1000.)
+        .unwrap_or(0.);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let hash_started = measuring.then(std::time::Instant::now);
+    let (observation_digest, _hash_work) =
+        CANONICAL_HASHER.with(|h| h.borrow_mut().hash(world.get().as_bytes()));
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let encoding_times = [
+        encode_ms,
+        hash_started
+            .map(|s| s.elapsed().as_secs_f64() * 1000.)
+            .unwrap_or(0.),
+    ];
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let presentation_started = measuring.then(std::time::Instant::now);
+    let mut retained = Vec::new();
+    let world = {
+        let mut value: serde_json::Value =
+            serde_json::from_str(world.get()).map_err(|e| e.to_string())?;
+        if INSTANCE_MEMORY.with(|m| m.get()) {
+            for (id, batch) in &snapshot.instances3d {
+                value["instances3d"][id] = serde_json::json!({"asset":batch.asset,"count":batch.count,"format":batch.format,
+                    "memory":{"offset":batch.packed.as_ptr() as usize,"byte_length":batch.packed.len(),"revision":batch.revision.to_string()}});
+                retained.push(batch.packed.clone());
+            }
+        } else {
+            for (id, batch) in &snapshot.instances3d {
+                if let Some(entry) = value.get_mut("instances3d").and_then(|v| v.get_mut(id))
+                    && let Some(object) = entry.as_object_mut() {
+                        object.insert("data".into(), serde_json::Value::String(batch.data().to_string()));
+                    }
+            }
+        }
+        serde_json::value::to_raw_value(&value).map_err(|e| e.to_string())?
+    };
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let presentation_ms = presentation_started
+        .map(|s| s.elapsed().as_secs_f64() * 1000.)
+        .unwrap_or(0.);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let envelope_started = measuring.then(std::time::Instant::now);
+    let observation = ProjectObservation {
+        compiled_systems: unone_engine::compiled_systems(),
+        project,
+        world: &world,
+        observation_digest: &observation_digest,
+        save_payload,
+        instance_transport: INSTANCE_MEMORY.with(|m| {
+            if m.get() {
+                Some("wasm-memory-v1")
+            } else {
+                None
+            }
+        }),
+    };
+    let bytes = serde_json::to_vec(&observation)
+        .map_err(|error| format!("snapshot serialization failed: {error}"))?;
+    OUTPUT.with(|output| *output.borrow_mut() = bytes);
+    INSTANCE_BUFFERS.with(|buffers| *buffers.borrow_mut() = retained);
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    if let Some(start) = envelope_started {
+        PUBLICATION_PROFILE.with(|p| {
+            p.borrow_mut().record(
+                [
+                    encoding_times[0],
+                    encoding_times[1],
+                    presentation_ms,
+                    start.elapsed().as_secs_f64() * 1000.,
+                ],
+                _hash_work,
+            )
+        });
+    }
+    Ok(())
+}
+
+
+ISOLATED PRE-FIX PROBE:
+{
+  "nativeDigest": "sha256:a9e43b035c79bc98a89dcde0f9536eb285e6ec2c9ffee965a94d4f2b4245e247",
+  "wasmDigest": "sha256:a9e43b035c79bc98a89dcde0f9536eb285e6ec2c9ffee965a94d4f2b4245e247",
+  "native": {
+    "bits": {
+      "a": "4008cccccccccccd",
+      "b": "3fb47ae147ae147b",
+      "c": "4005c28f5c28f5c3",
+      "constant": "4057733333333334",
+      "layoutWidth": "4057733333333334",
+      "layoutX": "4008cccccccccccd",
+      "right": "405839999999999a",
+      "title": "4046e66666666667",
+      "width": "4057733333333334"
+    },
+    "values": {
+      "a": 3.1,
+      "b": 0.08,
+      "c": 2.72,
+      "constant": 93.80000000000001,
+      "layoutWidth": 93.80000000000001,
+      "layoutX": 3.1,
+      "right": 96.9,
+      "title": 45.800000000000004,
+      "width": 93.80000000000001
+    }
+  },
+  "wasm": {
+    "bits": {
+      "a": "4008cccccccccccd",
+      "b": "3fb47ae147ae147b",
+      "c": "4005c28f5c28f5c3",
+      "constant": "4057733333333334",
+      "layoutWidth": "4057733333333334",
+      "layoutX": "4008cccccccccccd",
+      "right": "405839999999999a",
+      "title": "4046e66666666667",
+      "width": "4057733333333334"
+    },
+    "values": {
+      "a": 3.1,
+      "b": 0.08,
+      "c": 2.72,
+      "constant": 93.8,
+      "layoutWidth": 93.8,
+      "layoutX": 3.1,
+      "right": 96.9,
+      "title": 45.8,
+      "width": 93.8
+    }
+  },
+  "differences": []
+}

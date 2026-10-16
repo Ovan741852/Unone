@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "indexed_evidence_files": 67,
+  "working_source_files": 22,
+  "canonical_main_code_matches_after_git_line_ending_normalization": true,
+  "indexed_main_sha256": "15a012592e80f6c0f241e7596eccc9faed372c6d10c3c7655cf9287dcbf25d95",
+  "served_working_main_sha256": "714944fcd14624907005059835dcad6062268e23fb158d43a6ba5c2d8e8c13d1",
+  "note": "Git normalizes CRLF to LF in source blobs. The verified working/export script body is identical after that normalization; raw evidence files preserve exact indexed bytes."
+}

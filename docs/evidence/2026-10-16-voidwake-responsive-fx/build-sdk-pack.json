@@ -1,0 +1,709 @@
+{
+  "ok": true,
+  "value": {
+    "content": "shared-luau-and-declared-assets",
+    "engine_version": "0.1.0",
+    "host": "windows-x86_64",
+    "runtimes": [
+      {
+        "bytes": 1902633,
+        "compiled_systems": [
+          "audio",
+          "camera2d",
+          "input",
+          "observation",
+          "particle",
+          "random",
+          "ui",
+          "world"
+        ],
+        "id": "web-production-0",
+        "path": "runtimes/web-production-0",
+        "runtime_packages": {
+          "@unone/ui": "0.4.0"
+        },
+        "target": "web",
+        "variant": "production"
+      }
+    ],
+    "sources": {
+      "cli": {
+        "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\bin\\game.exe",
+        "sha256": "d2e8322f3f116e91c771087b0e3b1d07fd81e9382a0a342eecefdfc5abf55634"
+      },
+      "plugins": "separately discovered; not pinned or compatibility-certified by sdk.json; run plugin list/inspect/test",
+      "runtime_packages": {
+        "evidence": "hash-verified bundled source and type inventory; selected runtime descriptors declare executable package versions",
+        "files": [
+          {
+            "bytes": 2808,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\decisions\\0038-shared-ui-styling.md",
+            "relative_path": "docs/decisions/0038-shared-ui-styling.md",
+            "sha256": "e815a00830548c1575e09f9012a2fa5be8c3d3eceae5cc7c8232c2dcc36f5410"
+          },
+          {
+            "bytes": 2921,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\decisions\\0039-component-background-intent.md",
+            "relative_path": "docs/decisions/0039-component-background-intent.md",
+            "sha256": "606c069895535c70d23abe4f46c40e1f839cc05b66a70928d565fc9c3f210977"
+          },
+          {
+            "bytes": 3587,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\decisions\\0040-official-ui-package.md",
+            "relative_path": "docs/decisions/0040-official-ui-package.md",
+            "sha256": "96650faa0a9e34b1b8f0834f64193b35786897f0c5a00c868592d4e11549acda"
+          },
+          {
+            "bytes": 4127,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\decisions\\0042-official-slider-input-and-scroll-inertia.md",
+            "relative_path": "docs/decisions/0042-official-slider-input-and-scroll-inertia.md",
+            "sha256": "a60dd38a69870847058debc4c3276918973db4403bfff0034f642a5a4dbf2488"
+          },
+          {
+            "bytes": 3343,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\decisions\\0043-explicit-responsive-ui-layout.md",
+            "relative_path": "docs/decisions/0043-explicit-responsive-ui-layout.md",
+            "sha256": "a56d2899e9099d27d52086d5a5c3d968e9672bb995ba2dea885b20a15172021e"
+          },
+          {
+            "bytes": 23700,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\engine.d.luau",
+            "relative_path": "docs/engine.d.luau",
+            "sha256": "bf99e3dd2a84da0815bcfaa218e4c290472e21cafecd21282fbedd8da558832d"
+          },
+          {
+            "bytes": 9570,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\formal-ui-host.md",
+            "relative_path": "docs/formal-ui-host.md",
+            "sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9"
+          },
+          {
+            "bytes": 7642,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\project.schema.json",
+            "relative_path": "docs/project.schema.json",
+            "sha256": "35b3fd8d65bee76c42d6b6353cf7e95fdd1c1c6a13768b9666bf234838c0654e"
+          },
+          {
+            "bytes": 29599,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\ui-components.md",
+            "relative_path": "docs/ui-components.md",
+            "sha256": "ed9a198b5777c25b01213a2460b7dca6c74240837b8c5c58ee13ffd615cc39fe"
+          },
+          {
+            "bytes": 12375,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\ui-responsive.md",
+            "relative_path": "docs/ui-responsive.md",
+            "sha256": "670ab21cbd35be7dc5449b545be3dbd95923447be9e35c39750647870d1ac427"
+          },
+          {
+            "bytes": 17660,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\ui-scroll.md",
+            "relative_path": "docs/ui-scroll.md",
+            "sha256": "8500cc159a39f677321ec6b7ef77f16645cf17d1e27e8af611f2b430d6aebf4b"
+          },
+          {
+            "bytes": 5727,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\ui-slice-and-budget.md",
+            "relative_path": "docs/ui-slice-and-budget.md",
+            "sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55"
+          },
+          {
+            "bytes": 18292,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\ui-styling.md",
+            "relative_path": "docs/ui-styling.md",
+            "sha256": "8c44d2590af44232638b03c1d9a00602c48dcee7efa07fa6c52cb1094bb81880"
+          },
+          {
+            "bytes": 19682,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\docs\\ui.schema.json",
+            "relative_path": "docs/ui.schema.json",
+            "sha256": "80824b3d2411b5464208e35e4c6cf04a38d481bee25a729f6c26aaf6a128ca19"
+          },
+          {
+            "bytes": 9886,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\packages\\unone-ui\\README.md",
+            "relative_path": "packages/unone-ui/README.md",
+            "sha256": "c5ec492bacd08b34976abc79d3bf2c94204b1a46263e80253ca7a67fef6674a5"
+          },
+          {
+            "bytes": 186,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\packages\\unone-ui\\package.unone.json",
+            "relative_path": "packages/unone-ui/package.unone.json",
+            "sha256": "de5bb92db2f2f84333b1e6f4cefcdae353b87fe8113c87e6c59345faec1ecefd"
+          },
+          {
+            "bytes": 36001,
+            "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\packages\\unone-ui\\src\\components.luau",
+            "relative_path": "packages/unone-ui/src/components.luau",
+            "sha256": "bbbbf570b99d4eef5abb7d68d4047c9f918939ae1d493d775f3db9f39ec232d9"
+          }
+        ]
+      },
+      "runtimes": [
+        {
+          "descriptor": {
+            "cargo_features": [
+              "audio",
+              "camera2d",
+              "particle",
+              "random",
+              "ui"
+            ],
+            "compiled_systems": [
+              "audio",
+              "camera2d",
+              "input",
+              "observation",
+              "particle",
+              "random",
+              "ui",
+              "world"
+            ],
+            "dev_tools": false,
+            "emscripten": "3.1.74",
+            "exports": [
+              "init",
+              "alloc",
+              "load_project",
+              "set_save_payload",
+              "set_input_frame",
+              "set_viewport_aspect",
+              "set_instance_transport",
+              "tick",
+              "jobs_request",
+              "jobs_binary",
+              "ui_request",
+              "observation_ptr",
+              "observation_len"
+            ],
+            "javascript": "unone-player.js",
+            "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+            "preview_tools": false,
+            "profile": "release",
+            "runtime_packages": {
+              "@unone/ui": "0.4.0"
+            },
+            "rust": "1.95.0",
+            "source_commit": "074eca18cab0d2bb7f2655108b9427a72bfde44d",
+            "source_dirty": true,
+            "wasm": "unone_player.wasm",
+            "wasm_bytes": 1814349,
+            "wasm_sha256": "8df9e48d731f5b605b5898974b12ec78895427ca3bb3dc5b55bf67d4578b831f"
+          },
+          "evidence": "hash-verified declaration; not renderer execution",
+          "id": "web-production-0",
+          "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\runtimes\\web-production-0\\runtime.json",
+          "sha256": "d1b2a495cbb85b20b825b98f35166b957878a407691156873710b586711c52e9"
+        }
+      ],
+      "sdk_root": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final",
+      "templates": {
+        "files": [
+          {
+            "bytes": 11816,
+            "path": "templates/web/developer/api.js",
+            "sha256": "b2cf35e109daad233870e5b15cdcc0614f98eb96e9b4e1d90ccab6842ffcc236"
+          },
+          {
+            "bytes": 3479,
+            "path": "templates/web/developer/main.js",
+            "sha256": "af5fd4b1e7b43bd557ffb381ba9fa33725d5a0338deca9ad17425836aa347aa3"
+          },
+          {
+            "bytes": 9580,
+            "path": "templates/web/developer/panel.css",
+            "sha256": "21d3cb0544dc27a2b4bc96405cac4cef6427b484e89aa39bf74b06639d3b29aa"
+          },
+          {
+            "bytes": 36761,
+            "path": "templates/web/developer/panel.js",
+            "sha256": "e81dd68f4f852a328f03ed752e0760f5aae1abdf67c5db55fa7d22256109b117"
+          },
+          {
+            "bytes": 1083,
+            "path": "templates/web/player/index.html",
+            "sha256": "1b836256177d6cd8495c839dbcf251585a71bee5082d023a59f89a235cf681a3"
+          },
+          {
+            "bytes": 10941,
+            "path": "templates/web/player/main.js",
+            "sha256": "b01a30bdfdf252ae9045c116655a902d70fc32eab515fde7ad0200f4b8efc6f6"
+          },
+          {
+            "bytes": 7284,
+            "path": "templates/web/renderer/bloom.js",
+            "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+          },
+          {
+            "bytes": 2546,
+            "path": "templates/web/renderer/effekseer.js",
+            "sha256": "a9129aabc2794e0c15c580ddfde7dd2b90fea95c712e827e33de1e32af6afe4c"
+          },
+          {
+            "bytes": 5464,
+            "path": "templates/web/renderer/instances3d.js",
+            "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+          },
+          {
+            "bytes": 1348,
+            "path": "templates/web/renderer/mesh.js",
+            "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+          },
+          {
+            "bytes": 6207,
+            "path": "templates/web/renderer/particles.js",
+            "sha256": "57e65b72ef948dd32072d73c68fa7194226dc64493bae1fd9319388851da17f2"
+          },
+          {
+            "bytes": 4798,
+            "path": "templates/web/renderer/shader-materials.js",
+            "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+          },
+          {
+            "bytes": 15024,
+            "path": "templates/web/renderer/three.js",
+            "sha256": "d3b7b55043a40f61b79aaa90a59b483d0614b7d7cbc94a48fdbe6b3d9de0ad29"
+          },
+          {
+            "bytes": 1029,
+            "path": "templates/web/shared/asset-encoding.js",
+            "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+          },
+          {
+            "bytes": 1902,
+            "path": "templates/web/shared/async-scheduler.mjs",
+            "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+          },
+          {
+            "bytes": 9726,
+            "path": "templates/web/shared/audio-playback.js",
+            "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618"
+          },
+          {
+            "bytes": 12653,
+            "path": "templates/web/shared/canvas-ui.mjs",
+            "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+          },
+          {
+            "bytes": 11767,
+            "path": "templates/web/shared/fixed-step-scheduler.mjs",
+            "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+          },
+          {
+            "bytes": 5857,
+            "path": "templates/web/shared/host-input.js",
+            "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+          },
+          {
+            "bytes": 3147,
+            "path": "templates/web/shared/instance-transfer.mjs",
+            "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+          },
+          {
+            "bytes": 6407,
+            "path": "templates/web/shared/job-binary.mjs",
+            "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+          },
+          {
+            "bytes": 6787,
+            "path": "templates/web/shared/job-pool.mjs",
+            "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+          },
+          {
+            "bytes": 771,
+            "path": "templates/web/shared/job-worker.js",
+            "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+          },
+          {
+            "bytes": 1220,
+            "path": "templates/web/shared/load-project.js",
+            "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+          },
+          {
+            "bytes": 3700,
+            "path": "templates/web/shared/presentation-interpolation.mjs",
+            "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+          },
+          {
+            "bytes": 3162,
+            "path": "templates/web/shared/profile-window.js",
+            "sha256": "0c014e50f1450e63fe6a237e32eac0bcf95721d22b21c1415fa217100093c21e"
+          },
+          {
+            "bytes": 2638,
+            "path": "templates/web/shared/renderer-selection.mjs",
+            "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+          },
+          {
+            "bytes": 2506,
+            "path": "templates/web/shared/runtime-backend.mjs",
+            "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+          },
+          {
+            "bytes": 4849,
+            "path": "templates/web/shared/runtime-core.mjs",
+            "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+          },
+          {
+            "bytes": 1507,
+            "path": "templates/web/shared/runtime-worker.js",
+            "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+          },
+          {
+            "bytes": 315,
+            "path": "templates/web/shared/ui-contract.mjs",
+            "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+          },
+          {
+            "bytes": 4403,
+            "path": "templates/web/shared/ui-geometry.mjs",
+            "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+          },
+          {
+            "bytes": 18106,
+            "path": "templates/web/shared/ui-scroll.mjs",
+            "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+          },
+          {
+            "bytes": 9927,
+            "path": "templates/web/shared/ui-style.mjs",
+            "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+          },
+          {
+            "bytes": 7868,
+            "path": "templates/web/shared/ui-tree.js",
+            "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+          },
+          {
+            "bytes": 20074,
+            "path": "templates/web/shared/webgpu-snapshot.js",
+            "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+          },
+          {
+            "bytes": 1104,
+            "path": "templates/web/vendor/effekseer/LICENSE",
+            "sha256": "3bb9a8e1207233813ef7727bb39e4142494cb62e852d73e43390cbe81c45c149"
+          },
+          {
+            "bytes": 199689,
+            "path": "templates/web/vendor/effekseer/effekseer.js",
+            "sha256": "592327d692ea681a731efc7ddc874a3e86aaf0f4b719a0f66767d233c2fd867b"
+          },
+          {
+            "bytes": 1089618,
+            "path": "templates/web/vendor/effekseer/effekseer.wasm",
+            "sha256": "f9689b3721fc815e2d4b0fbcd6daedf9e0b307038d40a6c5b17c0037508ad686"
+          },
+          {
+            "bytes": 11548,
+            "path": "templates/web/vendor/rapier/LICENSE",
+            "sha256": "86ae51c591e742d80ce56823d35e2e176b53e38a99bd8499c85dae31ef4fe1f7"
+          },
+          {
+            "bytes": 1102,
+            "path": "templates/web/vendor/three/LICENSE",
+            "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+          },
+          {
+            "bytes": 492237,
+            "path": "templates/web/vendor/three/three.player.min.js",
+            "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+          }
+        ],
+        "path": "\\\\?\\D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\templates"
+      }
+    },
+    "targets": [
+      {
+        "decoders": [
+          "unone-mesh-json",
+          "png-rgb-rgba",
+          "image",
+          "audio",
+          "skfe-1500"
+        ],
+        "device_evidence": "browser-export",
+        "export_blocked_systems": [],
+        "exportable": true,
+        "family": "web-wasm",
+        "id": "web",
+        "note": "WASM plus JS player. player.presentation.json is this host's overlay.",
+        "packager": "web-directory",
+        "presentation": [
+          "mesh3d",
+          "instances3d",
+          "sprite",
+          "ui",
+          "audio",
+          "particle",
+          "shader_materials",
+          "spine",
+          "effekseer",
+          "bloom"
+        ],
+        "presentation_overlay_keys": [
+          "renderer_mode",
+          "renderer_module",
+          "renderer_files",
+          "ui",
+          "bloom",
+          "show_performance",
+          "runtime_backend",
+          "job_policy",
+          "interpolation",
+          "interpolate_instances"
+        ],
+        "renderer": "three-webgl",
+        "requires": [],
+        "runtime_blocked_systems": [],
+        "status": "supported",
+        "toolchain": "none"
+      },
+      {
+        "decoders": [
+          "unone-mesh-json",
+          "png-rgb-rgba",
+          "jpeg-rgba",
+          "webp-rgba",
+          "svg-static",
+          "audio-rodio"
+        ],
+        "device_evidence": "windows-vulkan",
+        "export_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "exportable": true,
+        "family": "native-wgpu",
+        "id": "windows",
+        "note": "Same Luau/assets as web. Native WGPU draws meshes, instances, 2D sprites, particles, non-DOM UI, Bloom and rodio/cpal audio; inspect the selected runtime descriptor for device availability. Export rejects spine/effekseer.",
+        "packager": "native-directory",
+        "presentation": [
+          "mesh3d",
+          "instances3d",
+          "sprite2d",
+          "particle",
+          "ui",
+          "audio",
+          "bloom"
+        ],
+        "presentation_overlay_keys": [
+          "renderer_mode",
+          "renderer_module",
+          "renderer_files",
+          "ui",
+          "bloom",
+          "show_performance",
+          "runtime_backend",
+          "job_policy",
+          "interpolation",
+          "interpolate_instances"
+        ],
+        "renderer": "wgpu-native-instanced",
+        "requires": [],
+        "runtime_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "status": "supported",
+        "toolchain": "none"
+      },
+      {
+        "decoders": [
+          "unone-mesh-json",
+          "png-rgb-rgba",
+          "jpeg-rgba",
+          "webp-rgba",
+          "svg-static",
+          "audio-rodio"
+        ],
+        "device_evidence": "bluestacks-x86_64",
+        "export_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "exportable": true,
+        "family": "native-wgpu",
+        "id": "android-x86_64",
+        "note": "wgpu NativeActivity. Not the WebView APK. Native WGPU draws meshes, instances, 2D sprites, particles, non-DOM UI, Bloom and rodio/cpal audio; physical arm64 evidence is separate.",
+        "packager": "native-activity-apk",
+        "presentation": [
+          "mesh3d",
+          "instances3d",
+          "sprite2d",
+          "particle",
+          "ui",
+          "audio",
+          "bloom"
+        ],
+        "presentation_overlay_keys": [
+          "renderer_mode",
+          "renderer_module",
+          "renderer_files",
+          "ui",
+          "bloom",
+          "show_performance",
+          "runtime_backend",
+          "job_policy",
+          "interpolation",
+          "interpolate_instances"
+        ],
+        "renderer": "wgpu-native-instanced",
+        "requires": [
+          "Android SDK",
+          "JDK",
+          "local test signing"
+        ],
+        "runtime_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "status": "supported",
+        "toolchain": "Android SDK, JDK"
+      },
+      {
+        "decoders": [
+          "unone-mesh-json",
+          "png-rgb-rgba",
+          "jpeg-rgba",
+          "webp-rgba",
+          "svg-static",
+          "audio-rodio"
+        ],
+        "device_evidence": "none",
+        "export_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "exportable": true,
+        "family": "native-wgpu",
+        "id": "android-arm64",
+        "note": "Packager exists. No physical arm64 device evidence. Inspect the selected runtime descriptor for UI/SVG/audio device availability.",
+        "packager": "native-activity-apk",
+        "presentation": [
+          "mesh3d",
+          "instances3d",
+          "sprite2d",
+          "particle",
+          "ui",
+          "audio",
+          "bloom"
+        ],
+        "presentation_overlay_keys": [
+          "renderer_mode",
+          "renderer_module",
+          "renderer_files",
+          "ui",
+          "bloom",
+          "show_performance",
+          "runtime_backend",
+          "job_policy",
+          "interpolation",
+          "interpolate_instances"
+        ],
+        "renderer": "wgpu-native-instanced",
+        "requires": [
+          "Android SDK",
+          "JDK",
+          "local test signing"
+        ],
+        "runtime_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "status": "supported",
+        "toolchain": "Android SDK, JDK"
+      },
+      {
+        "decoders": [
+          "unone-mesh-json",
+          "png-rgb-rgba",
+          "image",
+          "audio",
+          "skfe-1500"
+        ],
+        "device_evidence": "android-14-webview-137",
+        "export_blocked_systems": [],
+        "exportable": false,
+        "family": "webview-wraps-web",
+        "id": "android-webview",
+        "note": "Embeds a web export in System WebView. Not wgpu native. Export --target web first.",
+        "packager": "scripts/build-android-player.ps1",
+        "presentation": [
+          "mesh3d",
+          "instances3d",
+          "sprite",
+          "ui",
+          "audio",
+          "particle",
+          "spine",
+          "effekseer",
+          "bloom"
+        ],
+        "presentation_overlay_keys": [
+          "renderer_mode",
+          "renderer_module",
+          "renderer_files",
+          "ui",
+          "bloom",
+          "show_performance",
+          "runtime_backend",
+          "job_policy",
+          "interpolation",
+          "interpolate_instances"
+        ],
+        "renderer": "system-webview",
+        "requires": [
+          "Android SDK",
+          "JDK",
+          "web export directory"
+        ],
+        "runtime_blocked_systems": [],
+        "status": "wraps_web",
+        "toolchain": "Android SDK, JDK"
+      },
+      {
+        "decoders": [],
+        "device_evidence": "none",
+        "export_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "exportable": false,
+        "family": "native-wgpu",
+        "id": "ios",
+        "note": "ABI exists. No host, packager, or device evidence.",
+        "packager": "none",
+        "presentation": [],
+        "presentation_overlay_keys": [
+          "renderer_mode",
+          "renderer_module",
+          "renderer_files",
+          "ui",
+          "bloom",
+          "show_performance",
+          "runtime_backend",
+          "job_policy",
+          "interpolation",
+          "interpolate_instances"
+        ],
+        "renderer": null,
+        "requires": [
+          "iOS runtime",
+          "Xcode/macOS",
+          "signing"
+        ],
+        "runtime_blocked_systems": [
+          "spine",
+          "effekseer"
+        ],
+        "status": "not_implemented",
+        "toolchain": "Xcode/macOS"
+      }
+    ],
+    "verified": true,
+    "version": 1
+  },
+  "diagnostics": [],
+  "effects": []
+}

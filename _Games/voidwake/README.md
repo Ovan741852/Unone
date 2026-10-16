@@ -17,11 +17,24 @@ GPU context, or copied player runtime.
 The source checkout requires Rust, Node.js 22+, PowerShell, the Web toolchain
 described in [platform toolchain](../../docs/platform-toolchain.md), and Binaryen.
 The generated player and compiler outputs are intentionally ignored by Git.
-The project points to a generated bundle manifest under `.unone/bundles/`;
-`export.ps1` prepares it with the official CLI. Generated manifests and content
+The project points to a generated bundle manifest under `bundles/`;
+the official `project prepare` workflow synchronizes it. `export.ps1` can also
+prepare a local `.unone/bundles/` manifest for a source build. Generated manifests and content
 archives are local build products and are not checked in.
 
 From the repository root:
+
+With a matching portable official SDK, no engine rebuild is needed for game
+changes. Compose the entry, prepare a production player, and serve the export:
+
+```powershell
+$Sdk = '/path/to/unone-sdk'
+node _Games/voidwake/tools/compose-game.mjs
+& "$Sdk/bin/game.exe" --sdk $Sdk --project _Games/voidwake project prepare --target web --output _Games/voidwake/dist/player --json
+python "$Sdk/scripts/serve-player.py" --directory _Games/voidwake/dist/player --port 8341
+```
+
+For a source-checkout build:
 
 ```powershell
 cargo build -p unone-cli
@@ -53,24 +66,69 @@ and UI fragments. Edit these source files and compose the checked-in entry point
 ```powershell
 ./target/debug/game.exe --project _Games/voidwake api typings --update-script gameplay.luau
 node _Games/voidwake/tools/compose-game.mjs
-./target/debug/game.exe --project _Games/voidwake bundle pack --output .unone/bundles/manifest.json --json
-./target/debug/game.exe --project _Games/voidwake verify --json
+./target/debug/game.exe --project _Games/voidwake project sync --json
 ```
 
 The safe type refresh updates only the marked canonical contract in
 `gameplay.luau`; project types and logic stay outside that block. Compose afterward
-to refresh the generated entry point. `export.ps1` composes and prepares source
-bundles before exporting. The replay
+to refresh the generated entry point. `project sync` runs the normal verification
+gates and updates the configured source bundle; `export.ps1` also composes and
+prepares source bundles before exporting. The replay
 tests and four UI previews cover the menu, flight HUD, pause screen and upgrade selection. The overlap policy
 explicitly names decorative background layers; it does not waive overlapping
 controls or text. Visual layout choices belong to `ui.fragment.luau`, using the
 shared [UI styling API](../../docs/ui-styling.md) and existing semantic components.
 The [official package contract](../../docs/ui-components.md) documents the exact
 `runtime_packages` declaration and SDK/runtime compatibility checks. The package
-constructs the existing tree while retaining type sizes, colors, positions,
+constructs the existing tree while retaining type sizes, colors, desktop positions,
 IDs, action meanings and child order; project factories still own the
 mission introduction, vessel card, stat bars and upgrade cards. Decorative
 background leaves keep their existing IDs and overlap policies.
+
+## Responsive layout and effects
+
+The View retains official `createResponsiveLayout` models for the frame, menu,
+telemetry, instruments, dialogs, upgrade grid and touch controls. Each model
+selects the authored portrait, intermediate or desktop variant at aspect
+thresholds `0`, `0.85` and `1.4`. Named slots, rows, columns and grids own region
+allocation; typography, copy and optional panels remain explicit game choices.
+`resolveVoidwakeUi` supplies the same authored showcase values to the View and
+presentation. Portrait gives the ship its own menu region, stacks upgrades,
+and exposes touch steering and abilities. No viewport geometry is applied by
+a project renderer or DOM overlay.
+
+The official native declarative particle system supplies directional engine
+plumes, afterburners, projectile tracers, hit sparks, blast debris, embers and
+delayed smoke. Ship materials, shield ripples, short dash echoes, the graded
+nebula and brief blast/EMP accents use the engine Shader API and official Bloom.
+Presentation reads simulation state and uses its own visual seed sequence;
+it never consumes gameplay RNG. Fixed sprite/material pools and conservative
+particle reservations bound presentation work. `presentation` observations
+report actual native budgets, dropped decorative plays and effect counters.
+
+The two new ImageGen PNGs are single transparent images, not Sprite Sheets.
+The fireball accent lasts 12 presentation frames; independently moving native
+debris and embers outlive it. The wave front uses a separate image through the
+engine Shader API, accompanied by native flashes and independently moving
+sparks. This example does not claim texture-atlas or Flipbook particle
+support. Pausing freezes gameplay while transient presentation effects drain;
+it does not continually retrigger the same explosion or ability.
+
+The geometry regression executes the actual official package and game View
+across all authored variants and phases. The browser regression drives physical
+inputs against an exported production player, inspects observations and real
+WebGL draws, and saves screenshots. It does not inject gameplay state:
+
+```powershell
+node _Games/voidwake/tests/responsive-layout.mjs
+# Install Playwright or set UNONE_PLAYWRIGHT_MODULE to its installed module.
+node _Games/voidwake/tests/verify-responsive-fx.cjs
+```
+
+Set `VOIDWAKE_QA_URL`, `VOIDWAKE_QA_EXPORT` and `VOIDWAKE_QA_OUT` to select another
+served export and evidence directory. Browser tests cover desktop 1440×900,
+intermediate 1020×884, portrait 390×844 and live resizing. These are browser
+viewport checks, not claims of verification on physical mobile hardware.
 
 After exporting, the real-browser acceptance plan exercises pointer/keyboard
 actions at desktop, intermediate and portrait sizes and audits the packaged

@@ -1,0 +1,229 @@
+{
+  "schema": "unone.voidwake-build-validation.v1",
+  "native_checks": [
+    {
+      "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\test-json-numeric-roundtrip.txt",
+      "elapsed_seconds": 128.6741918,
+      "name": "test-json-numeric-roundtrip",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "-p",
+        "unone-engine",
+        "--release",
+        "--test",
+        "json_numeric_roundtrip"
+      ],
+      "started_at": "2026-10-16T08:03:58.0753706Z"
+    },
+    {
+      "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\test-web-publication-roundtrip.txt",
+      "elapsed_seconds": 86.5368007,
+      "name": "test-web-publication-roundtrip",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "-p",
+        "unone-web-live-smoke",
+        "--release",
+        "web_publication_preserves_binary64_through_instance_envelope"
+      ],
+      "started_at": "2026-10-16T08:06:06.7831378Z"
+    },
+    {
+      "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\workspace-tests.txt",
+      "elapsed_seconds": 290.2847079,
+      "name": "workspace-tests",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--workspace",
+        "--release"
+      ],
+      "started_at": "2026-10-16T08:07:33.3244469Z"
+    },
+    {
+      "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\clippy.txt",
+      "elapsed_seconds": 58.9145246,
+      "name": "clippy",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--release",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_at": "2026-10-16T08:12:23.6112655Z"
+    },
+    {
+      "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\build-cli.txt",
+      "elapsed_seconds": 3.5579361,
+      "name": "build-cli",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "build",
+        "-p",
+        "unone-cli",
+        "--release"
+      ],
+      "started_at": "2026-10-16T08:13:22.5276138Z"
+    }
+  ],
+  "workspace_test_counts": {
+    "passed": 490,
+    "failed": 0,
+    "ignored": 3,
+    "test_binaries": 25
+  },
+  "production_wasm": {
+    "exit_code": 0,
+    "command": [
+      "powershell",
+      "-File",
+      "artifacts/voidwake-responsive-fx/build/build-web-runtime.ps1"
+    ],
+    "log": "build-web-runtime.txt",
+    "runtime": {
+      "source_commit": "074eca18cab0d2bb7f2655108b9427a72bfde44d",
+      "runtime_packages": {
+        "@unone/ui": "0.4.0"
+      },
+      "javascript": "unone-player.js",
+      "profile": "release",
+      "dev_tools": false,
+      "exports": [
+        "init",
+        "alloc",
+        "load_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_instance_transport",
+        "tick",
+        "jobs_request",
+        "jobs_binary",
+        "ui_request",
+        "observation_ptr",
+        "observation_len"
+      ],
+      "wasm": "unone_player.wasm",
+      "wasm_sha256": "8df9e48d731f5b605b5898974b12ec78895427ca3bb3dc5b55bf67d4578b831f",
+      "emscripten": "3.1.74",
+      "preview_tools": false,
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "ui",
+        "world"
+      ],
+      "cargo_features": [
+        "audio",
+        "camera2d",
+        "particle",
+        "random",
+        "ui"
+      ],
+      "rust": "1.95.0",
+      "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+      "source_dirty": true,
+      "wasm_bytes": 1814349
+    },
+    "inherited_reduced_feature_warnings": 17
+  },
+  "production_abi": {
+    "production": true,
+    "declared_preview_tools": false,
+    "requested_exports": [
+      "unone_web_alloc",
+      "unone_web_init",
+      "unone_web_jobs_binary",
+      "unone_web_jobs_request",
+      "unone_web_load_project",
+      "unone_web_observation_len",
+      "unone_web_observation_ptr",
+      "unone_web_set_input_frame",
+      "unone_web_set_instance_transport",
+      "unone_web_set_save_payload",
+      "unone_web_set_viewport_aspect",
+      "unone_web_tick",
+      "unone_web_ui_request"
+    ],
+    "actual_exports": [
+      "unone_web_alloc",
+      "unone_web_init",
+      "unone_web_jobs_binary",
+      "unone_web_jobs_request",
+      "unone_web_load_project",
+      "unone_web_observation_len",
+      "unone_web_observation_ptr",
+      "unone_web_set_input_frame",
+      "unone_web_set_instance_transport",
+      "unone_web_set_pointer",
+      "unone_web_set_save_payload",
+      "unone_web_set_screen_pointer",
+      "unone_web_set_viewport_aspect",
+      "unone_web_tick",
+      "unone_web_ui_request"
+    ],
+    "actual_export_count": 15,
+    "existing_compatibility_exports": [
+      "unone_web_set_pointer",
+      "unone_web_set_screen_pointer"
+    ],
+    "matches_frozen_previous_abi": true,
+    "has_developer_request": false,
+    "sha256_matches": true
+  },
+  "sdk": {
+    "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+    "preserved_responsive_sdk_cli_sha256": "8b200e78c6d4bc65cbd335369c7ce18f61e800fa5cdbbe5f8be934c5ff00e083",
+    "runtime_packages": {
+      "@unone/ui": "0.4.0"
+    },
+    "cli": "D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\bin\\game.exe",
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "ui",
+      "world"
+    ],
+    "sdk": "D:/TSProject/UnoneVoidwake-20261016/sdk-final",
+    "preserved_responsive_sdk_wasm_sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da",
+    "source_inventory_count": 17,
+    "cli_sha256": "d2e8322f3f116e91c771087b0e3b1d07fd81e9382a0a342eecefdfc5abf55634",
+    "compiled_cli_sha256": "d2e8322f3f116e91c771087b0e3b1d07fd81e9382a0a342eecefdfc5abf55634",
+    "wasm_sha256": "8df9e48d731f5b605b5898974b12ec78895427ca3bb3dc5b55bf67d4578b831f"
+  },
+  "sdk_inventory": {
+    "verified": 68,
+    "failed": 0,
+    "record": "sdk-inventory-verification.json"
+  },
+  "shared_source_parity": {
+    "verified": 17,
+    "failed": 0,
+    "record": "sdk-source-verification.json"
+  },
+  "scope": "Build and metadata validation; actual exported game replay parity and browser rendering remain root-owned gates"
+}

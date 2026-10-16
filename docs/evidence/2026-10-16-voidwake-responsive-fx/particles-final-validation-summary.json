@@ -1,0 +1,11 @@
+{
+  "cli": "D:/TSProject/UnoneVoidwake-20261016/sdk-final/bin/game.exe",
+  "scene_sha256": "438ed532d84bc70ad37d284f79607c3909b0f6cedce590cba3a8261c3ce096ca",
+  "definitions_passed": 61,
+  "time_samples_passed": 16,
+  "direction_definitions": 48,
+  "direction_samples": 672,
+  "front_samples": 0,
+  "shader_materials": 59,
+  "effects": 61
+}

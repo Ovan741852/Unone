@@ -2,6 +2,18 @@
   "version": 1,
   "assets": [
     {
+      "id": "texture://voidwake/plasma_shockwave",
+      "kind": "texture2d",
+      "source": "assets/plasma-shockwave.png",
+      "bundle": "content"
+    },
+    {
+      "id": "texture://voidwake/impact_explosion",
+      "kind": "texture2d",
+      "source": "assets/impact-explosion.png",
+      "bundle": "content"
+    },
+    {
       "id": "texture://voidwake/nebula",
       "kind": "texture2d",
       "source": "assets/nebula.png",

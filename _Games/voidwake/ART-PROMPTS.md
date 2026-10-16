@@ -123,6 +123,30 @@ real UI text placed over this generated PNG.
 Use case: ui-mockup. Asset type: a single production game UI blank panel texture PNG for a realistic top-down deep-space spaceship roguelike, to be used behind real text in the official engine. Generate exactly ONE flat rectangular panel filling the entire image, landscape aspect about 3:2, front orthographic, no perspective. Extremely dark midnight blue-black matte aerospace composite interior, softly translucent-looking smoky glass but opaque output, subtle fine realistic metal grain, very thin muted warm amber/brass perimeter hairline inset 2 percent, small precise mechanical clipped corners, sparse tiny serial ticks ONLY near corners, subtle dim cyan ambient rim on right. Center 85 percent is perfectly quiet uniform dark blank negative space for UI text. Elegant restrained sci-fi NASA industrial typography aesthetic but absolutely NO letters, NO words, NO numbers, NO logos, NO icons, NO pictures, NO ships, NO decorative busy grids, NO drop shadow outside panel, NO watermark. All edges fully visible and aligned, fill entire image with panel, realistic material, not cartoon. This will be stretched behind game menu/HUD/cards.
 ```
 
+### plasma-shockwave.png (responsive combat polish)
+
+Tool: built-in `image_gen.imagegen`; `transparent_background: true`.
+Original: `C:/Users/maverickchiu/.codex/generated_images/01a13ea6-e5f4-7103-a54c-bda6e9ac57ee/exec-d4960ac9-b49c-47a9-a326-cb8f754ffcec.png`.
+Final project path: `assets/plasma-shockwave.png`.
+Validation: RGBA, 1254 x 1254, alpha range 0..254, transparent corners.
+This is a single transparent accent sprite, not an atlas or a flipbook.
+
+```text
+Use case: stylized-concept. Asset type: production transparent PNG VFX sprite for a realistic top-down 2D space combat game. Generate ONE isolated circular cyan-white plasma shockwave seen exactly orthographically from above, centered on a square canvas with comfortable transparent margins. A thin luminous irregular electromagnetic ring, realistic hot ionized gas filaments, wispy radial vapor and a few tiny outward sparks, bright white-blue leading edge with pale cyan falloff. The center is almost entirely transparent, the outside is genuinely transparent alpha. Precise circular overhead footprint, no perspective ellipse, no ground, no environment, no spacecraft, no text, no interface, no watermark, no checkerboard. Premium cinematic science-fiction game effect, photographic volumetric detail, restrained believable light, not cartoon, not vector. Keep energetic detail close to the ring, do not fill the entire canvas with an opaque glow. Smooth alpha falloff around filaments, genuinely transparent background.
+```
+
+### impact-explosion.png (responsive combat polish)
+
+Tool: built-in `image_gen.imagegen`; `transparent_background: true`.
+Original: `C:/Users/maverickchiu/.codex/generated_images/01a13ea6-e5f4-7103-a54c-bda6e9ac57ee/exec-1057fc09-b07c-4181-9999-347071cf576a.png`.
+Final project path: `assets/impact-explosion.png`.
+Validation: RGBA, 1254 x 1254, alpha range 0..255, transparent corners.
+This is a short fireball accent over independently simulated particles.
+
+```text
+Use case: stylized-concept. Asset type: production transparent PNG explosion sprite for a realistic top-down 2D space combat game. Generate ONE isolated compact spacecraft explosion viewed exactly orthographically from above, centered square canvas, the whole event inside with clear transparent margins. Photorealistic high-speed VFX photography of hot white core, luminous amber-orange turbulent fire curls, a few sharp metallic glowing fragments flying radially, dark charcoal wisps of smoke around the periphery with transparent alpha between them. Rounded asymmetric radial footprint, rich finely detailed hot gas with readable central silhouette at small sprite scale, premium commercial cinematic game visual effects. No spaceship or whole hull, no floor, no environment, no perspective, no mushroom cloud, no logo, no text, no UI, no watermark, no checkerboard, no cartoon or illustration, no opaque black backdrop. Real alpha transparency around effect and soft partly transparent outer smoke. Restrained fine debris instead of a cluttered starburst.
+```
+
 ### explosion.png
 
 Tool: `image_gen.imagegen`; `transparent_background: true`.

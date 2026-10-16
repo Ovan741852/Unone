@@ -384,463 +384,252 @@
       "uniforms": {}
     },
     "detonation_01": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_02": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_03": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_04": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_05": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_06": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_07": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_08": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_09": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_10": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_11": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_12": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_13": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_14": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_15": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
       }
     },
     "detonation_16": {
-      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return vec4(color.rgb * (1.0 + heat * 0.35), color.a * opacity); }",
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n float turn = age * 0.14;\n float c = cos(turn);\n float s = sin(turn);\n vec2 flow = vec2(sin(q.y * 17.0 + age * 9.0), cos(q.x * 15.0 - age * 7.0));\n vec2 evolving = mat2(c, s, -s, c) * q * (1.0 - age * 0.065) + flow * age * 0.016;\n color = texture2D(unone_texture, evolving + vec2(0.5));\n float brightness = max(color.r, max(color.g, color.b));\n vec3 cooled = color.rgb * vec3(0.62, 0.36, 0.22);\n vec3 heated = color.rgb * (1.0 + heat * 0.95) + vec3(0.42, 0.22, 0.05) * heat * brightness;\n return vec4(mix(cooled, heated, heat), color.a * opacity);\n}",
       "uniforms": {
         "opacity": 1,
-        "heat": 1
+        "heat": 1,
+        "age": 0
+      }
+    },
+    "plasma_wave_01": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n vec2 tangent = vec2(-q.y, q.x);\n vec2 drift = tangent * sin(dot(q, vec2(13.0, 9.0)) - age * 10.0) * age * 0.09;\n color = texture2D(unone_texture, uv + drift);\n float radius = length((uv - vec2(0.5)) * 2.0);\n float rim = smoothstep(0.58, 0.76, radius) * (1.0 - smoothstep(0.85, 1.0, radius));\n float detail = 0.88 + 0.12 * sin(radius * 44.0 - age * 11.0);\n vec3 lit = color.rgb * tint * (0.9 + energy * 1.1) * detail;\n float detailAlpha = smoothstep(0.12, 0.60, max(color.r, max(color.g, color.b)));\n return vec4(lit, color.a * opacity * rim * detailAlpha);\n}",
+      "uniforms": {
+        "opacity": 0,
+        "energy": 0,
+        "age": 0,
+        "tint": [
+          0.3,
+          0.75,
+          1
+        ]
+      }
+    },
+    "plasma_wave_02": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n vec2 tangent = vec2(-q.y, q.x);\n vec2 drift = tangent * sin(dot(q, vec2(13.0, 9.0)) - age * 10.0) * age * 0.09;\n color = texture2D(unone_texture, uv + drift);\n float radius = length((uv - vec2(0.5)) * 2.0);\n float rim = smoothstep(0.58, 0.76, radius) * (1.0 - smoothstep(0.85, 1.0, radius));\n float detail = 0.88 + 0.12 * sin(radius * 44.0 - age * 11.0);\n vec3 lit = color.rgb * tint * (0.9 + energy * 1.1) * detail;\n float detailAlpha = smoothstep(0.12, 0.60, max(color.r, max(color.g, color.b)));\n return vec4(lit, color.a * opacity * rim * detailAlpha);\n}",
+      "uniforms": {
+        "opacity": 0,
+        "energy": 0,
+        "age": 0,
+        "tint": [
+          0.3,
+          0.75,
+          1
+        ]
+      }
+    },
+    "plasma_wave_03": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n vec2 tangent = vec2(-q.y, q.x);\n vec2 drift = tangent * sin(dot(q, vec2(13.0, 9.0)) - age * 10.0) * age * 0.09;\n color = texture2D(unone_texture, uv + drift);\n float radius = length((uv - vec2(0.5)) * 2.0);\n float rim = smoothstep(0.58, 0.76, radius) * (1.0 - smoothstep(0.85, 1.0, radius));\n float detail = 0.88 + 0.12 * sin(radius * 44.0 - age * 11.0);\n vec3 lit = color.rgb * tint * (0.9 + energy * 1.1) * detail;\n float detailAlpha = smoothstep(0.12, 0.60, max(color.r, max(color.g, color.b)));\n return vec4(lit, color.a * opacity * rim * detailAlpha);\n}",
+      "uniforms": {
+        "opacity": 0,
+        "energy": 0,
+        "age": 0,
+        "tint": [
+          0.3,
+          0.75,
+          1
+        ]
+      }
+    },
+    "plasma_wave_04": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n vec2 tangent = vec2(-q.y, q.x);\n vec2 drift = tangent * sin(dot(q, vec2(13.0, 9.0)) - age * 10.0) * age * 0.09;\n color = texture2D(unone_texture, uv + drift);\n float radius = length((uv - vec2(0.5)) * 2.0);\n float rim = smoothstep(0.58, 0.76, radius) * (1.0 - smoothstep(0.85, 1.0, radius));\n float detail = 0.88 + 0.12 * sin(radius * 44.0 - age * 11.0);\n vec3 lit = color.rgb * tint * (0.9 + energy * 1.1) * detail;\n float detailAlpha = smoothstep(0.12, 0.60, max(color.r, max(color.g, color.b)));\n return vec4(lit, color.a * opacity * rim * detailAlpha);\n}",
+      "uniforms": {
+        "opacity": 0,
+        "energy": 0,
+        "age": 0,
+        "tint": [
+          0.3,
+          0.75,
+          1
+        ]
+      }
+    },
+    "plasma_wave_05": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n vec2 tangent = vec2(-q.y, q.x);\n vec2 drift = tangent * sin(dot(q, vec2(13.0, 9.0)) - age * 10.0) * age * 0.09;\n color = texture2D(unone_texture, uv + drift);\n float radius = length((uv - vec2(0.5)) * 2.0);\n float rim = smoothstep(0.58, 0.76, radius) * (1.0 - smoothstep(0.85, 1.0, radius));\n float detail = 0.88 + 0.12 * sin(radius * 44.0 - age * 11.0);\n vec3 lit = color.rgb * tint * (0.9 + energy * 1.1) * detail;\n float detailAlpha = smoothstep(0.12, 0.60, max(color.r, max(color.g, color.b)));\n return vec4(lit, color.a * opacity * rim * detailAlpha);\n}",
+      "uniforms": {
+        "opacity": 0,
+        "energy": 0,
+        "age": 0,
+        "tint": [
+          0.3,
+          0.75,
+          1
+        ]
+      }
+    },
+    "plasma_wave_06": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = uv - vec2(0.5);\n vec2 tangent = vec2(-q.y, q.x);\n vec2 drift = tangent * sin(dot(q, vec2(13.0, 9.0)) - age * 10.0) * age * 0.09;\n color = texture2D(unone_texture, uv + drift);\n float radius = length((uv - vec2(0.5)) * 2.0);\n float rim = smoothstep(0.58, 0.76, radius) * (1.0 - smoothstep(0.85, 1.0, radius));\n float detail = 0.88 + 0.12 * sin(radius * 44.0 - age * 11.0);\n vec3 lit = color.rgb * tint * (0.9 + energy * 1.1) * detail;\n float detailAlpha = smoothstep(0.12, 0.60, max(color.r, max(color.g, color.b)));\n return vec4(lit, color.a * opacity * rim * detailAlpha);\n}",
+      "uniforms": {
+        "opacity": 0,
+        "energy": 0,
+        "age": 0,
+        "tint": [
+          0.3,
+          0.75,
+          1
+        ]
+      }
+    },
+    "player_shield_ripple": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n vec2 q = (uv - vec2(0.5)) * 2.0;\n color = texture2D(unone_texture, uv + q * sin(length(q) * 22.0 - pulse * 9.0) * (1.0 - pulse) * 0.009);\n float radius = length(q);\n float sweep = 0.58 + 0.42 * pow(max(0.0, dot(normalize(q + vec2(0.0001)), impactDirection)), 3.0);\n float aperture = smoothstep(0.25, 0.7, radius) * (1.0 - smoothstep(0.9, 1.0, radius));\n vec3 light = color.rgb * tint * (1.2 + pulse * 1.6);\n return vec4(light, color.a * aperture * sweep * pulse * 0.78);\n}",
+      "uniforms": {
+        "pulse": 0,
+        "tint": [
+          0.25,
+          0.7,
+          1
+        ],
+        "impactDirection": [
+          0,
+          1
+        ]
+      }
+    },
+    "phase_echo_01": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float scan = 0.8 + 0.2 * sin(uv.y * 90.0 + unone_time * 12.0);\n return vec4(mix(color.rgb * 0.45, vec3(0.15, 0.52, 0.85), 0.68), color.a * opacity * scan);\n}",
+      "uniforms": {
+        "opacity": 0
+      }
+    },
+    "phase_echo_02": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float scan = 0.8 + 0.2 * sin(uv.y * 90.0 + unone_time * 12.0);\n return vec4(mix(color.rgb * 0.45, vec3(0.15, 0.52, 0.85), 0.68), color.a * opacity * scan);\n}",
+      "uniforms": {
+        "opacity": 0
+      }
+    },
+    "phase_echo_03": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float scan = 0.8 + 0.2 * sin(uv.y * 90.0 + unone_time * 12.0);\n return vec4(mix(color.rgb * 0.45, vec3(0.15, 0.52, 0.85), 0.68), color.a * opacity * scan);\n}",
+      "uniforms": {
+        "opacity": 0
+      }
+    },
+    "phase_echo_04": {
+      "fragment": "vec4 unoneShade(vec2 uv, vec4 color) {\n float scan = 0.8 + 0.2 * sin(uv.y * 90.0 + unone_time * 12.0);\n return vec4(mix(color.rgb * 0.45, vec3(0.15, 0.52, 0.85), 0.68), color.a * opacity * scan);\n}",
+      "uniforms": {
+        "opacity": 0
       }
     }
   },
   "particle_effects": {
-    "ion_exhaust_0": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": 0,
-            "y": -1,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
-    "ion_exhaust_1": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": -0.707107,
-            "y": -0.707107,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
-    "ion_exhaust_2": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": -1,
-            "y": 0,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
-    "ion_exhaust_3": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": -0.707107,
-            "y": 0.707107,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
-    "ion_exhaust_4": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": 0,
-            "y": 1,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
-    "ion_exhaust_5": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": 0.707107,
-            "y": 0.707107,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
-    "ion_exhaust_6": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": 1,
-            "y": 0,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
-    "ion_exhaust_7": {
-      "version": 1,
-      "duration_frames": 30,
-      "emitters": [
-        {
-          "id": "ion",
-          "count": 1,
-          "interval_frames": 2,
-          "lifetime_frames": 17,
-          "size_start": 10,
-          "size_end": 0.3,
-          "color_start": [
-            0.35,
-            0.85,
-            1,
-            0.85
-          ],
-          "color_end": [
-            0.02,
-            0.18,
-            0.7,
-            0
-          ],
-          "additive": true,
-          "spread": {
-            "x": 0.8,
-            "y": 0.8,
-            "z": 0
-          },
-          "velocity_mode": "cone",
-          "direction": {
-            "x": 0.707107,
-            "y": -0.707107,
-            "z": 0
-          },
-          "cone_angle_degrees": 12,
-          "speed_min": 65,
-          "speed_max": 105,
-          "sprite_shape": "soft_circle",
-          "size_easing": "ease_out"
-        }
-      ]
-    },
     "rail_bolts": {
       "version": 1,
       "duration_frames": 1,
@@ -1105,108 +894,125 @@
           "id": "initial_flash",
           "count": 1,
           "interval_frames": 999,
-          "lifetime_frames": 9,
-          "size_start": 55,
-          "size_end": 0,
+          "lifetime_frames": 5,
+          "size_start": 65,
+          "size_end": 0.1,
           "color_start": [
             1,
-            0.85,
-            0.58,
-            1
+            0.9,
+            0.7,
+            0.95
           ],
           "color_end": [
-            1,
-            0.3,
-            0.03,
-            0
-          ],
-          "additive": true
-        },
-        {
-          "id": "pressure_wave",
-          "count": 1,
-          "interval_frames": 999,
-          "lifetime_frames": 26,
-          "size_start": 18,
-          "size_end": 150,
-          "color_start": [
-            1,
-            0.47,
-            0.1,
-            0.5
-          ],
-          "color_end": [
-            0.6,
-            0.08,
-            0.01,
+            0.16,
+            0.18000000000000002,
+            0.24499999999999997,
             0
           ],
           "additive": true,
-          "sprite_shape": "ring",
-          "size_easing": "ease_out"
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step"
         },
         {
-          "id": "hot_fragments",
-          "count": 28,
-          "interval_frames": 999,
-          "lifetime_frames": 32,
-          "size_start": 7,
-          "size_end": 0.4,
-          "color_start": [
-            1,
-            0.75,
-            0.25,
-            1
-          ],
-          "color_end": [
-            1,
-            0.06,
-            0.01,
-            0
-          ],
-          "additive": true,
-          "velocity_min": {
-            "x": -170,
-            "y": -170,
-            "z": 0
-          },
-          "velocity_max": {
-            "x": 170,
-            "y": 170,
-            "z": 0
-          },
-          "sprite_shape": "streak",
-          "angular_velocity": 3
-        },
-        {
-          "id": "afterburn",
+          "id": "metal_shrapnel",
           "count": 18,
           "interval_frames": 999,
-          "lifetime_frames": 43,
-          "size_start": 4,
-          "size_end": 0.3,
+          "lifetime_frames": 33,
+          "size_start": 5,
+          "size_end": 0.2,
           "color_start": [
             1,
-            0.38,
-            0.03,
-            0.8
+            0.65,
+            0.22,
+            0.95
           ],
           "color_end": [
-            0.5,
-            0.01,
-            0.005,
+            0.16,
+            0.13,
+            0.077,
             0
           ],
           "additive": true,
-          "start_delay_frames": 6,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "angular_velocity": 2.2,
           "velocity_min": {
-            "x": -85,
-            "y": -85,
+            "x": -210,
+            "y": -210,
             "z": 0
           },
           "velocity_max": {
-            "x": 85,
-            "y": 85,
+            "x": 210,
+            "y": 210,
+            "z": 0
+          }
+        },
+        {
+          "id": "cooling_embers",
+          "count": 14,
+          "interval_frames": 999,
+          "lifetime_frames": 51,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            1,
+            0.3,
+            0.04,
+            0.75
+          ],
+          "color_end": [
+            0.16,
+            0.06,
+            0.013999999999999999,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "start_delay_frames": 4,
+          "velocity_min": {
+            "x": -95,
+            "y": -95,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 95,
+            "y": 95,
+            "z": 0
+          }
+        },
+        {
+          "id": "residual_smoke",
+          "count": 6,
+          "interval_frames": 999,
+          "lifetime_frames": 61,
+          "size_start": 10,
+          "size_end": 18,
+          "color_start": [
+            0.13,
+            0.13,
+            0.13,
+            0.19
+          ],
+          "color_end": [
+            0.06,
+            0.06,
+            0.06,
+            0
+          ],
+          "additive": false,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "start_delay_frames": 6,
+          "velocity_min": {
+            "x": -38,
+            "y": -38,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 38,
+            "y": 38,
             "z": 0
           }
         }
@@ -1220,108 +1026,125 @@
           "id": "initial_flash",
           "count": 1,
           "interval_frames": 999,
-          "lifetime_frames": 9,
-          "size_start": 132,
-          "size_end": 0,
+          "lifetime_frames": 5,
+          "size_start": 136.5,
+          "size_end": 0.1,
           "color_start": [
             1,
-            0.85,
-            0.58,
-            1
+            0.9,
+            0.7,
+            0.95
           ],
           "color_end": [
-            1,
-            0.3,
-            0.03,
-            0
-          ],
-          "additive": true
-        },
-        {
-          "id": "pressure_wave",
-          "count": 1,
-          "interval_frames": 999,
-          "lifetime_frames": 26,
-          "size_start": 43.199999999999996,
-          "size_end": 360,
-          "color_start": [
-            1,
-            0.47,
-            0.1,
-            0.5
-          ],
-          "color_end": [
-            0.6,
-            0.08,
-            0.01,
+            0.16,
+            0.18000000000000002,
+            0.24499999999999997,
             0
           ],
           "additive": true,
-          "sprite_shape": "ring",
-          "size_easing": "ease_out"
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step"
         },
         {
-          "id": "hot_fragments",
-          "count": 28,
-          "interval_frames": 999,
-          "lifetime_frames": 32,
-          "size_start": 16.8,
-          "size_end": 0.4,
-          "color_start": [
-            1,
-            0.75,
-            0.25,
-            1
-          ],
-          "color_end": [
-            1,
-            0.06,
-            0.01,
-            0
-          ],
-          "additive": true,
-          "velocity_min": {
-            "x": -408,
-            "y": -408,
-            "z": 0
-          },
-          "velocity_max": {
-            "x": 408,
-            "y": 408,
-            "z": 0
-          },
-          "sprite_shape": "streak",
-          "angular_velocity": 3
-        },
-        {
-          "id": "afterburn",
+          "id": "metal_shrapnel",
           "count": 18,
           "interval_frames": 999,
-          "lifetime_frames": 43,
-          "size_start": 9.6,
-          "size_end": 0.3,
+          "lifetime_frames": 33,
+          "size_start": 10.5,
+          "size_end": 0.2,
           "color_start": [
             1,
-            0.38,
-            0.03,
-            0.8
+            0.65,
+            0.22,
+            0.95
           ],
           "color_end": [
-            0.5,
-            0.01,
-            0.005,
+            0.16,
+            0.13,
+            0.077,
             0
           ],
           "additive": true,
-          "start_delay_frames": 6,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "angular_velocity": 2.2,
           "velocity_min": {
-            "x": -204,
-            "y": -204,
+            "x": -441,
+            "y": -441,
             "z": 0
           },
           "velocity_max": {
-            "x": 204,
-            "y": 204,
+            "x": 441,
+            "y": 441,
+            "z": 0
+          }
+        },
+        {
+          "id": "cooling_embers",
+          "count": 14,
+          "interval_frames": 999,
+          "lifetime_frames": 51,
+          "size_start": 6.300000000000001,
+          "size_end": 0.1,
+          "color_start": [
+            1,
+            0.3,
+            0.04,
+            0.75
+          ],
+          "color_end": [
+            0.16,
+            0.06,
+            0.013999999999999999,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "start_delay_frames": 4,
+          "velocity_min": {
+            "x": -199.5,
+            "y": -199.5,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 199.5,
+            "y": 199.5,
+            "z": 0
+          }
+        },
+        {
+          "id": "residual_smoke",
+          "count": 6,
+          "interval_frames": 999,
+          "lifetime_frames": 61,
+          "size_start": 21,
+          "size_end": 37.800000000000004,
+          "color_start": [
+            0.13,
+            0.13,
+            0.13,
+            0.19
+          ],
+          "color_end": [
+            0.06,
+            0.06,
+            0.06,
+            0
+          ],
+          "additive": false,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "start_delay_frames": 6,
+          "velocity_min": {
+            "x": -79.8,
+            "y": -79.8,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 79.8,
+            "y": 79.8,
             "z": 0
           }
         }
@@ -1329,83 +1152,64 @@
     },
     "emp_discharge": {
       "version": 1,
-      "duration_frames": 1,
+      "duration_frames": 8,
       "emitters": [
         {
-          "id": "phase_wave",
+          "id": "reactor_flash",
           "count": 1,
           "interval_frames": 999,
-          "lifetime_frames": 49,
-          "size_start": 15,
-          "size_end": 660,
-          "color_start": [
-            0.3,
-            0.9,
-            1,
-            0.75
-          ],
-          "color_end": [
-            0.08,
-            0.3,
-            1,
-            0
-          ],
-          "additive": true,
-          "sprite_shape": "ring",
-          "size_easing": "ease_out"
-        },
-        {
-          "id": "ion_flash",
-          "count": 1,
-          "interval_frames": 999,
-          "lifetime_frames": 22,
-          "size_start": 90,
-          "size_end": 220,
-          "color_start": [
-            0.2,
-            0.8,
-            1,
-            0.5
-          ],
-          "color_end": [
-            0.01,
-            0.12,
-            0.7,
-            0
-          ],
-          "additive": true
-        },
-        {
-          "id": "arcs",
-          "count": 24,
-          "interval_frames": 999,
-          "lifetime_frames": 32,
-          "size_start": 5,
-          "size_end": 0.4,
+          "lifetime_frames": 9,
+          "size_start": 115,
+          "size_end": 30,
           "color_start": [
             0.45,
-            0.95,
+            0.85,
             1,
-            1
+            0.35
           ],
           "color_end": [
-            0.04,
-            0.2,
-            1,
+            0.07200000000000001,
+            0.17,
+            0.35,
             0
           ],
           "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step"
+        },
+        {
+          "id": "ion_fragments",
+          "count": 20,
+          "interval_frames": 999,
+          "lifetime_frames": 32,
+          "size_start": 4,
+          "size_end": 0.1,
+          "color_start": [
+            0.48,
+            0.84,
+            1,
+            0.8
+          ],
+          "color_end": [
+            0.0768,
+            0.168,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
           "velocity_min": {
-            "x": -280,
-            "y": -280,
+            "x": -350,
+            "y": -350,
             "z": 0
           },
           "velocity_max": {
-            "x": 280,
-            "y": 280,
+            "x": 350,
+            "y": 350,
             "z": 0
-          },
-          "sprite_shape": "diamond"
+          }
         }
       ]
     },
@@ -1473,25 +1277,5546 @@
       "duration_frames": 1,
       "emitters": [
         {
-          "id": "muzzle",
+          "id": "white_core",
           "count": 1,
           "interval_frames": 999,
-          "lifetime_frames": 5,
-          "size_start": 19,
-          "size_end": 2,
+          "lifetime_frames": 3,
+          "size_start": 25,
+          "size_end": 0.1,
           "color_start": [
-            0.55,
-            0.95,
+            0.85,
+            0.97,
             1,
-            0.9
+            0.95
           ],
           "color_end": [
-            0.03,
-            0.4,
-            1,
+            0.136,
+            0.194,
+            0.35,
             0
           ],
-          "additive": true
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step"
+        },
+        {
+          "id": "rail_corona",
+          "count": 2,
+          "interval_frames": 999,
+          "lifetime_frames": 7,
+          "size_start": 11,
+          "size_end": 0.1,
+          "color_start": [
+            0.12,
+            0.64,
+            1,
+            0.55
+          ],
+          "color_end": [
+            0.0192,
+            0.128,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "velocity_min": {
+            "x": -25,
+            "y": -25,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 25,
+            "y": 25,
+            "z": 0
+          }
+        },
+        {
+          "id": "ejecta",
+          "count": 4,
+          "interval_frames": 999,
+          "lifetime_frames": 10,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.55,
+            0.8,
+            1,
+            0.8
+          ],
+          "color_end": [
+            0.08800000000000001,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "velocity_min": {
+            "x": -65,
+            "y": -65,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 65,
+            "y": 65,
+            "z": 0
+          }
+        }
+      ]
+    },
+    "rail_tracers": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "ballistic_ion_trail",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 3,
+          "size_start": 4,
+          "size_end": 1,
+          "color_start": [
+            0.25,
+            0.7,
+            1,
+            0.32
+          ],
+          "color_end": [
+            0.04,
+            0.13999999999999999,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step"
+        }
+      ]
+    },
+    "hostile_tracers": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "ballistic_amber_trail",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 3,
+          "size_start": 5,
+          "size_end": 1,
+          "color_start": [
+            1,
+            0.38,
+            0.08,
+            0.34
+          ],
+          "color_end": [
+            0.16,
+            0.07600000000000001,
+            0.027999999999999997,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step"
+        }
+      ]
+    },
+    "shield_impact": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "shield_energy",
+          "count": 1,
+          "interval_frames": 999,
+          "lifetime_frames": 16,
+          "size_start": 65,
+          "size_end": 100,
+          "color_start": [
+            0.22,
+            0.7,
+            1,
+            0.32
+          ],
+          "color_end": [
+            0.0352,
+            0.13999999999999999,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "ring"
+        },
+        {
+          "id": "surface_splinters",
+          "count": 12,
+          "interval_frames": 999,
+          "lifetime_frames": 16,
+          "size_start": 4,
+          "size_end": 0.1,
+          "color_start": [
+            0.58,
+            0.88,
+            1,
+            0.85
+          ],
+          "color_end": [
+            0.0928,
+            0.17600000000000002,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "emission_shape": "ring",
+          "emission_radius": 29,
+          "velocity_min": {
+            "x": -95,
+            "y": -95,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 95,
+            "y": 95,
+            "z": 0
+          }
+        }
+      ]
+    },
+    "ion_exhaust_0": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_0": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_0": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": 0,
+          "rotation_end": 0,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": -1,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_1": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_1": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_1": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.39269908169872414,
+          "rotation_end": -0.39269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_2": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_2": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_2": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -0.7853981633974483,
+          "rotation_end": -0.7853981633974483,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_3": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_3": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_3": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.1780972450961724,
+          "rotation_end": -1.1780972450961724,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_4": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_4": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_4": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.5707963267948966,
+          "rotation_end": -1.5707963267948966,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_5": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_5": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_5": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -1.9634954084936207,
+          "rotation_end": -1.9634954084936207,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_6": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_6": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_6": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.356194490192345,
+          "rotation_end": -2.356194490192345,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_7": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_7": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_7": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -2.748893571891069,
+          "rotation_end": -2.748893571891069,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": -0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_8": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_8": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_8": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.141592653589793,
+          "rotation_end": -3.141592653589793,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0,
+            "y": 1,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_9": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_9": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_9": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.5342917352885173,
+          "rotation_end": -3.5342917352885173,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": 0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_10": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_10": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_10": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -3.9269908169872414,
+          "rotation_end": -3.9269908169872414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": 0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_11": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_11": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_11": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.319689898685965,
+          "rotation_end": -4.319689898685965,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": 0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_12": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_12": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_12": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -4.71238898038469,
+          "rotation_end": -4.71238898038469,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 1,
+            "y": 0,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_13": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_13": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_13": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.105088062083414,
+          "rotation_end": -5.105088062083414,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.9238795,
+            "y": -0.3826834,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_14": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_14": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_14": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.497787143782138,
+          "rotation_end": -5.497787143782138,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.7071068,
+            "y": -0.7071068,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
+        }
+      ]
+    },
+    "ion_exhaust_15": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 7,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 50,
+          "speed_max": 90
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 14,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 35,
+          "speed_max": 55
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 2,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 70,
+          "speed_max": 125
+        }
+      ]
+    },
+    "afterburner_15": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 1,
+          "lifetime_frames": 9,
+          "size_start": 12,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 170,
+          "speed_max": 240
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 19,
+          "size_start": 22,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.5
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 110,
+          "speed_max": 170
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 4,
+          "interval_frames": 6,
+          "lifetime_frames": 16,
+          "size_start": 3,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 200,
+          "speed_max": 300
+        }
+      ]
+    },
+    "showcase_exhaust_15": {
+      "version": 1,
+      "duration_frames": 24,
+      "emitters": [
+        {
+          "id": "white_hot_core",
+          "count": 1,
+          "interval_frames": 2,
+          "lifetime_frames": 7,
+          "size_start": 33.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.72,
+            0.94,
+            1,
+            0.92
+          ],
+          "color_end": [
+            0.1152,
+            0.188,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 5,
+          "speed_min": 240,
+          "speed_max": 432
+        },
+        {
+          "id": "ion_plume",
+          "count": 1,
+          "interval_frames": 3,
+          "lifetime_frames": 16,
+          "size_start": 67.2,
+          "size_end": 0.4,
+          "color_start": [
+            0.08,
+            0.47,
+            0.95,
+            0.34
+          ],
+          "color_end": [
+            0.0128,
+            0.094,
+            0.33249999999999996,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 4,
+          "speed_min": 168,
+          "speed_max": 264
+        },
+        {
+          "id": "exhaust_flecks",
+          "count": 1,
+          "interval_frames": 4,
+          "lifetime_frames": 16,
+          "size_start": 9.6,
+          "size_end": 0.1,
+          "color_start": [
+            0.4,
+            0.8,
+            1,
+            0.6
+          ],
+          "color_end": [
+            0.064,
+            0.16000000000000003,
+            0.35,
+            0
+          ],
+          "additive": true,
+          "size_easing": "ease_out",
+          "color_easing": "smooth_step",
+          "sprite_shape": "streak",
+          "rotation_start": -5.890486225480862,
+          "rotation_end": -5.890486225480862,
+          "velocity_mode": "cone",
+          "direction": {
+            "x": 0.3826834,
+            "y": -0.9238795,
+            "z": 0
+          },
+          "cone_angle_degrees": 14,
+          "speed_min": 336,
+          "speed_max": 600
         }
       ]
     }
@@ -2354,7 +7679,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2371,7 +7696,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2388,7 +7713,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2405,7 +7730,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2422,7 +7747,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2439,7 +7764,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2456,7 +7781,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2473,7 +7798,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2490,7 +7815,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2507,7 +7832,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2524,7 +7849,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2541,7 +7866,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2558,7 +7883,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2575,7 +7900,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2592,7 +7917,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2609,7 +7934,7 @@
         "y": 0
       },
       "sprite": {
-        "asset": "texture://voidwake/explosion",
+        "asset": "texture://voidwake/impact_explosion",
         "size": {
           "x": 128,
           "y": 128
@@ -2618,6 +7943,193 @@
         "visible": false
       },
       "shader_material": "detonation_16"
+    },
+    {
+      "id": "plasma_wave_01",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/plasma_shockwave",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 25,
+        "visible": false
+      },
+      "shader_material": "plasma_wave_01"
+    },
+    {
+      "id": "plasma_wave_02",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/plasma_shockwave",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 25,
+        "visible": false
+      },
+      "shader_material": "plasma_wave_02"
+    },
+    {
+      "id": "plasma_wave_03",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/plasma_shockwave",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 25,
+        "visible": false
+      },
+      "shader_material": "plasma_wave_03"
+    },
+    {
+      "id": "plasma_wave_04",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/plasma_shockwave",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 25,
+        "visible": false
+      },
+      "shader_material": "plasma_wave_04"
+    },
+    {
+      "id": "plasma_wave_05",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/plasma_shockwave",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 25,
+        "visible": false
+      },
+      "shader_material": "plasma_wave_05"
+    },
+    {
+      "id": "plasma_wave_06",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/plasma_shockwave",
+        "size": {
+          "x": 128,
+          "y": 128
+        },
+        "layer": 25,
+        "visible": false
+      },
+      "shader_material": "plasma_wave_06"
+    },
+    {
+      "id": "player_shield_ripple",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/plasma_shockwave",
+        "size": {
+          "x": 94,
+          "y": 94
+        },
+        "layer": 24,
+        "visible": false
+      },
+      "shader_material": "player_shield_ripple"
+    },
+    {
+      "id": "phase_echo_01",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/player",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "layer": 18,
+        "visible": false
+      },
+      "shader_material": "phase_echo_01"
+    },
+    {
+      "id": "phase_echo_02",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/player",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "layer": 18,
+        "visible": false
+      },
+      "shader_material": "phase_echo_02"
+    },
+    {
+      "id": "phase_echo_03",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/player",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "layer": 18,
+        "visible": false
+      },
+      "shader_material": "phase_echo_03"
+    },
+    {
+      "id": "phase_echo_04",
+      "transform": {
+        "x": 0,
+        "y": 0
+      },
+      "sprite": {
+        "asset": "texture://voidwake/player",
+        "size": {
+          "x": 64,
+          "y": 64
+        },
+        "layer": 18,
+        "visible": false
+      },
+      "shader_material": "phase_echo_04"
     }
   ]
 }

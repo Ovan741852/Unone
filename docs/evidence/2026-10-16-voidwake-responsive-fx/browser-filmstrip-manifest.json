@@ -1,0 +1,747 @@
+{
+  "ok": true,
+  "release": "releases/7a1e2a7daac5ab2c62f1a90c9baf97b340875e873eaac8ae9f8955083e583de1/",
+  "source": {
+    "gameplay": {
+      "path": "_Games/voidwake/main.luau",
+      "bytes": 84803,
+      "sha256": "714944fcd14624907005059835dcad6062268e23fb158d43a6ba5c2d8e8c13d1"
+    },
+    "scene": {
+      "path": "_Games/voidwake/scene.json",
+      "bytes": 221706,
+      "sha256": "438ed532d84bc70ad37d284f79607c3909b0f6cedce590cba3a8261c3ce096ca"
+    },
+    "publishedScriptSha256": "714944fcd14624907005059835dcad6062268e23fb158d43a6ba5c2d8e8c13d1",
+    "maintainedHarness": {
+      "path": "_Games/voidwake/tests/verify-responsive-fx.cjs",
+      "bytes": 23094,
+      "sha256": "9acd478d4927b0a39379070aff614dec37f282fe329166ab52adc7ca17e49d4d"
+    },
+    "targetedHarness": {
+      "path": "artifacts/voidwake-responsive-fx/browser/targeted.cjs",
+      "bytes": 11662,
+      "sha256": "4e8b0f6d314aaa3595afcb2048ccb6ea499c97304ff1c64b3fc2ada17636a685"
+    },
+    "captureHarness": {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip.cjs",
+      "bytes": 4321,
+      "sha256": "0350826279b31a80a23c1126d05fc7d57b437eea1d94f88bdd6e20b1ff47d7ac"
+    }
+  },
+  "raw": {
+    "targeted": {
+      "path": "artifacts/voidwake-responsive-fx/browser/targeted/targeted-report.json",
+      "bytes": 1906543,
+      "sha256": "6ba7a103684f53b527d7881bb4a8d9685acf908fe3e898a2f5f6b795b82ec2c1"
+    },
+    "filmstrip": {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/filmstrip-report.json",
+      "bytes": 5376224,
+      "sha256": "2ecf1c3ae61ee041dae274812a438b4c7ae81159158236d4ac864e8e60e74956"
+    }
+  },
+  "capture": {
+    "method": "CDP Page.startScreencast reads genuinely presented browser JPEG frames; all input is physical Playwright mouse/keyboard. No runtime or rendering mutation. Frame sequence is continuous rather than a slow on-demand PNG acquisition.",
+    "totalFrames": 678,
+    "exportUnchanged": true,
+    "viewports": [
+      {
+        "viewport": {
+          "name": "desktop",
+          "width": 1440,
+          "height": 900
+        },
+        "frames": 221,
+        "events": [
+          {
+            "name": "dash-keydown",
+            "frameIndex": 32,
+            "frame": 67,
+            "clock": {
+              "performance": 6535.5,
+              "epoch": 1792139684722.8
+            }
+          },
+          {
+            "name": "emp-keydown",
+            "frameIndex": 61,
+            "frame": 93,
+            "clock": {
+              "performance": 7271.89999999851,
+              "epoch": 1792139685459.2
+            }
+          },
+          {
+            "name": "emp-tail",
+            "frameIndex": 125,
+            "frame": 162,
+            "clock": {
+              "performance": 8667.199999999255,
+              "epoch": 1792139686854.5
+            }
+          }
+        ],
+        "errors": [],
+        "lateProof": {
+          "frame": 235,
+          "time": 3.083333,
+          "effects": [
+            {
+              "angle": 0,
+              "id": 33,
+              "kind": "explosion",
+              "life": 0.283333,
+              "maxLife": 0.65,
+              "radius": 37.4,
+              "x": -194.445258,
+              "y": 9.568781,
+              "approximateAgeFrames": 22.000020000000003
+            }
+          ],
+          "visibleBlastPngEntities": [],
+          "nativeParticlesByEmitter": {
+            "cooling_embers": 14,
+            "metal_shrapnel": 18,
+            "residual_smoke": 6,
+            "exhaust_flecks": 10,
+            "ion_plume": 12,
+            "white_hot_core": 8,
+            "ejecta": 4,
+            "rail_corona": 2,
+            "white_core": 1,
+            "core": 5,
+            "glow": 5,
+            "crystal": 1,
+            "halo": 1,
+            "ballistic_ion_trail": 8,
+            "ballistic_amber_trail": 2
+          },
+          "coolingEmberSamples": [
+            {
+              "additive": true,
+              "color": [
+                0.759951,
+                0.231415,
+                0.03257,
+                0.535671
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-192/cooling_embers/56",
+              "instance": "particle-192",
+              "position": {
+                "x": -213.113692,
+                "y": -35.917301,
+                "z": 0.08
+              },
+              "size": 1.314187
+            },
+            {
+              "additive": true,
+              "color": [
+                0.759951,
+                0.231415,
+                0.03257,
+                0.535671
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-192/cooling_embers/57",
+              "instance": "particle-192",
+              "position": {
+                "x": -197.547197,
+                "y": 16.162402,
+                "z": 0.08
+              },
+              "size": 1.314187
+            },
+            {
+              "additive": true,
+              "color": [
+                0.759951,
+                0.231415,
+                0.03257,
+                0.535671
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-192/cooling_embers/58",
+              "instance": "particle-192",
+              "position": {
+                "x": -218.947145,
+                "y": -8.997378,
+                "z": 0.08
+              },
+              "size": 1.314187
+            },
+            {
+              "additive": true,
+              "color": [
+                0.759951,
+                0.231415,
+                0.03257,
+                0.535671
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-192/cooling_embers/59",
+              "instance": "particle-192",
+              "position": {
+                "x": -197.332208,
+                "y": -2.1934,
+                "z": 0.08
+              },
+              "size": 1.314187
+            }
+          ],
+          "presentation": {
+            "ability_discharges": 1,
+            "active_echoes": 0,
+            "active_handles": 11,
+            "active_waves": 0,
+            "afterburner": false,
+            "dropped_effects": 0,
+            "explosions_played": 1,
+            "live_particles": 99,
+            "muzzle_flashes": 6,
+            "particle_backend": "native_declarative",
+            "plume_mode": "ion_exhaust_",
+            "renderer": "official",
+            "reserved_particles": 168,
+            "shader_materials": 59,
+            "shield_impacts": 0,
+            "shield_pulse": 0,
+            "trail_points": 10
+          },
+          "actualGpu": {
+            "draws": 17431,
+            "instancedDraws": 9224,
+            "instances": 26422,
+            "linkedPrograms": 20,
+            "contexts": [
+              {
+                "kind": "webgl2",
+                "canvasId": "game",
+                "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+                "vendor": "Google Inc. (NVIDIA)",
+                "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1650 (0x00002188) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+              }
+            ],
+            "shaderErrors": [],
+            "contextLosses": 0
+          },
+          "performance": {
+            "render_ms": 5.700000002980232,
+            "draw_calls": 84,
+            "particles": 102,
+            "shader_materials": 26
+          }
+        }
+      },
+      {
+        "viewport": {
+          "name": "intermediate",
+          "width": 1020,
+          "height": 884
+        },
+        "frames": 227,
+        "events": [
+          {
+            "name": "dash-keydown",
+            "frameIndex": 36,
+            "frame": 65,
+            "clock": {
+              "performance": 3149.5,
+              "epoch": 1792139692454.9
+            }
+          },
+          {
+            "name": "emp-keydown",
+            "frameIndex": 66,
+            "frame": 94,
+            "clock": {
+              "performance": 3858.2999999970198,
+              "epoch": 1792139693163.7
+            }
+          },
+          {
+            "name": "emp-tail",
+            "frameIndex": 131,
+            "frame": 164,
+            "clock": {
+              "performance": 5328.199999999255,
+              "epoch": 1792139694633.7
+            }
+          }
+        ],
+        "errors": [],
+        "lateProof": {
+          "frame": 236,
+          "time": 3.166667,
+          "effects": [
+            {
+              "angle": 0,
+              "id": 33,
+              "kind": "explosion",
+              "life": 0.033333,
+              "maxLife": 0.65,
+              "radius": 37.4,
+              "x": -213.773972,
+              "y": 9.996804,
+              "approximateAgeFrames": 37.000020000000006
+            }
+          ],
+          "visibleBlastPngEntities": [],
+          "nativeParticlesByEmitter": {
+            "cooling_embers": 14,
+            "residual_smoke": 6,
+            "exhaust_flecks": 10,
+            "ion_plume": 10,
+            "white_hot_core": 8,
+            "ejecta": 4,
+            "flash": 1,
+            "sparks": 8,
+            "core": 5,
+            "glow": 5,
+            "crystal": 1,
+            "halo": 1,
+            "ballistic_ion_trail": 8,
+            "ballistic_amber_trail": 2
+          },
+          "coolingEmberSamples": [
+            {
+              "additive": true,
+              "color": [
+                0.400049,
+                0.128585,
+                0.02143,
+                0.214329
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/56",
+              "instance": "particle-212",
+              "position": {
+                "x": -242.403343,
+                "y": -21.579711,
+                "z": 0.08
+              },
+              "size": 0.461246
+            },
+            {
+              "additive": true,
+              "color": [
+                0.400049,
+                0.128585,
+                0.02143,
+                0.214329
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/57",
+              "instance": "particle-212",
+              "position": {
+                "x": -249.444765,
+                "y": -61.154963,
+                "z": 0.08
+              },
+              "size": 0.461246
+            },
+            {
+              "additive": true,
+              "color": [
+                0.400049,
+                0.128585,
+                0.02143,
+                0.214329
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/58",
+              "instance": "particle-212",
+              "position": {
+                "x": -237.993972,
+                "y": 20.516827,
+                "z": 0.08
+              },
+              "size": 0.461246
+            },
+            {
+              "additive": true,
+              "color": [
+                0.400049,
+                0.128585,
+                0.02143,
+                0.214329
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/59",
+              "instance": "particle-212",
+              "position": {
+                "x": -189.962355,
+                "y": -18.708765,
+                "z": 0.08
+              },
+              "size": 0.461246
+            }
+          ],
+          "presentation": {
+            "ability_discharges": 1,
+            "active_echoes": 0,
+            "active_handles": 12,
+            "active_waves": 0,
+            "afterburner": false,
+            "dropped_effects": 0,
+            "explosions_played": 1,
+            "live_particles": 85,
+            "muzzle_flashes": 7,
+            "particle_backend": "native_declarative",
+            "plume_mode": "ion_exhaust_",
+            "renderer": "official",
+            "reserved_particles": 177,
+            "shader_materials": 59,
+            "shield_impacts": 0,
+            "shield_pulse": 0,
+            "trail_points": 10
+          },
+          "actualGpu": {
+            "draws": 18058,
+            "instancedDraws": 9772,
+            "instances": 28274,
+            "linkedPrograms": 20,
+            "contexts": [
+              {
+                "kind": "webgl2",
+                "canvasId": "game",
+                "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+                "vendor": "Google Inc. (NVIDIA)",
+                "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1650 (0x00002188) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+              }
+            ],
+            "shaderErrors": [],
+            "contextLosses": 0
+          },
+          "performance": {
+            "render_ms": 6.899999998509884,
+            "draw_calls": 76,
+            "particles": 92,
+            "shader_materials": 24
+          }
+        }
+      },
+      {
+        "viewport": {
+          "name": "portrait",
+          "width": 390,
+          "height": 844
+        },
+        "frames": 230,
+        "events": [
+          {
+            "name": "dash-keydown",
+            "frameIndex": 36,
+            "frame": 64,
+            "clock": {
+              "performance": 2944.099999997765,
+              "epoch": 1792139700337.8
+            }
+          },
+          {
+            "name": "emp-keydown",
+            "frameIndex": 66,
+            "frame": 92,
+            "clock": {
+              "performance": 3669,
+              "epoch": 1792139701062.7
+            }
+          },
+          {
+            "name": "emp-tail",
+            "frameIndex": 137,
+            "frame": 153,
+            "clock": {
+              "performance": 5124.39999999851,
+              "epoch": 1792139702518.0999
+            }
+          }
+        ],
+        "errors": [],
+        "lateProof": {
+          "frame": 230,
+          "time": 3.083333,
+          "effects": [
+            {
+              "angle": 0,
+              "id": 33,
+              "kind": "explosion",
+              "life": 0.116667,
+              "maxLife": 0.65,
+              "radius": 37.4,
+              "x": -213.773972,
+              "y": 9.996804,
+              "approximateAgeFrames": 31.999980000000004
+            }
+          ],
+          "visibleBlastPngEntities": [],
+          "nativeParticlesByEmitter": {
+            "cooling_embers": 14,
+            "metal_shrapnel": 18,
+            "residual_smoke": 6,
+            "exhaust_flecks": 10,
+            "ion_plume": 12,
+            "white_hot_core": 6,
+            "ejecta": 4,
+            "rail_corona": 2,
+            "white_core": 1,
+            "core": 6,
+            "glow": 6,
+            "crystal": 1,
+            "halo": 1,
+            "ballistic_ion_trail": 10,
+            "ballistic_amber_trail": 2
+          },
+          "coolingEmberSamples": [
+            {
+              "additive": true,
+              "color": [
+                0.518433,
+                0.162409,
+                0.025094,
+                0.32003
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/56",
+              "instance": "particle-212",
+              "position": {
+                "x": -238.06556,
+                "y": -19.824726,
+                "z": 0.08
+              },
+              "size": 0.689812
+            },
+            {
+              "additive": true,
+              "color": [
+                0.518433,
+                0.162409,
+                0.025094,
+                0.32003
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/57",
+              "instance": "particle-212",
+              "position": {
+                "x": -244.040099,
+                "y": -53.403726,
+                "z": 0.08
+              },
+              "size": 0.689812
+            },
+            {
+              "additive": true,
+              "color": [
+                0.518433,
+                0.162409,
+                0.025094,
+                0.32003
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/58",
+              "instance": "particle-212",
+              "position": {
+                "x": -234.324275,
+                "y": 15.893549,
+                "z": 0.08
+              },
+              "size": 0.689812
+            },
+            {
+              "additive": true,
+              "color": [
+                0.518433,
+                0.162409,
+                0.025094,
+                0.32003
+              ],
+              "emitter": "cooling_embers",
+              "id": "particle-212/cooling_embers/59",
+              "instance": "particle-212",
+              "position": {
+                "x": -193.570176,
+                "y": -17.388771,
+                "z": 0.08
+              },
+              "size": 0.689812
+            }
+          ],
+          "presentation": {
+            "ability_discharges": 1,
+            "active_echoes": 0,
+            "active_handles": 11,
+            "active_waves": 0,
+            "afterburner": false,
+            "dropped_effects": 0,
+            "explosions_played": 1,
+            "live_particles": 99,
+            "muzzle_flashes": 7,
+            "particle_backend": "native_declarative",
+            "plume_mode": "ion_exhaust_",
+            "renderer": "official",
+            "reserved_particles": 172,
+            "shader_materials": 59,
+            "shield_impacts": 0,
+            "shield_pulse": 0,
+            "trail_points": 12
+          },
+          "actualGpu": {
+            "draws": 17644,
+            "instancedDraws": 9414,
+            "instances": 27028,
+            "linkedPrograms": 20,
+            "contexts": [
+              {
+                "kind": "webgl2",
+                "canvasId": "game",
+                "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+                "vendor": "Google Inc. (NVIDIA)",
+                "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1650 (0x00002188) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+              }
+            ],
+            "shaderErrors": [],
+            "contextLosses": 0
+          },
+          "performance": {
+            "render_ms": 6.600000001490116,
+            "draw_calls": 83,
+            "particles": 94,
+            "shader_materials": 25
+          }
+        }
+      }
+    ]
+  },
+  "selectedFrames": [
+    {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0075.jpg",
+      "bytes": 83877,
+      "sha256": "eefcee09041f9761cc067b63ef8ce2b1352f043f79e1f785a6c5c16ccdaadf26",
+      "purpose": "EMP electrical rim, early growth",
+      "originalFrameIndex": 75,
+      "originalMetadata": {
+        "offsetTop": 0,
+        "pageScaleFactor": 1,
+        "deviceWidth": 1440,
+        "deviceHeight": 900,
+        "scrollOffsetX": 0,
+        "scrollOffsetY": 0,
+        "timestamp": 1792139685.68963
+      }
+    },
+    {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0080.jpg",
+      "bytes": 88833,
+      "sha256": "91b743f95d24287e839707c093c98e9b57d5b69823015754f26700888b603cce",
+      "purpose": "EMP grown electrical rim with clear interior",
+      "originalFrameIndex": 80,
+      "originalMetadata": {
+        "offsetTop": 0,
+        "pageScaleFactor": 1,
+        "deviceWidth": 1440,
+        "deviceHeight": 900,
+        "scrollOffsetX": 0,
+        "scrollOffsetY": 0,
+        "timestamp": 1792139685.831189
+      }
+    },
+    {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/intermediate-0080.jpg",
+      "bytes": 60997,
+      "sha256": "2a94fe62bf1e9bf1f383b8d5415e44f1a1876dd69a7cb79fc2cee1a88025e118",
+      "purpose": "Intermediate electrical rim and clear interior",
+      "originalFrameIndex": 80,
+      "originalMetadata": {
+        "offsetTop": 0,
+        "pageScaleFactor": 1,
+        "deviceWidth": 1020,
+        "deviceHeight": 884,
+        "scrollOffsetX": 0,
+        "scrollOffsetY": 0,
+        "timestamp": 1792139693.35083
+      }
+    },
+    {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/portrait-0080.jpg",
+      "bytes": 36770,
+      "sha256": "4de42ca524382e39cf8abef937ef3b3113358cfd52090a17d6602e9fa1bbd47d",
+      "purpose": "Portrait electrical rim with clear interior",
+      "originalFrameIndex": 80,
+      "originalMetadata": {
+        "offsetTop": 0,
+        "pageScaleFactor": 1,
+        "deviceWidth": 390,
+        "deviceHeight": 844,
+        "scrollOffsetX": 0,
+        "scrollOffsetY": 0,
+        "timestamp": 1792139701.263224
+      }
+    },
+    {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/portrait-0085.jpg",
+      "bytes": 39749,
+      "sha256": "4ddabf11b9d0c8e9e4b4875be55c4153e3f30131bdeccfb74429701a2915ddab",
+      "purpose": "Portrait grown electrical rim",
+      "originalFrameIndex": 85,
+      "originalMetadata": {
+        "offsetTop": 0,
+        "pageScaleFactor": 1,
+        "deviceWidth": 390,
+        "deviceHeight": 844,
+        "scrollOffsetX": 0,
+        "scrollOffsetY": 0,
+        "timestamp": 1792139701.399345
+      }
+    },
+    {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0190.jpg",
+      "bytes": 78036,
+      "sha256": "2809c24973bc5a85d0b88a74f7ef7ddcc8a6b2c1c974617c17b1fdf24512ab78",
+      "purpose": "Actual enemy destruction: brief fireball accent",
+      "originalFrameIndex": 190,
+      "originalMetadata": {
+        "offsetTop": 0,
+        "pageScaleFactor": 1,
+        "deviceWidth": 1440,
+        "deviceHeight": 900,
+        "scrollOffsetX": 0,
+        "scrollOffsetY": 0,
+        "timestamp": 1792139687.861269
+      }
+    },
+    {
+      "path": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0220.jpg",
+      "bytes": 77492,
+      "sha256": "5fb27d6a6312b7e97f8fe19401f452848c052407229b28cf91fe35dd16062e12",
+      "purpose": "Later blast tail with the PNG accent expired",
+      "originalFrameIndex": 220,
+      "originalMetadata": {
+        "offsetTop": 0,
+        "pageScaleFactor": 1,
+        "deviceWidth": 1440,
+        "deviceHeight": 900,
+        "scrollOffsetX": 0,
+        "scrollOffsetY": 0,
+        "timestamp": 1792139688.490161
+      }
+    }
+  ],
+  "visualReview": {
+    "reviewer": "Codex actual-image inspection",
+    "result": "Pass",
+    "observations": [
+      "Actual early/mid electrical rings retain crisp outer filaments while the interior stays transparent enough to read the starfield and ship. The prior broad uniform blue wash is absent.",
+      "The sequence visibly expands and fades; these images are original CDP-delivered browser frames captured continuously before genuine physical Q input.",
+      "Portrait keeps its responsive HUD/touch control layout while the energy ring passes behind the UI.",
+      "Real enemy destruction shows a brief fireball. The later snapshot has no visible detonation PNG and still contains cooling embers and other native particle samples after approximately 22 simulation frames."
+    ],
+    "limits": [
+      "On-demand PNG shots in targeted-report can land after a short effect expires; the selected continuous JPEG frames establish the visible effect peak.",
+      "The raw filmstrip is retained locally with all delivered JPEG bytes and metadata; only selected original frames need to be committed.",
+      "Mouse/keyboard at portrait dimensions does not establish physical mobile touchscreen behavior.",
+      "No 60 FPS certification is made."
+    ]
+  }
+}

@@ -50,6 +50,12 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: VOIDWAKE adoption of official responsive regions, layered native
+  particles and engine sprite shaders, real desktop/portrait acceptance and a
+  shared JSON binary64 roundtrip correction. Both bounded Claude scopes timed
+  out without output and remain incomplete:
+  [record](reviews/2026-10-16-voidwake-responsive-fx.md).
+
 - 2026-10-16: explicit shared responsive UI regions, authored aspect variants,
   strict type ergonomics, numerical bounds and fresh SDK-only authoring. Release
   checks, final SDK inventory and 244 actual-player assertions passed; the bounded

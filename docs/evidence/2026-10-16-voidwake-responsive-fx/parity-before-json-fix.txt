@@ -1,0 +1,28 @@
+file:///D:/TSProject/Voidwake/engine/scripts/verify-player-parity.mjs:34
+  if(good.status!==0)throw new Error(`PLAYER_PARITY_FAILED: ${good.stdout}\n${good.stderr}`);
+                           ^
+
+Error: PLAYER_PARITY_FAILED: 
+file:///D:/TSProject/Voidwake/engine/scripts/verify-host-parity.mjs:50
+
+  if(result.observation_digest!==cases[i].observation_digest)throw new Error(`HOST_PARITY_MISMATCH frame=${spec.frames}: CLI=${cases[i].observation_digest} WASM=${result.observation_digest}. Rebuild both artifacts and inspect the shared host payload.`);
+
+                                                                   ^
+
+
+
+Error: HOST_PARITY_MISMATCH frame=60: CLI=sha256:933240a7a0b06986ecbe31876dc09f8dfa485a685ea4a594eac523a9fb831177 WASM=sha256:3e497438db3f0edf62f8a8a9b7c7d90b83855932c8ab27df6c2b7c31c325301c. Rebuild both artifacts and inspect the shared host payload.
+
+    at file:///D:/TSProject/Voidwake/engine/scripts/verify-host-parity.mjs:50:68
+
+
+
+Node.js v24.11.1
+
+
+    at file:///D:/TSProject/Voidwake/engine/scripts/verify-player-parity.mjs:34:28
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:671:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.11.1

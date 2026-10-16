@@ -1,0 +1,24 @@
+{
+  "javascript_sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d",
+  "preserved_responsive_sdk_cli_sha256": "8b200e78c6d4bc65cbd335369c7ce18f61e800fa5cdbbe5f8be934c5ff00e083",
+  "runtime_packages": {
+    "@unone/ui": "0.4.0"
+  },
+  "cli": "D:\\TSProject\\UnoneVoidwake-20261016\\sdk-final\\bin\\game.exe",
+  "compiled_systems": [
+    "audio",
+    "camera2d",
+    "input",
+    "observation",
+    "particle",
+    "random",
+    "ui",
+    "world"
+  ],
+  "sdk": "D:/TSProject/UnoneVoidwake-20261016/sdk-final",
+  "preserved_responsive_sdk_wasm_sha256": "eefd60555314bfb164de7598566912f01a98514001efcd69a90a4dab1421d4da",
+  "source_inventory_count": 17,
+  "cli_sha256": "d2e8322f3f116e91c771087b0e3b1d07fd81e9382a0a342eecefdfc5abf55634",
+  "compiled_cli_sha256": "d2e8322f3f116e91c771087b0e3b1d07fd81e9382a0a342eecefdfc5abf55634",
+  "wasm_sha256": "8df9e48d731f5b605b5898974b12ec78895427ca3bb3dc5b55bf67d4578b831f"
+}

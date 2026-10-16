@@ -1,0 +1,554 @@
+{
+  "baseline": "074eca18cab0d2bb7f2655108b9427a72bfde44d",
+  "scope": "Official responsive game UI and layered VFX; shared JSON float publication correction",
+  "preview": "http://127.0.0.1:8341/?ui=responsive-fx",
+  "results": {
+    "workspace": {
+      "passed": 490,
+      "failed": 0,
+      "ignored": 3,
+      "test_binaries": 25
+    },
+    "prepare": "7/7 gates, including 10 deterministic tests",
+    "native_wasm_compared_cases": 10,
+    "geometry_checks": 1940,
+    "full_browser_checks": 159,
+    "polished_affected_browser_checks": 42,
+    "sdk_inventory_files": 68,
+    "sdk_source_files": 17,
+    "particles": {
+      "cli": "D:/TSProject/UnoneVoidwake-20261016/sdk-final/bin/game.exe",
+      "scene_sha256": "438ed532d84bc70ad37d284f79607c3909b0f6cedce590cba3a8261c3ce096ca",
+      "definitions_passed": 61,
+      "time_samples_passed": 16,
+      "direction_definitions": 48,
+      "direction_samples": 672,
+      "front_samples": 0,
+      "shader_materials": 59,
+      "effects": 61
+    }
+  },
+  "source_identity_scope": "Working file bytes at final verification; Git line-ending normalization is separate.",
+  "sources": [
+    {
+      "file": ".gitattributes",
+      "bytes": 462,
+      "sha256": "b7617d1b1b65ad2908a7362e0e466d4e5e37a6d4d36919ce275c59203a20023c"
+    },
+    {
+      "file": "_Games/voidwake/gameplay.luau",
+      "bytes": 43482,
+      "sha256": "97d091ace186041503bc7ae5a345c20fd9b5d184fabb364efe2b17c514640db8"
+    },
+    {
+      "file": "_Games/voidwake/main.luau",
+      "bytes": 84803,
+      "sha256": "714944fcd14624907005059835dcad6062268e23fb158d43a6ba5c2d8e8c13d1"
+    },
+    {
+      "file": "_Games/voidwake/ui.fragment.luau",
+      "bytes": 23955,
+      "sha256": "7c6c1a06c3224b27fb11bb543b964a62721c244796223fe02b304c20247aff46"
+    },
+    {
+      "file": "_Games/voidwake/presentation.fragment.luau",
+      "bytes": 15221,
+      "sha256": "7b6ea4b2403eab7209c069b8dfa2cfc89166a5fc89e6b839daa0e14cc2565103"
+    },
+    {
+      "file": "_Games/voidwake/scene.json",
+      "bytes": 221706,
+      "sha256": "438ed532d84bc70ad37d284f79607c3909b0f6cedce590cba3a8261c3ce096ca"
+    },
+    {
+      "file": "_Games/voidwake/assets.json",
+      "bytes": 2375,
+      "sha256": "894b266f66ac9c09d8db9b6a4fc7f726545366d21674ead276fa45605980d7d3"
+    },
+    {
+      "file": "_Games/voidwake/project.unone.json",
+      "bytes": 1708,
+      "sha256": "d3f1d7e83c9a3e0e61725edca62768875ec70c80c5f3b7affc89668d2e4ac8a0"
+    },
+    {
+      "file": "_Games/voidwake/player.presentation.json",
+      "bytes": 1467,
+      "sha256": "5b3ff424ca08b135f03047e88e7b4c50a09a6eebcdd4d1c3cf6028d757e2eaf2"
+    },
+    {
+      "file": "_Games/voidwake/README.md",
+      "bytes": 8894,
+      "sha256": "404ce6bfda9a25f9bb378ffd1b6a44065323902c287e5f48953c76ca0be77de8"
+    },
+    {
+      "file": "_Games/voidwake/ART-PROMPTS.md",
+      "bytes": 13938,
+      "sha256": "114e1fbdf71985291085ee06b64bec6a51e181d462ff7dfd6bdb81e12d5021b0"
+    },
+    {
+      "file": "_Games/voidwake/assets/plasma-shockwave.png",
+      "bytes": 1542228,
+      "sha256": "824ac25eafb3f419247c912587b7a1b3aef3b914beee73f1c40c30a25c686eba"
+    },
+    {
+      "file": "_Games/voidwake/assets/impact-explosion.png",
+      "bytes": 1881670,
+      "sha256": "f81c54e178702d33e8ecdfd3ed535ac2d98060e011171c104240438b6e53f794"
+    },
+    {
+      "file": "_Games/voidwake/fonts/supplemental-fonts.json",
+      "bytes": 1452,
+      "sha256": "aa2bf5d35929b98af19083d4893da7fd4cedf0c84824ca654012a879d915357a"
+    },
+    {
+      "file": "_Games/voidwake/fonts/NotoSansTC-Supplemental-400.ttf",
+      "bytes": 10700,
+      "sha256": "2e8d6561d86ef5f04966fda8c004dc0850373aea941d3018504b11e1c88f9486"
+    },
+    {
+      "file": "_Games/voidwake/fonts/NotoSansTC-Supplemental-600.ttf",
+      "bytes": 10684,
+      "sha256": "adcd0320855d72bb8e7b0840ceb4624b89b59bc3f955ff76571a4852515af9c0"
+    },
+    {
+      "file": "_Games/voidwake/fonts/NotoSansTC-Supplemental-700.ttf",
+      "bytes": 10672,
+      "sha256": "6aeba00168dc422871a0f87cd9c9c037e508be6597b3f3a579ade4c5bba1318d"
+    },
+    {
+      "file": "_Games/voidwake/tests/responsive-layout.mjs",
+      "bytes": 5400,
+      "sha256": "8baa7bcdc361146a68a8de44936ec6cde06c9950e111819923f6f101ffd59166"
+    },
+    {
+      "file": "_Games/voidwake/tests/verify-responsive-fx.cjs",
+      "bytes": 23094,
+      "sha256": "9acd478d4927b0a39379070aff614dec37f282fe329166ab52adc7ca17e49d4d"
+    },
+    {
+      "file": "crates/unone-engine/Cargo.toml",
+      "bytes": 1650,
+      "sha256": "1fc80d0dd7c9326732aa317e95cb21083de42d745014aef3f5615e0fa01e1920"
+    },
+    {
+      "file": "crates/unone-engine/tests/json_numeric_roundtrip.rs",
+      "bytes": 2163,
+      "sha256": "f06473892973af9b5b40a5cf13d5a571ebea79cd92d9178d1c470c7a4308b5e6"
+    },
+    {
+      "file": "crates/unone-web-live-smoke/src/main.rs",
+      "bytes": 51134,
+      "sha256": "f5dd2bbcb171b60bac21fca47704050e182fca5baf8e1ce2127e28b9e9dbbd0c"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "prepare-final.json",
+      "source": "artifacts\\voidwake-responsive-fx\\prepare-polished.json",
+      "bytes": 39311,
+      "sha256": "c896b40b1e8623cd461f3ffee7e5534dfefdc91ec050fef0b0bb80dbce9ebe7b"
+    },
+    {
+      "file": "parity-final.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\parity-polished.txt",
+      "bytes": 464,
+      "sha256": "82f38007a6b43fc212e5faadb4c2da928f8286b0c2362378de629716e9cd8792"
+    },
+    {
+      "file": "verify-before-layout-fix.json",
+      "source": "artifacts\\voidwake-responsive-fx\\verify-initial.json",
+      "bytes": 16223,
+      "sha256": "41c10aa155aaac40a94330cfae0ead833f7bdcf2164ae3e5e530b73aac765885"
+    },
+    {
+      "file": "parity-before-json-fix.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\parity-final.txt",
+      "bytes": 1349,
+      "sha256": "d17164880b340dc07fa578d0cf5bf139e4daf0d95f13af2fdea631bf9e4ab36f"
+    },
+    {
+      "file": "fonts-before-glyph-fix.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\fonts-check.txt",
+      "bytes": 442,
+      "sha256": "158d58bec69c0522bdf373ffedc554e759b17cb37c43d6ef26d9883dba59b048"
+    },
+    {
+      "file": "fonts-final.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\fonts-final.txt",
+      "bytes": 111,
+      "sha256": "e275fb18da633266a7bd7bd11bd8e60b25012cde2909c48dc0b565a3ab1609f1"
+    },
+    {
+      "file": "layout-final.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\layout-final.txt",
+      "bytes": 89,
+      "sha256": "28efedaee88d7a0f9dff0208356c15c276265aff99b7374da0bb77cd7418b874"
+    },
+    {
+      "file": "sdk-independent-inventory.json",
+      "source": "artifacts\\voidwake-responsive-fx\\sdk-independent-inventory.json",
+      "bytes": 23258,
+      "sha256": "053b7100bd8a6fa57ed28a1657dcd51903e28c38a97d6c4a287fbae599f218ea"
+    },
+    {
+      "file": "first-promotion.json",
+      "source": "artifacts\\voidwake-responsive-fx\\promotion.json",
+      "bytes": 444,
+      "sha256": "757841cc55ba8fb831913a7d24652d1172c58ff2055eb1aee2a08c6bc46e1db0"
+    },
+    {
+      "file": "final-promotion.json",
+      "source": "artifacts\\voidwake-responsive-fx\\promotion-polished.json",
+      "bytes": 561,
+      "sha256": "e5dea21754cb4ade418e2f8fefc012c81a785897c9e995469672082e55ad6dc6"
+    },
+    {
+      "file": "browser-preliminary-summary.json",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\preliminary\\summary.json",
+      "bytes": 13975,
+      "sha256": "9bc4bf7b1807377300009f744f24fa95d99c6a722745316b69bb78a579567400"
+    },
+    {
+      "file": "browser-full-summary.json",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\summary.json",
+      "bytes": 13844,
+      "sha256": "81bb03597eff8aa61d2e06f3388673ba63983388705dc0dd447321725cb31286"
+    },
+    {
+      "file": "browser-full-evidence.json",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\browser-evidence.json",
+      "bytes": 3819952,
+      "sha256": "0baf7ab8c38ea0178b99c37a94ce3f6448d0bf26685d9410478a00dc4ee88c34"
+    },
+    {
+      "file": "browser-full-identity.json",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\baseline-identity.json",
+      "bytes": 11083,
+      "sha256": "07383db4ccad7e644d9d3beb7991f59657f37c9d51fa45f1d12e2a4faf859c29"
+    },
+    {
+      "file": "browser-full-visual-review.json",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\visual-review.json",
+      "bytes": 1781,
+      "sha256": "b240c7524793a017d2d9bf52673f2ecd5a78ab1d9cb7b0b8a4b6ecbd4e5b89c8"
+    },
+    {
+      "file": "browser-polished-evidence.json",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\targeted\\polished-evidence.json",
+      "bytes": 159718,
+      "sha256": "c95c3f75ed60efce058712f1313c02bfe3e37e44d6496f7b1f9adfe86c4d5e1a"
+    },
+    {
+      "file": "browser-polished-as-run.cjs",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\targeted\\targeted-as-run.cjs",
+      "bytes": 11662,
+      "sha256": "4e8b0f6d314aaa3595afcb2048ccb6ea499c97304ff1c64b3fc2ada17636a685"
+    },
+    {
+      "file": "browser-filmstrip-manifest.json",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\filmstrip\\selected-frame-manifest.json",
+      "bytes": 23312,
+      "sha256": "b7f9f1190a8b8686ac4d9b01b821e3c6c1a01fb9f97d968b110ceee96d15ef2c"
+    },
+    {
+      "file": "browser-capture-as-run.cjs",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\filmstrip\\capture-as-run.cjs",
+      "bytes": 4321,
+      "sha256": "0350826279b31a80a23c1126d05fc7d57b437eea1d94f88bdd6e20b1ff47d7ac"
+    },
+    {
+      "file": "browser-full-as-run.cjs",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\verify-as-run.cjs",
+      "bytes": 22820,
+      "sha256": "cb84b8ecfdc235ba21580e64d826b953624c99dfdfa6768942e2bf4770b8fc1e"
+    },
+    {
+      "file": "build-validation-summary.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\validation-summary.json",
+      "bytes": 6813,
+      "sha256": "7bbfef7a8bd4d5667bf081f111bf8f400c85b0766d15d29d885914746dc762d2"
+    },
+    {
+      "file": "build-native-checks.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\native-checks.json",
+      "bytes": 2148,
+      "sha256": "4b0d40b93faa2619367adc984c21611b4aa4c7d6457358882d0c8c9a6ea58ac4"
+    },
+    {
+      "file": "build-workspace-test-counts.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\workspace-test-counts.json",
+      "bytes": 80,
+      "sha256": "f5f4282012514228a5af3ff3d186e66083285881f3ba72bbbf359a531851f777"
+    },
+    {
+      "file": "build-workspace-tests.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\workspace-tests.txt",
+      "bytes": 48982,
+      "sha256": "05a23444e88fb6b522d738093da5ac206323df1d93c8498c48b925938f0cef15"
+    },
+    {
+      "file": "build-clippy.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\clippy.txt",
+      "bytes": 757,
+      "sha256": "fe2bcd4ce16a93a196a39847b3c7d987d59efbbf7efaa3064b1be9e9c6436dd2"
+    },
+    {
+      "file": "build-test-json-numeric-roundtrip.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\test-json-numeric-roundtrip.txt",
+      "bytes": 732,
+      "sha256": "e04f0b1936dd2eb0d803d979a6adda67c98dc810c432a45fb22661c0f39fd845"
+    },
+    {
+      "file": "build-test-web-publication-roundtrip.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\test-web-publication-roundtrip.txt",
+      "bytes": 588,
+      "sha256": "a278efed75e10fe34bc4fe7d14f1a414d6bce40999e340a709a3ec13a0c0c52d"
+    },
+    {
+      "file": "build-build-cli.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\build-cli.txt",
+      "bytes": 63,
+      "sha256": "b16bf2e181f3a90f9f1f0485c561f646f7f4e4c695ca71610ce65b592de1d3ff"
+    },
+    {
+      "file": "build-build-web-runtime.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\build-web-runtime.txt",
+      "bytes": 6889,
+      "sha256": "14f3c380322931e8d02a112a97b98a6b89f777ad424a05888b84967f01e4cf40"
+    },
+    {
+      "file": "build-production-abi.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\production-abi.json",
+      "bytes": 1203,
+      "sha256": "3d736febd831a6155ab83241facf172a10bccecf6ccbe272dad9315b9607684d"
+    },
+    {
+      "file": "build-release-artifacts.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\release-artifacts.json",
+      "bytes": 959,
+      "sha256": "3d1ab80d332a43db13239498c73f81eca8fd3fc17ab4ff573fc31f7fcb6503d1"
+    },
+    {
+      "file": "build-sdk-pack.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\sdk-pack.json",
+      "bytes": 25062,
+      "sha256": "7f830257daac9f119eaf2f3e655b848b43e3bdf920e1c40903d35818682729c4"
+    },
+    {
+      "file": "build-sdk-inspect.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\sdk-inspect.json",
+      "bytes": 25062,
+      "sha256": "7f830257daac9f119eaf2f3e655b848b43e3bdf920e1c40903d35818682729c4"
+    },
+    {
+      "file": "build-sdk-inventory-verification.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\sdk-inventory-verification.json",
+      "bytes": 13777,
+      "sha256": "5b242f9d20633948f996e9e5f0347da4ac3c71f9311240c1fbd629e60504e4c2"
+    },
+    {
+      "file": "build-sdk-source-verification.json",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\sdk-source-verification.json",
+      "bytes": 6556,
+      "sha256": "168f2c99a65414257de6a48e12e7e9d40edc21b5be1a3ecb36d740fe4f223f9d"
+    },
+    {
+      "file": "build-build-native.ps1",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\build-native.ps1",
+      "bytes": 1622,
+      "sha256": "917820187bd2388299ae12fc346cc3bf79ee6f9c5112205d886a73df57f84419"
+    },
+    {
+      "file": "build-build-web-runtime.ps1",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\build-web-runtime.ps1",
+      "bytes": 3440,
+      "sha256": "c2ebaa4485796e50cd93e262d77f97e5cbe2a25efa40fe49e7eb6c40d1423cdf"
+    },
+    {
+      "file": "build-pack-sdk.ps1",
+      "source": "artifacts\\voidwake-responsive-fx\\build\\pack-sdk.ps1",
+      "bytes": 3492,
+      "sha256": "462c3e6ee881d8eb4c14a23906f3dda233260120b6d46c316cafc37cec7354e2"
+    },
+    {
+      "file": "particles-final-validation-summary.json",
+      "source": "artifacts\\voidwake-responsive-fx\\fx-final\\final-validation-summary.json",
+      "bytes": 352,
+      "sha256": "f153d812c849767bca584da102218d285b7fa20c5fbdbc7fd7266ca1f21c01e7"
+    },
+    {
+      "file": "particles-all-definition-validation.json",
+      "source": "artifacts\\voidwake-responsive-fx\\fx-final\\all-definition-validation.json",
+      "bytes": 7963,
+      "sha256": "b8cd727d627c36241efcb686db4dda8cb103a737967826e9f8152d6353ffbb41"
+    },
+    {
+      "file": "particles-sample-summary.json",
+      "source": "artifacts\\voidwake-responsive-fx\\fx-final\\sample-summary.json",
+      "bytes": 2843,
+      "sha256": "00d1e4fb389507fb69141a6dde2489610a3c095ea31284933df9be8e0c1693a8"
+    },
+    {
+      "file": "particles-direction-audit.json",
+      "source": "artifacts\\voidwake-responsive-fx\\fx-final\\direction-audit.json",
+      "bytes": 10841,
+      "sha256": "d328f7879a3df4e6ee45f8793913cefd705e223aefa34d35c7bec9a1b5064c47"
+    },
+    {
+      "file": "particles-effect-budgets.json",
+      "source": "artifacts\\voidwake-responsive-fx\\fx-final\\effect-budgets.json",
+      "bytes": 2320,
+      "sha256": "ef6d977c6ac41c4de510386d8b646ca320927cff312e525f0021f6a8730af41b"
+    },
+    {
+      "file": "claude-attempt.json",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\claude-attempt.json",
+      "bytes": 1915,
+      "sha256": "20ea614e9f5096f047efaa6462dac7c3be63fba020ac730280cb453c9ff0089c"
+    },
+    {
+      "file": "claude-fixed.diff",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\claude-fixed.diff",
+      "bytes": 246442,
+      "sha256": "8477b74fbc85087794cb9b55e987f6dcc7714644b10654903dafc2b1bf758a12"
+    },
+    {
+      "file": "claude-prompt.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\claude-prompt.txt",
+      "bytes": 264178,
+      "sha256": "61349962948edaf8328be1550b0a3d641d807f6d99ed88b8cb6cd50e6fa7d5e6"
+    },
+    {
+      "file": "claude-stderr.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\claude-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "claude-stdout.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\claude-stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "claude-version-stderr.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\claude-version-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "claude-version-stdout.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\claude-version-stdout.txt",
+      "bytes": 22,
+      "sha256": "df949515ffdb6d599aca902006cb97c3a11033d1d6e4824f07fdc7c1301d3ab4"
+    },
+    {
+      "file": "precision-attempt.json",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\precision-attempt.json",
+      "bytes": 1794,
+      "sha256": "b8000a27cc454a8ce2d9c9d32e2b0658c25525849d1643f89c4629ac33b3cd33"
+    },
+    {
+      "file": "precision-fixed.diff",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\precision-fixed.diff",
+      "bytes": 11336,
+      "sha256": "74a8bad1001b769047627153ca292b6a34ef4c334f9621d4870c268f4be0df7e"
+    },
+    {
+      "file": "precision-prompt.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\precision-prompt.txt",
+      "bytes": 17638,
+      "sha256": "a985a120a32383435f4dba5526e4fcbba1de17555f203d228324b8f2e0e8e553"
+    },
+    {
+      "file": "precision-stderr.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\precision-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "precision-stdout.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\precision-stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "precision-version-stderr.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\precision-version-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "precision-version-stdout.txt",
+      "source": "artifacts\\voidwake-responsive-fx\\review\\precision-version-stdout.txt",
+      "bytes": 22,
+      "sha256": "df949515ffdb6d599aca902006cb97c3a11033d1d6e4824f07fdc7c1301d3ab4"
+    },
+    {
+      "file": "full-desktop-menu.png",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\desktop-menu.png",
+      "bytes": 914220,
+      "sha256": "82ee80b0ffdf75409558c518a04876a19de76080f0414c22457874613b84be2a"
+    },
+    {
+      "file": "full-portrait-menu.png",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\portrait-menu.png",
+      "bytes": 232627,
+      "sha256": "c4d6144358d300996076ea265c799b679eae51434134a020155fc6d9be9d8722"
+    },
+    {
+      "file": "full-portrait-upgrade.png",
+      "source": "artifacts\\voidwake-responsive-fx\\browser\\final\\portrait-upgrade.png",
+      "bytes": 112064,
+      "sha256": "e34ff76b39963f6251afe6d8550e4250140c2316cfed25acadedbb6fa7de1020"
+    },
+    {
+      "file": "polished-desktop-0075.jpg",
+      "source": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0075.jpg",
+      "bytes": 83877,
+      "sha256": "eefcee09041f9761cc067b63ef8ce2b1352f043f79e1f785a6c5c16ccdaadf26"
+    },
+    {
+      "file": "polished-desktop-0080.jpg",
+      "source": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0080.jpg",
+      "bytes": 88833,
+      "sha256": "91b743f95d24287e839707c093c98e9b57d5b69823015754f26700888b603cce"
+    },
+    {
+      "file": "polished-intermediate-0080.jpg",
+      "source": "artifacts/voidwake-responsive-fx/browser/filmstrip/intermediate-0080.jpg",
+      "bytes": 60997,
+      "sha256": "2a94fe62bf1e9bf1f383b8d5415e44f1a1876dd69a7cb79fc2cee1a88025e118"
+    },
+    {
+      "file": "polished-portrait-0080.jpg",
+      "source": "artifacts/voidwake-responsive-fx/browser/filmstrip/portrait-0080.jpg",
+      "bytes": 36770,
+      "sha256": "4de42ca524382e39cf8abef937ef3b3113358cfd52090a17d6602e9fa1bbd47d"
+    },
+    {
+      "file": "polished-portrait-0085.jpg",
+      "source": "artifacts/voidwake-responsive-fx/browser/filmstrip/portrait-0085.jpg",
+      "bytes": 39749,
+      "sha256": "4ddabf11b9d0c8e9e4b4875be55c4153e3f30131bdeccfb74429701a2915ddab"
+    },
+    {
+      "file": "polished-desktop-0190.jpg",
+      "source": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0190.jpg",
+      "bytes": 78036,
+      "sha256": "2809c24973bc5a85d0b88a74f7ef7ddcc8a6b2c1c974617c17b1fdf24512ab78"
+    },
+    {
+      "file": "polished-desktop-0220.jpg",
+      "source": "artifacts/voidwake-responsive-fx/browser/filmstrip/desktop-0220.jpg",
+      "bytes": 77492,
+      "sha256": "5fb27d6a6312b7e97f8fe19401f452848c052407229b28cf91fe35dd16062e12"
+    }
+  ],
+  "limits": [
+    "Full browser natural upgrade/result/Restart route belongs to the separately identified matching-runtime baseline; the last emitter-only polish has byte-identity continuity plus targeted physical-input GPU/visual validation.",
+    "Raw full browser observations remain in ignored artifacts; committed compact evidence records their SHA-256 and retains every assertion.",
+    "Browser viewport/mouse checks do not establish physical mobile touch behavior or a 60 FPS guarantee.",
+    "Both distinct bounded Claude review attempts timed out without output and are incomplete."
+  ]
+}

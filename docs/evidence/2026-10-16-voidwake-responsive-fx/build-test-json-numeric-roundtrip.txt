@@ -1,0 +1,14 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling serde_json v1.0.151
+   Compiling schemars v1.2.2
+   Compiling unone-engine v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-engine)
+    Finished `release` profile [optimized] target(s) in 2m 03s
+     Running tests\json_numeric_roundtrip.rs (D:/TSProject/Voidwake/game/tools/build/native\release\deps\json_numeric_roundtrip-95c7404bb6929918.exe)
+
+running 2 tests
+test canonical_observation_json_keeps_runtime_number_bits_and_digest ... ok
+test json_numeric_roundtrip_preserves_ieee_binary64_values ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

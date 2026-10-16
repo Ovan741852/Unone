@@ -56,6 +56,8 @@ export type Instances3DApi = {
 }
 
 export type InputApi = {
+    -- Current-tick host-projected UI event. Prefer createSlider().update(input).
+    getSliderInteraction: (id: string) -> UiSliderInteraction?,
     isDown: (action: string) -> boolean,
     -- Non-consuming edges for the current simulation tick. Read in update;
     -- multiple reads return the same result. Held actions press only once.
@@ -169,7 +171,7 @@ export type UiApi = {
     components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     -- Current host width/height ratio, also used by anchored placement.
-    -- Read-only environment data; selecting a layout remains game code.
+    -- Read-only environment data; pass to components.createResponsiveLayout().resolve.
     getViewport: () -> {aspect: number},
     -- Helpers return a real scroll_view node. Content is local top-left/y-down;
     -- viewport uses explicit left/top; never pass a stage x/y rect here.
@@ -206,6 +208,35 @@ export type UiButtonNode = UiPlacement & {
 }
 export type UiSliderNode = UiPlacement & {
     kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
+    drag: UiSliderDrag?,
+}
+export type UiSliderInteraction = {phase: "start" | "drag" | "end" | "cancel", ratio: number}
+export type UiSliderDrag = {
+    axis: "horizontal" | "vertical", reverse: boolean, enabled: boolean,
+    track_rect: UiRect, hit_rect: UiRect,
+}
+export type UiSliderOptions = {
+    id: string, value: number, min: number?, max: number?, step: number?,
+    axis: ("horizontal" | "vertical")?, reverse: boolean?,
+    onChange: never?, onClick: never?,
+}
+-- Explicit rects in the node's current stage/scroll space; no duplicate pointer
+-- mapping in projects. Hosts project, clip and capture these together.
+export type UiSliderViewProps = {
+    rect: UiRect, trackRect: UiRect?, hitPadding: number?, enabled: boolean?,
+    text: string?, action: string?, style: UiStyle?,
+    onChange: never?, value: never?,
+}
+export type UiSliderUpdate = {
+    value: number, changed: boolean, dragging: boolean,
+    started: boolean, released: boolean, cancelled: boolean,
+}
+export type UiSliderControl = {
+    view: (props: UiSliderViewProps) -> UiSliderNode,
+    update: (input: InputApi) -> UiSliderUpdate,
+    getValue: () -> number,
+    setValue: (value: number) -> (),
+    cancel: () -> (),
 }
 export type UiComboBoxNode = UiPlacement & {
     kind: "combobox", id: string, text: string?, action: string,
@@ -229,13 +260,13 @@ export type UiComponentNode = UiPlacement & {
 }
 export type UiScrollNode = UiPlacement & {
     kind: "scroll_view", id: string, viewport: UiViewport?,
-    scroll: {axis: string?, enabled: boolean?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
+    scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
     children: {UiNode}?,
 }
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
--- @unone/ui: pure constructors. All positions/order remain explicitly authored.
+-- @unone/ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
     text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
@@ -276,7 +307,41 @@ export type UiComponentProps = UiPlacement & {
 export type UiComponentScreenProps = {
     id: string, node: string, children: {UiNode}, budget: UiBudget?,
 }
+-- Layout lengths use normalized stage units per axis, like rect/viewport.
+-- They are NOT font/anchor vertical units. No intrinsic text measurement.
+-- A recursive record preserves contextual literal inference in strict Luau.
+-- The factory validates kind-dependent fields (grid columns, slot children,
+-- root sizing) and reports UI_LAYOUT_* errors before publishing anything.
+export type UiLayoutNode = {
+    id: string, kind: "slot" | "row" | "column" | "grid",
+    size: number?, grow: number?, children: {UiLayoutNode}?,
+    gap: number?, padding: UiInsets?, columns: number?,
+    rect: never?, style: never?, flex: never?, wrap: never?, direction: never?,
+}
+export type UiResponsiveVariant<T> = {
+    name: string, minAspect: number, layout: UiLayoutNode, values: T,
+}
+export type UiResponsiveLayoutOptions<T> = {
+    space: ("stage" | "scroll")?, variants: {UiResponsiveVariant<T>},
+    onResize: never?, breakpoints: never?,
+}
+export type UiResponsiveLayoutResult<T> = {
+    variant: string, values: T,
+    -- Fresh canonical copies; stage rect is y-up, scroll rect is y-down.
+    rect: (id: string) -> UiRect,
+    -- Top-left/y-down in either space; suitable for ScrollView viewport.
+    viewport: (id: string) -> UiViewport,
+}
+export type UiResponsiveLayout<T> = {
+    -- Pure: highest minAspect <= viewport.aspect, fallback first (minAspect=0).
+    -- Stage bounds stay inside 0..100; scroll bounds may extend beyond 100.
+    resolve: (viewport: {aspect: number}, bounds: UiViewport?) -> UiResponsiveLayoutResult<T>,
+}
 export type UiComponentKit = {
+    -- Create once with authored groups/thresholds; resolve each View for reflow.
+    createResponsiveLayout: <T>(options: UiResponsiveLayoutOptions<T>) -> UiResponsiveLayout<T>,
+    -- Preferred complete numeric slider: reusable state plus semantic host capture.
+    createSlider: (options: UiSliderOptions) -> UiSliderControl,
     text: (props: UiComponentTextProps) -> UiTextNode,
     button: (props: UiComponentButtonProps) -> UiButtonNode,
     slider: (props: UiComponentSliderProps) -> UiSliderNode,
@@ -310,6 +375,7 @@ export type UiScrollOptions = {
     id: string, viewport: UiViewport, content: {UiNode}?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 -- Give T your project row type to check keys and render callbacks.
 -- Bare options keep the legacy any default for existing projects.
@@ -318,6 +384,7 @@ export type UiVirtualOptions<T = any> = {
     rowHeight: number, gapY: number?,
     renderItem: (T, number, string) -> {UiNode},
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
+    inertia: boolean?, deceleration: number?,
 }
 export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
     columns: number, columnWidth: number, gapX: number?,
@@ -487,8 +554,8 @@ local function fx(kind:string,x:number,y:number,r:number,life:number)
  table.insert(S.effects,{id=id(),kind=kind,x=x,y=y,radius=r,life=life,maxLife=life,angle=0})
 end
 -- @AUDIO@
--- @PRESENTATION@
 -- @UI@
+-- @PRESENTATION@
 local function fresh(api:EngineApi,phase:string)
  nextId=0
  S={phase=phase,time=0,sectorTime=0,sectorDuration=SECTOR_DURATION,sector=1,wave=0,kills=0,

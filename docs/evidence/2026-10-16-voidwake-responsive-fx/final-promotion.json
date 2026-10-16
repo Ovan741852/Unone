@@ -1,0 +1,8 @@
+{
+  "live_root": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\dist\\player",
+  "backup_root": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\.unone\\player-before-wave-polish-e2a709591287437eba91ed031cf1d7bf",
+  "renderer": "official",
+  "old_server_command": "\"C:\\Program Files\\Python312\\python.exe\" D:/TSProject/UnoneVoidwake-20261016/sdk-final/scripts/serve-player.py --directory D:/TSProject/Voidwake/engine/_Games/voidwake/dist/player --port 8341 --bind 127.0.0.1 --no-cache",
+  "variant": "production",
+  "old_server_pid": 5148
+}

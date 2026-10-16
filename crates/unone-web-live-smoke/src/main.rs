@@ -750,6 +750,75 @@ mod tests {
     use unone_engine::InputFrame;
 
     #[test]
+    fn web_publication_preserves_binary64_through_instance_envelope() {
+        // Publication reparses canonical JSON before adding instance transport
+        // metadata. That extra parse must not lose a ULP from ordinary geometry
+        // or from arbitrary semantic observations.
+        let script = r#"return {start=function(api)
+local padding=3.1
+local width=100-padding-padding
+local title=100-(54.12+.08)
+api.observation.set('numbers',{width=width,title=title,tiny=1e-220})
+api.ui.setRoot({kind='screen',id='precision',node='precision',children={
+    {kind='panel',id='computed',rect={x=padding,y=title,width=width,height=.08}},
+}})
+end,update=function()end}"#;
+        let payload = serde_json::to_vec(&json!({
+            "config":{"name":"json-precision","entry_script":"main.luau","systems":{"ui":true}},
+            "script":script,
+        }))
+        .unwrap();
+        let mut core = unone_engine::HostProject::parse(&payload)
+            .unwrap()
+            .into_runtime(42)
+            .unwrap();
+        assert_eq!(
+            unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) },
+            0
+        );
+        for frame in 0..=1 {
+            if frame != 0 {
+                core.tick().unwrap();
+                assert_eq!(unone_web_tick(), 0);
+            }
+            let expected = core.observe();
+            let expected_numbers = &expected.observations["numbers"];
+            assert_eq!(
+                expected_numbers["width"].as_f64().unwrap().to_bits(),
+                0x4057_7333_3333_3334
+            );
+            for mode in [0, 1] {
+                assert_eq!(super::unone_web_set_instance_transport(mode), 0);
+                let actual: serde_json::Value = OUTPUT
+                    .with(|bytes| serde_json::from_slice(&bytes.borrow()).unwrap());
+                for name in ["width", "title", "tiny"] {
+                    assert_eq!(
+                        actual["world"]["observations"]["numbers"][name]
+                            .as_f64()
+                            .unwrap()
+                            .to_bits(),
+                        expected_numbers[name].as_f64().unwrap().to_bits(),
+                        "frame {frame}, instance mode {mode}, observation {name}"
+                    );
+                }
+                assert_eq!(
+                    actual["world"]["ui"]["children"][0]["rect"]["width"]
+                        .as_f64()
+                        .unwrap()
+                        .to_bits(),
+                    0x4057_7333_3333_3334
+                );
+                assert_eq!(
+                    actual["observation_digest"],
+                    unone_engine::observation_digest(&expected).unwrap()
+                );
+                assert_eq!(actual["world"], serde_json::to_value(&expected).unwrap());
+            }
+        }
+        assert_eq!(super::unone_web_set_instance_transport(0), 0);
+    }
+
+    #[test]
     fn binary_job_abi_preserves_raw_bytes_and_rejects_invalid_framing() {
         for length in [0usize,256,262144] {
             let header=serde_json::to_vec(&json!({"kind":"execute","id":"test","path":"copy.luau","source":"return function(b)return b end"})).unwrap();

@@ -3,3 +3,5 @@ docs/audits/**/raw/* -text -whitespace
 # Preserve exact command/browser captures and their byte-addressed manifests.
 docs/evidence/2026-10-16-slider-controls-inertia/* -text -whitespace
 docs/evidence/2026-10-16-ui-responsive/* -text -whitespace
+docs/evidence/2026-10-16-voidwake-responsive-fx/* -text -whitespace
+docs/evidence/2026-10-16-json-float-roundtrip/* -text -whitespace

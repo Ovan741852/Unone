@@ -1,0 +1,249 @@
+{
+  "ok": false,
+  "value": {
+    "project": "VOIDWAKE · 深空餘燼",
+    "steps": [
+      {
+        "name": "types",
+        "status": "passed",
+        "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+        "command": "game check --types",
+        "diagnostics": []
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "16 declared, 77 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout:menu",
+        "status": "failed",
+        "summary": "the project could not be loaded to draw its screen",
+        "command": "game ui preview --strict --frames 1 --seed 42 --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": [
+          {
+            "code": "LUAU_RUNTIME_ERROR",
+            "severity": "ERROR",
+            "summary": "Luau script could not be loaded or executed",
+            "explanation": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+            "facts": {
+              "message": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+              "runtime": "Luau",
+              "script": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau"
+            },
+            "likely_causes": [
+              "The entry script syntax or Engine API calls do not satisfy the current contract",
+              "The script uses a missing Entity or field at runtime"
+            ],
+            "suggested_actions": [
+              {
+                "action": "check_script",
+                "description": "Check the entry script contract first.",
+                "command": "game check --json"
+              },
+              {
+                "action": "inspect_project",
+                "description": "Confirm the scene and Entity ids.",
+                "command": "game project inspect --json"
+              }
+            ],
+            "source": {
+              "file": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau",
+              "line": 838,
+              "column": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "layout:playing",
+        "status": "failed",
+        "summary": "the project could not be loaded to draw its screen",
+        "command": "game ui preview --strict --frames 1 --seed 42 --input-sequence tests/ui-playing.input.json --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": [
+          {
+            "code": "LUAU_RUNTIME_ERROR",
+            "severity": "ERROR",
+            "summary": "Luau script could not be loaded or executed",
+            "explanation": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+            "facts": {
+              "message": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+              "runtime": "Luau",
+              "script": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau"
+            },
+            "likely_causes": [
+              "The entry script syntax or Engine API calls do not satisfy the current contract",
+              "The script uses a missing Entity or field at runtime"
+            ],
+            "suggested_actions": [
+              {
+                "action": "check_script",
+                "description": "Check the entry script contract first.",
+                "command": "game check --json"
+              },
+              {
+                "action": "inspect_project",
+                "description": "Confirm the scene and Entity ids.",
+                "command": "game project inspect --json"
+              }
+            ],
+            "source": {
+              "file": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau",
+              "line": 838,
+              "column": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "layout:paused",
+        "status": "failed",
+        "summary": "the project could not be loaded to draw its screen",
+        "command": "game ui preview --strict --frames 2 --seed 42 --input-sequence tests/ui-paused.input.json --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": [
+          {
+            "code": "LUAU_RUNTIME_ERROR",
+            "severity": "ERROR",
+            "summary": "Luau script could not be loaded or executed",
+            "explanation": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+            "facts": {
+              "message": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+              "runtime": "Luau",
+              "script": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau"
+            },
+            "likely_causes": [
+              "The entry script syntax or Engine API calls do not satisfy the current contract",
+              "The script uses a missing Entity or field at runtime"
+            ],
+            "suggested_actions": [
+              {
+                "action": "check_script",
+                "description": "Check the entry script contract first.",
+                "command": "game check --json"
+              },
+              {
+                "action": "inspect_project",
+                "description": "Confirm the scene and Entity ids.",
+                "command": "game project inspect --json"
+              }
+            ],
+            "source": {
+              "file": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau",
+              "line": 838,
+              "column": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "layout:upgrade",
+        "status": "failed",
+        "summary": "the project could not be loaded to draw its screen",
+        "command": "game ui preview --strict --frames 2500 --seed 42 --input-sequence tests/ui-upgrade.input.json --overlap-policy tests/ui-overlap-policy.json",
+        "diagnostics": [
+          {
+            "code": "LUAU_RUNTIME_ERROR",
+            "severity": "ERROR",
+            "summary": "Luau script could not be loaded or executed",
+            "explanation": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+            "facts": {
+              "message": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+              "runtime": "Luau",
+              "script": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau"
+            },
+            "likely_causes": [
+              "The entry script syntax or Engine API calls do not satisfy the current contract",
+              "The script uses a missing Entity or field at runtime"
+            ],
+            "suggested_actions": [
+              {
+                "action": "check_script",
+                "description": "Check the entry script contract first.",
+                "command": "game check --json"
+              },
+              {
+                "action": "inspect_project",
+                "description": "Confirm the scene and Entity ids.",
+                "command": "game project inspect --json"
+              }
+            ],
+            "source": {
+              "file": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau",
+              "line": 838,
+              "column": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "tests",
+        "status": "failed",
+        "summary": "the test suite could not run",
+        "command": "game test",
+        "diagnostics": [
+          {
+            "code": "LUAU_RUNTIME_ERROR",
+            "severity": "ERROR",
+            "summary": "Luau script could not be loaded or executed",
+            "explanation": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+            "facts": {
+              "message": "runtime error: packages/unone-ui:411: UI_LAYOUT_OVERFLOW: introduction fixed sizes and gaps exceed the available axis or leave zero area for grow children\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\tpackages/unone-ui:411: in function 'solve'\n\tpackages/unone-ui:424: in function 'solve'\n\tpackages/unone-ui:429: in function <packages/unone-ui:330>\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:838: in function 'updateUi'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1302: in function 'publish'\n\t[string \"\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau\"]:1541: in function 'start'",
+              "runtime": "Luau",
+              "script": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau"
+            },
+            "likely_causes": [
+              "The entry script syntax or Engine API calls do not satisfy the current contract",
+              "The script uses a missing Entity or field at runtime"
+            ],
+            "suggested_actions": [
+              {
+                "action": "check_script",
+                "description": "Check the entry script contract first.",
+                "command": "game check --json"
+              },
+              {
+                "action": "inspect_project",
+                "description": "Confirm the scene and Entity ids.",
+                "command": "game project inspect --json"
+              }
+            ],
+            "source": {
+              "file": "\\\\?\\D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\main.luau",
+              "line": 838,
+              "column": null
+            }
+          }
+        ]
+      }
+    ],
+    "passed": 2,
+    "failed": 5,
+    "not_applicable": 0,
+    "step_source": "default"
+  },
+  "diagnostics": [
+    {
+      "code": "VERIFY_FAILED",
+      "severity": "ERROR",
+      "summary": "A verify gate failed",
+      "explanation": "5 steps failed; each step's command field can be rerun independently.",
+      "facts": {
+        "failed_steps": [
+          "layout:menu",
+          "layout:playing",
+          "layout:paused",
+          "layout:upgrade",
+          "tests"
+        ]
+      },
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": [
+    "verify ran 7 gates in the default order: 2 passed, 5 failed, 0 not applicable"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "baseline": "074eca18cab0d2bb7f2655108b9427a72bfde44d",
+  "version": "2.1.280 (Claude Code)",
+  "version_exit_code": 0,
+  "command": [
+    "C:/Users/maverickchiu/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "2",
+    "--disable-slash-commands"
+  ],
+  "timeout_seconds": 55,
+  "duration_seconds": 56.0,
+  "exit_code": 124,
+  "status": "not a completed review",
+  "scope": [
+    "crates/unone-engine/Cargo.toml",
+    "crates/unone-engine/tests/json_numeric_roundtrip.rs",
+    "crates/unone-web-live-smoke/src/main.rs",
+    "docs/issues/2026-10-16-web-json-float-roundtrip.md"
+  ],
+  "source_snapshot": {
+    "crates/unone-engine/Cargo.toml": {
+      "sha256": "1fc80d0dd7c9326732aa317e95cb21083de42d745014aef3f5615e0fa01e1920",
+      "bytes": 1650
+    },
+    "crates/unone-engine/tests/json_numeric_roundtrip.rs": {
+      "sha256": "f06473892973af9b5b40a5cf13d5a571ebea79cd92d9178d1c470c7a4308b5e6",
+      "bytes": 2163
+    },
+    "crates/unone-web-live-smoke/src/main.rs": {
+      "sha256": "f5dd2bbcb171b60bac21fca47704050e182fca5baf8e1ce2127e28b9e9dbbd0c",
+      "bytes": 51134
+    },
+    "docs/issues/2026-10-16-web-json-float-roundtrip.md": {
+      "sha256": "2c6157519e62cc2f9e65ada467f9ebf3f381548476de49ac25c1d50ce066c2e6",
+      "bytes": 4237
+    }
+  },
+  "diff_sha256": "74a8bad1001b769047627153ca292b6a34ef4c334f9621d4870c268f4be0df7e",
+  "diff_bytes": 11336,
+  "prompt_sha256": "a985a120a32383435f4dba5526e4fcbba1de17555f203d228324b8f2e0e8e553",
+  "prompt_bytes": 17638,
+  "stdout_bytes": 0,
+  "stderr_bytes": 0
+}

@@ -1,0 +1,1 @@
+{"ok": true, "weights": [400, 600, 700], "authored_non_ascii_codepoints": 242, "supplemental_codepoints": 25}

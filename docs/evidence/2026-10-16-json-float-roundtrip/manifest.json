@@ -1,0 +1,43 @@
+{
+  "baseline": "074eca18cab0d2bb7f2655108b9427a72bfde44d",
+  "serde_json": "1.0.151",
+  "before_features": [
+    "default",
+    "raw_value",
+    "std"
+  ],
+  "capture_scope": "Default cached parser and isolated native/WASM official-package probe before transport fix rebuild; exact source in numeric-probe.mjs. Generated game tests/source are not changed by the probe.",
+  "native_canonical_digest": "sha256:a9e43b035c79bc98a89dcde0f9536eb285e6ec2c9ffee965a94d4f2b4245e247",
+  "wasm_canonical_digest": "sha256:a9e43b035c79bc98a89dcde0f9536eb285e6ec2c9ffee965a94d4f2b4245e247",
+  "result": "All Luau IEEE bits and canonical digests match; final Web JSON value loses one ULP for affected values.",
+  "files": {
+    "default-float-parse.rs": {
+      "bytes": 380,
+      "sha256": "809e524c79b2a13de81829f09313e8e6b12283d42503189fc0db31f3f94f43ac"
+    },
+    "default-float-parse.txt": {
+      "bytes": 212,
+      "sha256": "325454764ba76dd354efc6c5e1dd17d68d03145024bd245384d18a14989610de"
+    },
+    "numeric-native-raw.json": {
+      "bytes": 1958,
+      "sha256": "ab28931dc382a3e6ac11a37d4378da82e02beebf6f5b95afaac71d522e69841d"
+    },
+    "numeric-probe.json": {
+      "bytes": 1378,
+      "sha256": "e0f46b30800e1da03c44b599cdaff221d6e7f2944215ffc2b3c7006efb550a49"
+    },
+    "numeric-probe.mjs": {
+      "bytes": 3643,
+      "sha256": "4802b3de8f4a16d3999095ab4bd82e6e245283e858f0bce836bf80e5e404dca6"
+    },
+    "numeric-wasm-raw.json": {
+      "bytes": 762,
+      "sha256": "a670f09e256ed1ee4da17ac65c8d30fb2453fd2525bc080865d0232ec20d8a58"
+    },
+    "runtime-before.json": {
+      "bytes": 1096,
+      "sha256": "210d7c4898b6238b2a0b104928e56cda2777c566fcf98f5dbd3d583f2617b8c9"
+    }
+  }
+}

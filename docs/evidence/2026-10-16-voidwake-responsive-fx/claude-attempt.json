@@ -1,0 +1,64 @@
+{
+  "baseline": "074eca18cab0d2bb7f2655108b9427a72bfde44d",
+  "version": "2.1.280 (Claude Code)",
+  "version_exit_code": 0,
+  "command": [
+    "C:/Users/maverickchiu/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "2",
+    "--disable-slash-commands"
+  ],
+  "timeout_seconds": 55,
+  "duration_seconds": 56.2,
+  "exit_code": 124,
+  "status": "not a completed review",
+  "diff_sha256": "8477b74fbc85087794cb9b55e987f6dcc7714644b10654903dafc2b1bf758a12",
+  "diff_bytes": 246442,
+  "prompt_sha256": "61349962948edaf8328be1550b0a3d641d807f6d99ed88b8cb6cd50e6fa7d5e6",
+  "prompt_bytes": 264178,
+  "scope": [
+    "_Games/voidwake/ui.fragment.luau",
+    "_Games/voidwake/presentation.fragment.luau",
+    "_Games/voidwake/gameplay.luau",
+    "_Games/voidwake/scene.json"
+  ],
+  "context_files": [
+    "docs/ui-responsive.md",
+    "docs/native-particles.md"
+  ],
+  "omitted": [
+    "generated main.luau",
+    "canonical API type refresh hunks in gameplay.luau"
+  ],
+  "source_snapshot": {
+    "_Games/voidwake/ui.fragment.luau": {
+      "sha256": "3586ee1e7fa0ea1a287d7f271932e1e7a8a7f18ee5eb763e6606f26bb413aa2c",
+      "bytes": 23874
+    },
+    "_Games/voidwake/presentation.fragment.luau": {
+      "sha256": "7b6ea4b2403eab7209c069b8dfa2cfc89166a5fc89e6b839daa0e14cc2565103",
+      "bytes": 15221
+    },
+    "_Games/voidwake/gameplay.luau": {
+      "sha256": "97d091ace186041503bc7ae5a345c20fd9b5d184fabb364efe2b17c514640db8",
+      "bytes": 43482
+    },
+    "_Games/voidwake/scene.json": {
+      "sha256": "6689b437dda78a187454f09a3702066d8fb3a4f333905d3c983971eb0d6b37fe",
+      "bytes": 219980
+    }
+  },
+  "stdout_bytes": 0,
+  "stderr_bytes": 0
+}

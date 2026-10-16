@@ -1,0 +1,82 @@
+[
+  {
+    "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\test-json-numeric-roundtrip.txt",
+    "elapsed_seconds": 128.6741918,
+    "name": "test-json-numeric-roundtrip",
+    "exit_code": 0,
+    "command": [
+      "cargo",
+      "+1.95.0",
+      "test",
+      "-p",
+      "unone-engine",
+      "--release",
+      "--test",
+      "json_numeric_roundtrip"
+    ],
+    "started_at": "2026-10-16T08:03:58.0753706Z"
+  },
+  {
+    "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\test-web-publication-roundtrip.txt",
+    "elapsed_seconds": 86.5368007,
+    "name": "test-web-publication-roundtrip",
+    "exit_code": 0,
+    "command": [
+      "cargo",
+      "+1.95.0",
+      "test",
+      "-p",
+      "unone-web-live-smoke",
+      "--release",
+      "web_publication_preserves_binary64_through_instance_envelope"
+    ],
+    "started_at": "2026-10-16T08:06:06.7831378Z"
+  },
+  {
+    "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\workspace-tests.txt",
+    "elapsed_seconds": 290.2847079,
+    "name": "workspace-tests",
+    "exit_code": 0,
+    "command": [
+      "cargo",
+      "+1.95.0",
+      "test",
+      "--workspace",
+      "--release"
+    ],
+    "started_at": "2026-10-16T08:07:33.3244469Z"
+  },
+  {
+    "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\clippy.txt",
+    "elapsed_seconds": 58.9145246,
+    "name": "clippy",
+    "exit_code": 0,
+    "command": [
+      "cargo",
+      "+1.95.0",
+      "clippy",
+      "--workspace",
+      "--all-targets",
+      "--release",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "started_at": "2026-10-16T08:12:23.6112655Z"
+  },
+  {
+    "log": "D:\\TSProject\\Voidwake\\engine\\artifacts\\voidwake-responsive-fx\\build\\build-cli.txt",
+    "elapsed_seconds": 3.5579361,
+    "name": "build-cli",
+    "exit_code": 0,
+    "command": [
+      "cargo",
+      "+1.95.0",
+      "build",
+      "-p",
+      "unone-cli",
+      "--release"
+    ],
+    "started_at": "2026-10-16T08:13:22.5276138Z"
+  }
+]

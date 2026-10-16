@@ -1,0 +1,44 @@
+{
+  "production": true,
+  "declared_preview_tools": false,
+  "requested_exports": [
+    "unone_web_alloc",
+    "unone_web_init",
+    "unone_web_jobs_binary",
+    "unone_web_jobs_request",
+    "unone_web_load_project",
+    "unone_web_observation_len",
+    "unone_web_observation_ptr",
+    "unone_web_set_input_frame",
+    "unone_web_set_instance_transport",
+    "unone_web_set_save_payload",
+    "unone_web_set_viewport_aspect",
+    "unone_web_tick",
+    "unone_web_ui_request"
+  ],
+  "actual_exports": [
+    "unone_web_alloc",
+    "unone_web_init",
+    "unone_web_jobs_binary",
+    "unone_web_jobs_request",
+    "unone_web_load_project",
+    "unone_web_observation_len",
+    "unone_web_observation_ptr",
+    "unone_web_set_input_frame",
+    "unone_web_set_instance_transport",
+    "unone_web_set_pointer",
+    "unone_web_set_save_payload",
+    "unone_web_set_screen_pointer",
+    "unone_web_set_viewport_aspect",
+    "unone_web_tick",
+    "unone_web_ui_request"
+  ],
+  "actual_export_count": 15,
+  "existing_compatibility_exports": [
+    "unone_web_set_pointer",
+    "unone_web_set_screen_pointer"
+  ],
+  "matches_frozen_previous_abi": true,
+  "has_developer_request": false,
+  "sha256_matches": true
+}

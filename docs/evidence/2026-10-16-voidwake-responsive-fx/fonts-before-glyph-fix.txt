@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "D:\TSProject\Voidwake\engine\_Games\voidwake\tools\build-supplemental-fonts.py", line 64, in <module>
+    check()
+  File "D:\TSProject\Voidwake\engine\_Games\voidwake\tools\build-supplemental-fonts.py", line 53, in check
+    assert not missing, f"Weight {weight} needs supplemental codepoints: {sorted(missing)}"
+AssertionError: Weight 400 needs supplemental codepoints: [25511, 32034, 35320]

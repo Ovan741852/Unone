@@ -1,0 +1,11 @@
+    Checking serde_json v1.0.151
+    Checking schemars v1.2.2
+    Checking referencing v0.47.0
+    Checking unone-engine v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-engine)
+    Checking jsonschema v0.47.0
+    Checking unone-mobile-ffi v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-mobile-ffi)
+    Checking unone-web-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-web-smoke)
+    Checking unone-cli v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-cli)
+    Checking unone-mobile-android-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-mobile-android-smoke)
+    Checking unone-web-live-smoke v0.1.0 (D:\TSProject\Voidwake\engine\crates\unone-web-live-smoke)
+    Finished `release` profile [optimized] target(s) in 57.91s

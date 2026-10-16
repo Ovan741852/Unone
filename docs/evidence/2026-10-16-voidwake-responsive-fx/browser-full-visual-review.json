@@ -1,0 +1,19 @@
+{
+  "scope": "Complete matching-runtime baseline, release bd59236543c2293954ef695d590235915ef08105d20069549ac899b083cf2884. The separately planned scene-only native-ring correction is not covered by these 159 checks.",
+  "status": "UI and gameplay route passed; the EMP wash is a confirmed visual defect to be checked by the targeted scene-only follow-up.",
+  "reviewed_images": [
+    "desktop-menu.png", "desktop-phase-dash.png", "desktop-emp-burst.png",
+    "portrait-menu.png", "portrait-upgrade.png", "portrait-gameover.png",
+    "intermediate-upgrade.png"
+  ],
+  "findings": [
+    "Desktop retains the original typography, color hierarchy, large vessel and restrained framing.",
+    "Portrait retains the same art direction while giving the ship and story separate authored regions.",
+    "Upgrade cards and result controls are readable and remain inside the stage in desktop, intermediate and portrait dimensions.",
+    "Dash echoes and tight bright exhaust are visible from genuine physical input.",
+    "At the sampled EMP peak, a broad uniform blue annulus remains under the electrical filaments. Root confirmed the cause as overlapping native ring particles and is removing the five broad annuli from three scene definitions.",
+    "The full route confirms genuine WebGL shader/particle draws, natural upgrades, natural gameover and physical Restart without private simulation writes."
+  ],
+  "timing_limits": "The matching-runtime baseline still exceeds a 16.7 ms combined WASM/render CPU budget in common samples; the record is not a 60 FPS certification. Desktop/medium/portrait render p95 were 8.4/10.8/10 ms and WASM p95 15.7/15.9/16.6 ms on this QA machine.",
+  "evidence": ["summary.json", "browser-evidence.json", "baseline-identity.json", "verify-as-run.cjs"]
+}

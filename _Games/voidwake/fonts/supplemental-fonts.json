@@ -16,14 +16,17 @@
     "U+597D",
     "U+5EA7",
     "U+62B5",
+    "U+63A7",
     "U+653E",
     "U+68C4",
     "U+6D77",
     "U+71C3",
     "U+773C",
+    "U+7D22",
     "U+8000",
     "U+88AB",
     "U+88C2",
+    "U+89F8",
     "U+8C37",
     "U+8D77",
     "U+9053",
@@ -35,8 +38,8 @@
     "NotoSansTC-700.ttf": "bbb975a7233215e5dc43a7494e5c4dc2ac21672eecc997478b33ed3d3e6d16a5"
   },
   "output_faces_sha256": {
-    "NotoSansTC-Supplemental-400.ttf": "4d48df0be8b03e5c1d0f2fa856b1931d2dcf12533d5ccaee3d58f2744c0e9cb9",
-    "NotoSansTC-Supplemental-600.ttf": "688d16dabf999b2ceb633ea73e502a06f1da39c23ede12d8b1af49dd78926f3b",
-    "NotoSansTC-Supplemental-700.ttf": "20c9d6098c849aa74e9082e356466331395efacc7a5e41adb8a48a1a603a5ac0"
+    "NotoSansTC-Supplemental-400.ttf": "2e8d6561d86ef5f04966fda8c004dc0850373aea941d3018504b11e1c88f9486",
+    "NotoSansTC-Supplemental-600.ttf": "adcd0320855d72bb8e7b0840ceb4624b89b59bc3f955ff76571a4852515af9c0",
+    "NotoSansTC-Supplemental-700.ttf": "6aeba00168dc422871a0f87cd9c9c037e508be6597b3f3a579ade4c5bba1318d"
   }
 }

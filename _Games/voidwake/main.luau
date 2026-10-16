@@ -606,9 +606,334 @@ local function updateAudio(api: any)
  }
 end
 
+-- Game-owned art direction resolved by the official shared responsive package.
+-- Retained models own all breakpoint selection and region arithmetic.
+type VoidwakeUiValues = {
+ compact:boolean,showComms:boolean,showVessel:boolean,showRoute:boolean,showTouch:boolean,
+ titleSize:number,modalTitleSize:number,bodySize:number,buttonSize:number,statSize:number,
+ footerSize:number,choiceNameSize:number,choiceBodySize:number,
+ showcaseX:number,showcaseY:number,showcaseScale:number,
+}
+type VoidwakeUiModels = {[string]:UiResponsiveLayout<VoidwakeUiValues>}
+local uiModels:VoidwakeUiModels?=nil
+local abandonPrompt=false
+local function slot(id:string,size:number?):UiLayoutNode return {id=id,kind="slot",size=size} end
+local function uiValues(name:string):VoidwakeUiValues
+ if name=="portrait" then return {
+  compact=true,showComms=false,showVessel=false,showRoute=false,showTouch=true,
+  titleSize=4.1,modalTitleSize=3,bodySize=1.4,buttonSize=1.4,statSize=.95,footerSize=.7,
+  choiceNameSize=1.85,choiceBodySize=1.2,showcaseX=0,showcaseY=-65,showcaseScale=2.4,
+ } elseif name=="intermediate" then return {
+  compact=false,showComms=true,showVessel=true,showRoute=true,showTouch=false,
+  titleSize=4.1,modalTitleSize=3.6,bodySize=1.3,buttonSize=1.2,statSize=.95,footerSize=.75,
+  choiceNameSize=1.8,choiceBodySize=1.05,showcaseX=280,showcaseY=-50,showcaseScale=5.4,
+ } end
+ return {
+  compact=false,showComms=true,showVessel=true,showRoute=true,showTouch=false,
+  titleSize=5.7,modalTitleSize=4.3,bodySize=1.4,buttonSize=1.25,statSize=1.1,footerSize=.75,
+  choiceNameSize=2.1,choiceBodySize=1.15,showcaseX=330,showcaseY=-50,showcaseScale=6.4,
+ }
+end
+local function frameTree(p:boolean):UiLayoutNode
+ local header:{UiLayoutNode}=p and {slot("brand",62),slot("header_air"),slot("sound",23)} or
+  {slot("brand",22),slot("header_air"),slot("comms",37),slot("sound",9)}
+ return {id="frame",kind="column",padding={left=3.1,right=3.1,top=2.8,bottom=1.5},children={
+  {id="header",kind="row",size=4.8,gap=2,children=header},slot("header_gap",2.4),slot("header_rule",.08),
+  slot("world_region"),slot("footer_rule",.08),slot("footer_gap",1.2),
+  {id="footer_row",kind="row",size=2,gap=1,children={slot("footer",p and 62 or 55),slot("engine_mark")}},
+ }}
+end
+local function introTree(p:boolean):UiLayoutNode
+ if p then return {id="introduction",kind="column",children={
+  slot("eyebrow",2.5),slot("intro_eyebrow_gap",1),slot("menu_title",6.5),slot("intro_title_gap",.1),slot("menu_title_accent",6.5),
+  slot("intro_art_gap",.5),slot("menu_showcase"),slot("menu_story",7),slot("intro_rule_gap",1),slot("mission_rule",.08),
+  slot("intro_mission_gap",1.5),slot("mission",2.8),slot("mission_meta",2.3),slot("intro_end_gap",1),slot("mission_end",.08),
+  slot("intro_launch_gap",2),slot("launch",7),slot("menu_controls",2.5),
+ }} end
+ return {id="introduction",kind="column",children={
+  slot("intro_top",1),slot("eyebrow",2.5),slot("intro_eyebrow_gap",2.5),
+  slot("menu_title",8),slot("intro_title_gap",.5),slot("menu_title_accent",8),
+  slot("intro_story_gap",2.9),slot("menu_story",10),slot("intro_rule_gap",2.72),
+  slot("mission_rule",.08),slot("intro_mission_gap",4),slot("mission",3),
+  slot("intro_meta_gap",1.3),slot("mission_meta",2.5),slot("intro_end_gap",2.52),
+  slot("mission_end",.08),slot("intro_launch_gap",2.2),slot("launch",8.4),
+  slot("intro_controls_gap",1.6),slot("menu_controls",2.7),
+ }}
+end
+local function menuTree(p:boolean,m:boolean):UiLayoutNode
+ local intro=introTree(p)
+ if p then return {id="menu",kind="column",padding={left=6.25,right=6.25,top=16,bottom=17.5},children={intro}} end
+ intro.size=m and 43 or 34.7
+ return {id="menu",kind="row",padding={left=6.25,right=4,top=16,bottom=13},children={
+  intro,slot("menu_art_air"),{id="vessel_card",kind="column",size=m and 26 or 22,children={
+   slot("vessel_air"),slot("ship_tag",2),slot("vessel_tag_gap",1.5),slot("ship_name",5),
+   slot("vessel_name_gap",1),slot("ship_class",2.5),slot("vessel_rule_gap",2.92),
+   slot("ship_rule",.08),slot("vessel_serial_gap",2),slot("ship_serial",2),
+  }},
+ }}
+end
+local function telemetryTree(p:boolean):UiLayoutNode
+ local left:UiLayoutNode={id="mission_telemetry",kind="column",children={
+  slot("sector",3),slot("telemetry_clock_gap",1.5),slot("clock",3),slot("telemetry_objective_gap",.5),slot("objective",2.5),slot("telemetry_air")}}
+ if p then return {id="telemetry",kind="row",padding={left=4,right=4,top=13,bottom=73},gap=2,children={
+  left,{id="flight_commands",kind="column",size=24,children={slot("command_air"),slot("pause",5)}},
+ }} end
+ left.size=31
+ return {id="telemetry",kind="row",padding={left=4,right=4,top=13,bottom=73},children={
+  left,slot("telemetry_space"),{id="navigation",kind="column",size=29,children={slot("route",3),slot("route_gap",1),slot("salvage",2.5),slot("navigation_air")}},
+  {id="flight_commands",kind="column",size=10,children={slot("command_air"),slot("pause",5)}},
+ }}
+end
+local function instrumentsTree(p:boolean):UiLayoutNode
+ local stats:UiLayoutNode={id="vessel_stats",kind="column",size=p and 41 or 25,children={
+  slot("vessel",2.4),slot("vessel_bar_gap",.6),slot("hull",3),slot("hull_shield_gap",.5),slot("shield",3),slot("shield_xp_gap",.5),slot("xp",2.3)}}
+ local weapons:{UiLayoutNode}
+ if p then
+  local buttons:UiLayoutNode={id="weapon_buttons",kind="row",size=4,gap=2,children={slot("burst"),slot("dash")}}
+  weapons={slot("salvage",2.5),slot("salvage_auto_gap",1),slot("auto",4),slot("auto_pulse_gap",1),buttons,slot("weapon_air")}
+ else
+  local buttons:UiLayoutNode={id="weapon_buttons",kind="row",size=4.3,gap=.7,children={slot("auto"),slot("burst"),{id="dash",kind="slot",grow=1.2}}}
+  weapons={slot("weapon_status",2),slot("weapon_label_gap",1),slot("weapon",3),slot("weapon_action_gap",1.3),buttons,slot("weapon_air")}
+ end
+ return {id="instruments",kind="row",padding={left=5,right=4,top=79.8,bottom=6.5},children={
+  stats,slot("instrument_air"),{id="weapons",kind="column",size=p and 43 or 30,children=weapons}}}
+end
+local function pauseTree(p:boolean):UiLayoutNode
+ return {id="pause_dialog",kind="column",padding={left=p and 8 or 31,right=p and 8 or 31,top=30,bottom=31},children={
+  slot("paused_title",8),slot("paused_title_gap",4),slot("paused_copy",8),slot("paused_copy_gap",3),
+  slot("primary_action",7),slot("paused_action_gap",2),slot("secondary_action",7)}}
+end
+local function resultTree(p:boolean):UiLayoutNode
+ return {id="result_dialog",kind="column",padding={left=p and 8 or 28,right=p and 8 or 28,top=28,bottom=26},children={
+  slot("result_title",7),slot("result_title_gap",4),slot("result_copy",5),slot("result_copy_gap",3),slot("result_stats",8),
+  slot("result_action_gap",4),slot("restart",7),slot("result_button_gap",2),slot("return_menu",6)}}
+end
+local function upgradesTree(p:boolean):UiLayoutNode
+ return {id="upgrade_dialog",kind="column",padding={left=p and 8 or 11,right=p and 8 or 11,top=19,bottom=p and 15 or 27},children={
+  slot("upgrade_title",7),slot("upgrade_heading_gap",2),slot("upgrade_copy",3),slot("upgrade_cards_gap",p and 4.5 or 6),
+  {id="choices",kind="grid",columns=p and 1 or 3,gap=p and 1.5 or 3,children={slot("choice_1"),slot("choice_2"),slot("choice_3")}}}}
+end
+local function cardTree(p:boolean):UiLayoutNode
+ if p then return {id="card",kind="column",padding={left=2,right=2,top=.8,bottom=.9},children={
+  slot("rarity",1.6),slot("card_rarity_gap",.5),slot("choice_name",3),slot("card_name_gap",.5),
+  slot("choice_desc",4),slot("card_action_gap",.6),slot("select",3)}} end
+ return {id="card",kind="column",padding={left=2,right=2,top=2.5,bottom=1.2},children={
+  slot("rarity",2.5),slot("card_rarity_gap",3),slot("choice_name",4),slot("card_name_gap",6),
+  slot("choice_desc",8),slot("card_action_gap",3.6),slot("select",5.2)}}
+end
+local function makeModel(ui:UiComponentKit,tree:(boolean,boolean)->UiLayoutNode):UiResponsiveLayout<VoidwakeUiValues>
+ return ui.createResponsiveLayout({variants={
+  {name="portrait",minAspect=0,layout=tree(true,false),values=uiValues("portrait")},
+  {name="intermediate",minAspect=.85,layout=tree(false,true),values=uiValues("intermediate")},
+  {name="desktop",minAspect=1.4,layout=tree(false,false),values=uiValues("desktop")},
+ }})
+end
+local function ensureUiModels(ui:UiComponentKit):VoidwakeUiModels
+ if uiModels then return uiModels end
+ uiModels={
+  frame=makeModel(ui,function(p,_m) return frameTree(p) end),menu=makeModel(ui,menuTree),
+  telemetry=makeModel(ui,function(p,_m) return telemetryTree(p) end),instruments=makeModel(ui,function(p,_m) return instrumentsTree(p) end),
+  pause=makeModel(ui,function(p,_m) return pauseTree(p) end),result=makeModel(ui,function(p,_m) return resultTree(p) end),
+  upgrades=makeModel(ui,function(p,_m) return upgradesTree(p) end),card=makeModel(ui,function(p,_m) return cardTree(p) end),
+  touch=makeModel(ui,function(_p,_m) return {id="touch",kind="grid",columns=3,gap=1,padding={left=1,right=67,top=61,bottom=28},
+   children={slot("touch_air_left"),slot("up"),slot("touch_air_right"),slot("left"),slot("down"),slot("right")}} end),
+  boss=makeModel(ui,function(p,_m) return {id="boss_region",kind="column",padding={left=p and 8 or 32,right=p and 8 or 32,top=29,bottom=63},children={
+   {id="boss_plate",kind="column",children={slot("boss_name",2.5),slot("boss_gap",.5),slot("boss_health",2.4),slot("boss_air")}}}} end),
+  stat=makeModel(ui,function(_p,_m) return {id="stat",kind="row",children={
+   {id="label",kind="slot",grow=16},{id="label_track_gap",kind="slot",grow=3},
+   {id="bar",kind="column",grow=51,children={slot("bar_top",1.3),slot("track",.35),slot("bar_bottom")}},
+   {id="track_value_gap",kind="slot",grow=3},{id="value",kind="slot",grow=27}}} end),
+ }
+ return assert(uiModels)
+end
+-- Presentation uses this same pure selection for the authored menu showcase.
+local function resolveVoidwakeUi(api:EngineApi):UiResponsiveLayoutResult<VoidwakeUiValues>
+ return ensureUiModels(api.ui.components).frame.resolve(api.ui.getViewport())
+end
+
+local function updateUi(api:EngineApi)
+ local ui:UiComponentKit=api.ui.components
+ local models=ensureUiModels(ui)
+ local viewport=api.ui.getViewport()
+ local layout=resolveVoidwakeUi(api)
+ local design=layout.values
+ local nodes:{UiNode}={}
+ local mint:UiColor={.74,.89,.84,1}
+ local ivory:UiColor={.88,.93,.89,1}
+ local muted:UiColor={.47,.62,.62,1}
+ local edgeColor:UiColor={.57,.72,.68,.23}
+ local function component(id:string,kind:string,bounds:UiRect,build:()->())
+  local parent=nodes;nodes={};build();local children=nodes;nodes=parent
+  table.insert(nodes,(ui.component({id=id,component=kind,rect=bounds,children=children})))
+ end
+ local function panel(name:string,bounds:UiRect)
+  table.insert(nodes,(ui.panel({id=name,rect=bounds,style={background={.025,.065,.085,.72},border_color=edgeColor,border_width=.07,border_radius=.18}})))
+ end
+ local function rule(name:string,bounds:UiRect)
+  table.insert(nodes,(ui.panel({id=name,rect=bounds,style={background=edgeColor}})))
+ end
+ local tokens:{[string]:UiStyle}={
+  brand={font_family="Barlow Condensed",font_size=3.5,font_weight=700,letter_spacing=.38,color=ivory},
+  comms={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.8,letter_spacing=.18},
+  eyebrow={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=design.compact and 1.1 or 1,letter_spacing=.25,color=mint},
+  menu_title={font_size=design.titleSize,font_weight=700,letter_spacing=.15,color=ivory},
+  menu_title_accent={font_size=design.titleSize,font_weight=700,letter_spacing=.15,color=mint},
+  menu_story={font_size=design.bodySize,line_height=2,color={.58,.68,.67,1}},
+  mission={font_size=1.45,font_weight=600,letter_spacing=.12,color=ivory},
+  mission_meta={font_size=1,letter_spacing=.08},menu_controls={font_size=.85},
+  ship_tag={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.8,letter_spacing=.18,color=mint},
+  ship_name={font_family="Barlow Condensed",font_size=3.7,font_weight=600,letter_spacing=.3,color=ivory},
+  ship_class={font_size=1.05,letter_spacing=.12},
+  vessel={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.05,letter_spacing=.12,color=ivory},
+  sector={font_size=1.6,font_weight=600,color=ivory},
+  clock={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.6,color=ivory},
+  route={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,letter_spacing=.1,color=mint},
+  salvage={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=design.compact and 1.05 or .9,letter_spacing=.08},
+  paused_title={font_size=design.modalTitleSize,font_weight=600,color=ivory,text_align="center",letter_spacing=.3},
+  paused_copy={font_size=1.3,text_align="center"},
+  upgrade_title={font_size=design.modalTitleSize,font_weight=600,text_align="center",color=ivory,letter_spacing=.3},
+  upgrade_copy={font_size=design.compact and 1.1 or 1.3,text_align="center"},
+  result_title={font_size=design.modalTitleSize,font_weight=600,text_align="center",color=ivory,letter_spacing=.3},
+  result_copy={font_size=design.compact and 1.2 or 1.3,text_align="center"},
+  result_stats={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=design.compact and 1.25 or 1.6,text_align="center",color=mint},
+  footer={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=design.footerSize,letter_spacing=.13},
+  engine_mark={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=design.footerSize,letter_spacing=.13,text_align="end"},
+ }
+ local function text(name:string,value:string,bounds:UiRect)
+  local style:UiStyle=ui.composeStyle({font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,font_weight=400,color=muted,
+   text_align="start",vertical_align="middle",line_height=1.5,letter_spacing=0,overflow="clip"},tokens[name])
+  if string.sub(name,1,7)=="rarity_" then style.font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental";style.font_size=.9;style.color=mint;style.letter_spacing=.18 end
+  if string.sub(name,1,12)=="choice_name_" then style.font_size=design.choiceNameSize;style.font_weight=600;style.color=ivory end
+  if string.sub(name,1,12)=="choice_desc_" then style.font_size=design.choiceBodySize;style.line_height=design.compact and 1.6 or 1.8 end
+  table.insert(nodes,(ui.text({id=name,text=value,rect=bounds,style=style})))
+ end
+ local function button(name:string,label:string,action:string,bounds:UiRect)
+  local primary=action=="Start" or action=="Resume" or action=="Restart"
+  component(name.."_component","ActionButton",bounds,function()
+   table.insert(nodes,(ui.button({id=name,text=label,action=action,rect=bounds,style={
+    font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=primary and 1.55 or design.buttonSize,font_weight=primary and 600 or 400,
+    color=primary and {.035,.12,.14,1} or mint,background=primary and mint or {.025,.085,.105,.40},
+    border_color=primary and mint or edgeColor,border_width=.07,border_radius=.1,
+    padding={left=1.4,right=1.4,top=.3,bottom=.3},text_align="start",vertical_align="middle",letter_spacing=primary and .18 or .04}})))
+  end)
+ end
+ local function statBar(name:string,title:string,current:number,maximum:number,bounds:UiRect,color:UiColor)
+  local bar=models.stat.resolve(viewport,{left=bounds.x,top=100-bounds.y-bounds.height,width=bounds.width,height=bounds.height})
+  component(name.."_component","StatBar",bounds,function()
+   text(name.."_label",title,bar.rect("label"))
+   local track=bar.rect("track")
+   table.insert(nodes,(ui.panel({id=name.."_track",rect=track,style={background={.4,.6,.6,.17}}})))
+   if current>0 then
+    local fill:UiRect={x=track.x,y=track.y,width=math.max(.01,track.width*clamp(current/math.max(1,maximum),0,1)),height=track.height}
+    table.insert(nodes,(ui.panel({id=name.."_fill",rect=fill,style={background=color}})))
+   end
+   table.insert(nodes,(ui.text({id=name.."_value",text=math.ceil(current).." / "..maximum,rect=bar.rect("value"),style={
+    font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=design.statSize,color=ivory,text_align="end"}})))
+  end)
+ end
+ local function timer(t:number):string return string.format("%02d:%02d",math.floor(t/60),math.floor(t%60)) end
+ local phase=S.phase
+ if phase=="paused" or phase=="upgrade" or phase=="gameover" or phase=="victory" then
+  table.insert(nodes,(ui.panel({id="modal_shade",rect={x=0,y=0,width=100,height=100},style={background={.015,.04,.06,.82}}})))
+ end
+ text("brand","VOIDWAKE",layout.rect("brand"))
+ if design.showComms then text("comms","SYSTEM ONLINE   /   FLIGHT SYSTEMS",layout.rect("comms")) end
+ button("sound",soundEnabled and "SND ON" or "SND OFF","Sound",layout.rect("sound"))
+ rule("header_rule",layout.rect("header_rule"))
+ if phase=="menu" then
+  local menu=models.menu.resolve(viewport)
+  component("opening_component","MissionIntroduction",menu.rect("introduction"),function()
+   text("eyebrow","A DEEP SPACE ROGUELIKE",menu.rect("eyebrow"))
+   text("menu_title","在黑暗之中，",menu.rect("menu_title"))
+   text("menu_title_accent","留下你的餘燼。",menu.rect("menu_title_accent"))
+   text("menu_story","訊號已消失。返航不在選項之中。\n駕駛最後一艘遊隼，穿越失落星區。\n每次躍遷，都是一場全新的遠征。",menu.rect("menu_story"))
+   rule("mission_rule",menu.rect("mission_rule"));text("mission","穿越寂靜邊境",menu.rect("mission"))
+   text("mission_meta","4 個星區   ·   隨機強化   ·   永久死亡",menu.rect("mission_meta"));rule("mission_end",menu.rect("mission_end"))
+   button("launch","啟動遠征  ↗","Start",menu.rect("launch"))
+   text("menu_controls",design.showTouch and "觸控方向鍵航行   ·   自動索敵射擊" or "WASD 航行   ·   滑鼠射擊   ·   SPACE 閃避",menu.rect("menu_controls"))
+  end)
+  if design.showVessel then component("ship_component","VesselCard",menu.rect("vessel_card"),function()
+   text("ship_tag","YOUR VESSEL",menu.rect("ship_tag"));text("ship_name","PEREGRINE  MK. IV",menu.rect("ship_name"))
+   text("ship_class","遊隼級 · 深空攔截機",menu.rect("ship_class"));rule("ship_rule",menu.rect("ship_rule"))
+   text("ship_serial","REG. UN-0741  /  READY FOR DEPLOYMENT",menu.rect("ship_serial"))
+  end) end
+ elseif phase=="playing" then
+  local telemetry=models.telemetry.resolve(viewport)
+  local instruments=models.instruments.resolve(viewport)
+  local sectors={"蒼白星環","回聲裂谷","失落之海","無聲王座"}
+  text("sector",string.format("SECTOR %02d  /  %s",S.sector,sectors[math.min(4,S.sector)]),telemetry.rect("sector"))
+  text("clock",timer(S.time).."   /   擊毀 "..string.format("%03d",S.kills),telemetry.rect("clock"))
+  text("objective",S.sector==4 and "摧毀無聲君王" or ("躍遷窗口  "..math.max(0,math.ceil(SECTOR_DURATION-S.sectorTime)).."s"),telemetry.rect("objective"))
+  if design.showRoute then text("route","01 ─── 02 ─── 03 ─── 04",telemetry.rect("route")) end
+  text("salvage","SALVAGE  "..string.format("%04d",S.credits).."    /    LV. "..S.level,(design.compact and instruments or telemetry).rect("salvage"))
+  button("pause","Ⅱ  暫停","Pause",telemetry.rect("pause"))
+  text("vessel","PEREGRINE / MK. IV",instruments.rect("vessel"))
+  statBar("hull","船體",S.player.hp,S.player.maxHp,instruments.rect("hull"),{.70,.82,.70,1})
+  statBar("shield","護盾",S.player.shield,S.player.maxShield,instruments.rect("shield"),{.40,.73,.79,1})
+  text("xp","經驗 "..S.xp.." / "..S.xpNext.." · LV. "..S.level,instruments.rect("xp"))
+  if not design.compact then
+   text("weapon_status",S.autoFire and "AUTO TARGETING ONLINE" or "MANUAL TARGETING",instruments.rect("weapon_status"))
+   text("weapon","雙聯電磁炮  /  MK. "..S.level,instruments.rect("weapon"))
+  end
+  button("auto",S.autoFire and "F 自動 ON" or "F 自動 OFF","AutoFire",instruments.rect("auto"))
+  local pulseLabel=design.compact and "脈衝" or "Q 脈衝"
+  button("burst",S.burstCooldown>0 and (pulseLabel.." "..math.ceil(S.burstCooldown).."s") or pulseLabel,"Burst",instruments.rect("burst"))
+  button("dash",S.dashCooldown>0 and ("閃避 "..string.format("%.1f",S.dashCooldown).."s") or (design.compact and "閃避" or "閃避 READY"),"Dash",instruments.rect("dash"))
+  if design.showTouch then
+   local touch=models.touch.resolve(viewport)
+   button("up","↑","KeyW",touch.rect("up"));button("left","←","KeyA",touch.rect("left"))
+   button("down","↓","KeyS",touch.rect("down"));button("right","→","KeyD",touch.rect("right"))
+  end
+  for _,enemy in ipairs(S.enemies) do if enemy.boss then
+   local boss=models.boss.resolve(viewport)
+   panel("boss_plate",boss.rect("boss_plate"));text("boss_name","無聲君王  /  THE SOVEREIGN",boss.rect("boss_name"))
+   text("boss_health",math.ceil(enemy.hp/enemy.maxHp*100).."%",boss.rect("boss_health"))
+  end end
+ end
+ if phase=="paused" then
+  local dialog=models.pause.resolve(viewport)
+  text("paused_title",abandonPrompt and "放棄本次遠征？" or "航行已暫停",dialog.rect("paused_title"))
+  text("paused_copy",abandonPrompt and "目前的強化與進度將會失去。" or "深空可以等待。\n準備好，再點燃你的引擎。",dialog.rect("paused_copy"))
+  if abandonPrompt then
+   button("confirm_menu","確認放棄","Menu",dialog.rect("primary_action"));button("cancel_abandon","返回遠征","CancelAbandon",dialog.rect("secondary_action"))
+  else
+   button("resume","繼 續 航 行     ↗","Resume",dialog.rect("primary_action"));button("abandon","放棄遠征","Abandon",dialog.rect("secondary_action"))
+  end
+ elseif phase=="upgrade" then
+  local upgrades=models.upgrades.resolve(viewport)
+  text("upgrade_title",S.sectorDraft and "躍遷窗口已開啟" or "選擇你的下一道餘燼",upgrades.rect("upgrade_title"))
+  text("upgrade_copy","選擇一項科技，讓你的下一道餘燼更耀眼。",upgrades.rect("upgrade_copy"))
+  for i,choice in ipairs(S.choices) do
+   local region="choice_"..i
+   local card=models.card.resolve(viewport,upgrades.viewport(region))
+   component("choice_component_"..i,"UpgradeCard",upgrades.rect(region),function()
+    panel("choice_plate_"..i,upgrades.rect(region))
+    text("rarity_"..i,choice.rarity.." / 0"..i,card.rect("rarity"));text("choice_name_"..i,choice.name,card.rect("choice_name"))
+    local description=string.gsub(choice.description,"。","。\n")
+    description=string.gsub(description,"\n$","")
+    text("choice_desc_"..i,description,card.rect("choice_desc"))
+    button("select_"..i,"[ "..i.." ]  安裝科技","Select"..i,card.rect("select"))
+   end)
+  end
+ elseif phase=="gameover" or phase=="victory" then
+  local result=models.result.resolve(viewport)
+  text("result_title",phase=="victory" and "深 空 重 返 寂 靜" or "訊 號 已 中 斷",result.rect("result_title"))
+  text("result_copy",phase=="victory" and "無聲君王已被擊毀。你的餘燼仍在。" or "每一次失落，都是下一次遠征的起點。",result.rect("result_copy"))
+  text("result_stats","航行  "..timer(S.time).."    /    擊毀  "..S.kills.."\n抵達星區  "..S.sector.."    /    安裝強化  "..S.upgradesInstalled,result.rect("result_stats"))
+  button("restart","重 新 遠 征     ↗","Restart",result.rect("restart"));button("return_menu","返回主選單","Menu",result.rect("return_menu"))
+ end
+ rule("footer_rule",layout.rect("footer_rule"));text("footer","DEEP SPACE NETWORK  ·  CONNECTED",layout.rect("footer"))
+ text("engine_mark","POWERED BY UNONE ↗",layout.rect("engine_mark"))
+ local worldBounds=layout.rect("world_region")
+ api.observation.set("ui_layout",{variant=layout.variant,aspect=viewport.aspect,phase=phase,showTouch=design.showTouch,
+  world={x=worldBounds.x,y=worldBounds.y,width=worldBounds.width,height=worldBounds.height}})
+ api.ui.setRoot(ui.screen({id=phase,node=phase,children=nodes}))
+end
+
 -- Engine-owned presentation for VOIDWAKE. This fragment is inlined into the
 -- single Luau entry before publish(); it reads S and never changes gameplay or
--- consumes its random stream. All art remains the original imagegen PNGs.
+-- consumes its random stream. Bitmap art is imagegen PNGs; native particle
+-- shapes, Bloom and material resources are provided by the official player.
 local visualFrame = 0
 local visualSerial = 0
 local visualFired = 0
@@ -617,6 +942,15 @@ local visualHandles: {any} = {}
 local visualBatchHandles: {[string]: string} = {}
 local visualExhaust: {any} = {}
 local visualSeenEffects: {[number]: boolean} = {}
+local visualEffectStarted: {[number]: number} = {}
+local visualWaves: {any} = {}
+local visualEchoes: {any} = {}
+local visualWaveSlot = 0
+local visualEchoSlot = 0
+local visualShieldAt = -100
+local visualLastEcho = -100
+local visualDropped = 0
+local visualCounts: {[string]: number} = {}
 
 local function visualSlot(prefix:string, index:number):string
  return prefix .. (index < 10 and "0" or "") .. tostring(index)
@@ -642,7 +976,9 @@ end
 
 local function visualCanReserve(api:any, count:number):boolean
  local budget = api.particle.stats()
- return budget.active_handles < 58 and budget.reserved_particles + count <= 3900
+ local available=budget.active_handles < 58 and budget.reserved_particles + count <= 3900
+ if not available then visualDropped+=1 end
+ return available
 end
 
 local function visualPlay(api:any, effect:string, x:number, y:number, salt:number, births:number, life:number):string?
@@ -650,17 +986,18 @@ local function visualPlay(api:any, effect:string, x:number, y:number, salt:numbe
  visualSerial += 1
  local handle = api.particle.play(effect, {x=x,y=-y,z=0.08}, visualSeed(salt))
  table.insert(visualHandles, {handle=handle,expires=visualFrame+life})
+ visualCounts[effect]=(visualCounts[effect] or 0)+1
  return handle
 end
 
 -- Bullets and pickups share a few native instanced particle batches. Updating
 -- their exact positions replaces the preceding batch rather than allocating
 -- one effect handle per projectile or introducing another renderer.
-local function visualBatch(api:any, key:string, effect:string, positions:{any}, maxCount:number)
+local function visualBatch(api:any, key:string, effect:string, positions:{any}, maxCount:number, birthsPerOrigin:number)
  local previousHandle = visualBatchHandles[key]
  if previousHandle then api.particle.stop(previousHandle); visualBatchHandles[key] = nil end
  local count = math.min(#positions, maxCount)
- if count == 0 or not visualCanReserve(api, count*2) then return end
+ if count == 0 or not visualCanReserve(api, count*birthsPerOrigin) then return end
  local packed = buffer.create(count*12)
  for index=1,count do
   local point = positions[index]
@@ -673,15 +1010,30 @@ local function visualBatch(api:any, key:string, effect:string, positions:{any}, 
  visualBatchHandles[key] = api.particle.play_batch(effect, packed, visualSeed(visualFrame))
 end
 
+-- A fixed pool bounds image/material work independently of enemy density.
+-- These are original imagegen textures shaded through the engine API.
+local function visualWave(event:any, tint:{number}, energy:number, lifetime:number)
+ visualWaveSlot=visualWaveSlot%6+1
+ visualWaves[visualWaveSlot]={x=event.x,y=event.y,radius=event.radius,
+  tint=tint,energy=energy,started=visualFrame,lifetime=lifetime,
+  angle=(event.id%13)*.41,blast=event.kind=="explosion"}
+end
+
 local function resetPresentation(api:any)
  for _,record in ipairs(visualHandles) do api.particle.stop(record.handle) end
  for _,handle in pairs(visualBatchHandles) do api.particle.stop(handle) end
  visualFrame=0; visualSerial=0; visualFired=0
  visualVisibility={}; visualHandles={}; visualBatchHandles={}
  visualExhaust={}; visualSeenEffects={}
+ visualEffectStarted={}
+ visualWaves={};visualEchoes={};visualWaveSlot=0;visualEchoSlot=0
+ visualShieldAt=-100;visualLastEcho=-100;visualDropped=0;visualCounts={}
  for index=1,28 do visualShow(api,visualSlot("hostile_",index),false) end
  for index=1,19 do visualShow(api,visualSlot("rock_",index),false) end
  for index=1,16 do visualShow(api,visualSlot("detonation_",index),false) end
+ for index=1,6 do visualShow(api,visualSlot("plasma_wave_",index),false) end
+ for index=1,4 do visualShow(api,visualSlot("phase_echo_",index),false) end
+ visualShow(api,"player_shield_ripple",false)
  visualShow(api,"boss",false)
  visualShow(api,"player",true)
  api.shader.setMaterial("player","player_hull")
@@ -701,11 +1053,11 @@ local function updatePresentation(api:any)
  -- scale. Only its visual transform changes; the ship's gameplay state is
  -- still the untouched origin used when a sortie starts.
  local showcase = S.phase=="menu"
- local compact = api.ui.getViewport().aspect < 1.4
- local shipX = p.x + (showcase and (compact and 125 or 330) or 0)
- local shipY = p.y + (showcase and (-50+math.sin(visualFrame/75)*5) or 0)
+ local layoutValues=resolveVoidwakeUi(api).values
+ local shipX = p.x + (showcase and layoutValues.showcaseX or 0)
+ local shipY = p.y + (showcase and (layoutValues.showcaseY+math.sin(visualFrame/75)*5) or 0)
  local shipAngle = showcase and 0.12 or p.angle
- local shipScale = showcase and (compact and 4.2 or 6.4) or 1
+ local shipScale = showcase and layoutValues.showcaseScale or 1
 
  -- The large imagegen nebula moves more slowly than the ship. Its material
  -- gently grades the original photographic detail through the Shader API.
@@ -752,37 +1104,48 @@ local function updatePresentation(api:any)
  for index=hostileIndex+1,28 do visualShow(api,visualSlot("hostile_",index),false) end
  visualShow(api,"boss",hasBoss)
 
- local friendly,hostile,xp,repair={},{},{},{}
+ local friendly,hostile,xp,repair,friendlyTrail,hostileTrail={},{},{},{},{},{}
  for _,projectile in ipairs(S.bullets) do
   table.insert(projectile.friendly and friendly or hostile,{x=projectile.x,y=projectile.y})
+  local trail=projectile.friendly and friendlyTrail or hostileTrail
+  -- These positions come from the real swept ballistic segment. No separate
+  -- projectile simulation or renderer is introduced for the tracer.
+  local previousX=projectile.previousX or projectile.x
+  local previousY=projectile.previousY or projectile.y
+  table.insert(trail,{x=previousX,y=previousY})
+  table.insert(trail,{x=(previousX+projectile.x)*.5,y=(previousY+projectile.y)*.5})
  end
  for _,pickup in ipairs(S.pickups) do
   table.insert(pickup.kind=="repair" and repair or xp,{x=pickup.x,y=pickup.y})
  end
- visualBatch(api,"friendly","rail_bolts",friendly,280)
- visualBatch(api,"hostile","hostile_bolts",hostile,280)
- visualBatch(api,"xp","salvage_xp",xp,192)
- visualBatch(api,"repair","salvage_repair",repair,96)
+ visualBatch(api,"friendly","rail_bolts",friendly,280,2)
+ visualBatch(api,"hostile","hostile_bolts",hostile,280,2)
+ visualBatch(api,"xp","salvage_xp",xp,192,2)
+ visualBatch(api,"repair","salvage_repair",repair,96,2)
+ visualBatch(api,"friendly_trail","rail_tracers",friendlyTrail,160,1)
+ visualBatch(api,"hostile_trail","hostile_tracers",hostileTrail,80,1)
 
- -- Eight declarative exhaust directions let the engine orient the plume.
+ -- Sixteen declarative exhaust directions let the engine orient the plume.
  -- Moving only the emission origin leaves already-born ions in world space.
  local emitting = p.hp>0 and (S.phase=="playing" or S.phase=="menu")
- local direction = math.floor((shipAngle/(math.pi*2)*8)+0.5)%8
+ local direction = math.floor((shipAngle/(math.pi*2)*16)+0.5)%16
+ local boosting=p.dashTime>0 and S.phase=="playing"
+ local plumeMode=showcase and "showcase_exhaust_" or boosting and "afterburner_" or "ion_exhaust_"
  for nozzle=1,2 do
   local record=visualExhaust[nozzle]
   local side=(nozzle==1 and -8 or 8)*shipScale
   local tail=27*shipScale
   local x=shipX-math.sin(shipAngle)*tail+math.cos(shipAngle)*side
   local y=shipY+math.cos(shipAngle)*tail+math.sin(shipAngle)*side
-  if record and (not emitting or record.direction~=direction or visualFrame>=record.refresh) then
+  if record and (not emitting or record.direction~=direction or record.mode~=plumeMode or visualFrame>=record.refresh) then
    api.particle.finish(record.handle)
    visualExhaust[nozzle]=nil
    record=nil
   end
   if emitting and not record then
-   local handle=visualPlay(api,"ion_exhaust_"..tostring(direction),x,y,nozzle,15,50)
+   local handle=visualPlay(api,plumeMode..tostring(direction),x,y,nozzle,boosting and 52 or 26,48)
    if handle then
-    record={handle=handle,direction=direction,refresh=visualFrame+24}
+    record={handle=handle,direction=direction,mode=plumeMode,refresh=visualFrame+20}
     visualExhaust[nozzle]=record
    end
   end
@@ -790,237 +1153,113 @@ local function updatePresentation(api:any)
  end
 
  if S.fired>visualFired then
-  visualPlay(api,"muzzle_flash",p.x+math.sin(p.angle)*33,p.y-math.cos(p.angle)*33,S.fired,1,8)
+  visualPlay(api,"muzzle_flash",p.x+math.sin(p.angle)*33,p.y-math.cos(p.angle)*33,S.fired,7,12)
  end
  visualFired=S.fired
+
+ -- The dash leaves four short hull echoes. They are plain scene sprites with
+ -- imagegen ship art and a shared Shader API interface, behind the live ship.
+ if boosting and visualFrame-visualLastEcho>=3 then
+  visualEchoSlot=visualEchoSlot%4+1
+  visualEchoes[visualEchoSlot]={x=p.x,y=p.y,angle=p.angle,started=visualFrame}
+  visualLastEcho=visualFrame
+ end
 
  -- The PNG supplies detailed blast debris; authored native emitters add the
  -- pressure wave, fast sparks and delayed embers. FX IDs prevent repeats on
  -- pause, upgrade screens, or several publications of the same game state.
  local seen:{[number]:boolean}={}
+ local effectStarts:{[number]:number}={}
  local detonationIndex=0
  for _,event in ipairs(S.effects) do
   seen[event.id]=true
+  effectStarts[event.id]=visualEffectStarted[event.id] or visualFrame
   if not visualSeenEffects[event.id] then
    if event.kind=="explosion" then
-    visualPlay(api,event.radius>140 and "capital_detonation" or "hull_detonation",event.x,event.y,event.id,48,65)
+    visualPlay(api,event.radius>140 and "capital_detonation" or "hull_detonation",event.x,event.y,event.id,40,72)
+    visualWave(event,{1,.55,.22},.68,21)
    elseif event.kind=="hit" then
     visualPlay(api,"impact_sparks",event.x,event.y,event.id,9,20)
+    if event.radius>=50 then
+     visualShieldAt=visualFrame
+     visualPlay(api,"shield_impact",event.x,event.y,event.id,13,20)
+    end
    elseif event.kind=="burst" then
-    visualPlay(api,"emp_discharge",event.x,event.y,event.id,26,55)
+    visualPlay(api,"emp_discharge",event.x,event.y,event.id,24,55)
+    visualWave(event,{.3,.78,1},.8,28)
    elseif event.kind=="pulse" then
-    visualPlay(api,event.radius>150 and "emp_discharge" or "phase_dash",event.x,event.y,event.id,event.radius>150 and 26 or 13,55)
+    visualPlay(api,event.radius>150 and "emp_discharge" or "phase_dash",event.x,event.y,event.id,event.radius>150 and 24 or 13,55)
+    visualWave(event,{.32,.76,1},event.radius>150 and .6 or .24,event.radius>150 and 28 or 16)
    end
   end
-  if event.kind=="explosion" then
+  -- The bitmap supplies a brief dense gas accent, not a long static blast.
+  -- Its material advects/swivels UV detail while independent native debris,
+  -- cooling embers and smoke continue their own velocities and lifetimes.
+  local blastAge=(visualFrame-effectStarts[event.id])/12
+  if event.kind=="explosion" and blastAge<1 then
    detonationIndex+=1
    if detonationIndex<=16 then
     local entity=visualSlot("detonation_",detonationIndex)
-    local age=1-event.life/event.maxLife
-    local scale=event.radius*2/128*(0.6+age*0.65)
+    local age=blastAge
+    local scale=event.radius*2/128*(0.52+(1-(1-age)^2)*.8)
     visualPlace(api,entity,event.x,event.y,(event.id%13)*0.41,scale)
-    api.shader.setUniform(entity,"opacity",math.max(0,(1-age)^1.7))
-    api.shader.setUniform(entity,"heat",math.max(0,1-age*2))
+    api.shader.setUniform(entity,"opacity",math.max(0,(1-age)^1.45))
+    api.shader.setUniform(entity,"heat",math.max(0,1-age*1.6))
+    api.shader.setUniform(entity,"age",age)
    end
   end
  end
  for index=detonationIndex+1,16 do visualShow(api,visualSlot("detonation_",index),false) end
  visualSeenEffects=seen
-end
+ visualEffectStarted=effectStarts
 
--- Game-owned design tokens composed with the official @unone/ui package.
--- No host CSS, raw canvas calls, or game-specific engine branches.
-local abandonPrompt = false
-local function updateUi(api: EngineApi)
- local ui:UiComponentKit=api.ui.components
- local nodes: {UiNode} = {}
- local compact=api.ui.getViewport().aspect<1.4
- local mint:UiColor={.74,.89,.84,1}
- local ivory:UiColor={.88,.93,.89,1}
- local muted:UiColor={.47,.62,.62,1}
- local edgeColor:UiColor={.57,.72,.68,.23}
- local function rect(x:number,y:number,w:number,h:number):UiRect return {x=x,y=y,width=w,height=h} end
- local function component(id:string,kind:string,x:number,y:number,w:number,h:number,build:()->())
-  local parent=nodes;nodes={};build();local children=nodes;nodes=parent
-  table.insert(nodes,(ui.component({id=id,component=kind,rect=rect(x,y,w,h),children=children})))
+ local activeWaves,activeEchoes=0,0
+ for index=1,6 do
+  local wave=visualWaves[index]
+  local entity=visualSlot("plasma_wave_",index)
+  local age=wave and (visualFrame-wave.started)/wave.lifetime or 1
+  if wave and age<1 then
+   activeWaves+=1
+   local expand=1-(1-age)^3
+   local radius=wave.radius*(wave.blast and (.35+expand*1.2) or (.12+expand*.88))
+   visualPlace(api,entity,wave.x,wave.y,wave.angle,radius*2/128)
+   api.shader.setUniform(entity,"opacity",math.min(1,age*14+.25)*(1-age)^1.6)
+   api.shader.setUniform(entity,"energy",wave.energy*(1-age))
+   api.shader.setUniform(entity,"age",age)
+   api.shader.setUniform(entity,"tint",wave.tint)
+  else visualShow(api,entity,false) end
  end
- local function panel(name:string,x:number,y:number,w:number,h:number)
-  table.insert(nodes,(ui.panel({id=name,rect=rect(x,y,w,h),style={
-   background={.025,.065,.085,.72},border_color=edgeColor,border_width=.07,border_radius=.18}})))
+ for index=1,4 do
+  local echo=visualEchoes[index]
+  local entity=visualSlot("phase_echo_",index)
+  local age=echo and (visualFrame-echo.started)/14 or 1
+  if echo and age<1 then
+   activeEchoes+=1
+   visualPlace(api,entity,echo.x,echo.y,echo.angle,1+age*.09)
+   api.shader.setUniform(entity,"opacity",(1-age)^2*.24)
+  else visualShow(api,entity,false) end
  end
- local function rule(name:string,x:number,y:number,w:number,color:UiColor?)
-  table.insert(nodes,(ui.panel({id=name,rect=rect(x,y,w,.08),style={background=color or edgeColor}})))
- end
- local tokens:{[string]:UiStyle}={
-  brand={font_family="Barlow Condensed",font_size=3.5,font_weight=700,letter_spacing=.38,color=ivory},
-  comms={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.8,letter_spacing=.18},
-  eyebrow={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1,letter_spacing=.25,color=mint},
-  menu_title={font_size=5.7,font_weight=700,letter_spacing=.15,color=ivory},
-  menu_title_accent={font_size=5.7,font_weight=700,letter_spacing=.15,color=mint},
-  menu_story={font_size=1.4,line_height=2.0,color={.58,.68,.67,1}},
-  mission={font_size=1.45,font_weight=600,letter_spacing=.12,color=ivory},
-  mission_meta={font_size=1,letter_spacing=.08},
-  menu_controls={font_size=.85},
-  ship_tag={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.8,letter_spacing=.18,color=mint},
-  ship_name={font_family="Barlow Condensed",font_size=3.7,font_weight=600,letter_spacing=.3,color=ivory},
-  ship_class={font_size=1.05,letter_spacing=.12},
-  vessel={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.05,letter_spacing=.12,color=ivory},
-  sector={font_size=1.6,font_weight=600,color=ivory},
-  clock={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.6,color=ivory},
-  route={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,letter_spacing=.1,color=mint},
-  salvage={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.9,letter_spacing=.08},
-  paused_title={font_size=4.3,font_weight=600,color=ivory,text_align="center",letter_spacing=.3},
-  paused_copy={font_size=1.3,text_align="center"},
-  upgrade_title={font_size=4.1,font_weight=600,text_align="center",color=ivory,letter_spacing=.3},
-  upgrade_copy={font_size=1.3,text_align="center"},
-  result_title={font_size=4.3,font_weight=600,text_align="center",color=ivory,letter_spacing=.3},
-  result_copy={font_size=1.3,text_align="center"},
-  result_stats={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=1.6,text_align="center",color=mint},
-  footer={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.75,letter_spacing=.13},
-  engine_mark={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.75,letter_spacing=.13,text_align="end"},
-  flight_hint={font_size=.8,text_align="center",color={.32,.47,.49,1}},
- }
- local function text(name:string,value:string,x:number,y:number,w:number,h:number)
-  local style:UiStyle=ui.composeStyle({font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,font_weight=400,color=muted,
-   text_align="start",vertical_align="middle",line_height=1.5,letter_spacing=0,overflow="clip"},tokens[name])
-  if string.sub(name,1,7)=="rarity_" then style.font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental";style.font_size=.9;style.color=mint;style.letter_spacing=.18 end
-  if string.sub(name,1,12)=="choice_name_" then style.font_size=2.1;style.font_weight=600;style.color=ivory end
-  if string.sub(name,1,12)=="choice_desc_" then style.font_size=1.15;style.line_height=1.8 end
-  if compact then
-   if name=="menu_title" or name=="menu_title_accent" then style.font_size=4.1 end
-   if name=="menu_story" then style.font_size=1.35 end
-   if name=="paused_title" or name=="upgrade_title" or name=="result_title" then style.font_size=3.0 end
-  end
-  table.insert(nodes,(ui.text({id=name,text=value,rect=rect(x,y,w,h),style=style})))
- end
- local function button(name:string,label:string,action:string,x:number,y:number,w:number,h:number)
-  local primary=action=="Start" or action=="Resume" or action=="Restart"
-  component(name.."_component","ActionButton",x,y,w,h,function()
-   table.insert(nodes,(ui.button({id=name,text=label,action=action,rect=rect(x,y,w,h),style={
-    font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=primary and 1.55 or (compact and 1.2 or 1.25),font_weight=primary and 600 or 400,
-    color=primary and {.035,.12,.14,1} or mint,background=primary and mint or {.025,.085,.105,.40},
-    border_color=primary and mint or edgeColor,border_width=.07,border_radius=.1,
-    padding={left=1.4,right=1.4,top=.3,bottom=.3},text_align="start",vertical_align="middle",letter_spacing=primary and .18 or .04}})))
-  end)
- end
- local function statBar(name:string,title:string,current:number,maximum:number,x:number,y:number,w:number,color:UiColor)
-  component(name.."_component","StatBar",x,y,w,3,function()
-   text(name.."_label",title,x,y,w*.16,3)
-   table.insert(nodes,(ui.panel({id=name.."_track",rect=rect(x+w*.19,y+1.3,w*.51,.35),style={background={.4,.6,.6,.17}}})))
-   if current>0 then table.insert(nodes,(ui.panel({id=name.."_fill",rect=rect(x+w*.19,y+1.3,math.max(.01,w*.51*clamp(current/math.max(1,maximum),0,1)),.35),style={background=color}}))) end
-   table.insert(nodes,(ui.text({id=name.."_value",text=math.ceil(current).." / "..maximum,rect=rect(x+w*.73,y,w*.27,3),style={font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=compact and .95 or 1.1,color=ivory,text_align="end"}})))
-  end)
- end
- local function timer(t:number):string return string.format("%02d:%02d",math.floor(t/60),math.floor(t%60)) end
- local phase=S.phase
- if phase=="paused" or phase=="upgrade" or phase=="gameover" or phase=="victory" then
-  table.insert(nodes,(ui.panel({id="modal_shade",rect=rect(0,0,100,100),style={background={.015,.04,.06,.82}}})))
- end
- text("brand","VOIDWAKE",compact and 5 or 3.1,92.4,compact and 48 or 16,4.8)
- if not compact then text("comms","SYSTEM ONLINE   /   FLIGHT SYSTEMS",43,94,37,1.7) end
- button("sound",soundEnabled and "SND ON" or "SND OFF","Sound",compact and 78 or 89,93,compact and 17 or 7,3)
- rule("header_rule",3.1,90,93.8)
- if phase=="menu" then
-  local x=6.25;local w=compact and 87.5 or 34.7
-  component("opening_component","MissionIntroduction",x,17,w,67,function()
-   text("eyebrow","A DEEP SPACE ROGUELIKE",x,80,w,2.5)
-   text("menu_title","在黑暗之中，",x,compact and 72 or 70,w,8)
-   text("menu_title_accent","留下你的餘燼。",x,compact and 64 or 61.5,w,8)
-   text("menu_story","訊號已消失。返航不在選項之中。\n駕駛最後一艘遊隼，穿越失落星區。\n每次躍遷，都是一場全新的遠征。",x,compact and 49 or 48.6,w,10)
-   rule("mission_rule",x,45.8,w)
-   text("mission","穿越寂靜邊境",x,38.8,w,3)
-   text("mission_meta","4 個星區   ·   隨機強化   ·   永久死亡",x,35,w,2.5)
-   rule("mission_end",x,32.4,w)
-   button("launch","啟動遠征  ↗","Start",x,21.8,w,8.4)
-   text("menu_controls","WASD 航行   ·   滑鼠射擊   ·   SPACE 閃避",x,17.5,w,2.7)
-  end)
-  if not compact then component("ship_component","VesselCard",74,9,22,23,function()
-   text("ship_tag","YOUR VESSEL",74,30,22,2)
-   text("ship_name","PEREGRINE  MK. IV",74,23.5,22,5)
-   text("ship_class","遊隼級 · 深空攔截機",74,20,22,2.5)
-   rule("ship_rule",74,17,22)
-   text("ship_serial","REG. UN-0741  /  READY FOR DEPLOYMENT",74,13,22,2)
-  end) end
- else
-  if phase=="playing" then
-  local sectors={"蒼白星環","回聲裂谷","失落之海","無聲王座"}
-  text("sector",string.format("SECTOR %02d  /  %s",S.sector,sectors[math.min(4,S.sector)]),4,84,compact and 72 or 20,3)
-  text("clock",timer(S.time).."   /   擊毀 "..string.format("%03d",S.kills),4,79.5,compact and 60 or 20,3)
-  text("objective",S.sector==4 and "摧毀無聲君王" or ("躍遷窗口  "..math.max(0,math.ceil(SECTOR_DURATION-S.sectorTime)).."s"),4,76,compact and 60 or 20,2.5)
-  if not compact then text("route","01 ─── 02 ─── 03 ─── 04",64,85,29,3) end
-  text("salvage","SALVAGE  "..string.format("%04d",S.credits).."    /    LV. "..S.level,compact and 52 or 65,compact and 20 or 81,compact and 43 or 28,2.5)
-  button("pause","Ⅱ  暫停","Pause",compact and 78 or 88,73,compact and 17 or 9,5)
-  end
-  if phase=="playing" then
-  local vw=compact and 41 or 25
-  text("vessel","PEREGRINE / MK. IV",5,17,vw,2.4)
-  statBar("hull","船體",S.player.hp,S.player.maxHp,5,13.5,vw,{.70,.82,.70,1})
-  statBar("shield","護盾",S.player.shield,S.player.maxShield,5,10,vw,{.40,.73,.79,1})
-  text("xp","經驗 "..S.xp.." / "..S.xpNext.." · LV. "..S.level,5,6.5,vw,2.3)
-  if compact then
-   button("auto",S.autoFire and "F 自動 ON" or "F 自動 OFF","AutoFire",52,13,43,4)
-   button("burst",S.burstCooldown>0 and ("Q 脈衝 "..math.ceil(S.burstCooldown).."s") or "Q 脈衝","Burst",52,7,21,4)
-   button("dash",S.dashCooldown>0 and ("閃避 "..string.format("%.1f",S.dashCooldown).."s") or "閃避 READY","Dash",75,7,20,4)
-  else
-   text("weapon_status",S.autoFire and "AUTO TARGETING ONLINE" or "MANUAL TARGETING",66,19,30,2)
-   text("weapon","雙聯電磁炮  /  MK. "..S.level,66,15,30,3)
-   button("auto",S.autoFire and "F 自動 ON" or "F 自動 OFF","AutoFire",66,8.4,9,4.3)
-   button("burst",S.burstCooldown>0 and ("Q 脈衝 "..math.ceil(S.burstCooldown).."s") or "Q 脈衝 READY","Burst",75.7,8.4,9,4.3)
-   button("dash",S.dashCooldown>0 and ("SPACE "..string.format("%.1f",S.dashCooldown).."s") or "SPACE 閃避","Dash",85.4,8.4,10.6,4.3)
-  end
-  -- Desktop controls remain quiet; portrait uses the same semantic held input.
-  if compact then
-  button("up","↑","KeyW",12,34,10,5)
-  button("left","←","KeyA",1,28,10,5)
-  button("down","↓","KeyS",12,28,10,5)
-  button("right","→","KeyD",23,28,10,5)
-  end
-  if not compact then text("flight_hint","WASD 航行 · 滑鼠射擊 · Q 脈衝 · SPACE 閃避 · ESC 暫停",30,5.5,36,2) end
-  for _,enemy in ipairs(S.enemies) do if enemy.boss then
-   panel("boss_plate",30,82,40,8)
-   text("boss_name","無聲君王  /  THE SOVEREIGN",32,86,36,2.5)
-   text("boss_health",math.ceil(enemy.hp/enemy.maxHp*100).."%",32,83,36,2.4)
-  end end
-  end
- end
- if phase=="paused" then
-  text("paused_title",abandonPrompt and "放棄本次遠征？" or "航行已暫停",compact and 8 or 31,62,compact and 84 or 38,8)
-  text("paused_copy",abandonPrompt and "目前的強化與進度將會失去。" or "深空可以等待。\n準備好，再點燃你的引擎。",compact and 8 or 32,50,compact and 84 or 36,8)
-  if abandonPrompt then
-   button("confirm_menu","確認放棄","Menu",33,40,34,7)
-   button("cancel_abandon","返回遠征","CancelAbandon",33,31,34,7)
-  else
-   button("resume","繼 續 航 行     ↗","Resume",33,40,34,7)
-   button("abandon","放棄遠征","Abandon",33,31,34,7)
-  end
- elseif phase=="upgrade" then
-  text("upgrade_title",S.sectorDraft and "躍遷窗口已開啟" or "選擇你的下一道餘燼",8,74,84,7)
-  text("upgrade_copy","選擇一項科技，讓你的下一道餘燼更耀眼。",8,67,84,3)
-  for i,choice in ipairs(S.choices) do
-   local x=compact and 8 or (11+(i-1)*27)
-   local y=compact and (49-(i-1)*17) or 27
-   local w=compact and 84 or 24;local h=compact and 15.5 or 36
-   component("choice_component_"..i,"UpgradeCard",x,y,w,h,function()
-   panel("choice_plate_"..i,x,y,w,h)
-   text("rarity_"..i,choice.rarity.." / 0"..i,x+2,y+h-(compact and 3 or 5),w-4,2.5)
-   text("choice_name_"..i,choice.name,x+2,y+h-(compact and 6.6 or 12),w-4,4)
-   -- These descriptions have a natural sentence break already authored above.
-   local description=string.gsub(choice.description,"。","。\n")
-   text("choice_desc_"..i,description,x+2,y+(compact and 3.9 or 10),w-4,compact and 4.4 or 8)
-   button("select_"..i,"[ "..i.." ]  安裝科技","Select"..i,x+2,y+1.2,w-4,compact and 2.4 or 5.2)
-   end)
-  end
- elseif phase=="gameover" or phase=="victory" then
-  text("result_title",phase=="victory" and "深 空 重 返 寂 靜" or "訊 號 已 中 斷",compact and 8 or 28,65,compact and 84 or 44,7)
-  text("result_copy",phase=="victory" and "無聲君王已被擊毀。你的餘燼仍在。" or "每一次失落，都是下一次遠征的起點。",compact and 8 or 28,56,compact and 84 or 44,5)
-  text("result_stats","航行  "..timer(S.time).."    /    擊毀  "..S.kills.."\n抵達星區  "..S.sector.."    /    安裝強化  "..S.upgradesInstalled,compact and 8 or 29,45,compact and 84 or 42,8)
-  button("restart","重 新 遠 征     ↗","Restart",31,34,38,7)
-  button("return_menu","返回主選單","Menu",31,26,38,6)
- end
- rule("footer_rule",3.1,4.8,93.8)
- text("footer","DEEP SPACE NETWORK  ·  CONNECTED",3.1,1.5,compact and 60 or 30,2)
- text("engine_mark","POWERED BY UNONE ↗",compact and 68 or 81,1.5,compact and 27 or 15,2)
- api.ui.setRoot(ui.screen({id=phase,node=phase,children=nodes}))
+ local shieldPulse=math.max(0,1-(visualFrame-visualShieldAt)/22)^2
+ if shieldPulse>0 and p.hp>0 then
+  visualPlace(api,"player_shield_ripple",p.x,p.y,0,1+(1-math.sqrt(shieldPulse))*.18)
+  api.shader.setUniform("player_shield_ripple","pulse",shieldPulse)
+  api.shader.setUniform("player_shield_ripple","tint",p.shield>0 and {.3,.75,1} or {1,.52,.22})
+  api.shader.setUniform("player_shield_ripple","impactDirection",{math.sin(p.angle),math.cos(p.angle)})
+ else visualShow(api,"player_shield_ripple",false) end
+
+ local budget=api.particle.stats()
+ api.observation.set("presentation",{
+  renderer="official",particle_backend="native_declarative",shader_materials=59,
+  plume_mode=plumeMode,afterburner=boosting,
+  active_waves=activeWaves,active_echoes=activeEchoes,shield_pulse=shieldPulse,
+  trail_points=math.min(#friendlyTrail,160)+math.min(#hostileTrail,80),
+  active_handles=budget.active_handles,reserved_particles=budget.reserved_particles,
+  live_particles=budget.live_particles,dropped_effects=visualDropped,
+  explosions_played=(visualCounts.hull_detonation or 0)+(visualCounts.capital_detonation or 0),
+  muzzle_flashes=visualCounts.muzzle_flash or 0,
+  shield_impacts=visualCounts.shield_impact or 0,
+  ability_discharges=visualCounts.emp_discharge or 0,
+ })
 end
 
 local function fresh(api:EngineApi,phase:string)

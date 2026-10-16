@@ -1,0 +1,154 @@
+[
+  {
+    "effect": "afterburner_0",
+    "frame": 0,
+    "live_samples": 6,
+    "emitters": [
+      "exhaust_flecks",
+      "ion_plume",
+      "white_hot_core"
+    ],
+    "max_radius": 0.0
+  },
+  {
+    "effect": "afterburner_0",
+    "frame": 8,
+    "live_samples": 22,
+    "emitters": [
+      "exhaust_flecks",
+      "ion_plume",
+      "white_hot_core"
+    ],
+    "max_radius": 37.964
+  },
+  {
+    "effect": "afterburner_0",
+    "frame": 24,
+    "live_samples": 25,
+    "emitters": [
+      "exhaust_flecks",
+      "ion_plume",
+      "white_hot_core"
+    ],
+    "max_radius": 50.629
+  },
+  {
+    "effect": "afterburner_0",
+    "frame": 48,
+    "live_samples": 0,
+    "emitters": [],
+    "max_radius": 0
+  },
+  {
+    "effect": "hull_detonation",
+    "frame": 0,
+    "live_samples": 19,
+    "emitters": [
+      "initial_flash",
+      "metal_shrapnel"
+    ],
+    "max_radius": 0.0
+  },
+  {
+    "effect": "hull_detonation",
+    "frame": 8,
+    "live_samples": 38,
+    "emitters": [
+      "cooling_embers",
+      "metal_shrapnel",
+      "residual_smoke"
+    ],
+    "max_radius": 37.756
+  },
+  {
+    "effect": "hull_detonation",
+    "frame": 24,
+    "live_samples": 38,
+    "emitters": [
+      "cooling_embers",
+      "metal_shrapnel",
+      "residual_smoke"
+    ],
+    "max_radius": 113.269
+  },
+  {
+    "effect": "hull_detonation",
+    "frame": 48,
+    "live_samples": 20,
+    "emitters": [
+      "cooling_embers",
+      "residual_smoke"
+    ],
+    "max_radius": 85.754
+  },
+  {
+    "effect": "emp_discharge",
+    "frame": 0,
+    "live_samples": 21,
+    "emitters": [
+      "ion_fragments",
+      "reactor_flash"
+    ],
+    "max_radius": 0.0
+  },
+  {
+    "effect": "emp_discharge",
+    "frame": 8,
+    "live_samples": 21,
+    "emitters": [
+      "ion_fragments",
+      "reactor_flash"
+    ],
+    "max_radius": 58.581
+  },
+  {
+    "effect": "emp_discharge",
+    "frame": 24,
+    "live_samples": 20,
+    "emitters": [
+      "ion_fragments"
+    ],
+    "max_radius": 175.744
+  },
+  {
+    "effect": "emp_discharge",
+    "frame": 48,
+    "live_samples": 0,
+    "emitters": [],
+    "max_radius": 0
+  },
+  {
+    "effect": "shield_impact",
+    "frame": 0,
+    "live_samples": 13,
+    "emitters": [
+      "shield_energy",
+      "surface_splinters"
+    ],
+    "max_radius": 28.85
+  },
+  {
+    "effect": "shield_impact",
+    "frame": 8,
+    "live_samples": 13,
+    "emitters": [
+      "shield_energy",
+      "surface_splinters"
+    ],
+    "max_radius": 31.322
+  },
+  {
+    "effect": "shield_impact",
+    "frame": 24,
+    "live_samples": 0,
+    "emitters": [],
+    "max_radius": 0
+  },
+  {
+    "effect": "shield_impact",
+    "frame": 48,
+    "live_samples": 0,
+    "emitters": [],
+    "max_radius": 0
+  }
+]

@@ -1,0 +1,429 @@
+[
+  {
+    "effect": "rail_bolts",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 0,
+    "diagnostics": []
+  },
+  {
+    "effect": "hostile_bolts",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 0,
+    "diagnostics": []
+  },
+  {
+    "effect": "salvage_xp",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 0,
+    "diagnostics": []
+  },
+  {
+    "effect": "salvage_repair",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 0,
+    "diagnostics": []
+  },
+  {
+    "effect": "impact_sparks",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 8,
+    "diagnostics": []
+  },
+  {
+    "effect": "hull_detonation",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 38,
+    "diagnostics": []
+  },
+  {
+    "effect": "capital_detonation",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 38,
+    "diagnostics": []
+  },
+  {
+    "effect": "emp_discharge",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 21,
+    "diagnostics": []
+  },
+  {
+    "effect": "phase_dash",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 13,
+    "diagnostics": []
+  },
+  {
+    "effect": "muzzle_flash",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 4,
+    "diagnostics": []
+  },
+  {
+    "effect": "rail_tracers",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 0,
+    "diagnostics": []
+  },
+  {
+    "effect": "hostile_tracers",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 0,
+    "diagnostics": []
+  },
+  {
+    "effect": "shield_impact",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 13,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_0",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_0",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_0",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_1",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_1",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_1",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_2",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_2",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_2",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_3",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_3",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_3",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_4",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_4",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_4",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_5",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_5",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_5",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_6",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_6",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_6",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_7",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_7",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_7",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_8",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_8",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_8",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_9",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_9",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_9",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_10",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_10",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_10",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_11",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_11",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_11",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_12",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_12",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_12",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_13",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_13",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_13",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_14",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_14",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_14",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "ion_exhaust_15",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  },
+  {
+    "effect": "afterburner_15",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 22,
+    "diagnostics": []
+  },
+  {
+    "effect": "showcase_exhaust_15",
+    "exit_code": 0,
+    "ok": true,
+    "sample_count": 10,
+    "diagnostics": []
+  }
+]

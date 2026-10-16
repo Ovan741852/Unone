@@ -1,0 +1,469 @@
+{
+  "ok": true,
+  "url": "http://127.0.0.1:8341/?ui=responsive-fx",
+  "exportRoot": "D:\\TSProject\\Voidwake\\engine\\_Games\\voidwake\\dist\\player",
+  "startedUtc": "2026-10-16T08:18:20.902Z",
+  "checks": 159,
+  "passed": 159,
+  "exportUnchanged": true,
+  "failure": null,
+  "limitations": [
+    "Browser automation uses desktop mouse/keyboard, including portrait viewport; physical mobile hardware and touch are not claimed.",
+    "Actual GPU context and submitted draw calls establish rendered output; screenshots still require visual review.",
+    "Reported timing is this QA machine/browser and is not a product performance guarantee."
+  ],
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "phaseLabels": [
+        "menu",
+        "movement",
+        "manual-fire",
+        "phase-dash",
+        "emp-burst",
+        "paused",
+        "paused-reflow",
+        "live-reflow",
+        "impact",
+        "detonation",
+        "upgrade",
+        "upgrade-installed",
+        "shield-impact",
+        "gameover",
+        "restart"
+      ],
+      "uiVariants": [
+        "desktop",
+        "portrait"
+      ],
+      "performance": {
+        "samples": 225,
+        "maxParticles": 165,
+        "maxParticleSamples": 165,
+        "maxDrawCalls": 93,
+        "renderMsP95": 8.399999998509884,
+        "maxDroppedSteps": 2393,
+        "maxReservedParticles": 285,
+        "maxActiveHandles": 16,
+        "maxDroppedEffects": 0
+      },
+      "timings": {
+        "renderMs": {
+          "count": 176,
+          "p50": 6.900000002235174,
+          "p95": 8.399999998509884,
+          "max": 9.599999997764826
+        },
+        "bridgeMs": {
+          "count": 176,
+          "p50": 13.699999999254942,
+          "p95": 15.799999997019768,
+          "max": 17.100000001490116
+        },
+        "wasmMs": {
+          "count": 176,
+          "p50": 13.599999997764826,
+          "p95": 15.700000002980232,
+          "max": 16.699999999254942
+        }
+      },
+      "gpu": [
+        {
+          "kind": "webgl2",
+          "canvasId": "game",
+          "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+          "vendor": "Google Inc. (NVIDIA)",
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1650 (0x00002188) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+        }
+      ],
+      "actualDraws": 319610,
+      "actualInstancedDraws": 191776,
+      "maxEssentialTextOverflow": 0,
+      "errors": [],
+      "requestFailures": []
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "phaseLabels": [
+        "menu",
+        "movement",
+        "manual-fire",
+        "phase-dash",
+        "emp-burst",
+        "paused",
+        "paused-reflow",
+        "live-reflow",
+        "impact",
+        "detonation",
+        "upgrade",
+        "upgrade-installed",
+        "shield-impact",
+        "gameover",
+        "restart"
+      ],
+      "uiVariants": [
+        "intermediate",
+        "portrait"
+      ],
+      "performance": {
+        "samples": 229,
+        "maxParticles": 183,
+        "maxParticleSamples": 183,
+        "maxDrawCalls": 96,
+        "renderMsP95": 10.799999997019768,
+        "maxDroppedSteps": 2356,
+        "maxReservedParticles": 293,
+        "maxActiveHandles": 16,
+        "maxDroppedEffects": 0
+      },
+      "timings": {
+        "renderMs": {
+          "count": 179,
+          "p50": 7.100000001490116,
+          "p95": 10.799999997019768,
+          "max": 15.5
+        },
+        "bridgeMs": {
+          "count": 179,
+          "p50": 13.599999997764826,
+          "p95": 15.899999998509884,
+          "max": 17
+        },
+        "wasmMs": {
+          "count": 179,
+          "p50": 13.599999997764826,
+          "p95": 15.899999998509884,
+          "max": 16.900000002235174
+        }
+      },
+      "gpu": [
+        {
+          "kind": "webgl2",
+          "canvasId": "game",
+          "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+          "vendor": "Google Inc. (NVIDIA)",
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1650 (0x00002188) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+        }
+      ],
+      "actualDraws": 325156,
+      "actualInstancedDraws": 194920,
+      "maxEssentialTextOverflow": 0,
+      "errors": [],
+      "requestFailures": []
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "phaseLabels": [
+        "menu",
+        "movement",
+        "manual-fire",
+        "phase-dash",
+        "emp-burst",
+        "paused",
+        "paused-reflow",
+        "live-reflow",
+        "detonation",
+        "impact",
+        "upgrade",
+        "upgrade-installed",
+        "shield-impact",
+        "gameover",
+        "restart"
+      ],
+      "uiVariants": [
+        "portrait",
+        "desktop"
+      ],
+      "performance": {
+        "samples": 240,
+        "maxParticles": 175,
+        "maxParticleSamples": 183,
+        "maxDrawCalls": 90,
+        "renderMsP95": 10,
+        "maxDroppedSteps": 2456,
+        "maxReservedParticles": 298,
+        "maxActiveHandles": 16,
+        "maxDroppedEffects": 0
+      },
+      "timings": {
+        "renderMs": {
+          "count": 187,
+          "p50": 7,
+          "p95": 10,
+          "max": 14.700000002980232
+        },
+        "bridgeMs": {
+          "count": 187,
+          "p50": 14.100000001490116,
+          "p95": 16.600000001490116,
+          "max": 25.699999999254942
+        },
+        "wasmMs": {
+          "count": 187,
+          "p50": 14,
+          "p95": 16.600000001490116,
+          "max": 25.600000001490116
+        }
+      },
+      "gpu": [
+        {
+          "kind": "webgl2",
+          "canvasId": "game",
+          "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+          "vendor": "Google Inc. (NVIDIA)",
+          "renderer": "ANGLE (NVIDIA, NVIDIA GeForce GTX 1650 (0x00002188) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+        }
+      ],
+      "actualDraws": 330763,
+      "actualInstancedDraws": 197654,
+      "maxEssentialTextOverflow": 0,
+      "errors": [],
+      "requestFailures": []
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "desktop-detonation.png",
+      "bytes": 938326,
+      "sha256": "0a731c882a4c13b31de2a36d33b67bd57210d0e1427771083df793899af48e97"
+    },
+    {
+      "name": "desktop-emp-burst.png",
+      "bytes": 1016804,
+      "sha256": "5eb12664d44103effd2a66665547bae018a50e4587d6360df2dc70acf654ed70"
+    },
+    {
+      "name": "desktop-gameover.png",
+      "bytes": 393152,
+      "sha256": "658e7cc9b31d736b3177afaaef1179bd6154ecdd9872a166e201cc97b328dcd1"
+    },
+    {
+      "name": "desktop-impact.png",
+      "bytes": 945550,
+      "sha256": "8ac110f7584d908113107d3eb879ff5951160243e7d1b3f330d3ed79d4c523c6"
+    },
+    {
+      "name": "desktop-live-reflow.png",
+      "bytes": 256367,
+      "sha256": "dab137fb97b03c989891bef416d7939ccbb1c7cb0040f1dcae4f27ef9e0eee60"
+    },
+    {
+      "name": "desktop-manual-fire.png",
+      "bytes": 918547,
+      "sha256": "a655c8690458af3d4219ef35622ad4e26e073b742c6b6cdf11a9cd089644c345"
+    },
+    {
+      "name": "desktop-menu.png",
+      "bytes": 914220,
+      "sha256": "82ee80b0ffdf75409558c518a04876a19de76080f0414c22457874613b84be2a"
+    },
+    {
+      "name": "desktop-movement.png",
+      "bytes": 906188,
+      "sha256": "feb5a00dfcabb7b2117eabcff18419123b9bf7b6916c0decd1e2b06c4b83f7a2"
+    },
+    {
+      "name": "desktop-paused-reflow.png",
+      "bytes": 105568,
+      "sha256": "af5ce6791401e7a325bdccde02ea251cf2093302c9a9e13c83c4ecb681a8ef9b"
+    },
+    {
+      "name": "desktop-paused.png",
+      "bytes": 364898,
+      "sha256": "157ca6d16faf28f381a808d790f6a5ef09354e4027a49b0031e68e38fe8c3fd4"
+    },
+    {
+      "name": "desktop-phase-dash.png",
+      "bytes": 947908,
+      "sha256": "5135850a9b4b76b45c3caee8a9442930b767e8b0bd0cd19d6ed7820362b226ce"
+    },
+    {
+      "name": "desktop-restart.png",
+      "bytes": 879048,
+      "sha256": "e6398b5d1e922d86b70537bbb98ef6e16db41115f45c9768e671aec536af9fef"
+    },
+    {
+      "name": "desktop-shield-impact.png",
+      "bytes": 944449,
+      "sha256": "4bf3b5e9f6794769cd63856aecf937c7075171d34bfb3bebe3d9109e53f91159"
+    },
+    {
+      "name": "desktop-upgrade-installed.png",
+      "bytes": 1030720,
+      "sha256": "e4eb0d70df9f5f421bfc2507dfb9dfca388094670a71323e82671dba2a8704a5"
+    },
+    {
+      "name": "desktop-upgrade.png",
+      "bytes": 360963,
+      "sha256": "f5d55a7b2c765a2268c46378d15f37afc6638d98e4a2dfb4aca84ae8142b9c35"
+    },
+    {
+      "name": "intermediate-detonation.png",
+      "bytes": 664821,
+      "sha256": "70383e174418f3e42b86ea8b9d95d17928ba21483e1b4ad98dfb08f9b7f44588"
+    },
+    {
+      "name": "intermediate-emp-burst.png",
+      "bytes": 744090,
+      "sha256": "8390825a121c049a8266a309c4f2d80e3b707e6c2b3323604e89a32ce9c4e63e"
+    },
+    {
+      "name": "intermediate-gameover.png",
+      "bytes": 287106,
+      "sha256": "ac4ebdbf438c55c97cb797481eb2a613f6ac30e7384d8c34c0216ebcce574358"
+    },
+    {
+      "name": "intermediate-impact.png",
+      "bytes": 667161,
+      "sha256": "61594f728c0618c5b12ed373f19eafc313d1e775e45b2f8e34e4b163d5256180"
+    },
+    {
+      "name": "intermediate-live-reflow.png",
+      "bytes": 254284,
+      "sha256": "e1f5a774c4cc0ae0c1ddb7ec755fce5239d411dc25f5fea998435edc55eb6935"
+    },
+    {
+      "name": "intermediate-manual-fire.png",
+      "bytes": 653602,
+      "sha256": "02a33b54da6ca94c9ce390ff828869a1d999baad9d3f94b5addd7a49c880cd73"
+    },
+    {
+      "name": "intermediate-menu.png",
+      "bytes": 630360,
+      "sha256": "242c4477cde76139a6202e3f45a850fceb1c0bb0f9377231ac09fe99a3c10807"
+    },
+    {
+      "name": "intermediate-movement.png",
+      "bytes": 640071,
+      "sha256": "68b5e3285b4555d6f2192ba7e8297d47018d377598efb97e0616651df992544c"
+    },
+    {
+      "name": "intermediate-paused-reflow.png",
+      "bytes": 104451,
+      "sha256": "d657a04fc73923c4b104fc183d111becb198a470295dadbdde048a727231a86e"
+    },
+    {
+      "name": "intermediate-paused.png",
+      "bytes": 258677,
+      "sha256": "0726f92d3c4d055a4ff0f304c9b68b5c5d73523ece525c3a24530a0aaeecbfc9"
+    },
+    {
+      "name": "intermediate-phase-dash.png",
+      "bytes": 676549,
+      "sha256": "678347f25b3ced66ac514652392b5a82db2d62513bb1390cbf891438260884b8"
+    },
+    {
+      "name": "intermediate-restart.png",
+      "bytes": 605752,
+      "sha256": "d74441e1348896fe4ac580955ddc40c060e1ea76b01c23d447ff4a47262522b9"
+    },
+    {
+      "name": "intermediate-shield-impact.png",
+      "bytes": 670865,
+      "sha256": "a6c888fec9d2cd15cc77a7b4cdd307d104ec7fc1d38c399154e8f4ec63630d62"
+    },
+    {
+      "name": "intermediate-upgrade-installed.png",
+      "bytes": 755341,
+      "sha256": "7880f426c1d11a9a611fffec947e42cd00d3187b416f649b52e0201bb1c6ff7b"
+    },
+    {
+      "name": "intermediate-upgrade.png",
+      "bytes": 269790,
+      "sha256": "1cf47a3eeeeed21a6cdffe3621b70a42a0ed5dec4429dd4c430b2f9a5d9f7290"
+    },
+    {
+      "name": "portrait-detonation.png",
+      "bytes": 249255,
+      "sha256": "22559308385f90ff4b023a444a5fb34df1ba704bd14c49335c02066320b56910"
+    },
+    {
+      "name": "portrait-emp-burst.png",
+      "bytes": 298063,
+      "sha256": "930adc53dba09c9765e4c43913d8f0dff940c1fd838857dfb6946e947a83c84c"
+    },
+    {
+      "name": "portrait-gameover.png",
+      "bytes": 124791,
+      "sha256": "6ed2b990c34f6ee140ae21df67e337d003a68ce30c1f2ef00ff4808799445894"
+    },
+    {
+      "name": "portrait-impact.png",
+      "bytes": 246565,
+      "sha256": "60e8258562032cabd6d11ec0a1b3e8e12d933bc68bc228376226ac5e841445b4"
+    },
+    {
+      "name": "portrait-live-reflow.png",
+      "bytes": 915495,
+      "sha256": "fb8679e8e77c5b8ba7f173dd4fc5d3df564acb22d9246b3cf6b02df88a4a12cc"
+    },
+    {
+      "name": "portrait-manual-fire.png",
+      "bytes": 251553,
+      "sha256": "bb751fd054839fa3cf22545d3866a4c3544d94c7e047e43e6d9b51455fd53796"
+    },
+    {
+      "name": "portrait-menu.png",
+      "bytes": 232627,
+      "sha256": "c4d6144358d300996076ea265c799b679eae51434134a020155fc6d9be9d8722"
+    },
+    {
+      "name": "portrait-movement.png",
+      "bytes": 246117,
+      "sha256": "922ace75fe6fb48c7c05084cd6efa1a6ba33780e2dc2e26d05ad26833b59dff3"
+    },
+    {
+      "name": "portrait-paused-reflow.png",
+      "bytes": 354532,
+      "sha256": "f661fde15dba9bf87df65350e36c25b4fcdfbed78271d1552f506946be815545"
+    },
+    {
+      "name": "portrait-paused.png",
+      "bytes": 96582,
+      "sha256": "588a7b945c3634aaacfd331f1d39891e87fb24cc79f998bbf496dd47fcd147db"
+    },
+    {
+      "name": "portrait-phase-dash.png",
+      "bytes": 259882,
+      "sha256": "bfd19b9cf47a3389ed9bf9c53f6b396f4320742c50ae6f34809ede55ff3ab876"
+    },
+    {
+      "name": "portrait-restart.png",
+      "bytes": 231283,
+      "sha256": "43b965e670e553b6077d9b47a26f1a5df3e8f487db5b9be36bc19aa65a836998"
+    },
+    {
+      "name": "portrait-shield-impact.png",
+      "bytes": 257670,
+      "sha256": "75ec7679077cd3ed3b58809b61aa7a6e0a58f8a050f795972c641136420efb61"
+    },
+    {
+      "name": "portrait-upgrade-installed.png",
+      "bytes": 290597,
+      "sha256": "ffcaa39a21be448922c5ae938efb4443d7edb22ed2e43086b3649f9277f42a4d"
+    },
+    {
+      "name": "portrait-upgrade.png",
+      "bytes": 112064,
+      "sha256": "e34ff76b39963f6251afe6d8550e4250140c2316cfed25acadedbb6fa7de1020"
+    }
+  ],
+  "rawReport": {
+    "path": "artifacts/voidwake-responsive-fx/browser/final/report.json",
+    "bytes": 66238739,
+    "sha256": "d1bcf509f4b268fc843c2f6116655e500cfebb13ed315fece55f9e6e28950b66",
+    "retention": "Original raw report stays unchanged in the ignored local artifact directory. This compact record retains all checks and meaningful sampled public state; duplicate shader source strings, particle-batch debug arrays and binary-transport counters are omitted."
+  }
+}

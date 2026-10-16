@@ -1,0 +1,125 @@
+{
+  "sdk": "D:/TSProject/UnoneVoidwake-20261016/sdk-final",
+  "files": [
+    {
+      "source_sha256": "e815a00830548c1575e09f9012a2fa5be8c3d3eceae5cc7c8232c2dcc36f5410",
+      "relative_path": "docs/decisions/0038-shared-ui-styling.md",
+      "inventory_sha256": "e815a00830548c1575e09f9012a2fa5be8c3d3eceae5cc7c8232c2dcc36f5410",
+      "installed_sha256": "e815a00830548c1575e09f9012a2fa5be8c3d3eceae5cc7c8232c2dcc36f5410",
+      "matches": true
+    },
+    {
+      "source_sha256": "606c069895535c70d23abe4f46c40e1f839cc05b66a70928d565fc9c3f210977",
+      "relative_path": "docs/decisions/0039-component-background-intent.md",
+      "inventory_sha256": "606c069895535c70d23abe4f46c40e1f839cc05b66a70928d565fc9c3f210977",
+      "installed_sha256": "606c069895535c70d23abe4f46c40e1f839cc05b66a70928d565fc9c3f210977",
+      "matches": true
+    },
+    {
+      "source_sha256": "96650faa0a9e34b1b8f0834f64193b35786897f0c5a00c868592d4e11549acda",
+      "relative_path": "docs/decisions/0040-official-ui-package.md",
+      "inventory_sha256": "96650faa0a9e34b1b8f0834f64193b35786897f0c5a00c868592d4e11549acda",
+      "installed_sha256": "96650faa0a9e34b1b8f0834f64193b35786897f0c5a00c868592d4e11549acda",
+      "matches": true
+    },
+    {
+      "source_sha256": "a60dd38a69870847058debc4c3276918973db4403bfff0034f642a5a4dbf2488",
+      "relative_path": "docs/decisions/0042-official-slider-input-and-scroll-inertia.md",
+      "inventory_sha256": "a60dd38a69870847058debc4c3276918973db4403bfff0034f642a5a4dbf2488",
+      "installed_sha256": "a60dd38a69870847058debc4c3276918973db4403bfff0034f642a5a4dbf2488",
+      "matches": true
+    },
+    {
+      "source_sha256": "a56d2899e9099d27d52086d5a5c3d968e9672bb995ba2dea885b20a15172021e",
+      "relative_path": "docs/decisions/0043-explicit-responsive-ui-layout.md",
+      "inventory_sha256": "a56d2899e9099d27d52086d5a5c3d968e9672bb995ba2dea885b20a15172021e",
+      "installed_sha256": "a56d2899e9099d27d52086d5a5c3d968e9672bb995ba2dea885b20a15172021e",
+      "matches": true
+    },
+    {
+      "source_sha256": "bf99e3dd2a84da0815bcfaa218e4c290472e21cafecd21282fbedd8da558832d",
+      "relative_path": "docs/engine.d.luau",
+      "inventory_sha256": "bf99e3dd2a84da0815bcfaa218e4c290472e21cafecd21282fbedd8da558832d",
+      "installed_sha256": "bf99e3dd2a84da0815bcfaa218e4c290472e21cafecd21282fbedd8da558832d",
+      "matches": true
+    },
+    {
+      "source_sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9",
+      "relative_path": "docs/formal-ui-host.md",
+      "inventory_sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9",
+      "installed_sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9",
+      "matches": true
+    },
+    {
+      "source_sha256": "35b3fd8d65bee76c42d6b6353cf7e95fdd1c1c6a13768b9666bf234838c0654e",
+      "relative_path": "docs/project.schema.json",
+      "inventory_sha256": "35b3fd8d65bee76c42d6b6353cf7e95fdd1c1c6a13768b9666bf234838c0654e",
+      "installed_sha256": "35b3fd8d65bee76c42d6b6353cf7e95fdd1c1c6a13768b9666bf234838c0654e",
+      "matches": true
+    },
+    {
+      "source_sha256": "ed9a198b5777c25b01213a2460b7dca6c74240837b8c5c58ee13ffd615cc39fe",
+      "relative_path": "docs/ui-components.md",
+      "inventory_sha256": "ed9a198b5777c25b01213a2460b7dca6c74240837b8c5c58ee13ffd615cc39fe",
+      "installed_sha256": "ed9a198b5777c25b01213a2460b7dca6c74240837b8c5c58ee13ffd615cc39fe",
+      "matches": true
+    },
+    {
+      "source_sha256": "670ab21cbd35be7dc5449b545be3dbd95923447be9e35c39750647870d1ac427",
+      "relative_path": "docs/ui-responsive.md",
+      "inventory_sha256": "670ab21cbd35be7dc5449b545be3dbd95923447be9e35c39750647870d1ac427",
+      "installed_sha256": "670ab21cbd35be7dc5449b545be3dbd95923447be9e35c39750647870d1ac427",
+      "matches": true
+    },
+    {
+      "source_sha256": "8500cc159a39f677321ec6b7ef77f16645cf17d1e27e8af611f2b430d6aebf4b",
+      "relative_path": "docs/ui-scroll.md",
+      "inventory_sha256": "8500cc159a39f677321ec6b7ef77f16645cf17d1e27e8af611f2b430d6aebf4b",
+      "installed_sha256": "8500cc159a39f677321ec6b7ef77f16645cf17d1e27e8af611f2b430d6aebf4b",
+      "matches": true
+    },
+    {
+      "source_sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55",
+      "relative_path": "docs/ui-slice-and-budget.md",
+      "inventory_sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55",
+      "installed_sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55",
+      "matches": true
+    },
+    {
+      "source_sha256": "8c44d2590af44232638b03c1d9a00602c48dcee7efa07fa6c52cb1094bb81880",
+      "relative_path": "docs/ui-styling.md",
+      "inventory_sha256": "8c44d2590af44232638b03c1d9a00602c48dcee7efa07fa6c52cb1094bb81880",
+      "installed_sha256": "8c44d2590af44232638b03c1d9a00602c48dcee7efa07fa6c52cb1094bb81880",
+      "matches": true
+    },
+    {
+      "source_sha256": "80824b3d2411b5464208e35e4c6cf04a38d481bee25a729f6c26aaf6a128ca19",
+      "relative_path": "docs/ui.schema.json",
+      "inventory_sha256": "80824b3d2411b5464208e35e4c6cf04a38d481bee25a729f6c26aaf6a128ca19",
+      "installed_sha256": "80824b3d2411b5464208e35e4c6cf04a38d481bee25a729f6c26aaf6a128ca19",
+      "matches": true
+    },
+    {
+      "source_sha256": "c5ec492bacd08b34976abc79d3bf2c94204b1a46263e80253ca7a67fef6674a5",
+      "relative_path": "packages/unone-ui/README.md",
+      "inventory_sha256": "c5ec492bacd08b34976abc79d3bf2c94204b1a46263e80253ca7a67fef6674a5",
+      "installed_sha256": "c5ec492bacd08b34976abc79d3bf2c94204b1a46263e80253ca7a67fef6674a5",
+      "matches": true
+    },
+    {
+      "source_sha256": "de5bb92db2f2f84333b1e6f4cefcdae353b87fe8113c87e6c59345faec1ecefd",
+      "relative_path": "packages/unone-ui/package.unone.json",
+      "inventory_sha256": "de5bb92db2f2f84333b1e6f4cefcdae353b87fe8113c87e6c59345faec1ecefd",
+      "installed_sha256": "de5bb92db2f2f84333b1e6f4cefcdae353b87fe8113c87e6c59345faec1ecefd",
+      "matches": true
+    },
+    {
+      "source_sha256": "bbbbf570b99d4eef5abb7d68d4047c9f918939ae1d493d775f3db9f39ec232d9",
+      "relative_path": "packages/unone-ui/src/components.luau",
+      "inventory_sha256": "bbbbf570b99d4eef5abb7d68d4047c9f918939ae1d493d775f3db9f39ec232d9",
+      "installed_sha256": "bbbbf570b99d4eef5abb7d68d4047c9f918939ae1d493d775f3db9f39ec232d9",
+      "matches": true
+    }
+  ],
+  "verified_files": 17
+}
