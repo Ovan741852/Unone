@@ -523,12 +523,12 @@ fn prepare_diagnostic(
         diagnostic.suggested_actions.extend([
             ActionSuggestion {
                 action: "inspect_sdk_runtimes".to_string(),
-                description: "Inspect the installed target, variant and compiled systems before choosing a compatible runtime pack.".to_string(),
+                description: "Inspect the installed target, variant, compiled systems and exact runtime package versions before choosing a compatible runtime pack.".to_string(),
                 command: Some(diagnostic_command(&["--sdk", &mismatch.sdk_root.to_string_lossy(), "sdk", "inspect", "--json"])),
             },
             ActionSuggestion {
                 action: "inspect_project_systems".to_string(),
-                description: "Review enabled project systems. Explicitly disable only systems the game does not use, or install a runtime supporting all required systems.".to_string(),
+                description: "Review enabled project systems. Explicitly disable only systems the game does not use, or install a runtime supporting all required systems and package versions. Keep required package declarations intact.".to_string(),
                 command: Some(diagnostic_command(&["--project", &project.to_string_lossy(), "--json", "systems", "list"])),
             },
         ]);
@@ -659,10 +659,13 @@ mod tests {
             sdk_root: project.path().join("trusted-sdk"), target: "web".into(),
             variant: "development".into(), requested_runtime_id: Some("web-dev".into()),
             required_systems: vec!["ui".into(), "save".into()],
+            required_packages: std::collections::BTreeMap::from([("@unone/ui".into(), "0.1.0".into())]),
             available_runtimes: vec![sdk::RuntimeGap {
                 id: "web-prod".into(), target: "web".into(), variant: "production".into(),
                 compiled_systems: vec!["ui".into()], matches_target: true,
+                runtime_packages: std::collections::BTreeMap::new(),
                 matches_variant: false, matches_requested_id: false, missing_systems: vec!["save".into()],
+                missing_packages: std::collections::BTreeMap::from([("@unone/ui".into(), sdk::PackageVersionGap { expected: "0.1.0".into(), found: None })]),
             }],
         };
         let error = anyhow::Error::new(mismatch).context("Compatibility selection failed");
@@ -673,6 +676,8 @@ mod tests {
         assert_eq!(prepare.code, "SDK_RUNTIME_UNAVAILABLE");
         let gaps = &prepare.facts["runtime_selection"];
         assert_eq!(gaps["required_systems"], json!(["ui", "save"]));
+        assert_eq!(gaps["required_packages"], json!({"@unone/ui":"0.1.0"}));
+        assert_eq!(gaps["available_runtimes"][0]["missing_packages"]["@unone/ui"], json!({"expected":"0.1.0","found":null}));
         assert_eq!(gaps["available_runtimes"][0]["missing_systems"], json!(["save"]));
         assert_eq!(gaps["available_runtimes"][0]["matches_variant"], false);
         let prepare_retry = prepare.suggested_actions.iter().find(|action| action.action == "retry_project_prepare").unwrap();

@@ -1,22 +1,25 @@
 # Official UI typography and styling
 
-Use the existing `api.ui.setRoot` transport, UI leaves and reusable `component`
-wrappers. `style` extends those primitives; it does not introduce a second UI
-library. A component function can return a button, decorative panel, label and
-image with stable IDs. The game owns that composition, content, actions and
-screen flow. The official player owns font loading, glyph shaping and painting.
+Start reusable controls with the official [`@unone/ui` package](ui-components.md),
+a versioned pure Luau kit bundled with Core and the portable SDK. Declare
+`"runtime_packages":{"@unone/ui":"0.1.0"}` in `project.unone.json`, inspect
+`ui.components.info`, and call `api.ui.components.create(theme?)`. The returned
+kit constructs typed text/button/panel/image leaves and component wrappers for
+the existing `api.ui.setRoot` transport. Themes, content, state, action meanings
+and geometry remain project-owned. Custom Luau factories remain valid.
+The official player owns font loading, glyph shaping and painting.
 See [formal host support](formal-ui-host.md) and [ADR 0038](decisions/0038-shared-ui-styling.md).
 
-Start discovery with `game api search "font size"`, `"text alignment"`,
-`"border padding"`, `"component styling"`, `"card background"`,
-`"component overlap"`, `"字體"`, `"排版"`, `"卡片背景"`, `"元件重疊"` or `"共用元件"`,
-then describe `ui.setRoot` and inspect `game schema ui`.
-`game api search "responsive"` leads to `ui.getViewport`. CLI and MCP search
-use the same index. Regenerate strict types with `game api typings` after
-upgrading an existing project; do not keep an old hand-copied `UiNode` union.
-`component` is a node kind produced by a reusable Luau function, not an
-`api.ui.component()` factory. Reuse the existing typed tree rather than guessing
-an HTML/CSS or widget API from another framework.
+Search `game api search "UI package"`, `"shared components"`, `"button component"`,
+`"card component"`, `"官方UI套件"`, `"共用元件"` or `"主題樣式"` to discover the kit.
+For the canonical leaf contract, search `"font size"`, `"text alignment"`,
+`"border padding"`, `"card background"`, `"component overlap"`, `"字體"`,
+`"排版"`, `"卡片背景"` or `"元件重疊"`, describe `ui.setRoot`, and inspect
+`game schema ui`. `"responsive"` leads to `ui.getViewport`. CLI and MCP share the
+same index. Regenerate strict types with `game api typings` and use a matching
+SDK after upgrading; new projects inline the canonical contract.
+`component` is an existing tree node kind; `ui.component(props)` is a method on
+the kit returned by `create`, while `api.ui.component()` does not exist.
 
 ## Coordinates and defaults
 
@@ -36,8 +39,9 @@ Overflow is a presentation decision rather than an engine layout correction.
 
 Styles apply locally to `text`, `button`, `slider`, `combobox`, `image` and
 `panel`. Containers reject `style`; they do not inherit it or transform child
-coordinates. Reuse a style table or component function in Luau when multiple
-leaves share a theme.
+coordinates. Use per-kind theme defaults in `api.ui.components.create(theme?)` or custom
+Luau factories when several leaves share a theme. The kit copies styles with
+override precedence, padding-edge merging and whole RGBA-array replacement.
 
 | Field | Contract |
 | --- | --- |
@@ -116,8 +120,12 @@ joining/shaping; use zero tracking or a supported host rather than unjoined text
 
 ## Reuse existing components
 
-This compact settings action uses the existing component boundary. It is useful
-in any game; the engine does not know what the action means:
+Prefer the [official kit and two-instance card example](ui-components.md#construct-typed-leaves-and-components)
+for new shared controls. Its typed constructors reduce repeated schema data;
+`ui.component({...surface={kind="panel"}})` carries the background declaration
+with the component. Project factories can compose the kit or return canonical
+nodes directly. The following direct factories remain valid and show the
+underlying transport; the engine does not know what their actions mean:
 
 ```luau
 local function actionButton(id: string, text: string, action: string, rect: UiRect): UiNode

@@ -18,14 +18,18 @@ choice. Follow the [AI workflow](docs/ai-workflow.md) and
 [player export guide](docs/player-export.md); passing a headless test is only
 gameplay evidence, so inspect the exported player before claiming visual completion.
 
-[Official UI typography and styling](docs/ui-styling.md) extend the existing
-text/button/image controls and reusable `component` tree with named font catalogs,
-explicit type sizes, alignment, wrapping, colors, padding, borders and decorative
-panels. Core validates data; official Web/native hosts paint it. Game Luau owns
-component composition, themes, screen flow and responsive placement.
-Reusable component functions can carry explicit `background_for` ownership on
-their image/panel surfaces, avoiding external per-label overlap lists while
-retaining strict checks for foreground collisions and protruding content.
+The official [`@unone/ui` shared component package](docs/ui-components.md) ships
+with Core and the portable SDK. Declare `"runtime_packages":{"@unone/ui":"0.1.0"}`,
+discover `ui.components.info` / `ui.components.create`, then use the returned
+kit's typed text/button/panel/image/component constructors. The kit composes
+project-owned theme styles and instance IDs into the existing `ui.setRoot` tree;
+custom Luau factories remain valid. Themes, content, state, actions, screen flow
+and geometry stay in the project.
+[Typography and styling](docs/ui-styling.md) provide font catalogs, explicit type
+sizes, alignment, wrapping, colors, padding and borders. Optional component
+surfaces carry `background_for` ownership while strict inspection still reports
+foreground collisions and protruding content. Core validates data; the official
+Web/native hosts paint it.
 The [observatory settings example](_Games/observatory-settings/README.md) was
 authored independently using only a precompiled SDK, official docs and API
 discovery, then checked with real player interactions at three viewport shapes.

@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-16",
+  "reviewer": "ui_package_review independent subagent",
+  "baseline": "b776403",
+  "scope": [
+    "@unone/ui pure Luau constructors, copying, identity, styles and surfaces",
+    "Runtime binding, exact runtime_packages guard and strict API declarations",
+    "SDK runtime selection, package metadata consistency and source inventory",
+    "Native runtime package metadata freshness gate"
+  ],
+  "findings": [
+    {
+      "id": "virtual-node-copy-disconnect",
+      "status": "resolved",
+      "problem": "component deep-copy detached virtualList/virtualGrid nodes from the scroll helper registry. A range request returned true while the published tree retained its old range and children.",
+      "fix": "A private exact-table ownership predicate preserves registered live virtual nodes during copying. Ordinary authored data remains copied, and the live-node ownership exception is documented.",
+      "evidence_paths": [
+        "packages/unone-ui/src/components.luau",
+        "crates/unone-engine/src/runtime/bindings/scroll.luau",
+        "crates/unone-engine/src/runtime/bindings/state.rs",
+        "packages/unone-ui/README.md",
+        "crates/unone-engine/tests/ui_components.rs"
+      ],
+      "command": "PowerShell read scroll.luau and components.luau into memory, escaped them into loadstring calls, and piped a component-wrapped virtualList reproduction into .toolcache/luau-0.734/luau.exe. The fixed reproduction supplied helpers.isManagedNode as the package factory's third argument. No temporary source files were created.",
+      "before_stdout": [
+        "before\t1\t1",
+        "request\ttrue",
+        "after\t5\t1\tv::k1"
+      ],
+      "after_stdout": [
+        "before\t1\t1",
+        "request\ttrue",
+        "after\t5\t5\tv::k5"
+      ],
+      "request": {"id": "v", "revision": 1, "first": 5, "last": 7},
+      "regression_review": "Reviewed the EngineRuntime list/grid regression source, including unchanged frame/observations and first-tick RNG/counter comparison. Root reported its integration tests passed; this reviewer did not run Cargo."
+    },
+    {
+      "id": "stale-native-package-descriptor",
+      "status": "resolved",
+      "problem": "Android packaging queried an existing Windows capability executable. After a package version change, its stale version could be copied into runtime.json despite the new Android binary embedding the current version.",
+      "fix": "Assert-CurrentNativeRuntimePackages compares the descriptor's complete package map against the current canonical manifest, using ordinal package IDs and exact string versions, before output directory creation or copying.",
+      "evidence_paths": [
+        "scripts/build-native-player.ps1",
+        "packages/unone-ui/package.unone.json",
+        "crates/unone-native-player/Cargo.toml"
+      ],
+      "command": "$tokens=$null; $errors=$null; $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path (Get-Location) 'scripts/build-native-player.ps1'),[ref]$tokens,[ref]$errors); $ast.FindAll({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Assert-CurrentNativeRuntimePackages'},$false) | ForEach-Object { . ([scriptblock]::Create($_.Extent.Text)) }; # Invoke only the extracted function with the 16 in-memory cases recorded below; do not execute the build script body.",
+      "isolated_cases": [
+        {"case": "JSON current exact package", "accepted": true},
+        {"case": "JSON stale version", "accepted": false},
+        {"case": "JSON missing runtime_packages", "accepted": false},
+        {"case": "JSON empty map with ui compiled", "accepted": false},
+        {"case": "JSON extra package", "accepted": false},
+        {"case": "JSON wrong-case package ID", "accepted": false},
+        {"case": "JSON number version", "accepted": false},
+        {"case": "JSON null version", "accepted": false},
+        {"case": "JSON array instead of map", "accepted": false},
+        {"case": "JSON null map", "accepted": false},
+        {"case": "JSON empty map without ui compiled", "accepted": true},
+        {"case": "Current manifest 0.2.0 versus stale Windows descriptor 0.1.0", "accepted": false},
+        {"case": "IDictionary current exact package", "accepted": true},
+        {"case": "IDictionary wrong-case package ID", "accepted": false},
+        {"case": "IDictionary number version", "accepted": false},
+        {"case": "IDictionary extra package", "accepted": false}
+      ],
+      "isolated_result": "All 16 cases matched their expected acceptance or rejection.",
+      "stale_scenario_diagnostic": "NATIVE_RUNTIME_PACKAGES_STALE: Windows capability binary runtime package versions do not match current source. Rebuild the Windows runtime from current source before packaging this target; expected {\"@unone/ui\":\"0.2.0\"}; found {\"@unone/ui\":\"0.1.0\"}",
+      "ordering_review": "The assertion is called before New-Item and Copy-Item. Native player Cargo.toml uses all-systems for both Windows and Android builds."
+    }
+  ],
+  "final_review": "Both concrete findings are resolved. No remaining concrete correctness findings in the reviewed scope.",
+  "limitations": [
+    "No GPU, rendered-player or device verification performed by this reviewer.",
+    "No Cargo builds or tests performed by this reviewer.",
+    "Native gate verification invoked the isolated function with synthetic in-memory descriptors; no native binary was rebuilt or packaged.",
+    "Review evidence uses prior tool outputs. No tests were rerun while writing this report."
+  ]
+}

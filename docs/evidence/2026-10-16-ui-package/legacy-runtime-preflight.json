@@ -1,0 +1,95 @@
+{
+  "ok": false,
+  "value": {
+    "output": null,
+    "project": "_Games/observatory-settings",
+    "runtime": null,
+    "schema": "unone.project-prepare-preflight.v1",
+    "status": "incompatible",
+    "target": "web"
+  },
+  "diagnostics": [
+    {
+      "code": "SDK_RUNTIME_UNAVAILABLE",
+      "severity": "ERROR",
+      "summary": "Project prepare preflight failed",
+      "explanation": "SDK_RUNTIME_UNAVAILABLE: no matching target=web, variant=production, runtime_id=<automatic>; enabled project systems [audio, camera2d, input, observation, ui, world]; required runtime packages [@unone/ui@0.1.0]; installed runtimes: web-production-0 (web/production): missing systems [], package mismatches [@unone/ui: expected 0.1.0, found <missing>]. Run game sdk inspect --json and game systems list --json. Explicitly disable only systems the project does not use, or install a runtime pack supporting all required systems and exact package versions. Keep required package declarations intact. Recovery: Fix the reported target, SDK/runtime, project system, or presentation issue; no output was created.",
+      "facts": {
+        "cause": "SDK_RUNTIME_UNAVAILABLE: no matching target=web, variant=production, runtime_id=<automatic>; enabled project systems [audio, camera2d, input, observation, ui, world]; required runtime packages [@unone/ui@0.1.0]; installed runtimes: web-production-0 (web/production): missing systems [], package mismatches [@unone/ui: expected 0.1.0, found <missing>]. Run game sdk inspect --json and game systems list --json. Explicitly disable only systems the project does not use, or install a runtime pack supporting all required systems and exact package versions. Keep required package declarations intact",
+        "output": "<not-created>",
+        "project": "_Games/observatory-settings",
+        "requested_runtime_id": null,
+        "requested_sdk_root": "D:\\TSProject\\UnoneUiPackage-20261016\\legacy-runtime-sdk",
+        "runtime_selection": {
+          "available_runtimes": [
+            {
+              "compiled_systems": [
+                "audio",
+                "camera2d",
+                "input",
+                "observation",
+                "particle",
+                "random",
+                "ui",
+                "world"
+              ],
+              "id": "web-production-0",
+              "matches_requested_id": true,
+              "matches_target": true,
+              "matches_variant": true,
+              "missing_packages": {
+                "@unone/ui": {
+                  "expected": "0.1.0",
+                  "found": null
+                }
+              },
+              "missing_systems": [],
+              "runtime_packages": {},
+              "target": "web",
+              "variant": "production"
+            }
+          ],
+          "requested_runtime_id": null,
+          "required_packages": {
+            "@unone/ui": "0.1.0"
+          },
+          "required_systems": [
+            "audio",
+            "camera2d",
+            "input",
+            "observation",
+            "ui",
+            "world"
+          ],
+          "sdk_root": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\legacy-runtime-sdk",
+          "target": "web",
+          "variant": "production"
+        },
+        "schema": "unone.project-prepare.v1",
+        "stage": "preflight",
+        "target": "web",
+        "variant": "production"
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "inspect_sdk_runtimes",
+          "description": "Inspect the installed target, variant, compiled systems and exact runtime package versions before choosing a compatible runtime pack.",
+          "command": "& 'D:\\TSProject\\UnoneUiPackage-20261016\\legacy-runtime-sdk\\bin\\game.exe' --sdk '\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\legacy-runtime-sdk' sdk inspect --json"
+        },
+        {
+          "action": "inspect_project_systems",
+          "description": "Review enabled project systems. Explicitly disable only systems the game does not use, or install a runtime supporting all required systems and package versions. Keep required package declarations intact.",
+          "command": "& 'D:\\TSProject\\UnoneUiPackage-20261016\\legacy-runtime-sdk\\bin\\game.exe' --project _Games/observatory-settings --json systems list"
+        },
+        {
+          "action": "retry_project_preflight",
+          "description": "Re-run the read-only project preflight for the concrete web target; it never creates an output directory.",
+          "command": "& 'D:\\TSProject\\UnoneUiPackage-20261016\\legacy-runtime-sdk\\bin\\game.exe' --sdk '\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\legacy-runtime-sdk' --project _Games/observatory-settings --json project preflight --target web"
+        }
+      ],
+      "source": null
+    }
+  ],
+  "effects": []
+}

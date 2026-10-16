@@ -120,4 +120,11 @@ local function request(r)
  return true
 end
 return {scrollView=scrollView,virtualList=function(s)return virtual(s,false)end,
- virtualGrid=function(s)return virtual(s,true)end,setRoot=setRoot,request=request}
+ virtualGrid=function(s)return virtual(s,true)end,setRoot=setRoot,request=request,
+ -- Private ownership check for tree composers. A virtual node is a live
+ -- registry handle; copying its table would disconnect later materialization.
+ isManagedNode=function(node)
+  if type(node)~="table" then return false end
+  local entry=registry[node.id]
+  return entry~=nil and entry.node==node
+ end}

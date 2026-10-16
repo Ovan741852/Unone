@@ -60,21 +60,31 @@ to ask the user for permission before every routine change.
 
 ## AI-first layout decisions
 
-Use the existing official UI leaves and `component` tree for reusable controls.
-Before inventing game-owned HTML/GPU UI or a second widget transport, search
-`game api search "font size"` / `"text alignment"` / `"border padding"` and read
-[the shared typography and style contract](docs/ui-styling.md). Extend existing
-component leaves with typed styles and declare licensed faces in
-`presentation.ui.fonts`. Use `api.ui.getViewport()` for game-authored responsive
-choices. A font/style request does not authorize replacing the official player.
+Start shared controls with the official `@unone/ui` pure Luau package, bundled
+with Core and the SDK. Search `game api search "UI package"` / `"shared components"`
+/ `"button component"` / `"card component"` / `"官方UI套件"` / `"共用元件"` /
+`"主題樣式"`, describe `ui.components.info` and `ui.components.create`, and read
+[the package contract](docs/ui-components.md). Declare the exact package version
+in `project.unone.json` (`"runtime_packages":{"@unone/ui":"0.1.0"}`). The returned
+kit has typed text/button/panel/image/component constructors; it is not an npm
+module or a new renderer. Keep themes, content, state, action meanings and
+geometry in project Luau. Custom factories remain valid.
 
-Keep ordinary background ownership inside reusable component functions: search
-`game api search "card background"` / `"component overlap"` and declare
-`background_for` on the existing image/panel leaf. It must refer to the screen or
-an actual ancestor component in the same coordinate space. This is explicit
-validation intent, never a layout rule. Retain strict foreground/partial overlap
-checks; use exact-pair policies only for deliberate art/skin layers that do not
-meet containing-background semantics.
+For font/style changes search `game api search "font size"` / `"text alignment"`
+/ `"border padding"` and read [the shared style contract](docs/ui-styling.md).
+Use existing typed leaves, licensed faces in `presentation.ui.fonts`, and
+`api.ui.getViewport()` for project-authored responsive choices. Refresh
+`game api typings` and the SDK when upgrading. A font/style request does not
+authorize replacing the official player.
+
+Use `kit.component({...surface={kind="panel"}})` or an image surface for ordinary
+card backgrounds. The package prepends `id.."/surface"` with explicit
+`background_for={component=id}` and the component's unchanged authored placement.
+Children retain their coordinates and order. Custom factories may carry the same
+metadata on their own image/panel leaf. Search `"card background"` /
+`"component overlap"` for canonical ancestor/bounds checks. Retain strict
+foreground/partial overlap checks; use exact-pair policies only for deliberate
+art/skin layers that do not meet containing-background semantics.
 
 For UI layout, responsive grouping, hierarchy and visual composition, default to
 semantic AI reasoning rather than mechanical coordinate rules. Infer groups from

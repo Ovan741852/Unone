@@ -82,6 +82,7 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
         .filter(|word| !is_search_filler(word))
         .collect();
     let terms = if terms.is_empty() { &words } else { &terms };
+    let components_intent = is_ui_components_query(terms);
     let mut ranked: Vec<_> = descriptors()
         .into_iter()
         .filter_map(|descriptor| {
@@ -89,7 +90,7 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
                 return Some((1000, descriptor));
             }
             let score = terms.iter().try_fold(0, |total, term| {
-                search_term_score(&descriptor, term).map(|score| total + score)
+                search_term_score(&descriptor, term, components_intent).map(|score| total + score)
             })?;
             Some((score, descriptor))
         })
@@ -131,7 +132,134 @@ fn is_search_filler(word: &str) -> bool {
     )
 }
 
-fn search_term_score(descriptor: &ApiDescriptor, term: &str) -> Option<u32> {
+fn is_ui_components_query(terms: &[&str]) -> bool {
+    let ui_context = terms.iter().any(|term| matches!(*term, "ui" | "unone"));
+    let package_word = terms
+        .iter()
+        .any(|term| matches!(*term, "package" | "packages" | "kit"));
+    (ui_context && package_word)
+        || (terms.contains(&"unone") && terms.contains(&"ui"))
+        || terms.iter().any(|term| {
+            matches!(*term, "theme" | "themes")
+                || [
+                    "官方ui套件",
+                    "官方ui组件",
+                    "官方ui元件",
+                    "共用元件",
+                    "共用组件",
+                    "共用ui元件",
+                    "共用ui組件",
+                    "共用ui组件",
+                    "共享ui元件",
+                    "共享ui組件",
+                    "共享ui组件",
+                    "ui元件",
+                    "ui組件",
+                    "ui组件",
+                    "主題樣式",
+                    "主题样式",
+                ]
+                .iter()
+                .any(|alias| term.contains(alias))
+        })
+        || (terms.iter().any(|term| {
+            matches!(
+                *term,
+                "component" | "components" | "controls" | "widgets" | "元件" | "組件" | "组件"
+            )
+        }) && terms.iter().any(|term| {
+            matches!(
+                *term,
+                "ui" | "shared"
+                    | "reusable"
+                    | "button"
+                    | "buttons"
+                    | "card"
+                    | "cards"
+                    | "styling"
+                    | "共用"
+                    | "共享"
+            )
+        }))
+        || (terms.len() == 1 && matches!(terms[0], "component" | "components" | "widgets"))
+}
+
+fn search_term_score(
+    descriptor: &ApiDescriptor,
+    term: &str,
+    components_intent: bool,
+) -> Option<u32> {
+    if components_intent {
+        let package_term = matches!(
+            term,
+            "ui" | "unone"
+                | "official"
+                | "package"
+                | "packages"
+                | "kit"
+                | "theme"
+                | "themes"
+                | "shared"
+                | "reusable"
+                | "component"
+                | "components"
+                | "control"
+                | "controls"
+                | "widget"
+                | "widgets"
+                | "button"
+                | "buttons"
+                | "card"
+                | "cards"
+                | "style"
+                | "styles"
+                | "styling"
+                | "共用"
+                | "共享"
+                | "元件"
+                | "組件"
+                | "组件"
+        ) || [
+            "官方ui套件",
+            "官方ui组件",
+            "官方ui元件",
+            "共用元件",
+            "共用组件",
+            "共用ui元件",
+            "共用ui組件",
+            "共用ui组件",
+            "共享ui元件",
+            "共享ui組件",
+            "共享ui组件",
+            "ui元件",
+            "ui組件",
+            "ui组件",
+            "主題樣式",
+            "主题样式",
+        ]
+        .iter()
+        .any(|alias| term.contains(alias));
+        if package_term {
+            return match descriptor.name.as_str() {
+                "ui.components.create" => Some(400),
+                "ui.components.info" => Some(300),
+                "ui.components.composeStyle" => Some(200),
+                "ui.components.id" => Some(150),
+                "ui.setRoot" => Some(100),
+                _ => None,
+            };
+        }
+        if matches!(
+            term,
+            "version" | "declared" | "declaration" | "metadata" | "版本"
+        ) {
+            return match descriptor.name.as_str() {
+                "ui.components.info" => Some(600),
+                "ui.components.create" => Some(250),
+                _ => None,
+            };
+        }
+    }
     let ui_style_intent = matches!(
         term,
         "font"
@@ -1630,7 +1758,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui.setRoot",
             "ui",
             "Publish a declarative UI tree with reusable typography/box styles and explicit scoped card backgrounds. Image/panel background_for metadata declares screen or ancestor-component background intent for overlap diagnostics. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
-            "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Reuse existing component trees through Luau helper functions; component is a node kind, not api.ui.component(). A reusable card function carries background_for={component=id} on its own background leaf, keeping that intent beside its internal leaves instead of repeating their IDs in external overlap policies. Use background_for={screen=true} for a screen background. Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
+            "For official Web and native player UI: text, styled buttons, image skins and decorative panels composed from the game's ViewModel. Start reusable controls with the official @unone/ui package: ui.components.info then ui.components.create returns a typed kit. See docs/ui-components.md. Custom Luau factories may also return the existing component tree; component is a node kind, not api.ui.component(). A reusable card function carries background_for={component=id} on its own background leaf, keeping that intent beside its internal leaves instead of repeating their IDs in external overlap policies. Use background_for={screen=true} for a screen background. Start with docs/ui-styling.md and game schema ui; package fonts in presentation.ui.fonts instead of drawing text with game-owned DOM or GPU code.",
             "No automatic layout, CSS, platform widgets, data binding or game rules. The game authors rectangles, semantic grouping, ViewModels, reusable components, content and action meanings. Styles are local to leaves and never inherited from components. Use ui.getViewport for authored responsive choices.",
             vec![parameter(
                 "root",
@@ -1649,12 +1777,104 @@ fn descriptors() -> Vec<ApiDescriptor> {
             ],
             "api.ui.setRoot({kind=\"screen\",id=\"menu\",node=\"settings\",children={{kind=\"text\",id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4,font_weight=700,text_align=\"start\",vertical_align=\"middle\",color={0.9,0.95,1,1}}}}})",
             vec![
+                "ui.components.create",
+                "ui.components.info",
                 "ui.inspect",
                 "ui.getViewport",
                 "ui.scrollView",
                 "observation.set",
                 "input.getScreenPointerPosition",
             ],
+        ),
+        descriptor(
+            "ui.components.info",
+            "ui",
+            "Discover the official @unone/ui package name, version and whether this project declared it.",
+            "Before using shared components or checking a UI package version. Available without a runtime_packages declaration; see docs/ui-components.md and ui.components.create.",
+            "This reports the bundled package, not an npm registry or installed module. It does not enable a package or prove host visual support.",
+            vec![],
+            "UiComponentsInfo: {name:string, version:string, kind:string, entry:string, api:string, license:string, declared:boolean}.",
+            vec!["Read-only package metadata"],
+            "Does not publish UI or advance a frame. Reports the version bundled with this runtime/SDK.",
+            vec![],
+            "local package = api.ui.components.info(); api.observation.set(\"ui_package\", package)",
+            vec!["ui.components.create", "ui.setRoot"],
+        ),
+        descriptor(
+            "ui.components.create",
+            "ui",
+            "Create the official @unone/ui shared component kit for typed text, button, panel, image and card component construction with project-owned theme styles.",
+            "For UI package, shared components, button component, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.1.0\"} in project.unone.json, then create a kit. See docs/ui-components.md and docs/ui-styling.md. Kit methods are ui.text(props), ui.button(props), ui.panel(props), ui.image(props), ui.component(props), ui.id(instanceId,role) and ui.composeStyle(base?,override?) on the returned value, not api.ui.components.button.",
+            "No hardcoded theme, layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
+            vec![parameter(
+                "theme",
+                "UiComponentsTheme?",
+                "Optional per-kind UiStyle defaults: text, button, panel, image only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order.",
+            )],
+            "UiComponentKit; text -> UiTextNode, button -> UiButtonNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode; id -> string; composeStyle -> UiStyle.",
+            vec!["Construct pure Luau tables; does not publish UI or mutate props/theme"],
+            "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
+            vec![
+                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.1.0\"} to project.unone.json; info() remains available for discovery.",
+                "Use the returned kit's methods; api.ui.components.button and api.ui.component do not exist.",
+                "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
+                "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content.",
+            ],
+            "local ui = api.ui.components.create({button={font_size=2,background={0.1,0.2,0.3,1}}}); local button = ui.button({id=ui.id(\"menu\",\"apply\"),text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}}); api.ui.setRoot({kind=\"screen\",id=\"settings\",node=\"settings\",children={button}})",
+            vec![
+                "ui.components.info",
+                "ui.components.composeStyle",
+                "ui.components.id",
+                "ui.setRoot",
+                "ui.getViewport",
+            ],
+        ),
+        descriptor(
+            "ui.components.composeStyle",
+            "ui",
+            "Copy and compose UiStyle tables for the official shared component kit; override wins, padding merges by edge and RGBA arrays replace.",
+            "Build project-owned theme variants without mutating a base style or a previously constructed leaf. The returned kit exposes the same composeStyle helper; see docs/ui-components.md.",
+            "Not style inheritance, a CSS cascade or runtime layout. Canonical style field/value validation remains in ui.setRoot.",
+            vec![
+                parameter("base", "UiStyle?", "Optional base style to copy."),
+                parameter(
+                    "override",
+                    "UiStyle?",
+                    "Optional override; supplied fields replace base fields, except padding merges per edge.",
+                ),
+            ],
+            "UiStyle; composeStyle(nil,nil) returns an empty style table.",
+            vec!["Return a fresh copied table; neither input is changed"],
+            "Pure Luau operation; does not publish UI or advance a frame.",
+            vec![
+                "UI_PACKAGE_NOT_DECLARED: declare the exact bundled @unone/ui version before calling this helper. Cyclic or unsupported input tables are rejected. A supplied empty style selects canonical explicit typography defaults when published.",
+            ],
+            "local emphasis = api.ui.components.composeStyle({padding={left=1,right=1},color={1,1,1,1}}, {padding={right=2},color={1,0.8,0.2,1}})",
+            vec!["ui.components.create", "ui.setRoot"],
+        ),
+        descriptor(
+            "ui.components.id",
+            "ui",
+            "Compose stable instance-scoped IDs for shared UI component leaves.",
+            "Avoid collisions when instantiating the same project-owned card or button factory several times. The returned kit exposes the same id helper; see docs/ui-components.md.",
+            "Not a global ID allocator; the project chooses distinct instance IDs and role names. It does not infer semantic actions or placement.",
+            vec![
+                parameter("instanceId", "string", "Non-empty component instance ID."),
+                parameter(
+                    "role",
+                    "string",
+                    "Non-empty role within this instance; percent and slash are escaped to avoid role-path collisions.",
+                ),
+            ],
+            "string: instanceId..'/'..escapedRole; role escapes '%' as '%25' and '/' as '%2F'.",
+            vec!["None"],
+            "Pure deterministic string construction; does not publish UI or advance a frame.",
+            vec![
+                "UI_PACKAGE_NOT_DECLARED: declare the exact bundled @unone/ui version before calling this helper.",
+                "Keep generated IDs globally unique, including the reserved id..'/surface' of a component surface.",
+            ],
+            "local labelId = api.ui.components.id(\"inventory/left-card\", \"title\")",
+            vec!["ui.components.create", "ui.setRoot"],
         ),
         descriptor(
             "ui.getViewport",
@@ -2045,21 +2265,12 @@ mod tests {
             "text wrapping",
             "border padding",
             "background color",
-            "component styling",
-            "reusable components",
-            "shared UI controls",
             "how do I change font size",
             "字體",
             "字級 排版 樣式",
             "文字換行",
             "顏色 邊框 內距",
-            "共用元件",
-            "共用 UI 元件",
             "字體大小與排版",
-            "共用UI元件",
-            "共用UI組件",
-            "UI元件",
-            "共享UI组件",
             "font_size",
             "font_family",
             "font_weight",
@@ -2103,19 +2314,152 @@ mod tests {
 
     #[test]
     fn scoped_background_intents_discover_composition_without_hiding_world_queries() {
-        for query in ["card background", "component overlap", "reusable card backgrounds", "background_for", "ancestor background scope", "卡片背景", "元件重疊", "共用元件", "如何處理元件重疊", "组件重叠"] {
+        for query in [
+            "card background",
+            "component overlap",
+            "reusable card backgrounds",
+            "background_for",
+            "ancestor background scope",
+            "卡片背景",
+            "元件重疊",
+            "如何處理元件重疊",
+            "组件重叠",
+        ] {
             let matches = search(query);
-            assert_eq!(matches.first().map(|api| api.name.as_str()), Some("ui.setRoot"), "{query}");
-            assert!(matches.iter().all(|api| api.name.starts_with("ui.")), "{query}");
+            assert_eq!(
+                matches.first().map(|api| api.name.as_str()),
+                Some("ui.setRoot"),
+                "{query}"
+            );
+            assert!(
+                matches.iter().all(|api| api.name.starts_with("ui.")),
+                "{query}"
+            );
             let api = &matches[0];
             assert!(api.when_to_use.contains("background_for={component=id}"));
-            assert!(api.parameters[0].meaning.contains("later fully contained descendants"));
+            assert!(
+                api.parameters[0]
+                    .meaning
+                    .contains("later fully contained descendants")
+            );
             assert!(api.parameters[0].meaning.contains("Exact-pair v1"));
-            assert!(api.common_errors.iter().any(|error| error.contains("actual ancestor component ID")));
+            assert!(
+                api.common_errors
+                    .iter()
+                    .any(|error| error.contains("actual ancestor component ID"))
+            );
         }
         assert_eq!(search("ui.setRoot").len(), 1);
-        assert!(search("physics3d overlap").iter().any(|api| api.name.starts_with("physics3d.")));
+        assert!(
+            search("physics3d overlap")
+                .iter()
+                .any(|api| api.name.starts_with("physics3d."))
+        );
         assert!(search("ECS元件").is_empty());
+    }
+
+    #[test]
+    fn shared_component_queries_discover_the_real_versioned_package_entrypoints() {
+        for query in [
+            "UI package",
+            "official UI package",
+            "@unone/ui package",
+            "@unone/ui",
+            "shared components",
+            "reusable components",
+            "shared UI controls",
+            "component styling",
+            "button component",
+            "card component",
+            "UI components",
+            "components",
+            "官方UI套件",
+            "共用元件",
+            "共用 UI 元件",
+            "共用UI元件",
+            "共用UI組件",
+            "UI元件",
+            "共享UI组件",
+            "主題樣式",
+        ] {
+            let found = search(query);
+            assert_eq!(
+                found.first().map(|api| api.name.as_str()),
+                Some("ui.components.create"),
+                "{query}"
+            );
+            assert!(
+                found.iter().any(|api| api.name == "ui.components.info"),
+                "{query}"
+            );
+            assert!(
+                found.iter().all(|api| api.name.starts_with("ui.")),
+                "{query}"
+            );
+            assert!(found[0].when_to_use.contains("docs/ui-components.md"));
+        }
+        assert_eq!(search("UI package version")[0].name, "ui.components.info");
+        for name in [
+            "ui.components.info",
+            "ui.components.create",
+            "ui.components.composeStyle",
+            "ui.components.id",
+        ] {
+            let found = search(name);
+            assert_eq!(found.len(), 1, "{name}");
+            assert_eq!(found[0].name, name);
+        }
+        assert!(describe("ui.components.button").is_none());
+        assert!(describe("ui.component").is_none());
+        assert!(search("UI package unfindable").is_empty());
+        assert!(search("ECS元件").is_empty());
+        assert!(
+            search("entity size")
+                .iter()
+                .any(|api| api.name == "entity.getTransform2D")
+        );
+        assert!(
+            search("physics3d overlap")
+                .iter()
+                .any(|api| api.name.starts_with("physics3d."))
+        );
+
+        let create = describe("ui.components.create").unwrap();
+        assert_eq!(create.parameters[0].type_name, "UiComponentsTheme?");
+        assert!(create.returns.contains("UiComponentKit"));
+        assert!(create.returns.contains("UiComponentNode"));
+        assert!(
+            create.parameters[0]
+                .meaning
+                .contains("flattened UiPlacement")
+        );
+        assert!(
+            create.parameters[0]
+                .meaning
+                .contains("background_for={component=id}")
+        );
+        assert!(
+            create
+                .frame_semantics
+                .contains("padding merges by edge and RGBA arrays replace")
+        );
+        assert!(
+            create
+                .when_not_to_use
+                .contains("Themes, content, state, actions and geometry belong to project Luau")
+        );
+        assert!(
+            create
+                .common_errors
+                .iter()
+                .any(|error| error.contains("UI_PACKAGE_NOT_DECLARED"))
+        );
+        let info = describe("ui.components.info").unwrap();
+        assert!(
+            info.when_to_use
+                .contains("Available without a runtime_packages declaration")
+        );
+        assert!(info.returns.contains("declared:boolean"));
     }
 
     #[test]

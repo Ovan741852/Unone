@@ -1,0 +1,77 @@
+{
+  "baseline": "b776403b8055187fa8ac2faad0a5e852fa2a9f52",
+  "package": "@unone/ui",
+  "version": "0.1.0",
+  "distribution": "SDK-bundled pure Luau; exact project/runtime declaration; no npm or dynamic module installation",
+  "rust": {
+    "passed": 432,
+    "failed": 0,
+    "existing_ignored": 3,
+    "clippy": "passed",
+    "evidence": "rust-gates.json"
+  },
+  "official_player": {
+    "observatory_checks": 77,
+    "observatory_input_sequences": 30,
+    "viewports": 3,
+    "initial_rgb_equal_to_baseline": true,
+    "final_export_byte_equal_to_tested_export": true,
+    "evidence": [
+      "browser-checks.json",
+      "pixel-equivalence.json",
+      "sdk-inventory.json",
+      "final-prepare.json"
+    ]
+  },
+  "fresh_context": {
+    "fork_turns": "none",
+    "input_files_unchanged": 171,
+    "output_files_unchanged": 172,
+    "projects": 2,
+    "deterministic_tests_per_project": 2,
+    "browser_checks_per_project": 24,
+    "input_sequences_per_project": 9,
+    "official_player": true,
+    "implementation_reads": false,
+    "author_report": {
+      "original_path": "D:\\TSProject\\UnoneUiPackage-20261016\\author-evidence\\final-report.md",
+      "original_sha256": "377f578e7210ffc3f30c9fe5d1b8dd7b1b8588329e9b08dc9c35a24ae0e0aff2",
+      "retained_path": "fresh-author-report.md",
+      "normalization": "UTF-8 LF, one final newline"
+    },
+    "tooling_notes": {
+      "original_path": "D:\\TSProject\\UnoneUiPackage-20261016\\author-evidence\\tooling-notes.md",
+      "original_sha256": "91d8db88b2269221eb06c21f30a02bb4e8847ab5ffd3c22860127a72c0a74125",
+      "retained_path": "fresh-tooling-notes.md",
+      "normalization": "UTF-8 LF, one final newline"
+    },
+    "evidence": [
+      "fresh-inputs.json",
+      "fresh-commands.json",
+      "fresh-output-hashes.json",
+      "fresh-source-fixtures.json"
+    ]
+  },
+  "compatibility": {
+    "legacy_ui_runtime_rejected_before_export": true,
+    "declaration_preserved": true,
+    "evidence": "legacy-runtime-preflight.json"
+  },
+  "review": {
+    "independent_source_review": "two concrete findings fixed, no remaining concrete findings",
+    "claude": "attempt timed out; not a completed review",
+    "evidence": [
+      "independent-review.json",
+      "claude-attempt.json"
+    ]
+  },
+  "limitations": [
+    "Native GPU rendering was not tested in this slice.",
+    "The first fresh-a navigation timed out before checks; raw artifacts retained; cause unconfirmed. A fresh rerun passed all 24 checks.",
+    "Fresh apps use system fonts and desktop compositions; small viewport input checks do not certify responsive typography or packaged glyph coverage.",
+    "Desktop screenshots of both fresh apps were visually inspected. Observatory initial pixels were compared at all three viewports.",
+    "Fresh author isolation was instruction-enforced, not an OS sandbox. Its input snapshot predates the final documentation handoff improvements.",
+    "Raw large browser reports, screenshots and compiled SDKs remain local ignored artifacts; committed summaries retain their SHA-256 hashes.",
+    "The 57 old/current source-tree comparisons used a fake API, not the real renderer; actual browser and EngineRuntime regressions provide separate evidence."
+  ]
+}

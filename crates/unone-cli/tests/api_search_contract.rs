@@ -259,7 +259,6 @@ fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
         "font size",
         "text alignment",
         "border padding",
-        "component styling",
         "card background",
         "component overlap",
         "reusable card backgrounds",
@@ -269,11 +268,6 @@ fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
         "元件重疊",
         "如何處理元件重疊",
         "字體 字級 排版 樣式",
-        "共用元件",
-        "共用UI元件",
-        "共用UI組件",
-        "UI元件",
-        "共享UI组件",
         "font_size",
         "font_family",
         "text_align",
@@ -298,8 +292,18 @@ fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
                 .unwrap()
                 .contains("font_size=2")
         );
-        assert!(entry["when_to_use"].as_str().unwrap().contains("background_for={component=id}"));
-        assert!(entry["parameters"][0]["meaning"].as_str().unwrap().contains("Exact-pair v1"));
+        assert!(
+            entry["when_to_use"]
+                .as_str()
+                .unwrap()
+                .contains("background_for={component=id}")
+        );
+        assert!(
+            entry["parameters"][0]["meaning"]
+                .as_str()
+                .unwrap()
+                .contains("Exact-pair v1")
+        );
         assert!(
             entry["related_apis"]
                 .as_array()
@@ -311,6 +315,130 @@ fn typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract() {
         cli_search(&project_root, "responsive")["value"]["matches"][0]["name"],
         "ui.getViewport"
     );
+}
+
+#[test]
+fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
+    let project_root = unique_fixture_root("official ui package discovery");
+    for query in [
+        "UI package",
+        "shared components",
+        "reusable components",
+        "component styling",
+        "button component",
+        "card component",
+        "官方UI套件",
+        "共用元件",
+        "共用 UI 元件",
+        "共用UI元件",
+        "共用UI組件",
+        "UI元件",
+        "共享UI组件",
+        "主題樣式",
+    ] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query), "{query}");
+        assert_eq!(result["ok"], true);
+        assert_eq!(result["diagnostics"], json!([]));
+        let matches = result["value"]["matches"].as_array().unwrap();
+        let entry = &matches[0];
+        assert_eq!(entry["name"], "ui.components.create", "{query}");
+        assert!(
+            matches
+                .iter()
+                .any(|api| api["name"] == "ui.components.info")
+        );
+        assert!(
+            matches
+                .iter()
+                .all(|api| api["name"].as_str().unwrap().starts_with("ui."))
+        );
+        assert!(
+            entry["when_to_use"]
+                .as_str()
+                .unwrap()
+                .contains("docs/ui-components.md")
+        );
+        assert!(entry["when_to_use"].as_str().unwrap().contains("0.1.0"));
+        assert!(
+            entry["returns"]
+                .as_str()
+                .unwrap()
+                .contains("UiComponentKit")
+        );
+        assert_eq!(entry["parameters"][0]["type_name"], "UiComponentsTheme?");
+        assert!(
+            entry["parameters"][0]["meaning"]
+                .as_str()
+                .unwrap()
+                .contains("flattened UiPlacement")
+        );
+        assert!(
+            entry["parameters"][0]["meaning"]
+                .as_str()
+                .unwrap()
+                .contains("background_for={component=id}")
+        );
+        assert!(
+            entry["when_not_to_use"]
+                .as_str()
+                .unwrap()
+                .contains("Themes, content, state, actions and geometry belong to project Luau")
+        );
+    }
+    let version = cli_search(&project_root, "UI package version");
+    assert_eq!(version, mcp_search(&project_root, "UI package version"));
+    assert_eq!(version["value"]["matches"][0]["name"], "ui.components.info");
+    assert!(
+        version["value"]["matches"][0]["when_to_use"]
+            .as_str()
+            .unwrap()
+            .contains("Available without a runtime_packages declaration")
+    );
+    for query in [
+        "ui.components.info",
+        "ui.components.create",
+        "ui.components.composeStyle",
+        "ui.components.id",
+    ] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query));
+        let matches = result["value"]["matches"].as_array().unwrap();
+        assert_eq!(matches.len(), 1);
+        assert_eq!(matches[0]["name"], query);
+    }
+    let index = cli_search(&project_root, "");
+    let matches = index["value"]["matches"].as_array().unwrap();
+    assert!(
+        !matches
+            .iter()
+            .any(|api| api["name"] == "ui.components.button" || api["name"] == "ui.component")
+    );
+    for query in [
+        "entity size",
+        "physics3d overlap",
+        "ECS元件",
+        "UI package unfindable",
+    ] {
+        let result = cli_search(&project_root, query);
+        assert_eq!(result, mcp_search(&project_root, query));
+        let matches = result["value"]["matches"].as_array().unwrap();
+        if query == "entity size" {
+            assert!(
+                matches
+                    .iter()
+                    .any(|api| api["name"] == "entity.getTransform2D")
+            );
+        } else if query == "physics3d overlap" {
+            assert!(
+                matches
+                    .iter()
+                    .any(|api| api["name"].as_str().unwrap().starts_with("physics3d."))
+            );
+        } else {
+            assert!(matches.is_empty(), "{query}");
+        }
+    }
 }
 
 #[test]

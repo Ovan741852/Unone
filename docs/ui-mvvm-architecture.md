@@ -1,15 +1,24 @@
 # UI Manager / MVVM 架構提案
 
-Current scope (2026-10-16): [ADR 0038](decisions/0038-shared-ui-styling.md)
-extends the existing Core UI transport with shared typed font/box styles and a
-decorative panel primitive. Use [the implemented style API](ui-styling.md) on
-existing component leaves. This supersedes the earlier blanket "no new UI
-primitive" restriction; it does not add MVVM, a manager, reactive bindings,
-game-specific widgets or automatic layout to Core. The architecture proposal
-below remains guidance for game/SDK responsibility and future lifecycle work.
-The explicit background ownership in [ADR 0039](decisions/0039-component-background-intent.md)
-keeps validation intent inside those existing Luau component functions without
-changing this lifecycle/ownership boundary or adding automatic placement.
+Current scope (2026-10-16): the implemented official
+[`@unone/ui` package](ui-components.md) is a versioned pure Luau component kit,
+bundled with Core and the portable SDK. Declare
+`"runtime_packages":{"@unone/ui":"0.1.0"}` and discover `ui.components.info` /
+`ui.components.create`. Its returned kit constructs existing typed leaves and
+component nodes, copies per-kind theme styles, composes instance IDs and can
+prepend a scoped panel/image surface. It has no manager, binding lifecycle,
+reactive scheduler, hardcoded theme, layout policy or business behavior. Themes,
+content, state, actions and geometry remain project-owned; custom Luau factories
+remain valid. This package is implemented; the manager/reactive architecture
+below remains a proposal.
+
+[ADR 0038](decisions/0038-shared-ui-styling.md) extends the Core transport with
+shared font/box styles and a decorative panel primitive. Use the
+[implemented style contract](ui-styling.md) on those leaves.
+[ADR 0039](decisions/0039-component-background-intent.md) keeps explicit
+background validation intent inside components. The kit produces that canonical
+metadata without moving children or weakening strict foreground/partial overlap
+checks. These capabilities preserve the lifecycle/ownership boundary below.
 
 這是建立在 [ADR 0004](decisions/0004-mvvm-presentation-boundary.md) 上的
 UI 專用提案。四層是責任分法，不代表每個小畫面都必須建立四個檔案或四個
@@ -217,6 +226,7 @@ YesSir 可用三個情境做對照：王破防條（ProgressBar + computed）、
 8. signed update hash、safe-point switch 與 rollback 是否可重播；
 9. host 缺少 IME、focus、hover 時是否 fail-closed。
 
-實驗通過後才決定 foundation/components 是否各自發佈；目前先維持
+此處的 foundation/manager 與更高階 components 發佈仍待實驗決定；已實作的
+`@unone/ui` leaf/component kit 依上方契約使用。另維持
 [UnoneUI](https://github.com/Ovan741852/UnoneUI/blob/main/docs/platform-vision.md) 為可選 package，Core 不引入
 UI Manager、reactive scheduler 或商店依賴。

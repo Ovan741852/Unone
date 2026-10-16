@@ -7,6 +7,8 @@
 -- project init inlines it into the entry script, because the engine runtime
 -- has no module require: a single-file game must carry its own types for
 -- `game check --types` to mean anything.
+-- Official SDK-bundled Luau packages use typed API namespaces such as
+-- api.ui.components; declare their exact runtime_packages versions in the project.
 --
 -- Game-owned models, ViewModels, Views and save schemas belong in the game.
 
@@ -122,7 +124,6 @@ export type CameraTransformInput = {
     orthographicSize: number?,
 }
 
--- Deprecated compatibility namespace. New code uses api.camera.
 export type Camera3DApi = {
     getTransform: () -> Camera3DTransform,
     setPosition: (position: Vec3) -> (),
@@ -153,9 +154,133 @@ export type UiAnchor =
     | "bottom_left" | "bottom" | "bottom_right"
 
 export type UiApi = {
-    setRoot: (root: ObservationValue) -> (),
+    components: UiComponentsApi,
+    setRoot: (root: UiScreen) -> (),
+    -- Current host width/height ratio, also used by anchored placement.
+    -- Read-only environment data; selecting a layout remains game code.
+    getViewport: () -> {aspect: number},
+    -- Helpers return a real scroll_view node. Content is local top-left/y-down;
+    -- viewport uses explicit left/top; never pass a stage x/y rect here.
+    scrollView: (options: UiScrollOptions) -> any,
+    virtualList: (options: UiVirtualOptions) -> any,
+    virtualGrid: (options: UiVirtualGridOptions) -> any,
     -- Actual host ceilings and the last valid tree's node/subtree usage.
     inspect: () -> ObservationValue,
+}
+export type UiRect = {x: number, y: number, width: number, height: number}
+-- Every style length uses vertical units (1 = 1% of viewport height).
+-- Styles belong to one leaf, with no implicit inheritance. An explicit
+-- font_size does not change when its box changes and never silently shrinks.
+export type UiColor = {number} -- exactly four RGBA values, each in 0..1
+export type UiInsets = {left: number?, top: number?, right: number?, bottom: number?}
+export type UiStyle = {
+    font_family: string?, font_size: number?, font_weight: number?,
+    line_height: number?, letter_spacing: number?, color: UiColor?,
+    text_align: ("start" | "center" | "end")?,
+    vertical_align: ("top" | "middle" | "bottom")?,
+    wrap: ("none" | "word")?, overflow: ("clip" | "ellipsis")?,
+    padding: UiInsets?, background: UiColor?, border_color: UiColor?,
+    border_width: number?, border_radius: number?, opacity: number?,
+}
+export type UiPlacement = {
+    rect: UiRect?, anchor: UiAnchor?, pivot: UiAnchor?,
+    offset: {x: number?, y: number?}?, size: {width: number, height: number}?,
+}
+export type UiTextNode = UiPlacement & {
+    kind: "text", id: string, text: string?, style: UiStyle?,
+}
+export type UiButtonNode = UiPlacement & {
+    kind: "button", id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiSliderNode = UiPlacement & {
+    kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComboBoxNode = UiPlacement & {
+    kind: "combobox", id: string, text: string?, action: string,
+    expanded: boolean?, style: UiStyle?,
+}
+-- Image and panel styles accept box fields; typography requires a text leaf.
+-- A decorative surface may explicitly belong to its screen or an ancestor
+-- component in the same coordinate space. This never changes placement/order.
+export type UiBackgroundScope = {screen: true} | {component: string}
+export type UiImageNode = UiPlacement & {
+    kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiPanelNode = UiPlacement & {
+    kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentNode = UiPlacement & {
+    kind: "component", id: string, component: string, children: {UiNode}?,
+}
+export type UiScrollNode = UiPlacement & {
+    kind: "scroll_view", id: string, viewport: UiViewport?,
+    scroll: {axis: string?, enabled: boolean?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
+    children: {UiNode}?,
+}
+export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
+    | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
+export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
+-- @unone/ui: pure constructors. All positions/order remain explicitly authored.
+-- create snapshots these defaults; leaf overrides win, padding merges per edge.
+export type UiComponentsTheme = {
+    text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
+}
+export type UiComponentTextProps = UiPlacement & {
+    id: string, text: string?, style: UiStyle?,
+}
+export type UiComponentButtonProps = UiPlacement & {
+    id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComponentPanelProps = UiPlacement & {
+    id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentImageProps = UiPlacement & {
+    id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentSurface = {
+    kind: "panel", style: UiStyle?,
+} | {
+    kind: "image", asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?,
+}
+export type UiComponentProps = UiPlacement & {
+    id: string, component: string, children: {UiNode}?, surface: UiComponentSurface?,
+}
+export type UiComponentKit = {
+    text: (props: UiComponentTextProps) -> UiTextNode,
+    button: (props: UiComponentButtonProps) -> UiButtonNode,
+    panel: (props: UiComponentPanelProps) -> UiPanelNode,
+    image: (props: UiComponentImageProps) -> UiImageNode,
+    component: (props: UiComponentProps) -> UiComponentNode,
+    id: (instanceId: string, role: string) -> string,
+    composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
+}
+export type UiComponentsInfo = {
+    name: string, version: string, kind: string, entry: string,
+    api: string, license: string, declared: boolean,
+}
+export type UiComponentsApi = {
+    info: () -> UiComponentsInfo,
+    create: (theme: UiComponentsTheme?) -> UiComponentKit,
+    composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
+    id: (instanceId: string, role: string) -> string,
+}
+export type UiViewport = {left: number, top: number, width: number, height: number}
+export type UiScrollOptions = {
+    id: string, viewport: UiViewport, content: {any}?,
+    axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
+    resetKey: string?, wheelRect: UiViewport?,
+}
+export type UiVirtualOptions = {
+    id: string, viewport: UiViewport, items: {any}, key: string | ((any, number) -> string),
+    rowHeight: number, gapY: number?,
+    renderItem: (any, number, string) -> {any},
+    enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
+}
+export type UiVirtualGridOptions = UiVirtualOptions & {
+    columns: number, columnWidth: number, gapX: number?,
 }
 
 -- One source texture and one node. Border pixels / pixels_per_unit become
@@ -235,7 +360,7 @@ export type ParticleApi = {
     move: (handle: string, position: Vec3) -> boolean,
     -- End an emitter now and allow its existing particles to fade naturally.
     finish: (handle: string) -> boolean,
-    -- Particle appearance and motion are authored in scene particle_effects.
+    -- Other particle fields are authored in scene particle_effects and validated against particle.schema.json.
     stats: () -> {active_handles: number, max_handles: number, reserved_particles: number, max_particles: number, live_particles: number},
     play: (effect: string, position: Vec3, seed: number?) -> string,
     stop: (handle: string) -> boolean,
@@ -260,7 +385,15 @@ export type JobsApi = {
     cancel: (handle: string) -> (),
     reset: () -> (),
 }
+export type ShaderUniform = number | {number}
+export type ShaderApi = {
+    setMaterial: (entityId: string, materialId: string) -> (),
+    clearMaterial: (entityId: string) -> (),
+    setUniform: (materialId: string, name: string, value: ShaderUniform) -> (),
+}
+
 export type EngineApi = {
+    shader: ShaderApi,
     jobs: JobsApi,
     instances3d: Instances3DApi,
     debug: DebugApi,

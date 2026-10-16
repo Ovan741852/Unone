@@ -1,7 +1,8 @@
 # Aster Observatory settings
 
-A UI-only example built with the official Unone player, existing reusable
-`component` trees and typed typography/box styles. The scene contains no world
+A UI-only example built with the official Unone player and the SDK-bundled
+[`@unone/ui` package](../../docs/ui-components.md), using typed constructors for
+existing UI leaves and `component` trees. The scene contains no world
 entities. There is no HTML/CSS UI, replacement renderer, direct drawing API or
 image asset. Five licensed TTF faces supply Chinese reading text, display type
 and monospaced data labels.
@@ -11,8 +12,8 @@ portable SDK and its public CLI/type/documentation surface, without reading engi
 source or receiving implementation hints. Independent visual acceptance later
 identified a clipped heading at an intermediate aspect ratio; the author corrected
 its type size through the same documented API. The current copy retains those
-authored coordinates, typography and state behavior, with the background-intent
-refactor described below and the matching canonical strict type prelude.
+authored coordinates, typography and state behavior, with the official-package
+migration described below and the matching canonical strict type prelude.
 The launcher, documentation and ignore rules are integration files. The parent
 validation's real desktop/portrait browser evidence is recorded separately;
 the source tests below do not certify rendered pixels or mobile performance.
@@ -88,9 +89,13 @@ $Sdk = 'C:/Tools/UnoneSDK'
 & "$Sdk/bin/game.exe" --sdk $Sdk --project . --json verify
 ```
 
-Use a current SDK whose CLI and Web runtime both support `background_for`.
-An older runtime rejects the field; updating types alone does not update the
-player. From the repository root, replace `--project .` with
+Use a current SDK whose CLI and Web runtime both bundle `@unone/ui` version
+`0.1.0`. The project declares `"runtime_packages":{"@unone/ui":"0.1.0"}`;
+`api.ui.components.info()` exposes the installed version and declaration flag.
+No npm install, `require` import or filesystem module loader is involved. An
+older runtime cannot satisfy the package declaration; updating types alone does
+not update the player. SDK preflight checks runtime compatibility, while
+`verify` / `prepare` remain authoring gates. From the repository root, replace `--project .` with
 `--project ./_Games/observatory-settings`. Verification includes strict types,
 the explicit component backgrounds, six reviewed slider-skin overlap pairs and
 nine deterministic interaction cases:
@@ -100,9 +105,18 @@ aspect; actual portrait rendering and pointer interaction require browser QA.
 
 ## Backgrounds belong to their components
 
-`settingCard` declares its own surface with
-`background_for={component=id}`. Three card instances reuse that declaration;
-the preset card does the same. The full-screen panel explicitly uses
+The example calls `api.ui.components.create` inside its View publication, with
+project-owned shared button style defaults. Its `label`, `panel`, `actionButton`
+and `settingCard` factories compose the kit's typed constructors; the kit owns
+style copying/merging and ordinary component surface declarations. The factories
+still own the text, fonts, colors, geometry, semantic action IDs and application
+state. The slider skin and its value calculations remain authored Luau.
+
+`settingCard` uses `ui.component({...surface={kind="panel",style=...}})`.
+Three card instances reuse that package-backed factory; the preset card uses
+the same surface helper. The package prepends `id.."/surface"` with
+`background_for={component=id}` and the component's unchanged placement. Child
+coordinates and paint order are preserved. The full-screen panel explicitly uses
 `background_for={screen=true}`. These five instances replace 62 external pairs;
 the policy file contains only six deliberate slider-skin pairs instead of 68.
 The factory no longer exposes every label/control ID to an external policy.

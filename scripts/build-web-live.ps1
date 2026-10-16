@@ -76,6 +76,12 @@ if ($Player) {
     if (-not $systemReport.ok) { throw "Cannot resolve project systems: $systemJson" }
     $selected = @($systemReport.value.systems | Where-Object { (-not $Project) -or $_.enabled })
     $compiledSystems = @($selected | ForEach-Object { $_.id } | Sort-Object)
+    $runtimePackages = @{}
+    if ($compiledSystems -contains 'ui') {
+        $uiPackage = Get-Content -LiteralPath (Join-Path $repoRoot 'packages/unone-ui/package.unone.json') -Raw | ConvertFrom-Json
+        if ($uiPackage.name -ne '@unone/ui' -or [string]::IsNullOrWhiteSpace($uiPackage.version)) { throw 'Invalid canonical UI runtime package manifest' }
+        $runtimePackages[$uiPackage.name] = [string]$uiPackage.version
+    }
     $features = @($selected | Where-Object { $_.build_feature } | ForEach-Object { $_.build_feature } | Sort-Object -Unique)
     if ($Development) { $features += 'preview-tools' }
     $featureArgs = @('--no-default-features')
@@ -95,7 +101,7 @@ if ($Player) {
     New-Item -ItemType Directory -Force $outputRoot | Out-Null
     Copy-Item -LiteralPath $wasm.FullName -Destination $outputRoot -Force
     Copy-Item -LiteralPath $javascript.FullName -Destination $outputRoot -Force
-    $report = @{ compiled_systems=$compiledSystems; cargo_features=$features; profile='release'; dev_tools=$false; preview_tools=[bool]$Development; javascript=$javascript.Name; wasm=$wasm.Name;
+    $report = @{ compiled_systems=$compiledSystems; runtime_packages=$runtimePackages; cargo_features=$features; profile='release'; dev_tools=$false; preview_tools=[bool]$Development; javascript=$javascript.Name; wasm=$wasm.Name;
         wasm_bytes=$wasm.Length; wasm_sha256=(Get-FileHash $wasm.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         javascript_sha256=(Get-FileHash $javascript.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         exports=$exports; source_commit=(git -C $repoRoot rev-parse HEAD); source_dirty=[bool](git -C $repoRoot status --porcelain) }

@@ -352,35 +352,43 @@ Use `api.save.set(value)`/`api.save.get()` only when GAME_PLAN requires persiste
 
 ## 3.3.1 Official UI components, typography and style discovery
 
-The official UI already has reusable `component` trees and shared text, button,
-image, slider and combobox leaves. Extend these leaves with typed `style`; do not
-introduce a competing game-owned HTML/GPU UI system. Search `game api search
-"font size"`, `"component styling"`, `"card background"`, `"component overlap"`,
-`"共用元件"`, `"卡片背景"`, `"元件重疊"` or `"字體"`, describe `ui.setRoot`,
-and inspect `game schema ui` before authoring. The
-[current typography/style guide](ui-styling.md) covers units, defaults, font
-catalogs, component examples and target limits.
+Start shared controls with the official [`@unone/ui` package](ui-components.md),
+which ships as pure Luau with Core and the portable SDK. Search
+`game api search "UI package"`, `"shared components"`, `"button component"`,
+`"card component"`, `"官方UI套件"`, `"共用元件"` or `"主題樣式"`; describe
+`ui.components.info` and `ui.components.create`. Declare the exact bundled version
+in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.1.0"}`. `info()` is
+available before declaration and reports the name, version and `declared` flag.
+No npm install, import or filesystem module loader is involved.
 
-An explicit styled font size is measured in vertical design units and does not
-auto-shrink to the rectangle. Styles are local to existing component leaves;
-component is a node kind, not an `api.ui.component()` factory. Reusable themed
-controls are Luau functions returning that typed tree. `api.ui.getViewport()`
-exposes the current aspect for game-authored portrait/landscape choices without
-adding automatic placement. Refresh `game api typings` when upgrading a project.
-Inspect the exported official player's typography at the target sizes; headless
-tree validation does not prove glyph coverage, visual hierarchy or font metrics.
+`api.ui.components.create(theme?)` returns a typed kit with `text`, `button`,
+`panel`, `image`, `component`, `id` and `composeStyle` methods. These construct
+existing nodes for `api.ui.setRoot`; call `ui.button(props)` on the returned kit,
+not `api.ui.components.button`. Props use explicit flattened `rect` or
+`anchor`+`size` fields. Per-kind theme styles are copied, overrides win, padding
+merges by edge and RGBA arrays replace. The project owns themes, content, state,
+action meanings, screen flow and geometry. Custom Luau factories remain valid.
 
-Carry a card's background intent inside its existing reusable Luau component
-function: put `background_for={component=id}` on an earlier image/panel leaf,
-where `id` is its actual ancestor component node ID. A screen background uses
-`background_for={screen=true}`. The parser validates the ancestor, coordinate
-space and background bounds. Strict inspection exempts only later descendants
-of that scope fully contained by the background; it still reports foreground
-collisions, partial coverage, unrelated siblings and later occlusion. This adds
-no factory, automatic placement, draw-order rule or inheritance. Keep exact-pair
-version-1 overlap policies for deliberate skin layers that require them; do not
-claim that background metadata removes every policy. See the
-[scope contract](ui-styling.md#explicit-background-scopes).
+For font and canonical leaf details, search `"font size"`, `"text alignment"`,
+`"border padding"` or `"字體"`, describe `ui.setRoot`, and inspect `game schema ui`.
+The [style guide](ui-styling.md) covers vertical design units, explicit sizes,
+font catalogs and host limits. `api.ui.getViewport()` exposes the current aspect
+for project-authored responsive choices. Refresh `game api typings` and the SDK
+when upgrading. A package declaration needs a runtime containing that version;
+SDK preflight rejects older runtimes. Standard `verify` / `prepare` remain
+authoring gates. Inspect the exported official player at the target sizes to
+validate glyph coverage, visual hierarchy and font metrics.
+
+Use `ui.component({...surface={kind="panel"}})` or an image surface for a card's
+background. The helper prepends `id.."/surface"` with
+`background_for={component=id}` and the component's unchanged placement. Children
+retain authored coordinates and order. A direct custom factory may declare the
+same metadata on its own image/panel leaf; screen backgrounds use
+`background_for={screen=true}`. Search `"card background"` / `"component overlap"`
+for canonical scope checks. Strict inspection exempts only later fully contained
+descendants; foreground collisions, partial coverage, unrelated siblings and
+later occlusion remain findings. Keep exact-pair version-1 overlap policies for
+skin layers that need them. See [the scope contract](ui-styling.md#explicit-background-scopes).
 
 ## 3.4 Declarative particles (default visual-effects path)
 

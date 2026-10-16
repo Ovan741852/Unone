@@ -123,6 +123,7 @@ export type UiAnchor =
     | "bottom_left" | "bottom" | "bottom_right"
 
 export type UiApi = {
+    components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     getViewport: () -> {aspect: number},
     scrollView: (options: UiScrollOptions) -> any,
@@ -178,6 +179,50 @@ export type UiScrollNode = UiPlacement & {
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
+export type UiComponentsTheme = {
+    text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
+}
+export type UiComponentTextProps = UiPlacement & {
+    id: string, text: string?, style: UiStyle?,
+}
+export type UiComponentButtonProps = UiPlacement & {
+    id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComponentPanelProps = UiPlacement & {
+    id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentImageProps = UiPlacement & {
+    id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentSurface = {
+    kind: "panel", style: UiStyle?,
+} | {
+    kind: "image", asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?,
+}
+export type UiComponentProps = UiPlacement & {
+    id: string, component: string, children: {UiNode}?, surface: UiComponentSurface?,
+}
+export type UiComponentKit = {
+    text: (props: UiComponentTextProps) -> UiTextNode,
+    button: (props: UiComponentButtonProps) -> UiButtonNode,
+    panel: (props: UiComponentPanelProps) -> UiPanelNode,
+    image: (props: UiComponentImageProps) -> UiImageNode,
+    component: (props: UiComponentProps) -> UiComponentNode,
+    id: (instanceId: string, role: string) -> string,
+    composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
+}
+export type UiComponentsInfo = {
+    name: string, version: string, kind: string, entry: string,
+    api: string, license: string, declared: boolean,
+}
+export type UiComponentsApi = {
+    info: () -> UiComponentsInfo,
+    create: (theme: UiComponentsTheme?) -> UiComponentKit,
+    composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
+    id: (instanceId: string, role: string) -> string,
+}
 export type UiViewport = {left: number, top: number, width: number, height: number}
 export type UiScrollOptions = {
     id: string, viewport: UiViewport, content: {any}?,
@@ -344,62 +389,67 @@ local function textStyle(size: number, color: UiColor, family: string?, weight: 
     return {font_family=family or READING,font_size=size,font_weight=weight or 400,
         text_align="start",vertical_align="middle",color=color,wrap="none",overflow="clip"}
 end
-local function label(id: string, text: string, r: UiRect, size: number, color: UiColor, family: string?, weight: number?): UiNode
-    return {kind="text",id=id,text=text,rect=r,style=textStyle(size,color,family,weight)}
-end
-local function panel(id: string,r: UiRect,fill: UiColor,radius: number,border: UiColor?,opacity: number?,backgroundFor: UiBackgroundScope?): UiNode
-    return {kind="panel",id=id,rect=r,background_for=backgroundFor,style={background=fill,border_radius=radius,
-        border_width=if border then 0.10 else 0,border_color=border,opacity=opacity or 1}}
-end
-local function actionButton(id: string,text: string,action: string,r: UiRect,selected: boolean,small: boolean?): UiNode
-    local style: UiStyle = {font_family=READING,font_size=if small then 1.35 else 1.75,font_weight=700,
-        line_height=1.25,text_align="center",vertical_align="middle",wrap="none",overflow="clip",
-        padding={left=0.5,right=0.5,top=0.2,bottom=0.2},
-        color=if selected then INK else WHITE,
-        background=if selected then MINT else {0.06,0.105,0.135,0.88},
-        border_color=if selected then MINT else LINE,border_width=0.10,border_radius=0.65}
-    return {kind="component",id=id,component="observatory.action_button",rect=r,children={
-        {kind="button",id=id.."_action",text=text,action=action,rect=r,style=style},
-    }}
-end
-local function settingCard(id: string,index: string,title: string,description: string,r: UiRect,compact: boolean,controls: {UiNode}): UiNode
-    local p = if compact then 4 else 3
-    local descriptionStyle = textStyle(if compact then 1.35 else 1.5,MUTED,DISPLAY)
-    descriptionStyle.wrap="word"
-    descriptionStyle.line_height=1.2
-    local descriptionNode: UiNode = {kind="text",id=id.."_description",text=description,
-        rect=rect(r.x+p,r.y+1.8,if compact then 29 else 21.5,3.3),style=descriptionStyle}
-    local children: {UiNode} = {
-        panel(id.."_surface",r,{0.055,0.091,0.121,0.94},0.95,LINE,nil,{component=id}),
-        label(id.."_index",index,rect(r.x+p,r.y+r.height-3.0,30,1.8),1.0,MUTED,DATA),
-        label(id.."_title",title,rect(r.x+p,r.y+r.height-7.3,if compact then 29 else 21,3.7),if compact then 1.85 else 2.2,WHITE,READING,700),
-        descriptionNode,
-    }
-    for _,control in controls do table.insert(children,control) end
-    return {kind="component",id=id,component="observatory.setting_card",rect=r,children=children}
-end
-local function levelControl(compact: boolean): {UiNode}
-    local minus = if compact then rect(42,22.5,8,5) else rect(64,26,5,5)
-    local plus = if compact then rect(80,22.5,8,5) else rect(85,26,5,5)
-    sliderRect = if compact then rect(51,22.5,27,5) else rect(70,26,14,5)
-    local track = rect(sliderRect.x+1,sliderRect.y+2.15,sliderRect.width-2,0.7)
-    local fillWidth = math.max(0.15,track.width*draft.level/100)
-    local thumbX = track.x+(track.width-0.8)*draft.level/100
-    return {
-        label("level_value",tostring(draft.level).."%",if compact then rect(75,27.2,13,3.4) else rect(81,33.1,9,3.5),2.8,MINT,DATA),
-        actionButton("level_minus","−","LevelDown",minus,false),
-        panel("level_track",track,{0.18,0.28,0.33,1},0.4),
-        panel("level_fill",rect(track.x,track.y,fillWidth,track.height),MINT,0.4),
-        panel("level_thumb",rect(thumbX,sliderRect.y+1.5,0.8,2),WHITE,0.4),
-        {kind="slider",id="level_slider",action="SetLevel",text="",rect=sliderRect,
-            style={background={0,0,0,0},color={0,0,0,0},border_width=0}},
-        actionButton("level_plus","+","LevelUp",plus,false),
-    }
-end
 local function changed(): boolean
     return draft.sound ~= applied.sound or draft.mode ~= applied.mode or draft.level ~= applied.level
 end
 local function publish(api: EngineApi)
+    local ui: UiComponentKit = api.ui.components.create({button={
+        font_family=READING,font_weight=700,line_height=1.25,
+        text_align="center",vertical_align="middle",wrap="none",overflow="clip",
+        padding={left=0.5,right=0.5,top=0.2,bottom=0.2},
+        border_width=0.10,border_radius=0.65,
+    }})
+    local function label(id: string, text: string, r: UiRect, size: number, color: UiColor, family: string?, weight: number?): UiNode
+        return ui.text({id=id,text=text,rect=r,style=textStyle(size,color,family,weight)})
+    end
+    local function panel(id: string,r: UiRect,fill: UiColor,radius: number,border: UiColor?,opacity: number?,backgroundFor: UiBackgroundScope?): UiNode
+        return ui.panel({id=id,rect=r,background_for=backgroundFor,style={background=fill,border_radius=radius,
+            border_width=if border then 0.10 else 0,border_color=border,opacity=opacity or 1}})
+    end
+    local function actionButton(id: string,text: string,action: string,r: UiRect,selected: boolean,small: boolean?): UiNode
+        local style: UiStyle = {font_size=if small then 1.35 else 1.75,
+            color=if selected then INK else WHITE,
+            background=if selected then MINT else {0.06,0.105,0.135,0.88},
+            border_color=if selected then MINT else LINE}
+        return ui.component({id=id,component="observatory.action_button",rect=r,children={
+            ui.button({id=id.."_action",text=text,action=action,rect=r,style=style}),
+        }})
+    end
+    local function settingCard(id: string,index: string,title: string,description: string,r: UiRect,compact: boolean,controls: {UiNode}): UiNode
+        local p = if compact then 4 else 3
+        local descriptionStyle = textStyle(if compact then 1.35 else 1.5,MUTED,DISPLAY)
+        descriptionStyle.wrap="word"
+        descriptionStyle.line_height=1.2
+        local descriptionNode = ui.text({id=id.."_description",text=description,
+            rect=rect(r.x+p,r.y+1.8,if compact then 29 else 21.5,3.3),style=descriptionStyle})
+        local children: {UiNode} = {
+            label(id.."_index",index,rect(r.x+p,r.y+r.height-3.0,30,1.8),1.0,MUTED,DATA),
+            label(id.."_title",title,rect(r.x+p,r.y+r.height-7.3,if compact then 29 else 21,3.7),if compact then 1.85 else 2.2,WHITE,READING,700),
+            descriptionNode,
+        }
+        for _,control in controls do table.insert(children,control) end
+        return ui.component({id=id,component="observatory.setting_card",rect=r,
+            surface={kind="panel",style={background={0.055,0.091,0.121,0.94},border_radius=0.95,
+                border_width=0.10,border_color=LINE,opacity=1}},children=children})
+    end
+    local function levelControl(compact: boolean): {UiNode}
+        local minus = if compact then rect(42,22.5,8,5) else rect(64,26,5,5)
+        local plus = if compact then rect(80,22.5,8,5) else rect(85,26,5,5)
+        sliderRect = if compact then rect(51,22.5,27,5) else rect(70,26,14,5)
+        local track = rect(sliderRect.x+1,sliderRect.y+2.15,sliderRect.width-2,0.7)
+        local fillWidth = math.max(0.15,track.width*draft.level/100)
+        local thumbX = track.x+(track.width-0.8)*draft.level/100
+        return {
+            label("level_value",tostring(draft.level).."%",if compact then rect(75,27.2,13,3.4) else rect(81,33.1,9,3.5),2.8,MINT,DATA),
+            actionButton("level_minus","−","LevelDown",minus,false),
+            panel("level_track",track,{0.18,0.28,0.33,1},0.4),
+            panel("level_fill",rect(track.x,track.y,fillWidth,track.height),MINT,0.4),
+            panel("level_thumb",rect(thumbX,sliderRect.y+1.5,0.8,2),WHITE,0.4),
+            {kind="slider",id="level_slider",action="SetLevel",text="",rect=sliderRect,
+                style={background={0,0,0,0},color={0,0,0,0},border_width=0}},
+            actionButton("level_plus","+","LevelUp",plus,false),
+        }
+    end
     local aspect = api.ui.getViewport().aspect
     local compact = aspect < 1.1
     previousAspect = aspect
@@ -421,16 +471,17 @@ local function publish(api: EngineApi)
     paragraphStyle.wrap="word"
     paragraphStyle.vertical_align="top"
     paragraphStyle.line_height=1.5
-    local introNode: UiNode = {kind="text",id="intro_paragraph",text="調整聲音、觀測模式與顯示亮度，準備一段屬於你的安靜時光。\nA few small adjustments, for a better night under the stars.",
-        rect=if compact then rect(6,65,88,8.5) else rect(6,39,27,14),style=paragraphStyle}
+    local introNode = ui.text({id="intro_paragraph",text="調整聲音、觀測模式與顯示亮度，準備一段屬於你的安靜時光。\nA few small adjustments, for a better night under the stars.",
+        rect=if compact then rect(6,65,88,8.5) else rect(6,39,27,14),style=paragraphStyle})
     table.insert(nodes,introNode)
     if not compact then
-        local preset: UiNode = {kind="component",id="preset_card",component="observatory.preset",rect=rect(6,22,27,14),children={
-            panel("preset_surface",rect(6,22,27,14),{0.08,0.14,0.17,0.65},0.8,LINE,0.88,{component="preset_card"}),
+        local preset = ui.component({id="preset_card",component="observatory.preset",rect=rect(6,22,27,14),
+            surface={kind="panel",style={background={0.08,0.14,0.17,0.65},border_radius=0.8,
+                border_width=0.10,border_color=LINE,opacity=0.88}},children={
             label("preset_label","TONIGHT'S PRESET",rect(8,32,23,2.2),1.1,MUTED,DATA),
             label("preset_mode",modeNames[draft.mode],rect(8,27.2,23,3.5),1.8,WHITE,READING,700),
             label("preset_values",(if draft.sound then "SOUND ON" else "SOUND OFF").."  /  LEVEL "..tostring(draft.level),rect(8,23.8,23,2),1.2,MINT,DATA),
-        }}
+        }})
         table.insert(nodes,preset)
     end
     local soundRect=if compact then rect(6,50,88,13) else rect(38,65,56,18)
@@ -458,7 +509,7 @@ local function publish(api: EngineApi)
     statusStyle.padding={left=0.7,right=0.7}
     statusStyle.background={0.08,0.13,0.16,0.65}
     statusStyle.border_radius=0.3
-    local statusNode: UiNode = {kind="text",id="status_line",text=status,rect=rect(6,3,if compact then 88 else 58,3.2),style=statusStyle}
+    local statusNode = ui.text({id="status_line",text=status,rect=rect(6,3,if compact then 88 else 58,3.2),style=statusStyle})
     table.insert(nodes,statusNode)
     api.ui.setRoot({kind="screen",id="observatory_settings",node="settings",children=nodes})
     api.observation.set("draft",{sound=draft.sound,mode=draft.mode,level=draft.level})

@@ -50,6 +50,12 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: the official SDK-bundled `@unone/ui` package, typed kit discovery,
+  runtime/SDK compatibility and observatory migration. Independent source review
+  corrected virtual-node identity and stale native package descriptors; release
+  tests, Clippy and official Web/fresh-author acceptance passed. The prescribed
+  Claude attempt timed out without output and remains incomplete:
+  [record](reviews/2026-10-16-official-ui-package.md).
 - 2026-10-16: explicit background ownership on existing UI leaves, reusable
   component validation and the observatory migration. Independent source review,
   bounded parser/layout regressions and real official-player acceptance are

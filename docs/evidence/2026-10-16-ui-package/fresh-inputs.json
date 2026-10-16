@@ -1,0 +1,693 @@
+{
+  "baseline": "b776403b8055187fa8ac2faad0a5e852fa2a9f52",
+  "fork_turns": "none",
+  "boundary": "instruction-enforced SDK/official documents only; no engine Rust or existing game source; no package implementation reads",
+  "files": [
+    {
+      "path": "sdk/bin/game.exe",
+      "sha256": "94084946ca3ceea6e010f10f2611939564442651cc6248b5cd5ca1a0f6c6471c"
+    },
+    {
+      "path": "sdk/docs/engine.d.luau",
+      "sha256": "ef9db9bf3add442cd5ef2fb00b9bf82b84ae9efc2a5b21358dc68c1a757eb1ab"
+    },
+    {
+      "path": "sdk/packages/unone-ui/package.unone.json",
+      "sha256": "f3f6a0ddab61893ac46b7bd7157c275de03073b0c4cd11b8f6b2b7fbb342bd6a"
+    },
+    {
+      "path": "sdk/packages/unone-ui/README.md",
+      "sha256": "987d8e273525bf00001da3038949b5727eb388da901f0224df412291cdd12992"
+    },
+    {
+      "path": "sdk/packages/unone-ui/src/components.luau",
+      "sha256": "206ddd43ec1e0b23a5bef9ad104b6d2d2635641cc4a770db402b335ae98e4c4d"
+    },
+    {
+      "path": "sdk/runtimes/web-production-0/runtime.json",
+      "sha256": "555018cbe65fe0d2e47d5781380c837db3332a67e1897594c756488f6ab4da4b"
+    },
+    {
+      "path": "sdk/runtimes/web-production-0/unone-player.js",
+      "sha256": "3625e3b9e0afcdd84de47e7da46d43b08ba7d81f010b54ddd59d7fc19bbc422d"
+    },
+    {
+      "path": "sdk/runtimes/web-production-0/unone_player.wasm",
+      "sha256": "7bb3757a120a228c4cb52a32330ad988e4f8261dc9e360ce7261915a5907d2d7"
+    },
+    {
+      "path": "sdk/scripts/pack-native-android.ps1",
+      "sha256": "87d05d09703efeeaf05bd3b91b358d5781ae0d1176498f1acc15c7af385ff6d4"
+    },
+    {
+      "path": "sdk/sdk.json",
+      "sha256": "ae6cf9d8ca06dfc6bcc041320306a26c3e6059887b62cd13c17e42f4a9383a36"
+    },
+    {
+      "path": "sdk/templates/web/developer/api.js",
+      "sha256": "b2cf35e109daad233870e5b15cdcc0614f98eb96e9b4e1d90ccab6842ffcc236"
+    },
+    {
+      "path": "sdk/templates/web/developer/main.js",
+      "sha256": "af5fd4b1e7b43bd557ffb381ba9fa33725d5a0338deca9ad17425836aa347aa3"
+    },
+    {
+      "path": "sdk/templates/web/developer/panel.css",
+      "sha256": "21d3cb0544dc27a2b4bc96405cac4cef6427b484e89aa39bf74b06639d3b29aa"
+    },
+    {
+      "path": "sdk/templates/web/developer/panel.js",
+      "sha256": "e81dd68f4f852a328f03ed752e0760f5aae1abdf67c5db55fa7d22256109b117"
+    },
+    {
+      "path": "sdk/templates/web/player/index.html",
+      "sha256": "1b836256177d6cd8495c839dbcf251585a71bee5082d023a59f89a235cf681a3"
+    },
+    {
+      "path": "sdk/templates/web/player/main.js",
+      "sha256": "d3c2d2cd9dc20835734fe028401f062943f60d9716d0f748f06c20714ebe96e3"
+    },
+    {
+      "path": "sdk/templates/web/renderer/bloom.js",
+      "sha256": "69966489a71a2e2948997f43a1929bcdf383cfb4ffbb25ae0f32c834212d0e0c"
+    },
+    {
+      "path": "sdk/templates/web/renderer/effekseer.js",
+      "sha256": "a9129aabc2794e0c15c580ddfde7dd2b90fea95c712e827e33de1e32af6afe4c"
+    },
+    {
+      "path": "sdk/templates/web/renderer/instances3d.js",
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "sdk/templates/web/renderer/mesh.js",
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "sdk/templates/web/renderer/particles.js",
+      "sha256": "57e65b72ef948dd32072d73c68fa7194226dc64493bae1fd9319388851da17f2"
+    },
+    {
+      "path": "sdk/templates/web/renderer/shader-materials.js",
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "sdk/templates/web/renderer/three.js",
+      "sha256": "d3b7b55043a40f61b79aaa90a59b483d0614b7d7cbc94a48fdbe6b3d9de0ad29"
+    },
+    {
+      "path": "sdk/templates/web/shared/asset-encoding.js",
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "sdk/templates/web/shared/async-scheduler.mjs",
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "sdk/templates/web/shared/audio-playback.js",
+      "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618"
+    },
+    {
+      "path": "sdk/templates/web/shared/canvas-ui.mjs",
+      "sha256": "5301827ad53e3eb996c2a2ab7c1f66ce3fc8d720637fbdeacb150d5936b6be51"
+    },
+    {
+      "path": "sdk/templates/web/shared/fixed-step-scheduler.mjs",
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "sdk/templates/web/shared/host-input.js",
+      "sha256": "6b6bcc9be7486c6723a69d6f35331ae2f1b3434de6488ac1a2a502b8413dfd87"
+    },
+    {
+      "path": "sdk/templates/web/shared/instance-transfer.mjs",
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "sdk/templates/web/shared/job-binary.mjs",
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "sdk/templates/web/shared/job-pool.mjs",
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "sdk/templates/web/shared/job-worker.js",
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "sdk/templates/web/shared/load-project.js",
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "sdk/templates/web/shared/presentation-interpolation.mjs",
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "sdk/templates/web/shared/profile-window.js",
+      "sha256": "0c014e50f1450e63fe6a237e32eac0bcf95721d22b21c1415fa217100093c21e"
+    },
+    {
+      "path": "sdk/templates/web/shared/renderer-selection.mjs",
+      "sha256": "dd0cce349a942d5267f22366c8ac48d5c4f5e1d38e2b694b0467d44abc520d6b"
+    },
+    {
+      "path": "sdk/templates/web/shared/runtime-backend.mjs",
+      "sha256": "289854e1c9a6d35bc8663bb863e31f7b54e6cb445260dde96cb6815e893c7592"
+    },
+    {
+      "path": "sdk/templates/web/shared/runtime-core.mjs",
+      "sha256": "05361f638feaf8cb2879fcc4df82e446e065b34ec5d74785e7104ba93691de21"
+    },
+    {
+      "path": "sdk/templates/web/shared/runtime-worker.js",
+      "sha256": "02aa8ec5fdc5ce4e3682510cb80c3b006628695e3a1813ef50739eb28bde98c1"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-contract.mjs",
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-geometry.mjs",
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-scroll.mjs",
+      "sha256": "fde1941b01fa28ceb56deb2c0666c74a94f3cbdd5a1b762ea3f8af93d6d16ef5"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-style.mjs",
+      "sha256": "681073b16074bccd1e4ada375098f37932047a690b95c898df918296e06e2853"
+    },
+    {
+      "path": "sdk/templates/web/shared/ui-tree.js",
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "sdk/templates/web/shared/webgpu-snapshot.js",
+      "sha256": "3a1e35f2698273b8ae552382ab7167f2b7e7f7b10d659b53f360edd72dd88168"
+    },
+    {
+      "path": "sdk/templates/web/vendor/effekseer/effekseer.js",
+      "sha256": "592327d692ea681a731efc7ddc874a3e86aaf0f4b719a0f66767d233c2fd867b"
+    },
+    {
+      "path": "sdk/templates/web/vendor/effekseer/effekseer.wasm",
+      "sha256": "f9689b3721fc815e2d4b0fbcd6daedf9e0b307038d40a6c5b17c0037508ad686"
+    },
+    {
+      "path": "sdk/templates/web/vendor/effekseer/LICENSE",
+      "sha256": "3bb9a8e1207233813ef7727bb39e4142494cb62e852d73e43390cbe81c45c149"
+    },
+    {
+      "path": "sdk/templates/web/vendor/rapier/LICENSE",
+      "sha256": "86ae51c591e742d80ce56823d35e2e176b53e38a99bd8499c85dae31ef4fe1f7"
+    },
+    {
+      "path": "sdk/templates/web/vendor/three/LICENSE",
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "sdk/templates/web/vendor/three/three.player.min.js",
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    },
+    {
+      "path": "official-docs/AGENTS.md",
+      "sha256": "fb402dcc7d4dd9569b458ffe61c86087fc156d925d0ec9a320062fbd1f10c5ca"
+    },
+    {
+      "path": "official-docs/docs/ai-agent-game-handoff.md",
+      "sha256": "a864b410a56f42b2077f90287d203e8998edb6f6fa437a54d59c0b5ee767f92f"
+    },
+    {
+      "path": "official-docs/docs/ai-core-viewer-boundary.md",
+      "sha256": "6de49a1c186c9a90ad84c6af387fc8889b34a3f57e79e371bfbdb0e1896119c4"
+    },
+    {
+      "path": "official-docs/docs/ai-diagnostics-schema-v1.md",
+      "sha256": "4ba0e50ea370402dcf1e460a87a78fd0d341981aaba8325612a375386dc26e19"
+    },
+    {
+      "path": "official-docs/docs/ai-native-game-engine-plan-v0.1.md",
+      "sha256": "c37564d50ce57e77e8b85353aaecd2a4a017837b64136713709079ae3379f72f"
+    },
+    {
+      "path": "official-docs/docs/ai-workflow.md",
+      "sha256": "7dfe354fb4f00d8cc1da7aa1c78a83e59d76f95d66e1fefd835df3b5459e51e5"
+    },
+    {
+      "path": "official-docs/docs/ai-workshop-priorities.md",
+      "sha256": "28b89dae1550a636b8bb32072a825b43cf56d76c66f29531c94884b4b0caecdc"
+    },
+    {
+      "path": "official-docs/docs/asset-workflow.md",
+      "sha256": "9568949d4c10bef0691f6c285f2e9b07bb8a4440a70e9664e424eb7b1c06d0cd"
+    },
+    {
+      "path": "official-docs/docs/asset.schema.json",
+      "sha256": "84c9d2d5a64afe5790de22c642cef9974ae8622cbd29b9d2429197f50c75f1b3"
+    },
+    {
+      "path": "official-docs/docs/body3d.schema.json",
+      "sha256": "dafe33ef8d0bfe7de026b0054843bbe79d8cbd9b8a186c16bbe3a991c3abc115"
+    },
+    {
+      "path": "official-docs/docs/broadphase.md",
+      "sha256": "570f5b9de3aeb3b35d711a95a337fa273022f4a2abf21e86492ce1bea8af4b0c"
+    },
+    {
+      "path": "official-docs/docs/bundle.schema.json",
+      "sha256": "fbd27cfe73f557689b47963ca05a5bd04832514f21afe8b6862290d9c0628bd8"
+    },
+    {
+      "path": "official-docs/docs/canonical-hash-cache.md",
+      "sha256": "ba9d3fa68578662c7bcc5e8aba6af7be5d4cf61a17134fea149ce0e8f4a6963f"
+    },
+    {
+      "path": "official-docs/docs/cast3d.schema.json",
+      "sha256": "8840d860fa2d5804b60adc26025d8ab1fb4f4a573de6e235285becc893d6694d"
+    },
+    {
+      "path": "official-docs/docs/debug-control.schema.json",
+      "sha256": "cb29bdf7a3c281f9333a010d73407351f7c8066708b4cabc489fd0aeafa8d591"
+    },
+    {
+      "path": "official-docs/docs/debug-tab.schema.json",
+      "sha256": "b4258c3e0e8223c70aaf62a179bd80c254fc8baf0f30fc587eebd2148f4734b9"
+    },
+    {
+      "path": "official-docs/docs/decisions/0001-initial-engine-boundary.md",
+      "sha256": "849f22d3432da6180f1ce390b3329a1745e4651c00f0866a401c647ae2dc35e1"
+    },
+    {
+      "path": "official-docs/docs/decisions/0002-seven-game-acceptance-gate.md",
+      "sha256": "95d848fcbcf24b8c145d691531939b92d5e5b074ea5eebdbdafbcdb1b000e16f"
+    },
+    {
+      "path": "official-docs/docs/decisions/0004-mvvm-presentation-boundary.md",
+      "sha256": "c5069cd366ddbbc22415faa70be8a7b054ade9886ef40714a4b6b90eca6685d1"
+    },
+    {
+      "path": "official-docs/docs/decisions/0005-luau-analyzer-toolchain.md",
+      "sha256": "998882563512291b704bb73a25eab612c72d61fedff509da75bf61a5ecd33646"
+    },
+    {
+      "path": "official-docs/docs/decisions/0006-minimal-2d-physics-boundary.md",
+      "sha256": "42b5ccde4d03391e53935ec75244614b893e793f2e69690ddddfb9468dc616fb"
+    },
+    {
+      "path": "official-docs/docs/decisions/0007-2d-camera-boundary.md",
+      "sha256": "fe611694778d97f55de9ef8320debd256e1005ab162859bf766785eb365a6ed0"
+    },
+    {
+      "path": "official-docs/docs/decisions/0008-seeded-random-boundary.md",
+      "sha256": "68cb9425a00d9d0723be5a4786e45dd18b0d9f525aeb925ae8dae6e444c95ba8"
+    },
+    {
+      "path": "official-docs/docs/decisions/0009-semantic-pointer-input.md",
+      "sha256": "15e7cafbee59edc57bfb7d5c4c3c2ceb40c51efe3da74e81b90eb441a34d4eea"
+    },
+    {
+      "path": "official-docs/docs/decisions/0010-bundle-fetch-boundary.md",
+      "sha256": "41dbf2c5226699963b475f4a3b57dd4e0c511460f4d4732e277e33550160b848"
+    },
+    {
+      "path": "official-docs/docs/decisions/0011-mcp-thin-adapter.md",
+      "sha256": "048336a53c9135973d64b2b3757a84267ae13aef6488410ce0902e136fd49f01"
+    },
+    {
+      "path": "official-docs/docs/decisions/0012-sprite-size-presentation-boundary.md",
+      "sha256": "2efb1e70640bff340d599e6f567b90fc8ec74df888c461efc557e8d4cdc8c94a"
+    },
+    {
+      "path": "official-docs/docs/decisions/0013-browser-host-snapshot-bridge.md",
+      "sha256": "262ce8a3925c81aa4c7296cca5d534b5afd73900cd2d098abbb1aefb08af5adc"
+    },
+    {
+      "path": "official-docs/docs/decisions/0014-runtime-input-frame-boundary.md",
+      "sha256": "c3381f3af87bf0fe7f66529e537addefd7bd9dacf002e85a989cc90a8a635cb0"
+    },
+    {
+      "path": "official-docs/docs/decisions/0015-emscripten-live-host-bridge.md",
+      "sha256": "1cc06551258b2c1847bd26c5bd0ff1abb94997f2f81908e1ad1a207bd5c0ad79"
+    },
+    {
+      "path": "official-docs/docs/decisions/0016-bundle-generation-and-browser-storage.md",
+      "sha256": "b32228ab635c489b71b04ecbf9d93aca97354f5fdb66e7bfe17025acee21273a"
+    },
+    {
+      "path": "official-docs/docs/decisions/0017-mobile-host-lifecycle-boundary.md",
+      "sha256": "60a2fe29a32165a99a772ce6a4a4fb40f020d096373ad241fb67e12e679cee05"
+    },
+    {
+      "path": "official-docs/docs/decisions/0018-seven-game-acceptance-gate.md",
+      "sha256": "e2689cce8b65c88647485d7581c80deb81e8104e1f565b6ed3fc35cd6720c1b1"
+    },
+    {
+      "path": "official-docs/docs/decisions/0019-semantic-observation-mvvm-boundary.md",
+      "sha256": "e3d2171ea12cc2ff377ce427cdc9965997f6d901c93a11fa1270fd5198e58ad9"
+    },
+    {
+      "path": "official-docs/docs/decisions/0020-minimal-save-boundary.md",
+      "sha256": "4006975733442774c6195217c64742e6e4b77aec60106c6c5435d0b1bf491fce"
+    },
+    {
+      "path": "official-docs/docs/decisions/0021-minimal-ui-tree-boundary.md",
+      "sha256": "359a035ac73a87475ec295c37e9320ecb88931bf4cd55474e07b1be782c18658"
+    },
+    {
+      "path": "official-docs/docs/decisions/0022-minimal-3d-world-boundary.md",
+      "sha256": "35c2f25c1ba5083db35a4e387b72095c8330b88abb96afc248335642de853dc0"
+    },
+    {
+      "path": "official-docs/docs/decisions/0023-generic-web-game-host-boundary.md",
+      "sha256": "b60123c59ff2b7d5d8b025828f3229c1a70db943f49c02b12cb81f96241689b7"
+    },
+    {
+      "path": "official-docs/docs/decisions/0025-asset-gate-and-ai-subagent-handoff.md",
+      "sha256": "570447a628f67929e76e8aecbb472156a7ea9bfffe5b05812d814c684f100ef5"
+    },
+    {
+      "path": "official-docs/docs/decisions/0027-declared-engine-systems.md",
+      "sha256": "7b2b667edef19bfd332f1d0d11a26f7b59e3bf8ecc3aca6cad7c0b1f24da679f"
+    },
+    {
+      "path": "official-docs/docs/decisions/0028-semantic-presentation-systems.md",
+      "sha256": "2731108a7462713b1466f86aa6815bcd7986ca096a74724210b3e2dd9d4e9168"
+    },
+    {
+      "path": "official-docs/docs/decisions/0029-text-layout-gate.md",
+      "sha256": "b7fb67ab155211a8e955c463413c77ffc7e27d89b477f409bceb12bb4aeaeed8"
+    },
+    {
+      "path": "official-docs/docs/decisions/0030-anchored-ui-placement.md",
+      "sha256": "53adeb0269203bb0024c8a6b39eebc911a2182f3721347cf0e070d9134cd1ee0"
+    },
+    {
+      "path": "official-docs/docs/decisions/0031-camera-view-extent.md",
+      "sha256": "fe112053190cb787b392612e6c8a6775d6a97a78318fb231c5435354c24f1805"
+    },
+    {
+      "path": "official-docs/docs/decisions/0032-frame-cost-observation.md",
+      "sha256": "ea42be22846c3e36b166df40cb22384febccaa5d87088797b08d7a6ad38a8287"
+    },
+    {
+      "path": "official-docs/docs/decisions/0033-replay-diff.md",
+      "sha256": "116294ba477e3304ddfb0fce911ddb8723f8236d43f041dc458328741534aae9"
+    },
+    {
+      "path": "official-docs/docs/decisions/0034-independent-2d-colliders.md",
+      "sha256": "0dcf1d4c34b73a05128944637ae411d4468eff6d65971f3a7cb767ec624473da"
+    },
+    {
+      "path": "official-docs/docs/decisions/0035-capability-snapshot-boundary.md",
+      "sha256": "385930555ffa2a6b769bcc2aedb7cb440cd43142de898c46f73a69d6c6964bce"
+    },
+    {
+      "path": "official-docs/docs/decisions/0036-unified-camera-component.md",
+      "sha256": "dac09d1d25f5e8a126e24cd0f0d37dcd3f9136efdf929b79a78ce3a933159655"
+    },
+    {
+      "path": "official-docs/docs/decisions/0037-official-player-and-shader-boundary.md",
+      "sha256": "9ff1a1d8c264a6f50c7aa161215ebcf130adad9cd676f390874ece733e9ef0fe"
+    },
+    {
+      "path": "official-docs/docs/decisions/0038-shared-ui-styling.md",
+      "sha256": "e815a00830548c1575e09f9012a2fa5be8c3d3eceae5cc7c8232c2dcc36f5410"
+    },
+    {
+      "path": "official-docs/docs/decisions/0039-component-background-intent.md",
+      "sha256": "606c069895535c70d23abe4f46c40e1f839cc05b66a70928d565fc9c3f210977"
+    },
+    {
+      "path": "official-docs/docs/decisions/0040-official-ui-package.md",
+      "sha256": "96650faa0a9e34b1b8f0834f64193b35786897f0c5a00c868592d4e11549acda"
+    },
+    {
+      "path": "official-docs/docs/developer-session.md",
+      "sha256": "c0af92511de2575582f03b5aedaa0aa4ba66088f8738b6104bfb85e3dccb1f6c"
+    },
+    {
+      "path": "official-docs/docs/developer.schema.json",
+      "sha256": "84cad321e3037c6aff03f0f5abd9ac391f57ad5f12c8c217cd4af3e2b85dd263"
+    },
+    {
+      "path": "official-docs/docs/development-player.md",
+      "sha256": "f7131244e4991bce3dc7d152d1de3a39f5a56226f16199e825f22456421cc543"
+    },
+    {
+      "path": "official-docs/docs/diagnostics-replay.md",
+      "sha256": "79ee06f94bae2e3f7b670bee3122dd30da0c49d348ce14bf3155088a703f0b45"
+    },
+    {
+      "path": "official-docs/docs/engine.d.luau",
+      "sha256": "ef9db9bf3add442cd5ef2fb00b9bf82b84ae9efc2a5b21358dc68c1a757eb1ab"
+    },
+    {
+      "path": "official-docs/docs/execution-plan.md",
+      "sha256": "8f57a48ab0f48addc341f6c12ac823754c6d77972bd9e9ea5c500af9f0ff3748"
+    },
+    {
+      "path": "official-docs/docs/formal-ui-host.md",
+      "sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9"
+    },
+    {
+      "path": "official-docs/docs/host-project.schema.json",
+      "sha256": "23d1aa54c7a22f1c7fcf21f9cd8562868385cc19d26404e231bc295b3e77934c"
+    },
+    {
+      "path": "official-docs/docs/input.schema.json",
+      "sha256": "64c67cde5ecfc9455424997e847dd138200a4f266e5567469c25fb7c225b13d3"
+    },
+    {
+      "path": "official-docs/docs/instance-memory-transport.md",
+      "sha256": "d99c6615664a40a33b7795a40a7ac857f47cbdf7b0f95a50701c0b1966c937c3"
+    },
+    {
+      "path": "official-docs/docs/job-binary.md",
+      "sha256": "071bc5d6b1365dde48d5202962b1119ece51e9f82dafcb065ccf740ac266ea4d"
+    },
+    {
+      "path": "official-docs/docs/jobs.md",
+      "sha256": "528a917807ddc90798034a784cc7e62dea67ab7ccb8b603e49645309f48246d7"
+    },
+    {
+      "path": "official-docs/docs/joint3d.schema.json",
+      "sha256": "d5f0e64c177e35761a8c150f667c222cb312057045f2b6cc04c38f04d84dcb9a"
+    },
+    {
+      "path": "official-docs/docs/legion-fall-demo.md",
+      "sha256": "3df21bfeea365fb4e1e15b7d5782717abf681d31de19c093922328310e9955f7"
+    },
+    {
+      "path": "official-docs/docs/legion-fall-optimization.md",
+      "sha256": "ccf84d8cd9afb6101de7dd18903328359b31cf64f166fbd9b43e68c31393a6e0"
+    },
+    {
+      "path": "official-docs/docs/legion-fall-round2.md",
+      "sha256": "d392455b907ba65ac13e8f48707c8683675343628f107c8b073db61b09bb21bc"
+    },
+    {
+      "path": "official-docs/docs/legion-fall-round3.md",
+      "sha256": "eaba7f45a817e73328ff7cec713536d8a76348f97e44a0e8117f34978cd4bbc0"
+    },
+    {
+      "path": "official-docs/docs/legion-fall-round4.md",
+      "sha256": "6b945ea5e5ce7eab8aba69a390f8a929286d7fac8ce5b8447bc797a52cdbd23f"
+    },
+    {
+      "path": "official-docs/docs/legion-fall-worker.md",
+      "sha256": "37db59743bb640072a8031d81622f1e51b867b9fcec6114805528c6575b4beef"
+    },
+    {
+      "path": "official-docs/docs/luau-determinism.md",
+      "sha256": "18a68a9f5f72b932af6251273bf420c14fe812c82d84e30f7c0c76f46646c270"
+    },
+    {
+      "path": "official-docs/docs/mesh.schema.json",
+      "sha256": "f5b8701d759a373b7d65ee81ec9b37e22397855b2dd8c73f3976104fce082676"
+    },
+    {
+      "path": "official-docs/docs/mobile-host-abi.md",
+      "sha256": "e3b88f75885e283a87641d63a4549a36027f18dc28a3e3b151862b04b8e40445"
+    },
+    {
+      "path": "official-docs/docs/mobile-package-host.md",
+      "sha256": "0afac1704cbd7db04683201f9b8c458f905655cd336973269e6f697c4bb460ab"
+    },
+    {
+      "path": "official-docs/docs/native-battle.md",
+      "sha256": "a041d44f58835121a6c83f31184a7ea6ee91e9775dda6cba8feba6e85ad4fab6"
+    },
+    {
+      "path": "official-docs/docs/native-particles.md",
+      "sha256": "dcb50aa7ebb4609a77fb51c677153dbca6942991a8d462905fb1eaed17d545ad"
+    },
+    {
+      "path": "official-docs/docs/native-readiness.md",
+      "sha256": "7837aa7f2651cbfef70e3036e1088f0f469727523220636509ea3b6de7248ea6"
+    },
+    {
+      "path": "official-docs/docs/optional-systems.md",
+      "sha256": "ff1b98db35eab51742c97671e1a3019c61609b1c43e492b4604ef7675efe1cf0"
+    },
+    {
+      "path": "official-docs/docs/overlap3d.schema.json",
+      "sha256": "5c6211f420e5a96b62d3a31f3ad6ed236e905006c4ec876ff21b542cf9d41720"
+    },
+    {
+      "path": "official-docs/docs/particle.schema.json",
+      "sha256": "0f5a9dab26281a9b9fca21ad40b40a9c7988c831f412824dd86710e9d1b0224d"
+    },
+    {
+      "path": "official-docs/docs/performance-proposal-review.md",
+      "sha256": "08825048ca048441258a4058098c807735f693063fa5503defe9f05215d9aeb1"
+    },
+    {
+      "path": "official-docs/docs/performance-tools-review.md",
+      "sha256": "a15d7a67b98f012750d4e611cc92a17d4bdb05b0417fef0c5b6cefc19b49fe8d"
+    },
+    {
+      "path": "official-docs/docs/physics3d-performance.md",
+      "sha256": "a563b1a3cd84d60ae2f168917e405a2fc865a9ed37a0867726d830fe7e352f27"
+    },
+    {
+      "path": "official-docs/docs/physics3d.md",
+      "sha256": "f9c7a56e6b911ab6c37f97ea61b790c6c484bf948abddf7b506397499287a1d7"
+    },
+    {
+      "path": "official-docs/docs/platform-architecture.md",
+      "sha256": "092fe73deae9054c6713d67ef8da1560bdad6dafd28e22c25fe4343cb709c062"
+    },
+    {
+      "path": "official-docs/docs/platform-toolchain.md",
+      "sha256": "8654a561141adf2ca53983614a611990d40b3b4930607e9fddf641e139101c22"
+    },
+    {
+      "path": "official-docs/docs/player-export.md",
+      "sha256": "e90922d601aaebe1269b19657250b23240c3cf455bccae5c50eb8f9e5dc1c180"
+    },
+    {
+      "path": "official-docs/docs/player-workers.md",
+      "sha256": "18d54e834f8db0b0f332e2088486d90d068c8c2813603743db78986520fa85cf"
+    },
+    {
+      "path": "official-docs/docs/plugin-protocol.md",
+      "sha256": "bde116574767d659d62536b70e9d0c4d91b7331e12d39b7fff9bc99da3a62cb1"
+    },
+    {
+      "path": "official-docs/docs/portable-sdk.md",
+      "sha256": "845eac618c1706462c4922a3ab16e7681e274f0f9d57e680b3340a5c29c597d3"
+    },
+    {
+      "path": "official-docs/docs/preview-request.schema.json",
+      "sha256": "ba91c7d76581f2566fe11d0ef4b8c36970d69b44bc6e1c3747be3bf729ae7b6a"
+    },
+    {
+      "path": "official-docs/docs/profiler-tools-validation.md",
+      "sha256": "df60ced946ae609f8a22ab48c3045333635ba4839d95f44f34695bd6abc08eea"
+    },
+    {
+      "path": "official-docs/docs/profiling.md",
+      "sha256": "46c6f22cb57eedf3a2949548ae73e7ba4dd795c8668c35e7582e9344c83f8d02"
+    },
+    {
+      "path": "official-docs/docs/project-prepare.md",
+      "sha256": "dfab87ad317e0801edbfab2a1c9a9576b8cfcf170c7ad03d5366809b443d2884"
+    },
+    {
+      "path": "official-docs/docs/project.schema.json",
+      "sha256": "35b3fd8d65bee76c42d6b6353cf7e95fdd1c1c6a13768b9666bf234838c0654e"
+    },
+    {
+      "path": "official-docs/docs/ray3d.schema.json",
+      "sha256": "3e8f4b3fa16a6e97a511555ed0a3fc6b2164fa089b510c298d2574ac722fff20"
+    },
+    {
+      "path": "official-docs/docs/renderer-presentation-host.md",
+      "sha256": "c00b35a6e6c1534c8845bcbff634eddf2e201229720f95dd1ba5a236777ed7bf"
+    },
+    {
+      "path": "official-docs/docs/replay-result.schema.json",
+      "sha256": "649b9f17be88f1eb5bf577e37250fcbf74e77e0a9a0d6593c667891c80fd98cf"
+    },
+    {
+      "path": "official-docs/docs/reproduction.schema.json",
+      "sha256": "54e4cfdda347ec300c9f2ef97f2d5dec884b1cdfe9affec61f8f06f982f02382"
+    },
+    {
+      "path": "official-docs/docs/review-process.md",
+      "sha256": "1a367c5d8d2b0c2e4c18f0ebbc0cc5a0784a8f9936ef65903b1afd9d0afe94d6"
+    },
+    {
+      "path": "official-docs/docs/roadmap.md",
+      "sha256": "09136ded4419d07af5950f13202079960c0adb054ec5d41b4ec09acd807639f8"
+    },
+    {
+      "path": "official-docs/docs/runtime-contracts.md",
+      "sha256": "664516e3649a4d45bc1da1122a11baa0886915a6b6919343b1c5e6b79301a918"
+    },
+    {
+      "path": "official-docs/docs/runtime-execution-contract.md",
+      "sha256": "e99b7f9fb1ded40621985fd208bf8c63f8edc41d11fd626e7def0708e0aaeadd"
+    },
+    {
+      "path": "official-docs/docs/runtime-mode-validation.md",
+      "sha256": "94f10eb2271b9f2f4eb18721569e5dabe3a60b6134388b60010ad7ae3f752f6c"
+    },
+    {
+      "path": "official-docs/docs/scene.schema.json",
+      "sha256": "e3eb1fb3477bc5513f0ccfbf58852018fd3b341eef3287efa22889c22b4b068d"
+    },
+    {
+      "path": "official-docs/docs/shader-materials.md",
+      "sha256": "be3cbafff1ef524ae3e02abd0cf191962a2b252f7bb56bfed982f5e2950a9f4d"
+    },
+    {
+      "path": "official-docs/docs/shader.schema.json",
+      "sha256": "2b1cc811384510782e9cbb4b829b56ea97435946a3d09d28886baa0553ae88df"
+    },
+    {
+      "path": "official-docs/docs/sphere-sweeps-and-bloom.md",
+      "sha256": "c92ba24ecb17c35886fd782aa3a53f9362f3afe06e4247f9a403c22b69874d9d"
+    },
+    {
+      "path": "official-docs/docs/static-mesh.md",
+      "sha256": "c6613b3dff9c8a7cf434027bf222bf8e0ef40e8bf87cda9b17b779479df744bc"
+    },
+    {
+      "path": "official-docs/docs/test.schema.json",
+      "sha256": "99ce01e3dbe6da1ee6b29a9fbba6b35ab930d09ee0f440795aac6d6d6029f81d"
+    },
+    {
+      "path": "official-docs/docs/ui-components.md",
+      "sha256": "da8d68bae34e3c40aa88424a9b42ed9886a98a8b86f43bd77b5c3e420d9b8cea"
+    },
+    {
+      "path": "official-docs/docs/ui-mvvm-architecture.md",
+      "sha256": "435b57bfcc30fa530ca979706e42ef3fdc078c72a7368f123d7defd90d9683ed"
+    },
+    {
+      "path": "official-docs/docs/ui-scroll.md",
+      "sha256": "a950e096501b7fdd6e0c93f49b72f652e9185f74956a4a716c1c556b7b19d7f6"
+    },
+    {
+      "path": "official-docs/docs/ui-slice-and-budget.md",
+      "sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55"
+    },
+    {
+      "path": "official-docs/docs/ui-styling.md",
+      "sha256": "46c43f0b3134802a8a63510b560b4594c8d5c31546bd911f38a00e278c59f328"
+    },
+    {
+      "path": "official-docs/docs/ui.schema.json",
+      "sha256": "e902169a4b17d550a0227fcc56fcc045f6f28f525e607f538e38e55912f5e902"
+    },
+    {
+      "path": "official-docs/README.md",
+      "sha256": "3fe02c1f2f00b4d43f4999ce028e47ee718614ee0aab6de236313c08fbc61008"
+    }
+  ],
+  "reverified_unchanged": true,
+  "scope_note": "The immutable input SDK predates the final expanded direct-guide inventory and semantic input paragraph. The package implementation and typed API did not change. The boundary was instructions, not an OS sandbox."
+}

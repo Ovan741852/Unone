@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::{
-    collections::BTreeSet,
+    collections::{BTreeMap, BTreeSet},
     fs,
     path::{Path, PathBuf},
 };
@@ -24,7 +24,15 @@ struct Runtime {
     variant: String,
     path: String,
     compiled_systems: Vec<String>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    runtime_packages: BTreeMap<String, String>,
     bytes: u64,
+}
+
+#[derive(Debug, Serialize)]
+pub(crate) struct PackageVersionGap {
+    pub(crate) expected: String,
+    pub(crate) found: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -33,10 +41,12 @@ pub(crate) struct RuntimeGap {
     pub(crate) target: String,
     pub(crate) variant: String,
     pub(crate) compiled_systems: Vec<String>,
+    pub(crate) runtime_packages: BTreeMap<String, String>,
     pub(crate) matches_target: bool,
     pub(crate) matches_variant: bool,
     pub(crate) matches_requested_id: bool,
     pub(crate) missing_systems: Vec<String>,
+    pub(crate) missing_packages: BTreeMap<String, PackageVersionGap>,
 }
 
 /// Preserve the concrete selection mismatch for CLI/MCP recovery, without
@@ -48,22 +58,24 @@ pub(crate) struct RuntimeUnavailable {
     pub(crate) variant: String,
     pub(crate) requested_runtime_id: Option<String>,
     pub(crate) required_systems: Vec<String>,
+    pub(crate) required_packages: BTreeMap<String, String>,
     pub(crate) available_runtimes: Vec<RuntimeGap>,
 }
 
 impl std::fmt::Display for RuntimeUnavailable {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let installed = self.available_runtimes.iter().map(|runtime| format!(
-            "{} ({}/{}): missing [{}]{}{}{}", runtime.id, runtime.target, runtime.variant,
+            "{} ({}/{}): missing systems [{}], package mismatches [{}]{}{}{}", runtime.id, runtime.target, runtime.variant,
             runtime.missing_systems.join(", "),
+            runtime.missing_packages.iter().map(|(id, gap)| format!("{id}: expected {}, found {}", gap.expected, gap.found.as_deref().unwrap_or("<missing>"))).collect::<Vec<_>>().join(", "),
             if runtime.matches_target { "" } else { "; target does not match" },
             if runtime.matches_variant { "" } else { "; variant does not match" },
             if runtime.matches_requested_id { "" } else { "; requested ID does not match" },
         )).collect::<Vec<_>>().join("; ");
         write!(formatter,
-            "SDK_RUNTIME_UNAVAILABLE: no matching target={}, variant={}, runtime_id={}; enabled project systems [{}]; installed runtimes: {}. Run game sdk inspect --json and game systems list --json. Explicitly disable only systems the project does not use, or install a runtime pack supporting all required systems",
+            "SDK_RUNTIME_UNAVAILABLE: no matching target={}, variant={}, runtime_id={}; enabled project systems [{}]; required runtime packages [{}]; installed runtimes: {}. Run game sdk inspect --json and game systems list --json. Explicitly disable only systems the project does not use, or install a runtime pack supporting all required systems and exact package versions. Keep required package declarations intact",
             self.target, self.variant, self.requested_runtime_id.as_deref().unwrap_or("<automatic>"),
-            self.required_systems.join(", "), if installed.is_empty() { "<none>" } else { &installed },
+            self.required_systems.join(", "), self.required_packages.iter().map(|(id, version)| format!("{id}@{version}")).collect::<Vec<_>>().join(", "), if installed.is_empty() { "<none>" } else { &installed },
         )
     }
 }
@@ -71,7 +83,7 @@ impl std::fmt::Display for RuntimeUnavailable {
 impl std::error::Error for RuntimeUnavailable {}
 
 /// Keep selection and its failure evidence together. The policy remains exact
-/// target/variant/optional ID plus all systems, then smallest bytes and ID.
+/// target/variant/optional ID, systems and exact packages, then smallest bytes and ID.
 fn matching_runtime<'a>(
     runtimes: &'a [Runtime],
     sdk_root: &Path,
@@ -79,11 +91,13 @@ fn matching_runtime<'a>(
     variant: &str,
     id: Option<&str>,
     systems: &[String],
+    packages: &BTreeMap<String, String>,
 ) -> Result<&'a Runtime> {
     let mut candidates: Vec<_> = runtimes.iter().filter(|runtime| {
         runtime.target == target && runtime.variant == variant
             && id.is_none_or(|wanted| wanted == runtime.id)
             && systems.iter().all(|system| runtime.compiled_systems.contains(system))
+            && packages.iter().all(|(id, version)| runtime.runtime_packages.get(id) == Some(version))
     }).collect();
     candidates.sort_by(|left, right| left.bytes.cmp(&right.bytes).then(left.id.cmp(&right.id)));
     candidates.first().copied().ok_or_else(|| RuntimeUnavailable {
@@ -92,15 +106,18 @@ fn matching_runtime<'a>(
         variant: variant.to_string(),
         requested_runtime_id: id.map(str::to_string),
         required_systems: systems.to_vec(),
+        required_packages: packages.clone(),
         available_runtimes: runtimes.iter().map(|runtime| RuntimeGap {
             id: runtime.id.clone(),
             target: runtime.target.clone(),
             variant: runtime.variant.clone(),
             compiled_systems: runtime.compiled_systems.clone(),
+            runtime_packages: runtime.runtime_packages.clone(),
             matches_target: runtime.target == target,
             matches_variant: runtime.variant == variant,
             matches_requested_id: id.is_none_or(|wanted| wanted == runtime.id),
             missing_systems: systems.iter().filter(|system| !runtime.compiled_systems.contains(system)).cloned().collect(),
+            missing_packages: packages.iter().filter(|(id, version)| runtime.runtime_packages.get(*id) != Some(*version)).map(|(id, version)| (id.clone(), PackageVersionGap { expected: version.clone(), found: runtime.runtime_packages.get(id).cloned() })).collect(),
         }).collect(),
     }.into())
 }
@@ -144,6 +161,7 @@ impl SdkSelection {
             "runtime_root": self.runtime_root,
             "descriptor": self.runtime_root.join("runtime.json"),
             "readiness": self.runtime_manifest.get("readiness").cloned(),
+            "runtime_packages": self.runtime_manifest.get("runtime_packages").cloned().unwrap_or_else(|| json!({})),
             "verified": true,
         })
     }
@@ -291,6 +309,22 @@ fn runtime_files(r: &Value) -> Result<Vec<(String, String)>> {
         })
         .collect()
 }
+fn descriptor_packages(descriptor: &Value) -> Result<BTreeMap<String, String>> {
+    descriptor.get("runtime_packages").map_or_else(
+        || Ok(BTreeMap::new()),
+        |packages| serde_json::from_value(packages.clone()).context("SDK_RUNTIME_PACKAGES_INVALID"),
+    )
+}
+
+fn validate_runtime_package_metadata(runtime: &Runtime, descriptor: &Value) -> Result<()> {
+    ensure!(
+        runtime.runtime_packages == descriptor_packages(descriptor)?,
+        "SDK_RUNTIME_PACKAGES_MISMATCH: {} sdk.json and runtime.json must advertise the same package versions",
+        runtime.id
+    );
+    Ok(())
+}
+
 fn hash(b: &[u8]) -> String {
     format!("{:x}", Sha256::digest(b))
 }
@@ -395,6 +429,7 @@ fn load(root: &Path) -> Result<Manifest> {
             serde_json::to_value(&runtime.compiled_systems)? == r["compiled_systems"],
             "SDK_CAPABILITIES_MISMATCH"
         );
+        validate_runtime_package_metadata(runtime, &r)?;
         ensure!(
             r.get("target").and_then(Value::as_str).unwrap_or("web") == runtime.target,
             "SDK_RUNTIME_TARGET_MISMATCH"
@@ -460,7 +495,11 @@ pub fn inspect(explicit: Option<&Path>) -> Result<Value> {
         let descriptor:Value=serde_json::from_slice(&data)?;
         Ok(json!({"id":runtime.id,"path":path,"sha256":hash(&data),"descriptor":descriptor,"evidence":"hash-verified declaration; not renderer execution"}))
     }).collect::<Result<Vec<_>>>()?;
-    let source_evidence=json!({"sdk_root":root,"cli":{"path":safe(&root,&m.cli)?,"sha256":hash(&fs::read(safe(&root,&m.cli)?)?)},"templates":{"path":safe(&root,&m.templates)?,"files":m.files.iter().filter(|f|f.path.starts_with(&format!("{}/",m.templates))).collect::<Vec<_>>()},"runtimes":sources,"plugins":"separately discovered; not pinned or compatibility-certified by sdk.json; run plugin list/inspect/test"});
+    let package_paths: BTreeSet<_> = unone_engine::runtime_package_files().into_iter().map(|(path, _)| path).collect();
+    let package_files = m.files.iter().filter(|file| package_paths.contains(file.path.as_str())).map(|file| -> Result<Value> {
+        Ok(json!({"path":safe(&root,&file.path)?,"relative_path":file.path,"bytes":file.bytes,"sha256":file.sha256}))
+    }).collect::<Result<Vec<_>>>()?;
+    let source_evidence=json!({"sdk_root":root,"cli":{"path":safe(&root,&m.cli)?,"sha256":hash(&fs::read(safe(&root,&m.cli)?)?)},"templates":{"path":safe(&root,&m.templates)?,"files":m.files.iter().filter(|f|f.path.starts_with(&format!("{}/",m.templates))).collect::<Vec<_>>()},"runtime_packages":{"files":package_files,"evidence":"hash-verified bundled source and type inventory; selected runtime descriptors declare executable package versions"},"runtimes":sources,"plugins":"separately discovered; not pinned or compatibility-certified by sdk.json; run plugin list/inspect/test"});
     let mut report =
         json!({"version":m.version,"engine_version":m.engine_version,"host":m.host,"verified":true,"runtimes":m.runtimes,"content":"shared-luau-and-declared-assets","targets":crate::hosts::inspect_targets()})
     ;
@@ -527,7 +566,7 @@ fn select_runtime(
     } else {
         "production"
     };
-    let selected = matching_runtime(&manifest.runtimes, &sdk_root, host.id, variant, id, &systems)?;
+    let selected = matching_runtime(&manifest.runtimes, &sdk_root, host.id, variant, id, &systems, &config.runtime_packages)?;
     let runtime_root = safe(&sdk_root, &selected.path)?;
     let templates_root = safe(&sdk_root, &manifest.templates)?;
     let runtime_manifest: Value =
@@ -593,6 +632,11 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
     let mut files = Vec::<(String, Vec<u8>)>::new();
     let cli = format!("bin/game{}", std::env::consts::EXE_SUFFIX);
     files.push((cli.clone(), fs::read(std::env::current_exe()?)?));
+    // Official package sources come from this CLI's compiled contract, never
+    // from a possibly unrelated checkout passed as the Web template source.
+    for (path, source) in unone_engine::runtime_package_files() {
+        files.push((path.to_string(), source.as_bytes().to_vec()));
+    }
     for name in template_files() {
         files.push((
             format!("templates/web/{name}"),
@@ -632,6 +676,7 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
             variant: variant.into(),
             path: path.clone(),
             compiled_systems: serde_json::from_value(r["compiled_systems"].clone())?,
+            runtime_packages: descriptor_packages(&r)?,
             bytes: size,
         });
         files.push((format!("{path}/runtime.json"), bytes));
@@ -832,7 +877,8 @@ mod tests {
         Runtime {
             id: id.to_string(), target: target.to_string(), variant: variant.to_string(),
             path: format!("runtimes/{id}"),
-            compiled_systems: systems.iter().map(|system| (*system).to_string()).collect(), bytes,
+            compiled_systems: systems.iter().map(|system| (*system).to_string()).collect(),
+            runtime_packages: BTreeMap::new(), bytes,
         }
     }
 
@@ -840,7 +886,7 @@ mod tests {
     fn unavailable_runtime_exposes_concrete_capability_gaps_without_changing_requirements() {
         let required = ["camera2d", "camera3d", "physics2d", "save", "ui"].map(str::to_string);
         let runtimes = [runtime("web-minimal", "web", "production", &["camera2d", "ui"], 10)];
-        let error = matching_runtime(&runtimes, Path::new("trusted-sdk"), "web", "production", None, &required).unwrap_err();
+        let error = matching_runtime(&runtimes, Path::new("trusted-sdk"), "web", "production", None, &required, &BTreeMap::new()).unwrap_err();
         let gap = error.downcast_ref::<RuntimeUnavailable>().unwrap();
         assert_eq!(gap.required_systems, required);
         let candidate = &gap.available_runtimes[0];
@@ -862,7 +908,7 @@ mod tests {
             ("web", "development", None, true, false, true),
             ("web", "production", Some("uninstalled"), true, true, false),
         ] {
-            let error = matching_runtime(&runtimes, Path::new("sdk"), target, variant, id, &required).unwrap_err();
+            let error = matching_runtime(&runtimes, Path::new("sdk"), target, variant, id, &required, &BTreeMap::new()).unwrap_err();
             let gap = error.downcast_ref::<RuntimeUnavailable>().unwrap();
             let report = serde_json::to_value(gap).unwrap();
             assert_eq!(report["target"], target);
@@ -886,9 +932,55 @@ mod tests {
             runtime("other-variant", "web", "development", &["ui"], 1),
         ];
         let required = ["ui".to_string()];
-        let select = |id| matching_runtime(&runtimes, Path::new("sdk"), "web", "production", id, &required).unwrap().id.as_str();
+        let select = |id| matching_runtime(&runtimes, Path::new("sdk"), "web", "production", id, &required, &BTreeMap::new()).unwrap().id.as_str();
         assert_eq!(select(None), "a");
         assert_eq!(select(Some("large")), "large");
+    }
+    #[test]
+    fn package_selection_requires_exact_versions_and_preserves_missing_and_found_evidence() {
+        let packages = BTreeMap::from([("@unone/ui".into(), "0.1.0".into())]);
+        let mut old = runtime("older-ui", "web", "production", &["ui"], 2);
+        old.runtime_packages.insert("@unone/ui".into(), "0.0.9".into());
+        let runtimes = [runtime("legacy-ui", "web", "production", &["ui"], 1), old];
+        let error = matching_runtime(&runtimes, Path::new("sdk"), "web", "production", None, &["ui".into()], &packages).unwrap_err();
+        let gap = error.downcast_ref::<RuntimeUnavailable>().unwrap();
+        assert_eq!(gap.required_packages, packages);
+        let report = serde_json::to_value(gap).unwrap();
+        assert_eq!(report["available_runtimes"][0]["missing_packages"]["@unone/ui"], json!({"expected":"0.1.0","found":null}));
+        assert_eq!(report["available_runtimes"][1]["missing_packages"]["@unone/ui"], json!({"expected":"0.1.0","found":"0.0.9"}));
+        assert!(gap.to_string().contains("Keep required package declarations intact"));
+        assert!(gap.available_runtimes.iter().all(|runtime| runtime.missing_systems.is_empty()));
+
+        let mut compatible = runtime("compatible", "web", "production", &["ui"], 10);
+        compatible.runtime_packages = packages.clone();
+        let candidates = [runtime("legacy-ui", "web", "production", &["ui"], 1), compatible];
+        assert_eq!(matching_runtime(&candidates, Path::new("sdk"), "web", "production", None, &["ui".into()], &packages).unwrap().id, "compatible");
+        assert!(matching_runtime(&candidates, Path::new("sdk"), "web", "production", Some("legacy-ui"), &["ui".into()], &packages).is_err());
+    }
+
+    #[test]
+    fn legacy_runtime_metadata_remains_usable_without_package_requirements() {
+        let legacy: Runtime = serde_json::from_value(json!({"id":"legacy","target":"web","variant":"production","path":"runtimes/legacy","compiled_systems":["ui"],"bytes":1})).unwrap();
+        assert!(legacy.runtime_packages.is_empty());
+        assert!(serde_json::to_value(&legacy).unwrap().get("runtime_packages").is_none());
+        validate_runtime_package_metadata(&legacy, &json!({})).unwrap();
+        let candidates = [legacy];
+        assert_eq!(matching_runtime(&candidates, Path::new("sdk"), "web", "production", None, &["ui".into()], &BTreeMap::new()).unwrap().id, "legacy");
+    }
+
+    #[test]
+    fn package_facts_must_match_between_sdk_and_runtime_descriptor() {
+        let mut advertised = runtime("ui", "web", "production", &["ui"], 1);
+        advertised.runtime_packages.insert("@unone/ui".into(), "0.1.0".into());
+        for descriptor in [json!({}), json!({"runtime_packages":{"@unone/ui":"0.0.9"}})] {
+            assert!(validate_runtime_package_metadata(&advertised, &descriptor).unwrap_err().to_string().contains("SDK_RUNTIME_PACKAGES_MISMATCH"));
+        }
+        validate_runtime_package_metadata(&advertised, &json!({"runtime_packages":{"@unone/ui":"0.1.0"}})).unwrap();
+        for invalid in [json!({"runtime_packages":null}), json!({"runtime_packages":["@unone/ui"]}), json!({"runtime_packages":{"@unone/ui":1}})] {
+            assert!(descriptor_packages(&invalid).is_err());
+        }
+        let legacy = runtime("legacy", "web", "production", &["ui"], 1);
+        assert!(validate_runtime_package_metadata(&legacy, &json!({"runtime_packages":{"@unone/ui":"0.1.0"}})).is_err());
     }
     #[test]
     fn traversal_and_unknown_manifest_keys_fail() {

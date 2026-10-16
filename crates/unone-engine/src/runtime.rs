@@ -142,6 +142,8 @@ struct PointerState {
 
 #[derive(Clone)]
 struct ApiState {
+    #[cfg(feature = "ui")]
+    runtime_packages: BTreeMap<String, String>,
     #[cfg(feature = "jobs")]
     jobs: Rc<RefCell<jobs::Jobs>>,
     #[cfg(feature = "preview-tools")]
@@ -270,6 +272,13 @@ impl EngineRuntime {
             Ok(value) => value,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
+        let settings = match SystemSettings::from_config(&config) {
+            Ok(settings) => settings,
+            Err(error) => return EngineResult::failure(*error),
+        };
+        if let Err(error) = crate::runtime_packages::validate_runtime_packages(&config.runtime_packages, &settings) {
+            return EngineResult::failure(*error);
+        }
         let source = match fs::read_to_string(&paths.entry_script) {
             Ok(source) => source,
             Err(err) => {
@@ -552,6 +561,8 @@ impl EngineRuntime {
         #[cfg(feature = "preview-tools")]
         let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
         let api_state = ApiState {
+            #[cfg(feature = "ui")]
+            runtime_packages: config.runtime_packages.clone(),
             #[cfg(feature = "jobs")]
             jobs: Rc::new(RefCell::new(jobs::Jobs::default())),
             #[cfg(feature = "preview-tools")]
@@ -567,6 +578,7 @@ impl EngineRuntime {
         };
         let systems = SystemSettings::from_config(&config)?;
         systems.validate_compiled()?;
+        crate::runtime_packages::validate_runtime_packages(&config.runtime_packages, &systems)?;
         #[cfg(feature = "physics3d")]
         if world.borrow().physics3d.is_some() && !systems.is_enabled("physics3d") {
             return Err(Box::new(Diagnostic::error(
@@ -1363,6 +1375,8 @@ impl EngineRuntime {
             Rc::clone(&self.world)
         };
         let candidate_api_state = ApiState {
+            #[cfg(feature = "ui")]
+            runtime_packages: self.config.runtime_packages.clone(),
             #[cfg(feature = "jobs")]
             jobs: Rc::new(RefCell::new(self.jobs.borrow().reload_candidate())),
             debug_tools: Rc::new(RefCell::new(preview::DebugTools::with_revision(

@@ -1,0 +1,8 @@
+{
+  "name": "@unone/ui",
+  "version": "0.1.0",
+  "kind": "unone-luau-runtime",
+  "entry": "src/components.luau",
+  "api": "api.ui.components",
+  "license": "MIT OR Apache-2.0"
+}

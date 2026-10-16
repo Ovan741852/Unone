@@ -1,0 +1,117 @@
+{
+  "runtime_packages": [
+    {
+      "bytes": 2808,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\decisions\\0038-shared-ui-styling.md",
+      "relative_path": "docs/decisions/0038-shared-ui-styling.md",
+      "sha256": "e815a00830548c1575e09f9012a2fa5be8c3d3eceae5cc7c8232c2dcc36f5410"
+    },
+    {
+      "bytes": 2921,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\decisions\\0039-component-background-intent.md",
+      "relative_path": "docs/decisions/0039-component-background-intent.md",
+      "sha256": "606c069895535c70d23abe4f46c40e1f839cc05b66a70928d565fc9c3f210977"
+    },
+    {
+      "bytes": 3587,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\decisions\\0040-official-ui-package.md",
+      "relative_path": "docs/decisions/0040-official-ui-package.md",
+      "sha256": "96650faa0a9e34b1b8f0834f64193b35786897f0c5a00c868592d4e11549acda"
+    },
+    {
+      "bytes": 18604,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\engine.d.luau",
+      "relative_path": "docs/engine.d.luau",
+      "sha256": "ef9db9bf3add442cd5ef2fb00b9bf82b84ae9efc2a5b21358dc68c1a757eb1ab"
+    },
+    {
+      "bytes": 9570,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\formal-ui-host.md",
+      "relative_path": "docs/formal-ui-host.md",
+      "sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9"
+    },
+    {
+      "bytes": 7642,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\project.schema.json",
+      "relative_path": "docs/project.schema.json",
+      "sha256": "35b3fd8d65bee76c42d6b6353cf7e95fdd1c1c6a13768b9666bf234838c0654e"
+    },
+    {
+      "bytes": 8666,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\ui-components.md",
+      "relative_path": "docs/ui-components.md",
+      "sha256": "b64fe1d68e1d368d745fd77cf544e0dd1646e96c12a5b01d67d4a6aefb7e4311"
+    },
+    {
+      "bytes": 10000,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\ui-scroll.md",
+      "relative_path": "docs/ui-scroll.md",
+      "sha256": "a950e096501b7fdd6e0c93f49b72f652e9185f74956a4a716c1c556b7b19d7f6"
+    },
+    {
+      "bytes": 5727,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\ui-slice-and-budget.md",
+      "relative_path": "docs/ui-slice-and-budget.md",
+      "sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55"
+    },
+    {
+      "bytes": 14084,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\ui-styling.md",
+      "relative_path": "docs/ui-styling.md",
+      "sha256": "46c43f0b3134802a8a63510b560b4594c8d5c31546bd911f38a00e278c59f328"
+    },
+    {
+      "bytes": 18115,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\docs\\ui.schema.json",
+      "relative_path": "docs/ui.schema.json",
+      "sha256": "e902169a4b17d550a0227fcc56fcc045f6f28f525e607f538e38e55912f5e902"
+    },
+    {
+      "bytes": 4710,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\packages\\unone-ui\\README.md",
+      "relative_path": "packages/unone-ui/README.md",
+      "sha256": "2da43fb624913372936515bd08b87bb6e2be9eaa8b2ad703956db91f579d597b"
+    },
+    {
+      "bytes": 178,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\packages\\unone-ui\\package.unone.json",
+      "relative_path": "packages/unone-ui/package.unone.json",
+      "sha256": "f3f6a0ddab61893ac46b7bd7157c275de03073b0c4cd11b8f6b2b7fbb342bd6a"
+    },
+    {
+      "bytes": 7926,
+      "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\packages\\unone-ui\\src\\components.luau",
+      "relative_path": "packages/unone-ui/src/components.luau",
+      "sha256": "206ddd43ec1e0b23a5bef9ad104b6d2d2635641cc4a770db402b335ae98e4c4d"
+    }
+  ],
+  "runtimes": [
+    {
+      "bytes": 1823726,
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "ui",
+        "world"
+      ],
+      "id": "web-production-0",
+      "path": "runtimes/web-production-0",
+      "runtime_packages": {
+        "@unone/ui": "0.1.0"
+      },
+      "target": "web",
+      "variant": "production"
+    }
+  ],
+  "cli": {
+    "path": "\\\\?\\D:\\TSProject\\UnoneUiPackage-20261016\\final-sdk\\bin\\game.exe",
+    "sha256": "817a95c89fc2f52bbabb8180dd0b8956fcde286dff60a491ace534f01cb96e11"
+  },
+  "all_package_files_match_checkout": true,
+  "final_export_equals_browser_tested_previous_export": true,
+  "equal_export_files": 84
+}

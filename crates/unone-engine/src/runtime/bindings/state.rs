@@ -65,6 +65,14 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         ui_api.set(name, helpers.get::<mlua::Function>(name)?)?;
     }
     ui_api.set("_materialize", helpers.get::<mlua::Function>("request")?)?;
+    let package_info = crate::runtime_packages::ui_components_info();
+    let declared = state.runtime_packages.get("@unone/ui")
+        .is_some_and(|version| package_info["version"].as_str() == Some(version.as_str()));
+    let components: Table = lua.load(crate::runtime_packages::ui_components_source())
+        .set_name("@packages/unone-ui")
+        .call((json_to_lua(lua, package_info)?, declared,
+            helpers.get::<mlua::Function>("isManagedNode")?))?;
+    ui_api.set("components", components)?;
     Ok(ui_api)
 }
 

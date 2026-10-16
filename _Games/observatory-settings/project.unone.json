@@ -30,5 +30,8 @@
       "name": "desktop",
       "overlap_policy": "tests/desktop-overlaps.json"
     }
-  ]
+  ],
+  "runtime_packages": {
+    "@unone/ui": "0.1.0"
+  }
 }

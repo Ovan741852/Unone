@@ -1,0 +1,250 @@
+[
+  {
+    "label": "observatory",
+    "raw_report_path": "artifacts/ui-package/browser/browser-report.json",
+    "raw_report_sha256": "224cc75792ddf3f677b581d45c24d8e5acf63db4c2dc6c34d8c35d183d0b4edb",
+    "ok": true,
+    "checks": [
+      "desktop: actual official renderer selected",
+      "desktop: no fatal player diagnostic",
+      "desktop: actual production WASM advances",
+      "desktop: declared Observatory Reading 400 face loaded",
+      "desktop: declared Observatory Reading 700 face loaded",
+      "desktop: declared Observatory Display 400 face loaded",
+      "desktop: declared Observatory Display 700 face loaded",
+      "desktop: declared Observatory Data 400 face loaded",
+      "desktop: repeated component subtree identity exists",
+      "desktop: multiple packaged families actually paint glyphs",
+      "desktop: weight 400 actually paints glyphs",
+      "desktop: weight 700 actually paints glyphs",
+      "desktop: text automatically wraps beyond its explicit newlines",
+      "desktop: overlong label visibly paints ellipsis",
+      "desktop: intended complete text fits its authored box",
+      "desktop: sound-off has no fatal diagnostic",
+      "desktop: select-moon has no fatal diagnostic",
+      "desktop: level-increase has no fatal diagnostic",
+      "desktop: level-decrease has no fatal diagnostic",
+      "desktop: level-drag has no fatal diagnostic",
+      "desktop: apply-settings has no fatal diagnostic",
+      "desktop: reset-defaults has no fatal diagnostic",
+      "desktop: apply-defaults has no fatal diagnostic",
+      "desktop: select-meteor has no fatal diagnostic",
+      "desktop: select-deep has no fatal diagnostic",
+      "desktop: no browser, asset or compiler errors",
+      "intermediate: actual official renderer selected",
+      "intermediate: no fatal player diagnostic",
+      "intermediate: actual production WASM advances",
+      "intermediate: declared Observatory Reading 400 face loaded",
+      "intermediate: declared Observatory Reading 700 face loaded",
+      "intermediate: declared Observatory Display 400 face loaded",
+      "intermediate: declared Observatory Display 700 face loaded",
+      "intermediate: declared Observatory Data 400 face loaded",
+      "intermediate: repeated component subtree identity exists",
+      "intermediate: multiple packaged families actually paint glyphs",
+      "intermediate: weight 400 actually paints glyphs",
+      "intermediate: weight 700 actually paints glyphs",
+      "intermediate: text automatically wraps beyond its explicit newlines",
+      "intermediate: overlong label visibly paints ellipsis",
+      "intermediate: intended complete text fits its authored box",
+      "intermediate: sound-off has no fatal diagnostic",
+      "intermediate: select-moon has no fatal diagnostic",
+      "intermediate: level-increase has no fatal diagnostic",
+      "intermediate: level-decrease has no fatal diagnostic",
+      "intermediate: level-drag has no fatal diagnostic",
+      "intermediate: apply-settings has no fatal diagnostic",
+      "intermediate: reset-defaults has no fatal diagnostic",
+      "intermediate: apply-defaults has no fatal diagnostic",
+      "intermediate: select-meteor has no fatal diagnostic",
+      "intermediate: select-deep has no fatal diagnostic",
+      "intermediate: no browser, asset or compiler errors",
+      "portrait: actual official renderer selected",
+      "portrait: no fatal player diagnostic",
+      "portrait: actual production WASM advances",
+      "portrait: declared Observatory Reading 400 face loaded",
+      "portrait: declared Observatory Reading 700 face loaded",
+      "portrait: declared Observatory Display 400 face loaded",
+      "portrait: declared Observatory Display 700 face loaded",
+      "portrait: declared Observatory Data 400 face loaded",
+      "portrait: repeated component subtree identity exists",
+      "portrait: multiple packaged families actually paint glyphs",
+      "portrait: weight 400 actually paints glyphs",
+      "portrait: weight 700 actually paints glyphs",
+      "portrait: overlong label visibly paints ellipsis",
+      "portrait: intended complete text fits its authored box",
+      "portrait: sound-off has no fatal diagnostic",
+      "portrait: select-moon has no fatal diagnostic",
+      "portrait: level-increase has no fatal diagnostic",
+      "portrait: level-decrease has no fatal diagnostic",
+      "portrait: level-drag has no fatal diagnostic",
+      "portrait: apply-settings has no fatal diagnostic",
+      "portrait: reset-defaults has no fatal diagnostic",
+      "portrait: apply-defaults has no fatal diagnostic",
+      "portrait: select-meteor has no fatal diagnostic",
+      "portrait: select-deep has no fatal diagnostic",
+      "portrait: no browser, asset or compiler errors"
+    ],
+    "errors": [],
+    "real_input_sequences": 30,
+    "viewports": [
+      {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "initial_screenshots": [
+      {
+        "path": "artifacts/ui-package/browser/desktop-initial.png",
+        "sha256": "99385494e2c1169d1d99b5ddc7136f2b7ebdfae8d28343b7a909caf59dc40b0b"
+      },
+      {
+        "path": "artifacts/ui-package/browser/intermediate-initial.png",
+        "sha256": "ba586a471326eb2663f003e0330f90e9db4ba4f591806af2c19a1be9224f3d54"
+      },
+      {
+        "path": "artifacts/ui-package/browser/portrait-initial.png",
+        "sha256": "e4a1329ef37ea2f18570a5fb7f6c7d4b3bdbe27afc16f45954cb7b84870487dc"
+      }
+    ]
+  },
+  {
+    "label": "fresh-a",
+    "raw_report_path": "artifacts/ui-package/fresh-browser-a-final/browser-report.json",
+    "raw_report_sha256": "40f2cce3d1283438423652d7a5e2309c0ade4588336648524f4f549fabbe1c9a",
+    "ok": true,
+    "checks": [
+      "desktop: actual official renderer selected",
+      "desktop: no fatal player diagnostic",
+      "desktop: actual production WASM advances",
+      "desktop: repeated component subtree identity exists",
+      "desktop: first-once has no fatal diagnostic",
+      "desktop: first-twice has no fatal diagnostic",
+      "desktop: second-once has no fatal diagnostic",
+      "desktop: no browser, asset or compiler errors",
+      "intermediate: actual official renderer selected",
+      "intermediate: no fatal player diagnostic",
+      "intermediate: actual production WASM advances",
+      "intermediate: repeated component subtree identity exists",
+      "intermediate: first-once has no fatal diagnostic",
+      "intermediate: first-twice has no fatal diagnostic",
+      "intermediate: second-once has no fatal diagnostic",
+      "intermediate: no browser, asset or compiler errors",
+      "portrait: actual official renderer selected",
+      "portrait: no fatal player diagnostic",
+      "portrait: actual production WASM advances",
+      "portrait: repeated component subtree identity exists",
+      "portrait: first-once has no fatal diagnostic",
+      "portrait: first-twice has no fatal diagnostic",
+      "portrait: second-once has no fatal diagnostic",
+      "portrait: no browser, asset or compiler errors"
+    ],
+    "errors": [],
+    "real_input_sequences": 9,
+    "viewports": [
+      {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "initial_screenshots": [
+      {
+        "path": "artifacts/ui-package/fresh-browser-a-final/desktop-initial.png",
+        "sha256": "b487f695763b594be19cbb81f664cc5d472c598affaa0786963651eebd38122d"
+      },
+      {
+        "path": "artifacts/ui-package/fresh-browser-a-final/intermediate-initial.png",
+        "sha256": "6575340f6c1672834c7eba03a61e6eca378019261150e4dfa77a8a8ce7059f8f"
+      },
+      {
+        "path": "artifacts/ui-package/fresh-browser-a-final/portrait-initial.png",
+        "sha256": "b3e119df71d638a8d6842e95e32587e5a0a682700c3d0d10d89d5d6cee019ae0"
+      }
+    ]
+  },
+  {
+    "label": "fresh-b",
+    "raw_report_path": "artifacts/ui-package/fresh-browser-b/browser-report.json",
+    "raw_report_sha256": "349cae1dee0d7ea33621a4bf07419b5e0c4eb1b26285bb06297693cc14478ac8",
+    "ok": true,
+    "checks": [
+      "desktop: actual official renderer selected",
+      "desktop: no fatal player diagnostic",
+      "desktop: actual production WASM advances",
+      "desktop: repeated component subtree identity exists",
+      "desktop: first-once has no fatal diagnostic",
+      "desktop: first-twice has no fatal diagnostic",
+      "desktop: second-once has no fatal diagnostic",
+      "desktop: no browser, asset or compiler errors",
+      "intermediate: actual official renderer selected",
+      "intermediate: no fatal player diagnostic",
+      "intermediate: actual production WASM advances",
+      "intermediate: repeated component subtree identity exists",
+      "intermediate: first-once has no fatal diagnostic",
+      "intermediate: first-twice has no fatal diagnostic",
+      "intermediate: second-once has no fatal diagnostic",
+      "intermediate: no browser, asset or compiler errors",
+      "portrait: actual official renderer selected",
+      "portrait: no fatal player diagnostic",
+      "portrait: actual production WASM advances",
+      "portrait: repeated component subtree identity exists",
+      "portrait: first-once has no fatal diagnostic",
+      "portrait: first-twice has no fatal diagnostic",
+      "portrait: second-once has no fatal diagnostic",
+      "portrait: no browser, asset or compiler errors"
+    ],
+    "errors": [],
+    "real_input_sequences": 9,
+    "viewports": [
+      {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "initial_screenshots": [
+      {
+        "path": "artifacts/ui-package/fresh-browser-b/desktop-initial.png",
+        "sha256": "ec0c6918f93a7f96901000c81e2f9c2c9b7cd08e63c2c146f32e0b769a0f20d2"
+      },
+      {
+        "path": "artifacts/ui-package/fresh-browser-b/intermediate-initial.png",
+        "sha256": "062b6c64a52666c7187bbeb3c07522a154c394620f600e9a7d82e4087a70b24e"
+      },
+      {
+        "path": "artifacts/ui-package/fresh-browser-b/portrait-initial.png",
+        "sha256": "e3d4edb6db51c35387a5ea38f0ebd6f66da873f5c1e42484f545539e4c523d3e"
+      }
+    ]
+  }
+]

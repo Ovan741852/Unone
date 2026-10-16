@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "rgb_pixels_equal": true,
+      "difference_bbox": null
+    },
+    {
+      "viewport": "intermediate",
+      "rgb_pixels_equal": true,
+      "difference_bbox": null
+    },
+    {
+      "viewport": "portrait",
+      "rgb_pixels_equal": true,
+      "difference_bbox": null
+    }
+  ],
+  "baseline": "b776403 accepted official player",
+  "scope": "initial state only; full input outcomes separately covered by the browser gate"
+}

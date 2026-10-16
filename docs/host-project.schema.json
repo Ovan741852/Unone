@@ -569,6 +569,13 @@
         "name": {
           "type": "string"
         },
+        "runtime_packages": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Exact versions of SDK-bundled Luau runtime packages used by this project.\nDeclare @unone/ui before using api.ui.components constructors. This is\ncompatibility data, not a network resolver or filesystem module loader.",
+          "type": "object"
+        },
         "systems": {
           "additionalProperties": {
             "type": "boolean"

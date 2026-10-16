@@ -7,6 +7,8 @@
 -- project init inlines it into the entry script, because the engine runtime
 -- has no module require: a single-file game must carry its own types for
 -- `game check --types` to mean anything.
+-- Official SDK-bundled Luau packages use typed API namespaces such as
+-- api.ui.components; declare their exact runtime_packages versions in the project.
 --
 -- Game-owned models, ViewModels, Views and save schemas belong in the game.
 
@@ -152,6 +154,7 @@ export type UiAnchor =
     | "bottom_left" | "bottom" | "bottom_right"
 
 export type UiApi = {
+    components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     -- Current host width/height ratio, also used by anchored placement.
     -- Read-only environment data; selecting a layout remains game code.
@@ -218,6 +221,52 @@ export type UiScrollNode = UiPlacement & {
 export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
+-- @unone/ui: pure constructors. All positions/order remain explicitly authored.
+-- create snapshots these defaults; leaf overrides win, padding merges per edge.
+export type UiComponentsTheme = {
+    text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
+}
+export type UiComponentTextProps = UiPlacement & {
+    id: string, text: string?, style: UiStyle?,
+}
+export type UiComponentButtonProps = UiPlacement & {
+    id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiComponentPanelProps = UiPlacement & {
+    id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentImageProps = UiPlacement & {
+    id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentSurface = {
+    kind: "panel", style: UiStyle?,
+} | {
+    kind: "image", asset: string, fit: ("contain" | "cover" | "stretch")?,
+    alt: string?, slice: UiSlice?, style: UiStyle?,
+}
+export type UiComponentProps = UiPlacement & {
+    id: string, component: string, children: {UiNode}?, surface: UiComponentSurface?,
+}
+export type UiComponentKit = {
+    text: (props: UiComponentTextProps) -> UiTextNode,
+    button: (props: UiComponentButtonProps) -> UiButtonNode,
+    panel: (props: UiComponentPanelProps) -> UiPanelNode,
+    image: (props: UiComponentImageProps) -> UiImageNode,
+    component: (props: UiComponentProps) -> UiComponentNode,
+    id: (instanceId: string, role: string) -> string,
+    composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
+}
+export type UiComponentsInfo = {
+    name: string, version: string, kind: string, entry: string,
+    api: string, license: string, declared: boolean,
+}
+export type UiComponentsApi = {
+    info: () -> UiComponentsInfo,
+    create: (theme: UiComponentsTheme?) -> UiComponentKit,
+    composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
+    id: (instanceId: string, role: string) -> string,
+}
 export type UiViewport = {left: number, top: number, width: number, height: number}
 export type UiScrollOptions = {
     id: string, viewport: UiViewport, content: {any}?,

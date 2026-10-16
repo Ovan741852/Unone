@@ -33,6 +33,10 @@ mod platform;
 mod project;
 mod rigid3d;
 mod runtime;
+mod runtime_packages;
+pub use runtime_packages::compiled_runtime_packages;
+#[cfg(feature = "dev-tools")]
+pub use runtime_packages::runtime_package_files;
 #[cfg(feature = "preview-tools")]
 pub use runtime::{DebugControl, DebugTab, PreviewRequest};
 mod scene;
