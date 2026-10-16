@@ -32,6 +32,37 @@ enabled project systems. Smallest matching runtime wins, then runtime ID; use
 creating output. The CLI response includes `sdk_selection`; normal export.json
 retains the selected runtime/content hashes.
 
+### Starter projects and limited runtimes
+
+`project init` declares a general starter's systems; it does not infer which
+runtime packs the publisher included in your SDK. A minimal Web pack may omit
+systems such as `camera3d`, `physics2d` or `save` that are enabled by the starter.
+Keep the game's explicit choices and inspect compatibility before preparing an
+output:
+
+```powershell
+& ./sdk/bin/game.exe sdk inspect --json
+& ./sdk/bin/game.exe --project ./my-game systems list --json
+& ./sdk/bin/game.exe --project ./my-game project preflight --target web --json
+```
+
+`SDK_RUNTIME_UNAVAILABLE` reports the requested target, production/development
+variant, optional runtime ID and required systems. For each installed runtime it
+reports target/variant/ID match flags, compiled systems and concrete missing
+systems under `diagnostics[].facts.runtime_selection`. Missing systems are
+computed for each candidate independently; a candidate can also have the wrong
+target, variant or pinned ID even when its system list is sufficient.
+
+Review whether each enabled system is used by the game. Explicitly disable only
+unused systems through the documented systems commands, or obtain a compatible
+trusted runtime pack. The CLI never disables systems or switches variants for
+you. The generated Luau type prelude describes the complete public API; inspect
+executable calls and scene content when deciding which systems the game uses.
+Re-run preflight with the same runtime ID and `--development` choice after
+repairing compatibility. Its recovery actions retain read-only SDK/system
+inspection and a concrete preflight retry; they do not create an output or offer
+a prepare command with a placeholder destination.
+
 Hashes detect corruption, not publisher authenticity. Use a trusted distribution
 channel. Capability matching does not by itself prove renderer/decoder parity.
 

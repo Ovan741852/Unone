@@ -1,0 +1,23 @@
+{
+  "baseline": "91448f00419d96ef544bfbe4fdcdec2c719df4f7",
+  "version": "2.1.280 (Claude Code)",
+  "command": [
+    "claude",
+    "-p",
+    "--tools",
+    "",
+    "--permission-mode",
+    "plan",
+    "--no-session-persistence",
+    "--output-format",
+    "json",
+    "--max-turns",
+    "1",
+    "--disable-slash-commands"
+  ],
+  "exit_code": 124,
+  "duration_seconds": 90.08,
+  "diff_sha256": "80aac9bb6ca4706ed26410b3ce88f0196fb5d718ecd29d6ba8bf0abc35734712",
+  "stdout_bytes": 0,
+  "stderr_bytes": 0
+}

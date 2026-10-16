@@ -1,0 +1,34 @@
+{
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "name": "Aster Observatory",
+  "systems": {
+    "audio": true,
+    "camera3d": false,
+    "particle": false,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "ui": true
+  },
+  "test_files": [
+    "tests/defaults.test.json",
+    "tests/held-toggle-has-one-edge.test.json",
+    "tests/draft-controls.test.json",
+    "tests/apply-snapshots-draft.test.json",
+    "tests/reset-restores-default-draft.test.json",
+    "tests/drag-level-to-maximum.test.json",
+    "tests/drag-level-clamps-outside.test.json",
+    "tests/level-lower-bound.test.json",
+    "tests/level-upper-bound.test.json"
+  ],
+  "ui_previews": [
+    {
+      "frames": 1,
+      "name": "desktop",
+      "overlap_policy": "tests/desktop-overlaps.json"
+    }
+  ]
+}

@@ -50,6 +50,11 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-16: fresh-context, SDK-only UI authoring and an independent SDK recovery
+  probe. Real official-player input/font/viewport checks passed; shared SDK
+  diagnostic/recovery fixes and reproducible example/tooling are recorded. The
+  bounded Claude source review timed out without a response:
+  [record](reviews/2026-10-16-ui-authoring-usability.md).
 - 2026-10-15: shared official UI typography/styles, font catalogs, component
   discovery and the Voidwake source example. Independent reviews and actual
   player checks completed; the bounded Claude CLI attempt timed out without a

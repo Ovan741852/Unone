@@ -20,6 +20,23 @@ use crate::{sdk, sync};
 pub(crate) const SCHEMA: &str = "unone.project-prepare.v1";
 pub(crate) const PREFLIGHT_SCHEMA: &str = "unone.project-prepare-preflight.v1";
 
+#[derive(Clone, Copy)]
+struct RuntimeRequest<'a> {
+    sdk_root: Option<&'a Path>,
+    target: &'a str,
+    id: Option<&'a str>,
+    development: bool,
+}
+
+impl<'a> RuntimeRequest<'a> {
+    fn args(self) -> Vec<&'a str> {
+        let mut args = vec!["--target", self.target];
+        if let Some(id) = self.id { args.extend(["--runtime-id", id]); }
+        if self.development { args.push("--development"); }
+        args
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub(crate) struct ProjectPrepareReport {
     pub schema: String,
@@ -58,6 +75,7 @@ pub(crate) fn project_preflight(
     runtime_id: Option<&str>,
     development: bool,
 ) -> EngineResult<Value> {
+    let request = RuntimeRequest { sdk_root, target, id: runtime_id, development };
     let mut value = json!({
         "schema": PREFLIGHT_SCHEMA,
         "status": "starting",
@@ -77,7 +95,7 @@ pub(crate) fn project_preflight(
                 ),
             ),
             project,
-            target,
+            request,
         );
         return EngineResult {
             ok: false,
@@ -98,7 +116,7 @@ pub(crate) fn project_preflight(
                 "preflight",
                 &error,
                 project,
-                target,
+                request,
                 "Fix the reported target, SDK/runtime, project system, or presentation issue; no output was created.",
             );
             EngineResult {
@@ -122,6 +140,7 @@ pub(crate) fn project_prepare(
     runtime_id: Option<&str>,
     development: bool,
 ) -> EngineResult<ProjectPrepareReport> {
+    let request = RuntimeRequest { sdk_root, target, id: runtime_id, development };
     let output = match absolute_path(output) {
         Ok(path) => path,
         Err(error) => {
@@ -132,6 +151,7 @@ pub(crate) fn project_prepare(
                     &error,
                     project,
                     output,
+                    request,
                     "Choose an output path whose parent directory can be resolved, then retry.",
                 ),
             );
@@ -179,6 +199,7 @@ pub(crate) fn project_prepare(
                     &error,
                     project,
                     &output,
+                    request,
                     "Inspect the reported target, SDK/runtime variant, project systems, and presentation settings; then retry.",
                 ),
             );
@@ -207,6 +228,7 @@ pub(crate) fn project_prepare(
                 &error,
                 project,
                 &output,
+                request,
                 "Fix the reported export input or runtime issue and retry with a new output directory.",
             ));
             return result;
@@ -233,6 +255,7 @@ pub(crate) fn project_prepare(
                 &error,
                 project,
                 &output,
+                request,
                 "Keep the generated output for inspection, or remove it and retry after repairing the verified runtime/export manifest.",
             ));
             return result;
@@ -399,28 +422,63 @@ fn preflight_diagnostic(
     stage: &str,
     error: &anyhow::Error,
     project: &Path,
-    target: &str,
+    request: RuntimeRequest<'_>,
     recovery: &str,
 ) -> Diagnostic {
     preflight_action(
-        prepare_diagnostic(stage, error, project, Path::new("<not-created>"), recovery),
+        prepare_diagnostic(stage, error, project, Path::new("<not-created>"), request, recovery),
         project,
-        target,
+        request,
     )
 }
 
-fn preflight_action(mut diagnostic: Diagnostic, project: &Path, target: &str) -> Diagnostic {
-    diagnostic.suggested_actions = vec![ActionSuggestion {
+fn preflight_action(mut diagnostic: Diagnostic, project: &Path, request: RuntimeRequest<'_>) -> Diagnostic {
+    diagnostic.facts["requested_sdk_root"] = json!(request.sdk_root);
+    // Preserve useful read-only discovery actions; only the mutating retry
+    // belongs to prepare and must never leak into preflight with a fake output.
+    diagnostic.suggested_actions.retain(|action| action.action != "retry_project_prepare");
+    let project_path = project.to_string_lossy();
+    let command = {
+        let mut args = selected_sdk_args(&diagnostic);
+        args.extend(["--project", &project_path, "--json", "project", "preflight"]);
+        args.extend(request.args());
+        diagnostic_command(&args)
+    };
+    diagnostic.suggested_actions.push(ActionSuggestion {
         action: "retry_project_preflight".to_string(),
         description: format!(
-            "Re-run the read-only project preflight for the concrete {target} target; it never creates an output directory."
+            "Re-run the read-only project preflight for the concrete {} target; it never creates an output directory.", request.target
         ),
-        command: Some(format!(
-            "game --project \"{}\" --json project preflight --target {target}",
-            project.display()
-        )),
-    }];
+        command: Some(command),
+    });
     diagnostic
+}
+
+fn selected_sdk_args(diagnostic: &Diagnostic) -> Vec<&str> {
+    diagnostic.facts["runtime_selection"]["sdk_root"].as_str()
+        .or_else(|| diagnostic.facts["requested_sdk_root"].as_str())
+        .map(|root| vec!["--sdk", root])
+        .unwrap_or_default()
+}
+
+/// Recovery commands must work when a portable SDK's CLI is not on PATH.
+/// Values are shell literals, never interpolated PowerShell or POSIX source.
+fn diagnostic_command(args: &[&str]) -> String {
+    fn quote(value: &str) -> String {
+        let escaped = if cfg!(windows) { value.replace('\'', "''") } else { value.replace('\'', "'\\''") };
+        format!("'{escaped}'")
+    }
+    let mut command = match std::env::current_exe() {
+        Ok(path) => format!("{}{}", if cfg!(windows) { "& " } else { "" }, quote(&path.to_string_lossy())),
+        Err(_) => "game".to_string(),
+    };
+    for arg in args {
+        command.push(' ');
+        if !arg.is_empty() && arg.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"-_./".contains(&byte)) {
+            command.push_str(arg);
+        } else { command.push_str(&quote(arg)); }
+    }
+    command
 }
 
 fn prepare_diagnostic(
@@ -428,10 +486,13 @@ fn prepare_diagnostic(
     error: &anyhow::Error,
     project: &Path,
     output: &Path,
+    request: RuntimeRequest<'_>,
     recovery: &str,
 ) -> Diagnostic {
     let raw = format!("{error:#}");
-    let cause_code = raw
+    let cause_code = if error.is::<sdk::RuntimeUnavailable>() {
+        "SDK_RUNTIME_UNAVAILABLE"
+    } else { raw
         .split(|character: char| character == ':' || character.is_whitespace())
         .next()
         .filter(|code| {
@@ -440,7 +501,7 @@ fn prepare_diagnostic(
                     character.is_ascii_uppercase() || character == '_' || character.is_ascii_digit()
                 })
         })
-        .unwrap_or("PROJECT_PREPARE_FAILED");
+        .unwrap_or("PROJECT_PREPARE_FAILED") };
     let mut diagnostic = Diagnostic::error(
         cause_code,
         format!("Project prepare {stage} failed"),
@@ -452,15 +513,39 @@ fn prepare_diagnostic(
         "project": project,
         "output": output,
         "cause": raw,
+        "target": request.target,
+        "variant": if request.development { "development" } else { "production" },
+        "requested_runtime_id": request.id,
+        "requested_sdk_root": request.sdk_root,
     });
+    if let Some(mismatch) = error.downcast_ref::<sdk::RuntimeUnavailable>() {
+        diagnostic.facts["runtime_selection"] = json!(mismatch);
+        diagnostic.suggested_actions.extend([
+            ActionSuggestion {
+                action: "inspect_sdk_runtimes".to_string(),
+                description: "Inspect the installed target, variant and compiled systems before choosing a compatible runtime pack.".to_string(),
+                command: Some(diagnostic_command(&["--sdk", &mismatch.sdk_root.to_string_lossy(), "sdk", "inspect", "--json"])),
+            },
+            ActionSuggestion {
+                action: "inspect_project_systems".to_string(),
+                description: "Review enabled project systems. Explicitly disable only systems the game does not use, or install a runtime supporting all required systems.".to_string(),
+                command: Some(diagnostic_command(&["--project", &project.to_string_lossy(), "--json", "systems", "list"])),
+            },
+        ]);
+    }
+    let project_path = project.to_string_lossy();
+    let output_path = output.to_string_lossy();
+    let command = {
+        let mut args = selected_sdk_args(&diagnostic);
+        args.extend(["--project", &project_path, "--json", "project", "prepare"]);
+        args.extend(request.args());
+        args.extend(["--output", &output_path]);
+        diagnostic_command(&args)
+    };
     diagnostic.suggested_actions.push(ActionSuggestion {
         action: "retry_project_prepare".to_string(),
         description: recovery.to_string(),
-        command: Some(format!(
-            "game --project \"{}\" --json project prepare --target <web|windows> --output \"{}\"",
-            project.display(),
-            output.display()
-        )),
+        command: Some(command),
     });
     diagnostic
 }
@@ -526,7 +611,7 @@ mod tests {
         let project = tempdir().unwrap();
         let missing_sdk = project.path().join("missing-sdk");
         let before = fs::read_dir(project.path()).unwrap().count();
-        let result = project_preflight(project.path(), Some(&missing_sdk), "windows", None, false);
+        let result = project_preflight(project.path(), Some(&missing_sdk), "windows", Some("windows-test"), true);
         let after = fs::read_dir(project.path()).unwrap().count();
 
         assert!(!result.ok);
@@ -536,7 +621,101 @@ mod tests {
         assert_eq!(action.action, "retry_project_preflight");
         let command = action.command.as_deref().unwrap();
         assert!(command.contains("--target windows"));
+        assert!(command.contains("--sdk ") && command.contains(missing_sdk.to_str().unwrap()));
+        assert!(command.contains("--runtime-id windows-test --development"));
         assert!(!command.contains("--output"));
+        assert_eq!(result.diagnostics[0].facts["requested_sdk_root"], json!(missing_sdk));
+    }
+
+    #[test]
+    fn non_selection_failures_preserve_the_explicit_sdk_in_both_retry_modes() {
+        let project = tempdir().unwrap();
+        let explicit_sdk = project.path().join("sdk-A");
+        let output = project.path().join("new-output");
+        let request = RuntimeRequest { sdk_root: Some(&explicit_sdk), target: "web", id: Some("web-dev"), development: true };
+        for cause in ["SDK_HASH_MISMATCH: untrusted file", "FONT_SOURCE_MISSING: fonts/title.ttf"] {
+            let error = anyhow::anyhow!(cause);
+            let prepare = prepare_diagnostic("preflight", &error, project.path(), &output, request, "Repair the selected SDK or project input.");
+            let preflight = preflight_diagnostic("preflight", &error, project.path(), request, "Repair the selected SDK or project input.");
+            for diagnostic in [&prepare, &preflight] {
+                assert_eq!(diagnostic.facts["requested_sdk_root"], json!(explicit_sdk));
+                assert!(diagnostic.facts.get("runtime_selection").is_none());
+                let command = diagnostic.suggested_actions.last().unwrap().command.as_deref().unwrap();
+                assert!(command.contains("--sdk ") && command.contains(explicit_sdk.to_str().unwrap()), "{command}");
+                assert!(command.contains("--target web --runtime-id web-dev --development"));
+            }
+            assert!(prepare.suggested_actions.last().unwrap().command.as_deref().unwrap().contains("--output"));
+            assert!(!preflight.suggested_actions.last().unwrap().command.as_deref().unwrap().contains("--output"));
+        }
+        assert!(!output.exists());
+        assert_eq!(fs::read_dir(project.path()).unwrap().count(), 0);
+    }
+
+    #[test]
+    fn capability_failure_retains_structured_gaps_and_discovery_in_both_recovery_modes() {
+        let project = tempdir().unwrap();
+        let output = project.path().join("never-created");
+        let mismatch = sdk::RuntimeUnavailable {
+            sdk_root: project.path().join("trusted-sdk"), target: "web".into(),
+            variant: "development".into(), requested_runtime_id: Some("web-dev".into()),
+            required_systems: vec!["ui".into(), "save".into()],
+            available_runtimes: vec![sdk::RuntimeGap {
+                id: "web-prod".into(), target: "web".into(), variant: "production".into(),
+                compiled_systems: vec!["ui".into()], matches_target: true,
+                matches_variant: false, matches_requested_id: false, missing_systems: vec!["save".into()],
+            }],
+        };
+        let error = anyhow::Error::new(mismatch).context("Compatibility selection failed");
+        let explicit_sdk = project.path().join("sdk-alias");
+        let request = RuntimeRequest { sdk_root: Some(&explicit_sdk), target: "web", id: Some("web-dev"), development: true };
+        let before = fs::read_dir(project.path()).unwrap().count();
+        let prepare = prepare_diagnostic("preflight", &error, project.path(), &output, request, "Review compatibility before retrying.");
+        assert_eq!(prepare.code, "SDK_RUNTIME_UNAVAILABLE");
+        let gaps = &prepare.facts["runtime_selection"];
+        assert_eq!(gaps["required_systems"], json!(["ui", "save"]));
+        assert_eq!(gaps["available_runtimes"][0]["missing_systems"], json!(["save"]));
+        assert_eq!(gaps["available_runtimes"][0]["matches_variant"], false);
+        let prepare_retry = prepare.suggested_actions.iter().find(|action| action.action == "retry_project_prepare").unwrap();
+        let command = prepare_retry.command.as_deref().unwrap();
+        assert!(command.contains("--sdk ") && command.contains(project.path().join("trusted-sdk").to_str().unwrap()));
+        assert!(!command.contains("sdk-alias"));
+        assert!(command.contains("--target web --runtime-id web-dev --development"));
+        assert!(command.contains("--output ") && command.contains(output.to_str().unwrap()));
+        assert!(!command.contains("<web|windows>"));
+
+        let preflight = preflight_diagnostic("preflight", &error, project.path(), request, "Review compatibility before retrying.");
+        assert_eq!(preflight.facts["runtime_selection"], *gaps);
+        let actions = &preflight.suggested_actions;
+        assert_eq!(actions.iter().map(|action| action.action.as_str()).collect::<Vec<_>>(), ["inspect_sdk_runtimes", "inspect_project_systems", "retry_project_preflight"]);
+        let inspect = actions[0].command.as_deref().unwrap();
+        assert!(inspect.contains("--sdk") && inspect.ends_with("sdk inspect --json"));
+        assert!(actions[1].description.contains("only systems the game does not use"));
+        let retry = actions[2].command.as_deref().unwrap();
+        assert!(retry.contains("--sdk ") && retry.contains(project.path().join("trusted-sdk").to_str().unwrap()));
+        assert_eq!(preflight.facts["requested_sdk_root"], json!(explicit_sdk));
+        assert!(retry.contains("--target web --runtime-id web-dev --development"));
+        for action in actions {
+            let command = action.command.as_deref().unwrap();
+            assert!(!command.contains("--output") && !command.contains("<not-created>") && !command.contains("systems set"));
+        }
+        assert_eq!(before, fs::read_dir(project.path()).unwrap().count());
+        assert!(!output.exists());
+    }
+
+    #[test]
+    fn portable_recovery_commands_resolve_the_cli_and_quote_shell_literals() {
+        let command = diagnostic_command(&["--sdk", "SDK space/O'Brien $literal`tick; (data)", "--runtime-id", "runtime 'quoted' $id"]);
+        let executable = std::env::current_exe().unwrap().to_string_lossy().into_owned();
+        if cfg!(windows) {
+            assert!(command.starts_with(&format!("& '{}' ", executable.replace('\'', "''"))));
+            assert!(command.contains("--sdk 'SDK space/O''Brien $literal`tick; (data)'"));
+            assert!(command.contains("--runtime-id 'runtime ''quoted'' $id'"));
+        } else {
+            assert!(command.starts_with(&format!("'{}' ", executable.replace('\'', "'\\''"))));
+            assert!(command.contains("--sdk 'SDK space/O'\\''Brien $literal`tick; (data)'"));
+            assert!(command.contains("--runtime-id 'runtime '\\''quoted'\\'' $id'"));
+        }
+        assert!(!command.starts_with("game "));
     }
 
     #[test]

@@ -1,0 +1,59 @@
+{
+  "name": "apply-snapshots-draft",
+  "frames": 4,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "LevelUp": true,
+        "ToggleSound": true,
+        "ModeMoon": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "Apply": true
+      }
+    },
+    {
+      "actions": {}
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "sound": false,
+          "mode": 1,
+          "level": 70
+        },
+        "key": "draft"
+      }
+    },
+    {
+      "observation": {
+        "equals": {
+          "sound": false,
+          "mode": 1,
+          "level": 70
+        },
+        "key": "applied"
+      }
+    },
+    {
+      "observation": {
+        "equals": 1,
+        "key": "apply_count"
+      }
+    },
+    {
+      "observation": {
+        "equals": false,
+        "key": "dirty"
+      }
+    }
+  ]
+}

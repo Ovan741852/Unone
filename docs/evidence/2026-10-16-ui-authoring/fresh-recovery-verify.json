@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "value": {
+    "project": "UI Settings Recovery",
+    "steps": [
+      {
+        "name": "types",
+        "status": "passed",
+        "summary": "entrypoints [\"start\", \"update\"], strict_mode true",
+        "command": "game check --types",
+        "diagnostics": []
+      },
+      {
+        "name": "assets",
+        "status": "passed",
+        "summary": "0 declared, 0 scene references, ready_for_packaging true",
+        "command": "game asset inspect --strict",
+        "diagnostics": []
+      },
+      {
+        "name": "layout",
+        "status": "not_applicable",
+        "summary": "the game publishes no UI tree",
+        "command": "game ui preview --strict --frames 1 --seed 42",
+        "diagnostics": []
+      },
+      {
+        "name": "tests",
+        "status": "passed",
+        "summary": "2/2 deterministic cases passed",
+        "command": "game test",
+        "diagnostics": []
+      }
+    ],
+    "passed": 3,
+    "failed": 0,
+    "not_applicable": 1,
+    "step_source": "default"
+  },
+  "diagnostics": [],
+  "effects": [
+    "verify ran 4 gates in the default order: 3 passed, 0 failed, 1 not applicable"
+  ]
+}

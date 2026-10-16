@@ -16,7 +16,7 @@ struct File {
     bytes: u64,
     sha256: String,
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Runtime {
     id: String,
@@ -25,6 +25,84 @@ struct Runtime {
     path: String,
     compiled_systems: Vec<String>,
     bytes: u64,
+}
+
+#[derive(Debug, Serialize)]
+pub(crate) struct RuntimeGap {
+    pub(crate) id: String,
+    pub(crate) target: String,
+    pub(crate) variant: String,
+    pub(crate) compiled_systems: Vec<String>,
+    pub(crate) matches_target: bool,
+    pub(crate) matches_variant: bool,
+    pub(crate) matches_requested_id: bool,
+    pub(crate) missing_systems: Vec<String>,
+}
+
+/// Preserve the concrete selection mismatch for CLI/MCP recovery, without
+/// choosing which of the game's enabled capabilities it can safely remove.
+#[derive(Debug, Serialize)]
+pub(crate) struct RuntimeUnavailable {
+    pub(crate) sdk_root: PathBuf,
+    pub(crate) target: String,
+    pub(crate) variant: String,
+    pub(crate) requested_runtime_id: Option<String>,
+    pub(crate) required_systems: Vec<String>,
+    pub(crate) available_runtimes: Vec<RuntimeGap>,
+}
+
+impl std::fmt::Display for RuntimeUnavailable {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let installed = self.available_runtimes.iter().map(|runtime| format!(
+            "{} ({}/{}): missing [{}]{}{}{}", runtime.id, runtime.target, runtime.variant,
+            runtime.missing_systems.join(", "),
+            if runtime.matches_target { "" } else { "; target does not match" },
+            if runtime.matches_variant { "" } else { "; variant does not match" },
+            if runtime.matches_requested_id { "" } else { "; requested ID does not match" },
+        )).collect::<Vec<_>>().join("; ");
+        write!(formatter,
+            "SDK_RUNTIME_UNAVAILABLE: no matching target={}, variant={}, runtime_id={}; enabled project systems [{}]; installed runtimes: {}. Run game sdk inspect --json and game systems list --json. Explicitly disable only systems the project does not use, or install a runtime pack supporting all required systems",
+            self.target, self.variant, self.requested_runtime_id.as_deref().unwrap_or("<automatic>"),
+            self.required_systems.join(", "), if installed.is_empty() { "<none>" } else { &installed },
+        )
+    }
+}
+
+impl std::error::Error for RuntimeUnavailable {}
+
+/// Keep selection and its failure evidence together. The policy remains exact
+/// target/variant/optional ID plus all systems, then smallest bytes and ID.
+fn matching_runtime<'a>(
+    runtimes: &'a [Runtime],
+    sdk_root: &Path,
+    target: &str,
+    variant: &str,
+    id: Option<&str>,
+    systems: &[String],
+) -> Result<&'a Runtime> {
+    let mut candidates: Vec<_> = runtimes.iter().filter(|runtime| {
+        runtime.target == target && runtime.variant == variant
+            && id.is_none_or(|wanted| wanted == runtime.id)
+            && systems.iter().all(|system| runtime.compiled_systems.contains(system))
+    }).collect();
+    candidates.sort_by(|left, right| left.bytes.cmp(&right.bytes).then(left.id.cmp(&right.id)));
+    candidates.first().copied().ok_or_else(|| RuntimeUnavailable {
+        sdk_root: sdk_root.to_path_buf(),
+        target: target.to_string(),
+        variant: variant.to_string(),
+        requested_runtime_id: id.map(str::to_string),
+        required_systems: systems.to_vec(),
+        available_runtimes: runtimes.iter().map(|runtime| RuntimeGap {
+            id: runtime.id.clone(),
+            target: runtime.target.clone(),
+            variant: runtime.variant.clone(),
+            compiled_systems: runtime.compiled_systems.clone(),
+            matches_target: runtime.target == target,
+            matches_variant: runtime.variant == variant,
+            matches_requested_id: id.is_none_or(|wanted| wanted == runtime.id),
+            missing_systems: systems.iter().filter(|system| !runtime.compiled_systems.contains(system)).cloned().collect(),
+        }).collect(),
+    }.into())
 }
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -449,26 +527,7 @@ fn select_runtime(
     } else {
         "production"
     };
-    let mut candidates: Vec<_> = manifest
-        .runtimes
-        .iter()
-        .filter(|runtime| {
-            runtime.target == host.id
-                && runtime.variant == variant
-                && id.is_none_or(|wanted| wanted == runtime.id)
-                && systems
-                    .iter()
-                    .all(|system| runtime.compiled_systems.contains(system))
-        })
-        .collect();
-    candidates.sort_by(|left, right| {
-        left.bytes
-            .cmp(&right.bytes)
-            .then(left.id.cmp(&right.id))
-    });
-    let selected = candidates.first().context(
-        "SDK_RUNTIME_UNAVAILABLE: no matching target/variant/systems; run game sdk inspect --json and install a compatible runtime pack",
-    )?;
+    let selected = matching_runtime(&manifest.runtimes, &sdk_root, host.id, variant, id, &systems)?;
     let runtime_root = safe(&sdk_root, &selected.path)?;
     let templates_root = safe(&sdk_root, &manifest.templates)?;
     let runtime_manifest: Value =
@@ -768,6 +827,69 @@ fn native_readiness_gate(metadata: &Value) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn runtime(id: &str, target: &str, variant: &str, systems: &[&str], bytes: u64) -> Runtime {
+        Runtime {
+            id: id.to_string(), target: target.to_string(), variant: variant.to_string(),
+            path: format!("runtimes/{id}"),
+            compiled_systems: systems.iter().map(|system| (*system).to_string()).collect(), bytes,
+        }
+    }
+
+    #[test]
+    fn unavailable_runtime_exposes_concrete_capability_gaps_without_changing_requirements() {
+        let required = ["camera2d", "camera3d", "physics2d", "save", "ui"].map(str::to_string);
+        let runtimes = [runtime("web-minimal", "web", "production", &["camera2d", "ui"], 10)];
+        let error = matching_runtime(&runtimes, Path::new("trusted-sdk"), "web", "production", None, &required).unwrap_err();
+        let gap = error.downcast_ref::<RuntimeUnavailable>().unwrap();
+        assert_eq!(gap.required_systems, required);
+        let candidate = &gap.available_runtimes[0];
+        assert!(candidate.matches_target && candidate.matches_variant && candidate.matches_requested_id);
+        assert_eq!(candidate.compiled_systems, ["camera2d", "ui"]);
+        assert_eq!(candidate.missing_systems, ["camera3d", "physics2d", "save"]);
+        let explanation = gap.to_string();
+        for system in ["camera3d", "physics2d", "save"] { assert!(explanation.contains(system)); }
+        assert!(explanation.contains("only systems the project does not use"));
+        assert_eq!(required, ["camera2d", "camera3d", "physics2d", "save", "ui"].map(str::to_string));
+    }
+
+    #[test]
+    fn runtime_target_variant_and_pinned_id_mismatches_are_independent_of_system_gaps() {
+        let runtimes = [runtime("web-production", "web", "production", &["ui"], 10)];
+        let required = ["ui".to_string()];
+        for (target, variant, id, matches_target, matches_variant, matches_id) in [
+            ("windows", "production", None, false, true, true),
+            ("web", "development", None, true, false, true),
+            ("web", "production", Some("uninstalled"), true, true, false),
+        ] {
+            let error = matching_runtime(&runtimes, Path::new("sdk"), target, variant, id, &required).unwrap_err();
+            let gap = error.downcast_ref::<RuntimeUnavailable>().unwrap();
+            let report = serde_json::to_value(gap).unwrap();
+            assert_eq!(report["target"], target);
+            assert_eq!(report["variant"], variant);
+            assert_eq!(report["requested_runtime_id"], json!(id));
+            let candidate = &gap.available_runtimes[0];
+            assert_eq!(candidate.matches_target, matches_target);
+            assert_eq!(candidate.matches_variant, matches_variant);
+            assert_eq!(candidate.matches_requested_id, matches_id);
+            assert!(candidate.missing_systems.is_empty());
+        }
+    }
+
+    #[test]
+    fn compatible_selection_retains_smallest_runtime_then_id_policy_and_explicit_pin() {
+        let runtimes = [
+            runtime("unsupported-small", "web", "production", &[], 1),
+            runtime("b", "web", "production", &["ui"], 10),
+            runtime("a", "web", "production", &["ui"], 10),
+            runtime("large", "web", "production", &["ui"], 20),
+            runtime("other-variant", "web", "development", &["ui"], 1),
+        ];
+        let required = ["ui".to_string()];
+        let select = |id| matching_runtime(&runtimes, Path::new("sdk"), "web", "production", id, &required).unwrap().id.as_str();
+        assert_eq!(select(None), "a");
+        assert_eq!(select(Some("large")), "large");
+    }
     #[test]
     fn traversal_and_unknown_manifest_keys_fail() {
         let root = tempfile::tempdir().unwrap();

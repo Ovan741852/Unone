@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "value": {
+    "output": null,
+    "project": "D:\\TSProject\\UnoneUiUsability-20261016\\recovery-project",
+    "runtime": {
+      "descriptor": "\\\\?\\D:\\TSProject\\UnoneUiUsability-20261016\\fixed-sdk\\runtimes\\web-production-0\\runtime.json",
+      "engine_version": "0.1.0",
+      "family": "web-wasm",
+      "readiness": null,
+      "runtime_id": "web-production-0",
+      "runtime_root": "\\\\?\\D:\\TSProject\\UnoneUiUsability-20261016\\fixed-sdk\\runtimes\\web-production-0",
+      "target": "web",
+      "variant": "production",
+      "verified": true
+    },
+    "schema": "unone.project-prepare-preflight.v1",
+    "status": "compatible",
+    "target": "web"
+  },
+  "diagnostics": [],
+  "effects": []
+}

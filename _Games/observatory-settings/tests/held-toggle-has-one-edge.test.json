@@ -1,0 +1,40 @@
+{
+  "name": "held-toggle-has-one-edge",
+  "frames": 3,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "ToggleSound": true
+      }
+    },
+    {
+      "actions": {
+        "ToggleSound": true
+      }
+    },
+    {
+      "actions": {
+        "ToggleSound": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "sound": false,
+          "mode": 2,
+          "level": 65
+        },
+        "key": "draft"
+      }
+    },
+    {
+      "observation": {
+        "equals": true,
+        "key": "dirty"
+      }
+    }
+  ]
+}

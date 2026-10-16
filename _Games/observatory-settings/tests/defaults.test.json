@@ -1,0 +1,44 @@
+{
+  "name": "defaults",
+  "frames": 1,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {}
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "sound": true,
+          "mode": 2,
+          "level": 65
+        },
+        "key": "draft"
+      }
+    },
+    {
+      "observation": {
+        "equals": {
+          "sound": true,
+          "mode": 2,
+          "level": 65
+        },
+        "key": "applied"
+      }
+    },
+    {
+      "observation": {
+        "equals": false,
+        "key": "dirty"
+      }
+    },
+    {
+      "observation": {
+        "equals": 0,
+        "key": "apply_count"
+      }
+    }
+  ]
+}

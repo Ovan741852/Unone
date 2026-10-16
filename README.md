@@ -23,6 +23,9 @@ text/button/image controls and reusable `component` tree with named font catalog
 explicit type sizes, alignment, wrapping, colors, padding, borders and decorative
 panels. Core validates data; official Web/native hosts paint it. Game Luau owns
 component composition, themes, screen flow and responsive placement.
+The [observatory settings example](_Games/observatory-settings/README.md) was
+authored independently using only a precompiled SDK, official docs and API
+discovery, then checked with real player interactions at three viewport shapes.
 
 [ScrollView / VirtualList / VirtualGrid](docs/ui-scroll.md) provide Web clipped
 scroll content and fixed-cell virtualization. The guide covers the local

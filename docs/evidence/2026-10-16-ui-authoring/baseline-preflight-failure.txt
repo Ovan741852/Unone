@@ -1,0 +1,44 @@
+Started: 2026-10-16T09:11:10.4331419+08:00
+Program: D:\TSProject\UnoneUiUsability-20261016\baseline-sdk\bin\game.exe
+Arguments: ["--project","D:\\TSProject\\UnoneUiUsability-20261016\\first-project","--json","project","preflight","--target","web"]
+
+{
+  "ok": false,
+  "value": {
+    "output": null,
+    "project": "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+    "runtime": null,
+    "schema": "unone.project-prepare-preflight.v1",
+    "status": "incompatible",
+    "target": "web"
+  },
+  "diagnostics": [
+    {
+      "code": "SDK_RUNTIME_UNAVAILABLE",
+      "severity": "ERROR",
+      "summary": "Project prepare preflight failed",
+      "explanation": "SDK_RUNTIME_UNAVAILABLE: no matching target/variant/systems; run game sdk inspect --json and install a compatible runtime pack. Recovery: Fix the reported target, SDK/runtime, project system, or presentation issue; no output was created.",
+      "facts": {
+        "cause": "SDK_RUNTIME_UNAVAILABLE: no matching target/variant/systems; run game sdk inspect --json and install a compatible runtime pack",
+        "output": "<not-created>",
+        "project": "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+        "schema": "unone.project-prepare.v1",
+        "stage": "preflight"
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "retry_project_preflight",
+          "description": "Re-run the read-only project preflight for the concrete web target; it never creates an output directory.",
+          "command": "game --project \"D:\\TSProject\\UnoneUiUsability-20261016\\first-project\" --json project preflight --target web"
+        }
+      ],
+      "source": null
+    }
+  ],
+  "effects": []
+}
+
+Exit code: 1
+Elapsed seconds: 2.0397632
+Completed: 2026-10-16T09:11:12.3983306+08:00

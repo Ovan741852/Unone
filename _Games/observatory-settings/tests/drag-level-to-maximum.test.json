@@ -1,0 +1,58 @@
+{
+  "name": "drag-level-to-maximum",
+  "frames": 3,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true,
+        "screen_position": {
+          "x": 71.0,
+          "y": 28
+        }
+      }
+    },
+    {
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": true,
+        "screen_position": {
+          "x": 83.0,
+          "y": 28
+        }
+      }
+    },
+    {
+      "pointer": {
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "down": false,
+        "screen_position": {
+          "x": 83.0,
+          "y": 28
+        }
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "sound": true,
+          "mode": 2,
+          "level": 100
+        },
+        "key": "draft"
+      }
+    }
+  ]
+}

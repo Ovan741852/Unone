@@ -98,6 +98,9 @@ into the content package. Web waits for FontFace loading before starting the
 player; native registers the same aliases and weights in its font database.
 Malformed fonts fail explicitly. Font rights and character coverage remain the
 project's responsibility; keep the font license beside the source asset.
+Export copies the declared font faces. Include their accompanying license
+notices in the distribution too; neighboring source files are not copied
+automatically.
 
 The older `ui.font_source` plus `ui.font_family` declaration remains supported.
 For shared target output prefer the catalog, which can express several families
@@ -157,6 +160,29 @@ local compact = api.ui.getViewport().aspect < 1
 -- Choose a meaningful compact arrangement in your View function.
 -- The engine does not move, resize or reorder these groups automatically.
 ```
+
+Inspect the actual player at intermediate aspect ratios as well as desktop and
+portrait. Explicit font sizes can clip at a narrower width even when the same
+rectangles pass the default headless 16:9 preview. Choose a different authored
+composition or type size, word wrapping, or intentional ellipsis for that case.
+Headless layout reports are not glyph measurements on a different viewport.
+
+In strict Luau, annotate a constructed leaf before inserting it into a typed
+child list if the analyzer widens its `kind` literal to `string`:
+
+```luau
+local title: UiNode = {kind="text",id="title",text="Settings",
+    rect={x=10,y=75,width=80,height=12},style={font_size=4}}
+local children: {UiNode} = {}
+table.insert(children,title)
+```
+
+The complete [observatory settings example](../_Games/observatory-settings/README.md)
+demonstrates reusable cards, several font families/weights, selection, a draggable
+level control, Apply/Reset state, wrapping and ellipsis in the official player.
+It was first authored from a precompiled SDK and public documentation without
+access to engine source or existing games; see the
+[bounded usability validation](reviews/2026-10-16-ui-authoring-usability.md).
 
 MVVM, screen managers, themes and binding lifecycles stay in Luau/SDKs; see the
 [UI architecture proposal](ui-mvvm-architecture.md). Existing

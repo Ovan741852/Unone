@@ -1,0 +1,56 @@
+{
+  "name": "draft-controls",
+  "frames": 5,
+  "seed": 42,
+  "input_sequence": [
+    {
+      "actions": {
+        "ToggleSound": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "ModeMeteor": true
+      }
+    },
+    {
+      "actions": {}
+    },
+    {
+      "actions": {
+        "LevelDown": true
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "equals": {
+          "sound": false,
+          "mode": 3,
+          "level": 60
+        },
+        "key": "draft"
+      }
+    },
+    {
+      "observation": {
+        "equals": {
+          "sound": true,
+          "mode": 2,
+          "level": 65
+        },
+        "key": "applied"
+      }
+    },
+    {
+      "observation": {
+        "equals": true,
+        "key": "dirty"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Separate corrective authored iteration — 2026-10-16 ~09:21 Asia/Taipei
+
+Evidence supplied by independent root actual official-player browser at1020x884(aspect1.154): desktop editorial title second line was clipped to FOR THE NIGH. This is an author typography/layout defect: the29%-width title rectangle plus7.1 vertical-unit font was too tight at an intermediate aspect. Logical strict layout passing did not prove glyph fit.
+
+Correction: retain portrait grouping below1.1 and full desktop composition above it. Within the desktop composition, select an explicit5.8-unit editorial heading style for aspect below1.35; keep7.1-unit type on wider desktops. This is game-authored typography choice through documented ui.getViewport, not host autoshrink or engine change. Other rectangles/component/state semantics stay the same.
+
+Preserved: first findings.txt, initial dist/player, dist/player-final and source-before-visual-correction.luau. New export: dist/player-corrected. Final prepare will rerun all normal gates. Independent root must confirm corrected pixels; author has not independently taken screenshots.
+039 corrected prepare passed strict types/assets/layout:desktop/9tests; corrected official export83-file inventory audit040 passes. Real1020x884 corrected pixels await root independent confirmation.

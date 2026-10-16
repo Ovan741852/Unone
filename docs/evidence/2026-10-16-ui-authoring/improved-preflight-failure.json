@@ -1,0 +1,93 @@
+{
+  "ok": false,
+  "value": {
+    "output": null,
+    "project": "D:\\TSProject\\UnoneUiUsability-20261016\\recovery-project",
+    "runtime": null,
+    "schema": "unone.project-prepare-preflight.v1",
+    "status": "incompatible",
+    "target": "web"
+  },
+  "diagnostics": [
+    {
+      "code": "SDK_RUNTIME_UNAVAILABLE",
+      "severity": "ERROR",
+      "summary": "Project prepare preflight failed",
+      "explanation": "SDK_RUNTIME_UNAVAILABLE: no matching target=web, variant=production, runtime_id=<automatic>; enabled project systems [audio, camera2d, camera3d, input, observation, particle, physics2d, random, save, ui, world]; installed runtimes: web-production-0 (web/production): missing [camera3d, physics2d, save]. Run game sdk inspect --json and game systems list --json. Explicitly disable only systems the project does not use, or install a runtime pack supporting all required systems. Recovery: Fix the reported target, SDK/runtime, project system, or presentation issue; no output was created.",
+      "facts": {
+        "cause": "SDK_RUNTIME_UNAVAILABLE: no matching target=web, variant=production, runtime_id=<automatic>; enabled project systems [audio, camera2d, camera3d, input, observation, particle, physics2d, random, save, ui, world]; installed runtimes: web-production-0 (web/production): missing [camera3d, physics2d, save]. Run game sdk inspect --json and game systems list --json. Explicitly disable only systems the project does not use, or install a runtime pack supporting all required systems",
+        "output": "<not-created>",
+        "project": "D:\\TSProject\\UnoneUiUsability-20261016\\recovery-project",
+        "requested_runtime_id": null,
+        "runtime_selection": {
+          "available_runtimes": [
+            {
+              "compiled_systems": [
+                "audio",
+                "camera2d",
+                "input",
+                "observation",
+                "particle",
+                "random",
+                "ui",
+                "world"
+              ],
+              "id": "web-production-0",
+              "matches_requested_id": true,
+              "matches_target": true,
+              "matches_variant": true,
+              "missing_systems": [
+                "camera3d",
+                "physics2d",
+                "save"
+              ],
+              "target": "web",
+              "variant": "production"
+            }
+          ],
+          "requested_runtime_id": null,
+          "required_systems": [
+            "audio",
+            "camera2d",
+            "camera3d",
+            "input",
+            "observation",
+            "particle",
+            "physics2d",
+            "random",
+            "save",
+            "ui",
+            "world"
+          ],
+          "sdk_root": "\\\\?\\D:\\TSProject\\UnoneUiUsability-20261016\\fixed-sdk",
+          "target": "web",
+          "variant": "production"
+        },
+        "schema": "unone.project-prepare.v1",
+        "stage": "preflight",
+        "target": "web",
+        "variant": "production"
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "inspect_sdk_runtimes",
+          "description": "Inspect the installed target, variant and compiled systems before choosing a compatible runtime pack.",
+          "command": "game --sdk \"\\\\?\\D:\\TSProject\\UnoneUiUsability-20261016\\fixed-sdk\" sdk inspect --json"
+        },
+        {
+          "action": "inspect_project_systems",
+          "description": "Review enabled project systems. Explicitly disable only systems the game does not use, or install a runtime supporting all required systems.",
+          "command": "game --project \"D:\\TSProject\\UnoneUiUsability-20261016\\recovery-project\" --json systems list"
+        },
+        {
+          "action": "retry_project_preflight",
+          "description": "Re-run the read-only project preflight for the concrete web target; it never creates an output directory.",
+          "command": "game --sdk \"\\\\?\\D:\\TSProject\\UnoneUiUsability-20261016\\fixed-sdk\" --project \"D:\\TSProject\\UnoneUiUsability-20261016\\recovery-project\" --json project preflight --target web"
+        }
+      ],
+      "source": null
+    }
+  ],
+  "effects": []
+}

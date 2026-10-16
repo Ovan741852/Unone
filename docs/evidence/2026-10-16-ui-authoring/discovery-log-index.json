@@ -1,0 +1,743 @@
+[
+  {
+    "log": "002-cli-help.txt",
+    "sha256": "14cfde98a3d3d5958ed69204d23f4113c5c556c3de1c0296a0ea3d60c29c4e2e",
+    "argv": [
+      "--help"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.9716479,
+    "started": "2026-10-16T09:08:27.9213361+08:00\r"
+  },
+  {
+    "log": "004-platform-snapshot.txt",
+    "sha256": "5ab6148d3294bc809b08d7a91e00799a628954edc05d61e3fa700bd44862dc9c",
+    "argv": [
+      "--json",
+      "platform",
+      "snapshot"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 1.508784,
+    "started": "2026-10-16T09:08:45.8137014+08:00\r",
+    "ok": false,
+    "diagnostic_codes": [
+      "PROJECT_CONFIG_NOT_FOUND"
+    ]
+  },
+  {
+    "log": "005-search-font-size.txt",
+    "sha256": "975e27ae7063b3ea898bf90b8b71ad89f2e2137c9a4d2577c1079aee1d70fb4c",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "font size"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.2027602,
+    "started": "2026-10-16T09:08:45.8514521+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "font size",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ]
+  },
+  {
+    "log": "006-search-text-alignment.txt",
+    "sha256": "5f7b342b8434fef823e76b4343de4cd59bcea3f9485f8c4c24f0967b256bea32",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "text alignment"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.3313833,
+    "started": "2026-10-16T09:08:45.9487354+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "text alignment",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ]
+  },
+  {
+    "log": "007-search-border-padding.txt",
+    "sha256": "f761f92c42580e0733d926ca859189bc286ab0337118f0799d8ab25ee2328568",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "border padding"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.4807948,
+    "started": "2026-10-16T09:08:46.3304419+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "border padding",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ]
+  },
+  {
+    "log": "008-search-components.txt",
+    "sha256": "8f08a383603056305c913c50a072a2147dfb1a2ab9edad43fd298c6f71a4ac33",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "component styling"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.5951485,
+    "started": "2026-10-16T09:08:46.8295417+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "component styling",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ]
+  },
+  {
+    "log": "009-search-responsive.txt",
+    "sha256": "a8bdeff46f065bbe445dc98ce4c981501b81b7879a51d2619edd504fd0604322",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "responsive"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.591944,
+    "started": "2026-10-16T09:08:46.8432008+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "responsive",
+    "matches": [
+      "ui.getViewport",
+      "ui.setRoot"
+    ]
+  },
+  {
+    "log": "010-search-ui.txt",
+    "sha256": "16f90d94c3f899f3600fada10d2a26d636ac44b5731b9f5618fb2b64d2a05706",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "ui"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.6601151,
+    "started": "2026-10-16T09:08:46.9595320+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "ui",
+    "matches": [
+      "ui.setRoot",
+      "ui.getViewport",
+      "ui.inspect",
+      "ui.scrollView",
+      "ui.virtualList",
+      "ui.virtualGrid",
+      "input.getScreenPointerPosition",
+      "camera.getPosition",
+      "camera.getZoom"
+    ]
+  },
+  {
+    "log": "011-sdk-inspect.txt",
+    "sha256": "e1acda85687f9a817b4dd28b4b20f8438b95638260ef7e46131dd02d6bfb6ef8",
+    "argv": [
+      "--json",
+      "sdk",
+      "inspect"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.6751489,
+    "started": "2026-10-16T09:08:47.0542976+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "012-focused-discovery.txt",
+    "sha256": "7e7823cee19ea3ccf5879821dc7db147196be2c90e060f42e44c9e75c978c62c",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "font size"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.2027602,
+    "started": "2026-10-16T09:08:45.8514521+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "font size",
+    "matches": [
+      "ui.setRoot",
+      "ui.inspect"
+    ]
+  },
+  {
+    "log": "013-describe-set-root.txt",
+    "sha256": "32b4a2e1845c648ed6c13ef940b2e745cd290f6dbb24bc4dd4811f7d9ad78b3b",
+    "argv": [
+      "--json",
+      "api",
+      "describe",
+      "ui.setRoot"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.6672004,
+    "started": "2026-10-16T09:09:35.3293689+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "014-schema-ui.txt",
+    "sha256": "ee7e1572d5db418a76a9905a2282ecffbc6b21a820b2c90c1d9291c054e808a0",
+    "argv": [
+      "--json",
+      "schema",
+      "ui"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.8870542,
+    "started": "2026-10-16T09:09:35.2962796+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "015-search-input.txt",
+    "sha256": "e7db0b064e7f9cbb5e5d473d4ef41dd22e4f28153a47bc875d05bb54e6aa66c3",
+    "argv": [
+      "--json",
+      "api",
+      "search",
+      "input"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.5845334,
+    "started": "2026-10-16T09:09:35.4142816+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "query": "input",
+    "matches": [
+      "input.isDown",
+      "input.getPointerPosition",
+      "input.getScreenPointerPosition",
+      "input.isPointerDown",
+      "ui.scrollView",
+      "jobs.submit",
+      "jobs.schedule"
+    ]
+  },
+  {
+    "log": "016-describe-viewport.txt",
+    "sha256": "20272c292fb14bebb330cba37f84d5165a724348a15b4a0f3aac32d7150c9b10",
+    "argv": [
+      "--json",
+      "api",
+      "describe",
+      "ui.getViewport"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.4819751,
+    "started": "2026-10-16T09:09:35.4530043+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "017-project-init.txt",
+    "sha256": "f96014970aa42731b1e20053f2e54ae97dbad34d0edc8ce20be82f158950e5bf",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "project",
+      "init",
+      "--name",
+      "Aster Observatory"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.4219923,
+    "started": "2026-10-16T09:09:35.5146143+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "019-starter-verify.txt",
+    "sha256": "4dc2c7c94aae50b900ba720a8b6c35c2145d8fce384b86197023b4d709b91e0e",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "verify"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.7321748,
+    "started": "2026-10-16T09:09:58.5578774+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "verify": {
+      "passed": 3,
+      "failed": 0,
+      "not_applicable": 1
+    }
+  },
+  {
+    "log": "020-describe-screen-pointer.txt",
+    "sha256": "b8acaca8dff9008d1b4ef0d7ce8ee5f18220f845de10171a424d497df0c9f76b",
+    "argv": [
+      "--json",
+      "api",
+      "describe",
+      "input.getScreenPointerPosition"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.2699886,
+    "started": "2026-10-16T09:11:10.2984283+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "021-describe-action.txt",
+    "sha256": "a291a3b12b2ad4d2b656663da413cbbef062fb350c5c23ea50c5865a39a05635",
+    "argv": [
+      "--json",
+      "api",
+      "describe",
+      "input.isDown"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.3095601,
+    "started": "2026-10-16T09:11:10.4160100+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "022-describe-pointer-down.txt",
+    "sha256": "efff94f45a1c0ed9aaab88ff581a99427c18e824e2438b455c8bf80749e5572c",
+    "argv": [
+      "--json",
+      "api",
+      "describe",
+      "input.isPointerDown"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.2773587,
+    "started": "2026-10-16T09:11:10.3874693+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "023-describe-observation.txt",
+    "sha256": "98a86d988800ed749fa90fdb91636fea217116fb2a8dddb23f2460d79a232818",
+    "argv": [
+      "--json",
+      "api",
+      "describe",
+      "observation.set"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.2950099,
+    "started": "2026-10-16T09:11:10.4239326+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "024-help-api-typings.txt",
+    "sha256": "3d4ebf392b1563f848ed2d0f15900b2bac86d83429b70dfe58f0b2e21d9899b4",
+    "argv": [
+      "api",
+      "typings",
+      "--help"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.3094258,
+    "started": "2026-10-16T09:11:10.4186660+08:00\r"
+  },
+  {
+    "log": "025-project-preflight.txt",
+    "sha256": "d1b8fdadb00d8378e0fb369bb7313b37f75025e6928348bda98e6d19a5abc890",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "project",
+      "preflight",
+      "--target",
+      "web"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 2.0397632,
+    "started": "2026-10-16T09:11:10.4331419+08:00\r",
+    "ok": false,
+    "diagnostic_codes": [
+      "SDK_RUNTIME_UNAVAILABLE"
+    ]
+  },
+  {
+    "log": "026-project-platform.txt",
+    "sha256": "2dec29bb32f24df91111cc9659afff119eda80c22d54fbcf4fda49dfbbbd0383",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "platform",
+      "snapshot"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.7158762,
+    "started": "2026-10-16T09:11:10.6795982+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "028-systems-list.txt",
+    "sha256": "f48ab865d6a0e91fb736f1c6ba1721624f41d75139c8cd1b3423f7d3a539f819",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "systems",
+      "list"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.1346112,
+    "started": "2026-10-16T09:11:27.3798659+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "029-authored-check.txt",
+    "sha256": "4dbbc7d0765e9911337c69de953b04fcaa4fe0c5870cbc2c266b30804076782f",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "check",
+      "--types"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 0.3015934,
+    "started": "2026-10-16T09:14:22.3814181+08:00\r",
+    "ok": false,
+    "diagnostic_codes": [
+      "LUAU_TYPECHECK_FAILED"
+    ]
+  },
+  {
+    "log": "030-authored-run.txt",
+    "sha256": "17982666a9bfe001b914d67bf87ce330237861962e7a839167ef88a9d0523f50",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "run",
+      "--frames",
+      "1"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.5727251,
+    "started": "2026-10-16T09:14:22.4978551+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "031-ui-preview.txt",
+    "sha256": "ed9e77942b449d88ca2312ca107d0eaea07bd543382ed7f1aff6fa0d261e3a03",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "ui",
+      "preview",
+      "--strict"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 0.814876,
+    "started": "2026-10-16T09:14:22.4148129+08:00\r",
+    "ok": false,
+    "diagnostic_codes": [
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP"
+    ]
+  },
+  {
+    "log": "032-preflight-ui-config.txt",
+    "sha256": "e1fbecd18846a9b6708fac2fbe278a3822979db18a66551584791e07c4097e73",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "project",
+      "preflight",
+      "--target",
+      "web"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.5535683,
+    "started": "2026-10-16T09:14:22.4987615+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "033-types-after-author-fix.txt",
+    "sha256": "7e554dde7a4a0c47db93b9c5e4c1ef968a66300d7ed4d395081ebfcd686085b0",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "check",
+      "--types"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.2238427,
+    "started": "2026-10-16T09:15:11.4890004+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "034-preview-after-author-fix.txt",
+    "sha256": "4bd0103a28a67ca3ee08b64590843d9d250c8619e1b73d219b3cce17f6149425",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "ui",
+      "preview",
+      "--strict"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 0.6577128,
+    "started": "2026-10-16T09:15:12.4827977+08:00\r",
+    "ok": false,
+    "diagnostic_codes": [
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP",
+      "UI_NODES_OVERLAP"
+    ]
+  },
+  {
+    "log": "035-verify-complete.txt",
+    "sha256": "62ca0022f32fe79ab41efbdd98f8adb49e8471de1e276f3cfd470d44abbf4fe8",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "verify"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 0.4812273,
+    "started": "2026-10-16T09:16:05.6705476+08:00\r",
+    "ok": true,
+    "diagnostic_codes": [],
+    "verify": {
+      "passed": 4,
+      "failed": 0,
+      "not_applicable": 0
+    }
+  },
+  {
+    "log": "036-official-project-prepare.txt",
+    "sha256": "402435f0a29f58c9815fafc5d5d233d4bbd05c93ce7c99d006843a843b5c49b8",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "project",
+      "prepare",
+      "--target",
+      "web",
+      "--output",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project\\dist\\player"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.2963645,
+    "started": "2026-10-16T09:16:22.8077551+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "037-official-final-prepare.txt",
+    "sha256": "d308366f9d0919df0577886332afa57c4218f0c25057aa989f4705e53657cfbd",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "project",
+      "prepare",
+      "--target",
+      "web",
+      "--output",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project\\dist\\player-final"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 1.3483073,
+    "started": "2026-10-16T09:17:39.8595216+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  },
+  {
+    "log": "039-corrected-official-prepare.txt",
+    "sha256": "ccc503a4a4c4ff49467943d667da53074e57455e368dcf0c340010bd92744466",
+    "argv": [
+      "--project",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project",
+      "--json",
+      "project",
+      "prepare",
+      "--target",
+      "web",
+      "--output",
+      "D:\\TSProject\\UnoneUiUsability-20261016\\first-project\\dist\\player-corrected"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 5.736224,
+    "started": "2026-10-16T09:21:16.6504029+08:00\r",
+    "ok": true,
+    "diagnostic_codes": []
+  }
+]

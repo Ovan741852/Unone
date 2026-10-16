@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "empty_cwd": true,
+  "project_unchanged": true,
+  "actions": [
+    {
+      "ok": true,
+      "expected_exit_code": 0,
+      "command": "& 'D:\\TSProject\\UnoneUiUsability-20261016\\verified-sdk\\bin\\game.exe' --sdk '\\\\?\\D:\\TSProject\\UnoneUiUsability-20261016\\verified-sdk' sdk inspect --json",
+      "action": "inspect_sdk_runtimes",
+      "exit_code": 0
+    },
+    {
+      "ok": true,
+      "expected_exit_code": 0,
+      "command": "& 'D:\\TSProject\\UnoneUiUsability-20261016\\verified-sdk\\bin\\game.exe' --project 'D:\\TSProject\\UnoneUiUsability-20261016\\verbatim-project' --json systems list",
+      "action": "inspect_project_systems",
+      "exit_code": 0
+    },
+    {
+      "ok": false,
+      "expected_exit_code": 1,
+      "command": "& 'D:\\TSProject\\UnoneUiUsability-20261016\\verified-sdk\\bin\\game.exe' --sdk '\\\\?\\D:\\TSProject\\UnoneUiUsability-20261016\\verified-sdk' --project 'D:\\TSProject\\UnoneUiUsability-20261016\\verbatim-project' --json project preflight --target web",
+      "action": "retry_project_preflight",
+      "exit_code": 1
+    }
+  ],
+  "empty_path": true
+}

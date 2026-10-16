@@ -1,0 +1,76 @@
+Fresh-author Unone UI usability findings — 2026-10-16
+Author scope: independent first-project; no engine/source checkout, existing games, Git history, other project files or web browsing consulted. Only supplied official docs, generated scaffold, public CLI help/API/schema and precompiled SDK used. A narrowly scoped documentation assistant read the same official documentation for test-input and overlap-policy syntax; its reports did not contain prior implementation code.
+
+Result
+- Completed source example: D:\TSProject\UnoneUiUsability-20261016\first-project
+- Official final export: first-project\dist\player-final\index.html
+- Initial export retained: first-project\dist\player\index.html
+- Renderer: official / three-webgl; production web-production-0 SDK runtime.
+- Final release root: releases/45a18ece420fd7cae404dc64ebc91c7cd5130e4bf9d4bc6a21189498a5a3bce1/
+- Final prepare: exit0, types/assets/layout:desktop/tests all passed (037).
+- Tests:9/9. Inventory audit:83/83 file sizes+SHA256 match export.json (038).
+- NO actual browser/native screenshots were taken by this author. No claim of visual completion or host pointer-routing acceptance. Parent is independently testing real desktop and narrow pixels/interactions.
+
+Product implementation
+Three repeated settingCard components, actionButton components and a composed levelControl remain ordinary authored Luau. Card/background/control skins use existing panels and styled leaves. Sound toggles settings state; this UI example has no audio clip. Three modes select distinct state/highlights. Level supports buttons and pointer dragging. Apply snapshots draft and updates visible confirmation; Reset restores default draft. There is no persistence across reload (not requested; save system disabled). Paragraph+card descriptions wrap; constrained footer uses wrap=none/overflow=ellipsis deliberately. Border, radius, padding and RGBA transparency are explicitly authored. ui.getViewport aspect<1.1 selects portrait composition. No images, gameplay, custom renderer, DOM UI or direct GPU drawing.
+
+Fonts
+Observatory Reading: full supplied Noto Sans TC regular400/bold700; Observatory Display: Barlow Condensed regular400/bold700; Observatory Data: Share Tech Mono400. Both regular and bold are actually used for the first two families. Full Noto files were copied after coordinator correction. License notices accompany project fonts and are also in dist/font-licenses. Generated official export contains declared font bytes; its file inventory does not automatically include those three game font license text files. The companion license directory is supplied without changing generated official host assets.
+
+Actual discovery route, before implementation
+1. README.md -> AGENTS.md. Initial preserved read:001; written plan:discovery-plan.txt.
+2. README links:docs/portable-sdk.md, docs/ui-styling.md, docs/ai-workflow.md, docs/player-export.md. Full preserved reads:003, focused followups:012/018/027.
+3. CLI --help (002), platform snapshot (004), sdk inspect (011).
+4. Queries selected before implementation:
+   api search "font size" (005)
+   api search "text alignment" (006)
+   api search "border padding" (007)
+   api search "component styling" (008)
+   api search responsive (009)
+   api search ui (010)
+   api describe ui.setRoot (013)
+   schema ui (014)
+   api search input (015)
+   api describe ui.getViewport (016)
+5. project init (017) -> generated AGENTS/config/presentation/script/scene/tests (018). Unmodified starter verify passed (019).
+6. Describe input.getScreenPointerPosition (020), input.isDown (021), input.isPointerDown (022), observation.set (023); api typings --help (024). Public systems list (028), project platform snapshot (026), preflight (025/032).
+7. Read docs/formal-ui-host.md and docs/ui-slice-and-budget.md for semantic hit routing and exact intentional-art-overlap policy (027).
+8. Official test.schema.json / ai-workflow input examples supplied inline test sequences. Official project.schema.json UiPreviewSpec.overlap_policy supplies project-relative policy path. This was used rather than guessing a property or disabling strict layout.
+All numbered CLI logs contain exact executable/argv, timestamp, output, exit status and duration. Reads also preserve actual page paths. No failed attempt was deleted.
+
+Discoverability assessment
+The README and supplied AGENTS explicitly point to ui-styling; the prescribed font/alignment/border/component queries all find ui.setRoot and explain component is a node kind returned by a Luau helper, not an api.ui.component factory. The public schema and generated strict UiNode/UiStyle types were enough to author reusable cards, packaged fonts and styles without engine source. The font catalog aliases/weights/TTF paths and vertical-design-unit rule were clear. Component leaves use absolute stage coordinates; wrappers do not transform them or inherit styles, which was followed.
+
+Author mistakes and corrections (not Unone defects)
+- 004 platform snapshot was invoked before project init with no selected project. It returned PROJECT_CONFIG_NOT_FOUND/exit1 while retaining platform facts. Retried with real project (026), exit0.
+- 029 authored check --types failed on two inline table.insert node literals because kind widened to string. Added explicit UiNode local declarations; check passed033. Strict mode was retained; no any/ignore relaxation was introduced.
+- 031 strict preview identified intentional backdrop/card/slider-skin overlaps and one unintended description/minus overlap (1x0.1 units). Narrowed that description rectangle. Second unwaived preview034 retains only intentional art collisions.
+- Added exact documented panel-overlap policy for68 pairs; no text/button or button/button collision was waived. verify035 and final prepare037 report0 remaining layout findings.
+- Refined card descriptions to word-wrap with a readable regular display face. Both initial and final exported generations are retained; this was an author design refinement, not an engine fix.
+
+Coordinator/machine/package setup issues
+- Initial coordinator prompt used UNONE_LUAU_ANALYZE. Coordinator corrected to documented UNONE_LUAU_ANALYZER before first verify. No analyzer-error run occurred. The supplied analyzer passed strict checking.
+- Initial supplied Noto faces were small subsets. Coordinator replaced the same resource filenames with full family before copying; no missing-glyph SDK claim made.
+- 025 untouched starter preflight failed SDK_RUNTIME_UNAVAILABLE/exit1. sdk inspect reported installed runtime systems audio/camera2d/input/observation/particle/random/ui/world. systems list showed defaults also enable physics2d/camera3d/save. For this UI-only project these systems are unused and were explicitly disabled as documented in ai-workflow section0.5; then preflight032 passed. Particle/random were also disabled because this UI does not use them. No SDK bytes changed. This is selective-package/scaffold friction; not an unsupported UI feature and not a silent fallback renderer.
+
+Documentation/API defects and limits
+No demonstrated engine/API defect was encountered in the authorized implementation workflow. The task was achievable through public entry points.
+Known validation limit: ai-workflow documents headless tests at16:9; no viewport override was found in TestSpec, game run/test/ui preview help, or developer open. HostProject schema exposes viewport_aspect and ui.getViewport API says host boundary supplies aspect, but no documented CLI test flag was found. Thus the CLI cannot establish portrait layout acceptance in this workflow. Actual resized official-player acceptance remains required. This is a workflow limit, not evidence that runtime responsive UI fails.
+The strict overlap system requires an explicit pair for decorative surfaces behind contents, including a full-screen background. This is documented and worked; authoring68 exact pairs adds ceremony but does not block component reuse.
+
+Rough observed timing (Asia/Taipei)
+09:07:57 first official read.
+09:08:28–09:09:36 guides, help/API/schema discovery and init (~1m40s).
+09:09:36–09:11:27 generated scaffold, starter verify, API semantics, preflight/system diagnosis (~1m50s).
+09:11:27–09:14:15 design and first authored implementation (~2m50s).
+09:14:22–09:15:13 strict-type/layout corrections (~1m).
+09:15:13–09:16:06 exact policy and nine state/input cases (~1m).
+09:16:24 first official export ready; ~8m30s from first read.
+09:17 final export refinement and repeated official prepare; all gates pass.
+09:18:31 final83-file inventory audit; report/reproduction handoff followed.
+These are rough wall-clock intervals, not isolated engine performance measurements. CLI elapsed times are preserved per log.
+
+Reproduction
+Run first-attempt/reproduce.ps1 in PowerShell. It sets supplied analyzer path, runs verify, runs target preflight, then project prepare into a fresh timestamped export path. No Cargo/source checkout/Node required for export. Serve the output with an ordinary static server and open index.html via HTTP. Example if Python is present:
+python -m http.server 8196 --bind 127.0.0.1 --directory D:\TSProject\UnoneUiUsability-20261016\first-project\dist\player-final
+Open http://127.0.0.1:8196/ . Parent may choose its own browser/server tooling. Use desktop and narrow portrait, verify all buttons, drag/clamp level, check both packaged CJK weights and English display face, paragraph wrapping and actual ellipsis. Headless semantic action injection is not host routing evidence.

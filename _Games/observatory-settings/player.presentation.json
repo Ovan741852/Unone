@@ -1,0 +1,14 @@
+{
+  "renderer_mode": "official",
+  "bloom": false,
+  "ui": {
+    "font_family": "Observatory Reading",
+    "fonts": [
+      {"family":"Observatory Reading","source":"fonts/NotoSansTC-Regular.ttf","weight":400},
+      {"family":"Observatory Reading","source":"fonts/NotoSansTC-Bold.ttf","weight":700},
+      {"family":"Observatory Display","source":"fonts/BarlowCondensed-Regular.ttf","weight":400},
+      {"family":"Observatory Display","source":"fonts/BarlowCondensed-Bold.ttf","weight":700},
+      {"family":"Observatory Data","source":"fonts/ShareTechMono-Regular.ttf","weight":400}
+    ]
+  }
+}

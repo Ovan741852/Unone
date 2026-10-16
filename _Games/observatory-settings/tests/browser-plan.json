@@ -1,0 +1,24 @@
+{
+  "title": "Independent frozen Aster Observatory UI acceptance",
+  "requireRepeatedComponent": "observatory.setting_card",
+  "minimumRepeatedComponentInstances": 3,
+  "minimumPaintedFontFamilies": 2,
+  "requiredPaintedWeights": [400, 700],
+  "requireWrap": ["desktop", "intermediate"],
+  "requireEllipsis": true,
+  "requireTextFits": [{"id": "display_title"}],
+  "requirePackagedGlyphCoverage": true,
+  "initialExpect": {"observations": {"/draft": {"level": 65, "mode": 2, "sound": true}, "/dirty": false}},
+  "steps": [
+    {"name": "sound-off", "click": {"kind": "button", "text": "開啟  ON"}, "expect": {"observations": {"/draft/sound": false, "/applied/sound": true, "/dirty": true}}},
+    {"name": "select-moon", "click": {"kind": "button", "text": "月面\nMOON"}, "expect": {"observations": {"/draft/mode": 1, "/applied/mode": 2}}},
+    {"name": "level-increase", "click": {"kind": "button", "text": "+"}, "expect": {"increased": ["/draft/level"]}},
+    {"name": "level-decrease", "click": {"kind": "button", "text": "−"}, "expect": {"decreased": ["/draft/level"]}},
+    {"name": "level-drag", "drag": {"control": {"kind": "slider", "action": "SetLevel"}, "from": 0.2, "to": 0.8}, "expect": {"increased": ["/draft/level"]}},
+    {"name": "apply-settings", "click": {"kind": "button", "action": "Apply"}, "expect": {"equalPaths": [["/applied", "/draft"]], "observations": {"/dirty": false, "/applied/sound": false, "/applied/mode": 1}, "increased": ["/apply_count"]}},
+    {"name": "reset-defaults", "click": {"kind": "button", "text": "重設 / RESET"}, "expect": {"observations": {"/draft": {"level": 65, "mode": 2, "sound": true}}}},
+    {"name": "apply-defaults", "click": {"kind": "button", "action": "Apply"}, "expect": {"equalPaths": [["/applied", "/draft"]], "observations": {"/dirty": false, "/applied": {"level": 65, "mode": 2, "sound": true}}, "increased": ["/apply_count"]}},
+    {"name": "select-meteor", "click": {"kind": "button", "text": "流星\nMETEOR"}, "expect": {"observations": {"/draft/mode": 3}}},
+    {"name": "select-deep", "click": {"kind": "button", "text": "深空\nDEEP"}, "expect": {"observations": {"/draft/mode": 2}}}
+  ]
+}

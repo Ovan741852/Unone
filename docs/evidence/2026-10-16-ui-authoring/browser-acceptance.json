@@ -1,0 +1,689 @@
+{
+  "ok": true,
+  "checks": 77,
+  "generation": "4cbd98249ac647b70bb75344fee201a85583ff4922728a41c283666972fff6fa",
+  "viewports": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "環境聲音已關閉 SOUND OFF · 套用以保留這次調整。"
+        },
+        {
+          "name": "select-moon",
+          "draft": {
+            "level": 65,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "已選擇 SELECTED · 月面漫遊 / MOON · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-increase",
+          "draft": {
+            "level": 70,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度已提高 LEVEL UP · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-decrease",
+          "draft": {
+            "level": 65,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度已降低 LEVEL DOWN · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-drag",
+          "draft": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度預覽 LEVEL PREVIEW · 套用以保留這次調整。"
+        },
+        {
+          "name": "apply-settings",
+          "draft": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "dirty": false,
+          "applyCount": 1,
+          "status": "設定已套用 APPLIED #1 · 月面漫遊 / MOON · LEVEL 85 · 今晚，慢慢看。"
+        },
+        {
+          "name": "reset-defaults",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "dirty": true,
+          "applyCount": 1,
+          "status": "預設值已還原 DEFAULTS RESTORED · 你可以繼續調整，或套用目前設定。"
+        },
+        {
+          "name": "apply-defaults",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": false,
+          "applyCount": 2,
+          "status": "設定已套用 APPLIED #2 · 深空巡航 / DEEP SKY · LEVEL 65 · 今晚，慢慢看。"
+        },
+        {
+          "name": "select-meteor",
+          "draft": {
+            "level": 65,
+            "mode": 3,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 2,
+          "status": "已選擇 SELECTED · 流星守候 / METEOR · 套用以保留這次調整。"
+        },
+        {
+          "name": "select-deep",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": false,
+          "applyCount": 2,
+          "status": "已選擇 SELECTED · 深空巡航 / DEEP SKY · 套用以保留這次調整。"
+        }
+      ],
+      "components": {
+        "observatory.setting_card": [
+          "sound_card",
+          "mode_card",
+          "level_card"
+        ],
+        "observatory.action_button": [
+          "sound_toggle",
+          "mode_1",
+          "mode_2",
+          "mode_3",
+          "level_minus",
+          "level_plus",
+          "reset",
+          "apply"
+        ]
+      },
+      "paintedFamilies": [
+        "Observatory Reading",
+        "Observatory Display",
+        "Observatory Data"
+      ],
+      "title": [
+        {
+          "size": 7.1,
+          "width": 350.6192626953125,
+          "available": 417.6,
+          "overflow": 0
+        }
+      ],
+      "automaticWrapNodes": [
+        "intro_paragraph"
+      ],
+      "ellipsisNodes": [
+        "status_line"
+      ],
+      "errors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "intermediate",
+        "width": 1020,
+        "height": 884
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "環境聲音已關閉 SOUND OFF · 套用以保留這次調整。"
+        },
+        {
+          "name": "select-moon",
+          "draft": {
+            "level": 65,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "已選擇 SELECTED · 月面漫遊 / MOON · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-increase",
+          "draft": {
+            "level": 70,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度已提高 LEVEL UP · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-decrease",
+          "draft": {
+            "level": 65,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度已降低 LEVEL DOWN · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-drag",
+          "draft": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度預覽 LEVEL PREVIEW · 套用以保留這次調整。"
+        },
+        {
+          "name": "apply-settings",
+          "draft": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "dirty": false,
+          "applyCount": 1,
+          "status": "設定已套用 APPLIED #1 · 月面漫遊 / MOON · LEVEL 85 · 今晚，慢慢看。"
+        },
+        {
+          "name": "reset-defaults",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 85,
+            "mode": 1,
+            "sound": false
+          },
+          "dirty": true,
+          "applyCount": 1,
+          "status": "預設值已還原 DEFAULTS RESTORED · 你可以繼續調整，或套用目前設定。"
+        },
+        {
+          "name": "apply-defaults",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": false,
+          "applyCount": 2,
+          "status": "設定已套用 APPLIED #2 · 深空巡航 / DEEP SKY · LEVEL 65 · 今晚，慢慢看。"
+        },
+        {
+          "name": "select-meteor",
+          "draft": {
+            "level": 65,
+            "mode": 3,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 2,
+          "status": "已選擇 SELECTED · 流星守候 / METEOR · 套用以保留這次調整。"
+        },
+        {
+          "name": "select-deep",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": false,
+          "applyCount": 2,
+          "status": "已選擇 SELECTED · 深空巡航 / DEEP SKY · 套用以保留這次調整。"
+        }
+      ],
+      "components": {
+        "observatory.setting_card": [
+          "sound_card",
+          "mode_card",
+          "level_card"
+        ],
+        "observatory.action_button": [
+          "sound_toggle",
+          "mode_1",
+          "mode_2",
+          "mode_3",
+          "level_minus",
+          "level_plus",
+          "reset",
+          "apply"
+        ]
+      },
+      "paintedFamilies": [
+        "Observatory Reading",
+        "Observatory Display",
+        "Observatory Data"
+      ],
+      "title": [
+        {
+          "size": 5.8,
+          "width": 281.3183898925781,
+          "available": 295.8,
+          "overflow": 0
+        }
+      ],
+      "automaticWrapNodes": [
+        "intro_paragraph"
+      ],
+      "ellipsisNodes": [
+        "status_line"
+      ],
+      "errors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": {
+        "name": "portrait",
+        "width": 390,
+        "height": 844
+      },
+      "steps": [
+        {
+          "name": "sound-off",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "環境聲音已關閉 SOUND OFF · 套用以保留這次調整。"
+        },
+        {
+          "name": "select-moon",
+          "draft": {
+            "level": 65,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "已選擇 SELECTED · 月面漫遊 / MOON · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-increase",
+          "draft": {
+            "level": 70,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度已提高 LEVEL UP · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-decrease",
+          "draft": {
+            "level": 65,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度已降低 LEVEL DOWN · 套用以保留這次調整。"
+        },
+        {
+          "name": "level-drag",
+          "draft": {
+            "level": 82,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 0,
+          "status": "亮度預覽 LEVEL PREVIEW · 套用以保留這次調整。"
+        },
+        {
+          "name": "apply-settings",
+          "draft": {
+            "level": 82,
+            "mode": 1,
+            "sound": false
+          },
+          "applied": {
+            "level": 82,
+            "mode": 1,
+            "sound": false
+          },
+          "dirty": false,
+          "applyCount": 1,
+          "status": "設定已套用 APPLIED #1 · 月面漫遊 / MOON · LEVEL 82 · 今晚，慢慢看。"
+        },
+        {
+          "name": "reset-defaults",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 82,
+            "mode": 1,
+            "sound": false
+          },
+          "dirty": true,
+          "applyCount": 1,
+          "status": "預設值已還原 DEFAULTS RESTORED · 你可以繼續調整，或套用目前設定。"
+        },
+        {
+          "name": "apply-defaults",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": false,
+          "applyCount": 2,
+          "status": "設定已套用 APPLIED #2 · 深空巡航 / DEEP SKY · LEVEL 65 · 今晚，慢慢看。"
+        },
+        {
+          "name": "select-meteor",
+          "draft": {
+            "level": 65,
+            "mode": 3,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": true,
+          "applyCount": 2,
+          "status": "已選擇 SELECTED · 流星守候 / METEOR · 套用以保留這次調整。"
+        },
+        {
+          "name": "select-deep",
+          "draft": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "applied": {
+            "level": 65,
+            "mode": 2,
+            "sound": true
+          },
+          "dirty": false,
+          "applyCount": 2,
+          "status": "已選擇 SELECTED · 深空巡航 / DEEP SKY · 套用以保留這次調整。"
+        }
+      ],
+      "components": {
+        "observatory.setting_card": [
+          "sound_card",
+          "mode_card",
+          "level_card"
+        ],
+        "observatory.action_button": [
+          "sound_toggle",
+          "mode_1",
+          "mode_2",
+          "mode_3",
+          "level_minus",
+          "level_plus",
+          "reset",
+          "apply"
+        ]
+      },
+      "paintedFamilies": [
+        "Observatory Reading",
+        "Observatory Display",
+        "Observatory Data"
+      ],
+      "title": [
+        {
+          "size": 5,
+          "width": 231.55128479003906,
+          "available": 343.2,
+          "overflow": 0
+        }
+      ],
+      "automaticWrapNodes": [],
+      "ellipsisNodes": [
+        "status_line"
+      ],
+      "errors": [],
+      "failedRequests": []
+    }
+  ],
+  "fonts": {
+    "ok": true,
+    "strict": true,
+    "samples": 54,
+    "faces": [
+      {
+        "family": "Observatory Reading",
+        "source": "fonts/NotoSansTC-Regular.ttf",
+        "weight": 400,
+        "unicode_codepoints": 20745,
+        "bytes": 7149196
+      },
+      {
+        "family": "Observatory Reading",
+        "source": "fonts/NotoSansTC-Bold.ttf",
+        "weight": 700,
+        "unicode_codepoints": 20745,
+        "bytes": 7143756
+      },
+      {
+        "family": "Observatory Display",
+        "source": "fonts/BarlowCondensed-Regular.ttf",
+        "weight": 400,
+        "unicode_codepoints": 525,
+        "bytes": 80968
+      },
+      {
+        "family": "Observatory Display",
+        "source": "fonts/BarlowCondensed-Bold.ttf",
+        "weight": 700,
+        "unicode_codepoints": 525,
+        "bytes": 87120
+      },
+      {
+        "family": "Observatory Data",
+        "source": "fonts/ShareTechMono-Regular.ttf",
+        "weight": 400,
+        "unicode_codepoints": 267,
+        "bytes": 41912
+      }
+    ],
+    "unprovenSamples": 0
+  },
+  "previousEvidence": {
+    "qa1": "first-project-final-qa1: harness exact Apply label selector became stale when dirty label changed; retained.",
+    "qa2": "first-project-final-qa2: strict automatic-wrap assertion at portrait was overbroad; text fits explicit lines there. Desktop/intermediate wrap actual text. Canvas tracking normal serialized NaN until observer fix; retained."
+  },
+  "scope": "Real mouse/keyboard actions against the unchanged official production export; no source, payload, snapshot or runtime-memory mutations.",
+  "authoredCorrection": {
+    "issue": "At 1020x884 the original authored desktop heading rectangle clipped the end of FOR THE NIGHT.",
+    "originalScreenshot": "../first-project-final-qa2/intermediate-initial.png",
+    "correctedScreenshot": "intermediate-initial.png",
+    "fixScope": "Author changed medium-aspect heading font_size from 7.1 to 5.8; no engine change.",
+    "classification": "Authored responsive typography choice, not a renderer/API defect."
+  },
+  "visualReview": {
+    "reviewed": [
+      "desktop-initial.png",
+      "intermediate-initial.png",
+      "portrait-apply-settings.png"
+    ],
+    "findings": "Corrected medium heading is complete; desktop hierarchy and compact portrait controls remain legible, and card captions no longer run under mode buttons. Automatic wrapping is exercised at desktop and medium widths; portrait copy fits its explicit lines."
+  }
+}
