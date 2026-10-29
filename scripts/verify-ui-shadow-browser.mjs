@@ -13,7 +13,7 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),out=resolve(val
 const source=values.sdk?join(resolve(values.sdk),'templates/web/shared'):join(root,'web/shared');
 if(!values.font)throw Error('--font requires a licensed CJK TTF fixture');
 const font=resolve(values.font);
-const files=new Map(['canvas-ui.mjs','ui-style.mjs','ui-presentation.mjs','ui-contract.mjs','ui-geometry.mjs','ui-scroll.mjs'].map(n=>['/'+n,readFileSync(join(source,n))]));
+const files=new Map(['canvas-ui.mjs','ui-style.mjs','ui-presentation.mjs','ui-contract.mjs','ui-geometry.mjs','ui-scroll.mjs','ui-image-batch.mjs','retained-image-generation.mjs','player-completion.mjs'].map(n=>['/'+n,readFileSync(join(source,n))]));
 files.set('/font.ttf',readFileSync(font));
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const server=createServer((req,res)=>{const file=files.get(req.url);if(file){res.setHeader('Content-Type',req.url==='/font.ttf'?'font/ttf':'text/javascript');res.end(file);}

@@ -12,6 +12,7 @@ import {frameProfileCases} from './projected-frame-profile.js';
 import {framePresentationIdentity} from './projected-frame-publication.js';
 import {createTextureCachePolicy} from './texture-cache-policy.js';
 import {createPlayerProfiler} from '../shared/raster-diagnostics.mjs';
+import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 const source=fs.readFileSync(process.env.UNONE_PROFILE_THREE_SOURCE??new URL('./three.js',import.meta.url),'utf8');
 const at=name=>source.indexOf(`  function ${name}(`);
 const drawStart=at('profileProviders')>=0?at('profileProviders'):at('draw');
@@ -20,7 +21,7 @@ function fixture(profiler){
  const calls=[],noop=()=>{},texture=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);
  const records={white:{state:'ready',texture},pending:{state:'loading'}};let available=true,status='validated',epoch=1;
  const frameDraws=createFrameDraws(THREE,s=>records[s.id]),textureRecords=new Map();
- const context={profile:profiler?.renderer??null,options:profiler?{profiler}:{},textureCache:createTextureCachePolicy(textureRecords),frameDecoder:createProjectedFrameDecoder(),
+ const context={DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:profiler?.renderer??null,options:profiler?{profiler}:{},textureCache:createTextureCachePolicy(textureRecords),frameDecoder:createProjectedFrameDecoder(),
   framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,assertFrameSnapshot,
   assertProjectedBackend:noop,assertRasterSnapshot:noop,assertFrameGpuError:noop,rasterAvailable:()=>available,projectedEntries:()=>[],heightfieldEntries:()=>[],
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],

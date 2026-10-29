@@ -1,0 +1,40 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+   Compiling unone-cli v0.2.0 (D:\Projects\Unone\crates\unone-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 29.21s
+     Running unittests src\main.rs (target\debug\deps\game-54ed2b2a346dc40e.exe)
+
+running 1 test
+test export::tests::actual_official_web_exports_have_complete_static_local_dependency_closure ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 94 filtered out; finished in 0.89s
+
+     Running tests\api_search_contract.rs (target\debug\deps\api_search_contract-0d1566096c7ebfc9.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.00s
+
+     Running tests\api_typings_update.rs (target\debug\deps\api_typings_update-beedcb57b1f1b19f.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests\authoring_transport_contract.rs (target\debug\deps\authoring_transport_contract-e5247007f2630b69.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests\developer_transport_contract.rs (target\debug\deps\developer_transport_contract-58b983092e33ab60.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests\diagnostics_replay.rs (target\debug\deps\diagnostics_replay-3c2347b0b0ea827b.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+

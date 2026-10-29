@@ -3,10 +3,31 @@ use serde_json::json;
 use unone_engine::{EngineRuntime, ProjectConfig, SourceProject};
 
 #[test]
+fn retained_image_batch_constructor_is_pure_and_copies_only_small_instance_state() {
+    let config:ProjectConfig=serde_json::from_value(json!({"name":"retained-package","entry_script":"main.luau","runtime_packages":{"@unone/ui":"0.5.0"}})).unwrap();
+    let source=r#"return {start=function(api)
+        api.ui.imageBatch.define('shared',{bounds={x=0,y=0,width=10,height=10},quads={{asset='texture://tile',rect={x=0,y=0,width=10,height=10}}}})
+        local kit=api.ui.components.create()
+        local transform={a=1,b=0,c=0,d=1,tx=2,ty=3}
+        local art=kit.imageBatch({id='art',content='shared',rect={x=0,y=0,width=100,height=100},transform=transform})
+        transform.tx=99;assert(art.transform.tx==2 and art.quads==nil)
+        assert(not pcall(kit.imageBatch,{id='bad',content='shared',rect=art.rect,quads={}}))
+        assert(not pcall(kit.imageBatch,{id='bad',content='shared',rect=art.rect,transform={a=1,b=0,c=0,d=1,tx=0,ty=0,extra=true}}))
+        api.ui.setRoot(kit.screen({id='s',node='s',children={art}}))
+    end,update=function()end}"#;
+    let runtime=EngineRuntime::load_source_project(SourceProject{config,source:source.into(),..Default::default()}).unwrap();
+    let snapshot=runtime.observe();
+    assert_eq!(snapshot.ui_image_batches.len(),1);
+    let wire=serde_json::to_value(snapshot.ui.unwrap()).unwrap();
+    assert_eq!(wire["children"][0]["content"],"shared");
+    assert_eq!(wire["children"][0]["transform"]["tx"],2.);
+}
+
+#[test]
 fn image_batch_constructor_is_detached_typed_artwork_with_no_theme_or_actions() {
     let config: ProjectConfig = serde_json::from_value(json!({
         "name":"image-batch-package","entry_script":"main.luau",
-        "systems":{"ui":true},"runtime_packages":{"@unone/ui":"0.4.0"}
+        "systems":{"ui":true},"runtime_packages":{"@unone/ui":"0.5.0"}
     })).unwrap();
     let source = r#"
 return {start=function(api)

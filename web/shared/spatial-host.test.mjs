@@ -21,6 +21,13 @@ test('CPU policy works with older runtimes and never creates a GPU device',async
   await host.load();host.dispatch();await host.barrier();
   assert.equal(host.report().backend,'cpu');host.close();
 });
+test('closing during GPU creation retires the candidate without configuring a later runtime',async()=>{
+ const {module,calls}=bridge();let release,entered;const starting=new Promise(resolve=>entered=resolve);
+ const candidate=new Promise(resolve=>release=resolve);let disposed=0;
+ const host=createSpatialHost(module,{backend:'gpu',createExecutor:async()=>{entered();return candidate;}});
+ const loading=host.load();await starting;host.close();release({close(){disposed++;},execute(){assert.fail('retired executor');}});
+ await assert.rejects(loading,/SPATIAL_SESSION_RETIRED/);assert.equal(disposed,1);assert.equal(calls.length,0);
+});
 
 test('GPU completion is awaited and delivered in submission order before the next tick',async()=>{
   const {module,calls,tasks}=bridge();let release;

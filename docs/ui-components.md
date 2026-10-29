@@ -64,7 +64,7 @@ Declare the exact bundled version in `project.unone.json`:
 ```json
 {
   "runtime_packages": {
-    "@unone/ui": "0.4.0"
+    "@unone/ui": "0.5.0"
   }
 }
 ```
@@ -73,11 +73,18 @@ This is a project configuration fragment; keep the project's other fields.
 `api.ui.components.info()` returns `UiComponentsInfo`: the bundled manifest
 metadata (`name`, `version`, `kind`, `entry`, `api`, `license`) plus `declared`.
 This works before a project declares the package. The package name is `@unone/ui`
-and its current version is `0.4.0`. Calling other package helpers without declaring the
+and its current version is `0.5.0`. Calling other package helpers without declaring the
 package reports `UI_PACKAGE_NOT_DECLARED` with the required fix. Unknown package
 names, unsupported versions and disabled declarations fail explicitly at load.
 Use the version shipped with the selected Core/SDK; there is no npm installation,
 `require` import, filesystem module loader or dynamic package download.
+
+The engine 0.2.0 SDK ships `@unone/ui` 0.5.0, including retained-content
+`imageBatch` constructor props. This release deliberately changes the engine
+presentation contract; it does not promise compatibility with the 0.1 runtime
+or a package declaration pinned to 0.4.0. Upgrade the SDK, canonical typings and
+the project's exact package declaration together. Existing game projects are
+not rewritten automatically.
 
 The SDK includes the package source, documentation and canonical Luau types in
 its verified inventory. An older runtime without this package cannot satisfy

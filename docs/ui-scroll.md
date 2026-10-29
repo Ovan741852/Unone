@@ -1,7 +1,7 @@
 # ScrollView and virtual collections (Web)
 
 Start with the official [`@unone/ui` package](ui-components.md), declaring
-`"runtime_packages":{"@unone/ui":"0.4.0"}` in `project.unone.json`. Use
+`"runtime_packages":{"@unone/ui":"0.5.0"}` in `project.unone.json`. Use
 `api.ui.components.scrollView` for small, irregular authored content,
 `api.ui.components.virtualList` for long fixed-height rows, or
 `api.ui.components.virtualGrid` for fixed-size cells. The same methods exist on

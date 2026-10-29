@@ -14,13 +14,19 @@ canonical strict types accompany the portable SDK's verified package inventory.
 decorative art. Its typed quads preserve source crops and opacity; every quad
 still counts against the normal UI budget. Use a matching runtime supporting
 the `image_batch` node, and keep text and controls as ordinary UI nodes.
+For retained artwork, define logical content once with
+`api.ui.imageBatch.define(id,{bounds,quads})`, then use
+`kit.imageBatch({id=...,rect=...,content=id,transform={a,b,c,d,tx,ty}})`.
+The pure constructor copies only instance properties; it never creates or
+releases a Core resource. The rect clips in stage space; the affine maps local
+artwork to that stage. See [retained artwork](../../docs/ui-slice-and-budget.md#retained-image-artwork).
 Batch placement uses an explicit stage `rect`; quads use absolute stage
 coordinates. Anchors do not translate the quads and are rejected.
 
 Declare the exact installed version in `project.unone.json`:
 
 ```json
-{"runtime_packages":{"@unone/ui":"0.4.0"}}
+{"runtime_packages":{"@unone/ui":"0.5.0"}}
 ```
 
 The SDK includes the manifest and source at `packages/unone-ui/`. The matching

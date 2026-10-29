@@ -1,0 +1,26 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running unittests src\main.rs (target\debug\deps\unone_web_live_smoke-9efdc2a6126c4142.exe)
+
+running 19 tests
+test publication_profile_is_bounded_and_frozen_outside_window ... ok
+test tests::c_abi_scene_fragment_uses_shared_diagnostic_context ... ok
+test tests::binary_job_abi_preserves_raw_bytes_and_rejects_invalid_framing ... ok
+test tests::c_abi_complete_input_frame_replaces_scalar_pointer_for_one_tick ... ok
+test tests::c_abi_save_payload_reaches_luau_and_snapshot ... ok
+test host_time_abi_is_readonly_owned_bounded_and_never_ticks ... ok
+test direct_publication_tests::removing_the_last_instance_publishes_directly_and_retires_its_previous_memory_lease ... ok
+test tests::ordered_physical_direct_abi_rejects_overwrite_and_commits_only_the_first_batch ... ok
+test instance_memory_tests::memory_transport_preserves_digest_and_owns_pointer_lifetime ... ok
+test tests::c_abi_reload_failure_preserves_semantic_diagnostic_and_previous_runtime ... ok
+test ui_transport::tests::unload_retires_leases_and_releases_the_canonical_cache ... ok
+test ui_transport::tests::retained_memory_wire_is_complete_digest_equivalent_and_camera_updates_reuse_lease ... ok
+test ui_transport::tests::borrowed_presentation_filters_only_the_registry_and_reuses_output_storage ... ok
+test direct_publication_tests::direct_world_and_cached_save_match_the_previous_envelope_bytes_in_both_transports ... ok
+test ui_transport::tests::reload_with_reused_resource_revisions_changes_epoch_and_old_generation_is_retired ... ok
+test tests::web_publication_preserves_binary64_through_instance_envelope ... ok
+test tests::c_abi_load_tick_and_reload_preserve_runtime_contract ... ok
+test tests::web_normalized_3d_replay_matches_core_every_frame ... ok
+test tests::c_abi_rejects_negative_scene_fixture_matrix ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+

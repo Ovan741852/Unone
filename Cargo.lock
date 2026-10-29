@@ -3205,7 +3205,7 @@ checksum = "b4ac048d71ede7ee76d585517add45da530660ef4390e49b098733c6e897f254"
 
 [[package]]
 name = "unone-cli"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "base64",
@@ -3227,7 +3227,7 @@ dependencies = [
 
 [[package]]
 name = "unone-engine"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "base64",
@@ -3244,7 +3244,7 @@ dependencies = [
 
 [[package]]
 name = "unone-mobile-android-smoke"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde_json",
  "unone-mobile-ffi",
@@ -3252,7 +3252,7 @@ dependencies = [
 
 [[package]]
 name = "unone-mobile-ffi"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -3261,7 +3261,7 @@ dependencies = [
 
 [[package]]
 name = "unone-web-live-smoke"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -3270,7 +3270,7 @@ dependencies = [
 
 [[package]]
 name = "unone-web-smoke"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "unone-engine",
 ]

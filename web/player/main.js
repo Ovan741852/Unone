@@ -16,12 +16,13 @@ import {requireAssetEncoding,createAssetCatalog} from '../shared/asset-encoding.
 import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.js';
 import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileOptions} from '../shared/raster-diagnostics.mjs';
 import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from '../shared/startup-presentation.mjs';
+import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '../shared/player-completion.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
 let uiAssetManifest=null;
 const uiCanvas=document.createElement('canvas');Object.assign(uiCanvas.style,{width:'100%',height:'100%',pointerEvents:'none'});document.querySelector('#ui-layer').replaceChildren(uiCanvas);
-const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),resolveAsset:assetId=>{
+const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{getImageBatchPresenter:()=>renderer?.uiImageBatchPrefix,onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),resolveAsset:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
  if(!asset)throw Error(`UI asset ${assetId} is not declared in the active asset manifest`);
  requireAssetEncoding(asset,'image');
@@ -41,6 +42,8 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
+const playerCompletion=createPlayerCompletionMetrics();
+const removePerformanceAccessor=installPlayerPerformanceAccessor(window,(options={})=>playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:options.windowMs??5000}));
 let orderedQueue=null,orderedRouter=null,orderedEpoch=0,physicalProfile;
 // Explicit opt-in host profiling (?unone_profile=1). Null when disabled: each site is one branch.
 let profiler=null,profileFlight=null,profileLastSource=null;
@@ -64,25 +67,32 @@ function configurePhysical(){
 }
 async function json(path){const r=await fetch(new URL(path,document.baseURI),{cache:'no-store'});if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
 function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
-function acceptSnapshot(value,{reset=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
+function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 function draw(){
  if(!profiler)return drawFrame(null);
  const source=profiler.sourceOf(snapshot),pd=profiler.begin('draw',{source_command:source,snapshot_frame:snapshot?.world?.frame??null,redraw:source!==null&&source===profileLastSource,paused:frozen});
  profileLastSource=source;
- try{drawFrame(pd);}catch(error){profiler.end(pd,'error',{error});throw error;}
+ let outcome;try{outcome=drawFrame(pd);}catch(error){profiler.end(pd,'error',{error});throw error;}
  profiler.end(pd,profiler.outcomeOf(pd)??'returned');
+ return outcome;
 }
 function drawFrame(pd){
+ playerCompletion.attempt();
+ try{return submitDrawFrame(pd);}catch(error){playerCompletion.error();throw error;}
+}
+function submitDrawFrame(pd){
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
  if(pd)profiler.mark(pd,'interpolation_sample');
- if(pd)profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot));else renderer.draw(display.snapshot);
- renderUi(snapshot);if(pd)profiler.mark(pd,'ui_draw');renderMs=performance.now()-began;
- cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
- if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report()};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
+ const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
+ const uiOutcome=renderUi(snapshot);if(pd)profiler.mark(pd,'ui_draw');const submittedAt=performance.now();renderMs=submittedAt-began;
+ const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
+ const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now());
+ if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
  document.body.dataset.playerFrame=String(snapshot.world.frame);
  publishPhysical();
  if(pd)profiler.mark(pd,'host_publish');
  /* PROFILE_FRAME */
+ return combined;
 }
 async function advance(){
  if(!profiler)return advanceFrame(null);
@@ -118,26 +128,39 @@ function tickOnce(){if(tickFlight){if(profiler)profiler.record('update_request',
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
+ const gate=checked?renderer.startupPresentation:null;
+ if(checked&&!gate)throw Error('PLAYER_STARTUP_PRESENTATION_CONTRACT_MISSING');
+ let contextLost=false;const listeners=new Set();
+ const notify=()=>{for(const listener of listeners)listener();},lost=()=>{contextLost=true;notify();},restored=()=>{contextLost=false;notify();};
+ const sample=()=>{
+  const world=gate?gate.sample():{state:contextLost||renderer.isPresentationAvailable?.()===false?'lost':'presented'};
+  if(world.state!=='presented')return world;
+  const combined=playerCompletion.outcome();
+  if(combined.status==='unknown')throw Error('PLAYER_COMPLETION_CONTRACT_MISSING: world, UI and cursor must report explicit completion');
+  return combined.status==='completed'?world:{state:'needs_draw'};
+ };
+ const subscribe=listener=>{listeners.add(listener);const unsubscribe=gate?.subscribe(listener);return()=>{listeners.delete(listener);unsubscribe?.();};};
  const commit=()=>{
+ draw();
  metrics.raster=renderer.metrics().raster;
  if(startupAbort.signal.aborted)throw startupCancelled();
- if(checked&&renderer.startupPresentation.sample().state!=='presented')return false;
+ if(sample().state!=='presented')return false;
  assertRasterReady(metrics.raster,renderCount);orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
  /* DEVELOPER_CONNECT */
  scheduler.start();
  window.addEventListener('resize',()=>{const [width,height]=physicalViewport();backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
  };
- if(checked){
-  const gate=renderer.startupPresentation;if(!gate)throw Error('PLAYER_STARTUP_PRESENTATION_CONTRACT_MISSING');
-  await completeStartupPresentation({draw,waitForAssets:()=>renderer.ready(),sample:gate.sample,subscribe:gate.subscribe,
+ canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
+ try{
+  await completeStartupPresentation({draw,waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready()]),sample,subscribe,
    commit,signal:startupAbort.signal,onState:state=>{metrics.startup_presentation=state;metrics.raster=renderer.metrics().raster;
     document.body.dataset.playerMetrics=JSON.stringify(metrics);document.body.dataset.playerStartupPresentation=JSON.stringify(state);}});
- }else{draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);if(startupAbort.signal.aborted)throw startupCancelled();commit();}
+ }finally{canvas.removeEventListener('webglcontextlost',lost);canvas.removeEventListener('webglcontextrestored',restored);listeners.clear();}
 }
 async function start(){
  const profileOptions=playerProfileOptions(location.search);
@@ -161,7 +184,7 @@ async function start(){
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
  project.viewport_size=physicalViewport();
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
- acceptSnapshot(await backend.request({kind:'load',payload:project,seed:'42'}),{reset:true});
+ acceptSnapshot(await backend.request({kind:'load',payload:project,seed:'42'}),{reset:true,newSession:true});
  renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
@@ -179,6 +202,6 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
+window.addEventListener('pagehide',()=>{removePerformanceAccessor();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

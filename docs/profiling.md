@@ -1,5 +1,40 @@
 # Profiling for AI-directed optimization
 
+## Official production-player completion counters
+
+Engine 0.2.0's official Web player exposes a read-only endpoint without enabling
+the developer profiler:
+
+```javascript
+const sample = window.unonePlayerPerformance.snapshot({windowMs: 1000});
+```
+
+The version-1 report is detached and frozen. Querying does not tick, pause,
+reset, decode another world, or send a worker command. The default window is
+5000 ms; valid windows are finite, positive and at most 60000 ms.
+
+| Fields | Meaning |
+|---|---|
+| `version`, `session`, `backend` | Schema version 1, successful-load/restart session and runtime backend. Compare deltas within one session. |
+| `simulation_frame`, `simulation_time_seconds` | Latest decoded snapshot accepted by the main host, including worker execution. |
+| `accepted_publications`, `publication_at_ms` | Count/time of main-host acceptances, not the worker's publication clock. |
+| `time_origin_ms`, `queried_at_ms` | Main-host `performance.timeOrigin` and query `performance.now()`; completion timestamps use the same clock. |
+| `draw_attempts`, `completed_draws`, `presented_frame_changes` | Attempts, completed world/UI/cursor submissions and changes of submitted simulation frame. Repeated redraws count as submissions, without advancing simulation. |
+| `last_presented_snapshot_frame`, `last_completed_at_ms` | Last successful submission's frame/time. Pending/unavailable/incomplete passes cannot update these as successful draws. |
+| `completion_contract`, `last_draw_status` | Explicit outcome availability (`available`/`unknown`) and latest result (`completed`/`skipped`/`unknown`/`error`). |
+| `skipped_draws`, `unknown_draws`, `error_draws`, `skip_counts` | Non-completion counts, with fixed resource/context/diagnostic reasons. |
+| `dropped_steps_total`, `paused` | Session-relative scheduler drops, or null if unavailable; current pause state. |
+| `completed_intervals` | Window p95/p99 and coverage endpoints/sample count from a fixed 512-entry numeric ring. |
+
+Measure counter/frame deltas over host wall time. RAF callbacks alone do not
+prove rendering; completed submission alone does not prove 60 Hz simulation or
+physical scanout. Report unknown/missing evidence as insufficient. The old
+periodic `data-player-performance` report remains coarse, while this accessor
+reads current counters. Its last dirty UI render cost is not the cost of every
+draw. Resource/context skips must not be assigned zero render time.
+
+## Developer profiling
+
 Execution mode is now explicit in `execution` on profile reports and platform /
 developer-session metadata. Diagnostic preview builds disable Luau native codegen
 even when sampling is off. Pair diagnosis with a no-preview production-mode run;

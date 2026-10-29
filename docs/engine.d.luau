@@ -245,6 +245,8 @@ export type UiCursor = {kind:"default"}|{kind:"hidden"}|{kind:"image",asset:stri
 export type UiApi = {
     -- Official Web cursor overlay; pixels/hotspot use drawing-buffer units, y-down.
     setCursor: (cursor:UiCursor) -> (),
+    -- Stateful immutable artwork definitions; call outside pure View/renderItem.
+    imageBatch: UiImageBatchApi,
     components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     -- Current host width/height ratio, also used by anchored placement.
@@ -347,10 +349,23 @@ export type UiImageQuad = {
     asset: string, rect: UiRect,
     source: {x:number,y:number,width:number,height:number}?, opacity: number?,
 }
-export type UiImageBatchNode = {
+-- x'=a*x+c*y+tx, y'=b*x+d*y+ty. Maps retained local coordinates to stage y-up.
+export type UiImageTransform = {a:number,b:number,c:number,d:number,tx:number,ty:number}
+export type UiImageBatchDefinition = {bounds:UiRect,quads:{UiImageQuad}}
+export type UiImageBatchApi = {
+    define: (id:string, content:UiImageBatchDefinition) -> (),
+    remove: (id:string) -> boolean,
+}
+export type UiInlineImageBatchNode = {
     kind: "image_batch", id: string, rect: UiRect, quads: {UiImageQuad},
     background_for: UiBackgroundScope?,
 }
+export type UiRetainedImageBatchNode = {
+    -- rect is the stage clip/layout bound; it never translates the resource.
+    kind:"image_batch", id:string, rect:UiRect, content:string,
+    transform:UiImageTransform?, background_for:UiBackgroundScope?,
+}
+export type UiImageBatchNode = UiInlineImageBatchNode | UiRetainedImageBatchNode
 export type UiPanelNode = UiPlacement & {
     kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
 }
@@ -404,9 +419,16 @@ export type UiComponentImageProps = UiPlacement & {
     id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
     alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
 }
-export type UiComponentImageBatchProps = {
-    id: string, rect: UiRect, quads: {UiImageQuad}, background_for: UiBackgroundScope?,
+-- Constructors borrow their inputs; returned nodes remain mutable game-owned data.
+export type UiInlineImageBatchProps = {
+    read id:string, read rect:UiRect, read quads:{UiImageQuad},
+    read background_for:UiBackgroundScope?, read content:never?, read transform:never?,
 }
+export type UiRetainedImageBatchProps = {
+    read id:string, read rect:UiRect, read content:string,
+    read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read quads:never?,
+}
+export type UiComponentImageBatchProps = UiInlineImageBatchProps | UiRetainedImageBatchProps
 export type UiComponentSurface = {
     kind: "panel", style: UiStyle?,
 } | {

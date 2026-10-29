@@ -2,7 +2,7 @@
 
 Use `api.ui.components.createResponsiveLayout(options)` or the same method on a
 themed `UiComponentKit` for shared, explicit responsive composition. Declare
-`"runtime_packages":{"@unone/ui":"0.4.0"}` in `project.unone.json`. The package
+`"runtime_packages":{"@unone/ui":"0.5.0"}` in `project.unone.json`. The package
 selects an authored aspect variant and calculates slot, row, column and grid
 regions; projects supply semantic groups, breakpoint thresholds, content and
 styles. Existing leaf/component constructors keep their explicit placement

@@ -1,0 +1,76 @@
+{
+  "schema": "unone.retained-web-sdk-handoff.v1",
+  "date": "2026-10-30",
+  "status": "integration_candidate_actual_game_FPS_and_soak_acceptance_pending",
+  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate3",
+  "sdk_manifest_sha256": "dc941dc54c193e745e98404b8fb5f2eae50efbc1d16161fae106985b6e5c2429",
+  "engine_version": "0.2.0",
+  "runtime_package": "@unone/ui@0.5.0",
+  "runtime_id": "web-production-0",
+  "runtime_profile": "release",
+  "wasm_sha256": "e8ceb1d1c69348a4d25cb65b57afe57dc451299300100a79c12a7b706989e18c",
+  "cli_sha256": "3437535a08ca4459c5ccc1ad6c1723d285e951e345b725824f8b1360c26aa338",
+  "template_checkpoint": "D:/Projects/Unone/artifacts/web-retained-20261030-template-checkpoint3",
+  "api": {
+    "define": "api.ui.imageBatch.define(id, {bounds, quads})",
+    "remove": "api.ui.imageBatch.remove(id)",
+    "node": "kit.imageBatch({id,rect,content=id,transform={a,b,c,d,tx,ty}})",
+    "input_types": [
+      "UiInlineImageBatchProps",
+      "UiRetainedImageBatchProps"
+    ],
+    "input_policy": "Readonly outer records with exclusive fields. Constructor signature and runtime semantics unchanged.",
+    "coordinates": "Resource local y-up to stage y-up; node rect is explicit stage clip/layout viewport; source rectangles use top-left image pixels.",
+    "ownership": "Define on content change, publish references/cheap transforms, remove only after successful tree replacement drops the last reference. Pure renderItem cannot define/remove.",
+    "limits": "256 resources; host quad/string budgets; 16 MiB encoded bytes per resource, 32 MiB registry."
+  },
+  "completion": {
+    "query": "window.unonePlayerPerformance.snapshot({windowMs:1000})",
+    "version": 1,
+    "documentation": "docs/profiling.md#official-production-player-completion-counters",
+    "fields": [
+      "session",
+      "simulation_frame",
+      "simulation_time_seconds",
+      "completed_draws",
+      "last_presented_snapshot_frame",
+      "publication_at_ms",
+      "dropped_steps_total",
+      "completed_intervals"
+    ],
+    "scope": "Synchronous complete world/UI/cursor submissions. Not physical scanout. Query never ticks/pauses/decodes another world."
+  },
+  "verification": {
+    "web_unit_passed": 467,
+    "core_unit_passed": 352,
+    "core_ignored": 3,
+    "production_abi_passed": 10,
+    "final_containment_integration_passed": 8,
+    "typing_expected_outcomes": 28,
+    "actual_game_type_errors_before": 4,
+    "actual_game_type_errors_after": 0,
+    "official_smoke": true,
+    "smoke_backends": [
+      "main",
+      "worker"
+    ],
+    "smoke_release": "releases/8b90c2028f93e5044a790481d9bb9f4e75e0594e1c53646c5d1cf74999aa1775/",
+    "smoke_report": "D:/Projects/Unone/artifacts/retained-official-web-smoke-candidate3/report.json",
+    "gpu_report": "D:/Projects/Unone/artifacts/retained-ui-prefix-browser-r6/report.json",
+    "core_unit_scope": "Full Core run includes retained resources, encoded budgets and prefix hashing. Later type-only aliases and local-delta containment are covered separately by 28 typing outcomes and 8 final integration tests."
+  },
+  "coverage": {
+    "gpu_policy": "pixel_center",
+    "sampled_interiors_max_channel_error": 2,
+    "sampled_canvas_outer_one_pixel_rim_max_channel_error": 118,
+    "shared_edge_gaps": 0,
+    "context_scope": "Retained UI prefix and combined completed-presentation readiness/recovery",
+    "canvas_regression_exact_samples": 928
+  },
+  "remaining_acceptance": [
+    "Actual frozen-baseline game idle,drag,travel,atlas,battle: >=59 simulation ticks/s, RAF/s and completed submissions/s, p95<=18.5ms,p99<=25ms, no sustained dropped steps.",
+    "Longer actual-game CPU/GPU retention and JS/Luau GC measurements; short tests do not establish universal leak freedom.",
+    "Investigate ordinary-world geometry context-restore/delete warnings separately; retained UI ownership is already tested.",
+    "Do not use historical SDKcandidate1/2 for final acceptance; candidate3 fixes public type ergonomics and local containment."
+  ]
+}

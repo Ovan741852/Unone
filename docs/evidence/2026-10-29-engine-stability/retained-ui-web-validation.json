@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-30",
+  "baseline": "8060abf",
+  "source_checkpoint": "artifacts/web-retained-20261030-template-checkpoint3",
+  "production_source_frozen": true,
+  "source_hashes": [
+    {
+      "file": "web/shared/ui-image-batch.mjs",
+      "sha256": "cf41cbc708e6d38301fcd3357a5a4c8ae5607af8a15fa426a11aea1ccbebfd9f"
+    },
+    {
+      "file": "web/shared/canvas-ui.mjs",
+      "sha256": "c53cf8bcdc382c10019c76c2b8c9605d2b6d6d17d5af7cf6f443ec485573c6c4"
+    },
+    {
+      "file": "web/shared/ui-geometry.mjs",
+      "sha256": "a2bfab9f88f3272299ed68e8b3b14db95c4efff13c143bae760a5075726b0e0d"
+    },
+    {
+      "file": "web/shared/ui-text-input.mjs",
+      "sha256": "8ae898c6861a7e3f5e2474a6d61c3623322137b7a21b7c680a76a7d5605cbe29"
+    },
+    {
+      "file": "web/shared/retained-image-generation.mjs",
+      "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c"
+    },
+    {
+      "file": "web/shared/player-completion.mjs",
+      "sha256": "4b6d6ca276d5a84642986fc8cb87be20fe5560c9de19d31756a214389f01b7f0"
+    },
+    {
+      "file": "web/renderer/ui-image-batch-prefix.js",
+      "sha256": "6d7e4345dd170804d6bc12e465e97be86d040eddfb4d16cdeb5ab1f39aeda265"
+    },
+    {
+      "file": "web/renderer/projected-raster-shaders.js",
+      "sha256": "f914020f10a3c65eb6e1ca98da597d1003a5f22f1d1e8828105109bf4b25b6b5"
+    },
+    {
+      "file": "web/renderer/three.js",
+      "sha256": "4222d8718179ca885172184247b378b61106590313ad19634cac4c6b85f46a5d"
+    },
+    {
+      "file": "web/vendor/three/three.player.min.js",
+      "sha256": "48d1fa041eb6969ce4c396558d15aa774e9b43699010c80a740d2442213cbdc0"
+    },
+    {
+      "file": "scripts/verify-ui-image-batch-prefix-browser.mjs",
+      "sha256": "fcc8154d64b21a4da2ed76d744f63a1f03e4ff6c7029ffaf2df77f0e6762edb9"
+    },
+    {
+      "file": "scripts/verify-ui-shadow-browser.mjs",
+      "sha256": "7a416d1df93e439b4f5273c19e918b821865d0a11167cfb3b046bee14f381ff1"
+    }
+  ],
+  "whole_web_tests": {
+    "passed": 467,
+    "failed": 0,
+    "skipped": 0,
+    "raw_log": "retained-ui-web-tests.log",
+    "powershell_command": [
+      "$env:UNONE_PROJECTED_PACKETS='D:/Projects/Populous-Reborn/reports/root-c01-geometry-r5/packets/pan-adjacent.json'",
+      "$webTests=Get-ChildItem web/renderer,web/shared -Filter '*.test.mjs' -File | ForEach-Object FullName",
+      "node --test @webTests *> .cache/retained-ui-web-tests.log",
+      "$webTestExit=$LASTEXITCODE",
+      "Get-Content .cache/retained-ui-web-tests.log -Tail 11",
+      "exit $webTestExit"
+    ]
+  },
+  "gpu_component_qa": {
+    "command": "node scripts/verify-ui-image-batch-prefix-browser.mjs artifacts/retained-ui-prefix-browser-r6",
+    "report": "retained-ui-prefix-browser-r6.json",
+    "viewed_screenshot": "retained-ui-prefix-browser-r6.png",
+    "cases": 30.0,
+    "browser": "156.0.4314.50",
+    "errors": [],
+    "warnings": [],
+    "interior_bad_channels": 0.0,
+    "shared_edge_bad_samples": 0.0,
+    "max_channel_difference": 118.0,
+    "overlapping_hud_order": "passed in all three viewport/DPR fixtures",
+    "leading_text_full_canvas_fallback": "pixels identical in all three fixtures",
+    "camera_only_geometry_builds": 0,
+    "camera_only_buffer_uploads": 0,
+    "camera_only_canvas_hud_repaints": 0,
+    "after_clear_live_geometry_material_texture_counts": 0,
+    "context_restore": "first viewport only, restored prefix pixels equal",
+    "coverage_policy": "GPU pixel-center coverage; one-pixel outer geometric/clip rims can differ from Canvas antialiasing. Interior tolerance2/255 in bounded fixtures. No snapping."
+  },
+  "canvas_regression": {
+    "passed": 928,
+    "failed": 0,
+    "exact_pixels": true,
+    "raw_report": "artifacts/retained-ui-canvas-regression/report.json",
+    "report_sha256": "8a986cf092c2ee9a4b418ce3f300129b1b8bb57efb749a9a169e3b72a03cd55c",
+    "command": "node scripts/verify-ui-shadow-browser.mjs --font D:/Projects/Populous-Reborn/dev/web-complete-r9-fidelity-performance/fonts/NotoSansTC-Regular.ttf --out artifacts/retained-ui-canvas-regression --colors"
+  },
+  "scope_limits": [
+    "Component GPU/Canvas proof, not actual game FPS/GC/soak acceptance.",
+    "QA performs explicit readback/compositing; production prefix uses existing renderer framebuffer without readback.",
+    "Only leading eligible image-batch run is accelerated; painter order and Canvas fallback are retained.",
+    "Broader ordinary-world context-loss geometry warning reproduction is deferred until after first can-test SDK/owner benchmark window. Raw r3 warnings remain preserved.",
+    "Current production files were unchanged between final whole-Web suite and r6 QA. r6 added QA-only alpha-varying texture and real HUD overlap/fallback fixtures."
+  ],
+  "independent_review": "retained-ui-prefix-review.json"
+}

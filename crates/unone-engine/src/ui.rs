@@ -1,9 +1,11 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use serde::{Deserialize, Serialize};
 
 mod text_shadow;
 pub use text_shadow::UiTextShadow;
+mod image_batch;
+pub use image_batch::{UiImageBatchDefinition, UiImageBatchResource, UiImageTransform};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UiContract {
@@ -516,12 +518,19 @@ pub struct UiImageQuad {
 
 impl UiImageQuad {
     fn validate(&self, bounds: UiRect) -> Result<(), String> {
-        ensure_asset_id(&self.asset)?;
         validate_rect(self.rect)?;
+        self.validate_local(bounds)
+    }
+
+    fn validate_local(&self, bounds: UiRect) -> Result<(), String> {
+        ensure_asset_id(&self.asset)?;
+        image_batch::validate_local_rect(self.rect)?;
         let r = self.rect;
-        if r.x < bounds.x - 1e-8 || r.y < bounds.y - 1e-8
-            || r.x + r.width > bounds.x + bounds.width + 1e-8
-            || r.y + r.height > bounds.y + bounds.height + 1e-8 {
+        let dx=r.x-bounds.x;
+        let dy=r.y-bounds.y;
+        if dx < -1e-8 || dy < -1e-8
+            || r.width > bounds.width + 1e-8 - dx
+            || r.height > bounds.height + 1e-8 - dy {
             return Err("UI_IMAGE_BATCH_BOUNDS: every quad must fit inside its batch rectangle".into());
         }
         if self.opacity.is_some_and(|v| !v.is_finite() || !(0.0..=1.0).contains(&v)) {
@@ -608,7 +617,14 @@ pub enum UiNode {
     ImageBatch {
         id: String,
         rect: UiRect,
+        #[serde(skip_serializing_if = "Vec::is_empty")]
         quads: Vec<UiImageQuad>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        content: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        transform: Option<UiImageTransform>,
+        #[serde(skip)]
+        resource_quad_count: usize,
         #[serde(skip_serializing_if = "Option::is_none")]
         background_for: Option<UiBackgroundScope>,
     },
@@ -786,16 +802,26 @@ impl UiNode {
     }
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize)]
 pub struct UiTree {
     #[serde(skip)]
     pub(crate) viewport_aspect: f64,
+    #[serde(skip)]
+    pub(crate) string_bytes: usize,
     pub kind: String,
     pub id: String,
     pub node: String,
     pub children: Vec<UiNode>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub budget: Option<UiBudget>,
+}
+
+impl PartialEq for UiTree {
+    fn eq(&self,other:&Self)->bool {
+        self.viewport_aspect==other.viewport_aspect && self.kind==other.kind
+            && self.id==other.id && self.node==other.node && self.children==other.children
+            && self.budget==other.budget
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -848,6 +874,10 @@ struct RawUiNode {
     asset: Option<String>,
     #[serde(default)]
     quads: Option<Vec<UiImageQuad>>,
+    #[serde(default)]
+    content: Option<String>,
+    #[serde(default)]
+    transform: Option<UiImageTransform>,
     #[serde(default)]
     fit: Option<UiImageFit>,
     #[serde(default)]
@@ -981,13 +1011,14 @@ impl UiTree {
                 UiNode::Component { children, .. } | UiNode::ScrollView { children, .. } => {
                     1 + children.iter().map(|n| count(n, out)).sum::<usize>()
                 }
-                UiNode::ImageBatch { quads, .. } => {
-                    out.logical_nodes += quads.len();
+                UiNode::ImageBatch { quads, content, resource_quad_count, .. } => {
+                    let count=if content.is_some() { *resource_quad_count } else { quads.len() };
+                    out.logical_nodes += count;
                     out.leaf_nodes += 1;
-                    out.render_regions_upper_bound += quads.len();
+                    out.render_regions_upper_bound += count;
                     out.image_batches += 1;
-                    out.image_quads += quads.len();
-                    1 + quads.len()
+                    out.image_quads += count;
+                    1 + count
                 }
                 _ => {
                     out.leaf_nodes += 1;
@@ -1048,6 +1079,14 @@ impl UiTree {
     pub fn from_json_for_viewport(
         value: serde_json::Value,
         viewport_aspect: f64,
+    ) -> Result<Self, String> {
+        Self::from_json_for_viewport_with_resources(value, viewport_aspect, &BTreeMap::new())
+    }
+
+    pub fn from_json_for_viewport_with_resources(
+        value: serde_json::Value,
+        viewport_aspect: f64,
+        resources: &BTreeMap<String,UiImageBatchResource>,
     ) -> Result<Self, String> {
         let aspect = if viewport_aspect.is_finite() && viewport_aspect > 0.0 {
             viewport_aspect
@@ -1148,18 +1187,21 @@ impl UiTree {
         let mut node_count = 0;
         let mut children = Vec::with_capacity(raw.children.len());
         for raw_node in raw.children {
-            children.push(parse_node(raw_node, aspect, &mut ids, &mut node_count, 1, false)?);
+            children.push(parse_node(raw_node, aspect, &mut ids, &mut node_count, 1, false, resources)?);
         }
         validate_background_scopes(&children, &mut Vec::new(), false)?;
 
-        Ok(Self {
+        let tree=Self {
             viewport_aspect: aspect,
+            string_bytes: bytes,
             kind: raw.kind,
             id: raw.id,
             node: raw.node,
             children,
             budget: raw.budget,
-        })
+        };
+        tree.validate_image_batch_resources(resources)?;
+        Ok(tree)
     }
 }
 
@@ -1179,6 +1221,7 @@ fn parse_node(
     node_count: &mut usize,
     depth: usize,
     local: bool,
+    resources: &BTreeMap<String,UiImageBatchResource>,
 ) -> Result<UiNode, String> {
     if raw_node.kind == "component" && depth > ui_contract().max_component_depth {
         return Err(format!(
@@ -1195,8 +1238,8 @@ fn parse_node(
         ));
     }
     *node_count += 1;
-    if raw_node.quads.is_some() && raw_node.kind != "image_batch" {
-        return Err(format!("UI_IMAGE_BATCH_KIND: '{}' only accepts quads on image_batch", raw_node.id));
+    if (raw_node.quads.is_some() || raw_node.content.is_some() || raw_node.transform.is_some()) && raw_node.kind != "image_batch" {
+        return Err(format!("UI_IMAGE_BATCH_KIND: '{}' only accepts quads, content and transform on image_batch", raw_node.id));
     }
     if raw_node.kind == "image_batch" && (raw_node.anchor.is_some() || raw_node.pivot.is_some()
         || raw_node.offset.is_some() || raw_node.size.is_some()) {
@@ -1256,7 +1299,7 @@ fn parse_node(
         return Err(format!("UI_TEXT_INPUT_KIND: '{}' accepts editing fields only on text_input",raw_node.id));
     }
     if raw_node.kind == "image_batch" {
-        let batch = parse_image_batch(raw_node, rect, local)?;
+        let batch = parse_image_batch(raw_node, rect, local, resources)?;
         if let UiNode::ImageBatch { quads, .. } = &batch { *node_count += quads.len(); }
         return Ok(batch);
     }
@@ -1434,7 +1477,7 @@ fn parse_node(
             let children = raw_node.children.unwrap_or_default();
             let mut parsed_children = Vec::with_capacity(children.len());
             for child in children {
-                parsed_children.push(parse_node(child, aspect, ids, node_count, depth + 1, local)?);
+                parsed_children.push(parse_node(child, aspect, ids, node_count, depth + 1, local, resources)?);
             }
             Ok(UiNode::Component {
                 id,
@@ -1478,7 +1521,7 @@ fn parse_node(
             }
             let mut children = Vec::new();
             for child in raw_node.children.unwrap_or_default() {
-                children.push(parse_node(child, aspect, ids, node_count, depth + 1, true)?);
+                children.push(parse_node(child, aspect, ids, node_count, depth + 1, true, resources)?);
             }
             Ok(UiNode::ScrollView { id, rect, scroll, children })
         }
@@ -1488,7 +1531,7 @@ fn parse_node(
     }
 }
 
-fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool) -> Result<UiNode, String> {
+fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool, resources:&BTreeMap<String,UiImageBatchResource>) -> Result<UiNode, String> {
     if local {
         return Err(format!("UI_IMAGE_BATCH_SPACE: '{}' requires stage coordinates; scroll content is not supported", raw.id));
     }
@@ -1496,16 +1539,24 @@ fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool) -> Result<UiNode
         || raw.slice.is_some() || raw.alt.is_some() || raw.style.is_some()
         || raw.component.is_some() || raw.children.is_some() || raw.scroll.is_some()
         || raw.expanded.is_some() || raw.drag.is_some() {
-        return Err(format!("UI_IMAGE_BATCH_FIELDS: '{}' accepts placement, quads and optional background_for only", raw.id));
+        return Err(format!("UI_IMAGE_BATCH_FIELDS: '{}' accepts rect, either quads or content, optional transform and background_for only", raw.id));
     }
-    let quads = raw.quads.ok_or_else(|| format!("UI_IMAGE_BATCH_QUADS: '{}' requires quads", raw.id))?;
+    if let Some(content)=raw.content {
+        if raw.quads.is_some() { return Err(format!("UI_IMAGE_BATCH_CONTENT: '{}' must choose quads or content, not both",raw.id)); }
+        let resource=resources.get(&content).ok_or_else(||format!("UI_IMAGE_BATCH_CONTENT: unknown content '{content}'"))?;
+        raw.transform.unwrap_or_default().validate(resource.bounds())?;
+        return Ok(UiNode::ImageBatch {id:raw.id,rect,quads:Vec::new(),content:Some(content),transform:raw.transform,
+            resource_quad_count:resource.quads().len(),background_for:raw.background_for});
+    }
+    if raw.transform.is_some() { return Err("UI_IMAGE_BATCH_TRANSFORM: transform requires retained content; inline quads keep absolute stage coordinates".into()); }
+    let quads = raw.quads.ok_or_else(|| format!("UI_IMAGE_BATCH_QUADS: '{}' requires quads or retained content", raw.id))?;
     if quads.is_empty() {
         return Err(format!("UI_IMAGE_BATCH_EMPTY: '{}' requires at least one image quad", raw.id));
     }
     for (index, quad) in quads.iter().enumerate() {
         quad.validate(rect).map_err(|e| format!("{e}; batch={}; quad={index}", raw.id))?;
     }
-    Ok(UiNode::ImageBatch { id: raw.id, rect, quads, background_for: raw.background_for })
+    Ok(UiNode::ImageBatch { id: raw.id, rect, quads, content:None, transform:None, resource_quad_count:0, background_for: raw.background_for })
 }
 
 fn validate_background_scopes<'a>(

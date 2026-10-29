@@ -71,6 +71,40 @@ impl CanonicalHasher {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn complete_snapshots_reuse_static_artwork_prefix_when_input_receipt_and_frame_change() {
+        let mut world=crate::world::World::default();
+        let rect=crate::UiRect{x:0.,y:0.,width:100.,height:100.};
+        world.define_ui_image_batch("art".into(),crate::UiImageBatchDefinition{
+            bounds:rect,
+            quads:vec![crate::UiImageQuad{asset:"texture://".to_owned()+&"a".repeat(3*BLOCK),rect,source:None,opacity:None}],
+        },None).unwrap();
+        let mut snapshot=world.snapshot();
+        let mut cached=CanonicalHasher::default();
+        let initial=serde_json::to_vec(&snapshot).unwrap();
+        let (initial_digest,first)=cached.hash(&initial);
+        assert_eq!(first.reused_bytes,0);
+        assert_eq!(initial_digest,format!("sha256:{:x}",Sha256::digest(&initial)));
+        let mut previous=initial_digest;
+        for frame in [1,2,9,10] {
+            snapshot.frame=frame;
+            snapshot.time_seconds=frame as f64/60.;
+            snapshot.physical_input_receipt=Some(crate::PhysicalReceipt{
+                profile:"ordered_physical_v1".into(),epoch:7,through_sequence:frame*3,
+            });
+            snapshot.application.escape_behavior=if frame%2==0 {crate::EscapeBehavior::Action}else{crate::EscapeBehavior::Quit};
+            let bytes=serde_json::to_vec(&snapshot).unwrap();
+            let (actual,work)=cached.hash(&bytes);
+            assert_eq!(actual,format!("sha256:{:x}",Sha256::digest(&bytes)));
+            assert_ne!(actual,previous,"changed input/frame metadata remains part of the exact digest");
+            assert!(work.reused_bytes>=BLOCK,"static resource prefix must survive receipt/application changes");
+            assert_eq!(work.input_bytes,bytes.len());
+            assert_eq!(work.hashed_bytes+work.reused_bytes,bytes.len());
+            previous=actual;
+        }
+    }
+
     #[test]
     fn arbitrary_edits_growth_shrink_and_boundaries_match_full_sha256() {
         let mut cached = CanonicalHasher::default();

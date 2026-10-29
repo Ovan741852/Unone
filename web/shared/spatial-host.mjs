@@ -33,7 +33,10 @@ export function createSpatialHost(module, {backend='cpu', createExecutor}={}) {
   return {
     async load() {
       // A load retires an entire executor epoch; an old completion cannot enter it.
-      ++epoch; await pending; executor?.close(); executor=null; fault=null; closed=false;
+      const generation=++epoch;closed=false;await pending;
+      const active=()=>!closed&&generation===epoch;
+      if(!active())throw Error('SPATIAL_SESSION_RETIRED');
+      executor?.close(); executor=null; fault=null;
       metrics.reset();
       status={requested:backend,backend:'cpu',fallback_reason:null};
       const setupStarted=performance.now();let createMs=0,configureMs=0,createStarted=null,configureStarted=null;
@@ -41,11 +44,15 @@ export function createSpatialHost(module, {backend='cpu', createExecutor}={}) {
       try {
         if(typeof module._unone_web_spatial_request!=='function') throw Error('SPATIAL_ABI_UNAVAILABLE: rebuild the Web runtime');
         const create=createExecutor??(await import('./spatial-gpu.mjs')).createSpatialGpuExecutor;
-        createStarted=performance.now();executor=await create();createMs=performance.now()-createStarted;createStarted=null;
+        if(!active())throw Error('SPATIAL_SESSION_RETIRED');
+        createStarted=performance.now();const candidate=await create();
+        if(!active()){candidate?.close();throw Error('SPATIAL_SESSION_RETIRED');}
+        executor=candidate;createMs=performance.now()-createStarted;createStarted=null;
         configureStarted=performance.now();
         request({kind:'configure',backend:'webgpu'});
         configureMs=performance.now()-configureStarted;configureStarted=null;
       } catch(error) {
+        if(!active())throw error;
         if(createStarted!==null)createMs=performance.now()-createStarted;
         if(configureStarted!==null)configureMs=performance.now()-configureStarted;
         metrics.setup({success:false,total_ms:performance.now()-setupStarted,executor_create_ms:createMs,configure_ms:configureMs,gpu_initialized:false});

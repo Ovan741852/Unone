@@ -80,6 +80,92 @@ Canvas report 提供最後一次實際重繪的 `cpu_render_ms`、`render_region
 不會以零冒充。Native 沿用既有 `raster_ms`／`upload_bytes`。
 Native 目前仍是 CPU raster → GPU 合成，大量逐幀變動 UI 不能宣稱 60 FPS。
 
+## Retained image artwork
+
+`api.ui.imageBatch.define(id,{bounds,quads})` stores an immutable logical artwork
+resource. Define it in `Game.start` or explicitly replace its content in
+`Game.update`; a pure View or virtual `renderItem` only references it. The Core
+rejects resource mutations inside `renderItem`, including initial materialization.
+The existing `image_batch` node then accepts `content=id` instead of inline
+`quads`. The official `kit.imageBatch` constructor accepts the same two forms.
+Canonical constructor inputs are `UiInlineImageBatchProps` and
+`UiRetainedImageBatchProps`; `UiComponentImageBatchProps` is their union. Their
+outer fields are read-only inputs, so fresh table literals and explicitly typed
+variables can be passed directly; `background_for.screen=true` stays strict.
+`never?` exclusions reject mixing the two forms or adding a transform to inline
+quads. The constructor keeps its existing union signature and returns mutable,
+game-owned nodes; no runtime freeze or new constructor is introduced.
+
+```lua
+-- Game.start: source pixels and local artwork coordinates are independent.
+api.ui.imageBatch.define("background-art", {
+    bounds = {x=0, y=0, width=200, height=100},
+    quads = {{asset="texture://landscape",
+        rect={x=0, y=0, width=200, height=100},
+        source={x=0, y=0, width=1024, height=512}}},
+})
+
+-- Pure View: changing cameraX changes six small affine values, not image data.
+local artwork = {
+    kind="image_batch", id="background", content="background-art",
+    rect={x=0, y=0, width=100, height=100},
+    transform={a=1, b=0, c=0, d=1, tx=-cameraX, ty=0},
+}
+```
+
+The required resource `bounds` contains every local quad rectangle. Local x/y
+may be negative or extend beyond 0..100; dimensions and all coordinates must be
+finite. Each quad retains the existing ordered `asset`, `rect`, optional pixel
+`source` and `opacity` semantics. The engine owns source-dimension resolution,
+quad tessellation, compatible GPU runs and resource lifetime. A game neither
+groups textures nor sends GPU material flags.
+
+The transform uses `x'=a*x+c*y+tx`, `y'=b*x+d*y+ty`, mapping local coordinates to
+the existing stage y-up space. Omission means identity; a supplied transform
+requires all six finite fields and finite transformed bounds. The node `rect`
+is an explicit stage clip/layout viewport, never an implicit translation or
+scale. Artwork outside that rect is clipped, with its source crop unchanged.
+The node remains at its authored tree position, including A/B/A texture order
+and interleaved text/controls. Retained artwork inside scroll content is
+explicitly unsupported in this slice (`UI_IMAGE_BATCH_SPACE`). Ordinary inline
+quads remain a logical authoring convenience with absolute-stage containment;
+`transform` requires `content`, and mixing `content` with `quads` fails.
+
+Definitions are copied and fully validated before publication. Identical content
+preserves its generation; a successful replacement updates existing references
+only after their complete node/string budgets and transforms still validate.
+Every referenced quad counts for every instance. The registry is bounded to 256
+resources, `host_max_nodes` total stored quads and the existing string budget.
+The actual encoded JSON definition also has a 16 MiB per-resource limit and a
+32 MiB aggregate registry limit. Escaped strings count at their encoded byte
+size, including JSON syntax; the raw UTF-8 string budget alone is insufficient.
+Each immutable generation computes/caches this encoding once before admission.
+Over-limit content fails with `UI_IMAGE_BATCH_ENCODED_LIMIT` before replacing
+either a resource or the published tree.
+Unknown keys, invalid assets/crops/opacities and overflow reject atomically.
+Decoded image crop bounds are still validated by the host.
+
+`api.ui.imageBatch.remove(id)` returns whether an unused resource existed.
+Removing a resource referenced by the published tree fails with
+`UI_IMAGE_BATCH_IN_USE`; first publish a tree without that reference. Snapshot
+leases can retain an old immutable generation until released. Recreating an id
+gets a fresh engine revision. Resource definitions share world reset and reload
+ownership; failed reload restores definitions and the UI tree together. Pure
+tree creation never adds registry entries, including discarded/virtual views.
+
+Complete canonical snapshots include `ui_image_batches[id]` with
+`{revision,bounds,quads}` and the referencing UI node. The empty registry is
+omitted to avoid unused data. A player may transport unchanged
+generations by reference through its versioned private protocol; canonical
+inspection and replay remain complete. An unchanged generation shares its
+immutable content and cached JSON encoding across camera-only tree updates.
+
+This slice targets the matching official Web player. Host capability admission,
+ordered GPU acceleration, Canvas equivalence, recovery and performance must be
+validated separately before claiming target support or 60 FPS; a host lacking
+the retained contract must reject it clearly. Native/checked-raster parity is
+not implied by the Core API or a passing headless test.
+
 ## 配套與驗證
 
 更新插件不會更新已打包的 WASM／native。先用匹配的 Core、CLI、Web host、native player

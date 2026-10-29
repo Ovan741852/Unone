@@ -2,6 +2,8 @@
 // game controls, hit testing and visual layering are not DOM elements.
 import {uiUsage} from './ui-geometry.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
+import {createImageBatchResolver,imageBatchCanvasTransform} from './ui-image-batch.mjs';
+import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 import {textPaintBounds,validateInputRegion,validateTextShadow} from './ui-presentation.mjs';
 import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces,layoutUiText,measureUiText} from './ui-style.mjs';
 const actionNode=n=>n.kind==='button'||n.kind==='combobox'||n.kind==='input_region';
@@ -14,8 +16,8 @@ const sliderRatio=(drag,x,y)=>{
   const r=drag.track_rect,value=drag.axis==='vertical'?(y-r.y)/r.height:(x-r.x)/r.width;
   const ratio=Math.max(0,Math.min(1,value));return drag.reverse?1-ratio:ratio;
 };
-function prepareUi(tree){
-  const usage=uiUsage(tree);
+function prepareUi(tree,imageBatches,resolver=createImageBatchResolver()){
+  const usage=uiUsage(tree,{imageBatches,imageBatchResolver:resolver});
   const leaves=[];
   function walk(nodes,depth){
     for(const n of nodes??[]){
@@ -33,9 +35,11 @@ function prepareUi(tree){
       leaves.push(n);
     }
   }
-  walk(projectScrollTree(tree).tree?.children,0);return {nodes:leaves,usage};
+  walk(projectScrollTree(tree).tree?.children,0);const batches=new Map();
+  for(const node of leaves)if(node.kind==='image_batch')batches.set(node,resolver.resolve(node,imageBatches));
+  return {nodes:leaves,usage,batches};
 }
-export function flattenUi(tree){return prepareUi(tree).nodes;}
+export function flattenUi(tree,imageBatches){return prepareUi(tree,imageBatches).nodes;}
 function pointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
   let nodes=[],disposed=false;const captured=new Map(),holds=new Map(),sliderOwners=new Map(),released=new Set();
   function release(id,phase){const c=captured.get(id);if(!c)return false;captured.delete(id);
@@ -45,7 +49,7 @@ function pointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
     if(c.drag?(!dragNode(n??{})||n.drag.enabled===false||dragSignature(n)!==c.signature):c.action&&(!n||!actionNode(n)||n.action!==c.action)){release(pointer,'cancel');captured.set(pointer,{id:c.id,action:null});}}}
   function findNode(x,y,interactive){for(let i=nodes.length-1;i>=0;i--){const n=nodes[i];if((interactive?inputNode(n):!['panel','image_batch'].includes(n.kind))&&hit(n,x,y))return n;}return null;}
   const api={
-    setTree(tree){setNodes(flattenUi(tree));},
+    setTree(tree,imageBatches){setNodes(flattenUi(tree,imageBatches));},
     pointer({kind,pointerId=0,x,y}){
       if(disposed)return false;
       if(released.has(pointerId)){if(kind==='down')released.delete(pointerId);else{if(kind==='up'||kind==='cancel')released.delete(pointerId);return true;}}
@@ -90,17 +94,30 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
   try{for(const face of presentationFontFaces(ui))loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));return loaded;}
   catch(error){for(const font of loaded)document.fonts.delete(font);throw error;}
 }
-export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1)}={}){
+export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null}={}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
-  const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
+  const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets};
+  const readyWaiters=new Set();let requiredAssets=new Set();
+  let previous=null,paintKey=null,paintDefinitions=[],dirty=true,disposed=false,nodes=[],generation=0,batches=new Map(),prefix=[],references=[],gpuPrefix=0,loadingAssets=0;
   const diagnostics=new Map(),quadDiagnosticKeys=new Map();let usage=null,renderMs=null,renderRegions=0;
   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
+  const retireGpu=()=>getImageBatchPresenter()?.clear();
+  const outcome=()=>diagnostics.size?DRAW_SKIPPED.ui_diagnostics:loadingAssets?DRAW_SKIPPED.ui_assets_pending:DRAW_COMPLETED;
+  function notifyReady(){if(!readyWaiters.size)return;for(const check of [...readyWaiters])check();}
+  function ready(){
+    if(disposed)return Promise.reject(Error('UI_DISPOSED'));
+    for(const id of requiredAssets)ensureAsset(id);
+    return new Promise((resolve,reject)=>{const check=()=>{
+      let error;if(disposed)error=Error('UI_DISPOSED');else if(diagnostics.size){const first=diagnostics.values().next().value;error=Error(`${first.code}: ${first.node??first.asset??'ui'}; ${first.message}`);}
+      if(error){readyWaiters.delete(check);reject(error);}else if(!loadingAssets){readyWaiters.delete(check);resolve();}
+    };readyWaiters.add(check);check();});
+  }
   function ensureAsset(id){if(assets.has(id))return assets.get(id);
-    const entry={image:null,state:'loading'};assets.set(id,entry);const ticket=generation;
+    const entry={image:null,state:'loading'};assets.set(id,entry);loadingAssets++;const ticket=generation;
     Promise.resolve().then(()=>{if(!resolveAsset)throw Error('UI_ASSET_RESOLVER_REQUIRED');return resolveAsset(id);}).then(value=>typeof value==='string'||value instanceof URL?loadImage(value):value)
-      .then(image=>{if(disposed||ticket!==generation||assets.get(id)!==entry){image?.close?.();return;}if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');entry.image=image;entry.state='ready';dirty=true;requestRender();})
-      .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){entry.state='failed';reportError(id,error);dirty=true;requestRender();}});
+      .then(image=>{if(disposed||ticket!==generation||assets.get(id)!==entry){image?.close?.();return;}if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');entry.image=image;entry.state='ready';loadingAssets--;dirty=true;try{requestRender();}finally{notifyReady();}})
+      .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}});
     return entry;
   }
   function image(node,x,y,w,h,target=ctx,quadIndex=null){const e=ensureAsset(node.asset);if(!e.image)return;
@@ -113,12 +130,18 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       const value={code,node:node.id,asset:node.asset,message:error.message,...(quadIndex!==null?{quad:quadIndex}:{})};diagnostics.set(key,value);onDiagnostic(value);}
   }
   function imageBatch(node){
-    for(const [index,q]of node.quads.entries()){
+    const instance=batches.get(node);ctx.save();
+    try{
+    if(instance.retained){const r=instance.clip;ctx.beginPath();ctx.rect(r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100);ctx.clip();
+      ctx.transform(...imageBatchCanvasTransform(instance.transform,canvas.width,canvas.height,instance.definition.originX,instance.definition.originY));}
+    for(const [index,q]of instance.definition.quads.entries()){
       const r=q.rect,leaf={id:node.id,asset:q.asset,fit:'stretch',...(q.source?{slice:{left:0,top:0,right:0,bottom:0,pixels_per_unit:1,source:q.source}}:{})};
       ctx.save();
-      try{ctx.globalAlpha=(ctx.globalAlpha??1)*(q.opacity??1);image(leaf,r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100,ctx,index);}
+      try{ctx.globalAlpha=(ctx.globalAlpha??1)*(q.opacity??1);if(instance.retained)image(leaf,r.x-instance.definition.originX,-(r.y-instance.definition.originY)-r.height,r.width,r.height,ctx,index);
+        else image(leaf,r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100,ctx,index);}
       finally{ctx.restore();}
     }
+    }finally{ctx.restore();}
   }
   function text(node,x,y,w,h,scale=1){if(!node.text)return;const lines=String(node.text).split('\n');
     const lh=Number.isFinite(node.lineHeight)&&node.lineHeight>0?node.lineHeight:1.2;
@@ -164,16 +187,29 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
   }
   return {
     draw(snapshot,{width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}={}){
-      if(disposed)throw Error('UI_DISPOSED');if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return;
+      if(disposed)throw Error('UI_DISPOSED');if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return DRAW_SKIPPED.ui_target_unavailable;
       const bw=Math.min(8192,Math.max(1,Math.round(width*dpr))),bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));
       if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
-      const tree=(snapshot?.world??snapshot)?.ui??null,key=JSON.stringify(tree);
-      if(key!==previous){const prepared=prepareUi(tree);usage=prepared.usage;nodes=prepared.nodes;routing.setNodes(nodes);previous=key;dirty=true;
-        const used=new Set(nodes.flatMap(n=>n.kind==='image_batch'?n.quads.map(q=>q.asset):n.kind==='image'?[n.asset]:[]));for(const [id,e]of assets)if(!used.has(id)){e.image?.close?.();assets.delete(id);diagnostics.delete(id);}
-        for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
-      if(!dirty)return;dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
+      const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
+      let compositionChanged=false;
+      if(key!==previous||resourceChanged){const prepared=prepareUi(tree,imageBatches,batchResolver);usage=prepared.usage;nodes=prepared.nodes;batches=prepared.batches;routing.setNodes(nodes);previous=key;compositionChanged=true;
+        references=[];prefix=[];let leading=true;const used=new Set();
+        for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets)used.add(id);}
+          else if(node.kind==='image')used.add(node.asset);if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
+        if([...assets.keys()].some(id=>!used.has(id)))retireGpu();
+        for(const [id,e]of assets)if(!used.has(id)){if(e.state==='loading')loadingAssets--;e.image?.close?.();assets.delete(id);diagnostics.delete(id);}
+        requiredAssets=used;for(const id of used)ensureAsset(id);batchResolver.prune(nodes);}
+      prefixContext.width=bw;prefixContext.height=bh;
+      const presenter=getImageBatchPresenter(),presented=presenter?.drawPrefix(prefix,prefixContext)??0;
+      if(!Number.isInteger(presented)||presented<0||presented>prefix.length)throw Error('UI_IMAGE_PREFIX_RESULT_INVALID');
+      if(presented!==gpuPrefix){gpuPrefix=presented;compositionChanged=true;}
+      if(compositionChanged){const paintNodes=nodes.filter(node=>node.kind!=='image_batch'||batches.get(node).prefixIndex<0||batches.get(node).prefixIndex>=gpuPrefix),nextKey=JSON.stringify(paintNodes),definitions=paintNodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
+        if(nextKey!==paintKey||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;paintKey=nextKey;paintDefinitions=definitions;}
+      if(!dirty){notifyReady();return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();}dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
+      for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();
       for(const node of nodes){const r=node.rect,x=r.x*bw/100,y=(100-r.y-r.height)*bh/100,w=r.width*bw/100,h=r.height*bh/100;
         if(node.kind==='input_region')continue;
+        if(node.kind==='image_batch'&&batches.get(node).prefixIndex>=0&&batches.get(node).prefixIndex<gpuPrefix)continue;
         const paintBounds=textPaintBounds(node.style,{x,y,width:w,height:h,viewportHeight:bh});
         const c=node.clip;
         if(c){const cx=c.x*bw/100,cy=(100-c.y-c.height)*bh/100,cw=c.width*bw/100,ch=c.height*bh/100;
@@ -197,11 +233,13 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
           else {text(node,x,y,w,h,bw/width);renderRegions++;}
         }finally{if(c)ctx.restore();}}
       renderMs=performance.now()-started;
+      notifyReady();
+      return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();
     },
-    pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,
+    pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,
     setFont(family){fontFamily=family;dirty=true;},
-    invalidateAssets(){generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;},
+    invalidateAssets(){retireGpu();generation++;for(const e of assets.values())e.image?.close?.();assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
     report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
-    dispose(){if(disposed)return;router.dispose();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];previous=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();},
+    dispose(){if(disposed)return;retireGpu();router.dispose();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();},
   };
 }

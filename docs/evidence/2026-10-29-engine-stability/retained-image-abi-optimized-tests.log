@@ -1,0 +1,13 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+   Compiling unone-web-live-smoke v0.2.0 (D:\Projects\Unone\crates\unone-web-live-smoke)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.92s
+     Running unittests src\main.rs (target\debug\deps\unone_web_live_smoke-9efdc2a6126c4142.exe)
+
+running 4 tests
+test ui_transport::tests::unload_retires_leases_and_releases_the_canonical_cache ... ok
+test ui_transport::tests::reload_with_reused_resource_revisions_changes_epoch_and_old_generation_is_retired ... ok
+test ui_transport::tests::retained_memory_wire_is_complete_digest_equivalent_and_camera_updates_reuse_lease ... ok
+test ui_transport::tests::borrowed_presentation_filters_only_the_registry_and_reuses_output_storage ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.02s
+

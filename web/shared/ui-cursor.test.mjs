@@ -61,3 +61,19 @@ test('invalid declaration is atomic and resize uses current pixel geometry',asyn
  assert.equal(f.layer.width,2560);assert.equal(f.layer.height,1440);
  assert.equal(host.report().mode,'image');assert.equal(host.report().rect.x,253);host.dispose();
 });
+test('completion waits only for a visible requested custom cursor and reports failed artwork',async()=>{
+ const f=surface();let resolve;const pending=new Promise(yes=>{resolve=yes;});
+ const errors=[],host=createUiCursorHost({...f,loadImage:()=>pending,onError:error=>errors.push(error)});
+ assert.equal(host.update(image).status,'completed','no pointer requires no cursor paint');f.emit(74,60);
+ assert.equal(host.update(image).reason,'cursor_assets_pending');f.emit(-1,60);assert.equal(host.update(image).status,'completed');f.emit(74,60);
+ resolve({width:17,height:19});await Promise.resolve();assert.equal(host.update(image).status,'completed');host.dispose();
+ const failed=surface(),bad=createUiCursorHost({...failed,loadImage:()=>Promise.reject(Error('cursor unavailable')),onError:error=>errors.push(error)});
+ failed.emit(74,60);bad.update(image);await Promise.resolve();await Promise.resolve();assert.equal(bad.update(image).reason,'cursor_diagnostics');assert.equal(errors.length,1);bad.dispose();
+});
+test('cursor readiness waits for current visible artwork, ignores retired loads and rejects disposal',async()=>{
+ const f=surface(),loads=new Map(),host=createUiCursorHost({...f,loadImage:id=>new Promise(resolve=>loads.set(id,resolve)),onError() {}});
+ f.emit(74,60);host.update(image);let settled=false;const waiting=host.ready().then(()=>settled=true);await Promise.resolve();assert.equal(settled,false);
+ host.update({...image,asset:'texture://new'});loads.get(image.asset)({width:17,height:19});await Promise.resolve();assert.equal(settled,false,'retired artwork cannot unblock current cursor');
+ loads.get('texture://new')({width:17,height:19});await waiting;assert.equal(settled,true);
+ host.update({...image,asset:'texture://pending'});const cancelled=assert.rejects(host.ready(),/UI_CURSOR_DISPOSED/);host.dispose();await cancelled;
+});

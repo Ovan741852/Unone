@@ -1,5 +1,14 @@
 # Unone portable SDK
 
+This coordinated release uses engine **0.2.0** and `@unone/ui` **0.5.0**.
+Use the matching CLI/runtime/types/package together. Retained logical artwork is
+available through `ui.imageBatch.define` and `image_batch` content references;
+see `game api describe ui.imageBatch.define --json` and
+`docs/ui-slice-and-budget.md`. Camera-only updates use instance transforms rather
+than resubmitting vertices. GPU batching stays in the official player.
+Read-only production-player submission counters are documented in
+[profiling](docs/profiling.md#official-production-player-completion-counters).
+
 Start with this SDK's CLI and bundled documentation. The SDK contains the
 official player runtimes, host templates, `@unone/ui` source and canonical Luau
 types; ordinary consumer authoring and Web export need no engine checkout or

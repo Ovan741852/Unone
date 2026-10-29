@@ -7,6 +7,7 @@ import vm from 'node:vm';
 import {createRuntimeBackend} from './runtime-backend.mjs';
 import {createPresentationInterpolator} from './presentation-interpolation.mjs';
 import {createPlayerProfiler} from './raster-diagnostics.mjs';
+import {createPlayerCompletionMetrics} from './player-completion.mjs';
 const source=fs.readFileSync(process.env.UNONE_PROFILE_MAIN_SOURCE??new URL('../player/main.js',import.meta.url),'utf8');
 const slice=source.slice(source.indexOf('function acceptSnapshot('),source.indexOf('async function setPaused('));
 class Remote{
@@ -14,18 +15,18 @@ class Remote{
  postMessage({id,command}){this.posts.push(command.kind);setTimeout(()=>{
   if(command.kind==='init')return this.onmessage({data:{id,ok:true,packet:{value:null,updates:[],removed:[]}}});
   if(this.fail)return this.onmessage({data:{id,ok:false,error:'TICK_FAILED'}});
-  this.onmessage({data:{id,ok:true,packet:{value:{world:{frame:++this.frame,entities:{}},save_payload:{n:this.frame}},updates:[],removed:[]},metrics:{}}});});}
+  this.onmessage({data:{id,ok:true,packet:{value:{world:{frame:++this.frame,time_seconds:this.frame/60,entities:{}},save_payload:{n:this.frame}},updates:[],removed:[]},metrics:{}}});});}
  terminate(){}
 }
-async function fixture(profiler,{throwDraw=false}={}){
+async function fixture(profiler,{throwDraw=false,drawOutcome,uiOutcome={status:'completed'},cursorOutcome={status:'completed'}}={}){
  let remote;class W extends Remote{constructor(){super();remote=this;}}
  const backend=await createRuntimeBackend({kind:'worker',url:'http://unone.test/r.js',WorkerClass:W,...(profiler?{profiler}:{})});
  const log=[],storage=new Map(),body={dataset:{}};
- const renderer={draw(s){log.push(['render',s.world.frame]);profiler?.renderer.mark('frame_decode_validate');if(throwDraw)throw Error('RENDER_FAILED');profiler?.renderer.outcome('completed');},
+ const renderer={draw(s){log.push(['render',s.world.frame]);profiler?.renderer.mark('frame_decode_validate');if(throwDraw)throw Error('RENDER_FAILED');profiler?.renderer.outcome('completed');return drawOutcome;},
   metrics:()=>({}),};
- const context={profiler,profileFlight:null,profileLastSource:null,backend,renderer,snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
+ const context={profiler,profileFlight:null,profileLastSource:null,backend,renderer,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
   bridgeMs:0,renderMs:0,renderCount:0,frozen:false,manualInput:null,lastStats:null,hasWorldPointer:false,saved:'null',key:'k',orderedQueue:null,scheduler:null,audio:null,
-  input:{consumeFrame:()=>({actions:[]})},renderUi:()=>log.push(['ui']),uiRenderer:{report:()=>({})},cursorHost:{update(){},report:()=>({})},canvas:{width:1,height:1},
+  input:{consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({})},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
   document:{body},localStorage:{setItem:(k,v)=>{storage.set(k,v);log.push(['save']);}},publishPhysical(){},performance,JSON,Error,String};
  vm.createContext(context);vm.runInContext(slice,context);context.acceptSnapshot(context.snapshot,{reset:true});
  return {context,backend,log,storage,body,remote:()=>remote};
@@ -74,4 +75,16 @@ test('an in-flight update evicted by a command backlog still completes the real 
  assert.deepEqual(on.log,off.log);assert.deepEqual([...on.storage],[...off.storage]);assert.deepEqual(on.remote().posts,off.remote().posts);
  const r=p.report();assert(r.counts.abandoned>=1);assert.equal(r.counts.late_ends,r.counts.abandoned);
  assert.equal(r.counts.open,0);
+});
+test('actual main entry with worker snapshots counts only complete world/UI/cursor submissions',async()=>{
+ const done={status:'completed'};
+ for(const options of [{drawOutcome:{status:'skipped',reason:'frame_resources_pending'}},{drawOutcome:done,uiOutcome:{status:'skipped',reason:'ui_assets_pending'}},{drawOutcome:done,cursorOutcome:{status:'skipped',reason:'cursor_assets_pending'}},{}]){
+  const f=await fixture(null,options);await f.context.tickOnce();f.context.draw();
+  const r=f.context.playerCompletion.snapshot();assert.equal(r.simulation_frame,1);assert.equal(r.simulation_time_seconds,1/60);assert.equal(r.completed_draws,0);assert.equal(r.last_presented_snapshot_frame,null);
+  assert.deepEqual(f.remote().posts,['init','tick'],'metrics add no worker commands');f.backend.close();
+ }
+ const f=await fixture(null,{drawOutcome:done});await f.context.tickOnce();f.context.draw();f.context.draw();
+ let r=f.context.playerCompletion.snapshot();assert.equal(r.completed_draws,2);assert.equal(r.presented_frame_changes,1);assert.equal(r.last_presented_snapshot_frame,1);
+ await f.context.tickOnce();r=f.context.playerCompletion.snapshot();assert.equal(r.simulation_frame,2);assert.equal(r.last_presented_snapshot_frame,1,'accepted worker reply is not a completed draw');
+ f.context.acceptSnapshot({world:{frame:0,time_seconds:0}},{reset:true,newSession:true});r=f.context.playerCompletion.snapshot();assert.equal(r.draw_attempts,0);assert.equal(r.simulation_frame,0);f.backend.close();
 });

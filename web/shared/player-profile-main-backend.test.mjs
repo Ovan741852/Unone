@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRuntimeBackend} from './runtime-backend.mjs';
 import {createPlayerProfiler} from './raster-diagnostics.mjs';
+import {createPlayerCompletionMetrics,DRAW_COMPLETED} from './player-completion.mjs';
 const heap=new Uint8Array(1<<20),OBS=65536,abi={log:[],frame:0,len:0,fail:false};
 function publish(v){const b=new TextEncoder().encode(JSON.stringify(v));heap.set(b,OBS);abi.len=b.length;return 0;}
 const world=()=>({world:{frame:abi.frame,instances3d:{}}});
@@ -33,4 +34,11 @@ test('main-thread backend: identical ABI sequence when disabled; enabled command
  const failed=profiler.report().events.at(-1);assert.equal(failed.status,'error');
  assert.deepEqual(failed.spans.filter(s=>s.parent==='execute').map(s=>s.name),['barrier_wait','input_abi'],'partial trace up to the failing ABI');
  off.backend.close();on.backend.close();
+});
+test('main-thread accepted publications and performance reads do not imply completed presentation or invoke the ABI',async()=>{
+ const f=await run(null),m=createPlayerCompletionMetrics();for(const value of f.values)m.accept(value);
+ const before=[...abi.log];assert.equal(m.snapshot().simulation_frame,2);assert.equal(m.snapshot().completed_draws,0);
+ m.attempt();m.finish(undefined,DRAW_COMPLETED,DRAW_COMPLETED,2);assert.equal(m.snapshot().unknown_draws,1);
+ m.attempt();m.finish(DRAW_COMPLETED,DRAW_COMPLETED,DRAW_COMPLETED,1);const r=m.snapshot();
+ assert.equal(r.last_presented_snapshot_frame,1);assert.equal(r.simulation_frame,2);assert.equal(r.completed_draws,1);assert.deepEqual(abi.log,before);f.backend.close();
 });

@@ -1,0 +1,33 @@
+✔ completion requires explicit world, UI and cursor readiness and keeps simulation distinct (1.0556ms)
+✔ interval storage is bounded, stale windows are empty and reads never advance counters (1.4902ms)
+✔ owned read-only accessor preserves existing names and permits safe teardown and reattachment (0.2069ms)
+✔ main-thread backend: identical ABI sequence when disabled; enabled commands carry execute and atomic tick spans (4.0054ms)
+✔ main-thread accepted publications and performance reads do not imply completed presentation or invoke the ABI (1.6213ms)
+✔ disabled profiling leaves draw/update/save behavior and published datasets unchanged (65.7045ms)
+✔ updates and draws are distinct identities; redraws of one snapshot are flagged, not new updates (30.9207ms)
+✔ failed updates and draws keep identity and status, then rethrow unchanged (32.0288ms)
+✔ an in-flight update evicted by a command backlog still completes the real tick unchanged (568.5673ms)
+✔ actual main entry with worker snapshots counts only complete world/UI/cursor submissions (158.1716ms)
+✔ actual production startup entry waits raw-loss event gap, redraws, then publishes exactly one READY and starts scheduler once (4.6117ms)
+✔ actual production startup entry pagehide cancellation prevents late READY and scheduler creation (1.0101ms)
+✔ actual production factory assignment disposes a late resolved renderer after pagehide (1.0221ms)
+✔ actual READY commit resamples/cancels after metrics callbacks, without a later await gap (0.8269ms)
+✔ actual ordinary and checked startup wait for delayed Canvas-only images without polling RAF or starting simulation (3.1536ms)
+✔ startup never treats an unknown renderer outcome as a completed presentation (0.7881ms)
+✔ pointer entry at the final RAF barrier cannot READY a newly required pending cursor (1.3262ms)
+✔ strict shape and explicit default/hidden/image (1.6163ms)
+✔ drawing-buffer hotspot and nearest pixels have no implicit CSS unit conversion (0.095ms)
+✔ host uses true pointer/CSS mapping and paints last on passive overlay (0.4484ms)
+✔ outside/blur/touch/default restore host cursor and never inject input (0.1702ms)
+✔ late image load cannot revive a cleared/replaced cursor (0.1274ms)
+✔ invalid declaration is atomic and resize uses current pixel geometry (0.3537ms)
+✔ completion waits only for a visible requested custom cursor and reports failed artwork (0.2045ms)
+✔ cursor readiness waits for current visible artwork, ignores retired loads and rejects disposal (0.2535ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 936.601

@@ -99,6 +99,13 @@
             "null"
           ]
         },
+        "content": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "drag": {
           "anyOf": [
             {
@@ -259,6 +266,17 @@
             "null"
           ]
         },
+        "transform": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiImageTransform"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "viewport": {
           "anyOf": [
             {
@@ -378,6 +396,45 @@
       "required": [
         "asset",
         "rect"
+      ],
+      "type": "object"
+    },
+    "UiImageTransform": {
+      "additionalProperties": false,
+      "description": "Local-to-stage affine transform: x'=a*x+c*y+tx, y'=b*x+d*y+ty.",
+      "properties": {
+        "a": {
+          "format": "double",
+          "type": "number"
+        },
+        "b": {
+          "format": "double",
+          "type": "number"
+        },
+        "c": {
+          "format": "double",
+          "type": "number"
+        },
+        "d": {
+          "format": "double",
+          "type": "number"
+        },
+        "tx": {
+          "format": "double",
+          "type": "number"
+        },
+        "ty": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "tx",
+        "ty"
       ],
       "type": "object"
     },

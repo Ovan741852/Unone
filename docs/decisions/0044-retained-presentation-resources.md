@@ -1,7 +1,7 @@
 # Decision 0044: Shared Render Resources, Retained Instances and Explicit Streams
 
 - Date: 2026-10-30
-- Status: selected architecture direction; new authoring and transport APIs are not implemented
+- Status: selected architecture; first retained UI resource/transport slice implemented, official-player acceptance in progress
 - Scope: reusable engine presentation, including 2D workflows in the 3D engine
 
 ## Problem
@@ -128,9 +128,11 @@ Retention must exist across the complete path, not only in a JavaScript cache.
   player deltas and GPU handles are separate representations. Reattachment,
   dropped/invalid deltas, reload, scene reset and GPU context loss require an
   explicit full-state recovery path with host epoch/generation checks.
-- Preserve existing canonical digest semantics for existing content. A new
-  resource representation needs an explicit versioned contract and compatibility
-  tests; do not silently remove data from a digest to improve frame time.
+- Prioritize the effective model over backward compatibility, as directed by the
+  user. This coordinated contract is engine 0.2.0 with `@unone/ui` 0.5.0. Keep
+  canonical state complete and deterministic within that version; do not omit
+  resource content from a digest merely to improve frame time. Existing game
+  products are not silently migrated or rewritten.
 - Core definitions have an explicit owner and bounded lifetime. Destroying an
   instance releases its references; shared definitions live until their owner
   releases them or the scene ends. In-use destruction has a specified error or
@@ -153,6 +155,15 @@ Retention must exist across the complete path, not only in a JavaScript cache.
   ordinary path must not inherit the expert Web-only blend profile accidentally.
 
 ## Current source facts and limits
+
+The first slice implements existing UI `image_batch` references to immutable
+logical image resources, an independent affine instance transform, the matching
+private ABI/worker resource wire, and explicit project teardown. Core ownership,
+definition/crop/alpha validation and transport tests exist; official renderer and
+actual-player acceptance are still in progress. Runtime entity sprite attachment,
+general mesh resource APIs and dense independent-instance updates remain future
+slices. A retained artwork group is appropriate for content that moves together;
+it is not a claim that changing every independent object's data is free.
 
 `runtime/bindings/projected.rs` copies both supplied buffers and constructs a
 validated candidate before `World::set_projected` compares it with the old batch.

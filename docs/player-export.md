@@ -85,6 +85,33 @@ durations, draw calls, triangles, textures, particle count and dropped fixed ste
 These are raw measurements for AI investigation, not a bottleneck classifier.
 Save restoration precedes Game.start; input/scheduler/UI/audio use shared host modules.
 
+The official host also exposes the read-only
+`window.unonePlayerPerformance.snapshot({windowMs:5000})` accessor. It reads cached
+primitives from already accepted main/worker publications; it does not request a
+tick, decode another world, pause, or reset the game. The detached frozen result
+separates `simulation_frame`/`simulation_time_seconds` from
+`completed_draws`/`last_presented_snapshot_frame`. A completed draw requires
+explicit world, Canvas UI and required cursor readiness; pending resources and
+older/custom renderer contracts are reported as skipped or unknown. Completion
+means synchronous host submission, not GPU scanout acknowledgement.
+
+`publication_at_ms` is the main host's snapshot-acceptance timestamp, paired with
+`time_origin_ms`; it is not the worker's serialization time. Counters reset on a
+successful project load/restart and include session-relative `dropped_steps_total`. Completed
+interval quantiles use at most 512 samples ending within the requested window
+(positive and at most 60000 ms), with retained count and endpoints reported;
+they are not a complete history or an inferred FPS. Existing `playerPerformance`
+dataset publication keeps its 30-draw cadence and includes a completion summary.
+An absent accessor is an older host, not evidence of successful presentation.
+
+`UNONE_PLAYER_READY` waits abortably for the renderer, current Canvas assets and
+required cursor artwork, then verifies a fresh complete submission at the final
+frame barrier. Startup does not tick simulation or poll RAF while assets are
+pending. Selected custom renderers must return an explicit synchronous draw
+outcome (`{status:'completed'}` or `{status:'skipped',reason:...}`); an unknown
+outcome fails with `PLAYER_COMPLETION_CONTRACT_MISSING` instead of reporting
+READY. This host submission contract still does not acknowledge GPU scanout.
+
 See the [probe report](../_Games/dragon-tycoon3/README.md) for actual measured
 download/startup results and their limits. The local measurement server sends
 correct WASM/MJS MIME types, no-store responses and optional gzip. It is a local

@@ -10,7 +10,7 @@ fn load(body: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
 fn load_script(source: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
     let mut config = json!({"name":"ui-components","entry_script":"main.luau","systems":{"ui":true}});
     if declared {
-        config["runtime_packages"] = json!({"@unone/ui":"0.4.0"});
+        config["runtime_packages"] = json!({"@unone/ui":"0.5.0"});
     }
     let config: ProjectConfig = serde_json::from_value(config).unwrap();
     EngineRuntime::load_source_project(SourceProject {
@@ -112,9 +112,9 @@ fn undeclared_projects_can_inspect_metadata_but_cannot_use_the_package() {
     let runtime = load(r#"
 local c=api.ui.components
 local info=c.info()
-assert(info.name=='@unone/ui' and info.version=='0.4.0' and info.declared==false)
+assert(info.name=='@unone/ui' and info.version=='0.5.0' and info.declared==false)
 info.version='changed'
-assert(c.info().version=='0.4.0')
+assert(c.info().version=='0.5.0')
 local calls={function()c.create()end,function()c.id('a','b')end,function()c.composeStyle()end}
 for _,name in ipairs({'text','button','slider','combobox','panel','image','imageBatch','component','screen','scrollView','virtualList','virtualGrid'}) do
     table.insert(calls,function()c[name]({})end)
@@ -122,7 +122,7 @@ end
 for _,call in ipairs(calls) do
     local ok,message=pcall(call)
     assert(not ok and string.find(message,'UI_PACKAGE_NOT_DECLARED',1,true))
-    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.4.0',1,true))
+    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.5.0',1,true))
 end
 api.observation.set('declared',c.info().declared)
 "#, false).unwrap();

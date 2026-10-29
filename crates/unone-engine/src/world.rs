@@ -806,6 +806,10 @@ pub struct RigidBodySnapshot {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct WorldSnapshot {
+    // Static immutable artwork precedes receipt/application/frame metadata so
+    // exact-byte prefix hashing can reuse it during pointer/input changes.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub ui_image_batches: BTreeMap<String,crate::UiImageBatchResource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub physical_input_receipt: Option<crate::PhysicalReceipt>,
     #[serde(skip_serializing_if = "crate::ApplicationState::is_default")]
@@ -901,6 +905,8 @@ pub(crate) struct RigidBodyState {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct World {
     pub ui_cursor: Option<crate::UiCursor>,
+    pub ui_image_batches: BTreeMap<String,crate::UiImageBatchResource>,
+    pub ui_image_batch_revision: u64,
     pub application: crate::ApplicationState,
     pub projected_geometry: BTreeMap<String,crate::ProjectedBatch>,
     pub projected_frame: Option<crate::ProjectedFrame>,
@@ -948,6 +954,7 @@ impl World {
 
     fn apply_scene(&mut self, scene: SceneFile) {
         self.ui_cursor=None;
+        self.ui_image_batches.clear();
         self.projected_geometry.clear();
         self.projected_frame=None;
         self.projected_world_hidden=false;
@@ -1121,6 +1128,7 @@ impl World {
             projected_viewport:if self.projected_geometry.is_empty()&&self.projected_frame.is_none() {None} else {Some(self.projected_viewport.clone())},
             projected_world_visible:!self.projected_world_hidden,
             application: self.application.clone(),
+            ui_image_batches:self.ui_image_batches.clone(),
             heightfields: self.heightfields.clone(),
             shader_materials: self.shader_materials.clone(),
             jobs: None,
@@ -1967,6 +1975,7 @@ mod tests {
 
     fn world_with(entities: BTreeMap<String, EntityState>) -> World {
         World {
+            ui_image_batches:BTreeMap::new(),ui_image_batch_revision:0,
             ui_cursor:None,projected_geometry:BTreeMap::new(),projected_frame:None,projected_revision:0,
             projected_viewport:Default::default(),projected_world_hidden:false,
             application: Default::default(),

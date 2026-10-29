@@ -110,6 +110,19 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
 /// adding an unknown word cannot turn a query into a broad OR search.
 fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
     let has = |aliases: &[&str]| terms.iter().any(|term| aliases.contains(term));
+    // Ordinary artwork discovery starts with logical resources/instances. GPU
+    // acceleration is a host decision; expert projected buffers stay explicit.
+    let artwork = ["artwork", "image", "images", "imagebatch", "image_batch", "圖片", "图片", "圖像", "图像", "大量圖片", "大量图片"];
+    let artwork_context = ["2d", "gpu", "ui", "retained", "batch", "batches", "batching", "resource", "resources", "camera", "pan", "panning", "transform", "affine", "clip", "crop", "opacity", "many", "大量", "相機", "相机", "平移"];
+    if let Some(tokens)=fully_segment_ui_terms(terms,&[&artwork[..],&artwork_context[..]].concat()) {
+        let image_intent=tokens.iter().any(|term|artwork.contains(term))
+            && tokens.iter().any(|term|["gpu","retained","batch","batches","batching","imagebatch","image_batch","many","大量","大量圖片","大量图片"].contains(term));
+        let pan_intent=tokens.iter().any(|term|["camera","相機","相机"].contains(term))
+            && tokens.iter().any(|term|["pan","panning","平移"].contains(term));
+        if image_intent || pan_intent {
+            return Some(["ui.imageBatch.define","ui.components.imageBatch","ui.setRoot","ui.imageBatch.remove"].into_iter().filter_map(describe).collect());
+        }
+    }
     // Explicit responsive composition uses the shared opt-in model. Keep this
     // vocabulary separate from virtual collections and typography: "virtual
     // grid" and "font layout" must retain their established capability routes.
@@ -1902,7 +1915,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "UiSliderInteraction? = {phase:'start'|'drag'|'end'|'cancel',ratio:number in 0..1}; nil when no event was delivered this tick.",
             vec!["Read-only; multiple reads never consume the event"],
             "The current tick snapshot is stable. Successful ticks consume pending events; a following tick without input has nil, while a failed tick preserves pending events for retry. Hosts retain start/end/cancel order and coalesce adjacent drag samples.",
-            vec!["Use matching 0.4.0 SDK/Core/player templates. ui_sliders frames reject unknown phase, non-finite/out-of-range ratio, blank/oversized ID and more than 256 controls."],
+            vec!["Use matching SDK/Core/player templates with @unone/ui 0.5.0. ui_sliders frames reject unknown phase, non-finite/out-of-range ratio, blank/oversized ID and more than 256 controls."],
             "local event = api.input.getSliderInteraction(\"volume\") -- advanced: ordinary code uses volume.update(api.input)",
             vec!["ui.components.createSlider", "ui.components.slider"],
         ),
@@ -2033,6 +2046,30 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["observation.set", "observation.array", "spatial.take"],
         ),
         descriptor(
+            "ui.imageBatch.define", "ui",
+            "Define retained ordered image artwork once, then move instances using a cheap affine transform.",
+            "For 2D GPU artwork, image batching, camera pan and 大量圖片: retain logical image_batch asset/crop/opacity content and change instance placement independently. The official host chooses eligible GPU runs or an order-preserving Canvas fallback. Read docs/ui-slice-and-budget.md#retained-image-artwork.",
+            "This stores logical images, not packed GPU geometry. Keep gameplay, visibility decisions and drawing order in Luau. Resource mutations are forbidden inside pure virtual renderItem callbacks.",
+            vec![parameter("id","string","Stable resource id, 1..1024 bytes."),parameter("content","UiImageBatchDefinition","{bounds,quads}; finite local bounds contain ordered image rectangles; source crops use pixels.")],
+            "nil",vec!["Copy and validate the complete immutable generation, registry budgets and live UI references before replacement"],
+            "Identical content preserves its revision. Existing instances reference the current generation; old snapshots keep the previous immutable content. Publish kind=image_batch with content=id and optional transform={a,b,c,d,tx,ty}; rect is its stage clip/layout viewport. Inline quads remain a logical authoring convenience. Host support is explicit; no new scene or automatic layout.",
+            vec!["UI_IMAGE_BATCH_CONTENT for a missing reference; UI_NODE_LIMIT counts every referenced quad per instance; UI_PURE_VIEW rejects renderItem mutations; invalid definitions leave current content unchanged."],
+            "api.ui.imageBatch.define(\"art\",{bounds={x=0,y=0,width=10,height=10},quads={{asset=\"texture://tile\",rect={x=0,y=0,width=10,height=10}}}})",
+            vec!["ui.imageBatch.remove","ui.setRoot","ui.components.imageBatch"],
+        ),
+        descriptor(
+            "ui.imageBatch.remove", "ui",
+            "Release an unused retained image artwork resource.",
+            "After replacing the UI tree so no node references that content id.",
+            "Removing visible content fails explicitly; this does not remove UI nodes or alter their order.",
+            vec![parameter("id","string","The retained image content id.")],
+            "boolean: whether a resource was removed.",vec!["Release the live registry reference after checking published UI ownership"],
+            "Snapshots may retain immutable generations until released. Recreating the id receives a fresh engine revision. Resources share the runtime world's reset and reload lifetime.",
+            vec!["UI_IMAGE_BATCH_IN_USE: replace the UI tree before removal","UI_PURE_VIEW: no resource mutations in renderItem"],
+            "local removed = api.ui.imageBatch.remove(\"art\")",
+            vec!["ui.imageBatch.define","ui.setRoot"],
+        ),
+        descriptor(
             "ui.setCursor", "ui",
             "Declare a default, hidden or asset-image cursor for the official Web host.",
             "Luau chooses the sprite and timing; the generic host positions it at the current real mouse/pen and paints after UI. Read docs/ui-cursor.md.",
@@ -2095,7 +2132,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui.components.createResponsiveLayout",
             "ui",
             "Create the official reusable responsive layout model: select an authored aspect breakpoint and resolve explicit slot/row/column/grid regions without changing UI nodes.",
-            "Default for responsive layout, adaptive layout, breakpoints, row/column/grid, 自適應排版 and 響應式斷點. Available on api.ui.components and the themed kit. Declare @unone/ui 0.4.0; use canonical UiResponsiveLayoutOptions<T>, UiResponsiveLayout<T>, UiLayoutNode and UiViewport from game api typings. Read docs/ui-responsive.md for a complete typed lifecycle and coordinate examples.",
+            "Default for responsive layout, adaptive layout, breakpoints, row/column/grid, 自適應排版 and 響應式斷點. Available on api.ui.components and the themed kit. Declare @unone/ui 0.5.0; use canonical UiResponsiveLayoutOptions<T>, UiResponsiveLayout<T>, UiLayoutNode and UiViewport from game api typings. Read docs/ui-responsive.md for a complete typed lifecycle and coordinate examples.",
             "No implicit component layout, text measurement, wrapping, CSS, inferred breakpoints, node transformation, renderer replacement or application rules. Project Luau chooses semantic groups, thresholds, content and styles; this shared model owns selection and geometry arithmetic.",
             vec![parameter("options", "UiResponsiveLayoutOptions<T>", "space='stage' (default) or 'scroll'; dense nonempty variants={name,minAspect,layout,values:T}. First minAspect=0, then strictly ascending finite thresholds; unique nonblank names. UiLayoutNode is {id,kind='slot'|'row'|'column'|'grid',size?,grow?,padding?,gap?,columns?,children?}. Explicit positive size fixes a row/column child's main-axis extent; otherwise positive grow defaults to 1. No size+grow, root sizing or grid-child sizing. Grid requires columns integer 1..256 and equal cells. Slot rejects container-only fields. IDs are unique within each variant.")],
             "UiResponsiveLayout<T>; resolve({aspect:number},bounds?:UiViewport)->{variant:string,values:T,rect(id)->UiRect,viewport(id)->UiViewport}. Bounds default {left=0,top=0,width=100,height=100}.",
@@ -2109,7 +2146,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui.components.createSlider",
             "ui",
             "Create the official reusable numeric Slider control with host-owned hit testing/capture and package-owned range, step, value and gesture lifecycle.",
-            "Default for slider, slider drag, slider value, volume slider, 滑桿拖曳 and 滑桿數值. Available on api.ui.components and the themed kit. Declare @unone/ui 0.4.0 and use canonical UiSliderOptions, UiSliderControl, UiSliderViewProps and UiSliderUpdate from game api typings.",
+            "Default for slider, slider drag, slider value, volume slider, 滑桿拖曳 and 滑桿數值. Available on api.ui.components and the themed kit. Declare @unone/ui 0.5.0 and use canonical UiSliderOptions, UiSliderControl, UiSliderViewProps and UiSliderUpdate from game api typings.",
             "Not a callback, automatic layout or game settings binding. Create once; keep whether/when to apply a setting in the project. Use the low-level slider leaf only when deliberately implementing another control protocol.",
             vec![parameter("options", "UiSliderOptions", "id and finite value required; min=0, max=1 (max>min), optional positive step snaps relative to min, both endpoints reachable; axis='horizontal'|'vertical' (default horizontal), reverse=false.")],
             "UiSliderControl with view(props)->UiSliderNode; update(api.input)->{value,changed,dragging,started,released,cancelled}; getValue(); setValue(value); cancel().",
@@ -2123,7 +2160,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui.components.create",
             "ui",
             "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
-            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.4.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createResponsiveLayout/createSlider/text/button/slider/combobox/panel/image/imageBatch/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control and createResponsiveLayout for opt-in responsive geometry. Direct module constructors use no theme defaults.",
+            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.5.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createResponsiveLayout/createSlider/text/button/slider/combobox/panel/image/imageBatch/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control and createResponsiveLayout for opt-in responsive geometry. Direct module constructors use no theme defaults.",
             "No hardcoded theme, implicit layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau; opt-in createResponsiveLayout handles shared breakpoint selection and row/column/grid arithmetic from authored definitions. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
             vec![parameter(
                 "theme",
@@ -2134,7 +2171,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["Construct pure Luau tables; does not publish UI or mutate props/theme"],
             "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
             vec![
-                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.4.0\"} to project.unone.json; info() remains available for discovery.",
+                "UI_PACKAGE_NOT_DECLARED: add runtime_packages: {\"@unone/ui\":\"0.5.0\"} to project.unone.json; info() remains available for discovery.",
                 "Both api.ui.components.button and kit.button exist. api.ui.component and onClick do not exist; publish with ui.setRoot and read semantic action edges with input.wasPressed.",
                 "Author exactly rect OR anchor+size on each node; component children do not become local coordinates. Surface ID id..'/surface' must be globally unique.",
                 "Keep foreground and partial-overlap checks enabled; a surface does not excuse unrelated or protruding content.",
@@ -2545,7 +2582,7 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     ] {
         result.push(descriptor(
             &format!("ui.components.{method}"), "ui", purpose,
-            "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.4.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
+            "Official @unone/ui control entrypoint; declare runtime_packages={\"@unone/ui\":\"0.5.0\"}. The same method exists on the UiComponentKit returned by create(theme?). See docs/ui-components.md; use game api typings for canonical EngineApi, UiApi and UiComponentKit.",
             "No callbacks, implicit layout, inherited container styles or project behavior. For explicit authored responsive geometry use ui.components.createResponsiveLayout, then pass its rect results to leaves. api.ui.component does not exist. Constructors return canonical data; ui.setRoot publishes it.",
             vec![parameter("props", props, "Canonical typed props without kind. Leaf/component placement is flattened rect OR anchor+size. screen uses id/node/children/budget, without placement. Component children retain stage coordinates (0..100, y-up); scroll content uses its documented local top-left/y-down contract. action is a semantic string, never an onClick function.")],
             returns, vec!["Copy authored props and applicable theme styles; no UI publication"],
@@ -2562,7 +2599,7 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     ] {
         result.push(descriptor(
             &format!("ui.components.{method}"), "ui", purpose,
-            "Declare @unone/ui 0.4.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
+            "Declare @unone/ui 0.5.0; the module and themed kit delegate to the same existing scroll helper. Read docs/ui-scroll.md and docs/ui-components.md for coordinates, lifecycle and current Web-only host support. Legacy api.ui.scrollView/virtualList/virtualGrid remain compatible.",
             "No theme style for scroll containers, automatic responsive layout, native scroll support or gameplay callback. Virtual renderItem is UI-pure and never advances Game.update or consumes RNG.",
             vec![parameter("options", options, "Viewport belongs to its containing space; content uses local top-left/y-down coordinates. Optional inertia=false and deceleration=8 (finite (0,100], exponential velocity decay in s^-1) configure Web host-only release motion; no elastic overscroll. Stable item keys and explicit fixed row/cell sizes are required for virtualization.")],
             "UiScrollNode (also a UiNode); preserve registered virtualList/virtualGrid handles when composing a screen/component.",
@@ -3141,6 +3178,26 @@ mod tests {
                 .when_not_to_use
                 .contains("engine neither simulates particles")
         );
+    }
+
+    #[test]
+    fn retained_artwork_discovery_exposes_the_resource_lifecycle_and_cheap_instance_contract() {
+        let define=describe("ui.imageBatch.define").unwrap();
+        assert!(define.purpose.contains("retained"));
+        assert!(define.frame_semantics.contains("Identical content preserves"));
+        assert!(define.when_to_use.contains("retained-image-artwork"));
+        assert_eq!(search("ui.imageBatch.define")[0].name,"ui.imageBatch.define");
+        assert!(describe("ui.imageBatch.remove").unwrap().common_errors.iter().any(|error|error.contains("UI_IMAGE_BATCH_IN_USE")));
+        for query in ["2D GPU artwork","image batching","retained images","many images","camera pan","大量圖片","大量 图片","相機平移"] {
+            let matches=search(query);
+            assert_eq!(matches.first().map(|entry|entry.name.as_str()),Some("ui.imageBatch.define"),"{query}");
+            assert!(matches.iter().any(|entry|entry.name=="ui.components.imageBatch"),"{query}");
+            assert!(matches.iter().all(|entry|!entry.name.starts_with("projected.")),"{query}");
+            assert!(search(&format!("{query} unfindable")).is_empty(),"{query}");
+        }
+        assert_eq!(search("projected.set")[0].name,"projected.set");
+        assert_eq!(search("ui.components.image")[0].name,"ui.components.image");
+        assert_eq!(search("ui image")[0].name,"ui.components.image");
     }
 
     #[test]

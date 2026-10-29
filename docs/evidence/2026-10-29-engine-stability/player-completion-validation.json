@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-30",
+  "baseline_commit": "8060abf72210150e913bf9a5ab0c076eef8591fa",
+  "source_dirty": true,
+  "scope": "Official Web host completion counters and native retained UI unsupported gate; focused source checks before final combined SDK/browser validation.",
+  "checks": [
+    {
+      "command": "node --test web/shared/player-completion.test.mjs web/shared/player-profile-main.test.mjs web/shared/player-profile-main-backend.test.mjs web/shared/ui-cursor.test.mjs",
+      "passed": 17,
+      "failed": 0,
+      "exit_code": 0,
+      "raw_log": "player-completion-focused-tests.log"
+    },
+    {
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib native_retained_ui_is_rejected_before_any_gpu_or_asset_preparation",
+      "passed": 1,
+      "failed": 0,
+      "filtered": 67,
+      "exit_code": 0,
+      "raw_log": "native-retained-image-gate.log",
+      "environment": "CARGO_HOME/RUSTUP_HOME/PATH/LIBRARY_PATH as native-validation.json; debug test profile; no release proc-macro overrides."
+    }
+  ],
+  "counter_contract": {
+    "accessor": "window.unonePlayerPerformance.snapshot({windowMs:5000})",
+    "completion": "Explicit completed outcomes from world renderer, Canvas UI and required cursor, after synchronous submissions; no GPU/compositor scanout acknowledgement.",
+    "publication_timestamp": "Main-host acceptance of already-decoded snapshot; performance.timeOrigin included, not worker serialization time.",
+    "reset": "Successful new project load/restart starts a metrics session; interpolation-only resets do not. Dropped steps are relative to the scheduler total at that session start.",
+    "storage": "512 numeric intervals; no per-frame report arrays/sorting. Queries construct detached frozen reports and never invoke runtime/worker commands."
+  },
+  "independent_review": {
+    "reviewer": "Codex /root/runtime_audit",
+    "result": "No concrete P1/P2 in completion helper/main/cursor/export glue, including session-relative dropped-step follow-up."
+  },
+  "limits": [
+    "The combined actual Canvas/renderer pending/failure/context-loss and final SDK browser execution remain separate validations.",
+    "No benchmark or full native support was run; native retained content/transform rejects before preparation/painting.",
+    "Earlier native artifacts remain untouched. No 60FPS, zeroGC, finalcommit or universal memory-leak certification follows from these tests."
+  ],
+  "startup_followup": {
+    "command": "node --test web/shared/startup-player-entry.test.mjs web/shared/player-completion.test.mjs web/shared/player-profile-main.test.mjs web/shared/player-profile-main-backend.test.mjs web/shared/ui-cursor.test.mjs",
+    "exit_code": 0,
+    "passed": 25,
+    "failed": 0,
+    "raw_log": "player-startup-completion-tests.log",
+    "scope": "Actual main startup entry with real Canvas asset readiness in ordinary/checked modes; unknown outcome rejection, no READY/completed draws/scheduler while images pending, no RAF polling during asset waits, final-barrier cursor freshness, cursor retirement/disposal.",
+    "limits": "Controlled host/renderer fixtures; actual exported browser/SDK remains separate."
+  }
+}

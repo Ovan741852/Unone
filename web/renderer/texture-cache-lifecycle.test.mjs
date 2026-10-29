@@ -23,7 +23,7 @@ function fixture(policy={max_bytes:16,max_entries:1,idle_frames:2}){
   const disposable=kind=>{const result={kind,disposed:0,dispose(){this.disposed++;}};allocated.push(result);return result;};
   const THREE={TextureLoader:class {load(url,resolve,_progress,reject){loads.push({url,resolve,reject});}},
     MeshBasicMaterial:class {constructor(value){Object.assign(this,value);Object.assign(this,disposable('material'));}},DoubleSide:2};
-  const environment={textureRecords,textureCache,meshAssets,records,meshes3d,THREE,
+  const environment={uiImageBatchPrefix:{clear(){}},assetRequestPending:false,textureRecords,textureCache,meshAssets,records,meshes3d,THREE,
     options:{loadAssetUrl:async asset=>asset.id},configureTexture:(_three,texture)=>texture,
     fetch:async url=>{const data=deferred();fetches.push({url,...data});return {ok:true,json:()=>data.promise};},
     validateMesh:raw=>raw,meshGeometry:()=>disposable('geometry'),frameProfile:null,

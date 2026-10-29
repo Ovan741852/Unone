@@ -357,7 +357,7 @@ which ships as pure Luau with Core and the portable SDK. Search
 `game api search "UI package"`, `"shared components"`, `"button component"`,
 `"card component"`, `"官方UI套件"`, `"共用元件"` or `"主題樣式"`; describe
 `ui.components.info` and `ui.components.create`. Declare the exact bundled version
-in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.4.0"}`. `info()` is
+in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.5.0"}`. `info()` is
 available before declaration and reports the name, version and `declared` flag.
 No npm install, import or filesystem module loader is involved.
 

@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-30",
+  "source_baseline": "8060abf",
+  "source_dirty": true,
+  "scope": "Independent final Web retained-image resolver/Canvas/prefix/Three review plus cross-reviewed whole-player startup completion follow-up.",
+  "reviewer": "Codex /root/native_performance",
+  "source_checkpoint": "artifacts/web-retained-20261030-template-checkpoint3",
+  "reviewed_sources": [
+    {
+      "file": "web/player/main.js",
+      "sha256": "6d361954a2c8294a61dfbcbf9b264069a30b04640c1cd8ad0b2a1582d88d8e23",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/shared/player-completion.mjs",
+      "sha256": "4b6d6ca276d5a84642986fc8cb87be20fe5560c9de19d31756a214389f01b7f0",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/shared/ui-cursor.mjs",
+      "sha256": "1d48485fe01c43b34a80c6aa80578c1d9b7441de289782ab3c5854805a3c70f3",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/shared/canvas-ui.mjs",
+      "sha256": "c53cf8bcdc382c10019c76c2b8c9605d2b6d6d17d5af7cf6f443ec485573c6c4",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/shared/ui-image-batch.mjs",
+      "sha256": "cf41cbc708e6d38301fcd3357a5a4c8ae5607af8a15fa426a11aea1ccbebfd9f",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/renderer/ui-image-batch-prefix.js",
+      "sha256": "6d7e4345dd170804d6bc12e465e97be86d040eddfb4d16cdeb5ab1f39aeda265",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/renderer/three.js",
+      "sha256": "4222d8718179ca885172184247b378b61106590313ad19634cac4c6b85f46a5d",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/shared/startup-presentation.mjs",
+      "sha256": "930554c590587bca5e08064a47bbe99dc17e68968b32322b7177b210b51cefc9",
+      "checkpoint3_matches": true
+    },
+    {
+      "file": "web/shared/retained-image-generation.mjs",
+      "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c",
+      "checkpoint3_matches": true
+    }
+  ],
+  "findings": [
+    {
+      "problem": "Zero-eligible, partial or target-mismatch fallback retained old GPU instance/definition owners.",
+      "disposition": "Corrected: clear/reconcile selected GPU ownership, then sweep only actually selected generations. Focused regression source reviewed."
+    },
+    {
+      "problem": "Canvas.ready waiter could remain stranded after asset invalidation retired its pending generation.",
+      "disposition": "Corrected: reconcile current required asset generations and notify; stale old loads cannot unblock current readiness."
+    },
+    {
+      "problem": "Three would silently resize oversized source images and change crop interiors.",
+      "disposition": "Corrected: source admission requires a known positive actual GPU maxTextureSize and supported image dimensions; otherwise Canvas fallback."
+    },
+    {
+      "problem": "Boot READY could precede Canvas assets, or become stale when a cursor became required at the final RAF barrier.",
+      "disposition": "Root delegated main/helper/cursor implementation to this reviewer; independently cross-reviewed by Codex /root/runtime_audit. Startup awaits renderer/Canvas/current cursor readiness, redraws at final commit and requires complete host outcomes; unknown outcomes fail explicitly."
+    }
+  ],
+  "result": "Corrections re-read; no additional concrete P1/P2 in bounded reviewed scope.",
+  "evidence": [
+    {
+      "kind": "Whole Web Node suite executed by Web agent; raw log read",
+      "passed": 467,
+      "failed": 0,
+      "skipped": 0,
+      "raw_log": "retained-ui-web-tests.log"
+    },
+    {
+      "kind": "Focused startup/counter/cursor suite executed by implementation agent",
+      "passed": 25,
+      "failed": 0,
+      "raw_log": "player-startup-completion-tests.log"
+    },
+    {
+      "kind": "Actual GPU/Canvas component proof executed by Web agent, report read",
+      "cases": 30.0,
+      "raw_report": "retained-ui-prefix-browser-r5.json",
+      "interior_bad_channels": 0,
+      "shared_edge_gaps": 0,
+      "scope": "Fractional pan/zoom/clip, DPR/portrait, source crop/alpha/order, large origin and context restore. Accepted outer one-pixel coverage rim can differ from Canvas AA."
+    }
+  ],
+  "limits": [
+    "The prefix accelerates only a leading eligible image-batch run; it preserves ordinary Canvas HUD/interleaving and falls back for unsupported precision, transforms, image limits or targets.",
+    "GPU pixel-center outer edge coverage intentionally differs from Canvas AA. Interior tolerances are bounded by tested fixtures, not universal pixel equivalence.",
+    "This record is not the final SDK/runtime artifact manifest, full-game rendering acceptance, FPS/GC benchmark or universal memory-leak certification. GPU allocation errors use fatal host teardown; no recoverable driver-allocation transaction is claimed."
+  ]
+}

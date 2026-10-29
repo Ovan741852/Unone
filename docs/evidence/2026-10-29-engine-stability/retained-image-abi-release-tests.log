@@ -1,0 +1,50 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling autocfg v1.5.1
+   Compiling libm v0.2.16
+   Compiling getrandom v0.4.3
+   Compiling cfg-if v1.0.4
+   Compiling serde_core v1.0.229
+   Compiling typenum v1.20.1
+   Compiling crossbeam-utils v0.8.22
+   Compiling find-msvc-tools v0.1.12
+   Compiling shlex v2.0.1
+   Compiling version_check v0.9.5
+   Compiling smallvec v1.16.0
+   Compiling bytemuck v1.25.2
+   Compiling paste v1.0.15
+   Compiling which v8.0.6
+   Compiling heapless v0.8.0
+   Compiling crossbeam-epoch v0.9.21
+   Compiling byteorder v1.5.0
+   Compiling equivalent v1.0.2
+   Compiling parking_lot_core v0.9.12
+   Compiling libc v0.2.189
+   Compiling allocator-api2 v0.2.21
+   Compiling foldhash v0.2.0
+   Compiling thiserror v2.0.20
+   Compiling crossbeam-deque v0.8.8
+   Compiling safe_arch v0.7.4
+   Compiling hash32 v0.3.1
+   Compiling generic-array v0.14.7
+   Compiling windows-link v0.2.1
+   Compiling memchr v2.8.3
+   Compiling num-traits v0.2.19
+   Compiling matrixmultiply v0.3.11
+   Compiling pkg-config v0.3.34
+   Compiling zmij v1.0.23
+   Compiling rawpointer v0.2.1
+   Compiling stable_deref_trait v1.2.1
+   Compiling hashbrown v0.16.1
+   Compiling wide v0.7.33
+   Compiling robust v1.2.0
+   Compiling hashbrown v0.17.1
+error: failed to run custom build command for `quote v1.0.47`
+
+Caused by:
+  could not execute process `D:\Projects\Unone\target\release\build\quote-7403f9114f4290f8\build-script-build` (never executed)
+
+Caused by:
+  應用程式控制原則已封鎖此檔案。 (os error 4551)
+warning: build failed, waiting for other jobs to finish...

@@ -250,3 +250,290 @@ discovery/type-contract test. Raw output is retained in
 remaining prototype registration, input type, recipe or tests outside this
 historical record; `git diff --check` passed. These are focused source gates,
 not a new SDK build or a performance measurement.
+
+## Retained logical image artwork — engine 0.2.0 / UI 0.5.0
+
+The Core follow-up implements reusable logical artwork resources under the
+existing `image_batch` UI node. This is engine presentation ownership: ordered
+asset/crop/opacity data, affine placement, validation and bounded resource
+lifetime. Content, projection choices, visibility decisions, picking and game
+rules remain authored in Luau. No JYRogue product or game script was changed.
+
+`api.ui.imageBatch.define(id,{bounds,quads})` creates a copied immutable Arc
+generation. Nodes reference `content=id` and may change the six-value affine
+transform independently; their explicit stage rect is the clip/layout viewport.
+Core admissions use cached per-generation count/string metadata and do not scan
+the resource quads for a camera-only tree change. Complete canonical snapshots
+contain `{revision,bounds,quads}`; the resource caches that full JSON encoding.
+The private player transfer protocol and renderer are separate agents' work.
+
+Replacement validates registry limits and all current UI references before
+commit. In-use removal fails; old snapshots can retain old generations.
+Resources share world reset/reload ownership. Virtual `renderItem` resource
+mutations fail, including initial materialization, with guard restoration after
+callback errors. Scroll-local retained artwork is explicitly rejected in this
+slice. Inline logical image authoring remains available; unifying its private
+rendering path does not require another game-facing GPU API.
+
+The package's new retained constructor props ship as `@unone/ui` 0.5.0 with the
+deliberately breaking engine 0.2.0 release. Current authoring guidance, templates'
+canonical metadata, fixtures and AGENTS package instructions were aligned on an
+explicit path allowlist. Historical ADR/evidence/review captures and unrelated
+UnoneUI plugin versions were left intact. Existing game configurations were not
+automatically migrated.
+
+Implementing-agent checks: `cargo check -p unone-engine --lib` passed; before the
+version-string alignment, the retained integration suite passed 7/7, existing
+UI component integration tests 14/14, and image-batch package tests 2/2. Logs are
+`.cache/retained-image-core-check.log` and
+`.cache/retained-image-package-tests.log`. The engine 0.2.0/UI 0.5.0 integration
+rerun compiled, but Windows App Control blocked the new executable before any
+test ran (error 4551); see `.cache/retained-image-package-0.5-tests.log`.
+Likewise, the UI library test executable compiled but was blocked before
+execution (`.cache/retained-image-ui-lib-tests.log`); the subsequent API test
+command was not reached. The private Arc-release and aggregate-registry-budget
+unit tests are therefore not recorded as passing. No policy workaround was
+attempted. `cargo test -p unone-engine --lib --no-run` subsequently passed for
+engine 0.2.0, compiling the new API and ownership tests; its raw output is
+`.cache/retained-image-lib-0.2-compile.log`. Actual matching WASM/Web execution,
+pixels, full publication cost,
+frame cadence, GC and long-run memory evidence remain separate acceptance gates.
+
+### Encoded-definition limit and completed Core source gates
+
+An independent follow-up found that the 8 MiB raw UTF-8 asset-string allowance
+did not establish the Web wire's encoded byte bound: JSON escaping can expand a
+control character from one byte to six. Core admission now prepares the
+immutable generation's cached canonical JSON once, rejects a resource over
+16 MiB and rejects a registry whose cached definition payloads sum above
+32 MiB. These checks precede resource/tree/revision mutation. Camera-only
+updates and checks of previous generations read cached string lengths in O(1).
+The original semantic DTO validation remains in place.
+
+The focused boundary suite passed 4/4, including exact 16 MiB acceptance,
+one-byte overflow rejection, escaped-NUL expansion, exact aggregate 32 MiB
+acceptance and atomic aggregate overflow rejection, plus the previously
+unexecuted Arc-release/reset and stored-quad checks. Raw output is
+`.cache/retained-image-encoded-budget-tests.log`.
+
+Windows subsequently permitted the final engine 0.2.0 test binaries to execute.
+On the frozen final Core/UI 0.5.0 source, `cargo test -p unone-engine --lib ui::`
+passed 33/33, `cargo test -p unone-engine --lib api::tests` passed 16/16, and the
+retained/image-batch-package/UI-component integration targets passed 7/7, 2/2
+and 14/14. Final logs are `.cache/retained-image-ui-final-tests.log`,
+`.cache/retained-image-api-final-tests.log` and
+`.cache/retained-image-package-final-tests.log`. These results supersede the
+earlier execution-block limitation for these focused targets; they do not
+replace the official exported Web pipeline, pixel or performance gates.
+
+### Canonical field order during physical input
+
+Before the unshipped 0.2.0 candidate was rebuilt, the retained registry was
+moved to the first `WorldSnapshot` field. A changing physical-input receipt or
+application field had previously preceded the static definitions, invalidating
+the exact-byte SHA prefix at its first block during interaction. Definitions
+now precede all mutable metadata. Complete canonical data is still hashed; this
+does not remove the receipt, ignore a revision or weaken digest comparison.
+
+A full-snapshot regression uses more than 48 KiB of static artwork, changes
+receipt/frame/time/application (including optional field presence), compares
+each cached result to a complete SHA-256, and requires at least 16 KiB of exact
+prefix reuse. It compiled, but Windows App Control blocked the new executable
+before execution (4551). See `.cache/retained-canonical-input-prefix-tests.log`;
+this new test is not recorded as passing. The earlier 72 focused source tests
+were executed before this final declaration-order change.
+
+## 2026-10-30 completion telemetry and native retained-UI admission
+
+Codex `/root/runtime_audit` independently read `/root/native_performance`'s
+completion helper, official main-host glue, cursor outcomes, export inventory
+and UI-disabled stubs. It found no concrete P1/P2, including the follow-up that
+makes dropped-step counts relative to the successful load/restart session.
+Main and worker paths consume existing decoded publications; querying the
+frozen accessor invokes no runtime command. The fixed 512-sample interval ring
+is copied/sorted only on report queries. Completion requires explicit world,
+Canvas UI and required cursor outcomes, after synchronous submission; missing
+contracts remain unknown. Focused helper/main-backend/worker-entry/cursor tests
+passed 17/17. Actual combined renderer/UI pending/failure/context-loss browser
+execution remains separate evidence, not established by those fixtures.
+
+The same independent reviewer also read the native retained-image gate and
+found no concrete P1/P2. Recursive component/scroll traversal rejects retained
+content or transforms at startup admission and before later preparation/paint;
+unused definitions remain admissible. Native explicitly declares that limit
+instead of painting an empty quad list. The nested missing-texture admission
+regression passed 1/1. No optimized native artifact or FPS run was produced in
+this slice. Exact commands and raw logs are in
+[completion validation](../evidence/2026-10-29-engine-stability/player-completion-validation.json).
+
+## 2026-10-30 retained-resource wire review and serialization follow-up
+
+Codex `/root/native_performance` independently reviewed root's new ABI resource
+leases, epoch-aware synchronous reader, immutable-generation grants, worker
+resource deltas, receiver admission and backend/core teardown after `8060abf`.
+Concrete findings were reported before changes: worker admission could cancel
+its timeout and then strand the request when delta validation threw; close kept
+the decoded latest graph and old asynchronous barriers could write after
+unload; resource-ID and encoded-byte limits differed between Core and the
+reader/first consumer. The implementing agents corrected these paths, and the
+reviewer re-read the corrections. No additional concrete P1/P2 was found in
+this bounded wire scope. Generation grants prove immutable ownership, not
+geometry validity; first presentation consumers still validate complete content.
+
+The reviewer then authored a separately delegated serializer optimization in
+`ui_transport.rs`. A generic forwarding serializer filters only the top-level
+registry field from the existing WorldSnapshot struct; it does not hand-copy a
+field list or affect nested names. No-instance presentation writes directly to
+the reusable OUTPUT buffer. Canonical state remains complete, and mixed
+instance worlds keep their explicit transport rewrite. Retiring the final wire
+registry releases the canonical/lease vectors and retained hash capacity once;
+ordinary non-UI publications retain normal bounded hash-prefix reuse.
+Codex `/root/runtime_audit` independently reviewed this serializer/lifetime
+change and found no concrete P1/P2. Its requested mixed UI/instance regression
+was added to the final source.
+
+Intermediate optimized source executed 4/4 focused ABI tests and 19/19 full ABI
+tests. Initial final-source attempts were blocked by Windows application
+control before execution (error 4551), including a release dependency build
+script. Root subsequently ran the normal production-feature command
+`cargo test -p unone-web-live-smoke --no-default-features`: all 10 tests passed,
+including the six final retirement, mixed-instance, unload and serialization
+cases. That later execution supersedes the initial execution gap; failed logs
+remain preserved. Actual final WASM/browser/worker rendering and SDK validation
+remain separate evidence.
+Commands, successful and blocked raw logs, ownership limits and findings are in
+[retained wire validation](../evidence/2026-10-29-engine-stability/retained-image-wire-validation.json).
+
+## Final retained Core execution and candidate-1 official-player smoke
+
+The final ordinary Core library run completed with **352 passed, 0 failed,
+3 ignored** in `.cache/retained-image-core-full-tests.log`. It executed the new
+complete-snapshot input-receipt/application prefix regression, encoded byte
+boundaries, immutable Arc release/reset and all other retained Core library
+checks. This supersedes earlier Windows 4551 execution blocks for those Core
+tests; their original failed-launch logs remain available. It does not turn the
+separately blocked final ABI test executable into a passing run.
+
+The Core authorship scope was the existing UI node/resource model, strict
+binding/type validation, affine placement, immutable canonical content,
+bounded admission and world-owned reset/reload lifetime. The final field-order
+change retains complete SHA-256 input while placing immutable artwork before
+mutable physical/application/frame data. Gameplay and rendering remain separate
+owners. The implementing agent's independent review scope was the other
+agents' wire serializer/lease retirement, completion metrics and native
+fail-closed admission; those bounded dispositions are recorded above.
+
+The actual production SDK candidate-1 official Web export also passed the
+prepared end-to-end smoke in both **main and worker** backends, with eight
+recorded phases per backend. The report is
+`artifacts/retained-official-web-smoke-candidate1/report.json` and identifies
+Edge 156.0.4314.50 and release
+`a3d8fb5014576e4d82e4c4d1fde1d44cb898d5c0beedd43490619f9ee79f7cf7`.
+The run checked camera-only resource retention, mixed UI order and the real
+button path, live replacement, removal/recreation and context-loss recovery;
+root also inspected the initial/restored screenshots. It is pipeline/lifecycle
+evidence, not a frame-rate or long memory-soak result. Candidate 1 remains an
+internal candidate: a subsequent independent GPU fallback-retirement P2 is
+being fixed before publication. Its passing smoke is not certification of
+the next renderer/SDK candidate.
+
+### Retained artwork CLI discovery
+
+The release-candidate CLI search had returned no match for `2D GPU artwork`.
+The existing scoped authoring intent index now directs that phrase, image
+batching, camera pan and 大量圖片 to logical retained image resources and the
+official kit/publish lifecycle. It does not present expert projected buffers as
+the normal artwork route. The vocabulary requires a batch/retention/GPU or
+camera-pan intent; ordinary `ui image` and exact API names preserve their own
+routes, and adding an unknown word does not broaden a query. The descriptor
+states that GPU eligibility and an order-preserving Canvas fallback belong to
+the official host.
+
+This changed only the development-tools API index/descriptors and its focused
+test. The final API suite passed 16/16, including all new English/Chinese
+queries and the narrow-scope checks; output is
+`.cache/retained-artwork-discovery-final-tests.log`. Production Core behavior,
+canonical types, compiled gameplay and the final WASM are unchanged by this
+discovery follow-up; the CLI is rebuilt separately.
+
+## Constructor typing and local containment before SDK candidate 3
+
+The game owner reported four Luau errors at existing `imageBatch` calls. The
+canonical inputs now expose named `UiInlineImageBatchProps` and
+`UiRetainedImageBatchProps`: outer input fields are readonly, and `never?`
+exclusions preserve the two mutually exclusive forms. Their existing
+`UiComponentImageBatchProps` union and single constructor signature remain.
+Returned UI nodes remain mutable game-owned data. No runtime constructor,
+package Lua implementation, authored field shape, `any` escape or cast was
+added. Readonly constructor overloads were investigated but rejected because
+the actual full game produced an ambiguous-call error with a union fallback.
+
+Isolated verification met all 28 expected outcomes: fourteen positive/negative
+cases each on the existing owner Luau 0.743 analyzer and official pinned 0.734.
+It covers fresh inline/retained literals with screen/component backgrounds,
+named/union/inferred variables, and rejection of false screen, mixed/missing
+forms, inline transform and invalid asset/crop types. The owner's 0.743 binary
+has SHA-256 `7b756b36e5d912b097ecce27040a15a68ee79060e5ab27a996c3bdc5dfbbf415`;
+its existing build manifest discloses only a solver constraint-budget increase.
+The existing candidate-2 Core compiler also parsed and executed the new
+canonical declarations through one headless tick. This establishes parser
+support, not rendering or performance. Results are in
+`.cache/artifacts/image-batch-type-ergonomics/final/report.json`.
+
+The actual current JY source snapshot
+`a438b4a8385ecd86d12930a73dc0ee12c8f1a9e45bdece55e9709ba0ff9d98e5`
+was read into cache and only its canonical type block was refreshed. The
+original four TypeErrors became zero (analyzer status 0), with the game body,
+existing game assertions/lint warnings and original product file unchanged.
+No new game casts or handwritten shapes were used. Hashes and the complete
+raw output are in
+`.cache/artifacts/image-batch-type-ergonomics/final/full-game-report.json` and
+`full-game-canonical-only.log` beside it. Canonical source/docs mirror hashes
+match. These declaration changes require a refreshed CLI/SDK typing inventory,
+not a production VM behavior change.
+
+Root also authorized closing the previously recorded candidate-2 containment
+mismatch before the performance window. Core now compares local deltas and
+remaining width/height using the exact Web `1e-8` inequalities, avoiding rounded
+absolute endpoint sums. A real-Lua regression attempts oversized width and
+height at origin `1e9` and verifies atomic resource revision/content/tree
+preservation. The first final-source test executable compiled but Windows
+App Control blocked execution (4551), recorded at
+`.cache/retained-image-containment-final-tests.log`; it is not a passing run.
+An ordinary final-source retry subsequently executed **8/8 retained integration
+tests successfully**, including that atomic width/height regression; output is
+`.cache/retained-image-containment-final-tests-retry.log`. That executed result
+supersedes the earlier launch block for this target while preserving its log.
+Candidate 2 remains immutable historical evidence. The corrected next
+artifact requires the rebuilt Core/WASM and its own acceptance results.
+
+## Final retained Web compositor and READY review
+
+Codex `/root/native_performance` independently reviewed the frozen resolver,
+Canvas compositor, GPU prefix presenter and Three glue against `8060abf`.
+Reported P2 findings were corrected and re-read: fallback now retires prior and
+non-selected GPU owners; invalidating assets transfers existing readiness
+waiters to the new generation; and decoded images exceeding the actual GPU
+texture limit fall back before Three can silently resize source pixels.
+Leading-prefix eligibility preserves paint order, consecutive A/B/A texture
+runs and the Canvas HUD; f64 origin rebasing and conservative f32 admission keep
+unsupported transforms/precision on the Canvas path. No additional concrete
+P1/P2 was found in this bounded final source scope.
+
+The same reviewer reported whole-player READY preceding pending Canvas assets
+and was delegated the main/cursor fix. Startup now waits abortably for all
+required presentation assets and validates a fresh full submission at the final
+RAF barrier. Codex `/root/runtime_audit` found a cursor-enter freshness gap in
+that draft; a final-commit redraw and controlled regression corrected it. The
+independent reviewer re-read that correction and found no additional critical
+issue. Focused tests passed 25/25; the Web agent's final whole-Web log passed
+467/467 with no skips. All nine reviewed source hashes match immutable template
+checkpoint 3 in [final prefix review](../evidence/2026-10-29-engine-stability/retained-ui-prefix-review.json).
+
+The actual component GPU report covers 30 pan/zoom/clip/DPR cases with no
+interior channel errors above 2/255 or shared-edge gaps, unchanged camera
+geometry uploads/HUD raster, large-origin equivalence and context restoration.
+Its accepted one-pixel outer coverage rim differs from Canvas antialiasing;
+this is not universal pixel equivalence. The reviewer read that report and did
+not rerun the GPU workload. Final SDK/exported-player smoke, game FPS/GC and
+artifact certification remain separately identified evidence.

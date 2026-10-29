@@ -6,6 +6,7 @@ import {createRasterCapability} from './projected-raster-capability.js';
 import {assertRasterProfile} from './projected-raster-policy.js';
 import {createTextureCachePolicy} from './texture-cache-policy.js';
 import {createProjectedFrameDecoder} from '../shared/projected-frame.mjs';
+import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 const path=process.env.UNONE_RASTER_THREE_SOURCE??new URL('./three.js',import.meta.url);
 const source=fs.readFileSync(path,'utf8');
 function body(name,next){return source.slice(source.indexOf(`  function ${name}(`),source.indexOf(`  function ${next}(`));}
@@ -18,7 +19,7 @@ function fixture(){
  cap.ensure({width:1280,height:720,dpr:1});
  const renderer={getContext:()=>gl,getDrawingBufferSize:v=>{queries++;return {x:1280,y:720};},getPixelRatio:()=>1,
   outputColorSpace:'srgb',toneMapping:'none',capabilities:{},info:{reset(){throw Error('GPU resources reached');}}};
- const context={frameDraws:null,framePass:null,projectedFrame:()=>null,frameProfile:null,framePublication:null,assertFrameSnapshot(){},renderer,rasterCapability:cap,projected:{entries:()=>[],clear(){clears++;}},rasterPass:{invalidate(){invalidates++;}},
+ const context={DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear(){}},frameDraws:null,framePass:null,projectedFrame:()=>null,frameProfile:null,framePublication:null,assertFrameSnapshot(){},renderer,rasterCapability:cap,projected:{entries:()=>[],clear(){clears++;}},rasterPass:{invalidate(){invalidates++;}},
   checkedRaster:true,rasterPolicy:{requested:'upper_left_checked'},WebGL2RenderingContext,assertRasterProfile,
   antialias:false,bloomEnabled:false,aoEnabled:false,options:{},THREE:{Vector2:class{},SRGBColorSpace:'srgb',NoToneMapping:'none'},
   assertProjectedBackend(){},assertRasterSnapshot(){},projectedEntries:()=>[],heightfieldEntries:()=>[],backend:'webgl',bloom:null,

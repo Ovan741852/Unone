@@ -3,7 +3,7 @@
 Current scope (2026-10-16): the implemented official
 [`@unone/ui` package](ui-components.md) is a versioned pure Luau component kit,
 bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.4.0"}` and discover `ui.components.info` /
+`"runtime_packages":{"@unone/ui":"0.5.0"}` and discover `ui.components.info` /
 `ui.components.create`. Its returned kit constructs existing typed leaves and
 component/screen nodes and all canonical leaf controls, copies per-kind theme
 styles, composes instance IDs and can

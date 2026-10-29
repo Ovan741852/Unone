@@ -118,8 +118,8 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
   for(const [type,down]of [['keydown',true],['keyup',false]])listen(win,type,e=>{if(!externalInput&&routeKey(e,down))e.stopImmediatePropagation?.();},true);
   listen(win,'blur',()=>suspend());listen(win,'resize',position);listen(win,'scroll',position,true);
   listen(doc,'visibilitychange',()=>{if(doc.hidden)suspend();});
-  function setTree(tree){
-    const nodes=flattenUi(tree).filter(n=>n.kind==='text_input'&&visible(n)),live=new Set(nodes.map(n=>n.id));
+  function setTree(tree,imageBatches){
+    const nodes=flattenUi(tree,imageBatches).filter(n=>n.kind==='text_input'&&visible(n)),live=new Set(nodes.map(n=>n.id));
     if(nodes.length>64)throw Error('UI_TEXT_INPUT_LIMIT: at most 64 fields may be presented');
     for(const [id,record]of records)if(!live.has(id)){if(active===record)close('cancel');records.delete(id);}
     for(const node of nodes){
@@ -142,7 +142,7 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
     if(disposed)throw Error('UI_TEXT_INPUT_DISPOSED');
     const world=value.world??value,hasFields=hasTextInput(world.ui?.children);
     if(!hasFields&&!records.size)return value;
-    setTree(world.ui);
+    setTree(world.ui,world.ui_image_batches);
     if(!hasFields)return value;
     const children=(world.ui?.children??[]).map(n=>{
       if(n.kind!=='text_input')return n;

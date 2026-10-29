@@ -25,7 +25,7 @@ local leafFields: {[string]: Fields} = {
     combobox={id=true,text=true,action=true,expanded=true,style=true},
     panel={id=true,style=true,background_for=true},
     image={id=true,asset=true,fit=true,slice=true,alt=true,style=true,background_for=true},
-    image_batch={id=true,quads=true,background_for=true},
+    image_batch={id=true,quads=true,content=true,transform=true,background_for=true},
 }
 local componentFields: Fields = {id=true,component=true,children=true,surface=true}
 local screenFields: Fields = {id=true,node=true,children=true,budget=true}
@@ -47,7 +47,7 @@ end
 for key in pairs(placement) do componentFields[key] = true end
 -- Quad coordinates are absolute stage coordinates, so batch bounds must be
 -- authored in the same space instead of moving independently with an anchor.
-leafFields.image_batch = {id=true,rect=true,quads=true,background_for=true}
+leafFields.image_batch = {id=true,rect=true,quads=true,content=true,transform=true,background_for=true}
 
 local function available()
     assert(declared, "UI_PACKAGE_NOT_DECLARED: declare runtime_packages={['"..metadata.name.."']='"..metadata.version.."'} in project.unone.json (JSON: \"runtime_packages\":{\""..metadata.name.."\":\""..metadata.version.."\"})")
@@ -602,11 +602,18 @@ local function makeKit(theme: any?): any
     kit.imageBatch = function(props: any): any
         available()
         fields(props,leafFields.image_batch,"imageBatch")
-        dense(props.quads,"imageBatch.quads")
-        for _,quad in ipairs(props.quads) do
-            fields(quad,{asset=true,rect=true,source=true,opacity=true},"imageBatch.quad")
-            fields(quad.rect,rectFields,"imageBatch.quad.rect")
-            if quad.source~=nil then fields(quad.source,rectFields,"imageBatch.quad.source") end
+        assert((props.quads~=nil)~=(props.content~=nil),"UI_IMAGE_BATCH_CONTENT: choose quads or retained content")
+        if props.content~=nil then
+            assert(type(props.content)=="string" and props.content~="","UI_IMAGE_BATCH_CONTENT: stable resource id required")
+            if props.transform~=nil then fields(props.transform,{a=true,b=true,c=true,d=true,tx=true,ty=true},"imageBatch.transform") end
+        else
+            assert(props.transform==nil,"UI_IMAGE_BATCH_TRANSFORM: transform requires retained content")
+            dense(props.quads,"imageBatch.quads")
+            for _,quad in ipairs(props.quads) do
+                fields(quad,{asset=true,rect=true,source=true,opacity=true},"imageBatch.quad")
+                fields(quad.rect,rectFields,"imageBatch.quad.rect")
+                if quad.source~=nil then fields(quad.source,rectFields,"imageBatch.quad.source") end
+            end
         end
         return leaf("image_batch",props)
     end

@@ -1,0 +1,12 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+   Compiling unone-web-live-smoke v0.2.0 (D:\Projects\Unone\crates\unone-web-live-smoke)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.28s
+     Running unittests src\main.rs (target\debug\deps\unone_web_live_smoke-9efdc2a6126c4142.exe)
+error: test failed, to rerun pass `-p unone-web-live-smoke --bin unone-web-live-smoke`
+
+Caused by:
+  could not execute process `D:\Projects\Unone\target\debug\deps\unone_web_live_smoke-9efdc2a6126c4142.exe ui_transport::tests` (never executed)
+
+Caused by:
+  應用程式控制原則已封鎖此檔案。 (os error 4551)

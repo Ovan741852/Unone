@@ -1,0 +1,21 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+   Compiling unone-web-live-smoke v0.2.0 (D:\Projects\Unone\crates\unone-web-live-smoke)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.36s
+     Running unittests src\main.rs (target\debug\deps\unone_web_live_smoke-51026684c451466e.exe)
+
+running 10 tests
+test host_time_abi_is_readonly_owned_bounded_and_never_ticks ... ok
+test direct_publication_tests::removing_the_last_instance_publishes_directly_and_retires_its_previous_memory_lease ... ok
+test instance_memory_tests::memory_transport_preserves_digest_and_owns_pointer_lifetime ... ok
+test ui_transport::tests::retained_resources_and_instances_share_both_transports_without_digest_or_lease_changes ... ok
+test ui_transport::tests::retained_memory_wire_is_complete_digest_equivalent_and_camera_updates_reuse_lease ... ok
+test ui_transport::tests::unload_retires_leases_and_releases_the_canonical_cache ... ok
+test ui_transport::tests::borrowed_presentation_filters_only_the_registry_and_reuses_output_storage ... ok
+test direct_publication_tests::direct_world_and_cached_save_match_the_previous_envelope_bytes_in_both_transports ... ok
+test ui_transport::tests::reload_with_reused_resource_revisions_changes_epoch_and_old_generation_is_retired ... ok
+test ui_transport::tests::removing_the_last_resource_retires_wire_bytes_and_hash_capacity ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

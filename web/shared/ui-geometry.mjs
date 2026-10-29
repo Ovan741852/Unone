@@ -1,5 +1,6 @@
 import {UI_CONTRACT} from './ui-contract.mjs';
 import {validateInputRegion} from './ui-presentation.mjs';
+import {createImageBatchResolver} from './ui-image-batch.mjs';
 export {UI_CONTRACT};
 
 export function uiBudget(tree) {
@@ -9,27 +10,8 @@ export function uiBudget(tree) {
   throw Error(`UI_BUDGET_INVALID: requested=${max}, host_max_nodes=${UI_CONTRACT.host_max_nodes}; set budget.max_nodes within 1..host_max_nodes`);
  return max;
 }
-export function validateImageBatch(node){
- const keys=['kind','id','rect','quads','background_for'];
- if(Object.keys(node).some(k=>!keys.includes(k)))throw Error(`UI_IMAGE_BATCH_FIELDS: ${node.id}`);
- const validRect=r=>r&&Object.keys(r).every(k=>['x','y','width','height'].includes(k))&&['x','y','width','height'].every(k=>Number.isFinite(r[k]))&&r.width>0&&r.height>0;
- const stageRect=r=>validRect(r)&&r.x>=0&&r.y>=0&&r.x+r.width<=100&&r.y+r.height<=100;
- if(!stageRect(node.rect))throw Error(`UI_IMAGE_BATCH_BOUNDS: ${node.id}`);
- if(!Array.isArray(node.quads))throw Error(`UI_IMAGE_BATCH_QUADS: ${node.id}`);
- if(!node.quads.length)throw Error(`UI_IMAGE_BATCH_EMPTY: ${node.id}`);
- for(const [index,q]of node.quads.entries()){
-  if(!q||typeof q!=='object'||Object.keys(q).some(k=>!['asset','rect','source','opacity'].includes(k)))throw Error(`UI_IMAGE_BATCH_FIELDS: ${node.id}; quad=${index}`);
-  const asset=typeof q.asset==='string'?q.asset.match(/^([a-zA-Z0-9+.-]+):\/\/(.*)$/s):null;
-  if(!asset||!asset[2].trim()||['http','https','file','data'].includes(asset[1].toLowerCase()))throw Error(`UI_IMAGE_BATCH_ASSET: ${node.id}; quad=${index}`);
-  const r=q.rect,b=node.rect;
-  if(!stageRect(r)||r.x<b.x-1e-8||r.y<b.y-1e-8||r.x+r.width>b.x+b.width+1e-8||r.y+r.height>b.y+b.height+1e-8)throw Error(`UI_IMAGE_BATCH_BOUNDS: ${node.id}; quad=${index}`);
-  if(q.opacity!=null&&(!Number.isFinite(q.opacity)||q.opacity<0||q.opacity>1))throw Error(`UI_IMAGE_BATCH_OPACITY: ${node.id}; quad=${index}`);
-  const s=q.source;
-  if(s!=null&&(!validRect(s)||s.x<0||s.y<0||!Number.isFinite(s.x+s.width)||!Number.isFinite(s.y+s.height)))throw Error(`UI_IMAGE_BATCH_SOURCE: ${node.id}; quad=${index}`);
- }
- return node.quads;
-}
-export function uiUsage(tree){
+export function validateImageBatch(node,imageBatches){return createImageBatchResolver().resolve(node,imageBatches).definition.quads;}
+export function uiUsage(tree,{imageBatches,imageBatchResolver=createImageBatchResolver()}={}){
  const max=uiBudget(tree),out={logical_nodes:0,leaf_nodes:0,render_regions_upper_bound:0,max_nodes:max,host_max_nodes:UI_CONTRACT.host_max_nodes,limit_source:tree?.budget?'screen.budget':'contract.default',subtrees:[]};
  let bytes=0;const encoder=new TextEncoder();
  for(const v of Object.values(tree??{}))if(typeof v==='string')bytes+=encoder.encode(v).length;
@@ -43,12 +25,10 @@ export function uiUsage(tree){
   const before=out.logical_nodes;
   if(n.kind==='image_batch'){
    if(local)throw Error(`UI_IMAGE_BATCH_SPACE: ${n.id}; scroll content requires a supported transform`);
-   const quads=validateImageBatch(n);
-   for(const [i,q]of quads.entries()){
-    if(++out.logical_nodes>max)throw Error(`UI_NODE_LIMIT: path=${path}.quads[${i}], node=${n.id}, used=${out.logical_nodes}, limit=${max}, host_max_nodes=${UI_CONTRACT.host_max_nodes}`);
-    bytes+=encoder.encode(q.asset).length;
-    if(bytes>UI_CONTRACT.max_string_bytes)throw Error(`UI_STRING_LIMIT: ${path}.quads[${i}]; used=${bytes}, limit=${UI_CONTRACT.max_string_bytes}`);
-   }
+   const data=imageBatchResolver.resolve(n,imageBatches).definition,quads=data.quads;
+   const firstExcess=max-out.logical_nodes;out.logical_nodes+=quads.length;
+   if(out.logical_nodes>max)throw Error(`UI_NODE_LIMIT: path=${path}.quads[${firstExcess}], node=${n.id}, used=${max+1}, limit=${max}, host_max_nodes=${UI_CONTRACT.host_max_nodes}`);
+   bytes+=data.stringBytes;if(bytes>UI_CONTRACT.max_string_bytes)throw Error(`UI_STRING_LIMIT: ${path}.quads; used=${bytes}, limit=${UI_CONTRACT.max_string_bytes}`);
    out.leaf_nodes++;out.render_regions_upper_bound+=quads.length;
   }
   else if(n.kind==='component'||n.kind==='scroll_view')for(const [i,c]of (n.children??[]).entries())visit(c,`${path}.children[${i}]`,depth+1,local||n.kind==='scroll_view');

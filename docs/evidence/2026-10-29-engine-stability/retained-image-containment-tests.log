@@ -1,0 +1,16 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.55s
+     Running tests\retained_image_batch.rs (target\debug\deps\retained_image_batch-1d096e0432c685dd.exe)
+
+running 8 tests
+test pure_virtual_callbacks_cannot_mutate_resources_and_error_restores_the_guard ... ok
+test live_budget_transform_overflow_and_unknown_fields_reject_without_partial_change ... ok
+test large_origin_rounded_endpoints_cannot_admit_an_oversized_replacement ... ok
+test removal_requires_no_published_reference_and_recreation_gets_new_revision ... ok
+test camera_changes_only_instance_state_and_keeps_owned_content_and_cached_bytes ... ok
+test retained_content_is_explicitly_stage_only_and_inline_serialization_is_unchanged ... ok
+test reload_rollback_restores_matching_resource_and_instance_generations ... ok
+test replacement_is_atomic_updates_live_counts_and_preserves_old_snapshot_generation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

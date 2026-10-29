@@ -6,10 +6,11 @@ import {createFrameDraws} from './projected-frame-draws.js';import {frameProfile
 import * as THREE from '../vendor/three/three.player.min.js';
 import {framePresentationIdentity} from './projected-frame-publication.js';
 import {assertFrameGpuError} from './projected-frame-target-query.js';
+import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 const frameFixture=()=>({profile:'rgb8_encoded_rebuild_v1',initial:{rgb8:[17,24,39],depth:1},draws:[],revision:1});
 function fixture(){
  const events=[],noop=()=>{};let complete=true;
- const context={profile:null,textureCache:{begin:noop,sweep:noop},framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,projectedFrame,frameDecoder:createProjectedFrameDecoder(),assertFrameSnapshot,
+ const context={DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:null,textureCache:{begin:noop,sweep:noop},framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,projectedFrame,frameDecoder:createProjectedFrameDecoder(),assertFrameSnapshot,
   assertProjectedBackend:noop,assertRasterSnapshot:noop,assertFrameGpuError:noop,rasterAvailable:()=>true,projectedEntries:()=>[],heightfieldEntries:()=>[],
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop},getContext:()=>({NO_ERROR:0,getError:()=>0}),render(){events.push('ordinary');}},worldOf:x=>x,resize:noop,

@@ -2001,7 +2001,7 @@ fn evaluate_assertion(
             .ui
             .as_ref()
             .ok_or_else(|| "UI tree does not exist.".to_string())?;
-        let expected = UiTree::from_json(ui.equals.clone())
+        let expected = UiTree::from_json_for_viewport_with_resources(ui.equals.clone(),crate::ui::UI_REFERENCE_ASPECT,&world.ui_image_batches)
             .map_err(|error| format!("UI assertion is not a valid UI tree: {error}"))?;
         if actual != &expected {
             return Err(format!(

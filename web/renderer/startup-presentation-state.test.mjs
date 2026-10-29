@@ -6,6 +6,7 @@ import {createStartupPresentationState} from './startup-presentation-state.js';
 import {createRasterCapability} from './projected-raster-capability.js';
 import {createTextureCachePolicy} from './texture-cache-policy.js';
 import {createProjectedFrameDecoder} from '../shared/projected-frame.mjs';
+import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 function fixture(){
  let lost=false,width=1280,height=720,dpr=1,renders=0;const trace=[];
  const cap=createRasterCapability({policy:{requested:'upper_left_checked'},profile:{version:'test',hash:'ab'},validate:()=>({samples:1,passed:1})});
@@ -13,7 +14,7 @@ function fixture(){
  const available=()=>{if(lost){cap.lost();return false;}return cap.metrics().status!=='lost';};
  const startup=createStartupPresentationState({available,metrics:cap.metrics,view});
  const noop=()=>{},projected={entries:()=>[],prepare:noop,draw:noop},snapshot={entities:{},projected_world_visible:false};
- const context={projectedFrame:()=>null,assertFrameSnapshot:noop,frameProfile:null,framePublication:null,assertProjectedBackend:noop,assertRasterSnapshot:noop,rasterAvailable:available,projectedEntries:()=>[],heightfieldEntries:()=>[],
+ const context={DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},projectedFrame:()=>null,assertFrameSnapshot:noop,frameProfile:null,framePublication:null,assertProjectedBackend:noop,assertRasterSnapshot:noop,rasterAvailable:available,projectedEntries:()=>[],heightfieldEntries:()=>[],
   rasterPolicy:{requested:'upper_left_checked'},backend:'webgl',bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],renderer:{info:{reset:noop},render(){renders++;}},
   worldOf:x=>x,resize:noop,checkedRaster:true,validateRaster:()=>cap.ensure(view()),specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),
   shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshes3d:new Map(),heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},

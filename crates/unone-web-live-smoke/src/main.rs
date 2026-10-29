@@ -3,6 +3,7 @@ use std::cell::RefCell;
 use unone_engine::{BundleSpec, BundleVerifier};
 
 use serde::Serialize;
+mod ui_transport;
 use unone_engine::{
     Diagnostic, EngineRuntime, HostInputState, HostProject, Vec2, WorldSnapshot, parse_input_frame,
 };
@@ -104,6 +105,9 @@ fn write_snapshot(
     snapshot: &WorldSnapshot,
     save_payload: Option<&serde_json::value::RawValue>,
 ) -> Result<(), String> {
+    if ui_transport::enabled() && !snapshot.ui_image_batches.is_empty() {
+        return ui_transport::write(project, snapshot, save_payload);
+    }
     if snapshot.instances3d.is_empty() {
         return write_direct_snapshot(project, snapshot, save_payload);
     }
@@ -330,7 +334,7 @@ fn publish_snapshot(
     save_payload: Option<&serde_json::value::RawValue>,
 ) -> i32 {
     match write_snapshot(project, snapshot, save_payload) {
-        Ok(()) => 0,
+        Ok(()) => { if snapshot.ui_image_batches.is_empty() || !ui_transport::enabled() { ui_transport::retire(); } 0 },
         Err(error) => {
             write_error(error);
             -1
@@ -366,6 +370,23 @@ fn write_diagnostic(diagnostic: &Diagnostic) {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_init() -> i32 {
+    0
+}
+
+/// Release the current project and host publication leases without advancing it.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_unload_project() -> i32 {
+    RUNTIME.with(|v| *v.borrow_mut()=None);
+    INPUT.with(|v| *v.borrow_mut()=HostInputState::default());
+    PROJECT_NAME.with(|v| *v.borrow_mut()=String::new());
+    OUTPUT.with(|v| *v.borrow_mut()=Vec::new());
+    INPUT_BUFFER.with(|v| *v.borrow_mut()=Vec::new());
+    INSTANCE_BUFFERS.with(|v| *v.borrow_mut()=Vec::new());
+    INSTANCE_MEMORY.with(|v|v.set(false));
+    CANONICAL_HASHER.with(|v| *v.borrow_mut()=unone_engine::CanonicalHasher::default());
+    ui_transport::unload();
+    #[cfg(any(feature="dev-tools",feature="preview-tools"))]
+    PUBLICATION_PROFILE.with(|v| *v.borrow_mut()=PublicationProfile::default());
     0
 }
 
@@ -550,6 +571,7 @@ pub unsafe extern "C" fn unone_web_load_project(
     let project_name = payload.config.name.clone();
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
+            if let Err(error)=ui_transport::new_runtime() {write_error(error);return -1;}
             CANONICAL_HASHER.with(|h| *h.borrow_mut() = unone_engine::CanonicalHasher::default());
             INSTANCE_MEMORY.with(|mode| mode.set(false));
             #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]

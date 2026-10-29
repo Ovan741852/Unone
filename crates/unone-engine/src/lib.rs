@@ -65,6 +65,7 @@ mod systems;
 mod ui;
 mod ui_cursor;
 pub use ui_cursor::{UiCursor,CursorFilter};
+pub use ui::{UiImageBatchDefinition,UiImageBatchResource,UiImageTransform};
 #[cfg(feature = "dev-tools")]
 mod verify;
 mod world;

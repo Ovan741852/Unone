@@ -16,6 +16,19 @@ fn leaves(tree: &UiTree) -> Vec<&UiNode> {
     }
     out
 }
+pub(crate) fn ensure_retained_images_supported(tree: &UiTree) -> R<()> {
+    fn unsupported(node:&UiNode)->bool {
+        match node {
+            UiNode::ImageBatch{content:Some(_),..}|UiNode::ImageBatch{transform:Some(_),..}=>true,
+            UiNode::Component{children,..}|UiNode::ScrollView{children,..}=>children.iter().any(unsupported),
+            _=>false,
+        }
+    }
+    if tree.children.iter().any(unsupported) {
+        return Err("UI_HOST_CAPABILITY_UNSUPPORTED: retained image_batch content/transform requires the official Web host; native retained image resources are not implemented".into());
+    }
+    Ok(())
+}
 #[derive(Default)]
 pub struct PointerRouter {
     captures: BTreeMap<u64, Capture>,
@@ -609,6 +622,7 @@ impl Rasterizer {
     }
 
     fn draw(&self, tree: &UiTree, width: u32, height: u32) -> R<Vec<u8>> {
+        ensure_retained_images_supported(tree)?;
         let mut svg = format!(
             "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='{width}' height='{height}'>"
         );
@@ -876,6 +890,7 @@ impl Surface {
         let Some(tree) = tree else {
             return Ok(());
         };
+        ensure_retained_images_supported(tree)?;
         if leaves(tree)
             .iter()
             .any(|n| matches!(n, UiNode::ScrollView { .. }))

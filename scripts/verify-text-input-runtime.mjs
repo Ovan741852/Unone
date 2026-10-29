@@ -61,7 +61,7 @@ try{
     options.onRuntimeInitialized=()=>ready(context.Module);
     vm.runInNewContext(javascript.toString('utf8'),context,{filename:jsPath});
   });
-  const config={name:'Reusable Text Input Runtime QA',runtime_packages:{'@unone/ui':metadata.runtime_packages?.['@unone/ui']??'0.4.0'},systems:{ui:true}};
+  const config={name:'Reusable Text Input Runtime QA',runtime_packages:{'@unone/ui':metadata.runtime_packages?.['@unone/ui']??'0.5.0'},systems:{ui:true}};
   report.config=config;
   let state=loadProject(module,{config,script,scene:null},42n);
   const input=(frame={actions:{}})=>{

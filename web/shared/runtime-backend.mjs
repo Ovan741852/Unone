@@ -4,13 +4,21 @@ export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobP
  if(!['main','worker'].includes(kind))throw Error('RUNTIME_BACKEND_INVALID');
  let closed=false,pending=0,tail=Promise.resolve(),metrics={backend:kind},serial=0,current=null;
  const receiver=new InstanceReceiver();let worker,core;
- function shutdown(error=Error('RUNTIME_CLOSED')){closed=true;worker?.terminate();core?.close();if(current){clearTimeout(current.timer);current.reject(error);current=null;}}
+ function shutdown(error=Error('RUNTIME_CLOSED')){closed=true;worker?.terminate();core?.close();receiver.clear();if(current){clearTimeout(current.timer);current.reject(error);current=null;}}
  if(kind==='worker'){
   if(!WorkerClass)throw Error('WORKER_UNAVAILABLE');worker=new WorkerClass(new URL('./runtime-worker.js',import.meta.url));
   worker.onerror=event=>shutdown(Error('WORKER_FAILED: '+event.message));
-  worker.onmessage=({data})=>{const arrived=profiler?profiler.now():0;if(!current||data.id!==current.id){shutdown(Error('WORKER_RESPONSE_STALE'));return;}const request=current;current=null;clearTimeout(request.timer);if(!data.ok){if(request.event)workerSpans(request,data.profile,arrived,arrived);request.reject(Error(data.error));return;}metrics=data.metrics??metrics;
-   if(!request.event){request.resolve(receiver.accept(data.packet));return;}
-   const value=receiver.accept(data.packet);workerSpans(request,data.metrics?.profile,arrived,profiler.now());request.resolve(value);};
+  worker.onmessage=({data})=>{
+   const arrived=profiler?profiler.now():0;if(!current||data.id!==current.id){shutdown(Error('WORKER_RESPONSE_STALE'));return;}
+   const request=current;
+   if(!data.ok){current=null;clearTimeout(request.timer);if(request.event)workerSpans(request,data.profile,arrived,arrived);request.reject(Error(data.error));return;}
+   // Keep the request and its timeout owned until packet admission succeeds.
+   // A rejected resource delta must reject the in-flight request, never leave
+   // an unresolvable tick after cancelling its only timeout.
+   let value;try{value=receiver.accept(data.packet);if(request.event)workerSpans(request,data.metrics?.profile,arrived,profiler.now());}
+   catch(error){shutdown(error);return;}
+   metrics=data.metrics??metrics;current=null;clearTimeout(request.timer);request.resolve(value);
+  };
  }else core=createRuntimeCore(await loadRuntime(url),{url,jobPolicy,device,spatialBackend,requirePhysicalViewport,...(profiler?{profile:true}:{})});
  async function dispatch(command,event=null){if(closed)throw Error('RUNTIME_CLOSED');if(core){const at=performance.now();if(event)profiler.span(event,'queue_wait',event.start_ms,at);let value;try{value=await core.execute(command);}finally{if(event)coreSpans(event,at,profiler.now());}metrics={backend:'main',jobs:core.report(),viewport:core.report().viewport,execute_ms:performance.now()-at,wasm_linear_bytes:core.module.HEAPU8.buffer.byteLength};return value;}
   return new Promise((resolve,reject)=>{const id=++serial,recycled=receiver.takeRecycled();const timer=setTimeout(()=>shutdown(Error('WORKER_REQUEST_TIMEOUT')),timeoutMs);current={id,resolve,reject,timer,...(event?{event,posted:profiler.now()}:{})};try{worker.postMessage({id,command,recycled},recycled);}catch(error){shutdown(error);}});

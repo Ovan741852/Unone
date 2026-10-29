@@ -1,0 +1,30 @@
+✔ immutable Core leases decode once, survive heap growth and invalidate across epochs (1.326ms)
+✔ invalid descriptors preserve prior generation and never expose a heap view (0.448ms)
+✔ resource IDs share the Core UTF-8 boundary through lease and worker transport (0.888ms)
+✔ worker packets transfer changed definitions only and retire old resource graphs (1.5846ms)
+✔ worker receivers reject missing/stale deltas atomically and reloads publish fresh definitions (0.26ms)
+✔ immutable ownership grants reject accessors and mutable class instances (0.135ms)
+✔ invalid worker deltas reject the actual in-flight request without a hang (profile=false) (0.7688ms)
+✔ invalid worker deltas reject the actual in-flight request without a hang (profile=true) (0.7538ms)
+✔ closing a retained runtime unloads once and a suspended tick cannot execute after teardown (1.045ms)
+✔ host-time inspection is detached and cannot replace the latest world or tick it (2.0239ms)
+✔ physical viewport updates publish dimensions without a simulation tick and fail on stale ABI (0.2887ms)
+✔ forced GPU load failure leaves the core unloaded instead of running CPU ticks (0.2174ms)
+✔ UI-only request publishes a new window without a simulation tick (0.242ms)
+✔ aspect never republishes stale instance pointers after a developer mutation (0.289ms)
+✔ developer inspection restores packed instances without ticking or changing transport (0.3595ms)
+✔ CPU policy works with older runtimes and never creates a GPU device (2.1055ms)
+✔ closing during GPU creation retires the candidate without configuring a later runtime (0.3696ms)
+✔ GPU completion is awaited and delivered in submission order before the next tick (0.9799ms)
+✔ auto reports initialization fallback while forced GPU fails (0.306ms)
+✔ execution failure faults the runtime instead of completing with default data (0.3398ms)
+✔ reload retires old task completions without injecting them into the new epoch (0.2765ms)
+✔ host forwards optional execution profiles separately from canonical query results (0.3464ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.2275

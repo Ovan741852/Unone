@@ -194,6 +194,26 @@ cases still fail the target. This A/B predates the subsequent save/direct-ABI
 and advanced source-over changes and cannot establish their game-level benefit.
 Exact cases, runtime substitutions and sampling limitations are in
 [candidate3 browser evidence](../evidence/2026-10-29-engine-stability/web-priority-candidate3-browser.json).
-The retained authoring/resource transport in Decision 0044 still requires
-implementation and full official-player measurement; this design record is not
-a completed performance or memory/GC acceptance result.
+The retained authoring/resource transport in Decision 0044 is implemented in the
+internal engine 0.2.0/UI 0.5.0 candidate. Generic official main/worker player
+smoke verifies the pipeline and lifecycle; full target-game performance and
+memory/GC acceptance still require actual measurements.
+
+### Local containment mismatch found in internal candidate 2
+
+Candidate 2's retained quad containment compares absolute endpoint sums;
+the Web consumer checks local differences. At local origin `x=1e9`, resource
+width `1e-7` and quad width `1.5e-7`, both binary64 endpoint sums round to
+`1000000000.0000001`. Core can therefore admit the oversized quad, while the
+Web check correctly rejects its `5e-8` excess above the `1e-8` tolerance. The
+origin fits the Lua portable integer range; this is an invalid-data admission
+mismatch rather than an ordinary large-origin rendering limitation.
+
+Before the performance window started, the next candidate's Core source was
+corrected to the same local-delta/remaining-extent inequalities used by Web,
+preserving its `1e-8` tolerance and explicit rejection. A real-Lua regression
+attempts both oversized width and height replacements and checks unchanged
+resource revision, immutable content and the published tree. Candidate 2
+remains an immutable historical artifact; no game workaround or relaxed bounds
+contract was introduced. Exact source-test execution status is recorded in the
+[review follow-up](../reviews/2026-10-29-engine-stability.md).

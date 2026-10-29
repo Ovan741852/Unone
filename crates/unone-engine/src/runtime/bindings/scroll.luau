@@ -1,6 +1,6 @@
 -- Engine helper: local content rects are top-left/y-down. Data/functions stay
 -- in Lua; only the visible window crosses the host boundary.
-local publish = ...
+local publish, renderPure = ...
 local registry, root, revision = {}, nil, 0
 local function positive(n, name)
  assert(type(n)=="number" and n==n and n>0 and n<math.huge,"UI_SCROLL_SPEC: positive "..name.." required")
@@ -57,7 +57,7 @@ local function materialize(entry,first,last)
  for i=first,last do
   local x=((i-1)%v.columns)*(v.column_width+v.gap_x)
   local y=math.floor((i-1)/v.columns)*(v.row_height+v.gap_y)
-  local nodes=s.renderItem(s.items[i],i,v.keys[i])
+  local nodes=renderPure(s.renderItem,s.items[i],i,v.keys[i])
   assert(type(nodes)=="table" and #nodes>0,"UI_VIRTUAL_RENDER: return a non-empty array of local UI nodes")
   local projected={};for _,n in ipairs(nodes) do table.insert(projected,translated(n,x,y)) end
   table.insert(children,{kind="component",id=s.id.."::"..v.keys[i],component="ui.virtual-item",

@@ -1,0 +1,399 @@
+{
+  "ok": true,
+  "scope": "Official WebGL UI prefix plus real Canvas HUD; fractional pan/shared-edge coverage, source crop/alpha/order, ordinary world shader underlay, DPR, retained geometry and release. GPU pixel-center edge coverage is intentionally distinct from Canvas AA, without snapping.",
+  "reports": [
+    {
+      "width": 128,
+      "height": 96,
+      "dpr": 1,
+      "cases": [
+        {
+          "panCssPixels": 0,
+          "zoom": 1,
+          "maxChannelDifference": 1,
+          "edgeChannelsDifferingAbove2": 0,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.125,
+          "zoom": 1,
+          "maxChannelDifference": 30,
+          "edgeChannelsDifferingAbove2": 179,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.25,
+          "zoom": 1,
+          "maxChannelDifference": 58,
+          "edgeChannelsDifferingAbove2": 213,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.375,
+          "zoom": 1,
+          "maxChannelDifference": 88,
+          "edgeChannelsDifferingAbove2": 238,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.5,
+          "zoom": 1,
+          "maxChannelDifference": 118,
+          "edgeChannelsDifferingAbove2": 251,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.625,
+          "zoom": 1,
+          "maxChannelDifference": 92,
+          "edgeChannelsDifferingAbove2": 219,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.75,
+          "zoom": 1,
+          "maxChannelDifference": 62,
+          "edgeChannelsDifferingAbove2": 206,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.875,
+          "zoom": 1,
+          "maxChannelDifference": 31,
+          "edgeChannelsDifferingAbove2": 176,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.3125,
+          "zoom": 1.125,
+          "maxChannelDifference": 77,
+          "edgeChannelsDifferingAbove2": 350,
+          "interiorBad": 0,
+          "seamBad": 0,
+          "case": "fractional_zoom"
+        },
+        {
+          "panCssPixels": 0.375,
+          "zoom": 1,
+          "maxChannelDifference": 92,
+          "edgeChannelsDifferingAbove2": 208,
+          "interiorBad": 0,
+          "seamBad": 0,
+          "case": "fractional_clip"
+        }
+      ],
+      "geometryBuildsDuringCamera": 0,
+      "uploadsDuringCamera": {
+        "bufferData": 0,
+        "bufferSubData": 0
+      },
+      "canvasHudRepaints": 0,
+      "largeOriginAccelerated": true,
+      "largeOriginPixelsEqual": true,
+      "contextRestorePixelsEqual": true,
+      "resourcesBeforeClear": {
+        "draws": 27,
+        "prefix_nodes": 2,
+        "prefix_quads": 7,
+        "coverage": "pixel_center",
+        "fallback_reason": "accelerated",
+        "geometry_builds": 11,
+        "geometry_disposes": 7,
+        "live_geometries": 4,
+        "material_builds": 11,
+        "material_disposes": 7,
+        "live_materials": 4,
+        "texture_builds": 6,
+        "texture_disposes": 3,
+        "live_textures": 3
+      },
+      "resourcesAfterClear": {
+        "draws": 27,
+        "prefix_nodes": 0,
+        "prefix_quads": 0,
+        "coverage": "pixel_center",
+        "fallback_reason": "accelerated",
+        "geometry_builds": 11,
+        "geometry_disposes": 11,
+        "live_geometries": 0,
+        "material_builds": 11,
+        "material_disposes": 11,
+        "live_materials": 0,
+        "texture_builds": 6,
+        "texture_disposes": 6,
+        "live_textures": 0
+      }
+    },
+    {
+      "width": 128,
+      "height": 96,
+      "dpr": 2,
+      "cases": [
+        {
+          "panCssPixels": 0,
+          "zoom": 1,
+          "maxChannelDifference": 1,
+          "edgeChannelsDifferingAbove2": 0,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.125,
+          "zoom": 1,
+          "maxChannelDifference": 59,
+          "edgeChannelsDifferingAbove2": 399,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.25,
+          "zoom": 1,
+          "maxChannelDifference": 117,
+          "edgeChannelsDifferingAbove2": 505,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.375,
+          "zoom": 1,
+          "maxChannelDifference": 60,
+          "edgeChannelsDifferingAbove2": 405,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.5,
+          "zoom": 1,
+          "maxChannelDifference": 1,
+          "edgeChannelsDifferingAbove2": 0,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.625,
+          "zoom": 1,
+          "maxChannelDifference": 57,
+          "edgeChannelsDifferingAbove2": 423,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.75,
+          "zoom": 1,
+          "maxChannelDifference": 111,
+          "edgeChannelsDifferingAbove2": 479,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.875,
+          "zoom": 1,
+          "maxChannelDifference": 59,
+          "edgeChannelsDifferingAbove2": 427,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.3125,
+          "zoom": 1.125,
+          "maxChannelDifference": 85,
+          "edgeChannelsDifferingAbove2": 491,
+          "interiorBad": 0,
+          "seamBad": 0,
+          "case": "fractional_zoom"
+        },
+        {
+          "panCssPixels": 0.375,
+          "zoom": 1,
+          "maxChannelDifference": 53,
+          "edgeChannelsDifferingAbove2": 459,
+          "interiorBad": 0,
+          "seamBad": 0,
+          "case": "fractional_clip"
+        }
+      ],
+      "geometryBuildsDuringCamera": 0,
+      "uploadsDuringCamera": {
+        "bufferData": 0,
+        "bufferSubData": 0
+      },
+      "canvasHudRepaints": 0,
+      "largeOriginAccelerated": true,
+      "largeOriginPixelsEqual": true,
+      "contextRestorePixelsEqual": null,
+      "resourcesBeforeClear": {
+        "draws": 25,
+        "prefix_nodes": 2,
+        "prefix_quads": 7,
+        "coverage": "pixel_center",
+        "fallback_reason": "accelerated",
+        "geometry_builds": 7,
+        "geometry_disposes": 3,
+        "live_geometries": 4,
+        "material_builds": 7,
+        "material_disposes": 3,
+        "live_materials": 4,
+        "texture_builds": 3,
+        "texture_disposes": 0,
+        "live_textures": 3
+      },
+      "resourcesAfterClear": {
+        "draws": 25,
+        "prefix_nodes": 0,
+        "prefix_quads": 0,
+        "coverage": "pixel_center",
+        "fallback_reason": "accelerated",
+        "geometry_builds": 7,
+        "geometry_disposes": 7,
+        "live_geometries": 0,
+        "material_builds": 7,
+        "material_disposes": 7,
+        "live_materials": 0,
+        "texture_builds": 3,
+        "texture_disposes": 3,
+        "live_textures": 0
+      }
+    },
+    {
+      "width": 96,
+      "height": 128,
+      "dpr": 1,
+      "cases": [
+        {
+          "panCssPixels": 0,
+          "zoom": 1,
+          "maxChannelDifference": 1,
+          "edgeChannelsDifferingAbove2": 0,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.125,
+          "zoom": 1,
+          "maxChannelDifference": 30,
+          "edgeChannelsDifferingAbove2": 179,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.25,
+          "zoom": 1,
+          "maxChannelDifference": 58,
+          "edgeChannelsDifferingAbove2": 213,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.375,
+          "zoom": 1,
+          "maxChannelDifference": 88,
+          "edgeChannelsDifferingAbove2": 238,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.5,
+          "zoom": 1,
+          "maxChannelDifference": 118,
+          "edgeChannelsDifferingAbove2": 251,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.625,
+          "zoom": 1,
+          "maxChannelDifference": 92,
+          "edgeChannelsDifferingAbove2": 219,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.75,
+          "zoom": 1,
+          "maxChannelDifference": 62,
+          "edgeChannelsDifferingAbove2": 206,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.875,
+          "zoom": 1,
+          "maxChannelDifference": 31,
+          "edgeChannelsDifferingAbove2": 176,
+          "interiorBad": 0,
+          "seamBad": 0
+        },
+        {
+          "panCssPixels": 0.3125,
+          "zoom": 1.125,
+          "maxChannelDifference": 77,
+          "edgeChannelsDifferingAbove2": 350,
+          "interiorBad": 0,
+          "seamBad": 0,
+          "case": "fractional_zoom"
+        },
+        {
+          "panCssPixels": 0.375,
+          "zoom": 1,
+          "maxChannelDifference": 92,
+          "edgeChannelsDifferingAbove2": 193,
+          "interiorBad": 0,
+          "seamBad": 0,
+          "case": "fractional_clip"
+        }
+      ],
+      "geometryBuildsDuringCamera": 0,
+      "uploadsDuringCamera": {
+        "bufferData": 0,
+        "bufferSubData": 0
+      },
+      "canvasHudRepaints": 0,
+      "largeOriginAccelerated": true,
+      "largeOriginPixelsEqual": true,
+      "contextRestorePixelsEqual": null,
+      "resourcesBeforeClear": {
+        "draws": 25,
+        "prefix_nodes": 2,
+        "prefix_quads": 7,
+        "coverage": "pixel_center",
+        "fallback_reason": "accelerated",
+        "geometry_builds": 7,
+        "geometry_disposes": 3,
+        "live_geometries": 4,
+        "material_builds": 7,
+        "material_disposes": 3,
+        "live_materials": 4,
+        "texture_builds": 3,
+        "texture_disposes": 0,
+        "live_textures": 3
+      },
+      "resourcesAfterClear": {
+        "draws": 25,
+        "prefix_nodes": 0,
+        "prefix_quads": 0,
+        "coverage": "pixel_center",
+        "fallback_reason": "accelerated",
+        "geometry_builds": 7,
+        "geometry_disposes": 7,
+        "live_geometries": 0,
+        "material_builds": 7,
+        "material_disposes": 7,
+        "live_materials": 0,
+        "texture_builds": 3,
+        "texture_disposes": 3,
+        "live_textures": 0
+      }
+    }
+  ],
+  "browser": "156.0.4314.50",
+  "errors": [],
+  "warnings": []
+}

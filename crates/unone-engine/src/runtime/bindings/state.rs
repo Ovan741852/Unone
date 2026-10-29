@@ -46,6 +46,27 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let ui = Rc::clone(&state.ui);
     let viewport_aspect = Rc::clone(&state.viewport_aspect);
     let ui_api = lua.create_table()?;
+    let pure_depth=Rc::new(std::cell::Cell::new(0usize));
+    let resources=lua.create_table()?;
+    let define_world=Rc::clone(&state.world);
+    let define_ui=Rc::clone(&ui);
+    let define_pure=Rc::clone(&pure_depth);
+    resources.set("define",lua.create_function(move |_,(id,value):(String,Value)| {
+        if define_pure.get()>0 { return Err(mlua::Error::RuntimeError("UI_PURE_VIEW: image batch resources cannot be defined inside renderItem; define them in Game.start/update".into())); }
+        let value=lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+        let definition=serde_json::from_value::<crate::UiImageBatchDefinition>(value)
+            .map_err(|e|mlua::Error::RuntimeError(format!("UI_IMAGE_BATCH_DEFINITION: {e}")))?;
+        define_world.borrow_mut().define_ui_image_batch(id,definition,define_ui.borrow_mut().as_mut())
+            .map_err(mlua::Error::RuntimeError)
+    })?)?;
+    let remove_world=Rc::clone(&state.world);
+    let remove_ui=Rc::clone(&ui);
+    let remove_pure=Rc::clone(&pure_depth);
+    resources.set("remove",lua.create_function(move |_,id:String| {
+        if remove_pure.get()>0 { return Err(mlua::Error::RuntimeError("UI_PURE_VIEW: image batch resources cannot be removed inside renderItem".into())); }
+        remove_world.borrow_mut().remove_ui_image_batch(&id,remove_ui.borrow().as_ref()).map_err(mlua::Error::RuntimeError)
+    })?)?;
+    ui_api.set("imageBatch",resources)?;
     super::ui_cursor::install(lua,state,&ui_api)?;
     let viewport_state = Rc::clone(&viewport_aspect);
     ui_api.set("getViewport", lua.create_function(move |lua, ()| {
@@ -57,6 +78,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_ref().map(UiTree::usage)}))
     })?)?;
     let ui_aspect = Rc::clone(&viewport_aspect);
+    let resource_world=Rc::clone(&state.world);
     ui_api.set(
         "setRoot",
         lua.create_function(move |_, value: Value| {
@@ -66,7 +88,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             // Name the vocabulary this build accepts. A host binary that is
             // older than the CLI fails here, and without this the message sends
             // the author to debug their game instead of their toolchain.
-            let tree = UiTree::from_json_for_viewport(value, *ui_aspect.borrow()).map_err(
+            let tree = UiTree::from_json_for_viewport_with_resources(value, *ui_aspect.borrow(),&resource_world.borrow().ui_image_batches).map_err(
                 |error| {
                     mlua::Error::RuntimeError(format!(
                         "{error} — this engine build accepts node placement as                          rect{{x,y,width,height}} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up"
@@ -77,8 +99,15 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             Ok(())
         })?,
     )?;
+    let pure=lua.create_function(move |_,(callback,args):(mlua::Function,mlua::Variadic<Value>)| {
+        let old=pure_depth.get();
+        pure_depth.set(old+1);
+        let result=callback.call::<mlua::MultiValue>(args);
+        pure_depth.set(old);
+        result
+    })?;
     let helpers: Table = lua.load(include_str!("scroll.luau")).set_name("@engine/ui-scroll")
-        .call(ui_api.get::<mlua::Function>("setRoot")?)?;
+        .call((ui_api.get::<mlua::Function>("setRoot")?,pure))?;
     for name in ["scrollView", "virtualList", "virtualGrid", "setRoot"] {
         ui_api.set(name, helpers.get::<mlua::Function>(name)?)?;
     }

@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-30",
+  "baseline_commit": "8060abf",
+  "source_dirty": true,
+  "scope": "Retained UI resource wire, immutable generation grants and worker lifetime review; borrowed top-level presentation serializer optimization.",
+  "source_changes": {
+    "core_presentation": "Canonical snapshot serialization remains complete; a delegated top-level SerializeStruct adapter omits only ui_image_batches from presentation, preserving all other fields and nested names.",
+    "allocation": "CANONICAL and OUTPUT vectors reuse storage while active. No-instance presentation avoids snapshot clone, serde Value conversion and temporary world RawValue. Instance-bearing Value rewrite remains.",
+    "lifetime": "Leases replace only after successful complete envelope. Disabling wire or removing final registry releases canonical/lease storage and retires retained hash capacity once. Unload releases wire caches; root ABI teardown retires runtime ownership."
+  },
+  "checks": [
+    {
+      "phase": "Intermediate optimized serializer before final retirement/budget follow-ups",
+      "command": "cargo test -p unone-web-live-smoke ui_transport::tests",
+      "exit_code": 0,
+      "passed": 4,
+      "failed": 0,
+      "raw_log": "retained-image-abi-optimized-tests.log"
+    },
+    {
+      "phase": "Same intermediate source",
+      "command": "cargo test -p unone-web-live-smoke",
+      "exit_code": 0,
+      "passed": 19,
+      "failed": 0,
+      "raw_log": "retained-image-abi-full-tests.log"
+    },
+    {
+      "phase": "Final six focused test sources after retirement/mixed-instance follow-up",
+      "command": "cargo test -p unone-web-live-smoke ui_transport::tests",
+      "compiled": true,
+      "executed": false,
+      "exit_code": 1,
+      "passed": null,
+      "failure": "Windows application control policy blocked test executable before execution (os error4551).",
+      "raw_log": "retained-image-abi-final-tests.log"
+    },
+    {
+      "phase": "Normal release test retry, no security-policy changes",
+      "command": "cargo test -p unone-web-live-smoke --release --config 'profile.release.debug=2' --config 'profile.release.strip=\"none\"' ui_transport::tests",
+      "executed": false,
+      "exit_code": 1,
+      "failure": "Windows4551 blocked quote build-script before test compilation/execution.",
+      "raw_log": "retained-image-abi-release-tests.log"
+    },
+    {
+      "phase": "Superseding final-source production-feature execution by root",
+      "command": "cargo test -p unone-web-live-smoke --no-default-features",
+      "environment": "Direct pinned RUSTC; standard process-local CARGO_HOME/RUSTUP_HOME/PATH/LIBRARY_PATH. No Cargo profile overrides or test filter.",
+      "exit_code": 0,
+      "compiled": true,
+      "executed": true,
+      "passed": 10,
+      "failed": 0,
+      "raw_log": "retained-image-abi-all-final-tests.log",
+      "coverage": "Includes all six final ui_transport tests, actual mixed UI/instances branches, final-resource retirement, unload, output reuse and digest parity."
+    }
+  ],
+  "final_test_sources": [
+    "Canonical digest/complete restoration and unchanged resource leases",
+    "New runtime epoch with reused revision",
+    "Borrowed presentation all-other-fields/nested-name parity and output storage reuse",
+    "Unload releases lease/canonical capacity",
+    "Last resource removal releases wire/hash capacity",
+    "Simultaneous retained UI and instances3d in JSON/memory transport"
+  ],
+  "review": {
+    "reviewer": "Codex /root/native_performance, independent of root wire implementation",
+    "findings": [
+      "Worker decoder exception escaped after cancelling timeout, leaving in-flight promise unresolved. Root fixed request ownership/catch→shutdown.",
+      "Close retained latest resource graph and asynchronous barrier continuation could write after unload. Root cleared ownership and added closed guards after waits.",
+      "Resource ID and encoded-byte bounds differed across Core and official Web reader/consumer. Implementing agents aligned1024-byte IDs and16/32MiB encoded admission before commit."
+    ],
+    "result": "Corrections re-read; no additional concrete P1/P2 found in this scoped source review.",
+    "serializer_reviewer": "Codex /root/runtime_audit, independent of serializer optimization author",
+    "serializer_result": "Initial and final retirement/mixed-branch source checks found no concrete P1/P2: typed top-level filtering, digest/order, vector reuse, successful-publication retirement and boundary-only hash reset are coherent. Final six tests later executed successfully within root final10/10 production-feature ABI suite."
+  },
+  "limits": [
+    "Earlier Windows4551 attempts are preserved as failed attempts; the later final-source no-default-features suite executed10/10 successfully and supersedes their execution gap.",
+    "Actual WASM/browser/worker rendering and final SDK validation remain separate evidence owned by root/Web agent.",
+    "No FPS, GC, final artifact or universal memory-leak certification. WebAssembly linear-memory high-water capacity cannot shrink merely by releasing owned objects."
+  ]
+}

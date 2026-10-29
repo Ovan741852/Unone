@@ -65,7 +65,7 @@ with Core and the SDK. Search `game api search "UI package"` / `"shared componen
 / `"button component"` / `"card component"` / `"官方UI套件"` / `"共用元件"` /
 `"主題樣式"`, describe `ui.components.info` and `ui.components.create`, and read
 [the package contract](docs/ui-components.md). Declare the exact package version
-in `project.unone.json` (`"runtime_packages":{"@unone/ui":"0.4.0"}`). Both
+in `project.unone.json` (`"runtime_packages":{"@unone/ui":"0.5.0"}`). Both
 `api.ui.components` and the themed kit returned by `create` expose typed
 text/button/slider/combobox/panel/image/component/screen constructors, the
 `createSlider` numeric control, `createResponsiveLayout` model, plus
