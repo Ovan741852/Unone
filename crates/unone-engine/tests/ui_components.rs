@@ -469,3 +469,191 @@ api.ui.setRoot({kind='screen',id='screen',node='test',children={
     assert!(report.findings.iter().any(|finding| finding.code == "UI_NODES_OVERLAP"
         && finding.nodes.contains(&"one".to_string()) && finding.nodes.contains(&"two".to_string())));
 }
+
+#[test]
+fn leaf_owned_styles_keep_theme_props_and_each_result_independent() {
+    let values=observed(r#"
+local c=api.ui.components
+local shared={.1,.2,.3,1}
+local theme={text={padding={left=1,right=2},color=shared,background=shared,text_shadow={offset_x=1,offset_y=2,color={0,0,0,.5}}}}
+local ui=c.create(theme)
+local props={id='a',text='A',rect={x=0,y=0,width=10,height=5},style={padding={right=4},color={.7,.8,.9,1},text_shadow={offset_x=3,color={1,1,1,.2}}}}
+local a=ui.text(props)
+local b=ui.text(props)
+assert(a~=b and a.style~=b.style and a.style.color~=b.style.color and a.style.padding~=b.style.padding)
+assert(a.style~=props.style and a.style.color~=props.style.color and a.rect~=props.rect)
+assert(a.style.padding.left==1 and a.style.padding.right==4)
+assert(a.style.text_shadow.offset_x==3 and a.style.text_shadow.offset_y==nil,'shadow replaces whole record')
+assert(a.style.text_shadow~=props.style.text_shadow and a.style.text_shadow.color~=props.style.text_shadow.color)
+props.style.color[1]=0;props.style.padding.right=9;props.rect.x=90;theme.text.padding.left=50;shared[1]=.99
+assert(a.style.color[1]==.7 and a.style.padding.right==4 and a.rect.x==0)
+a.style.color[1]=.5;a.style.padding.left=80;a.style.text_shadow.color[1]=0
+assert(b.style.color[1]==.7 and b.style.padding.left==1 and b.style.text_shadow.color[1]==1)
+local base=ui.text({id='base',rect={x=0,y=0,width=10,height=5}})
+local later=ui.text({id='later',rect={x=0,y=0,width=10,height=5}})
+assert(base.style.padding.left==1 and base.style.color[1]==.1)
+assert(base.style.color~=base.style.background and base.style.color~=later.style.color)
+base.style.color[1]=.6;assert(base.style.background[1]==.1 and later.style.color[1]==.1)
+local plain=c.text({id='plain',rect=base.rect})
+local empty=c.text({id='empty',rect=base.rect,style={}})
+assert(plain.style==nil and type(empty.style)=='table' and next(empty.style)==nil)
+local noBase={id='no-base',rect=base.rect,style={padding={left=1},color=shared,background=shared}}
+local detached=c.text(noBase)
+assert(detached.style~=noBase.style and detached.style.color~=shared and detached.style.color~=detached.style.background)
+detached.style.color[1]=0;assert(detached.style.background[1]==.99 and shared[1]==.99)
+api.observation.set('owned_style',true)
+"#);
+    assert_eq!(values["owned_style"],true);
+}
+
+#[test]
+fn leaf_metatable_fallback_preserves_inherited_style_and_strips_copied_metatables() {
+    let values=observed(r#"
+local c=api.ui.components
+local inherited={padding={left=2},color={1,.5,.25,1}}
+local reads=0
+local props=setmetatable({id='inherited',rect={x=0,y=0,width=10,height=5}},{__metatable='protected',__index=function(_,key)if key=='style' then reads+=1;return inherited end;return nil end})
+local node=c.text(props)
+assert(reads==3,'retain the existing inherited style read path')
+assert(node.style.padding.left==2 and node.style.color[2]==.5 and node.style~=inherited)
+inherited.color[2]=0;assert(node.style.color[2]==.5)
+local padding=setmetatable({right=3},{__metatable='padding',__index={left=99}})
+local shadow=setmetatable({offset_x=2,color={0,0,0,.5}},{__metatable='shadow',__index={offset_y=99}})
+local authored=setmetatable({padding=padding,text_shadow=shadow,color={.2,.3,.4,1}},{__metatable='style',__index={opacity=.9}})
+local ui=c.create({text={padding={left=1},text_shadow={offset_y=1,color={1,1,1,1}}}})
+local fallback=ui.text({id='meta-style',rect=node.rect,style=authored})
+assert(getmetatable(fallback.style)==nil and getmetatable(fallback.style.padding)==nil and getmetatable(fallback.style.text_shadow)==nil)
+assert(fallback.style.padding.left==1 and fallback.style.padding.right==3 and fallback.style.opacity==nil)
+assert(fallback.style.text_shadow.offset_x==2 and fallback.style.text_shadow.offset_y==nil)
+local nested=ui.text({id='nested-meta',rect=node.rect,style={padding=padding,text_shadow=shadow}})
+assert(nested.style.padding.left==1 and nested.style.padding.right==3 and nested.style.text_shadow.offset_y==nil)
+nested.style.padding.right=8;assert(padding.right==3 and fallback.style.padding.right==3)
+api.observation.set('metatable_style',true)
+"#);
+    assert_eq!(values["metatable_style"],true);
+}
+
+#[test]
+fn managed_identity_probe_never_runs_authored_nested_index_callbacks() {
+    let values=observed(r#"
+local c=api.ui.components
+local calls=0
+local color=setmetatable({0,0,0,1},{__index=function(t,key)
+ if key=='id' then calls+=1;rawset(t,1,t[1]+.1) end
+ return nil
+end})
+local props={id='plain',rect={x=0,y=0,width=10,height=5},style={color=color}}
+local a=c.text(props)
+local b=c.text(props)
+local composed=c.composeStyle({color=color})
+assert(calls==0 and color[1]==0,'private ownership probes cannot call authored getters')
+assert(a.style.color[1]==0 and b.style.color[1]==0 and composed.color[1]==0)
+assert(getmetatable(a.style.color)==nil and a.style.color~=color and a.style.color~=b.style.color)
+a.style.color[1]=.8;assert(b.style.color[1]==0 and color[1]==0)
+api.observation.set('pure_identity_probe',true)
+"#);
+    assert_eq!(values["pure_identity_probe"],true);
+}
+
+#[test]
+fn leaf_owned_style_retains_the_first_props_copy_work_depth_and_portability_bounds() {
+    let values=observed(r#"
+local c=api.ui.components
+-- props, id, rect and four coordinates, style and color consume nine visits.
+local wide=table.create(131063,true)
+local props={id='wide',rect={x=0,y=0,width=1,height=1},style={color=wide}}
+assert(#c.text(props).style.color==131063)
+wide[131064]=true
+local ok,message=pcall(c.text,props)
+assert(not ok and string.find(tostring(message),'data exceeds copy limits',1,true),tostring(message))
+local deep={};local current=deep
+for _=1,62 do current[1]={};current=current[1] end
+props.style={color=deep};assert(type(c.text(props).style.color)=='table')
+current[1]=true;ok,message=pcall(c.text,props)
+assert(not ok and string.find(tostring(message),'data exceeds copy limits',1,true),tostring(message))
+for _,bad in ipairs({function()end,coroutine.create(function()end),buffer.create(16)})do
+ props.style={color={bad}};ok,message=pcall(c.text,props)
+ assert(not ok and string.find(tostring(message),'only portable',1,true),tostring(message))
+end
+api.observation.set('leaf_copy_bounds',true)
+"#);
+    assert_eq!(values["leaf_copy_bounds"],true);
+}
+
+#[test]
+fn owned_style_package_matches_previous_source_canonical_worlds_across_changed_views() {
+    let current=include_str!("../../../packages/unone-ui/src/components.luau");
+    let fast=r#"            if getmetatable(props)==nil and (props.style==nil or getmetatable(props.style)==nil) then
+                node.style = mergeOwnedStyle(defaults[kind],node.style)
+            else
+                -- A root metatable may supply inherited style. copy(props)
+                -- intentionally contains raw fields only, so retain compose.
+                node.style = compose(defaults[kind],props.style)
+            end"#;
+    let current=current.replace("\r\n","\n");
+    assert_eq!(current.matches(fast).count(),1,"exact production leaf fast path");
+    // Only switch the call site back to the previous compose path. Both VMs
+    // use the actual bundled package source and identical authored game views.
+    let previous=current.replacen(fast,"            node.style = compose(defaults[kind],props.style)",1);
+    let make=|package:&str| {
+        let mut script=String::from("local helpers=(function(...)\n");
+        script.push_str(include_str!("../src/runtime/bindings/scroll.luau"));
+        script.push_str("\nend)(function()end,function(callback)return callback()end)\nlocal components=(function(...)\n");
+        script.push_str(package);
+        script.push_str(r#"
+end)({name='@unone/ui',version='0.5.0'},true,helpers.isManagedNode,helpers)
+local ui
+local frame=0
+local function view()
+ local children={}
+ for row=0,7 do
+  local leaves={}
+  for column=0,11 do
+   local n=row*12+column
+   local style=nil
+   if n%3==0 then style={} elseif n%3==1 then style={padding={right=.2},color={.2+(frame%2)*.1,.6,.9,1},text_shadow={offset_x=.1,offset_y=.2,color={0,0,0,.4}}} end
+   table.insert(leaves,ui.text({id='t'..n,text='Frame '..frame,rect={x=column*8,y=row*10,width=7,height=6},style=style}))
+  end
+  table.insert(children,ui.component({id='row'..row,component='qa.row',rect={x=0,y=0,width=100,height=100},surface={kind='panel',style={opacity=.5}},children=leaves}))
+ end
+ return ui.screen({id='root',node='qa.styles',children=children})
+end
+return {start=function(api)
+ ui=components.create({text={font_size=1.4,color={1,1,1,1},padding={left=.1,right=.1},text_shadow={offset_x=.1,offset_y=.2,color={0,0,0,.5}}},panel={background={.1,.2,.3,.2}}})
+ api.ui.setRoot(view())
+end,update=function(api)frame+=1;api.ui.setRoot(view())end}
+"#);
+        load_script(&script,true).unwrap()
+    };
+    let mut before=make(&previous);let mut after=make(&current);
+    assert_eq!(serde_json::to_vec(&before.observe()).unwrap(),serde_json::to_vec(&after.observe()).unwrap());
+    for _ in 0..120 {
+        let a=before.tick().unwrap();let b=after.tick().unwrap();
+        assert_eq!(serde_json::to_vec(&a).unwrap(),serde_json::to_vec(&b).unwrap());
+        assert_eq!(unone_engine::observation_digest(&a).unwrap(),unone_engine::observation_digest(&b).unwrap());
+    }
+    #[cfg(all(feature="sampling-profile",not(feature="phase-profile")))]
+    {
+        for runtime in [&mut before,&mut after] {
+            let started=runtime.preview_request(unone_engine::PreviewRequest::ProfileStart {sampling:false}).unwrap();
+            assert_eq!(started["execution"]["bytecode_optimization_level"],2);
+            assert_eq!(started["execution"]["sampling_profile"],true);
+        }
+        for _ in 0..10 {
+            let a=before.tick().unwrap();let b=after.tick().unwrap();
+            assert_eq!(serde_json::to_vec(&a).unwrap(),serde_json::to_vec(&b).unwrap());
+        }
+        let a=before.preview_request(unone_engine::PreviewRequest::ProfileStop {}).unwrap();
+        let b=after.preview_request(unone_engine::PreviewRequest::ProfileStop {}).unwrap();
+        assert_eq!(a["window"]["vm"]["tick_count"],10);
+        assert_eq!(b["window"]["vm"]["tick_count"],10);
+        // Optional local evidence, never an allocation/time pass threshold.
+        // Both sides use opt2, VM allocation/GC probes and sampling=false.
+        if let Some(path)=std::env::var_os("UNONE_UI_OWNED_STYLE_ALLOCATION_OUTPUT") {
+            let value=json!({"scope":"Synthetic owned-style package pair; Luau update allocation-growth/GC diagnostics, not CPU milliseconds, production FPS or total allocator traffic", "warmup_ticks":120,"measured_ticks":10,"leaves_per_view":96,"canonical_worlds_equal":true,"sampling":false,"execution":b["execution"],"before":a["window"]["vm"],"after":b["window"]["vm"]});
+            let path=std::path::PathBuf::from(path);
+            if let Some(parent)=path.parent(){std::fs::create_dir_all(parent).unwrap();}
+            std::fs::write(path,serde_json::to_vec_pretty(&value).unwrap()).unwrap();
+        }
+    }
+}

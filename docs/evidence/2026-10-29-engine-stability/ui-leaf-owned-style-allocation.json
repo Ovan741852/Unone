@@ -1,0 +1,307 @@
+{
+  "after": {
+    "allocation_growth_bytes": 8389228,
+    "allocation_growth_events": 123177,
+    "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+    "availability": {
+      "allocation_growth": "measured",
+      "full_gc_wall_time": "unsupported",
+      "incremental_gc_wall_time": "measured",
+      "js_gc": "not-applicable",
+      "rust_allocations": "not-collected"
+    },
+    "boundary_metrics": {
+      "api_calls": {
+        "scope": "Rust binding wrapper calls, not gameplay function calls",
+        "status": "not-collected"
+      },
+      "rust_allocations": {
+        "scope": "Rust allocator traffic outside Luau onallocate",
+        "status": "not-collected"
+      },
+      "table_conversion": {
+        "scope": "Luau/Rust value conversion object and byte counts",
+        "status": "not-collected"
+      }
+    },
+    "capabilities": {
+      "allocation_growth": true,
+      "full_gc_wall_time": false,
+      "incremental_gc_wall_time": true,
+      "js_gc": false,
+      "rust_allocations": false
+    },
+    "frames": [
+      {
+        "allocation_growth_bytes": 836205,
+        "allocation_growth_events": 12293,
+        "completed": true,
+        "frame": 121,
+        "incremental_gc_max_step_ms": 0.047,
+        "incremental_gc_ms": 0.5767000000000004,
+        "incremental_gc_steps": 229
+      },
+      {
+        "allocation_growth_bytes": 842424,
+        "allocation_growth_events": 12346,
+        "completed": true,
+        "frame": 122,
+        "incremental_gc_max_step_ms": 0.0045000000000000005,
+        "incremental_gc_ms": 0.07640000000000002,
+        "incremental_gc_steps": 60
+      },
+      {
+        "allocation_growth_bytes": 838074,
+        "allocation_growth_events": 12290,
+        "completed": true,
+        "frame": 123,
+        "incremental_gc_max_step_ms": 0.027299999999999998,
+        "incremental_gc_ms": 0.6079999999999998,
+        "incremental_gc_steps": 285
+      },
+      {
+        "allocation_growth_bytes": 841769,
+        "allocation_growth_events": 12356,
+        "completed": true,
+        "frame": 124,
+        "incremental_gc_max_step_ms": 0.0277,
+        "incremental_gc_ms": 0.3446,
+        "incremental_gc_steps": 201
+      },
+      {
+        "allocation_growth_bytes": 837124,
+        "allocation_growth_events": 12296,
+        "completed": true,
+        "frame": 125,
+        "incremental_gc_max_step_ms": 0.0326,
+        "incremental_gc_ms": 0.4869000000000001,
+        "incremental_gc_steps": 244
+      },
+      {
+        "allocation_growth_bytes": 839333,
+        "allocation_growth_events": 12353,
+        "completed": true,
+        "frame": 126,
+        "incremental_gc_max_step_ms": 0.0031999999999999997,
+        "incremental_gc_ms": 0.011,
+        "incremental_gc_steps": 7
+      },
+      {
+        "allocation_growth_bytes": 839208,
+        "allocation_growth_events": 12284,
+        "completed": true,
+        "frame": 127,
+        "incremental_gc_max_step_ms": 0.0313,
+        "incremental_gc_ms": 0.6592999999999992,
+        "incremental_gc_steps": 317
+      },
+      {
+        "allocation_growth_bytes": 840630,
+        "allocation_growth_events": 12350,
+        "completed": true,
+        "frame": 128,
+        "incremental_gc_max_step_ms": 0.025400000000000002,
+        "incremental_gc_ms": 0.24449999999999997,
+        "incremental_gc_steps": 153
+      },
+      {
+        "allocation_growth_bytes": 836261,
+        "allocation_growth_events": 12298,
+        "completed": true,
+        "frame": 129,
+        "incremental_gc_max_step_ms": 0.030800000000000004,
+        "incremental_gc_ms": 0.46730000000000005,
+        "incremental_gc_steps": 225
+      },
+      {
+        "allocation_growth_bytes": 838200,
+        "allocation_growth_events": 12311,
+        "completed": true,
+        "frame": 130,
+        "incremental_gc_max_step_ms": 0.004,
+        "incremental_gc_ms": 0.1535000000000001,
+        "incremental_gc_steps": 145
+      }
+    ],
+    "full_gc_ms": null,
+    "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
+    "incremental_gc_max_step_ms": 0.047,
+    "incremental_gc_ms": 3.6281999999999996,
+    "incremental_gc_steps": 1866,
+    "js_gc_ms": null,
+    "measurement_overhead": "includes VM allocation and interrupt instrumentation; compare with sampling disabled",
+    "retained_limit": 1024,
+    "rust_allocation_bytes": null,
+    "schema_version": 2,
+    "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+    "tick_count": 10,
+    "unavailable_values_are_null": true
+  },
+  "before": {
+    "allocation_growth_bytes": 9100629,
+    "allocation_growth_events": 134935,
+    "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+    "availability": {
+      "allocation_growth": "measured",
+      "full_gc_wall_time": "unsupported",
+      "incremental_gc_wall_time": "measured",
+      "js_gc": "not-applicable",
+      "rust_allocations": "not-collected"
+    },
+    "boundary_metrics": {
+      "api_calls": {
+        "scope": "Rust binding wrapper calls, not gameplay function calls",
+        "status": "not-collected"
+      },
+      "rust_allocations": {
+        "scope": "Rust allocator traffic outside Luau onallocate",
+        "status": "not-collected"
+      },
+      "table_conversion": {
+        "scope": "Luau/Rust value conversion object and byte counts",
+        "status": "not-collected"
+      }
+    },
+    "capabilities": {
+      "allocation_growth": true,
+      "full_gc_wall_time": false,
+      "incremental_gc_wall_time": true,
+      "js_gc": false,
+      "rust_allocations": false
+    },
+    "frames": [
+      {
+        "allocation_growth_bytes": 911558,
+        "allocation_growth_events": 13465,
+        "completed": true,
+        "frame": 121,
+        "incremental_gc_max_step_ms": 0.0401,
+        "incremental_gc_ms": 0.9456999999999969,
+        "incremental_gc_steps": 479
+      },
+      {
+        "allocation_growth_bytes": 909092,
+        "allocation_growth_events": 13510,
+        "completed": true,
+        "frame": 122,
+        "incremental_gc_max_step_ms": 0.0268,
+        "incremental_gc_ms": 0.24230000000000002,
+        "incremental_gc_steps": 38
+      },
+      {
+        "allocation_growth_bytes": 908646,
+        "allocation_growth_events": 13436,
+        "completed": true,
+        "frame": 123,
+        "incremental_gc_max_step_ms": 0.0315,
+        "incremental_gc_ms": 0.6253000000000001,
+        "incremental_gc_steps": 226
+      },
+      {
+        "allocation_growth_bytes": 913954,
+        "allocation_growth_events": 13495,
+        "completed": true,
+        "frame": 124,
+        "incremental_gc_max_step_ms": 0.0283,
+        "incremental_gc_ms": 0.46120000000000005,
+        "incremental_gc_steps": 251
+      },
+      {
+        "allocation_growth_bytes": 909417,
+        "allocation_growth_events": 13534,
+        "completed": true,
+        "frame": 125,
+        "incremental_gc_max_step_ms": 0.0053,
+        "incremental_gc_ms": 0.15750000000000003,
+        "incremental_gc_steps": 151
+      },
+      {
+        "allocation_growth_bytes": 909524,
+        "allocation_growth_events": 13476,
+        "completed": true,
+        "frame": 126,
+        "incremental_gc_max_step_ms": 0.0252,
+        "incremental_gc_ms": 0.5235999999999996,
+        "incremental_gc_steps": 286
+      },
+      {
+        "allocation_growth_bytes": 909071,
+        "allocation_growth_events": 13501,
+        "completed": true,
+        "frame": 127,
+        "incremental_gc_max_step_ms": 0.0279,
+        "incremental_gc_ms": 0.4663000000000003,
+        "incremental_gc_steps": 252
+      },
+      {
+        "allocation_growth_bytes": 908833,
+        "allocation_growth_events": 13493,
+        "completed": true,
+        "frame": 128,
+        "incremental_gc_max_step_ms": 0.0244,
+        "incremental_gc_ms": 0.452200000000001,
+        "incremental_gc_steps": 340
+      },
+      {
+        "allocation_growth_bytes": 910764,
+        "allocation_growth_events": 13530,
+        "completed": true,
+        "frame": 129,
+        "incremental_gc_max_step_ms": 0.0354,
+        "incremental_gc_ms": 0.3870999999999999,
+        "incremental_gc_steps": 199
+      },
+      {
+        "allocation_growth_bytes": 909770,
+        "allocation_growth_events": 13495,
+        "completed": true,
+        "frame": 130,
+        "incremental_gc_max_step_ms": 0.0423,
+        "incremental_gc_ms": 0.5122999999999996,
+        "incremental_gc_steps": 241
+      }
+    ],
+    "full_gc_ms": null,
+    "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
+    "incremental_gc_max_step_ms": 0.0423,
+    "incremental_gc_ms": 4.773499999999998,
+    "incremental_gc_steps": 2463,
+    "js_gc_ms": null,
+    "measurement_overhead": "includes VM allocation and interrupt instrumentation; compare with sampling disabled",
+    "retained_limit": 1024,
+    "rust_allocation_bytes": null,
+    "schema_version": 2,
+    "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+    "tick_count": 10,
+    "unavailable_values_are_null": true
+  },
+  "canonical_worlds_equal": true,
+  "execution": {
+    "build_intent": "sampling-diagnostic",
+    "bytecode_optimization_level": 2,
+    "bytecode_type_info_level": 0,
+    "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+    "host_binding": "rust-mlua",
+    "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+    "luau_execution": "interpreter",
+    "native_codegen_compiled": false,
+    "native_codegen_fallback": "interpreter",
+    "native_codegen_requested": false,
+    "native_codegen_supported": null,
+    "phase_profile": false,
+    "preview_tools": true,
+    "runtime": "luau",
+    "rust_profile": "debug",
+    "sampling_profile": true,
+    "schema_version": 2,
+    "target_arch": "x86_64",
+    "target_os": "windows",
+    "vm_implementation": "luau-upstream-vendored",
+    "wasm_host_compilation": "not-applicable"
+  },
+  "leaves_per_view": 96,
+  "measured_ticks": 10,
+  "sampling": false,
+  "scope": "Synthetic owned-style package pair; Luau update allocation-growth/GC diagnostics, not CPU milliseconds, production FPS or total allocator traffic",
+  "warmup_ticks": 120
+}

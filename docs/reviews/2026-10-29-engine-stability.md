@@ -777,3 +777,38 @@ one turn, no session persistence and a 60-second bound. It returned no stdout or
 stderr and was terminated; it remains incomplete. Command, source hashes and
 exit/signal are preserved in the candidate6 evidence, with no passing-review
 claim. Actual game five-case and longer memory/GC acceptance remain open.
+
+## Owned UI leaf styles and private identity purity
+
+Actual game opt2 sampling also attributed safe-point samples to the official
+package's copy/field helpers. Counts are not exact time attribution, but source
+confirmed a redundant operation: leaf first deep-copied props/style, then copied
+the same style again while composing defaults. The internal fast path now
+transfers that already detached override. Defaults still receive a fresh copy,
+public composeStyle retains its independent-copy contract, root metatables
+retain the original compose path, and public nodes remain mutable. No subtree
+memoization, public freeze or additional traversal was introduced.
+
+Independent review caught a valid descendant-metatable counterexample: the
+private ownership probe used `node.id`, unintentionally invoking arbitrary
+`__index` during each copy. The correction is a raw ID lookup plus the existing
+private registry object-identity check. Genuine handles have raw IDs, so
+rebind/retirement behavior remains intact. The real-helper regression verifies
+zero getter invocations and unchanged authored colors. This intentionally fixes
+private probe purity rather than preserving an accidental callback side effect.
+
+The final opt2 targeted suite executed **19/19**, including mutation isolation,
+padding/replacement, metatables, portable work/depth limits and real managed
+virtual identity. The source-paired fixture compared complete canonical world
+bytes/digests across 120 warmup views and ten measured changed views, each with
+96 leaves. On this native x86_64 debug-host opt2 diagnostic, Luau positive
+allocation growth fell from 9,100,629 to 8,389,228 bytes and allocation events
+from 134,935 to 123,177. This is about 7.8% fewer measured Luau growth bytes in
+that fixture, not a Web workload, production CPU/FPS result or total allocator
+traffic measurement. Incremental GC raw metrics are retained without a timing
+gate or collection-cycle claim. See
+[allocation evidence](../evidence/2026-10-29-engine-stability/ui-leaf-owned-style-allocation.json)
+and [executed tests](../evidence/2026-10-29-engine-stability/ui-leaf-owned-style-tests.log).
+The earlier 18-case pre-purity-fix result remains cache history, not the final
+result. Independent Codex source re-review found no remaining concrete P1/P2.
+SDK6 remains immutable; this package/helper slice requires a separate runtime.

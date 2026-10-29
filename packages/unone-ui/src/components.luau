@@ -161,6 +161,23 @@ local function compose(base: any?, override: any?): any
     return result
 end
 
+-- Only leaf's detached copy may enter this path. Defaults still need a fresh
+-- copy for every result; an owned override can transfer its private children.
+local function mergeOwnedStyle(base: any?, override: any?): any
+    if base==nil then return override end
+    local result = copy(base)
+    if override~=nil then
+        for key, value in pairs(override) do
+            if key=="padding" and result.padding~=nil then
+                for edge, length in pairs(value) do result.padding[edge] = length end
+            else
+                result[key] = value
+            end
+        end
+    end
+    return result
+end
+
 local function identifier(instanceId: string, role: string): string
     assert(type(instanceId)=="string" and string.find(instanceId,"%S")~=nil,
         "UI_COMPONENT_ID: a non-empty stable instance ID is required")
@@ -486,7 +503,13 @@ local function makeKit(theme: any?): any
         local node = copy(props)
         node.kind = kind
         if defaults[kind]~=nil or props.style~=nil then
-            node.style = compose(defaults[kind],props.style)
+            if getmetatable(props)==nil and (props.style==nil or getmetatable(props.style)==nil) then
+                node.style = mergeOwnedStyle(defaults[kind],node.style)
+            else
+                -- A root metatable may supply inherited style. copy(props)
+                -- intentionally contains raw fields only, so retain compose.
+                node.style = compose(defaults[kind],props.style)
+            end
         end
         return node
     end

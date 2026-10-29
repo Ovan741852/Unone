@@ -138,6 +138,7 @@ return {scrollView=scrollView,virtualList=function(s)return virtual(s,false)end,
  -- registry handle; copying its table would disconnect later materialization.
  isManagedNode=function(node)
   if type(node)~="table" then return false end
-  local entry=registry[node.id]
+  -- Private identity probes must not run authored __index callbacks.
+  local entry=registry[rawget(node,'id')]
   return entry~=nil and entry.node==node
  end}

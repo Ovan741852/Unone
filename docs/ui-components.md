@@ -421,6 +421,8 @@ update the published tree. Do not clone or manually mutate those handles. The
 exception is recognized by the engine's private registry, not by a node name or
 an ID pattern; ordinary hand-authored nodes remain independent copies. Existing
 [scroll lifecycle and purity rules](ui-scroll.md) continue to apply.
+The private identity probe reads the raw ID and checks the registered object;
+it does not invoke authored `__index` getters while copying ordinary data.
 
 ```luau
 local base: UiStyle = {padding={left=1,right=1},color={1,1,1,1}}

@@ -1,0 +1,27 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.49s
+     Running tests\ui_components.rs (target\debug\deps\ui_components-8aeb5920dfee1211.exe)
+
+running 19 tests
+test undeclared_projects_can_inspect_metadata_but_cannot_use_the_package ... ok
+test theme_overrides_and_copied_inputs_are_isolated_between_instances ... ok
+test leaf_metatable_fallback_preserves_inherited_style_and_strips_copied_metatables ... ok
+test familiar_but_unsupported_callback_and_layout_props_have_actionable_errors ... ok
+test unknown_fields_sparse_children_and_cyclic_data_fail_before_publication ... ok
+test stable_ids_and_anchored_surfaces_do_not_reposition_children ... ok
+test managed_identity_probe_never_runs_authored_nested_index_callbacks ... ok
+test constructors_publish_existing_nodes_with_authored_geometry_and_order ... ok
+test direct_and_themed_entries_cover_every_canonical_control_and_screen ... ok
+test leaf_owned_styles_keep_theme_props_and_each_result_independent ... ok
+test core_keeps_value_id_and_background_validation_authoritative ... ok
+test portable_copy_keeps_mutable_unaliased_data_without_metatables ... ok
+test component_backgrounds_do_not_hide_foreground_collisions ... ok
+test helper_forwarders_keep_existing_contracts_and_compatibility_entries ... ok
+test virtual_rows_translate_slider_track_and_hit_geometry_with_the_leaf ... ok
+test nested_virtual_helpers_keep_live_identity_and_materialize_without_a_tick ... ok
+test portable_copy_preserves_exact_work_and_depth_bounds ... ok
+test leaf_owned_style_retains_the_first_props_copy_work_depth_and_portability_bounds ... ok
+test owned_style_package_matches_previous_source_canonical_worlds_across_changed_views ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.40s
+

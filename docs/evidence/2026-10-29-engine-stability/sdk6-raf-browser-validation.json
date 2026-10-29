@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "SDK6 actual official production main/worker read-only RAF telemetry functional verification; no FPS, GC, leak or OS scanout verdict",
+  "command": "node .cache/verify-retained-raf-browser.mjs --export D:/Projects/Unone/artifacts/retained-official-web-20261030-candidate6 --out D:/Projects/Unone/artifacts/retained-raf-browser-candidate6 --backends main,worker --frames 540",
+  "raw_report": "artifacts/retained-raf-browser-candidate6/report.json",
+  "raw_report_sha256": "23cfa0e2bae0808cfc94b65f492aba958439147ef8c10d64188f76754795441d",
+  "runner_copy": "artifacts/retained-raf-browser-candidate6/verification-script.mjs",
+  "export_root": "D:\\Projects\\Unone\\artifacts\\retained-official-web-20261030-candidate6",
+  "release": "releases/c4cfb706d594ed37f0a9ad7786853490f4b3d9fb79faab99d69a40a68f5ebcb8/",
+  "actual_export_sources": {
+    "web/player/main.js": "d4be20a7d55a182047c5dfa763e57540eb75b200f824ef2559bc81c1bc59262e",
+    "web/shared/async-scheduler.mjs": "0f743b61721c20052707fa15d0e5d52b596ce53d1b904c3bd7ff6286cdcfe6e7",
+    "web/shared/player-completion.mjs": "be4339501cfd5c93c20e19869d31f630c190dcb17f371b549c8341905ae06996"
+  },
+  "runtime_wasm_sha256": "423f90c4d64c916931887d83cfc9562e46d1bdcb4718373327588fa8c0c54f25",
+  "browser": "156.0.4314.50",
+  "passed": true,
+  "cases": [
+    {
+      "backend": "main",
+      "passed": true,
+      "errors": [],
+      "failed_requests": [],
+      "default_includes_rows": false,
+      "legacy_includes_rows": false,
+      "ring_rows": 512,
+      "recorded_total": 549,
+      "short_window_rows": 18,
+      "micro_window_rows": 0,
+      "detached": true,
+      "frozen": true,
+      "native_raf_tokens_verified": 301,
+      "fresh_rows_verified": 301,
+      "source_counts": {
+        "manual": 0,
+        "startup": 3,
+        "scheduler_raf": 546,
+        "unknown": 0
+      },
+      "successful_coverage_ms": 4992.200000000001,
+      "fresh_coverage_ms": 4992.200000000001,
+      "scope_reconstruction": {
+        "actual_completed": {
+          "retained": 18,
+          "p95_ms": 17.100000023841858,
+          "p99_ms": 17.100000023841858,
+          "max_ms": 17.100000023841858
+        },
+        "successful_raf": {
+          "retained": 18,
+          "p95_ms": 16.700000000000728,
+          "p99_ms": 16.700000000000728,
+          "max_ms": 16.700000000000728
+        },
+        "new_snapshot_raf": {
+          "retained": 18,
+          "p95_ms": 16.700000000000728,
+          "p99_ms": 16.700000000000728,
+          "max_ms": 16.700000000000728
+        },
+        "submit_sync_wall": {
+          "retained": 18,
+          "p95_ms": 0.5,
+          "p99_ms": 0.5,
+          "max_ms": 0.5
+        },
+        "callback_sync_wall": {
+          "retained": 18,
+          "p95_ms": 0.8999999761581421,
+          "p99_ms": 0.8999999761581421,
+          "max_ms": 0.8999999761581421
+        },
+        "preparation_wall": {
+          "window_ms": 300,
+          "retained": 18,
+          "capacity": 512,
+          "oldest_start_ms": 9136.599999904633,
+          "oldest_end_ms": 9137.699999928474,
+          "newest_end_ms": 9420.5,
+          "coverage_ms": 283.90000009536743,
+          "window_coverage": 0.9463333336512247,
+          "min_ms": 0.6999999284744263,
+          "max_ms": 1.100000023841858,
+          "p50_ms": 0.7999999523162842,
+          "p95_ms": 1.100000023841858,
+          "p99_ms": 1.100000023841858
+        }
+      }
+    },
+    {
+      "backend": "worker",
+      "passed": true,
+      "errors": [],
+      "failed_requests": [],
+      "default_includes_rows": false,
+      "legacy_includes_rows": false,
+      "ring_rows": 512,
+      "recorded_total": 547,
+      "short_window_rows": 18,
+      "micro_window_rows": 0,
+      "detached": true,
+      "frozen": true,
+      "native_raf_tokens_verified": 300,
+      "fresh_rows_verified": 300,
+      "source_counts": {
+        "manual": 0,
+        "startup": 3,
+        "scheduler_raf": 544,
+        "unknown": 0
+      },
+      "successful_coverage_ms": 4995.399999976158,
+      "fresh_coverage_ms": 4995.399999976158,
+      "scope_reconstruction": {
+        "actual_completed": {
+          "retained": 18,
+          "p95_ms": 17.100000023841858,
+          "p99_ms": 17.100000023841858,
+          "max_ms": 17.100000023841858
+        },
+        "successful_raf": {
+          "retained": 17,
+          "p95_ms": 16.799999999999272,
+          "p99_ms": 16.799999999999272,
+          "max_ms": 16.799999999999272
+        },
+        "new_snapshot_raf": {
+          "retained": 17,
+          "p95_ms": 16.799999999999272,
+          "p99_ms": 16.799999999999272,
+          "max_ms": 16.799999999999272
+        },
+        "submit_sync_wall": {
+          "retained": 18,
+          "p95_ms": 0.7000000476837158,
+          "p99_ms": 0.7000000476837158,
+          "max_ms": 0.7000000476837158
+        },
+        "callback_sync_wall": {
+          "retained": 18,
+          "p95_ms": 1,
+          "p99_ms": 1,
+          "max_ms": 1
+        },
+        "preparation_wall": {
+          "window_ms": 300,
+          "retained": 18,
+          "capacity": 512,
+          "oldest_start_ms": 9069.899999976158,
+          "oldest_end_ms": 9070.899999976158,
+          "newest_end_ms": 9354.300000071526,
+          "coverage_ms": 283.90000009536743,
+          "window_coverage": 0.9463333336512247,
+          "min_ms": 0.8999999761581421,
+          "max_ms": 1.2999999523162842,
+          "p50_ms": 1,
+          "p95_ms": 1.2999999523162842,
+          "p99_ms": 1.2999999523162842
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Actual 540-tick capacity/progress checks, not performance acceptance.",
+    "Independent RAF observer is unpatched and issues no Core command; it does not acknowledge GPU/OS scanout.",
+    "Actual completed_intervals and additive interval/wall summaries were reconstructed independently from opted-in paired timestamps in a short window.",
+    "Core/game/renderer production sources were not edited by this verification.",
+    "The game owner must still run unchanged game-specific FPS and interaction acceptance on the delivered artifact."
+  ]
+}
