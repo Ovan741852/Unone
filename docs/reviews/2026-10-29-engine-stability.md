@@ -612,6 +612,25 @@ backend plus actual main entry wiring, readiness, input and completion cases.
 It leaves the completion counter definitions unchanged. This establishes
 scheduling correctness under the controlled cases, not final SDK/game FPS.
 
+## Startup save persistence correction
+
+Root's exported-save smoke preparation found a preexisting data-loss path:
+READY assigned the post-`Game.start` save to the persisted marker without a
+storage write, so unchanged later ticks never persisted it. Codex
+`/root/native_performance` added one actual main helper shared by startup,
+updates and restart. It advances the marker only after successful storage,
+initializes it from the restored text, and persists before READY. A paused
+restart now persists newly produced `Game.start` data without a later tick.
+
+Focused actual-entry tests passed 28/28. A changed 112 KiB immutable publication
+writes once before READY; 120 unchanged calls perform zero payload stringifies
+and no additional writes. Change/clear each write once. A startup storage
+exception preserves the old marker and creates no READY or scheduler; the
+worker-backed tick path also verifies rejected-write preservation/retry.
+Actual exported-player acceptance and final SDK evidence are separate from
+these controlled VM-entry tests. See
+[startup save evidence](../evidence/2026-10-29-engine-stability/startup-save-persistence-validation.json).
+
 ## Candidate5 exported acceptance and remaining game gate
 
 The final recursive Web inventory executed **519/519**, zero failures/skips,
