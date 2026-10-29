@@ -12,7 +12,7 @@ function fixture(){
   projectedEntries:()=>[],heightfieldEntries:()=>[],rasterPolicy:{requested:'off'},backend:'webgl',bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop},render:noop},worldOf:x=>x,resize:noop,checkedRaster:false,specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),
   shaderMaterials:{retain:noop,clear:noop},scene:{remove:noop},camera:{},camera3d:{},meshes3d:new Map(),meshAssets:new Map(),heightfields:{draw:noop,clear:noop},
-  instances:{draw:noop,clear:noop},particles:{draw:noop},projected:{prepare:noop,draw:noop,clear:noop},rasterPass:null,startupPresentation:null,frameDraws:null,
+  instances:{draw:noop,clear:noop},particles:{draw:noop},projected:{entries:()=>[],prepare:noop,draw:noop,clear:noop},rasterPass:null,startupPresentation:null,frameDraws:null,
   textureCache:createTextureCachePolicy(new Map()),profile:null};
  vm.createContext(context);vm.runInContext(between('draw','clearTextures')+between('clearTextures','dispose'),context);
  return {context,calls};

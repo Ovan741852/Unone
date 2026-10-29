@@ -1,0 +1,282 @@
+{
+  "date": "2026-10-30",
+  "baseRevision": "feed494",
+  "scope": "Reusable official Web UI host lifecycle/traversal and legacy projected source-over/same-size resource updates. No gameplay rules, game files, existing player pages/saves/servers or renderer selection changed.",
+  "changes": {
+    "ui": [
+      "Canvas validates and projects once per content change and privately shares prepared leaves with its pointer router; content-based dirty detection still catches in-place edits.",
+      "Scroll uses its first projection unless reset/anchoring changes effective offsets. Text input freshly scans current node kinds and returns the original snapshot when no fields exist.",
+      "Disposed handles release retained trees, serialized content, usage, pointer ownership and editing listeners. Retired virtual lists release keys and suppress queued post-lifetime requests; in-flight callbacks capture scalar request fields."
+    ],
+    "projected": [
+      "Opt-in source_over requires host raster and both depth flags false. Default opaque/cutout behavior remains; source-over retains one authored order/id queue behind Canvas HUD.",
+      "Linear source-over filtering interpolates premultiplied encoded or linear texels and restores straight RGB before explicit SrcAlpha blending. Full-alpha 2D use sets cutoff0; the advanced API default remains0.05.",
+      "Presentation-owned decoder keys both complete packed strings, both counts and revision, validates metadata each draw, retains one accepted generation and rejects stale invalid payloads. Default public geometry results are detached.",
+      "Same-sized vertex/index changes swap renderer-owned arrays and upload existing GPU buffers. Unchanged bytes/materials/callbacks reuse owners; failed staged commits restore previous buffers/materials/uniforms and retire new resources.",
+      "All new production behavior lives in already inventoried Web files; no new production module dependency was added."
+    ]
+  },
+  "verification": {
+    "webUnitSuite": {
+      "tests": 437,
+      "passed": 437,
+      "failed": 0,
+      "skipped": 0,
+      "rawLog": "web-priority-final-web-tests.log",
+      "rawLogSha256": "7fdc7272427ff7d50716b257af901d535be387a43e6ffaf3dfd58d6950d5aba4",
+      "finalSourceDelta": "Final rerun includes the strict-equality guard that skips idempotent undo assignments. The earlier GPU run precedes that guard; geometry/shader/ownership behavior is unchanged and independent final source review found no P1/P2."
+    },
+    "focusedUi": {
+      "tests": 62,
+      "passed": 62,
+      "includes": "Controlled --expose-gc child keeps four disposed public handles and an actually started unresolved virtual request alive, while WeakRefs confirm former rect/key graphs are released. This is not a real-game GC-frequency/heap soak."
+    },
+    "canvasPixels": {
+      "rawReport": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-ui-pixel-qa\\report.json",
+      "passed": true,
+      "samples": 928,
+      "viewports": [
+        {
+          "width": 640,
+          "height": 480,
+          "dpr": 1
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "dpr": 2
+        },
+        {
+          "width": 360,
+          "height": 640,
+          "dpr": 1
+        }
+      ],
+      "errors": [],
+      "scope": "Actual official Canvas pixels, TC translation adapter only; not original bitmap font or normal game acceptance",
+      "font": {
+        "path": "D:\\Projects\\Populous-Reborn\\dev\\web-complete-r9-fidelity-performance\\fonts\\NotoSansTC-Regular.ttf",
+        "sha256": "bd10f02fdad8c214ce3df825e151306f08247fabd6050823ba259ebf744f7e16"
+      }
+    },
+    "projectedPixels": {
+      "rawReport": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-source-over-pixels-r5\\report.json",
+      "actualImage": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-source-over-pixels-r5\\actual.png",
+      "referenceImage": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-source-over-pixels-r5\\reference.png",
+      "ok": true,
+      "scope": "Actual official host-raster legacy projected adapter versus Canvas2D drawImage, full-frame RGB/RGBA pixels, existing GL buffer updates, stale-payload rejection and bounded resource retirement; no FPS or long-soak claim.",
+      "physicalSize": [
+        64,
+        48
+      ],
+      "conformance": {
+        "samples": 919,
+        "passed": 919,
+        "failures": [],
+        "readback": "actual-WebGL2-default-RGBA8-and-staging-marker"
+      },
+      "results": [
+        {
+          "id": "nearest-alpha",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 0,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "linear-premultiplied-alpha",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 2,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "linear-texture-times-vertex-alpha",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 1,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "opaque-after-translucent",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 1,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "translucent-after-opaque",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 1,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "multiple-translucent-overlap",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 2,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "physical-scissor",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 2,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "atlas-crop-linear-upscale-outside-neighbors",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 1,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "atlas-crop-linear-upscale-transparent-neighbors",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 1,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "fractional-source-crop",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 2,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "transparent-backdrop-alpha",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 1,
+          "differingChannels": 0,
+          "firstMismatch": null
+        },
+        {
+          "id": "transparent-backdrop-multiple-overlays",
+          "passed": true,
+          "tolerance": 2,
+          "maxError": 2,
+          "differingChannels": 0,
+          "firstMismatch": null
+        }
+      ],
+      "updates": {
+        "bufferData": 0,
+        "bufferSubData": 2,
+        "unchangedRedraws": 20,
+        "invalidStaleRejected": true,
+        "contextRestorePixelsEqual": true,
+        "resourcesBeforeClear": {
+          "projected_batches": 1,
+          "projected_triangles": 2,
+          "projected_rebuilds": 28,
+          "projected_geometry_decodes": 28,
+          "projected_geometry_decode_reuses": 20,
+          "projected_retained_geometries": 1,
+          "projected_geometry_builds": 27,
+          "projected_geometry_disposes": 26,
+          "projected_live_geometries": 1,
+          "projected_material_builds": 27,
+          "projected_material_disposes": 26,
+          "projected_live_materials": 1,
+          "projected_geometry_updates": 1,
+          "projected_vertex_update_bytes": 160,
+          "projected_index_update_bytes": 24
+        },
+        "resourcesAfterClear": {
+          "projected_batches": 0,
+          "projected_triangles": 0,
+          "projected_rebuilds": 28,
+          "projected_geometry_decodes": 28,
+          "projected_geometry_decode_reuses": 20,
+          "projected_retained_geometries": 0,
+          "projected_geometry_builds": 27,
+          "projected_geometry_disposes": 27,
+          "projected_live_geometries": 0,
+          "projected_material_builds": 27,
+          "projected_material_disposes": 27,
+          "projected_live_materials": 0,
+          "projected_geometry_updates": 1,
+          "projected_vertex_update_bytes": 160,
+          "projected_index_update_bytes": 24
+        }
+      },
+      "gpu": {
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "vendor": "Google Inc. (NVIDIA)"
+      },
+      "browser": "156.0.4314.50",
+      "browserErrors": [],
+      "consoleErrors": []
+    },
+    "independentReview": {
+      "reviewer": "/root/native_performance",
+      "mode": "Read-only Codex review of final current source including idempotent assignment guard",
+      "result": "No concrete P1/P2 found",
+      "reviewed": "Full-string cache/metadata validation, borrowed/owned arrays, commit rollback/version reupload, disposal/context loss, order/depth, manual premultiplied sampling and crop/scissor orientation",
+      "testsRerun": false
+    }
+  },
+  "performanceLimit": "The current frozen JYRogue candidate3 remains below59 actual simulation ticks/s for detail-world idle/drag/travel after O3+UI hosts; see web-priority-candidate3-browser.json. Advanced projected source-over has not been measured on actual gameplay. The unshipped set2D preset was withdrawn; ADR0044 selects a retained-resource/instance direction without implementing new authoring/transport APIs. This evidence does not establish stable60FPS, no memory leak anywhere, or infrequent real-game GC.",
+  "samplingLimit": "Canvas agreement is bounded to the twelve reported synthetic cases on the recorded Chromium/ANGLE/NVIDIA GPU, tolerance2/255 (nearest exact). No universal browser/backend pixel-exactness or arbitrary future atlas-crop guarantee is implied.",
+  "manifest": [
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 18481,
+      "sha256": "7ee39bda33ec88eead6d223ec76692d4c85970dc8924e5a7c9863dac96a0869d"
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "bytes": 19133,
+      "sha256": "c080c247f544213b549104bb8e658fd39501316962c358c5123c23264cfba76d"
+    },
+    {
+      "path": "web/shared/ui-text-input.mjs",
+      "bytes": 10011,
+      "sha256": "cf453f564e419249d242a3724cbc359e50fde3143ed10d79a0e5ea4fedb0cc67"
+    },
+    {
+      "path": "web/shared/projected-geometry.js",
+      "bytes": 9005,
+      "sha256": "b31c5169eb275a5dbdf90a2d50675c023d856fe8a9daed7fff1f73f6da2a03de"
+    },
+    {
+      "path": "web/renderer/projected.js",
+      "bytes": 10327,
+      "sha256": "c608f429e3c2d90a9faf8998e64f4e199bfcac90b21340c2d7eef12961578318"
+    },
+    {
+      "path": "web/renderer/projected-raster-shaders.js",
+      "bytes": 4312,
+      "sha256": "f914020f10a3c65eb6e1ca98da597d1003a5f22f1d1e8828105109bf4b25b6b5"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 29069,
+      "sha256": "72045e73ca0eec3b06633cd56674f81b4e89271f1740848535ff12a2509bb6e2"
+    },
+    {
+      "path": "scripts/verify-projected-source-over-browser.mjs",
+      "bytes": 14093,
+      "sha256": "add1f051fdf85051a373df69c3ffcb226c032256b1b2991efbd63c176f09f09e"
+    }
+  ]
+}

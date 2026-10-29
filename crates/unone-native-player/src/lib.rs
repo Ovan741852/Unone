@@ -34,6 +34,9 @@ use winit::{
 type R<T> = Result<T, String>;
 pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
     if snapshot.projected_frame.is_some(){return Err("HOST_PROJECTED_FRAME_UNSUPPORTED: encoded reference Frame requires official WebGL2 profile".into());}
+    if snapshot.projected_geometry.values().any(|batch|batch.blend==unone_engine::ProjectedBlend::SourceOver) {
+        return Err("PROJECTED_BLEND_UNSUPPORTED: source_over requires the official WebGL projected renderer; native sRGB hardware blending does not implement the encoded-color contract".into());
+    }
     if !snapshot.shader_materials.is_empty() {
         return Err("SHADER_BACKEND_UNSUPPORTED: GLSL sprite shader materials require the official WebGL player; native wgpu does not implement this contract".into());
     }
@@ -805,6 +808,8 @@ pub fn desktop() -> R<()> {
         descriptor["presentation"].as_array_mut().unwrap().push(json!("projected_geometry"));
         descriptor["projected_geometry"]["alpha_compare"]=json!(["greater_equal","greater"]);
         descriptor["projected_geometry"]["material_defaults"]["alpha_compare"]=json!("greater_equal");
+        descriptor["projected_geometry"]["material_defaults"]["blend"]=json!("opaque");
+        descriptor["projected_geometry"]["source_over"]=json!({"supported":false,"error":"PROJECTED_BLEND_UNSUPPORTED","phase":"before_GPU_prepare","reason":"native sRGB hardware blending does not implement encoded-color source-over parity"});
         descriptor["raster"]=json!({"sample_count":1,"antialias":{"omitted":"fixed_single_sample","false":"accepted_single_sample","true":"unsupported_preflight"},"static_until_relaunch":true});
         descriptor["raster"]["projected_raster"]=json!({"omitted":"native_host_raster","explicit":"unsupported_package_admission","before_runtime_or_gpu":true});
         descriptor["raster"]["projected_material_profile"]=json!({"omitted":"legacy_unchanged","explicit":"unsupported_package_admission","snapshot":"unsupported_before_GPU_prepare"});
@@ -1008,6 +1013,20 @@ mod telemetry_tests {
             "fragment":"vec4 unoneShade(vec2 uv,vec4 color){return color;}"
         }}})).runtime(42).err().expect("native shader gate");
         assert!(error.contains("SHADER_BACKEND_UNSUPPORTED"));
+    }
+
+    #[test]
+    fn native_source_over_is_rejected_before_any_gpu_or_texture_preparation() {
+        let runtime=unone_engine::EngineRuntime::load_source("blend","main.luau",
+            "return {start=function()end,update=function()end}",None).unwrap();
+        let mut snapshot=runtime.observe();
+        let vertices:Vec<u8>=[0f32,0.,0.5,1.,0.,0.,1.,1.,1.,1.].into_iter().flat_map(f32::to_le_bytes).collect::<Vec<_>>().repeat(3);
+        let indices=[0u32,1,2].into_iter().flat_map(u32::to_le_bytes).collect();
+        let batch=unone_engine::ProjectedBatch::new("missing-on-purpose".into(),vertices,indices,0,false,false).unwrap();
+        snapshot.projected_geometry.insert("alpha".into(),batch.clone());
+        assert!(super::ensure_shader_backend(&snapshot).is_ok(),"opaque retains existing admission");
+        snapshot.projected_geometry.insert("alpha".into(),batch.with_blend(unone_engine::ProjectedBlend::SourceOver).unwrap());
+        assert!(super::ensure_shader_backend(&snapshot).unwrap_err().starts_with("PROJECTED_BLEND_UNSUPPORTED:"));
     }
 
     #[test]

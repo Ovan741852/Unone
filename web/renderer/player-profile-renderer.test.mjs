@@ -27,7 +27,7 @@ function fixture(profiler){
   renderer:{info:{reset:noop,render:{calls:0,triangles:0},memory:{geometries:0,textures:0}},getContext:()=>({}),render(){calls.push('ordinary');}},worldOf:x=>x,resize:noop,
   checkedRaster:true,validateRaster:()=>true,specsOf:()=>new Map(Object.keys(records).map(id=>[id,{id,kind:'texture2d'}])),visibleSprites:()=>[],records:new Map(),
   shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshes3d:new Map(),heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
-  projected:{prepare:noop,draw:noop,clear(){calls.push('projected.clear');}},rasterPass:{draw:noop,invalidate(){calls.push('rasterPass.invalidate');}},frameDraws,
+  projected:{entries:()=>[],prepare:noop,draw:noop,clear(){calls.push('projected.clear');}},rasterPass:{draw:noop,invalidate(){calls.push('rasterPass.invalidate');}},frameDraws,
   framePass:{draw(d,c,frame){calls.push(['pass',frame.draws.length]);d.draw({getPixelRatio:()=>1,setScissor:noop,setScissorTest:noop,render(){calls.push('frame-draw');}},c,1280,720);return true;},invalidate(){calls.push('framePass.invalidate');}},
   startupPresentation:{invalidate(){calls.push('invalidate');},drawn(){calls.push('drawn');}},
   rasterCapability:{metrics:()=>({status,context_epoch:epoch,target_generation:epoch}),lost(){status='lost';calls.push('cap.lost');},restored(){status='unchecked';epoch++;calls.push('cap.restored');}}};

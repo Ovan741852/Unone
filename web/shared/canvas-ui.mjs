@@ -14,8 +14,8 @@ const sliderRatio=(drag,x,y)=>{
   const r=drag.track_rect,value=drag.axis==='vertical'?(y-r.y)/r.height:(x-r.x)/r.width;
   const ratio=Math.max(0,Math.min(1,value));return drag.reverse?1-ratio:ratio;
 };
-export function flattenUi(tree){
-  uiUsage(tree);
+function prepareUi(tree){
+  const usage=uiUsage(tree);
   const leaves=[];
   function walk(nodes,depth){
     for(const n of nodes??[]){
@@ -33,17 +33,21 @@ export function flattenUi(tree){
       leaves.push(n);
     }
   }
-  walk(projectScrollTree(tree).tree?.children,0);return leaves;
+  walk(projectScrollTree(tree).tree?.children,0);return {nodes:leaves,usage};
 }
-export function createUiPointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
-  let nodes=[];const captured=new Map(),holds=new Map(),sliderOwners=new Map(),released=new Set();
+export function flattenUi(tree){return prepareUi(tree).nodes;}
+function pointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
+  let nodes=[],disposed=false;const captured=new Map(),holds=new Map(),sliderOwners=new Map(),released=new Set();
   function release(id,phase){const c=captured.get(id);if(!c)return false;captured.delete(id);
     if(c.drag){sliderOwners.delete(c.id);onSlider({id:c.id,phase:phase==='up'?'end':'cancel',ratio:c.ratio});}
     if(c.action){const count=(holds.get(c.action)??1)-1;if(count>0)holds.set(c.action,count);else{holds.delete(c.action);onAction({action:c.action,phase,nodeId:c.id,pointerId:id});}}return true;}
-  return {
-    setTree(tree){nodes=flattenUi(tree);for(const [pointer,c]of captured){const n=nodes.find(n=>n.id===c.id);
-      if(c.drag?(!dragNode(n??{})||n.drag.enabled===false||dragSignature(n)!==c.signature):c.action&&(!n||!actionNode(n)||n.action!==c.action)){release(pointer,'cancel');captured.set(pointer,{id:c.id,action:null});}}},
+  function setNodes(next){if(disposed)throw Error('UI_DISPOSED');nodes=next;for(const [pointer,c]of captured){const n=nodes.find(n=>n.id===c.id);
+    if(c.drag?(!dragNode(n??{})||n.drag.enabled===false||dragSignature(n)!==c.signature):c.action&&(!n||!actionNode(n)||n.action!==c.action)){release(pointer,'cancel');captured.set(pointer,{id:c.id,action:null});}}}
+  function findNode(x,y,interactive){for(let i=nodes.length-1;i>=0;i--){const n=nodes[i];if((interactive?inputNode(n):!['panel','image_batch'].includes(n.kind))&&hit(n,x,y))return n;}return null;}
+  const api={
+    setTree(tree){setNodes(flattenUi(tree));},
     pointer({kind,pointerId=0,x,y}){
+      if(disposed)return false;
       if(released.has(pointerId)){if(kind==='down')released.delete(pointerId);else{if(kind==='up'||kind==='cancel')released.delete(pointerId);return true;}}
       const c=captured.get(pointerId);
       if(c?.drag&&(kind==='move'||kind==='up')&&Number.isFinite(x)&&Number.isFinite(y)){
@@ -52,7 +56,7 @@ export function createUiPointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
       if(kind==='cancel'||kind==='up'){const owned=release(pointerId,kind);if(owned&&kind==='cancel')released.add(pointerId);return owned;}
       if(c)return true;
       if(kind!=='down')return false;
-      const node=[...nodes].reverse().find(n=>inputNode(n)&&hit(n,x,y));
+      const node=findNode(x,y,true);
       // Old slider leaves remain passthrough. Official model sliders declare
       // drag geometry, own the complete stream, and never send world pointers.
       // Decorative leaves do not obscure semantic controls underneath them.
@@ -67,10 +71,15 @@ export function createUiPointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
       return true;
     },
     releaseAll(){for(const id of [...captured.keys()]){release(id,'cancel');released.add(id);}},
-    hitTest(x,y){const reversed=[...nodes].reverse(),n=reversed.find(n=>inputNode(n)&&hit(n,x,y))??reversed.find(n=>!['panel','image_batch'].includes(n.kind)&&hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null,...(dragNode(n)?{kind:'slider',sliderDrag:true}:n.kind==='text_input'?{kind:'text_input'}:{})}:null;},
+    hitTest(x,y){const n=findNode(x,y,true)??findNode(x,y,false);return n?{nodeId:n.id,action:actionNode(n)?n.action:null,...(dragNode(n)?{kind:'slider',sliderDrag:true}:n.kind==='text_input'?{kind:'text_input'}:{})}:null;},
     get capturedPointers(){return [...captured.keys()];},
+    dispose(){if(disposed)return;api.releaseAll();disposed=true;nodes=[];captured.clear();holds.clear();sliderOwners.clear();released.clear();},
   };
+  // Prepared leaves are passed only within this module, never cached by caller
+  // tree identity. Public setTree still validates and projects every call.
+  return {api,setNodes};
 }
+export function createUiPointerRouter(options={}){return pointerRouter(options).api;}
 function imageLoad(url){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error(`UI_IMAGE_LOAD_FAILED: ${url}`));image.src=url;});}
 export async function loadCanvasFont(family,url,weight=400){
   try{const font=new FontFace(family,`url(${JSON.stringify(String(url))})`,{weight:String(weight)});await font.load();document.fonts.add(font);return font;}
@@ -84,7 +93,7 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
 export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1)}={}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
-  const router=createUiPointerRouter({onAction,onSlider}),assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
+  const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
   const diagnostics=new Map(),quadDiagnosticKeys=new Map();let usage=null,renderMs=null,renderRegions=0;
   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
   function ensureAsset(id){if(assets.has(id))return assets.get(id);
@@ -159,7 +168,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       const bw=Math.min(8192,Math.max(1,Math.round(width*dpr))),bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));
       if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
       const tree=(snapshot?.world??snapshot)?.ui??null,key=JSON.stringify(tree);
-      if(key!==previous){usage=uiUsage(tree);nodes=flattenUi(tree);router.setTree(tree);previous=key;dirty=true;
+      if(key!==previous){const prepared=prepareUi(tree);usage=prepared.usage;nodes=prepared.nodes;routing.setNodes(nodes);previous=key;dirty=true;
         const used=new Set(nodes.flatMap(n=>n.kind==='image_batch'?n.quads.map(q=>q.asset):n.kind==='image'?[n.asset]:[]));for(const [id,e]of assets)if(!used.has(id)){e.image?.close?.();assets.delete(id);diagnostics.delete(id);}
         for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
       if(!dirty)return;dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
@@ -193,6 +202,6 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
     setFont(family){fontFamily=family;dirty=true;},
     invalidateAssets(){generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;},
     report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
-    dispose(){router.releaseAll();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();quadDiagnosticKeys.clear();opacityPainter.dispose();},
+    dispose(){if(disposed)return;router.dispose();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];previous=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();},
   };
 }

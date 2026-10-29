@@ -49,6 +49,13 @@ execution. Their capability sets are not equivalent.
 
 ## Immediate sequence
 
+The current user-directed performance priority is the official Web player.
+Use [Decision 0044](decisions/0044-retained-presentation-resources.md) for the
+resource/instance/stream boundary: complete the existing sprite/UI paths and
+measure end-to-end retention/transport before adding another low-level 2D
+authoring API. The resource transport and new authoring capabilities in that
+decision are planned, not currently implemented or a 60 FPS acceptance claim.
+
 1. Keep runtime data contracts unique: Rust DTOs generate JSON schemas; unknown
    typed fields fail ingestion; common host loaders and normalized replay fixtures
    prevent silent platform drift. See [runtime contracts](runtime-contracts.md).

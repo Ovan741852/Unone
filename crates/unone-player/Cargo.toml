@@ -30,7 +30,8 @@ unone-engine = { path = "../unone-engine", default-features = false }
 [workspace]
 
 [profile.release]
-opt-level = "s"
+# The interpreter and publication pipeline prioritize frame-time throughput.
+opt-level = 3
 lto = true
 codegen-units = 1
 strip = "debuginfo"

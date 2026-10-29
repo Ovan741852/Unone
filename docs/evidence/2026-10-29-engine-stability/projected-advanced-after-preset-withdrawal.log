@@ -1,0 +1,19 @@
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.17s
+     Running tests\projected_geometry.rs (target\debug\deps\projected_geometry-2aa3eafeb05f92ea.exe)
+
+running 11 tests
+test source_over_requires_both_explicit_disabled_depth_flags_before_mutation ... ok
+test viewport_has_pixel_dimensions_and_reading_never_advances_it ... ok
+test scissor_is_physical_top_left_bounded_atomic_and_clipped_to_new_viewport ... ok
+test host_dimensions_exist_before_start_and_resize_is_atomic ... ok
+test material_policy_defaults_and_updates_are_validated_atomically ... ok
+test packed_geometry_lifecycle_is_atomic_and_revision_is_non_consuming ... ok
+test source_over_blend_is_opt_in_atomic_and_revision_sensitive ... ok
+test source_over_2d_artwork_keeps_explicit_material_and_buffer_ownership ... ok
+test packed_geometry_rejects_invalid_values_indices_and_unknown_options ... ok
+test alpha_compare_is_atomic_default_compatible_and_revision_sensitive ... ok
+test world_geometry_and_batch_limits_reject_without_partial_mutation ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

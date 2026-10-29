@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-30",
+  "baseline_commit": "feed49461d84982a18aa45fec9e47b73cb895c2c",
+  "source_dirty": true,
+  "scope": "SaveState immutable serialized save cache; direct-to-OUTPUT canonical no-instance Web ABI envelope; native source_over unsupported admission. Focused checks on working source, no final artifact or FPS certification.",
+  "environment": {
+    "CARGO_HOME": "D:\\Projects\\Unone\\.toolcache\\cargo",
+    "RUSTUP_HOME": "D:\\Projects\\Unone\\.toolcache\\rustup",
+    "PATH_prepend": [
+      "D:\\Projects\\Unone\\.toolcache\\cargo\\bin",
+      "D:\\Projects\\Unone\\.toolcache\\w64devkit\\bin"
+    ],
+    "LIBRARY_PATH": "D:\\Projects\\Unone\\.toolcache\\rustup\\toolchains\\1.95.0-x86_64-pc-windows-gnu\\lib\\rustlib\\x86_64-pc-windows-gnu\\lib\\self-contained",
+    "rust": "1.95.0",
+    "profile": "test, unoptimized with debuginfo",
+    "proc_macro_overrides": "None for these debug test commands."
+  },
+  "checks": [
+    {
+      "command": "cargo test -p unone-engine --test save_publication",
+      "exit_code": 0,
+      "passed": 3,
+      "failed": 0,
+      "raw_log": "save-publication-tests.log"
+    },
+    {
+      "command": "cargo test -p unone-engine --lib runtime::save_state::tests",
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "raw_log": "save-cache-unit-tests.log"
+    },
+    {
+      "command": "cargo test -p unone-web-live-smoke",
+      "exit_code": 0,
+      "passed": 15,
+      "failed": 0,
+      "raw_log": "web-publication-tests.log"
+    },
+    {
+      "command": "cargo test -p unone-web-live-smoke --no-default-features direct_publication_tests",
+      "exit_code": 0,
+      "passed": 2,
+      "failed": 0,
+      "raw_log": "web-publication-production-tests.log"
+    },
+    {
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib native_source_over_is_rejected_before_any_gpu_or_texture_preparation",
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "raw_log": "native-source-over-gate.log"
+    }
+  ],
+  "coverage": [
+    "Cached encoding reuse, replacement and clear invalidation; immutable old leases; detached host and Lua owned reads; restored save visible before Game.start.",
+    "Lua cyclic and out-of-range portable-integer rejection preserves encoded generation. Lua nil remains Some(JSON null), distinct from absent host save.",
+    "Reload commit and rollback preserve the corresponding payload and immutable cached generation; save-only writes remain outside observation digest.",
+    "Byte-for-byte old envelope equivalence across absent/null/112 KiB save, escaped Unicode, binary64, empty arrays, physical receipt and both instance transport modes.",
+    "Actual ABI instance-to-empty transition preserves digest/transport while revoking the previous instance memory lease.",
+    "Valid source_over native admission fails before GPU/texture preparation; opaque retains prior admission."
+  ],
+  "limits": [
+    "No benchmark or player rendering was performed in these commands. This is not proof of 60 rendered FPS, universal leak freedom or zero GC.",
+    "One serialized save generation is retained alongside the current JSON payload. Host-owned Rc leases can intentionally outlive replacements.",
+    "Existing instance-bearing canonical parse/rewrite fallback remains. JavaScript decode/parse and world capture still allocate.",
+    "First or dirty save-cache encoding precedes the existing publication phase timers; total ABI and browser CPU measurements include it.",
+    "The earlier Windows runtime artifact is not rebuilt or recertified by these checks."
+  ],
+  "independent_source_review": {
+    "reviewer": "Codex /root/runtime_audit",
+    "result": "No concrete P1/P2 found in SaveState and direct ABI diff.",
+    "gap": "Reviewer requested actual ABI instance-to-empty old-lease retirement coverage; regression added and passed."
+  }
+}

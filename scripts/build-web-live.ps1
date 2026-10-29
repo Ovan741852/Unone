@@ -5,6 +5,8 @@ param(
     [switch]$Development,
     [string]$Project,
     [string]$OutputRoot,
+    # Explicit current publisher CLI; defaults to the checkout's debug build.
+    [string]$Cli,
     [ValidateRange(1000,3600000)][int]$ParityTimeoutMs = 120000,
     [string]$BinaryenRoot = $env:UNONE_BINARYEN_ROOT,
     [string]$EmsdkRoot = $(if ($env:UNONE_EMSDK_ROOT) { $env:UNONE_EMSDK_ROOT } elseif ($env:EMSDK) { $env:EMSDK } else { '' })
@@ -70,7 +72,7 @@ if ($Player) {
     if ($BinaryenRoot) { $env:EM_BINARYEN_ROOT = [IO.Path]::GetFullPath($BinaryenRoot) }
     $exports = @('init','alloc','load_project','set_save_payload','set_input_frame','set_viewport_aspect','set_viewport_size','set_instance_transport','tick','ui_request','jobs_request','jobs_binary','spatial_request','host_time_request','observation_ptr','observation_len')
     if ($Development) { $exports += 'developer_request' }
-    $cli = Join-Path $repoRoot 'target/debug/game.exe'
+    $cli = if ($Cli) { [IO.Path]::GetFullPath($Cli) } else { Join-Path $repoRoot 'target/debug/game.exe' }
     if (-not (Test-Path -LiteralPath $cli)) { throw 'Build the current CLI first: cargo build -p unone-cli' }
     $systemsProject = if ($Project) { [IO.Path]::GetFullPath($Project) } else { Join-Path $repoRoot 'tests/host-parity-project' }
     $systemJson = & $cli --project $systemsProject systems list --json
@@ -115,7 +117,7 @@ if ($Player) {
     # Run the actual export gate with Node selected before the SDK changed PATH.
     [string[]]$parityArgs = if ($Development) { @('--development') } else { @() }
     if ($Project) { $parityArgs += @('--fixture', $systemsProject) }
-    & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --runtime $outputRoot --timeout-ms $ParityTimeoutMs @parityArgs
+    & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --cli $cli --runtime $outputRoot --timeout-ms $ParityTimeoutMs @parityArgs
     if ($LASTEXITCODE -ne 0) { throw 'Player artifact parity failed. Build the current native CLI with cargo build -p unone-cli, fix any mismatch, then rerun this player build.' }
     Write-Output ($report | ConvertTo-Json -Depth 6)
 } else {

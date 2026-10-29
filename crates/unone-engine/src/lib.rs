@@ -9,7 +9,7 @@ pub use mesh::{MeshAsset, MeshLod, validate_mesh_geometry};
 mod heightfield;
 pub use heightfield::{Heightfield, HeightfieldDefinition, HeightfieldPatch};
 mod projected;
-pub use projected::{ProjectedBatch,ProjectedViewport,ProjectedScissor,ProjectedColorMode,ProjectedFilter,ProjectedSamplingSpace,ProjectedAddressMode,ProjectedAlphaCompare,PROJECTED_FORMAT};
+pub use projected::{ProjectedBatch,ProjectedViewport,ProjectedScissor,ProjectedColorMode,ProjectedFilter,ProjectedSamplingSpace,ProjectedAddressMode,ProjectedAlphaCompare,ProjectedBlend,PROJECTED_FORMAT};
 mod projected_frame;
 mod physical_input;
 mod physical_input_validation;

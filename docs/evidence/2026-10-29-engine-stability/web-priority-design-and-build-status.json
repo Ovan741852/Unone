@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-30",
+  "baseline": "feed49461d84982a18aa45fec9e47b73cb895c2c",
+  "source_dirty": true,
+  "status": "Architecture review superseded the unshipped set2D preset. No new SDK is distributed by this slice.",
+  "checks": [
+    {
+      "command": "cargo test -p unone-engine --test projected_geometry",
+      "passed": 11,
+      "raw_log": "projected-advanced-after-preset-withdrawal.log"
+    },
+    {
+      "command": "cargo test -p unone-engine --lib api::tests::",
+      "passed": 15,
+      "raw_log": "projected-api-after-preset-withdrawal.log"
+    },
+    {
+      "command": "$env:UNONE_PROJECTED_PACKETS='D:/Projects/Populous-Reborn/reports/root-c01-geometry-r5/packets/pan-adjacent.json'; $webTests=Get-ChildItem web/renderer,web/shared -Filter '*.test.mjs' -File | ForEach-Object FullName; node --test @webTests",
+      "passed": 437,
+      "raw_log": "web-priority-final-web-tests.log"
+    }
+  ],
+  "builds": [
+    {
+      "artifact": "artifacts/web-priority-20261030-o3-runtime",
+      "status": "Diagnostic production WASM; prior source, no final SDK acceptance"
+    },
+    {
+      "artifact": "artifacts/web-priority-20261030-publication-runtime",
+      "status": "Diagnostic production WASM; intermediate source, no final SDK acceptance"
+    },
+    {
+      "artifact": "artifacts/web-priority-20261030-set2d-runtime",
+      "status": "Superseded diagnostic WASM containing withdrawn prototype. Must not be distributed as the accepted API."
+    },
+    {
+      "artifact": "target/release/game.exe",
+      "status": "Release compilation succeeded in 41.26 seconds. Execution of api describe projected.set2D --json failed because Windows Application Control policy blocked the file. No successful final CLI/SDK acceptance claimed."
+    }
+  ],
+  "limits": [
+    "The resource/instance transport and new high-level authoring capabilities in Decision 0044 are not implemented.",
+    "No actual game GPU adapter was implemented; candidate3 detail-world still fails the 60 Hz target.",
+    "No universal leak-free or GC-frequency result is established. Existing SDKs/game products/servers/pages/saves remain unchanged."
+  ]
+}

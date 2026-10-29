@@ -12,7 +12,7 @@ function fixture(){
  const view=()=>({width,height,dpr});cap.ensure(view());
  const available=()=>{if(lost){cap.lost();return false;}return cap.metrics().status!=='lost';};
  const startup=createStartupPresentationState({available,metrics:cap.metrics,view});
- const noop=()=>{},projected={prepare:noop,draw:noop},snapshot={entities:{},projected_world_visible:false};
+ const noop=()=>{},projected={entries:()=>[],prepare:noop,draw:noop},snapshot={entities:{},projected_world_visible:false};
  const context={projectedFrame:()=>null,assertFrameSnapshot:noop,frameProfile:null,framePublication:null,assertProjectedBackend:noop,assertRasterSnapshot:noop,rasterAvailable:available,projectedEntries:()=>[],heightfieldEntries:()=>[],
   rasterPolicy:{requested:'upper_left_checked'},backend:'webgl',bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],renderer:{info:{reset:noop},render(){renders++;}},
   worldOf:x=>x,resize:noop,checkedRaster:true,validateRaster:()=>cap.ensure(view()),specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),

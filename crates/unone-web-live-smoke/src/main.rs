@@ -94,7 +94,7 @@ struct ProjectObservation<'a> {
     project: &'a str,
     world: &'a serde_json::value::RawValue,
     observation_digest: &'a str,
-    save_payload: Option<serde_json::Value>,
+    save_payload: Option<&'a serde_json::value::RawValue>,
     #[serde(skip_serializing_if = "Option::is_none")]
     instance_transport: Option<&'static str>,
 }
@@ -102,8 +102,11 @@ struct ProjectObservation<'a> {
 fn write_snapshot(
     project: &str,
     snapshot: &WorldSnapshot,
-    save_payload: Option<serde_json::Value>,
+    save_payload: Option<&serde_json::value::RawValue>,
 ) -> Result<(), String> {
+    if snapshot.instances3d.is_empty() {
+        return write_direct_snapshot(project, snapshot, save_payload);
+    }
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let measuring = PUBLICATION_PROFILE.with(|p| p.borrow().active);
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
@@ -127,12 +130,8 @@ fn write_snapshot(
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let presentation_started = measuring.then(std::time::Instant::now);
     let mut retained = Vec::new();
-    let world = if snapshot.instances3d.is_empty() {
-        // With no instance transport to rewrite, the canonical JSON already
-        // is the presentation JSON. Avoid parsing and serializing the entire
-        // UI/entity tree again on every fixed tick.
-        world
-    } else {
+    // Instance-bearing worlds retain the established transport rewrite path.
+    let world = {
         let mut value: serde_json::Value =
             serde_json::from_str(world.get()).map_err(|e| e.to_string())?;
         if INSTANCE_MEMORY.with(|m| m.get()) {
@@ -195,6 +194,118 @@ fn write_snapshot(
     Ok(())
 }
 
+fn append_json<T: Serialize + ?Sized>(bytes: &mut Vec<u8>, value: &T) -> Result<(), String> {
+    serde_json::to_writer(bytes, value).map_err(|error| format!("snapshot serialization failed: {error}"))
+}
+
+// With no presentation-only instance rewrite, serialize the canonical world
+// directly into its final envelope. Hash exactly that byte range before
+// appending the remaining fields; no temporary RawValue/world-sized copy.
+// Only constant JSON punctuation is authored here: every value uses serde.
+fn write_direct_snapshot(project: &str, snapshot: &WorldSnapshot,
+    save_payload: Option<&serde_json::value::RawValue>) -> Result<(), String> {
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    let measuring = PUBLICATION_PROFILE.with(|p| p.borrow().active);
+    #[cfg(not(any(feature = "dev-tools", feature = "preview-tools")))]
+    let measuring = false;
+    let (_phases, _work) = OUTPUT.with(|output| {
+        let mut bytes = output.borrow_mut();
+        bytes.clear();
+        let prefix_started = measuring.then(std::time::Instant::now);
+        bytes.extend_from_slice(b"{\"compiled_systems\":");
+        append_json(&mut bytes, unone_engine::compiled_systems())?;
+        bytes.extend_from_slice(b",\"project\":");
+        append_json(&mut bytes, project)?;
+        bytes.extend_from_slice(b",\"world\":");
+        let prefix_ms=prefix_started.map_or(0., |s| s.elapsed().as_secs_f64()*1000.);
+        let encode_started=measuring.then(std::time::Instant::now);
+        let start=bytes.len();
+        append_json(&mut bytes, snapshot)?;
+        let end=bytes.len();
+        let encode_ms=encode_started.map_or(0., |s| s.elapsed().as_secs_f64()*1000.);
+        let hash_started=measuring.then(std::time::Instant::now);
+        let (digest,work)=CANONICAL_HASHER.with(|h| h.borrow_mut().hash(&bytes[start..end]));
+        let hash_ms=hash_started.map_or(0., |s| s.elapsed().as_secs_f64()*1000.);
+        let suffix_started=measuring.then(std::time::Instant::now);
+        bytes.extend_from_slice(b",\"observation_digest\":");append_json(&mut bytes, &digest)?;
+        bytes.extend_from_slice(b",\"save_payload\":");append_json(&mut bytes, &save_payload)?;
+        if INSTANCE_MEMORY.with(|mode| mode.get()) {
+            bytes.extend_from_slice(b",\"instance_transport\":");append_json(&mut bytes, "wasm-memory-v1")?;
+        }
+        bytes.push(b'}');
+        let envelope_ms=prefix_ms+suffix_started.map_or(0., |s| s.elapsed().as_secs_f64()*1000.);
+        Ok::<_,String>(([encode_ms,hash_ms,0.,envelope_ms],work))
+    })?;
+    // Revoke the previous presentation's instance leases only after complete
+    // publication, including when the last instance batch was removed.
+    INSTANCE_BUFFERS.with(|buffers| buffers.borrow_mut().clear());
+    #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+    if measuring {PUBLICATION_PROFILE.with(|p|p.borrow_mut().record(_phases,_work));}
+    Ok(())
+}
+
+#[cfg(test)]
+mod direct_publication_tests {
+    use super::*;
+    #[derive(Serialize)]
+    struct PreviousEnvelope<'a> {
+        compiled_systems:&'static [String], project:&'a str,
+        world:&'a serde_json::value::RawValue, observation_digest:&'a str,
+        save_payload:Option<serde_json::Value>,
+        #[serde(skip_serializing_if="Option::is_none")]
+        instance_transport:Option<&'static str>,
+    }
+    #[test]
+    fn direct_world_and_cached_save_match_the_previous_envelope_bytes_in_both_transports() {
+        let mut runtime=EngineRuntime::load_source("wire","main.luau",r#"return {start=function(api)
+            api.observation.set('values',{wide=2147483648,small=1e-220,fraction=100-3.1-3.1,
+                escaped='繁中\\\"\n',array=api.observation.array()})
+            end,update=function()end}"#,None).unwrap();
+        let mut snapshot=runtime.tick().unwrap();
+        snapshot.physical_input_receipt=Some(unone_engine::PhysicalReceipt {profile:"ordered_physical_v1".into(),epoch:2,through_sequence:1});
+        let project="project \"繁中\"\n\\";
+        for save in [None,Some(serde_json::Value::Null),Some(serde_json::json!({"large":"x".repeat(112*1024),"escaped":"\n\"繁中\\","array":[],"fraction":1e-220}))] {
+            runtime.set_save_payload(save.clone());
+            for memory in [false,true] {
+                INSTANCE_MEMORY.with(|mode|mode.set(memory));
+                let (world,digest)=unone_engine::encode_observation(&snapshot).unwrap();
+                let expected=serde_json::to_vec(&PreviousEnvelope {compiled_systems:unone_engine::compiled_systems(),project,
+                    world:&world,observation_digest:&digest,save_payload:save.clone(),instance_transport:memory.then_some("wasm-memory-v1")}).unwrap();
+                let cached=runtime.serialized_save_payload();
+                let typed=serde_json::to_vec(&ProjectObservation {compiled_systems:unone_engine::compiled_systems(),project,
+                    world:&world,observation_digest:&digest,save_payload:cached.as_deref(),instance_transport:memory.then_some("wasm-memory-v1")}).unwrap();
+                assert_eq!(expected,typed,"cached raw values and the typed envelope preserve the previous wire contract");
+                write_snapshot(project,&snapshot,cached.as_deref()).unwrap();
+                OUTPUT.with(|out|assert_eq!(*out.borrow(),expected));
+                assert_eq!(runtime.save_payload(),save);
+            }
+        }
+        INSTANCE_MEMORY.with(|mode|mode.set(false));
+    }
+
+    #[test]
+    fn removing_the_last_instance_publishes_directly_and_retires_its_previous_memory_lease() {
+        let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"last-instance","entry_script":"main.luau"},
+            "script":r#"return {start=function(api)
+                local b=buffer.create(40);buffer.writef32(b,24,1)
+                buffer.writef32(b,28,1);buffer.writef32(b,32,1);buffer.writef32(b,36,1)
+                api.instances3d.set('crowd','mesh://unit',b)
+                end,update=function(api)api.instances3d.remove('crowd')end}"#})).unwrap();
+        assert_eq!(unsafe{unone_web_load_project(payload.as_ptr(),payload.len(),42)},0);
+        assert_eq!(unone_web_set_instance_transport(1),0);
+        let lease=INSTANCE_BUFFERS.with(|buffers|std::sync::Arc::downgrade(&buffers.borrow()[0]));
+        assert!(lease.upgrade().is_some());
+        assert_eq!(unone_web_tick(),0);
+        assert!(INSTANCE_BUFFERS.with(|buffers|buffers.borrow().is_empty()));
+        assert!(lease.upgrade().is_none());
+        let result:serde_json::Value=OUTPUT.with(|bytes|serde_json::from_slice(&bytes.borrow()).unwrap());
+        assert!(result["world"].get("instances3d").is_none());
+        assert_eq!(result["instance_transport"],"wasm-memory-v1");
+        RUNTIME.with(|runtime|assert_eq!(result["observation_digest"],
+            unone_engine::observation_digest(&runtime.borrow().as_ref().unwrap().observe()).unwrap()));
+    }
+}
+
 /// Opt in to presentation-only instance pointers. Canonical digest stays unchanged.
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_set_instance_transport(mode: i32) -> i32 {
@@ -216,7 +327,7 @@ pub extern "C" fn unone_web_set_instance_transport(mode: i32) -> i32 {
 fn publish_snapshot(
     project: &str,
     snapshot: &WorldSnapshot,
-    save_payload: Option<serde_json::Value>,
+    save_payload: Option<&serde_json::value::RawValue>,
 ) -> i32 {
     match write_snapshot(project, snapshot, save_payload) {
         Ok(()) => 0,
@@ -228,8 +339,8 @@ fn publish_snapshot(
 }
 
 fn write_runtime_observation(runtime: &EngineRuntime, snapshot: &WorldSnapshot) -> i32 {
-    let save_payload = runtime.save_payload();
-    PROJECT_NAME.with(|project| publish_snapshot(project.borrow().as_str(), snapshot, save_payload))
+    let save_payload = runtime.serialized_save_payload();
+    PROJECT_NAME.with(|project| publish_snapshot(project.borrow().as_str(), snapshot, save_payload.as_deref()))
 }
 
 fn write_runtime_snapshot(runtime: &EngineRuntime) -> i32 {
@@ -445,10 +556,10 @@ pub unsafe extern "C" fn unone_web_load_project(
             PUBLICATION_PROFILE.with(|p| *p.borrow_mut() = PublicationProfile::default());
             INPUT.with(|input| *input.borrow_mut() = HostInputState::default());
             let snapshot = runtime_value.observe();
-            let save_payload = runtime_value.save_payload();
+            let save_payload = runtime_value.serialized_save_payload();
             RUNTIME.with(|runtime| *runtime.borrow_mut() = Some(runtime_value));
             PROJECT_NAME.with(|project| *project.borrow_mut() = project_name.clone());
-            publish_snapshot(&project_name, &snapshot, save_payload)
+            publish_snapshot(&project_name, &snapshot, save_payload.as_deref())
         }
         Err(diagnostic) => {
             write_diagnostic(&diagnostic);

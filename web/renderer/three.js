@@ -8,7 +8,7 @@ import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 import {heightfieldEntries,createHeightfieldRenderer} from '../shared/heightfields.js';
 import {configureTexture,createPerspectiveCamera} from './presentation3d.js';
-import {createProjectedRenderer,projectedEntries,assertProjectedBackend} from './projected.js';
+import {createProjectedRenderer,assertProjectedBackend} from './projected.js';
 import {normalizeAntialias} from '../shared/renderer-selection.mjs';
 import {parseProjectedRaster,assertRasterBackend,assertRasterProfile,assertRasterSnapshot} from './projected-raster-policy.js';
 import {createRasterCapability} from './projected-raster-capability.js';
@@ -302,7 +302,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     framePublication=frame;
     profile?.mark('frame_identity');
     if(!rasterAvailable()){profile?.outcome('skipped_raster_unavailable');return;}
-    const projectedBatches=projectedEntries(snapshot);
+    const projectedBatches=projected.entries(snapshot);
     const worldVisible=(snapshot?.world??snapshot)?.projected_world_visible!==false;
     if(projectedBatches.length&&bloom&&worldVisible)throw Error('PROJECTED_POSTPROCESSING_UNSUPPORTED: disable Bloom or hide normal world3D');
     const terrain=heightfieldEntries(snapshot);

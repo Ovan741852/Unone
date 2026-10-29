@@ -83,8 +83,11 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   const s=states.get(v.id),virtual=v.node.scroll.virtual_items;if(!virtual||!v.enabled||s.pending||!virtual.keys.length)return;
   const range=virtualWindow(virtual,s.y,v.rect.height),key=[virtual.revision,range.first,range.last].join(':');
   if(virtual.first<=range.first&&virtual.last>=range.last||s.requested===key)return;s.requested=key;s.pending=true;
-  Promise.resolve().then(()=>requestWindow({id:v.id,revision:virtual.revision,...range})).catch(e=>{if(!disposed&&states.get(v.id)===s)onDiagnostic(e);}).finally(()=>{s.pending=false;if(!disposed&&states.get(v.id)===s)requestRender();});
+  // A slow host request must not retain a former view tree or virtual key list.
+  const id=v.id,revision=virtual.revision;
+  Promise.resolve().then(()=>{if(!disposed&&states.get(id)===s)return requestWindow({id,revision,...range});}).catch(e=>{if(!disposed&&states.get(id)===s)onDiagnostic(e);}).finally(()=>{s.pending=false;if(!disposed&&states.get(id)===s)requestRender();});
  }
+ const retireState=s=>{for(const {bar}of Object.values(s.rails))bar.remove();s.keys=null;s.reset=null;};
  const wheel=e=>{const p=point(e),r=stage.getBoundingClientRect(),scale=e.deltaMode===1?24:e.deltaMode===2?r.height:1,dx=e.deltaX*scale/r.width*100,dy=e.deltaY*scale/r.height*100;
   for(const v of [...views].reverse()){
    if(!v.enabled||!inside(v.wheelRect,p.x,p.y))continue;stopMomentum();const s=states.get(v.id),x=s.x+(v.node.scroll.axis==='horizontal'?(dx||dy):dx),y=s.y+dy;
@@ -126,8 +129,8 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
  return {
   setExternalInput(value){externalInput=!!value;},routeWheel:wheel,routeKey:keydown,
   draw(snapshot){
-   if(disposed)throw Error('UI_SCROLL_DISPOSED');const tree=(snapshot.world??snapshot).ui,initial=projectScrollTree(tree,states),live=new Set(initial.views.map(v=>v.id));
-   for(const [id,s]of states)if(!live.has(id)){for(const {bar}of Object.values(s.rails))bar.remove();states.delete(id);if(gesture?.id===id)abandonGesture();}
+   if(disposed)throw Error('UI_SCROLL_DISPOSED');const tree=(snapshot.world??snapshot).ui,initial=projectScrollTree(tree,states),live=new Set(initial.views.map(v=>v.id));let offsetsChanged=false;
+   for(const [id,s]of states)if(!live.has(id)){retireState(s);states.delete(id);if(gesture?.id===id)abandonGesture();}
    for(const v of initial.views){
     if(!v.enabled&&gesture?.id===v.id)abandonGesture();
     let s=states.get(v.id);if(!s){s=makeState(v.id);states.set(v.id,s);}const reset=v.node.scroll.reset_key;
@@ -135,6 +138,7 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
     const data=v.node.scroll.virtual_items,keys=data?.keys,pitch=data?data.row_height+data.gap_y:0;
     if(keys&&s.keys&&s.pitch===pitch&&s.columns===data.columns){const oldIndex=Math.floor(s.y/pitch)*data.columns,key=s.keys[oldIndex],index=keys.indexOf(key);if(index>=0)s.y+=(Math.floor(index/data.columns)-Math.floor(oldIndex/data.columns))*pitch;}
     s.keys=keys;s.pitch=pitch;s.columns=data?.columns;s.x=clamp(s.x,v.maxX);s.y=clamp(s.y,v.maxY);
+    if(s.x!==v.offset.x||s.y!==v.offset.y)offsetsChanged=true;
     for(const axis of ['x','y']){const {bar,content}=s.rails[axis],vertical=axis==='y';
      const railRect=vertical?{x:Math.min(98,v.rect.x+v.rect.width+.4),y:v.rect.y,width:2,height:v.rect.height}:{x:v.rect.x,y:100-Math.min(98,top(v.rect)+v.rect.height+.4)-2,width:v.rect.width,height:2},visibleRail=intersect(v.parentClip,railRect);
      bar.hidden=!v.enabled||!(vertical?v.maxY:v.maxX)||visibleRail.width<=0||visibleRail.height<=0;
@@ -144,7 +148,9 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
      content.style.width=vertical?'1px':Math.min(1e6,Math.max(v.extent.width,v.rect.width)*stage.clientWidth/100)+'px';content.style.height=vertical?Math.min(1e6,Math.max(v.extent.height,v.rect.height)*stage.clientHeight/100)+'px':'1px';
      const rail=s.rails[axis];rail.max=vertical?v.maxY:v.maxX;rail.range=vertical?bar.scrollHeight-bar.clientHeight:bar.scrollWidth-bar.clientWidth;if(!bar.hidden)bar[vertical?'scrollTop':'scrollLeft']=rail.max?s[axis]/rail.max*rail.range:0;}
    }
-   const result=projectScrollTree(tree,states);views=result.views;projected=result.tree;
+   // Projection already clamps saved offsets. Repeat only when reset/anchoring
+   // changed their effective values, including a parent of nested scroll views.
+   const result=offsetsChanged?projectScrollTree(tree,states):initial;views=result.views;projected=result.tree;
    if(momentum){const v=views.find(v=>v.id===momentum.id&&v.enabled);if(!v||signature(v)!==momentum.signature)stopMomentum();}
    for(const v of views)refresh(v);
    if(pendingFocus){const {owner,key}=pendingFocus,v=views.find(v=>v.id===owner&&v.enabled);if(!v||!v.node.scroll.virtual_items.keys.includes(key))pendingFocus=null;
@@ -183,6 +189,6 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   },
   cancel,
   report(){return views.map(v=>({id:v.id,enabled:v.enabled,viewport:v.rect,extent:v.extent,offset:{x:states.get(v.id).x,y:states.get(v.id).y},max:{x:v.maxX,y:v.maxY},total:v.node.scroll.virtual_items?.keys.length??null,window:v.node.scroll.virtual_items?{first:v.node.scroll.virtual_items.first,last:v.node.scroll.virtual_items.last}:null,materialized:v.node.children?.length??0}));},
-  dispose(){disposed=true;cancel();ignored.clear();canvas.removeEventListener('wheel',legacyWheel);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerleave',leave);window.removeEventListener('keydown',legacyKey,true);window.removeEventListener('blur',cancel);for(const s of states.values())for(const {bar}of Object.values(s.rails))bar.remove();states.clear();},
+  dispose(){if(disposed)return;disposed=true;cancel();ignored.clear();hovered='';views=[];projected=null;canvas.removeEventListener('wheel',legacyWheel);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerleave',leave);window.removeEventListener('keydown',legacyKey,true);window.removeEventListener('blur',cancel);for(const s of states.values())retireState(s);states.clear();},
  };
 }

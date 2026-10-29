@@ -1,0 +1,23 @@
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.23s
+     Running unittests src\lib.rs (target\debug\deps\unone_engine-565649b8dc0a302e.exe)
+
+running 15 tests
+test api::tests::empty_query_is_the_complete_index_without_empty_warning ... ok
+test api::tests::native_and_external_effect_descriptions_explain_authoring_and_ownership ... ok
+test api::tests::no_match_keeps_success_and_has_fixed_discovery_guidance ... ok
+test api::tests::matching_query_keeps_existing_search_results_without_diagnostic ... ok
+test api::tests::the_type_contract_covers_every_documented_api ... ok
+test api::tests::exact_api_and_explicit_effekseer_queries_keep_their_intent ... ok
+test api::tests::generic_effect_words_preserve_explicit_shader_intent ... ok
+test api::tests::visual_intents_discover_native_particles_before_external_effects ... ok
+test api::tests::generic_batch_collision_search_discovers_spatial_contract_and_bundled_guide ... ok
+test api::tests::scoped_background_intents_discover_composition_without_hiding_world_queries ... ok
+test api::tests::shared_component_queries_discover_the_real_versioned_package_entrypoints ... ok
+test api::tests::typography_and_box_intents_discover_official_ui_authoring ... ok
+test api::tests::responsive_intents_discover_the_shared_model_without_cross_family_matches ... ok
+test api::tests::ui_authoring_intents_rank_callable_controls_and_non_consuming_edges ... ok
+test api::tests::composed_ui_queries_consume_known_words_within_one_capability_family ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 334 filtered out; finished in 0.09s
+

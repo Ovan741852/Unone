@@ -1,6 +1,83 @@
 use unone_engine::EngineRuntime;
 
 #[test]
+fn source_over_blend_is_opt_in_atomic_and_revision_sensitive() {
+    let script=format!(r#"{FIXTURE}
+d.depth_test=false;d.depth_write=false
+local turn=0
+return {{start=function(api) api.projected.set('tri',d) end,update=function(api)
+ turn+=1
+ if turn==1 then d.blend='opaque'
+ elseif turn==2 then d.blend='source_over'
+ elseif turn==4 then d.blend=nil end
+ api.projected.set('tri',d)
+ for _,bad in {{'add','SourceOver','',false,1,{{}}}} do
+  local invalid=table.clone(d);invalid.blend=bad
+  assert(not pcall(api.projected.set,'tri',invalid))
+ end
+ local unknown=table.clone(d);unknown.blend_mode='source_over'
+ assert(not pcall(api.projected.set,'tri',unknown))
+end}}"#);
+    let mut runtime=game(&script);
+    let initial=runtime.observe();
+    let initial_wire=serde_json::to_value(&initial.projected_geometry).unwrap();
+    assert!(initial_wire["tri"].get("blend").is_none());
+    assert_eq!(initial.projected_geometry["tri"].blend,unone_engine::ProjectedBlend::Opaque);
+    runtime.tick().unwrap();
+    assert_eq!(serde_json::to_value(runtime.observe().projected_geometry).unwrap(),initial_wire);
+    runtime.tick().unwrap();let blended=runtime.observe();
+    let blended_wire=serde_json::to_value(&blended.projected_geometry).unwrap();
+    assert_eq!(blended_wire["tri"]["blend"],"source_over");
+    assert_eq!(blended_wire["tri"]["revision"],2);
+    assert_eq!(blended_wire["tri"]["vertices"],initial_wire["tri"]["vertices"]);
+    assert_eq!(blended.projected_geometry["tri"].depth_test,initial.projected_geometry["tri"].depth_test);
+    assert_eq!(blended.projected_geometry["tri"].depth_write,initial.projected_geometry["tri"].depth_write);
+    assert_eq!(blended.projected_geometry["tri"].alpha_cutoff,initial.projected_geometry["tri"].alpha_cutoff);
+    runtime.tick().unwrap();
+    assert_eq!(serde_json::to_value(runtime.observe().projected_geometry).unwrap(),blended_wire);
+    runtime.tick().unwrap();let restored=serde_json::to_value(runtime.observe().projected_geometry).unwrap();
+    assert!(restored["tri"].get("blend").is_none());
+    assert_eq!(restored["tri"]["revision"],3);
+}
+
+#[test]
+fn source_over_requires_both_explicit_disabled_depth_flags_before_mutation() {
+    let script=format!(r#"{FIXTURE}
+return {{start=function(api)
+ api.projected.set('tri',d)
+ for _,depth in {{{{}},{{depth_test=false}},{{depth_write=false}},{{depth_test=true,depth_write=false}},{{depth_test=false,depth_write=true}}}} do
+  local invalid=table.clone(d);invalid.blend='source_over'
+  invalid.depth_test=depth.depth_test;invalid.depth_write=depth.depth_write
+  local accepted,message=pcall(api.projected.set,'tri',invalid)
+  assert(not accepted and string.find(tostring(message),'source_over requires depth_test=false and depth_write=false',1,true))
+ end
+end,update=function()end}}"#);
+    let runtime=game(&script);let snapshot=runtime.observe();let batch=&snapshot.projected_geometry["tri"];
+    assert_eq!(batch.revision,1);
+    assert_eq!(batch.blend,unone_engine::ProjectedBlend::Opaque);
+    assert!(batch.depth_test&&batch.depth_write);
+}
+
+#[test]
+fn source_over_2d_artwork_keeps_explicit_material_and_buffer_ownership() {
+    let script=format!(r#"{FIXTURE}
+return {{start=function(api)
+ d.blend='source_over';d.depth_test=false;d.depth_write=false;d.alpha_cutoff=0
+ d.color_mode='encoded';d.sampling_space='encoded';d.filter='linear'
+ buffer.writef32(v,36,0.25)
+ api.projected.set('tile',d)
+ buffer.writef32(v,36,0.75)
+end,update=function()end}}"#);
+    let runtime=game(&script);let snapshot=runtime.observe();let batch=&snapshot.projected_geometry["tile"];
+    assert_eq!(batch.blend,unone_engine::ProjectedBlend::SourceOver);
+    assert!(!batch.depth_test&&!batch.depth_write);
+    assert_eq!(batch.alpha_cutoff,0.);
+    assert_eq!(batch.color_mode,unone_engine::ProjectedColorMode::Encoded);
+    assert_eq!(batch.sampling_space,unone_engine::ProjectedSamplingSpace::Encoded);
+    assert_eq!(f32::from_le_bytes(batch.vertices[36..40].try_into().unwrap()),0.25);
+}
+
+#[test]
 fn alpha_compare_is_atomic_default_compatible_and_revision_sensitive() {
     let script=format!(r#"{FIXTURE}
 local turn=0

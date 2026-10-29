@@ -1,0 +1,25 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+   Compiling unone-web-live-smoke v0.1.0 (D:\Projects\Unone\crates\unone-web-live-smoke)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 24.31s
+     Running unittests src\main.rs (target\debug\deps\unone_web_live_smoke-7559ff991595a492.exe)
+
+running 15 tests
+test tests::c_abi_scene_fragment_uses_shared_diagnostic_context ... ok
+test publication_profile_is_bounded_and_frozen_outside_window ... ok
+test tests::binary_job_abi_preserves_raw_bytes_and_rejects_invalid_framing ... ok
+test host_time_abi_is_readonly_owned_bounded_and_never_ticks ... ok
+test tests::c_abi_complete_input_frame_replaces_scalar_pointer_for_one_tick ... ok
+test tests::ordered_physical_direct_abi_rejects_overwrite_and_commits_only_the_first_batch ... ok
+test tests::c_abi_save_payload_reaches_luau_and_snapshot ... ok
+test direct_publication_tests::removing_the_last_instance_publishes_directly_and_retires_its_previous_memory_lease ... ok
+test tests::c_abi_reload_failure_preserves_semantic_diagnostic_and_previous_runtime ... ok
+test instance_memory_tests::memory_transport_preserves_digest_and_owns_pointer_lifetime ... ok
+test direct_publication_tests::direct_world_and_cached_save_match_the_previous_envelope_bytes_in_both_transports ... ok
+test tests::web_publication_preserves_binary64_through_instance_envelope ... ok
+test tests::c_abi_load_tick_and_reload_preserve_runtime_contract ... ok
+test tests::web_normalized_3d_replay_matches_core_every_frame ... ok
+test tests::c_abi_rejects_negative_scene_fixture_matrix ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

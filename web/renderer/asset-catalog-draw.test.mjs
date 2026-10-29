@@ -38,7 +38,7 @@ function fixture({getAssetManifest,getAssetCatalog,profiler=null}){
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop,render:{calls:0,triangles:0},memory:{geometries:0,textures:0}},getContext:()=>({}),render(){calls.push('ordinary');}},worldOf:x=>x,resize:noop,
   checkedRaster:true,validateRaster:()=>true,visibleSprites:()=>[],records:new Map(),shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshes3d:new Map(),
-  heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},projected:{prepare:noop,draw:noop,clear:noop},rasterPass:{draw:noop,invalidate:noop},frameDraws,
+  heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},projected:{entries:()=>[],prepare:noop,draw:noop,clear:noop},rasterPass:{draw:noop,invalidate:noop},frameDraws,
   framePass:{draw(d,c,frame){d.draw({getPixelRatio:()=>1,setScissor(...s){calls.push(['scissor',...s]);},setScissorTest:noop,render(scene){calls.push(['draw',scene.children[0].material.uniforms.frameTexture.value===texture]);}},c,1280,720);return true;},invalidate:noop},
   startupPresentation:{invalidate:noop,drawn(){calls.push('drawn');}},rasterCapability:{metrics:()=>({status:'validated',context_epoch:1,target_generation:1}),lost:noop,restored:noop}};
  vm.createContext(context);vm.runInContext(body,context);if(profiler)context.profileProviders(profiler);

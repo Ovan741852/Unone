@@ -10,7 +10,7 @@ fn boolean(t:&Table,k:&str)->mlua::Result<bool> {
 fn decode(t:Table)->mlua::Result<crate::ProjectedBatch> {
     for pair in t.clone().pairs::<Value,Value>() {
         let (key,_)=pair?;let key=text(key)?;
-        if !["texture","vertices","indices","order","depth_test","depth_write","scissor","color_mode","filter","sampling_space","address_mode","alpha_cutoff","alpha_compare"].contains(&key.as_str()) {return Err(error("unknown field"));}
+        if !["texture","vertices","indices","order","depth_test","depth_write","scissor","color_mode","filter","sampling_space","address_mode","alpha_cutoff","alpha_compare","blend"].contains(&key.as_str()) {return Err(error("unknown field"));}
     }
     let order=match t.get::<Value>("order")? {
         Value::Nil=>0,Value::Integer(n) if (-32768..=32767).contains(&n)=>n as i32,
@@ -30,9 +30,11 @@ fn decode(t:Table)->mlua::Result<crate::ProjectedBatch> {
     let address_mode=match t.get::<Value>("address_mode")? {Value::Nil=>crate::ProjectedAddressMode::Clamp,v=>match text(v)?.as_str(){"clamp"=>crate::ProjectedAddressMode::Clamp,"repeat"=>crate::ProjectedAddressMode::Repeat,_=>return Err(error("address_mode clamp or repeat required"))}};
     let alpha_cutoff=match t.get::<Value>("alpha_cutoff")? {Value::Nil=>0.05,Value::Number(n) if n.is_finite()&&(0.0..=1.0).contains(&n)=>n as f32,Value::Integer(n) if (0..=1).contains(&n)=>n as f32,_=>return Err(error("finite alpha_cutoff in0..1 required"))};
     let alpha_compare=match t.get::<Value>("alpha_compare")? {Value::Nil=>crate::ProjectedAlphaCompare::GreaterEqual,v=>match text(v)?.as_str(){"greater_equal"=>crate::ProjectedAlphaCompare::GreaterEqual,"greater"=>crate::ProjectedAlphaCompare::Greater,_=>return Err(error("alpha_compare greater_equal or greater required"))}};
+    let blend=match t.get::<Value>("blend")? {Value::Nil=>crate::ProjectedBlend::Opaque,v=>match text(v)?.as_str(){"opaque"=>crate::ProjectedBlend::Opaque,"source_over"=>crate::ProjectedBlend::SourceOver,_=>return Err(error("blend opaque or source_over required"))}};
     crate::ProjectedBatch::new(text(t.get("texture")?)?,vertices.to_vec(),indices.to_vec(),order,
         boolean(&t,"depth_test")?,boolean(&t,"depth_write")?).and_then(|batch|batch.with_scissor(scissor))
-        .and_then(|batch|batch.with_material(color_mode,filter,alpha_cutoff)).map(|batch|batch.with_sampling_space(sampling_space).with_address_mode(address_mode).with_alpha_compare(alpha_compare)).map_err(mlua::Error::RuntimeError)
+        .and_then(|batch|batch.with_material(color_mode,filter,alpha_cutoff)).map(|batch|batch.with_sampling_space(sampling_space).with_address_mode(address_mode).with_alpha_compare(alpha_compare))
+        .and_then(|batch|batch.with_blend(blend)).map_err(mlua::Error::RuntimeError)
 }
 pub(super) fn bind(lua:&Lua,state:&ApiState)->mlua::Result<Table> {
     let api=lua.create_table()?;let world=Rc::clone(&state.world);

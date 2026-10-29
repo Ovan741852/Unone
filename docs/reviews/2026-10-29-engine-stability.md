@@ -117,6 +117,15 @@ RGBA correction: shadow colors now validate each index 0 through 3 explicitly,
 so Array.prototype iteration cannot skip missing entries in direct JavaScript
 host inputs. This does not expand shadow support to native/legacy targets.
 
+A subsequent UI-disabled export correction was also re-read: disabled packages
+prune the text-input/cursor modules, replace their entry imports, and provide
+the Canvas `report()`/particle `metrics()` methods called by ordinary host
+telemetry. This preserves the disabled host shapes without dangling imports.
+The implementing agent reports the actual enabled/disabled closure regression
+passing; its real exported UI-off player reached frame 91 without errors or UI
+module requests in [browser evidence](../evidence/2026-10-29-engine-stability/ui-disabled-browser.json).
+The reviewer did not rerun that browser workload.
+
 No additional unresolved P1/P2 was found in this follow-up. Shadow paint reuses
 the foreground layout with translated clips and an expanded opacity envelope;
 input regions retain authored capture rectangles and button ownership lifetime
@@ -140,3 +149,104 @@ integration passed. Exact commands, process-local proc-macro workaround, raw
 logs and artifact identity are in the `frozen_source_native_phase` of
 [native validation](../evidence/2026-10-29-engine-stability/native-validation.json).
 No FPS benchmark or game/native UI visual-completion claim was added.
+
+## 2026-10-30 Web publication and source-over follow-up
+
+This slice compares `feed49461d84982a18aa45fec9e47b73cb895c2c` with the working
+source. Codex `/root/runtime_audit` independently reviewed the SaveState and
+no-instance Web ABI changes authored by `/root/native_performance`; `/root`
+also read the diff. No concrete P1/P2 was found. All accepted save writes
+invalidate the current immutable encoding, detached owned/Lua reads retain
+existing behavior, and reload rollback restores the payload together with its
+matching encoding. Publication receives an owned immutable Rc lease, so no
+RefCell borrow crosses a public callback. Storage retains one current encoding;
+explicit host leases may outlive replacements.
+
+The direct Web envelope writes canonical world bytes into the reusable output
+Vec, hashes exactly that byte range, and uses serde for every JSON value. The
+instance-bearing rewrite path remains. The independent reviewer requested an
+actual ABI instance-to-empty transition regression; it was added and passed,
+including retirement of the previous memory lease. Focused checks passed
+3 save-publication integration tests, 1 cache unit test, all 15 default-feature
+Web ABI tests, and 2 direct-publication tests with development features disabled.
+Exact commands, process-local environment and raw output are in
+[save/publication validation](../evidence/2026-10-29-engine-stability/save-publication-validation.json).
+First/dirty save-cache encoding is outside the existing publication phase
+timers; complete ABI/browser measurements must assess its total cost. No FPS,
+GC or universal memory-leak claim follows from these tests.
+
+Codex `/root/native_performance` independently read the source-over Core/Lua
+contract and Web renderer/GLSL hunks authored by the other agents. No concrete
+P1/P2 was found in that bounded source review. The explicit `source_over` mode
+requires both depth flags disabled, remains revision-bearing, and shares the
+authored rank queue with opaque draws. Filtered transparent samples use
+premultiplied interpolation before returning straight RGB for blending. Actual
+GPU pixel equivalence remains a separate implementing-agent validation.
+
+Native explicitly rejects `source_over` before renderer creation and GPU/texture
+preparation because its sRGB attachment blend path does not implement the Web
+encoded-color contract. The descriptor reports this limit; its focused
+admission regression passed 1/1. The previously packaged Windows executable
+was not replaced or recertified by this follow-up. Claude was not attempted in
+this slice, following the user's delegated instruction to use Codex review.
+
+## Withdrawn projected preset prototype — 2026-10-30
+
+The uncommitted `api.projected.set2D` prototype was withdrawn after the user
+challenged its abstraction. It only fixed material defaults around the existing
+40-byte clip-space stream. A caller still had to tessellate quads, normalize
+source-pixel crops, split consecutive texture runs and republish geometry. Fewer
+flags did not establish a coherent ordinary sprite/artwork interface.
+
+The prototype registration, `ProjectedGeometry2D` type, discovery entry, narrow
+recipe and prototype-only tests were removed. The advanced `projected.set`
+stream and its explicit source-over material, validation, compatibility and GPU
+evidence remain. No game adapter was implemented and no JYRogue product file was
+changed by this investigation. Candidate SDK/runtime artifacts generated while
+the prototype existed are historical evidence, not an accepted public API.
+Prototype test logs remain at `.cache/projected-set2d-core-tests.log` and
+`.cache/projected-set2d-api-tests.log`; they demonstrate the discarded preset's
+behavior, not a shipping capability or frame-rate result.
+
+The design direction separates retained render resources from per-instance
+transform, visibility and paint order, with rendering/batching owned by the
+engine. This follows the relevant distinction in
+[Godot Resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html),
+[CanvasItem](https://docs.godotengine.org/en/stable/classes/class_canvasitem.html)
+and the independent asset/instance components shown by
+[Bevy Sprite](https://docs.rs/bevy/latest/bevy/sprite/struct.Sprite.html) and
+[Mesh2d](https://bevy.org/examples/2d-rendering/mesh2d/).
+It is an architectural recommendation, not a claim that a new general resource
+or scene API has been implemented. Existing entity/UI semantics should be reused;
+game-specific projection, visibility decisions, content and action meaning stay
+in Luau.
+
+All three Codex reviewers independently assessed Decision 0044. Concrete
+omissions corrected in the final design record: RAF callbacks can occur while a
+renderer skips its pass, so acceptance also counts completed ready presentation;
+retained UI references need success/failure replacement and virtual-retirement
+rules; Web-first rollout needs explicit per-host material/crop/clip admission.
+The record also avoids introducing an implicit hierarchy, a duplicate public
+rectangle-array API or a claim that four 2D corners encode perspective W.
+This is a reviewed architecture direction; no new retained resource/instance
+protocol or general high-level drawing API was implemented in this slice.
+
+The withdrawal edits were confined to
+`crates/unone-engine/src/runtime/bindings/projected.rs`,
+`crates/unone-engine/src/api.rs`,
+`crates/unone-engine/src/engine.d.luau`, `docs/engine.d.luau`,
+`crates/unone-engine/tests/projected_geometry.rs`,
+`docs/projected-geometry.md` and this review note. The retained advanced blend
+implementation in `projected.rs`, its public export, and the other agents' Web
+and native changes were not removed. This describes the surgical withdrawal,
+not the complete shared working-tree diff.
+
+After withdrawal, `cargo test -p unone-engine --test projected_geometry` passed
+11/11 tests and `cargo test -p unone-engine --lib api::tests` passed 15/15 tests.
+The API count was 16 before withdrawal because the removed prototype had one
+discovery/type-contract test. Raw output is retained in
+`.cache/projected-advanced-after-preset-withdrawal.log` and
+`.cache/projected-api-after-preset-withdrawal.log`. A source/docs scan found no
+remaining prototype registration, input type, recipe or tests outside this
+historical record; `git diff --check` passed. These are focused source gates,
+not a new SDK build or a performance measurement.

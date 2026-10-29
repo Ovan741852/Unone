@@ -5,6 +5,11 @@ vertices after its own projector, deformation or camera calculation. The engine
 owns validation, texture lookup, buffers, draw ordering, clipping and GPU lifetime.
 No game formula, camera adaptation, picking, terrain, lighting or fog is inferred.
 
+`set` is an advanced preprojected stream for a caller that deliberately owns
+its clip-space geometry and complete material policy. It is not the ordinary
+sprite or UI authoring entry. Ordinary game content should retain logical
+resources and instances rather than manage GPU vertex layouts or texture runs.
+
 ```luau
 local geometry: ProjectedGeometry = {
     texture="texture://atlas", vertices=vertexBuffer, indices=indexBuffer,
@@ -67,7 +72,12 @@ revision; snapshot reads do not consume it. Missing remove IDs raise
 `f32le-clip4-uv2-rgba4-u32-v1`, texture, order, depth flags, vertex/index counts,
 base64 vertex/index payloads, material policy and revision. Encoding caches share immutable
 storage. These bytes participate in canonical snapshots/digests; this differs
-from the older instances3d pose transport. Renderer cache keys are ID/revision.
+from the older instances3d pose transport. The Web retained decoder compares both
+complete payload strings, counts and revision, and revalidates metadata on each
+draw; ID/revision alone is not proof of unchanged content after a world restart.
+
+For the ordinary authoring/resource design direction and current transport
+limitations, see [Decision 0044](decisions/0044-retained-presentation-resources.md).
 
 `setWorldVisible(false)` suppresses normal world3D mesh, instance, heightfield
 and particle submissions, while retaining all simulation data. Projected batches,
@@ -118,11 +128,12 @@ centers sample exact texels. Three clones sampler textures while
 sharing immutable image data; changing one batch never changes other materials.
 Native uses separate material samplers with the shared image bind group.
 `alpha_cutoff` is finite0..1 (default0.05); multiplied alpha strictly below the
-cutoff discards before depth writes. Survivors output opaque alpha1. Cutoff0
-also retains alpha0 pixels; cutoff1 retains only exact alpha1.
+cutoff discards before depth writes. With default `blend="opaque"`, survivors
+output opaque alpha1. Cutoff0 also retains alpha0 pixels; cutoff1 retains only
+exact alpha1. `alpha_compare="greater"` instead discards equality too.
 
-There is no blendlist, tone mapping, fog or lighting in this bounded opaque/cutout
-material. Unknown blend fields fail validation. Native converts official V to`1-V`;
+There is no arbitrary blendlist, tone mapping, fog or lighting in this bounded
+material. Native converts official V to`1-V`;
 Web uses official image flipping. Encoded mode is an explicit modulation policy,
 not proof of complete legacy fixed-function precision. Encoded-space bilinear
 and modulation are explicit policies. Integer rounding, dithering and original
@@ -136,6 +147,59 @@ the normal camera. On Three WebGL, projected geometry plus visible world3D and
 Bloom is explicitly rejected because the default framebuffer does not share the
 offscreen world depth attachment. Hide normal world3D or disable Bloom. Projected
 draws occur after the normal world/postprocess and before UI.
+
+## Optional source-over artwork
+
+On this advanced stream, `blend="source_over"` opts a legacy batch into straight-alpha
+source-over composition through the official **WebGL host-raster** path. This is
+a reusable presentation primitive for already-authored geometry, not an engine
+map/fog/layout rule. V1 requires both `depth_test=false` and `depth_write=false`;
+omitting either retains its legacy true default and rejects the publication
+before world mutation. Native and checked-raster paths reject source-over with
+`PROJECTED_BLEND_UNSUPPORTED`; WebGPU/custom retain their existing unsupported
+projected-backend boundary.
+
+```luau
+api.projected.set("authored-artwork", {
+    texture="texture://atlas", vertices=vertexBuffer, indices=indexBuffer,
+    order=10, depth_test=false, depth_write=false,
+    blend="source_over", alpha_cutoff=0,
+    color_mode="encoded", sampling_space="encoded", filter="linear",
+    address_mode="clamp",
+})
+```
+
+The fragment alpha is sampled texture alpha times interpolated vertex alpha;
+it is not forced to1. The source-over RGB factors are source alpha and
+one-minus-source-alpha. Destination alpha follows source-over as well. Cutoff
+and alpha comparison are still independent controls: use explicit
+`alpha_cutoff=0` with the default `greater_equal` comparison to preserve all
+coverage values. Adding blend never silently changes cutoff, filtering, address
+mode or depth policy. Omitted/explicit `opaque` keeps old behavior, is omitted
+from canonical JSON and preserves identical-batch revisions. Source-over is
+serialized and participates in exact batch equality/revision updates.
+
+For Canvas-style encoded-RGB artwork, explicitly select encoded modulation and
+encoded sampling. The source-over encoded bilinear path filters premultiplied
+encoded RGB and alpha, then restores straight RGB before final composition;
+transparent colored neighbors must not introduce dark/colored fringes.
+`nearest` is also supported. This policy requires actual Canvas/WebGL pixel
+comparison for asymmetric crops, opacity, filtering and composition. It is not
+a promise of exact browser image-decoder or original-game pixel parity.
+
+All legacy batches keep one authored paint order: increasing signed `order`,
+then UTF-8 batch ID; within a batch, index order. Hosts must not move alpha
+batches into a separately sorted transparent queue or regroup nonconsecutive
+textures. The projected pass remains behind the separate Canvas HUD. Moving
+authored artwork from UI quads requires preserving its semantic position relative
+to that HUD; the engine does not infer which UI layers may move.
+
+The current256-batch budget is unchanged. A caller may combine consecutive
+same-texture quads into one indexed batch, preserving all source-pixel UV crops,
+destination rectangles, per-quad opacity and scissor boundaries. It must account
+for texture transitions rather than unique textures: global texture grouping
+can change source-over pixels. Geometry/texture cache ownership and revision
+validation remain engine/host responsibilities; no game-owned renderer is needed.
 
 ## Verification and implementation review
 

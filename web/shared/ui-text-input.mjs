@@ -3,11 +3,23 @@
 // and deletion; no game-specific identifiers, validation or save rules live here.
 import {flattenUi} from './canvas-ui.mjs';
 import {uiFont} from './ui-style.mjs';
+import {UI_CONTRACT} from './ui-geometry.mjs';
 
 const editable=node=>node?.kind==='text_input'&&node.enabled!==false;
 const visible=node=>!node.clip||(node.rect.x<node.clip.x+node.clip.width&&node.rect.x+node.rect.width>node.clip.x
   &&node.rect.y<node.clip.y+node.clip.height&&node.rect.y+node.rect.height>node.clip.y);
 const scalarLimit=(text,max)=>Array.from(text).slice(0,max).join('');
+// Check current contents each draw: hosts also accept caller-owned trees that
+// may be edited in place. Image-batch quads are not UI children or edit fields.
+function hasTextInput(nodes,depth=1){
+  // Let the canonical validator reject excessive/cyclic caller-owned trees.
+  if(depth>UI_CONTRACT.max_component_depth)return true;
+  for(let i=0;i<(nodes?.length??0);i++){
+    const node=nodes[i];if(node?.kind==='text_input')return true;
+    if((node?.kind==='component'||node?.kind==='scroll_view')&&hasTextInput(node.children,depth+1))return true;
+  }
+  return false;
+}
 
 export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument??document,window:win=doc.defaultView??window,
   onInteraction=()=>{},releaseKeyboard=()=>{},requestRender=()=>{},onDiagnostic=error=>{throw error;}}){
@@ -128,7 +140,10 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
   }
   function draw(value){
     if(disposed)throw Error('UI_TEXT_INPUT_DISPOSED');
-    const world=value.world??value;setTree(world.ui);
+    const world=value.world??value,hasFields=hasTextInput(world.ui?.children);
+    if(!hasFields&&!records.size)return value;
+    setTree(world.ui);
+    if(!hasFields)return value;
     const children=(world.ui?.children??[]).map(n=>{
       if(n.kind!=='text_input')return n;
       const r=records.get(n.id);return r?{...n,text:r.text,text_edit:{focused:active===r,selection_start:r.start??r.text.length,
@@ -149,6 +164,6 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
   }
   return {draw,pointer,routeKey,setExternalInput:value=>{externalInput=!!value;},suspend,
     report:()=>({focused:active?.node.id??null,composing:active?.composing??false,fields:records.size,backend:'native-editing-sink'}),
-    dispose(){if(disposed)return;active=null;disposed=true;for(const remove of listeners)remove();sink?.remove();records.clear();captured.clear();ownedKeys.clear();},
+    dispose(){if(disposed)return;active=null;disposed=true;for(const remove of listeners)remove();listeners.length=0;sink?.remove();sink=null;records.clear();captured.clear();ownedKeys.clear();},
   };
 }

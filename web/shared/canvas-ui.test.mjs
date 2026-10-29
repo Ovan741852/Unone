@@ -2,6 +2,29 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {createUiPointerRouter,createCanvasUi,flattenUi} from './canvas-ui.mjs';
 import {createHostInput} from './host-input.js';
 const rect={x:0,y:0,width:50,height:50},button={kind:'button',id:'open',rect,text:'',action:'OpenChest'};
+
+test('Canvas detects in-place text, action and clip edits and validates changed batches',()=>{
+ const drawn=[],events=[],ctx={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},rect(){},clip(){},fillText:t=>drawn.push(t),measureText:()=>({width:1})};
+ const ui=createCanvasUi({width:100,height:100,getContext:()=>ctx},{onAction:e=>events.push(e)});
+ const node={...button,text:'Before',rect:{...rect}},snapshot={ui:{children:[node]}};
+ ui.draw(snapshot);node.text='After';node.action='Continue';node.clip={x:20,y:20,width:10,height:10};ui.draw(snapshot);
+ assert.deepEqual(drawn,['Before','After']);assert.equal(ui.hitTest(5,5),null);assert.equal(ui.hitTest(25,25).action,'Continue');
+ ui.pointer({kind:'down',pointerId:4,x:25,y:25});node.action='Next';ui.draw(snapshot);
+ assert.deepEqual(events.map(e=>[e.action,e.phase]),[['Continue','down'],['Continue','cancel']]);assert(ui.pointer({kind:'up',pointerId:4}));
+ const batch={kind:'image_batch',id:'batch',rect:{x:0,y:0,width:20,height:20},quads:[{asset:'asset://tile',rect:{x:0,y:0,width:10,height:10}}]};
+ snapshot.ui.children=[batch];ui.draw(snapshot);batch.quads[0].rect.width=21;
+ assert.throws(()=>ui.draw(snapshot),/UI_IMAGE_BATCH_BOUNDS/);ui.dispose();
+ assert.equal(ui.report().nodes,0);assert.equal(ui.report().usage,null);assert.equal(ui.hitTest(25,25),null);
+ assert.deepEqual(ui.report().assets,[]);assert.deepEqual(ui.report().diagnostics,[]);assert.throws(()=>ui.draw(snapshot),/UI_DISPOSED/);
+});
+
+test('pointer router disposal cancels once and releases nodes and all pointer tails',()=>{
+ const actions=[],sliders=[],router=createUiPointerRouter({onAction:e=>actions.push(e),onSlider:e=>sliders.push(e)});
+ router.setTree({children:[button,modelSlider()]});router.pointer({kind:'down',pointerId:1,x:1,y:1});router.pointer({kind:'down',pointerId:2,x:30,y:35});
+ router.dispose();router.dispose();assert.deepEqual(actions.map(e=>e.phase),['down','cancel']);assert.deepEqual(sliders.map(e=>e.phase),['start','cancel']);
+ assert.deepEqual(router.capturedPointers,[]);assert.equal(router.hitTest(1,1),null);assert.equal(router.pointer({kind:'up',pointerId:1}),false);
+ assert.equal(router.pointer({kind:'down',x:1,y:1}),false);assert.throws(()=>router.setTree({children:[button]}),/UI_DISPOSED/);
+});
 test('viewport clips drawing and input without resizing content',()=>{
  const clip={x:10,y:10,width:20,height:20},node={...button,clip,text:'Visible'},r=createUiPointerRouter();
  r.setTree({children:[node]});assert.equal(r.hitTest(5,5),null);assert.equal(r.pointer({kind:'down',x:5,y:5}),false);assert.equal(r.hitTest(15,15).action,'OpenChest');

@@ -70,6 +70,9 @@ export type ProjectedGeometry = {
     scissor: {x: number,y: number,width: number,height: number}?,
     color_mode: ("linear" | "encoded")?, filter: ("nearest" | "linear")?,
     sampling_space: ("linear" | "encoded")?, address_mode: ("clamp" | "repeat")?, alpha_cutoff: number?, alpha_compare: ("greater_equal" | "greater")?,
+    --source_over requires depth_test=false and depth_write=false; WebGL host-raster only.
+    --Use alpha_cutoff=0 for full-alpha artwork; opaque defaults/snapshots are unchanged.
+    blend: ("opaque" | "source_over")?,
 }
 export type ProjectedCompare = "never" | "less" | "equal" | "less_equal" | "greater" | "not_equal" | "greater_equal" | "always"
 export type ProjectedFrameMaterial = {

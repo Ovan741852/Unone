@@ -39,7 +39,9 @@ Binaryen 131 is checksum pinned. The tested Unity Emscripten expects an older
 Binaryen name-map format; release builds retain ABI names by enabling Emscripten
 runtime assertions, then strip debug sections. This avoids producing a small
 WASM that links successfully but fails browser instantiation. Rust/Luau still use
-the size-optimized release profile with LTO. Runtime assertions are not editor code.
+the speed-optimized release profile with LTO. This trades a larger download for
+interpreter/publication throughput; compare the emitted runtime hashes, byte sizes
+and actual player timings. Runtime assertions are not editor code.
 
 Export requires a new destination and a matching release runtime manifest/hashes;
 `--runtime <directory>` overrides the default `<project>/dist/player-runtime`.

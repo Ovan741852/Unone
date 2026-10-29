@@ -36,6 +36,32 @@ function setup(){
     get redraws(){return redraws;},get focuses(){return focuses;}};
 }
 
+test('screens without fields pass through without visiting image-batch payloads or creating a sink',()=>{
+ const s=setup(),batch={kind:'image_batch',id:'map',get quads(){throw Error('editing host visited draw payload');}},
+   snapshot={world:{ui:{children:[{kind:'component',id:'group',children:[batch]}]}}};
+ for(let i=0;i<120;i++)assert.equal(s.host.draw(snapshot),snapshot);
+ assert.equal(s.host.report().fields,0);assert.equal(s.body.children.length,0);assert.deepEqual(s.events,[]);s.host.dispose();
+});
+
+test('field presence scan preserves canonical depth rejection for excessive and cyclic trees',()=>{
+ const s=setup();let node={kind:'component',id:'leaf',children:[]};
+ for(let i=0;i<20000;i++)node={kind:'component',id:'group',children:[node]};
+ assert.throws(()=>s.host.draw({ui:{children:[node]}}),/UI_DEPTH_LIMIT/);
+ const cycle={kind:'component',id:'cycle',children:[]};cycle.children.push(cycle);
+ assert.throws(()=>s.host.draw({ui:{children:[cycle]}}),/UI_DEPTH_LIMIT/);s.host.dispose();
+});
+
+test('in-place field additions and removals keep draft, focus cancellation and release ownership',()=>{
+ const s=setup(),children=[],snapshot={world:{ui:{children}}};assert.equal(s.host.draw(snapshot),snapshot);
+ children.push(s.node({text:'初名'}));assert.equal(s.host.draw(snapshot).world.ui.children[0].text,'初名');
+ const el=s.sink();el.value='編輯';el.emit('input');assert.equal(s.host.draw(snapshot).world.ui.children[0].text,'編輯');
+ assert(s.host.pointer({pointerId:7,preventDefault(){}},'down',{kind:'text_input',nodeId:'nickname'}));children.length=0;
+ assert.equal(s.host.draw(snapshot),snapshot);assert.equal(s.events.at(-1).phase,'cancel');assert.equal(s.host.report().fields,0);assert.equal(s.host.report().focused,null);
+ assert(s.host.pointer({pointerId:7},'up',null));children.push({kind:'component',id:'nested',children:[s.node({text:'再開'})]});
+ s.host.draw(snapshot);assert.equal(s.host.report().focused,'nickname');assert.equal(s.host.report().fields,1);s.host.dispose();
+ assert.equal(s.body.children.length,0);assert.equal([...el.listeners.values()].flat().length,0);
+});
+
 test('official native sink accepts IME commit once; Enter chooses candidate before submitting',()=>{
   const s=setup();s.draw();assert.equal(s.events[0].phase,'focus');
   const el=s.sink();el.emit('compositionstart');el.value='小';el.emit('input',{isComposing:true});

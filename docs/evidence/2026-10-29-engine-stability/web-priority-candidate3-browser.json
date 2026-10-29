@@ -1,0 +1,1169 @@
+{
+  "date": "2026-10-30",
+  "sourceRevision": "feed494 plus current Web host lifecycle/traversal changes; O3 runtime built separately from feed494 Rust",
+  "scope": "Actual official main-backend Web player against immutable JYRogue player-performance-candidate3. Fresh isolated Chrome process/contexts and independent ephemeral server; original game files, server8264, existing pages/saves unchanged.",
+  "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+  "release": "releases/17459e2097cd4d38e8656ae7219aeb55fbc48e4f3252fe87c4dc5ab8bf35687c/",
+  "coordination": "Own engine compile/parity/test processes held idle during the sequential timed browser windows. Other system activity was not exclusively reserved.",
+  "protocol": {
+    "secondsPerWindow": 10,
+    "warmupSeconds": 2,
+    "viewport": {
+      "width": 1600,
+      "height": 900
+    },
+    "profiling": false,
+    "browser": {
+      "executable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "fileVersion": "156.0.8078.48",
+      "headless": true
+    },
+    "observer": "RAF timestamps, already published host metrics, and two boundary snapshots. No full snapshot decode during timing. Setup-only queueAction HTTP hook is documented in each raw result.",
+    "fixtures": "Named fresh save for ordinary cases. Battle uses an explicitly constructed Blackwind position/exploration fixture with visible native StartBlackwind entry; not a natural-progression claim.",
+    "order": "baseline drag/travel; O3 drag/travel; O3+UI drag/travel; baseline idle/atlas/battle; O3+UI idle/atlas/battle. O3-only idle/atlas/battle not measured.",
+    "target": {
+      "minimumRafFps": 59,
+      "minimumSimulationFps": 59,
+      "rafP95Ms": 18.5,
+      "rafP99Ms": 25,
+      "reportedDroppedDelta": 0
+    }
+  },
+  "interpretation": [
+    "Every measured detail-world idle/drag/travel variant remains below59 simulation ticks/s and fails the target. RAF near60 does not establish60 simulation ticks/s.",
+    "Atlas and constructed battle pass in baseline and O3+UI. Detail-world performance remains the unresolved bottleneck.",
+    "Single10-second windows provide focused regression evidence, not a statistical causal improvement, long-term memory/GC soak, maximal gameplay acceptance, or a guarantee of stable60FPS.",
+    "Reported dropped-step endpoints publish every30draws and can each be up to29draws stale. Published CPU medians are sampled host metrics rather than full per-frame profiles.",
+    "uiPublished is the Canvas renderer retained last-redraw duration, which may be stale across unchanged idle draws. Its median is not per-frame UI traversal/painting time and must not be added to renderPublished (which already includes UI work)."
+  ],
+  "variants": {
+    "baseline": {
+      "servedEngineFiles": [],
+      "cases": [
+        {
+          "case": "drag",
+          "rafFps": 59.42156353655676,
+          "simulationFps": 37.75016977616547,
+          "rafIntervalMs": {
+            "n": 594,
+            "p50": 16.699999999999818,
+            "p95": 16.799999999999272,
+            "p99": 33.30000000000018,
+            "min": 16.5,
+            "max": 33.400000000000546,
+            "mean": 16.835690235690237
+          },
+          "reportedDroppedDelta": 217,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": false,
+            "rafTail": false,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 20.799999952316284,
+              "p95": 26.5,
+              "p99": 37.89999997615814,
+              "min": 13.600000023841858,
+              "max": 37.89999997615814,
+              "mean": 21.200000005960465
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1.899999976158142,
+              "p95": 2.200000047683716,
+              "p99": 5.5,
+              "min": 1.5,
+              "max": 5.5,
+              "mean": 2.0249999940395353
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 3.799999952316284,
+              "p95": 4.200000047683716,
+              "p99": 5.399999976158142,
+              "min": 2.399999976158142,
+              "max": 5.399999976158142,
+              "mean": 3.6549999952316283
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\drag\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\drag\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\drag\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\drag\\after.png"
+        },
+        {
+          "case": "travel",
+          "rafFps": 55.782856002394965,
+          "simulationFps": 32.232312144496554,
+          "rafIntervalMs": {
+            "n": 558,
+            "p50": 16.699999999999818,
+            "p95": 33.30000000000018,
+            "p99": 33.400000000001455,
+            "min": 16.399999999999636,
+            "max": 50.100000000000364,
+            "mean": 17.92186379928315
+          },
+          "reportedDroppedDelta": 265,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": false,
+            "simulation": false,
+            "rafTail": false,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 18,
+              "p50": 19.899999976158142,
+              "p95": 24.100000023841858,
+              "p99": 24.100000023841858,
+              "min": 14.299999952316284,
+              "max": 24.100000023841858,
+              "mean": 19.566666682561237
+            },
+            "renderPublished": {
+              "n": 18,
+              "p50": 6.100000023841858,
+              "p95": 14.399999976158142,
+              "p99": 14.399999976158142,
+              "min": 1.399999976158142,
+              "max": 14.399999976158142,
+              "mean": 5.638888875643413
+            },
+            "uiPublished": {
+              "n": 18,
+              "p50": 3.399999976158142,
+              "p95": 4.299999952316284,
+              "p99": 4.299999952316284,
+              "min": 2.5999999046325684,
+              "max": 4.299999952316284,
+              "mean": 3.277777757909563
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\travel\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\travel\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\travel\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\travel\\after.png"
+        },
+        {
+          "case": "idle",
+          "rafFps": 58.23403300593309,
+          "simulationFps": 51.45335792989979,
+          "rafIntervalMs": {
+            "n": 583,
+            "p50": 16.699999999999818,
+            "p95": 16.80000000000109,
+            "p99": 33.399999999999636,
+            "min": 16.5,
+            "max": 33.400000000001455,
+            "mean": 17.153173241852485
+          },
+          "reportedDroppedDelta": 76,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": false,
+            "simulation": false,
+            "rafTail": false,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 8,
+              "p95": 21.100000023841858,
+              "p99": 27.100000023841858,
+              "min": 6.200000047683716,
+              "max": 27.100000023841858,
+              "mean": 11.35000001192093
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1.899999976158142,
+              "p95": 7.800000071525574,
+              "p99": 8.299999952316284,
+              "min": 1.399999976158142,
+              "max": 8.299999952316284,
+              "mean": 2.4650000095367433
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 80.5,
+              "p95": 80.5,
+              "p99": 80.5,
+              "min": 3.399999976158142,
+              "max": 80.5,
+              "mean": 61.46500000357628
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\idle\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\idle\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\idle\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\idle\\after.png"
+        },
+        {
+          "case": "atlas",
+          "rafFps": 60.07596961215514,
+          "simulationFps": 59.97600959616154,
+          "rafIntervalMs": {
+            "n": 600,
+            "p50": 16.69999999999891,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000109,
+            "min": 16.5,
+            "max": 16.80000000000109,
+            "mean": 16.667166666666667
+          },
+          "reportedDroppedDelta": 0,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": true
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 6.100000023841858,
+              "p95": 8.100000023841858,
+              "p99": 15.100000023841858,
+              "min": 4.399999976158142,
+              "max": 15.100000023841858,
+              "mean": 6.5150000035762785
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1,
+              "p95": 1.1999999284744263,
+              "p99": 1.399999976158142,
+              "min": 0.7999999523162842,
+              "max": 1.399999976158142,
+              "mean": 1.0349999904632567
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.7000000476837158,
+              "p95": 0.7000000476837158,
+              "p99": 0.7000000476837158,
+              "min": 0.7000000476837158,
+              "max": 0.7000000476837158,
+              "mean": 0.7000000476837158
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\atlas\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\atlas\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\atlas\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\atlas\\after.png"
+        },
+        {
+          "case": "battle",
+          "rafFps": 59.94544964068405,
+          "simulationFps": 60.04535872341852,
+          "rafIntervalMs": {
+            "n": 599,
+            "p50": 16.69999999999891,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000109,
+            "min": 16.5,
+            "max": 16.80000000000109,
+            "mean": 16.667111853088482
+          },
+          "reportedDroppedDelta": 0,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": true
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 7.800000071525574,
+              "p95": 9.199999928474426,
+              "p99": 11.100000023841858,
+              "min": 6.399999976158142,
+              "max": 11.100000023841858,
+              "mean": 8.129999989271164
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 3,
+              "p95": 3.600000023841858,
+              "p99": 3.6999999284744263,
+              "min": 1.399999976158142,
+              "max": 3.6999999284744263,
+              "mean": 2.7649999856948853
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.8000000715255737,
+              "p95": 1.100000023841858,
+              "p99": 1.3000000715255737,
+              "min": 0.6000000238418579,
+              "max": 1.3000000715255737,
+              "mean": 0.8599999964237213
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\battle\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\battle\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\battle\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\battle\\after.png"
+        }
+      ]
+    },
+    "o3": {
+      "servedEngineFiles": [
+        {
+          "path": "runtime/runtime.json",
+          "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\runtime.json",
+          "bytes": 1287,
+          "sha256": "3ae44a066420c055308f0700b0523f8ab3c091e530d53b6a1de0af7f374508c0"
+        },
+        {
+          "path": "runtime/unone-player.js",
+          "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone-player.js",
+          "bytes": 101921,
+          "sha256": "61a1b8fc5da2554ca1de7a422d435d558fa6185c0ce8f5d91d370a7452cf8ef4"
+        },
+        {
+          "path": "runtime/unone_player.wasm",
+          "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone_player.wasm",
+          "bytes": 3097877,
+          "sha256": "f17e21047cf7be8c428af02b6b33c501d83248b883d692b8b7eb50f725df401b"
+        }
+      ],
+      "cases": [
+        {
+          "case": "drag",
+          "rafFps": 60.072924345544166,
+          "simulationFps": 44.23280001562456,
+          "rafIntervalMs": {
+            "n": 602,
+            "p50": 16.699999999999818,
+            "p95": 16.800000000000182,
+            "p99": 16.80000000000109,
+            "min": 16.399999999999636,
+            "max": 17,
+            "mean": 16.667109634551494
+          },
+          "reportedDroppedDelta": 151,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": false,
+            "rafTail": true,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 16.90000009536743,
+              "p95": 21.100000023841858,
+              "p99": 23.600000023841858,
+              "min": 11.5,
+              "max": 23.600000023841858,
+              "mean": 17.2549999833107
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1.7999999523162842,
+              "p95": 6.5,
+              "p99": 8,
+              "min": 1.2999999523162842,
+              "max": 8,
+              "mean": 2.464999997615814
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 3.3000000715255737,
+              "p95": 3.9000000953674316,
+              "p99": 4.299999952316284,
+              "min": 2.5,
+              "max": 4.299999952316284,
+              "mean": 3.320000010728836
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\drag\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\drag\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\drag\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\drag\\after.png"
+        },
+        {
+          "case": "travel",
+          "rafFps": 56.55736888693568,
+          "simulationFps": 33.058180405744096,
+          "rafIntervalMs": {
+            "n": 567,
+            "p50": 16.69999999999891,
+            "p95": 33.29999999999927,
+            "p99": 33.400000000000546,
+            "min": 16.100000000000364,
+            "max": 50.099999999998545,
+            "mean": 17.63703703703704
+          },
+          "reportedDroppedDelta": 270,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": false,
+            "simulation": false,
+            "rafTail": false,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 19,
+              "p50": 17.700000047683716,
+              "p95": 30.799999952316284,
+              "p99": 30.799999952316284,
+              "min": 13.600000023841858,
+              "max": 30.799999952316284,
+              "mean": 19.10000000501934
+            },
+            "renderPublished": {
+              "n": 19,
+              "p50": 2,
+              "p95": 11.799999952316284,
+              "p99": 11.799999952316284,
+              "min": 1.600000023841858,
+              "max": 11.799999952316284,
+              "mean": 4.647368418542962
+            },
+            "uiPublished": {
+              "n": 19,
+              "p50": 3.4000000953674316,
+              "p95": 6.399999976158142,
+              "p99": 6.399999976158142,
+              "min": 2.600000023841858,
+              "max": 6.399999976158142,
+              "mean": 3.8263157919833533
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\travel\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\travel\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\travel\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\travel\\after.png"
+        }
+      ]
+    },
+    "o3-ui": {
+      "servedEngineFiles": [
+        {
+          "path": "runtime/runtime.json",
+          "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\runtime.json",
+          "bytes": 1287,
+          "sha256": "3ae44a066420c055308f0700b0523f8ab3c091e530d53b6a1de0af7f374508c0"
+        },
+        {
+          "path": "runtime/unone-player.js",
+          "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone-player.js",
+          "bytes": 101921,
+          "sha256": "61a1b8fc5da2554ca1de7a422d435d558fa6185c0ce8f5d91d370a7452cf8ef4"
+        },
+        {
+          "path": "runtime/unone_player.wasm",
+          "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone_player.wasm",
+          "bytes": 3097877,
+          "sha256": "f17e21047cf7be8c428af02b6b33c501d83248b883d692b8b7eb50f725df401b"
+        },
+        {
+          "path": "web/shared/canvas-ui.mjs",
+          "source": "D:\\Projects\\Unone\\web\\shared\\canvas-ui.mjs",
+          "bytes": 18481,
+          "sha256": "7ee39bda33ec88eead6d223ec76692d4c85970dc8924e5a7c9863dac96a0869d"
+        },
+        {
+          "path": "web/shared/ui-scroll.mjs",
+          "source": "D:\\Projects\\Unone\\web\\shared\\ui-scroll.mjs",
+          "bytes": 19133,
+          "sha256": "c080c247f544213b549104bb8e658fd39501316962c358c5123c23264cfba76d"
+        },
+        {
+          "path": "web/shared/ui-text-input.mjs",
+          "source": "D:\\Projects\\Unone\\web\\shared\\ui-text-input.mjs",
+          "bytes": 10011,
+          "sha256": "cf453f564e419249d242a3724cbc359e50fde3143ed10d79a0e5ea4fedb0cc67"
+        }
+      ],
+      "cases": [
+        {
+          "case": "drag",
+          "rafFps": 60.101664507126486,
+          "simulationFps": 44.154290840227254,
+          "rafIntervalMs": {
+            "n": 602,
+            "p50": 16.69999999999891,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000109,
+            "min": 16.09999999999991,
+            "max": 17.100000000000364,
+            "mean": 16.667109634551494
+          },
+          "reportedDroppedDelta": 152,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": false,
+            "rafTail": true,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 17.699999928474426,
+              "p95": 22.100000023841858,
+              "p99": 27.199999928474426,
+              "min": 12.899999976158142,
+              "max": 27.199999928474426,
+              "mean": 17.81999997496605
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 0.8999999761581421,
+              "p95": 5.899999976158142,
+              "p99": 6,
+              "min": 0.7000000476837158,
+              "max": 6,
+              "mean": 1.6599999845027924
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 3.5,
+              "p95": 4.100000023841858,
+              "p99": 4.399999976158142,
+              "min": 2.5,
+              "max": 4.399999976158142,
+              "mean": 3.359999990463257
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\drag\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\drag\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\drag\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\drag\\after.png"
+        },
+        {
+          "case": "travel",
+          "rafFps": 58.30932849554154,
+          "simulationFps": 36.480708084390095,
+          "rafIntervalMs": {
+            "n": 584,
+            "p50": 16.69999999999891,
+            "p95": 16.80000000000109,
+            "p99": 33.399999999999636,
+            "min": 16.5,
+            "max": 33.400000000001455,
+            "mean": 17.123972602739727
+          },
+          "reportedDroppedDelta": 243,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": false,
+            "simulation": false,
+            "rafTail": false,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 19.199999928474426,
+              "p95": 21.5,
+              "p99": 21.5,
+              "min": 14.899999976158142,
+              "max": 21.5,
+              "mean": 19.189999985694886
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 5.5,
+              "p95": 6.5,
+              "p99": 8.800000071525574,
+              "min": 0.8999999761581421,
+              "max": 8.800000071525574,
+              "mean": 4.51000000834465
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 3.600000023841858,
+              "p95": 4.399999976158142,
+              "p99": 6.5,
+              "min": 2.700000047683716,
+              "max": 6.5,
+              "mean": 3.7450000047683716
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\travel\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\travel\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\travel\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\travel\\after.png"
+        },
+        {
+          "case": "idle",
+          "rafFps": 59.432993288717,
+          "simulationFps": 53.05092689529773,
+          "rafIntervalMs": {
+            "n": 595,
+            "p50": 16.699999999999818,
+            "p95": 16.800000000000182,
+            "p99": 17.600000000000364,
+            "min": 15.599999999998545,
+            "max": 33.399999999999636,
+            "mean": 16.807226890756304
+          },
+          "reportedDroppedDelta": 60,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": false,
+            "rafTail": true,
+            "noReportedDropped": false,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": false
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 7.200000047683716,
+              "p95": 21.700000047683716,
+              "p99": 26.899999976158142,
+              "min": 4.800000071525574,
+              "max": 26.899999976158142,
+              "mean": 11.465000003576279
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1.1999999284744263,
+              "p95": 6.100000023841858,
+              "p99": 9.100000023841858,
+              "min": 0.9000000953674316,
+              "max": 9.100000023841858,
+              "mean": 2.4399999916553496
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 75.09999990463257,
+              "p95": 75.09999990463257,
+              "p99": 75.09999990463257,
+              "min": 3.299999952316284,
+              "max": 75.09999990463257,
+              "mean": 53.91999992728233
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\idle\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\idle\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\idle\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\idle\\after.png"
+        },
+        {
+          "case": "atlas",
+          "rafFps": 59.96042611861876,
+          "simulationFps": 60.06036016214979,
+          "rafIntervalMs": {
+            "n": 599,
+            "p50": 16.69999999999891,
+            "p95": 16.800000000000182,
+            "p99": 16.80000000000109,
+            "min": 16.30000000000109,
+            "max": 17,
+            "mean": 16.6669449081803
+          },
+          "reportedDroppedDelta": 0,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": true
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 5.199999928474426,
+              "p95": 6.400000095367432,
+              "p99": 17.300000071525574,
+              "min": 3.600000023841858,
+              "max": 17.300000071525574,
+              "mean": 5.625000005960464
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 0.7000000476837158,
+              "p95": 0.8999999761581421,
+              "p99": 0.8999999761581421,
+              "min": 0.6000000238418579,
+              "max": 0.8999999761581421,
+              "mean": 0.7400000095367432
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.7000000476837158,
+              "p95": 0.7000000476837158,
+              "p99": 0.7000000476837158,
+              "min": 0.7000000476837158,
+              "max": 0.7000000476837158,
+              "mean": 0.7000000476837158
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\atlas\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\atlas\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\atlas\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\atlas\\after.png"
+        },
+        {
+          "case": "battle",
+          "rafFps": 59.94724642271923,
+          "simulationFps": 60.047158500090426,
+          "rafIntervalMs": {
+            "n": 599,
+            "p50": 16.69999999999891,
+            "p95": 16.800000000000182,
+            "p99": 16.80000000000109,
+            "min": 16.30000000000109,
+            "max": 17,
+            "mean": 16.667111853088482
+          },
+          "reportedDroppedDelta": 0,
+          "target60": {
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "visible": true,
+            "passed": true
+          },
+          "publishedCpuMs": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 6.899999976158142,
+              "p95": 14.700000047683716,
+              "p99": 14.700000047683716,
+              "min": 6.100000023841858,
+              "max": 14.700000047683716,
+              "mean": 7.9400000154972075
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1.899999976158142,
+              "p95": 2.799999952316284,
+              "p99": 2.799999952316284,
+              "min": 1.1999999284744263,
+              "max": 2.799999952316284,
+              "mean": 2.019999974966049
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.7000000476837158,
+              "p95": 0.8999999761581421,
+              "p99": 0.8999999761581421,
+              "min": 0.5999999046325684,
+              "max": 0.8999999761581421,
+              "mean": 0.7399999916553497
+            },
+            "phases": {}
+          },
+          "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+          "renderer": {
+            "renderer": "official",
+            "presentationBackend": "main",
+            "interpolation": false
+          },
+          "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\battle\\result.json",
+          "samples": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\battle\\samples.json",
+          "beforeScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\battle\\before.png",
+          "afterScreenshot": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\battle\\after.png"
+        }
+      ]
+    }
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "identity": {
+        "variant": "baseline",
+        "scope": "Diagnostic response-only engine substitution against immutable candidate3 gameplay. No game files, existing server/page/save or export manifests changed. Baseline, O3 and O3+UI hosts are separate variants.",
+        "frozenExport": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-candidate3",
+        "release": "releases/17459e2097cd4d38e8656ae7219aeb55fbc48e4f3252fe87c4dc5ab8bf35687c/",
+        "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+        "originalManifestSha256": "d62ce4635da6bd3be9034132717a53e3da96a1aa52613ff84287404dcb90bf95",
+        "runtimeOverride": null,
+        "substitutions": [],
+        "benchmarkSha256": "3e66d7d8f17e42ca03cc8338512acee091b425ba8d71a9468327ae09e8db3f6c"
+      },
+      "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline\\result.json",
+      "seconds": 10,
+      "warmup": 2,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "profiling": false
+    },
+    {
+      "name": "baseline-rest",
+      "identity": {
+        "variant": "baseline",
+        "scope": "Diagnostic response-only engine substitution against immutable candidate3 gameplay. No game files, existing server/page/save or export manifests changed. Baseline, O3 and O3+UI hosts are separate variants.",
+        "frozenExport": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-candidate3",
+        "release": "releases/17459e2097cd4d38e8656ae7219aeb55fbc48e4f3252fe87c4dc5ab8bf35687c/",
+        "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+        "originalManifestSha256": "d62ce4635da6bd3be9034132717a53e3da96a1aa52613ff84287404dcb90bf95",
+        "runtimeOverride": null,
+        "substitutions": [],
+        "benchmarkSha256": "3e66d7d8f17e42ca03cc8338512acee091b425ba8d71a9468327ae09e8db3f6c"
+      },
+      "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-baseline-rest\\result.json",
+      "seconds": 10,
+      "warmup": 2,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "profiling": false
+    },
+    {
+      "name": "o3",
+      "identity": {
+        "variant": "o3",
+        "scope": "Diagnostic response-only engine substitution against immutable candidate3 gameplay. No game files, existing server/page/save or export manifests changed. Baseline, O3 and O3+UI hosts are separate variants.",
+        "frozenExport": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-candidate3",
+        "release": "releases/17459e2097cd4d38e8656ae7219aeb55fbc48e4f3252fe87c4dc5ab8bf35687c/",
+        "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+        "originalManifestSha256": "d62ce4635da6bd3be9034132717a53e3da96a1aa52613ff84287404dcb90bf95",
+        "runtimeOverride": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime",
+        "substitutions": [
+          {
+            "path": "runtime/runtime.json",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\runtime.json",
+            "bytes": 1287,
+            "sha256": "3ae44a066420c055308f0700b0523f8ab3c091e530d53b6a1de0af7f374508c0"
+          },
+          {
+            "path": "runtime/unone-player.js",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone-player.js",
+            "bytes": 101921,
+            "sha256": "61a1b8fc5da2554ca1de7a422d435d558fa6185c0ce8f5d91d370a7452cf8ef4"
+          },
+          {
+            "path": "runtime/unone_player.wasm",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone_player.wasm",
+            "bytes": 3097877,
+            "sha256": "f17e21047cf7be8c428af02b6b33c501d83248b883d692b8b7eb50f725df401b"
+          }
+        ],
+        "benchmarkSha256": "3e66d7d8f17e42ca03cc8338512acee091b425ba8d71a9468327ae09e8db3f6c"
+      },
+      "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3\\result.json",
+      "seconds": 10,
+      "warmup": 2,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "profiling": false
+    },
+    {
+      "name": "o3-ui",
+      "identity": {
+        "variant": "o3-ui",
+        "scope": "Diagnostic response-only engine substitution against immutable candidate3 gameplay. No game files, existing server/page/save or export manifests changed. Baseline, O3 and O3+UI hosts are separate variants.",
+        "frozenExport": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-candidate3",
+        "release": "releases/17459e2097cd4d38e8656ae7219aeb55fbc48e4f3252fe87c4dc5ab8bf35687c/",
+        "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+        "originalManifestSha256": "d62ce4635da6bd3be9034132717a53e3da96a1aa52613ff84287404dcb90bf95",
+        "runtimeOverride": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime",
+        "substitutions": [
+          {
+            "path": "runtime/runtime.json",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\runtime.json",
+            "bytes": 1287,
+            "sha256": "3ae44a066420c055308f0700b0523f8ab3c091e530d53b6a1de0af7f374508c0"
+          },
+          {
+            "path": "runtime/unone-player.js",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone-player.js",
+            "bytes": 101921,
+            "sha256": "61a1b8fc5da2554ca1de7a422d435d558fa6185c0ce8f5d91d370a7452cf8ef4"
+          },
+          {
+            "path": "runtime/unone_player.wasm",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone_player.wasm",
+            "bytes": 3097877,
+            "sha256": "f17e21047cf7be8c428af02b6b33c501d83248b883d692b8b7eb50f725df401b"
+          },
+          {
+            "path": "web/shared/canvas-ui.mjs",
+            "source": "D:\\Projects\\Unone\\web\\shared\\canvas-ui.mjs",
+            "bytes": 18481,
+            "sha256": "7ee39bda33ec88eead6d223ec76692d4c85970dc8924e5a7c9863dac96a0869d"
+          },
+          {
+            "path": "web/shared/ui-scroll.mjs",
+            "source": "D:\\Projects\\Unone\\web\\shared\\ui-scroll.mjs",
+            "bytes": 19133,
+            "sha256": "c080c247f544213b549104bb8e658fd39501316962c358c5123c23264cfba76d"
+          },
+          {
+            "path": "web/shared/ui-text-input.mjs",
+            "source": "D:\\Projects\\Unone\\web\\shared\\ui-text-input.mjs",
+            "bytes": 10011,
+            "sha256": "cf453f564e419249d242a3724cbc359e50fde3143ed10d79a0e5ea4fedb0cc67"
+          }
+        ],
+        "benchmarkSha256": "3e66d7d8f17e42ca03cc8338512acee091b425ba8d71a9468327ae09e8db3f6c"
+      },
+      "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui\\result.json",
+      "seconds": 10,
+      "warmup": 2,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "profiling": false
+    },
+    {
+      "name": "o3-ui-rest",
+      "identity": {
+        "variant": "o3-ui",
+        "scope": "Diagnostic response-only engine substitution against immutable candidate3 gameplay. No game files, existing server/page/save or export manifests changed. Baseline, O3 and O3+UI hosts are separate variants.",
+        "frozenExport": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-candidate3",
+        "release": "releases/17459e2097cd4d38e8656ae7219aeb55fbc48e4f3252fe87c4dc5ab8bf35687c/",
+        "sourceSha256": "ae809b20d579a7e73a6ee5e8c94a4841fad6bf195319e8071788e036820a5ba7",
+        "originalManifestSha256": "d62ce4635da6bd3be9034132717a53e3da96a1aa52613ff84287404dcb90bf95",
+        "runtimeOverride": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime",
+        "substitutions": [
+          {
+            "path": "runtime/runtime.json",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\runtime.json",
+            "bytes": 1287,
+            "sha256": "3ae44a066420c055308f0700b0523f8ab3c091e530d53b6a1de0af7f374508c0"
+          },
+          {
+            "path": "runtime/unone-player.js",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone-player.js",
+            "bytes": 101921,
+            "sha256": "61a1b8fc5da2554ca1de7a422d435d558fa6185c0ce8f5d91d370a7452cf8ef4"
+          },
+          {
+            "path": "runtime/unone_player.wasm",
+            "source": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-o3-runtime\\unone_player.wasm",
+            "bytes": 3097877,
+            "sha256": "f17e21047cf7be8c428af02b6b33c501d83248b883d692b8b7eb50f725df401b"
+          },
+          {
+            "path": "web/shared/canvas-ui.mjs",
+            "source": "D:\\Projects\\Unone\\web\\shared\\canvas-ui.mjs",
+            "bytes": 18481,
+            "sha256": "7ee39bda33ec88eead6d223ec76692d4c85970dc8924e5a7c9863dac96a0869d"
+          },
+          {
+            "path": "web/shared/ui-scroll.mjs",
+            "source": "D:\\Projects\\Unone\\web\\shared\\ui-scroll.mjs",
+            "bytes": 19133,
+            "sha256": "c080c247f544213b549104bb8e658fd39501316962c358c5123c23264cfba76d"
+          },
+          {
+            "path": "web/shared/ui-text-input.mjs",
+            "source": "D:\\Projects\\Unone\\web\\shared\\ui-text-input.mjs",
+            "bytes": 10011,
+            "sha256": "cf453f564e419249d242a3724cbc359e50fde3143ed10d79a0e5ea4fedb0cc67"
+          }
+        ],
+        "benchmarkSha256": "3e66d7d8f17e42ca03cc8338512acee091b425ba8d71a9468327ae09e8db3f6c"
+      },
+      "rawResult": "D:\\Projects\\Unone\\artifacts\\web-priority-20261030-candidate3-o3-ui-rest\\result.json",
+      "seconds": 10,
+      "warmup": 2,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "profiling": false
+    }
+  ]
+}

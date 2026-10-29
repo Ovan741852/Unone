@@ -23,6 +23,9 @@ pub enum ProjectedAddressMode {#[default] Clamp,Repeat}
 #[derive(Debug,Clone,Copy,PartialEq,Eq,Serialize,Deserialize,Default)]
 #[serde(rename_all="snake_case")]
 pub enum ProjectedAlphaCompare {#[default] GreaterEqual,Greater}
+#[derive(Debug,Clone,Copy,PartialEq,Eq,Serialize,Deserialize,Default)]
+#[serde(rename_all="snake_case")]
+pub enum ProjectedBlend {#[default] Opaque,SourceOver}
 #[derive(Debug,Clone,PartialEq,Eq,Serialize,Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProjectedScissor {pub x:u32,pub y:u32,pub width:u32,pub height:u32}
@@ -62,6 +65,7 @@ pub struct ProjectedBatch {
     pub address_mode:ProjectedAddressMode,
     pub alpha_cutoff:f32,
     pub alpha_compare:ProjectedAlphaCompare,
+    pub blend:ProjectedBlend,
     pub vertices: Arc<[u8]>,
     pub indices: Arc<[u8]>,
     pub revision: u64,
@@ -70,7 +74,7 @@ pub struct ProjectedBatch {
 }
 impl Serialize for ProjectedBatch {
     fn serialize<S: serde::Serializer>(&self, serializer:S)->Result<S::Ok,S::Error> {
-        let fields=15+usize::from(self.scissor.is_some())+usize::from(self.alpha_compare!=ProjectedAlphaCompare::GreaterEqual);
+        let fields=15+usize::from(self.scissor.is_some())+usize::from(self.alpha_compare!=ProjectedAlphaCompare::GreaterEqual)+usize::from(self.blend!=ProjectedBlend::Opaque);
         let mut s=serializer.serialize_struct("ProjectedBatch",fields)?;
         s.serialize_field("format",PROJECTED_FORMAT)?;
         s.serialize_field("texture",&self.texture)?;
@@ -83,6 +87,7 @@ impl Serialize for ProjectedBatch {
         s.serialize_field("address_mode",&self.address_mode)?;
         s.serialize_field("alpha_cutoff",&self.alpha_cutoff)?;
         if self.alpha_compare!=ProjectedAlphaCompare::GreaterEqual {s.serialize_field("alpha_compare",&self.alpha_compare)?;}
+        if self.blend!=ProjectedBlend::Opaque {s.serialize_field("blend",&self.blend)?;}
         if let Some(scissor)=&self.scissor {s.serialize_field("scissor",scissor)?;}
         s.serialize_field("vertex_count",&(self.vertices.len()/40))?;
         s.serialize_field("index_count",&(self.indices.len()/4))?;
@@ -120,13 +125,13 @@ impl ProjectedBatch {
         if indices.chunks_exact(4).any(|b|u32::from_le_bytes(b.try_into().unwrap()) as usize>=vertices.len()/40) {
             return Err(invalid("index outside vertex range"));
         }
-        Ok(Self {texture,order,depth_test,depth_write,scissor:None,color_mode:ProjectedColorMode::Linear,filter:ProjectedFilter::Nearest,sampling_space:ProjectedSamplingSpace::Linear,address_mode:ProjectedAddressMode::Clamp,alpha_cutoff:0.05,alpha_compare:ProjectedAlphaCompare::GreaterEqual,vertices:vertices.into(),indices:indices.into(),revision:0,
+        Ok(Self {texture,order,depth_test,depth_write,scissor:None,color_mode:ProjectedColorMode::Linear,filter:ProjectedFilter::Nearest,sampling_space:ProjectedSamplingSpace::Linear,address_mode:ProjectedAddressMode::Clamp,alpha_cutoff:0.05,alpha_compare:ProjectedAlphaCompare::GreaterEqual,blend:ProjectedBlend::Opaque,vertices:vertices.into(),indices:indices.into(),revision:0,
             encoded_vertices:Arc::new(OnceLock::new()),encoded_indices:Arc::new(OnceLock::new())})
     }
     fn same(&self,b:&Self)->bool {
         self.texture==b.texture && self.order==b.order && self.depth_test==b.depth_test && self.depth_write==b.depth_write && self.scissor==b.scissor
             && self.color_mode==b.color_mode && self.filter==b.filter && self.sampling_space==b.sampling_space && self.address_mode==b.address_mode && self.alpha_cutoff==b.alpha_cutoff
-            && self.alpha_compare==b.alpha_compare && self.vertices==b.vertices && self.indices==b.indices
+            && self.alpha_compare==b.alpha_compare && self.blend==b.blend && self.vertices==b.vertices && self.indices==b.indices
     }
     pub fn with_scissor(mut self,scissor:Option<ProjectedScissor>)->Result<Self,String> {
         if let Some(rect)=&scissor {rect.validate()?;}self.scissor=scissor;Ok(self)
@@ -138,6 +143,12 @@ impl ProjectedBatch {
     pub fn with_sampling_space(mut self,space:ProjectedSamplingSpace)->Self {self.sampling_space=space;self}
     pub fn with_address_mode(mut self,mode:ProjectedAddressMode)->Self {self.address_mode=mode;self}
     pub fn with_alpha_compare(mut self,mode:ProjectedAlphaCompare)->Self {self.alpha_compare=mode;self}
+    pub fn with_blend(mut self,mode:ProjectedBlend)->Result<Self,String> {
+        if mode==ProjectedBlend::SourceOver && (self.depth_test || self.depth_write) {
+            return Err(invalid("source_over requires depth_test=false and depth_write=false"));
+        }
+        self.blend=mode;Ok(self)
+    }
 }
 impl crate::world::World {
     pub(crate) fn set_projected(&mut self,id:String,mut batch:ProjectedBatch)->Result<(),String> {

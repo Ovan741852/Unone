@@ -2,7 +2,7 @@
 import {isProjectedBase64} from './projected-base64.js';
 const format='f32le-clip4-uv2-rgba4-u32-v1',utf8=new TextEncoder();
 const invalid=m=>{throw Error(`PROJECTED_INVALID: ${m}`);};
-const keys=new Set(['format','texture','order','depth_test','depth_write','scissor','color_mode','filter','sampling_space','address_mode','alpha_cutoff','alpha_compare','vertex_count','index_count','vertices','indices','revision']);
+const keys=new Set(['format','texture','order','depth_test','depth_write','scissor','color_mode','filter','sampling_space','address_mode','alpha_cutoff','alpha_compare','blend','vertex_count','index_count','vertices','indices','revision']);
 const decodeSrgb=n=>n<=.04045?n/12.92:((n+.055)/1.055)**2.4;
 const encodeSrgb=n=>n<=.0031308?n*12.92:1.055*n**(1/2.4)-.055;
 // Reference scalar output encoded for an sRGB surface; actual adapters run the same transfer in shaders.
@@ -11,15 +11,16 @@ export function projectedModulate(textureEncoded,vertexRgb,mode='linear'){
  return mode==='encoded'?textureEncoded*vertexRgb:encodeSrgb(decodeSrgb(textureEncoded)*vertexRgb);
 }
 // RGBA8 top-left source, official bottom-left UV; returns encoded RGB and linear alpha.
-export function projectedSampleRgba8(image,width,height,u,v,{filter='nearest',sampling_space='linear',address_mode='clamp'}={}){
- if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||image.length!==width*height*4||![u,v].every(Number.isFinite)||!['linear','encoded'].includes(sampling_space)||!['nearest','linear'].includes(filter)||!['clamp','repeat'].includes(address_mode))invalid('sample reference arguments');
+export function projectedSampleRgba8(image,width,height,u,v,{filter='nearest',sampling_space='linear',address_mode='clamp',blend='opaque'}={}){
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||image.length!==width*height*4||![u,v].every(Number.isFinite)||!['linear','encoded'].includes(sampling_space)||!['nearest','linear'].includes(filter)||!['clamp','repeat'].includes(address_mode)||!['opaque','source_over'].includes(blend))invalid('sample reference arguments');
  const address=(n,size)=>address_mode==='repeat'?((n%size)+size)%size:Math.max(0,Math.min(size-1,n));
  const pixel=(x,y)=>{x=address(x,width);y=address(y,height);return Array.from(image.slice((y*width+x)*4,(y*width+x)*4+4),n=>n/255);};
  if(filter==='nearest')return pixel(Math.floor(u*width),Math.floor((1-v)*height));
  const x=u*width-.5,y=(1-v)*height-.5,x0=Math.floor(x),y0=Math.floor(y),fx=x-x0,fy=y-y0;
  const p=[pixel(x0,y0),pixel(x0+1,y0),pixel(x0,y0+1),pixel(x0+1,y0+1)];
  const weights=[(1-fx)*(1-fy),fx*(1-fy),(1-fx)*fy,fx*fy];
- return [0,1,2,3].map(c=>{const linear=c<3&&sampling_space==='linear';let value=0;for(let i=0;i<4;i++)value+=weights[i]*(linear?decodeSrgb(p[i][c]):p[i][c]);return linear?encodeSrgb(value):value;});
+ const alpha=p.reduce((sum,pixel,i)=>sum+weights[i]*pixel[3],0);
+ return [0,1,2,3].map(c=>{const linear=c<3&&sampling_space==='linear',premultiply=c<3&&blend==='source_over';let value=0;for(let i=0;i<4;i++)value+=weights[i]*(linear?decodeSrgb(p[i][c]):p[i][c])*(premultiply?p[i][3]:1);if(premultiply)value=alpha?value/alpha:0;return linear?encodeSrgb(value):value;});
 }
 export function projectedScissor(scissor,width,height){
  const s=scissor??{x:0,y:0,width,height};
@@ -34,6 +35,7 @@ function bytes(s){
  return b;
 }
 export function projectedGeometryData(d){
+ if(typeof d.vertices!=='string'||typeof d.indices!=='string'||d.vertices.length!==4*Math.ceil(d.vertex_count*40/3)||d.indices.length!==4*Math.ceil(d.index_count*4/3))invalid('exact bounded base64 lengths');
  const vb=bytes(d.vertices),ib=bytes(d.indices);
  if(vb.byteLength!==d.vertex_count*40||ib.byteLength!==d.index_count*4)invalid('exact byte counts');
  const v=new DataView(vb.buffer),ix=new DataView(ib.buffer);
@@ -48,7 +50,7 @@ export function projectedGeometryData(d){
 }
 const revision=n=>(Number.isSafeInteger(n)&&n>0)||(typeof n==='string'&&/^[1-9][0-9]{0,19}$/.test(n)&&BigInt(n)<=18446744073709551615n);
 function compareUtf8(a,b){const x=utf8.encode(a),y=utf8.encode(b);for(let i=0;i<Math.min(x.length,y.length);i++)if(x[i]!==y[i])return x[i]-y[i];return x.length-y.length;}
-export function projectedEntries(snapshot){
+function decodeEntries(snapshot,geometryFor){
  const batches=(snapshot?.world??snapshot)?.projected_geometry;
  if(batches===undefined||batches===null)return [];
  if(typeof batches!=='object'||Array.isArray(batches))invalid('batch map required');
@@ -65,11 +67,36 @@ export function projectedEntries(snapshot){
   if(d.address_mode!==undefined&&!['clamp','repeat'].includes(d.address_mode))invalid('address_mode');
   if(d.alpha_cutoff!==undefined&&(typeof d.alpha_cutoff!=='number'||!Number.isFinite(d.alpha_cutoff)||d.alpha_cutoff<0||d.alpha_cutoff>1))invalid('alpha_cutoff');
   if(d.alpha_compare!==undefined&&!['greater_equal','greater'].includes(d.alpha_compare))invalid('alpha_compare');
+  if(d.blend!==undefined&&!['opaque','source_over'].includes(d.blend))invalid('blend');
+  if(d.blend==='source_over'&&(d.depth_test||d.depth_write))invalid('source_over requires depth_test=false and depth_write=false');
   const s=d.scissor;if(s!==undefined&&(!s||typeof s!=='object'||Array.isArray(s)||Object.keys(s).some(k=>!['x','y','width','height'].includes(k))||![s.x,s.y,s.width,s.height].every(Number.isInteger)||s.x<0||s.y<0||s.width<=0||s.height<=0||s.x+s.width>32768||s.y+s.height>32768))invalid('physical pixel scissor rectangle');
   // Validate before any GPU mutation, including replacements with a stale revision.
-  projectedGeometryData(d);
+  geometryFor(d);
  }
  return entries.sort((a,b)=>a[1].order-b[1].order||compareUtf8(a[0],b[0]));
+}
+export function projectedEntries(snapshot){return decodeEntries(snapshot,projectedGeometryData);}
+// Retain one accepted batch generation. Revisions never substitute for content:
+// both complete strings and both counts must still match. Metadata is validated
+// on every draw, and failed validation leaves the previous generation intact.
+// Borrowed arrays are reserved for a presentation-owned decoder; its geometry
+// must be copied before GPU ownership and must never escape through host hooks.
+export function createProjectedGeometryDecoder({copyGeometry=true}={}){
+ let retained=new Map(),decodes=0,reuses=0;
+ const find=(map,d)=>map.get(d.vertices)?.find(r=>r.indices===d.indices&&r.vertex_count===d.vertex_count&&r.index_count===d.index_count&&r.revision===String(d.revision));
+ const detach=data=>copyGeometry?{vertices:data.vertices.slice(),indices:data.indices.slice()}:data;
+ function entries(snapshot){
+  const next=new Map();let built=0,found=0;
+  const entries=decodeEntries(snapshot,d=>{
+   let r=find(next,d)??find(retained,d);
+   if(r)found++;else{r={indices:d.indices,vertex_count:d.vertex_count,index_count:d.index_count,revision:String(d.revision),data:projectedGeometryData(d)};built++;}
+   if(!find(next,d)){if(next.has(d.vertices))next.get(d.vertices).push(r);else next.set(d.vertices,[r]);}
+  });
+  retained=next;decodes+=built;reuses+=found;return entries;
+ }
+ return {entries,geometry:d=>detach(find(retained,d)?.data??projectedGeometryData(d)),clear(){retained=new Map();},
+  metrics:()=>({projected_geometry_decodes:decodes,projected_geometry_decode_reuses:reuses,
+   projected_retained_geometries:[...retained.values()].reduce((n,rows)=>n+rows.length,0)})};
 }
 export function assertProjectedBackend(snapshot,backend){
  const world=snapshot?.world??snapshot;

@@ -20,6 +20,8 @@ use crate::{
 const FIXED_DT: f64 = 1.0 / 60.0;
 mod bindings;
 mod host_time;
+mod save_state;
+use save_state::SaveState;
 mod spatial;
 mod spatial_metrics;
 pub use spatial::SpatialTask;
@@ -225,7 +227,7 @@ struct ApiState {
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
     ui: Rc<RefCell<Option<UiTree>>>,
     viewport_aspect: Rc<RefCell<f64>>,
-    save_payload: Rc<RefCell<Option<serde_json::Value>>>,
+    save_payload: Rc<RefCell<SaveState>>,
 }
 
 #[derive(Debug, Clone)]
@@ -285,7 +287,7 @@ struct ReloadRollbackState {
     observations: BTreeMap<String, serde_json::Value>,
     ui: Option<UiTree>,
     viewport_aspect: f64,
-    save_payload: Option<serde_json::Value>,
+    save_payload: SaveState,
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
@@ -312,7 +314,7 @@ pub struct EngineRuntime {
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
     ui: Rc<RefCell<Option<UiTree>>>,
     viewport_aspect: Rc<RefCell<f64>>,
-    save_payload: Rc<RefCell<Option<serde_json::Value>>>,
+    save_payload: Rc<RefCell<SaveState>>,
     #[cfg(feature = "dev-tools")]
     generation: u64,
     #[cfg(feature = "dev-tools")]
@@ -636,7 +638,7 @@ impl EngineRuntime {
         // place a game can rebuild its state before the first frame, and an
         // injection after start would both hide the payload and silently
         // overwrite anything start saved.
-        let save_payload = Rc::new(RefCell::new(restored_save));
+        let save_payload = Rc::new(RefCell::new(SaveState::new(restored_save)));
         #[cfg(feature = "preview-tools")]
         let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
         let api_state = ApiState {
@@ -853,11 +855,19 @@ impl EngineRuntime {
     /// The engine validates the transport as JSON but does not interpret the
     /// game schema. The game owns versioning and migration decisions.
     pub fn set_save_payload(&mut self, payload: Option<serde_json::Value>) {
-        *self.save_payload.borrow_mut() = payload;
+        self.save_payload.borrow_mut().replace(payload);
     }
 
     pub fn save_payload(&self) -> Option<serde_json::Value> {
-        self.save_payload.borrow().clone()
+        self.save_payload.borrow().owned()
+    }
+
+    /// Immutable encoding of the current save for host publication. Repeated
+    /// reads reuse one encoding; every accepted replacement invalidates it.
+    /// The returned Rc holds no RefCell borrow and remains valid after writes.
+    /// The ordinary owned getter and Lua save.get remain detached copies.
+    pub fn serialized_save_payload(&self) -> Option<Rc<serde_json::value::RawValue>> {
+        self.save_payload.borrow().encoded()
     }
 
     #[cfg(feature = "dev-tools")]

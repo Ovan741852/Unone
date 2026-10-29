@@ -12,18 +12,38 @@ uniform float projectedAlphaCutoff;
 uniform float projectedAlphaStrict;
 uniform float projectedEncodedSampling;
 uniform float projectedRepeatAddress;
+uniform float projectedSourceOver;
+uniform float projectedLinearFiltering;
 varying vec2 projectedUv;
 varying vec4 projectedColor;
 vec3 projectedToEncoded(vec3 value){return mix(1.055*pow(value,vec3(1.0/2.4))-0.055,12.92*value,lessThanEqual(value,vec3(0.0031308)));}
 vec3 projectedToLinear(vec3 value){return mix(pow((value+0.055)/1.055,vec3(2.4)),value/12.92,lessThanEqual(value,vec3(0.04045)));}
 vec4 projectedEncodedTexel(ivec2 p,ivec2 size){ivec2 position=clamp(p,ivec2(0),size-ivec2(1));if(projectedRepeatAddress>0.5)position=((p%size)+size)%size;vec4 value=texelFetch(projectedTexture,position,0);return vec4(projectedToEncoded(value.rgb),value.a);}
+vec4 projectedPremultipliedTexel(ivec2 p,ivec2 size){
+ ivec2 position=clamp(p,ivec2(0),size-ivec2(1));if(projectedRepeatAddress>0.5)position=((p%size)+size)%size;
+ vec4 value=texelFetch(projectedTexture,position,0);if(projectedEncodedSampling>0.5)value.rgb=projectedToEncoded(value.rgb);
+ return vec4(value.rgb*value.a,value.a);
+}
 vec4 projectedSample(vec2 uv){
- vec4 value=texture2D(projectedTexture,uv);
- if(projectedEncodedSampling<0.5)return value;
- ivec2 size=textureSize(projectedTexture,0);vec2 p=uv*vec2(size)-0.5;ivec2 low=ivec2(floor(p));vec2 f=fract(p);
- vec4 top=mix(projectedEncodedTexel(low,size),projectedEncodedTexel(low+ivec2(1,0),size),f.x);
- vec4 bottom=mix(projectedEncodedTexel(low+ivec2(0,1),size),projectedEncodedTexel(low+ivec2(1,1),size),f.x);
- vec4 encoded=mix(top,bottom,f.y);return vec4(projectedToLinear(encoded.rgb),encoded.a);
+ vec4 filtered=vec4(0.0);
+ // Source-over image filtering interpolates premultiplied samples, then
+ // restores straight RGB for the material's explicit SrcAlpha blend factors.
+ if(projectedSourceOver>0.5&&projectedLinearFiltering>0.5){
+  ivec2 size=textureSize(projectedTexture,0);vec2 p=uv*vec2(size)-0.5;ivec2 low=ivec2(floor(p));vec2 f=fract(p);
+  vec4 top=mix(projectedPremultipliedTexel(low,size),projectedPremultipliedTexel(low+ivec2(1,0),size),f.x);
+  vec4 bottom=mix(projectedPremultipliedTexel(low+ivec2(0,1),size),projectedPremultipliedTexel(low+ivec2(1,1),size),f.x);
+  filtered=mix(top,bottom,f.y);filtered.rgb=filtered.a>0.0?filtered.rgb/filtered.a:vec3(0.0);
+  if(projectedEncodedSampling>0.5)filtered.rgb=projectedToLinear(filtered.rgb);
+ }else{
+  filtered=texture2D(projectedTexture,uv);
+  if(projectedEncodedSampling>0.5){
+   ivec2 size=textureSize(projectedTexture,0);vec2 p=uv*vec2(size)-0.5;ivec2 low=ivec2(floor(p));vec2 f=fract(p);
+   vec4 top=mix(projectedEncodedTexel(low,size),projectedEncodedTexel(low+ivec2(1,0),size),f.x);
+   vec4 bottom=mix(projectedEncodedTexel(low+ivec2(0,1),size),projectedEncodedTexel(low+ivec2(1,1),size),f.x);
+   vec4 encoded=mix(top,bottom,f.y);filtered=vec4(projectedToLinear(encoded.rgb),encoded.a);
+  }
+ }
+ return filtered;
 }
 void main(){
  vec4 texel=projectedSample(projectedUv);
@@ -32,7 +52,7 @@ void main(){
  else if(alpha<projectedAlphaCutoff)discard;
  vec3 rgb=texel.rgb*projectedColor.rgb;
  if(projectedEncodedMode>0.5)rgb=projectedToLinear(projectedToEncoded(texel.rgb)*projectedColor.rgb);
- gl_FragColor=vec4(rgb,1.0);
+ gl_FragColor=vec4(rgb,projectedSourceOver>0.5?alpha:1.0);
  #include <colorspace_fragment>
 }`;
 export function projectedShaders(raster='host'){

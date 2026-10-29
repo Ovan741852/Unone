@@ -35,6 +35,32 @@ function harness(t,snapshot,options={}){
  return {host,stage,canvas,win,state,draw};
 }
 const wheel=(canvas,x,y,deltaY)=>canvas.dispatch('wheel',{clientX:x*10,clientY:(100-y)*10,deltaX:0,deltaY,deltaMode:0});
+
+test('in-place reset, nested offsets and content shrink project current geometry on the same draw',t=>{
+ const inner=view('inner',[button('deep',80)]);inner.rect={x:2,y:20,width:20,height:30};
+ const outer=view('outer',[inner,button('tail',110)]),snapshot=screen([outer]),{host,canvas,draw,stage}=harness(t,snapshot);
+ wheel(canvas,15,85,200);assert.equal(host.report()[0].offset.y,20);
+ let projected=draw(snapshot);assert.equal(projected.ui.children.find(n=>n.id==='inner').rect.y,60);
+ outer.scroll.reset_key='new';projected=draw(snapshot);
+ assert.equal(host.report()[0].offset.y,0);assert.equal(projected.ui.children.find(n=>n.id==='inner').rect.y,40);
+ wheel(canvas,15,85,400);assert.equal(host.report()[0].offset.y,40);
+ outer.children=[button('tail',10)];projected=draw(snapshot);assert.equal(host.report()[0].offset.y,0);
+ assert.equal(projected.ui.children.find(n=>n.id==='tail').rect.y,70);
+ host.dispose();host.dispose();assert.deepEqual(host.report(),[]);assert.equal(stage.children.length,0);assert.equal(host.ensureVisible('tail'),false);
+});
+
+test('virtual-list prepend preserves the visible key in returned geometry immediately',t=>{
+ const keys=Array.from({length:10},(_,i)=>'k'+i),node=virtualNode(keys,1,10),snapshot=screen([node]),{host,draw}=harness(t,snapshot);
+ assert(host.scrollToKey('rows','k5'));const before=draw(snapshot).ui.children.find(n=>n.id==='item_k5').rect;
+ const next=screen([virtualNode(['new',...keys],1,11,2)]),after=draw(next).ui.children.find(n=>n.id==='item_k5').rect;
+ assert.deepEqual(after,before);assert.equal(host.report()[0].offset.y,50);
+});
+
+test('queued virtual requests are suppressed when disposed or unmounted before their microtask',async t=>{
+ const requests=[],snapshot=screen([virtualNode(['a','b','c','d'],1,1)]),{host,draw}=harness(t,snapshot,{requestWindow:request=>requests.push(request)});
+ draw(screen([]));await flush();assert.deepEqual(requests,[]);
+ draw(snapshot);host.dispose();await flush();assert.deepEqual(requests,[]);
+});
 test('external ordered router obtains real UI receipts exactly once and omission keeps legacy listeners',t=>{
  const {host,canvas,win}=harness(t,screen([view('scroll',[button('tail',110)])]));
  assert.equal(typeof host.setExternalInput,'function');host.setExternalInput(true);

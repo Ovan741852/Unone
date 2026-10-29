@@ -15,7 +15,7 @@ function fixture(){
   renderer:{info:{reset:noop},getContext:()=>({NO_ERROR:0,getError:()=>0}),render(){events.push('ordinary');}},worldOf:x=>x,resize:noop,
   checkedRaster:true,validateRaster:()=>true,specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),shaderMaterials:{retain:noop},
   scene:{},camera:{},camera3d:{},meshes3d:new Map(),heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
-  projected:{prepare:noop,draw:noop},rasterPass:{draw:noop},
+  projected:{entries:()=>[],prepare:noop,draw:noop},rasterPass:{draw:noop},
   frameDraws:{prepare(frame){events.push(['prepare',frame.draws.length]);return true;}},
   framePass:{draw(draws,camera,frame){events.push(['frame',frame.revision]);return complete;}},
   startupPresentation:{invalidate(){},drawn(){events.push('completed');}}};

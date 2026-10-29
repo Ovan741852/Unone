@@ -103,7 +103,7 @@ pub(super) fn save(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         "set",
         lua.create_function(move |lua, value: Value| {
             let value = portable_value_to_json(lua, value).map_err(mlua::Error::RuntimeError)?;
-            *save_state.borrow_mut() = Some(value);
+            save_state.borrow_mut().replace(Some(value));
             Ok(())
         })?,
     )?;
@@ -111,7 +111,7 @@ pub(super) fn save(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     save_api.set(
         "get",
         lua.create_function(move |lua, ()| {
-            let Some(value) = save_state.borrow().clone() else {
+            let Some(value) = save_state.borrow().owned() else {
                 return Ok(Value::Nil);
             };
             json_to_lua(lua, value)

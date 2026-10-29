@@ -11,10 +11,10 @@ presentation and sustained performance are separate evidence scopes.
 
 ## Reported defects
 
-The numbers below match the eleven defects in the supplied audit. Implementation
-is present in the working change; final build, regression and player evidence is
-still being collected for this record. A test listed below identifies coverage,
-not an assertion that its latest run has passed.
+The numbers below match the eleven defects in the supplied audit. Their fixes
+were committed as `feed494`; completed checks and remaining player/performance
+limits are recorded below. A test name identifies coverage; use the linked raw
+execution evidence for the result and its scope.
 
 | Audit | Correction | Regression / remaining verification |
 | --- | --- | --- |
@@ -45,20 +45,15 @@ Non-preview source VMs now default to bytecode optimization level 2 independentl
 of native code generation; preview/sampler VMs keep level 1. Type information
 level 1 remains specific to non-preview native-codegen builds. Execution
 metadata and [mode documentation](../runtime-mode-validation.md) state those
-defaults and the separately compiled job-cache limitation. Same-source
-production/diagnostic parity and target performance must be measured before
-accepting this compiler-policy candidate.
+defaults and the separately compiled job-cache limitation. Sampled same-source
+parity and target performance are recorded below; they do not establish full-game
+or cross-platform acceptance.
 
 The official UI package reduces redundant copies/temporary tables without
 publishing mutable author aliases. Web projected-frame updates reuse typed
 buffers and draw groups where their identity is unchanged; particle render
 scratch storage and renderer-owned resources follow their existing disposal
 lifecycle. These are concrete allocation reductions, not proof of zero GC.
-
-Production source VMs now select bytecode optimization level 2 independently of
-native codegen; diagnostic VMs retain level 1 for attribution. The execution
-descriptor reports these defaults. This does not change fixed dt, RNG, gameplay
-rules or separately compiled cached-job bytecode.
 
 Additional authoring fixes reject 2D transform mutation on 3D entities, align
 runner actions with the official player, and guard `api typings --output`
@@ -170,3 +165,35 @@ target, sample window and measured percentiles/heap/retention behavior. Record
 failed or blocked commands, including Windows execution-policy error 4551, as
 execution limits instead of passing checks. Independent review is recorded
 separately under [the review process](../review-process.md).
+
+## Web priority and presentation design follow-up — 2026-10-30
+
+The user selected the official Web player as the priority and requested a
+general engine design review after questioning the proposed `set2D` shortcut.
+Godot, Unity and Bevy primary documentation and three independent source
+assessments converge on [Decision 0044](../decisions/0044-retained-presentation-resources.md):
+shared resources, retained instances and an explicit advanced geometry stream,
+reusing existing entities/assets/UI. The new preset prototype was withdrawn
+before SDK distribution; it did not remove caller triangulation, clip-space
+projection, texture grouping or whole-payload transport.
+
+Independent fixes reduce duplicate UI projection/validation and host retention,
+cache current save encoding, write canonical publication directly into the ABI
+output, and retain decoded/GPU projected resources with transactional updates.
+The advanced projected stream now supports explicit source-over on official
+WebGL host raster. Its bounded Canvas comparison allows at most 2/255 channel
+error in the sampled linear cases; nearest samples are exact. Native, checked
+raster and WebGPU do not implement that blend contract and reject explicitly.
+See [host/pixel evidence](../evidence/2026-10-29-engine-stability/web-priority-hosts-and-source-over.json)
+and [save/publication evidence](../evidence/2026-10-29-engine-stability/save-publication-validation.json).
+
+Controlled frozen candidate3 browser runs with speed-optimized WASM and the UI
+host changes measured about 53.05 simulation ticks/s idle, 44.15 while dragging
+and 36.48 during travel; atlas and battle remained about 60. These detail-world
+cases still fail the target. This A/B predates the subsequent save/direct-ABI
+and advanced source-over changes and cannot establish their game-level benefit.
+Exact cases, runtime substitutions and sampling limitations are in
+[candidate3 browser evidence](../evidence/2026-10-29-engine-stability/web-priority-candidate3-browser.json).
+The retained authoring/resource transport in Decision 0044 still requires
+implementation and full official-player measurement; this design record is not
+a completed performance or memory/GC acceptance result.

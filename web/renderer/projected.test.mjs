@@ -6,6 +6,33 @@ import * as projectedTransport from '../shared/projected-geometry.js';
 import * as THREE from '../vendor/three/three.player.min.js';
 import {Texture as FixtureTexture} from '../vendor/three/three.core.js';
 const b64=a=>Buffer.from(a.buffer).toString('base64');
+
+test('source-over is opt-in, depth-free and shares the authored rank queue with opaque batches',()=>{
+ const source={...fixture(),blend:'source_over',depth_test:false,depth_write:false,alpha_cutoff:0};
+ assert.doesNotThrow(()=>projectedEntries({projected_geometry:{s:source}}));
+ for(const blend of [null,1,false,'normal','SOURCE_OVER'])assert.throws(()=>projectedEntries({projected_geometry:{s:{...source,blend}}}),/PROJECTED_INVALID: blend/);
+ for(const flags of [{depth_test:true},{depth_write:true}])assert.throws(()=>projectedEntries({projected_geometry:{s:{...source,...flags}}}),/source_over requires depth_test=false and depth_write=false/);
+ const texture=new FixtureTexture(),adapter=createProjectedRenderer(THREE,()=>({state:'ready',texture}));
+ const specs=new Map([['t',{kind:'texture2d'}]]);let meshes;
+ const renderer={autoClear:true,getScissor:v=>v.set(0,0,1,1),getScissorTest:()=>false,setScissor(){},setScissorTest(){},getDrawingBufferSize:v=>v.set(64,48),getPixelRatio:()=>1,render:s=>meshes=s.children.slice()};
+ adapter.prepare(projectedEntries({projected_geometry:{translucent:{...source,order:0},laterOpaque:{...fixture(),order:1}}}),specs);adapter.draw(renderer,new THREE.PerspectiveCamera());
+ const blended=meshes.find(m=>m.renderOrder===0).material,opaque=meshes.find(m=>m.renderOrder===1).material;
+ assert.equal(blended.transparent,false);assert.equal(opaque.transparent,false);assert.equal(blended.blending,THREE.CustomBlending);assert.equal(opaque.blending,THREE.NoBlending);
+ assert.equal(blended.blendSrc,THREE.SrcAlphaFactor);assert.equal(blended.blendDst,THREE.OneMinusSrcAlphaFactor);assert.equal(blended.blendSrcAlpha,THREE.OneFactor);assert.equal(blended.blendDstAlpha,THREE.OneMinusSrcAlphaFactor);
+ assert.equal(blended.uniforms.projectedSourceOver.value,1);assert.equal(opaque.uniforms.projectedSourceOver.value,0);assert.equal(blended.depthFunc,THREE.AlwaysDepth);assert.equal(blended.depthWrite,false);
+ adapter.clear();
+ let textureCalls=0;const checked=createProjectedRenderer(THREE,()=>{textureCalls++;return {state:'ready',texture};},{raster:'upper_left_checked'});
+ assert.throws(()=>checked.prepare(projectedEntries({projected_geometry:{s:source}}),specs),/PROJECTED_BLEND_UNSUPPORTED/);
+ assert.equal(textureCalls,0);assert.equal(checked.metrics().projected_batches,0);checked.clear();
+});
+
+test('source-over bilinear samples premultiplied image colors before restoring straight RGB',()=>{
+ const image=new Uint8Array([255,0,0,255,0,0,255,0]),sample=(u,blend,sampling_space='encoded')=>projectedTransport.projectedSampleRgba8(image,2,1,u,.5,{filter:'linear',sampling_space,blend});
+ assert.deepEqual(sample(.5,'opaque'),[.5,0,.5,.5]);assert.deepEqual(sample(.5,'source_over'),[1,0,0,.5]);
+ const linear=sample(.5,'source_over','linear');assert(Math.abs(linear[0]-1)<1e-12);assert.deepEqual(linear.slice(1),[0,0,.5]);assert.deepEqual(sample(1,'source_over'),[0,0,0,0]);
+ const a=projectedTransport.projectedSampleRgba8(image,2,1,0,.5,{filter:'linear',sampling_space:'encoded',address_mode:'repeat',blend:'source_over'});
+ assert.deepEqual(a,[1,0,0,.5]);
+});
 test('alpha comparison validation and actual Three uniforms follow revision without changing depth policy',()=>{
  const texture=new FixtureTexture(),adapter=createProjectedRenderer(THREE,()=>({state:'ready',texture}));
  const specs=new Map([['t',{kind:'texture2d'}]]);

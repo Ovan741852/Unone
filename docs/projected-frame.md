@@ -102,9 +102,12 @@ also compare canonical draw content, and content changes revoke the private
 completed-game token even while new textures are pending. Only a completed
 new pass restores proof. These identities are not source epochs.
 
-Correctness currently validates and decodes every incoming Frame's base64 on
-each redraw and compares canonical content for restart safety. This is a known
-CPU/allocation cost; future caching must preserve validation and content identity.
+The official Web retained decoder revalidates incoming metadata and compares
+complete packed content for restart safety. Previously validated identical
+payload strings reuse decoded storage; changed counts, policy, profile or bytes
+cannot bypass validation through an ID/revision match. The public decoder keeps
+detached results. This reduces decode allocation, but full JSON payloads still
+cross the current observation bridge; it is not a retained-resource transport.
 
 Before READY and after target/context changes, official Web runs the existing
 919-sample raster gate plus47 new fixed cases/1028 samples through the actual
