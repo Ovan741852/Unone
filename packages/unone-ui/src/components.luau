@@ -8,6 +8,7 @@ local styleFields: Fields = {
     font_family=true,font_size=true,font_weight=true,line_height=true,letter_spacing=true,
     color=true,text_align=true,vertical_align=true,wrap=true,overflow=true,padding=true,
     background=true,border_color=true,border_width=true,border_radius=true,opacity=true,
+    text_shadow=true,
 }
 local insetFields: Fields = {left=true,top=true,right=true,bottom=true}
 local themeFields: Fields = {text_input=true,text=true,button=true,slider=true,combobox=true,panel=true,image=true}
@@ -16,6 +17,7 @@ local surfaceFields: {[string]: Fields} = {
     image={kind=true,asset=true,fit=true,slice=true,alt=true,style=true},
 }
 local leafFields: {[string]: Fields} = {
+    input_region={id=true,action=true},
     text_input={id=true,text=true,placeholder=true,max_length=true,focused=true,enabled=true,style=true},
     text={id=true,text=true,style=true},
     button={id=true,text=true,action=true,style=true},
@@ -43,6 +45,9 @@ for _, fields in pairs(leafFields) do
     for key in pairs(placement) do fields[key] = true end
 end
 for key in pairs(placement) do componentFields[key] = true end
+-- Quad coordinates are absolute stage coordinates, so batch bounds must be
+-- authored in the same space instead of moving independently with an anchor.
+leafFields.image_batch = {id=true,rect=true,quads=true,background_for=true}
 
 local function available()
     assert(declared, "UI_PACKAGE_NOT_DECLARED: declare runtime_packages={['"..metadata.name.."']='"..metadata.version.."'} in project.unone.json (JSON: \"runtime_packages\":{\""..metadata.name.."\":\""..metadata.version.."\"})")
@@ -105,11 +110,7 @@ local function copy(value: any): any
         if isManagedNode(item) then return item end
         assert(not active[item], "UI_COMPONENT_COPY: cyclic UI data")
         active[item] = true
-        -- Native cloning avoids reinserting every scalar in large UI records.
-        -- Metatables never belong to portable output; preserve support for
-        -- protected metatables without asking table.clone to copy them.
-        local hasMetatable = getmetatable(item)~=nil
-        local result: any = if hasMetatable then {} else table.clone(item)
+        local result: any = {}
         local childDepth = depth+1
         for key, child in pairs(item) do
             assert(type(key)=="string" or type(key)=="number", "UI_COMPONENT_COPY: invalid table key")
@@ -118,11 +119,14 @@ local function copy(value: any): any
             if childKind=="table" then
                 result[key] = visit(child,childDepth)
             else
+                -- Scalars need validation and one work unit, not another Lua
+                -- call. Allocate only visited entries so sparse source-table
+                -- capacity cannot bypass the bounded portable-data copy.
                 remaining -= 1
                 assert(remaining>=0 and childDepth<=64, "UI_COMPONENT_COPY: data exceeds copy limits")
                 assert(childKind=="nil" or childKind=="string" or childKind=="number" or childKind=="boolean",
                     "UI_COMPONENT_COPY: only portable UI data can be copied")
-                if hasMetatable then result[key] = child end
+                result[key] = child
             end
         end
         active[item] = nil
@@ -135,6 +139,9 @@ local function style(value: any, path: string)
     if value==nil then return end
     fields(value,styleFields,path)
     if value.padding~=nil then fields(value.padding,insetFields,path..".padding") end
+    if value.text_shadow~=nil then
+        fields(value.text_shadow,{offset_x=true,offset_y=true,color=true},path..".text_shadow")
+    end
 end
 
 local function compose(base: any?, override: any?): any
@@ -484,6 +491,7 @@ local function makeKit(theme: any?): any
         return node
     end
     kit.textInput = function(props: any): any return leaf("text_input",props) end
+    kit.inputRegion = function(props: any): any return leaf("input_region",props) end
     kit.text = function(props: any): any return leaf("text",props) end
     kit.button = function(props: any): any return leaf("button",props) end
     kit.slider = function(props: any): any return leaf("slider",props) end

@@ -1,0 +1,159 @@
+{
+  "schema": "unone.ui-capability-port.v1",
+  "date": "2026-10-30",
+  "classification": "Reusable engine UI presentation and input primitives; no game rules, content, layout inference or renderer replacement.",
+  "sourceEvidence": {
+    "frozenSource": "D:/Projects/Populous-Reborn/tooling/engine-ui-capability-r11-schema-r3-source",
+    "scope": "Carry forward SDK8-r3 text_shadow and input_region capabilities. Game directories, released SDKs/exports and browser pages were read only."
+  },
+  "sourceFiles": [
+    {
+      "path": "crates/unone-engine/src/ui.rs",
+      "currentSha256": "181a18bcb6ea18b6a3e52ed2c60e5fcb4c43c8eac979f62a1022fa8db73e20e1",
+      "frozenSha256": "62bb237a3c59082e73f40612fe74ab037ebc3e2cbe57d35aa150b2f146ea588f"
+    },
+    {
+      "path": "crates/unone-engine/src/ui/text_shadow.rs",
+      "currentSha256": "1622a6e2e697b262e23107812f1739a7047c6db64fa1840ba510834afa3dee31",
+      "frozenSha256": "1622a6e2e697b262e23107812f1739a7047c6db64fa1840ba510834afa3dee31"
+    },
+    {
+      "path": "crates/unone-engine/src/layout.rs",
+      "currentSha256": "70bc44ce32e9facfd9f7563b6fef840a0e34f8d703d7b554b26f5a532b372a6b",
+      "frozenSha256": "70bc44ce32e9facfd9f7563b6fef840a0e34f8d703d7b554b26f5a532b372a6b"
+    },
+    {
+      "path": "crates/unone-engine/src/schema.rs",
+      "currentSha256": "f2b3cbbb23430fc2447ea7c0d02492f0f3eeafdfd6c21cccba2f756451b32640",
+      "frozenSha256": "f2b3cbbb23430fc2447ea7c0d02492f0f3eeafdfd6c21cccba2f756451b32640"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "currentSha256": "79b69012381433ab3a6a0d11e207e5bf1f9f180b71b013a740249e9b9ff542f5",
+      "frozenSha256": "f5223f90598396621dac937ad0f285a4940f256d116b2e8ba475e774c6d14a18"
+    },
+    {
+      "path": "crates/unone-cli/src/export.rs",
+      "currentSha256": "759bc85a37d30ff94648e6130351b1b2b0fbdacc09996872f157976f910279e2",
+      "frozenSha256": "d023ad4b8e5b0ab6ec95ee81a6bde22465d41915d74d5af20e6e704c186e04cc"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "currentSha256": "7411ada2106ca05363fee7c96428d4614bcbe0fedc4c6b103c2e484e04498dd3",
+      "frozenSha256": "7411ada2106ca05363fee7c96428d4614bcbe0fedc4c6b103c2e484e04498dd3"
+    },
+    {
+      "path": "packages/unone-ui/src/components.luau",
+      "currentSha256": "7249b816cd5f3d9010612724db92a210d295b8dbd3694ddc079b895fe83ca064",
+      "frozenSha256": "0c8907cecf1a1d960b399c02d5bb3909aa92fd6319cb187ec01700ffdcc5eb29"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "currentSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04",
+      "frozenSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04"
+    },
+    {
+      "path": "web/shared/ui-style.mjs",
+      "currentSha256": "c3f22bf97b655bba42787c69c516bc253c89e22c6ed80c4949804ada4407bea0",
+      "frozenSha256": "c3f22bf97b655bba42787c69c516bc253c89e22c6ed80c4949804ada4407bea0"
+    },
+    {
+      "path": "web/shared/ui-presentation.mjs",
+      "currentSha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487",
+      "frozenSha256": "ae75329a8ecb5a7407365eee0a64610984660302f2ed31c36f75d90d3dbd967c"
+    },
+    {
+      "path": "web/shared/ui-geometry.mjs",
+      "currentSha256": "04777899d001ba399debe03ef28cf089c269eecd97fa7b0060a2888e925e5677",
+      "frozenSha256": "04777899d001ba399debe03ef28cf089c269eecd97fa7b0060a2888e925e5677"
+    },
+    {
+      "path": "web/shared/ui-scroll.mjs",
+      "currentSha256": "9e08a7614af659f620b768800740584970f8e2a7f800a526e1179ba6f3c78549",
+      "frozenSha256": "9e08a7614af659f620b768800740584970f8e2a7f800a526e1179ba6f3c78549"
+    },
+    {
+      "path": "web/shared/ui-tree.js",
+      "currentSha256": "5c6624619fa18ee56dbc75b17d48d08eca51b37eb6d71e182b1e2754d0112d76",
+      "frozenSha256": "5c6624619fa18ee56dbc75b17d48d08eca51b37eb6d71e182b1e2754d0112d76"
+    },
+    {
+      "path": "docs/ui.schema.json",
+      "currentSha256": "6a68d40355767d3ad53dca53bdfe6fd4ce640fa4c4694decbb8ff9e9cd768b1a",
+      "frozenSha256": "6233ae05d68e21b5d7d253947d4b96c10b81f2e75a095ae4a88284f4e5b65c67"
+    }
+  ],
+  "retainedCurrentFixes": [
+    "Numeric UI validation paths remain allocation-light on success.",
+    "image_batch requires explicit authored rect; anchored positioning remains rejected.",
+    "Luau portable-copy scalar fast path and bounded work/depth remain.",
+    "Earlier projected frame/resource/bridge stability changes remain."
+  ],
+  "semantics": {
+    "textShadow": "Sharp same-layout glyph copy, translated box/content clips, whole-leaf opacity once, unchanged authored placement/hit region; finite offsets in viewport-height units.",
+    "inputRegion": "No paint,style,asset or children; ordinary semantic action, clipped half-open input rect, full-stream capture/cancel/reset/shared holds. Input-region vs art has no visual collision; region/interactive conflicts remain."
+  },
+  "independentReview": {
+    "packagingP1": "Corrected shared/ui-presentation.mjs inventory and UI-disabled text-input/cursor pruning; SDK derives the inventory. Actual enabled/disabled export closure regression passed1/1. Disabled Canvas report/cursor/particle metrics stubs preserve the30-draw diagnostics lifecycle; actual exported production UI-off browser reached91ticks without UI module requests or errors.",
+    "sparseColorP2": "Corrected Array.some sparse-hole acceptance with explicit finite indices0..3 and negative controls; normal Core JSON cannot encode sparse arrays.",
+    "discovery": "ui.setRoot API search now describes text shadow/doc/host limits; inputRegion has typed descriptor."
+  },
+  "tests": {
+    "rustUi": {
+      "passed": 27,
+      "suites": {
+        "ui_components": 14,
+        "ui_presentation_input": 6,
+        "ui_styles": 7
+      }
+    },
+    "cliCompiledSchema": {
+      "passed": 4
+    },
+    "webAll": {
+      "passed": 419,
+      "failed": 0,
+      "skipped": 0,
+      "realPacketsInput": "D:/Projects/Populous-Reborn/reports/root-c01-geometry-r5/packets/pan-adjacent.json"
+    },
+    "canvasPixels": {
+      "passed": true,
+      "glyphComparisons": 880,
+      "transparentShadowBoxComparisons": 48,
+      "failures": 0,
+      "viewports": [
+        {
+          "width": 640,
+          "height": 480,
+          "dpr": 1
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "dpr": 2
+        },
+        {
+          "width": 360,
+          "height": 640,
+          "dpr": 1
+        }
+      ],
+      "font": {
+        "path": "D:\\Projects\\Populous-Reborn\\dev\\web-complete-r9-fidelity-performance\\fonts\\NotoSansTC-Regular.ttf",
+        "sha256": "bd10f02fdad8c214ce3df825e151306f08247fabd6050823ba259ebf744f7e16"
+      },
+      "evidence": "artifacts/stability-20261030-ui-shadow-final-pixels/report.json"
+    }
+  },
+  "schemas": "docs/ui.schema.json generated with freshly compiled target/debug/game.exe and verified UiTextShadow definition; SDK doc schemas are regenerated from the compiled Rust contract instead of stale embedded source docs.",
+  "limitations": [
+    "Primitive/unit/pixel parity is not complete Populous gameplay, visual, input or performance acceptance.",
+    "Native text_shadow and legacy DOM new capabilities explicitly reject; editable text_input shadow rejected. Native input_region source routing exists, native player acceptance remains separate.",
+    "Final union runtime, SDK inventory, native builds and game adoption are owned by root and are not certified by this record."
+  ]
+}

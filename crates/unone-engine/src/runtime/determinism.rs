@@ -39,8 +39,12 @@ pub(super) fn new_job_vm() -> Result<Lua, Box<crate::Diagnostic>> {
 }
 fn create_vm(job:bool) -> Result<Lua, Box<crate::Diagnostic>> {
     let lua = Lua::new();
-    #[cfg(all(feature="native-codegen",not(feature="preview-tools")))]
-    lua.set_compiler(mlua::Compiler::new().set_optimization_level(2).set_type_info_level(1));
+    // Bytecode optimization is independent of native machine-code generation:
+    // production interpreters/Wasm benefit from inlining too. Diagnostic VMs
+    // keep level 1 so the sampler retains attributable function boundaries.
+    lua.set_compiler(mlua::Compiler::new()
+        .set_optimization_level(crate::execution::bytecode_optimization_level())
+        .set_type_info_level(crate::execution::bytecode_type_info_level()));
     // Native compiled/inlined frames are not reliably attributed by the VM sampler.
     // Diagnostic builds retain the interpreter; production native builds may use codegen.
     #[cfg(all(feature="native-codegen",feature="preview-tools"))]

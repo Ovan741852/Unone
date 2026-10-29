@@ -34,6 +34,13 @@ still requires its implementation and contract tests.
 
 ## Host semantics and deterministic scope
 
+Official native, Web player and development runner keyboard input uses neutral
+names: `Left`/`Right`/`Up`/`Down` for arrows, `Space`, `Enter`, `Escape`, uppercase
+letters `A`..`Z` and digits `0`..`9`. Left/right modifiers retain their physical
+names, such as `ShiftLeft` and `ControlRight`. Web also retains code aliases for
+compatibility; portable games use the neutral names. Hosts do not map keys to
+game meanings such as `Shoot` or `Accelerate`; declare that policy in Luau.
+
 Web and Mobile share `HostProject` and `HostInputState` from engine core. The host
 envelope is `{config, script, scene, restored_save?, viewport_aspect?}`; `config`
 is the complete `ProjectConfig`, with the same generated schema and unknown-field

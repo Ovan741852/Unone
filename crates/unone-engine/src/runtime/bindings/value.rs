@@ -1,11 +1,32 @@
 use mlua::{Lua, Table, Value};
-use std::collections::BTreeMap;
 
 // UI component trees are serialized through the same portable Lua-value
 // boundary as observations. Keep this guard above the Core UI component limit
 // (16 wrappers plus the tree/children/rect fields) so a valid reusable UI tree
 // is not rejected before UiTree validation can produce its specific diagnostic.
 const MAX_OBSERVATION_DEPTH: usize = 64;
+// Count expanded occurrences, not just distinct tables: a tiny acyclic graph
+// such as t={t,t} can otherwise expand exponentially into JSON. This admits
+// a full documented spatial result while bounding work at this shared boundary.
+const MAX_SERIALIZED_NODES: usize = 1_048_576;
+
+struct ConversionBudget {
+    remaining: usize,
+    ancestors: Vec<usize>,
+}
+
+impl ConversionBudget {
+    fn new() -> Self {
+        Self { remaining: MAX_SERIALIZED_NODES, ancestors: Vec::new() }
+    }
+
+    fn consume(&mut self) -> Result<(), String> {
+        self.remaining = self.remaining.checked_sub(1).ok_or_else(|| format!(
+            "observation value exceeds maximum serialized node count of {MAX_SERIALIZED_NODES}"
+        ))?;
+        Ok(())
+    }
+}
 const PORTABLE_INTEGER_MIN: i64 = i32::MIN as i64;
 const PORTABLE_INTEGER_MAX: i64 = i32::MAX as i64;
 // A weak-key registry preserves the identity of engine-produced JSON arrays,
@@ -36,7 +57,8 @@ pub(super) fn observation_array(lua: &Lua, table: Option<Table>) -> mlua::Result
         Some(table) => table,
         None => lua.create_table()?,
     };
-    let mut keys = Vec::new();
+    let mut key_count = 0;
+    let mut largest_key = 0;
     for pair in table.clone().pairs::<Value, Value>() {
         let (key, _) = pair?;
         let key = match key {
@@ -48,10 +70,17 @@ pub(super) fn observation_array(lua: &Lua, table: Option<Table>) -> mlua::Result
             )),
         };
         ensure_portable_integer(key).map_err(mlua::Error::RuntimeError)?;
-        keys.push(key);
+        key_count += 1;
+        largest_key = largest_key.max(key);
+        if key_count > MAX_SERIALIZED_NODES {
+            return Err(mlua::Error::RuntimeError(format!(
+                "observation value exceeds maximum serialized node count of {MAX_SERIALIZED_NODES}"
+            )));
+        }
     }
-    keys.sort_unstable();
-    if !keys.iter().copied().eq(1..=keys.len() as i64) {
+    // Positive table keys are unique, so count == maximum proves contiguity
+    // without allocating and sorting a second copy of every array index.
+    if largest_key != key_count as i64 {
         return Err(mlua::Error::RuntimeError(
             "observation array keys must be contiguous starting at 1".into(),
         ));
@@ -63,12 +92,12 @@ pub(super) fn observation_array(lua: &Lua, table: Option<Table>) -> mlua::Result
 }
 
 pub(in crate::runtime) fn lua_value_to_json(value: Value) -> Result<serde_json::Value, String> {
-    lua_value_to_json_at(value, 0, false, None)
+    lua_value_to_json_at(value, 0, false, None, &mut ConversionBudget::new())
 }
 
 pub(super) fn portable_value_to_json(lua: &Lua, value: Value) -> Result<serde_json::Value, String> {
     let arrays = array_registry(lua).map_err(|error| error.to_string())?;
-    lua_value_to_json_at(value, 0, false, Some(&arrays))
+    lua_value_to_json_at(value, 0, false, Some(&arrays), &mut ConversionBudget::new())
 }
 
 // Luau numbers are binary64 on both hosts, but mlua extracts integral numbers
@@ -77,15 +106,16 @@ pub(super) fn portable_value_to_json(lua: &Lua, value: Value) -> Result<serde_js
 // Canonicalize wide integral values to JSON floats, matching WASM's Number path.
 pub(in crate::runtime) fn observation_value_to_json(lua: &Lua, value: Value) -> Result<serde_json::Value, String> {
     let arrays = array_registry(lua).map_err(|error| error.to_string())?;
-    lua_value_to_json_at(value, 0, true, Some(&arrays))
+    lua_value_to_json_at(value, 0, true, Some(&arrays), &mut ConversionBudget::new())
 }
 
-fn lua_value_to_json_at(value: Value, depth: usize, observation: bool, arrays: Option<&Table>) -> Result<serde_json::Value, String> {
+fn lua_value_to_json_at(value: Value, depth: usize, observation: bool, arrays: Option<&Table>, budget: &mut ConversionBudget) -> Result<serde_json::Value, String> {
     if depth > MAX_OBSERVATION_DEPTH {
         return Err(format!(
             "observation value exceeds maximum nesting depth of {MAX_OBSERVATION_DEPTH}"
         ));
     }
+    budget.consume()?;
     match value {
         Value::Nil => Ok(serde_json::Value::Null),
         Value::Boolean(value) => Ok(serde_json::Value::Bool(value)),
@@ -97,13 +127,25 @@ fn lua_value_to_json_at(value: Value, depth: usize, observation: bool, arrays: O
             ensure_portable_integer(value)?;
             Ok(serde_json::json!(value))
         }
-        Value::Number(value) if value.is_finite() => Ok(serde_json::json!(value)),
+        Value::Number(value) if value.is_finite() => {
+            if !observation { ensure_portable_number(value)?; }
+            Ok(serde_json::json!(value))
+        }
         Value::Number(_) => Err("observation numbers must be finite".to_string()),
         Value::String(value) => value
             .to_str()
             .map(|value| serde_json::Value::String(value.to_string()))
             .map_err(|error| format!("observation string is not valid UTF-8: {error}")),
-        Value::Table(table) => table_to_json(table, depth, observation, arrays),
+        Value::Table(table) => {
+            let identity = table.to_pointer() as usize;
+            if budget.ancestors.contains(&identity) {
+                return Err("observation value contains a table cycle".into());
+            }
+            budget.ancestors.push(identity);
+            let result = table_to_json(table, depth, observation, arrays, budget);
+            budget.ancestors.pop();
+            result
+        }
         other => Err(format!(
             "observation value kind '{}' is not serializable",
             other.type_name()
@@ -111,20 +153,25 @@ fn lua_value_to_json_at(value: Value, depth: usize, observation: bool, arrays: O
     }
 }
 
-fn table_to_json(table: Table, depth: usize, observation: bool, arrays: Option<&Table>) -> Result<serde_json::Value, String> {
+fn table_to_json(table: Table, depth: usize, observation: bool, arrays: Option<&Table>, budget: &mut ConversionBudget) -> Result<serde_json::Value, String> {
     let explicit_array = arrays.map(|registry| registry.raw_get::<bool>(table.clone()))
         .transpose().map_err(|error| error.to_string())?.unwrap_or(false);
-    let mut object = BTreeMap::new();
-    let mut array: BTreeMap<i64, serde_json::Value> = BTreeMap::new();
+    // Build the final object directly instead of allocating a second sorted
+    // map when returning it. Dense arrays similarly need no per-index tree
+    // nodes: raw_len plus exact key/count checks establish the same contract.
+    let mut object = serde_json::Map::new();
+    let array_len = table.raw_len();
+    let mut array = Vec::new();
+    let mut array_count = 0;
     for pair in table.pairs::<Value, Value>() {
         let (key, value) = pair.map_err(|error| error.to_string())?;
-        let value = lua_value_to_json_at(value, depth + 1, observation, arrays)?;
+        let value = lua_value_to_json_at(value, depth + 1, observation, arrays, budget)?;
         match key {
             Value::String(key) => {
                 if explicit_array {
                     return Err("observation array keys must be contiguous positive integers starting at 1; string keys are not allowed".to_string());
                 }
-                if !array.is_empty() {
+                if array_count != 0 {
                     return Err("observation table cannot mix string and integer keys".to_string());
                 }
                 let key = key
@@ -137,7 +184,8 @@ fn table_to_json(table: Table, depth: usize, observation: bool, arrays: Option<&
                 if !object.is_empty() {
                     return Err("observation table cannot mix string and integer keys".to_string());
                 }
-                array.insert(ensure_portable_integer(luau_integer_to_i64(key))?, value);
+                let key = ensure_portable_integer(luau_integer_to_i64(key))? as usize;
+                insert_array_value(&mut array, &mut array_count, array_len, key, value, budget.remaining)?;
             }
             Value::Number(key) if key.is_finite() && key.fract() == 0.0 && key > 0.0 => {
                 if !object.is_empty() {
@@ -148,7 +196,7 @@ fn table_to_json(table: Table, depth: usize, observation: bool, arrays: Option<&
                         "observation array key is outside the portable integer range".to_string(),
                     );
                 }
-                array.insert(key as i64, value);
+                insert_array_value(&mut array, &mut array_count, array_len, key as usize, value, budget.remaining)?;
             }
             _ => {
                 return Err(
@@ -157,15 +205,31 @@ fn table_to_json(table: Table, depth: usize, observation: bool, arrays: Option<&
             }
         }
     }
-    if explicit_array || !array.is_empty() {
-        let expected = (1..=array.len() as i64).collect::<Vec<_>>();
-        let keys = array.keys().copied().collect::<Vec<_>>();
-        if keys != expected {
+    if explicit_array || array_count != 0 {
+        if array_count != array_len {
             return Err("observation array keys must be contiguous starting at 1".to_string());
         }
-        return Ok(serde_json::Value::Array(array.into_values().collect()));
+        return Ok(serde_json::Value::Array(array));
     }
-    Ok(serde_json::Value::Object(object.into_iter().collect()))
+    Ok(serde_json::Value::Object(object))
+}
+
+fn insert_array_value(
+    array: &mut Vec<serde_json::Value>, count: &mut usize, len: usize, key: usize,
+    value: serde_json::Value, remaining: usize,
+) -> Result<(), String> {
+    if key > len {
+        return Err("observation array keys must be contiguous starting at 1".into());
+    }
+    if *count == 0 {
+        if len > remaining + 1 {
+            return Err(format!("observation value exceeds maximum serialized node count of {MAX_SERIALIZED_NODES}"));
+        }
+        array.resize(len, serde_json::Value::Null);
+    }
+    array[key - 1] = value;
+    *count += 1;
+    Ok(())
 }
 
 #[cfg(target_pointer_width = "64")]
@@ -183,6 +247,15 @@ fn ensure_portable_integer(value: i64) -> Result<i64, String> {
         return Err("observation integer is outside the portable Luau integer range".to_string());
     }
     Ok(value)
+}
+
+fn ensure_portable_number(value: f64) -> Result<(), String> {
+    if value.fract() == 0.0
+        && !(PORTABLE_INTEGER_MIN as f64..=PORTABLE_INTEGER_MAX as f64).contains(&value)
+    {
+        return Err("observation integer is outside the portable Luau integer range".into());
+    }
+    Ok(())
 }
 
 pub(in crate::runtime) fn json_to_lua(lua: &Lua, value: serde_json::Value) -> mlua::Result<Value> {
@@ -212,7 +285,10 @@ fn json_to_lua_at(lua: &Lua, value: serde_json::Value, observation: bool) -> mlu
                     ));
                 }
                 Ok(Value::Integer(value as mlua::Integer))
-            } else if let Some(value) = value.as_f64() {
+            } else if let Some(value) = value.as_f64().filter(|value| value.is_finite()) {
+                ensure_portable_number(value).map_err(|_| mlua::Error::RuntimeError(
+                    "save payload integer is outside the portable Luau integer range".into()
+                ))?;
                 Ok(Value::Number(value))
             } else {
                 Err(mlua::Error::RuntimeError(
@@ -242,6 +318,38 @@ fn json_to_lua_at(lua: &Lua, value: serde_json::Value, observation: bool) -> mlu
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn portable_integer_range_is_identical_for_number_and_integer_variants() {
+        let lua = Lua::new();
+        for value in [2_147_483_648.0, -2_147_483_649.0, 1e30, -1e30] {
+            assert!(lua_value_to_json(Value::Number(value)).unwrap_err().contains("portable"));
+            assert!(portable_value_to_json(&lua, Value::Number(value)).is_err());
+            assert!(json_to_lua(&lua, serde_json::json!(value)).is_err());
+            assert!(observation_value_to_json(&lua, Value::Number(value)).is_ok());
+            assert!(observation_json_to_lua(&lua, serde_json::json!(value)).is_ok());
+        }
+        for value in [-2_147_483_648.0, 2_147_483_647.0, 2_147_483_648.5, -0.0] {
+            assert!(lua_value_to_json(Value::Number(value)).is_ok());
+            assert!(json_to_lua(&lua, serde_json::json!(value)).is_ok());
+        }
+        assert!(json_to_lua(&lua, serde_json::json!(u64::MAX)).is_err());
+    }
+
+    #[test]
+    fn conversion_bounds_expanded_aliases_and_rejects_cycles_without_rejecting_sharing() {
+        let lua = Lua::new();
+        let graph = lua.load("local t={1}; for _=1,40 do t={t,t} end; return t").eval::<Value>().unwrap();
+        let mut budget = ConversionBudget { remaining: 128, ancestors: Vec::new() };
+        let error = lua_value_to_json_at(graph, 0, false, None, &mut budget).unwrap_err();
+        assert!(error.contains("maximum serialized node count"));
+        assert!(budget.remaining <= 1);
+        assert!(budget.ancestors.is_empty());
+        let shared = lua.load("local t={1}; return {t,t}").eval::<Value>().unwrap();
+        assert_eq!(lua_value_to_json(shared).unwrap(), serde_json::json!([[1],[1]]));
+        let cycle = lua.load("local t={};t.self=t;return t").eval::<Value>().unwrap();
+        assert!(lua_value_to_json(cycle).unwrap_err().contains("table cycle"));
+    }
 
     #[test]
     fn observation_numbers_match_wasm_classification_and_keep_other_boundaries_strict() {

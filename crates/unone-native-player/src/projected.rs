@@ -16,6 +16,11 @@ pub(crate) struct Projected {
     material_layout:wgpu::BindGroupLayout,samplers:[wgpu::Sampler;4],
     pub uploaded:u64,pub triangles:u64,pub draws:u64,
 }
+// Core limits a world's live projected payload to 64 MiB. Keep some upload
+// slack for changing geometry, but never retain every batch's historical peak.
+const MAX_RETAINED_BYTES:usize=64*1024*1024;
+fn retention_budget(active:usize)->usize {active.saturating_mul(2).max(4*1024*1024).min(MAX_RETAINED_BYTES)}
+fn needs_compaction(active:usize,retained:usize)->bool {retained>retention_budget(active)}
 pub(crate) fn ordered<'a>(batches:&'a BTreeMap<String,ProjectedBatch>)->Vec<(&'a String,&'a ProjectedBatch)> {
     let mut rows:Vec<_>=batches.iter().collect();rows.sort_by(|a,b|a.1.order.cmp(&b.1.order).then_with(||a.0.cmp(b.0)));rows
 }
@@ -32,6 +37,7 @@ fn material_params(batch:&ProjectedBatch)->[f32;8] {[batch.alpha_cutoff,if batch
     if batch.alpha_compare==unone_engine::ProjectedAlphaCompare::Greater {1.}else{0.},0.,0.,0.]}
 fn material_key(batch:&ProjectedBatch)->(bool,bool,bool,bool,u32,bool) {(batch.color_mode==unone_engine::ProjectedColorMode::Encoded,batch.filter==unone_engine::ProjectedFilter::Linear,batch.sampling_space==unone_engine::ProjectedSamplingSpace::Encoded,batch.address_mode==unone_engine::ProjectedAddressMode::Repeat,batch.alpha_cutoff.to_bits(),batch.alpha_compare==unone_engine::ProjectedAlphaCompare::Greater)}
 impl Projected {
+    pub fn retained_bytes(&self)->usize {self.records.values().map(|r|r.vertex_capacity+r.index_capacity).sum()}
     pub fn new(device:&wgpu::Device,format:wgpu::TextureFormat,texture_layout:&wgpu::BindGroupLayout)->Self {
         let shader=device.create_shader_module(wgpu::ShaderModuleDescriptor {label:Some("projected-passthrough"),
             source:wgpu::ShaderSource::Wgsl(include_str!("projected.wgsl").into())});
@@ -69,20 +75,35 @@ impl Projected {
         ]})
     }
     pub fn prepare(&mut self,device:&wgpu::Device,queue:&wgpu::Queue,textures:&BTreeMap<String,Arc<wgpu::BindGroup>>,batches:&BTreeMap<String,ProjectedBatch>)->Result<(),String> {
-        self.uploaded=0;self.records.retain(|id,_|batches.contains_key(id));
-        self.order=ordered(batches).into_iter().map(|(id,_)|id.clone()).collect();
+        self.uploaded=0;
+        let ordering_changed=self.records.len()!=batches.len() || batches.iter().any(|(id,b)|self.records.get(id).is_none_or(|r|r.order!=b.order));
+        self.records.retain(|id,_|batches.contains_key(id));
+        if ordering_changed {
+            self.order.clear();self.order.extend(batches.keys().cloned());
+            self.order.sort_unstable_by(|a,b|batches[a].order.cmp(&batches[b].order).then_with(||a.cmp(b)));
+        }
+        let active:usize=batches.values().map(|b|b.vertices.len()+b.indices.len()).sum();
+        let retained:usize=batches.iter().map(|(id,b)|self.records.get(id).map_or(b.vertices.len()+b.indices.len(),
+            |r|r.vertex_capacity.max(b.vertices.len())+r.index_capacity.max(b.indices.len()))).sum();
+        let compact=needs_compaction(active,retained);
         for (id,batch) in batches {
+            if self.records.get(id).is_some_and(|r|r.revision==batch.revision
+                && (!compact || (r.vertex_capacity==batch.vertices.len() && r.index_capacity==batch.indices.len()))) {continue;}
             let texture=textures.get(&batch.texture).ok_or_else(||format!("PROJECTED_TEXTURE_MISSING: {}",batch.texture))?.clone();
-            if self.records.get(id).is_some_and(|r|r.revision==batch.revision) {continue;}
             let make=|bytes:&[u8],usage|device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label:Some("projected-packed-geometry"),contents:bytes,usage:usage|wgpu::BufferUsages::COPY_DST});
-            let mut record=self.records.remove(id).unwrap_or_else(||Record {
+            let previous=self.records.remove(id);
+            let mut record=if let Some(mut record)=previous {
+                if record.vertex_capacity<batch.vertices.len() || (compact && record.vertex_capacity!=batch.vertices.len()) {
+                    record.vertices=make(&batch.vertices,wgpu::BufferUsages::VERTEX);record.vertex_capacity=batch.vertices.len();
+                } else {queue.write_buffer(&record.vertices,0,&batch.vertices);}
+                if record.index_capacity<batch.indices.len() || (compact && record.index_capacity!=batch.indices.len()) {
+                    record.indices=make(&batch.indices,wgpu::BufferUsages::INDEX);record.index_capacity=batch.indices.len();
+                } else {queue.write_buffer(&record.indices,0,&batch.indices);}
+                record
+            } else {Record {
                 vertices:make(&batch.vertices,wgpu::BufferUsages::VERTEX),indices:make(&batch.indices,wgpu::BufferUsages::INDEX),
-                vertex_capacity:batch.vertices.len(),index_capacity:batch.indices.len(),count:0,texture:texture.clone(),revision:0,order:0,pipeline:0,scissor:None,material:self.material(device,batch),material_key:material_key(batch)});
-            if record.vertex_capacity<batch.vertices.len() {record.vertices=make(&batch.vertices,wgpu::BufferUsages::VERTEX);record.vertex_capacity=batch.vertices.len();}
-            else {queue.write_buffer(&record.vertices,0,&batch.vertices);}
-            if record.index_capacity<batch.indices.len() {record.indices=make(&batch.indices,wgpu::BufferUsages::INDEX);record.index_capacity=batch.indices.len();}
-            else {queue.write_buffer(&record.indices,0,&batch.indices);}
+                vertex_capacity:batch.vertices.len(),index_capacity:batch.indices.len(),count:0,texture:texture.clone(),revision:0,order:0,pipeline:0,scissor:None,material:self.material(device,batch),material_key:material_key(batch)}};
             self.uploaded+=(batch.vertices.len()+batch.indices.len()) as u64;
             record.count=(batch.indices.len()/4) as u32;record.texture=texture;record.revision=batch.revision;record.order=batch.order;
             record.pipeline=usize::from(batch.depth_test)|usize::from(batch.depth_write)<<1;
@@ -112,6 +133,56 @@ impl Projected {
 
 #[cfg(test)] mod tests {
     use super::*;
+    #[test]
+    #[ignore="requires a native GPU; run explicitly on a verified host"]
+    fn gpu_rotating_batches_compact_and_unchanged_frames_do_not_upload() {
+        pollster::block_on(async {
+            let adapter=wgpu::Instance::default().request_adapter(&wgpu::RequestAdapterOptions::default()).await.unwrap();
+            let (device,queue)=adapter.request_device(&wgpu::DeviceDescriptor::default()).await.unwrap();
+            let layout=device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {label:None,entries:&[
+                wgpu::BindGroupLayoutEntry {binding:0,visibility:wgpu::ShaderStages::FRAGMENT,
+                    ty:wgpu::BindingType::Texture {sample_type:wgpu::TextureSampleType::Float {filterable:true},view_dimension:wgpu::TextureViewDimension::D2,multisampled:false},count:None},
+            ]});
+            let texture=device.create_texture(&wgpu::TextureDescriptor {label:None,size:wgpu::Extent3d {width:1,height:1,depth_or_array_layers:1},mip_level_count:1,sample_count:1,
+                dimension:wgpu::TextureDimension::D2,format:wgpu::TextureFormat::Rgba8Unorm,usage:wgpu::TextureUsages::TEXTURE_BINDING,view_formats:&[]});
+            let view=texture.create_view(&Default::default());
+            let textures=BTreeMap::from([("t".into(),Arc::new(device.create_bind_group(&wgpu::BindGroupDescriptor {label:None,layout:&layout,
+                entries:&[wgpu::BindGroupEntry {binding:0,resource:wgpu::BindingResource::TextureView(&view)}]})))]);
+            let packed:Vec<u8>=[0f32,0.,0.5,1.,0.,1.,1.,1.,1.,1.].into_iter().flat_map(f32::to_le_bytes).collect();
+            let make=|count,revision| {let mut b=ProjectedBatch::new("t".into(),packed.repeat(count),[0u32,1,2].into_iter().flat_map(u32::to_le_bytes).collect(),0,true,true).unwrap();b.revision=revision;b};
+            let small=make(3,1);let mut large=make(100_000,2);
+            let mut batches:BTreeMap<String,ProjectedBatch>=(0..32).map(|n|(n.to_string(),small.clone())).collect();
+            let mut projected=Projected::new(&device,wgpu::TextureFormat::Rgba8Unorm,&layout);
+            let mut peak=0;
+            for id in 0..32 {
+                if id>0 {let mut b=small.clone();b.revision=id*2+1;batches.insert((id-1).to_string(),b);}
+                large.revision=id*2+2;batches.insert(id.to_string(),large.clone());
+                projected.prepare(&device,&queue,&textures,&batches).unwrap();
+                let active=batches.values().map(|b|b.vertices.len()+b.indices.len()).sum();
+                let retained:usize=projected.records.values().map(|r|(r.vertices.size()+r.indices.size()) as usize).sum();
+                assert_eq!(retained,projected.retained_bytes());assert!(retained<=retention_budget(active));peak=peak.max(retained);
+                projected.prepare(&device,&queue,&textures,&batches).unwrap();assert_eq!(projected.uploaded,0);
+                let submission=queue.submit([]);device.poll(wgpu::PollType::Wait {submission_index:Some(submission),timeout:Some(std::time::Duration::from_secs(10))}).unwrap();
+            }
+            projected.prepare(&device,&queue,&textures,&BTreeMap::new()).unwrap();assert_eq!(projected.retained_bytes(),0);assert!(projected.order.is_empty());
+            println!("PROJECTED_BUFFER_STRESS adapter={:?} peak_retained_bytes={peak} final_retained_bytes=0",adapter.get_info());
+        });
+    }
+    #[test] fn rotating_large_batches_cannot_accumulate_historical_peaks() {
+        let mut capacities=[132usize;256];
+        for large_id in 0..256 {
+            let mut requested=[132usize;256];requested[large_id]=16*1024*1024;
+            let active=requested.iter().sum();
+            let retained=capacities.iter().zip(requested).map(|(old,new)|(*old).max(new)).sum();
+            let compact=needs_compaction(active,retained);
+            for (old,new) in capacities.iter_mut().zip(requested) {*old=if compact {new}else{(*old).max(new)};}
+            assert!(capacities.iter().sum::<usize>()<=retention_budget(active));
+        }
+        // Keep headroom under ordinary count fluctuations; no shrink/grow loop.
+        assert!(!needs_compaction(8*1024*1024,12*1024*1024));
+        assert!(needs_compaction(132,16*1024*1024));
+        assert_eq!(retention_budget(MAX_RETAINED_BYTES),MAX_RETAINED_BYTES);
+    }
     #[test] fn ordering_and_evidence_use_exact_core_payloads() {
         let mut vertices=Vec::new();for _ in 0..3 {for n in [0f32,0.,0.5,1.,0.,1.,1.,1.,1.,1.] {vertices.extend_from_slice(&n.to_le_bytes());}}
         let indices=[0u32,1,2].into_iter().flat_map(u32::to_le_bytes).collect::<Vec<_>>();

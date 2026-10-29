@@ -31,7 +31,7 @@ function fixture(){
    events.push(['mesh',mesh.material,target,dither]);}if(fail)throw Error('draw-fault');}};
  const state=()=>({target,viewport:viewport.toArray(),scissor:scissor.toArray(),test,color:color.toArray(),alpha,dither,autoClear:renderer.autoClear});
  const initial=state(),pass=createFramePass(THREE,renderer);
- return {renderer,gl,events,state,initial,pass,wrongDepth:()=>wrongDepth=true,wrongSize:()=>wrongSize=true,lose:()=>lost=true,fail:()=>fail=true,failCleanup:()=>cleanupError=true};
+ return {renderer,gl,events,state,initial,pass,wrongDepth:()=>wrongDepth=true,wrongSize:()=>wrongSize=true,lose:()=>lost=true,restore:()=>lost=false,fail:()=>fail=true,failCleanup:()=>cleanupError=true};
 }
 test('actual production pass queries attachments and textureSize, initializes nonzero RGB/depth, blends and full-copies alpha0',()=>{
  const f=fixture(),source=new THREE.DataTexture(new Uint8Array([200,100,50,0]),1,1);source.flipY=false;source.colorSpace=THREE.SRGBColorSpace;
@@ -78,4 +78,18 @@ test('actual conformance cleanup cannot return validation while its final clear 
  const f=fixture();f.failCleanup();
  assert.throws(()=>validateFrameTarget(THREE,f.renderer,f.pass,{physical_size:[1280,720],dpr:2}),/stage=frame-validation\.clear gl_error=0x0500/);
  assert.deepEqual(f.state(),f.initial);f.pass.dispose();
+});
+
+test('context loss retires fullscreen and size-query owners before restoration and recreates fresh helpers',()=>{
+ const f=fixture(),camera=new THREE.PerspectiveCamera(),frame={initial:{rgb8:[17,24,39],depth:1}};
+ f.pass.draw({draw(){}},camera,frame);
+ const materials=new Set(f.events.filter(e=>e[0]==='mesh').map(e=>e[1]));let disposed=0;
+ for(const m of materials)m.addEventListener('dispose',()=>disposed++);
+ assert.equal(materials.size,3,'initial, copy and GPU textureSize query helpers');
+ const generation=f.pass.metrics().generation;f.lose();f.pass.contextLost();f.pass.contextLost();
+ assert.equal(disposed,3);assert.equal(f.pass.metrics().attachment,null);assert.equal(f.pass.metrics().generation,generation);
+ assert.equal(f.pass.draw({draw(){}},camera,frame),false);
+ f.restore();f.events.length=0;assert(f.pass.draw({draw(){}},camera,frame));
+ for(const e of f.events.filter(e=>e[0]==='mesh'))assert(!materials.has(e[1]),'old Three ownership listeners never cross context epochs');
+ assert.equal(f.pass.metrics().generation,generation+1);f.pass.dispose();assert.equal(disposed,3);
 });

@@ -34,6 +34,7 @@ export function projectScrollTree(tree,offsets=new Map()){
     continue;
    }
    const c=intersect(clip,n.clip);if(c&&(c.width<=0||c.height<=0))continue;
+   if(!enabled&&n.kind==='input_region')continue;
    leaves.push({...n,rect:r,...(drag?{drag}:{}),...(c?{clip:c}:{}),...(!enabled&&['button','slider','combobox'].includes(n.kind)?{kind:'text',action:undefined,drag:undefined}:{}),...(!enabled&&n.kind==='text_input'?{enabled:false,focused:false}:{}),...(owner?{scrollOwner:owner}:{}),...(item?{virtualKey:item.key,virtualIndex:item.index,virtualCount:item.count}:{} )});
   }
  }

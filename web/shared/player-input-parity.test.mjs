@@ -14,7 +14,7 @@ const mappings=[...native.slice(native.indexOf('fn key_action('),native.indexOf(
 
 function harness() {
   const canvasEvents=new Map(),windowEvents=new Map(),input=createHostInput(),uiCalls=[];
-  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,orderedRouter:null,
+  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,orderedRouter:null,textInputs:{pointer:()=>false,routeKey:()=>false,suspend(){}},
     canvas:{getBoundingClientRect:()=>({left:0,top:0,width:200,height:100}),setPointerCapture(){},addEventListener:(name,fn)=>canvasEvents.set(name,fn)},
     window:{addEventListener:(name,fn)=>windowEvents.set(name,fn)},
     worldFromPointer:(_canvas,event)=>({x:event.clientX,y:event.clientY}),
@@ -34,6 +34,24 @@ test('actual official player physical keys match every current native action nam
     const h=harness();h.key('keydown',code);
     assert.equal(h.input.consumeFrame().actions[action],true,code+' -> '+action);
     h.key('keyup',code);assert.equal(h.input.consumeFrame().actions[action],undefined);
+  }
+});
+
+test('development runner shares official neutral keyboard routing and tap buffering',()=>{
+  const runner=readFileSync(new URL('../runner/main.js',import.meta.url),'utf8');
+  const events=new Map(),input=createHostInput();
+  const context=vm.createContext({...helpers,hostInput:input,
+    window:{addEventListener:(name,fn)=>events.set(name,fn)}});
+  const handlers=runner.slice(runner.indexOf('  window.addEventListener("keydown",'),runner.indexOf('  canvas.addEventListener("pointerdown",'));
+  assert.ok(handlers.includes('routeBrowserKey'));
+  vm.runInContext(handlers,context);
+  for(const [code,action] of mappings){
+    events.get('keydown')({code,preventDefault(){}});
+    events.get('keyup')({code,preventDefault(){}});
+    const frame=input.consumeFrame();
+    assert.equal(frame.actions[action],true,code);
+    for(const invented of ['Shoot','Accelerate','Save','Build','Roll','Battle']) assert.equal(frame.actions[invented],undefined);
+    input.consumeFrame();
   }
 });
 

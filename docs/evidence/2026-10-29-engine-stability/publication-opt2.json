@@ -1,0 +1,167 @@
+{
+  "schema": "unone.publication.benchmark.v1",
+  "scope": "Node V8 production WASM CPU, no renderer/display; WASM capacity plateau is not proof of no leak or low GC.",
+  "identity": {
+    "runtime": "D:\\Projects\\Unone\\artifacts\\stability-20261029-jyrogue-opt2-runtime",
+    "wasm_sha256": "5b8a5e643bd58fa59933416f52ef7f446a92e23b906a15ef25d2ace63fccedcd",
+    "source_sha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+    "payload_sha256": "bc02f69353207cb270748d2f683059132cff0463608c4055c8b9d557f3c0835d",
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "configuration": {
+    "frames": 300,
+    "warmup": 30,
+    "runs": 3,
+    "seed": "42",
+    "viewport": [
+      1600,
+      900
+    ],
+    "enter_action": "EnterGame"
+  },
+  "runs": [
+    {
+      "run": 1,
+      "frame": 331,
+      "screen": "world",
+      "tick_ms": {
+        "n": 300,
+        "min": 14.114700000000084,
+        "p50": 17.872100000000046,
+        "p95": 25.82180000000062,
+        "max": 39.11079999999993
+      },
+      "decode_ms": {
+        "n": 300,
+        "min": 1.3198999999995067,
+        "p50": 1.5286999999998443,
+        "p95": 2.3283999999994194,
+        "max": 3.3859999999999673
+      },
+      "cpu_total_ms": {
+        "n": 300,
+        "min": 15.4992000000002,
+        "p50": 19.369800000000396,
+        "p95": 27.70510000000013,
+        "max": 41.32049999999981
+      },
+      "output_bytes": {
+        "n": 300,
+        "min": 415306,
+        "p50": 415737,
+        "p95": 415803,
+        "max": 415815
+      },
+      "wasm_capacity": {
+        "before": 29097984,
+        "after": 29097984,
+        "min": 29097984,
+        "max": 29097984
+      },
+      "equivalence": {
+        "world_without_default_application": "8b89ba7a72ed14ae283843abfa08f5dac09c27d00f61de9350ab4a654a30751f",
+        "ui": "fc0a9272f9114e3a42ad74bb7680e879863234eb47447db774ab5465976ff478",
+        "entities": "61de9edf6261fd8009687ea92c17b9ed52c7b96f6f8eeb6db453eba5467ffba2",
+        "observations": "f0af648a39b84bb9a91c8704bdd74458f83cd0f431420ded5d267535a704f4e1",
+        "save": "ea71e6ee50d6ac0f5c8aed024d1675a3d1649e95b09d800ce86c0d9ef845ef09"
+      },
+      "observation_digest": "sha256:0f3f36d2dda09589514d224cd241f5578f42438be22c374aded5161b9101600b"
+    },
+    {
+      "run": 2,
+      "frame": 331,
+      "screen": "world",
+      "tick_ms": {
+        "n": 300,
+        "min": 13.485700000001088,
+        "p50": 17.982200000000375,
+        "p95": 25.53440000000046,
+        "max": 42.38760000000002
+      },
+      "decode_ms": {
+        "n": 300,
+        "min": 1.3148000000001048,
+        "p50": 1.6808000000000902,
+        "p95": 2.3194000000003143,
+        "max": 2.9900000000016007
+      },
+      "cpu_total_ms": {
+        "n": 300,
+        "min": 15.484399999999368,
+        "p50": 19.805900000001202,
+        "p95": 27.703199999999924,
+        "max": 44.70889999999963
+      },
+      "output_bytes": {
+        "n": 300,
+        "min": 415306,
+        "p50": 415737,
+        "p95": 415803,
+        "max": 415815
+      },
+      "wasm_capacity": {
+        "before": 50331648,
+        "after": 50331648,
+        "min": 50331648,
+        "max": 50331648
+      },
+      "equivalence": {
+        "world_without_default_application": "8b89ba7a72ed14ae283843abfa08f5dac09c27d00f61de9350ab4a654a30751f",
+        "ui": "fc0a9272f9114e3a42ad74bb7680e879863234eb47447db774ab5465976ff478",
+        "entities": "61de9edf6261fd8009687ea92c17b9ed52c7b96f6f8eeb6db453eba5467ffba2",
+        "observations": "f0af648a39b84bb9a91c8704bdd74458f83cd0f431420ded5d267535a704f4e1",
+        "save": "ea71e6ee50d6ac0f5c8aed024d1675a3d1649e95b09d800ce86c0d9ef845ef09"
+      },
+      "observation_digest": "sha256:0f3f36d2dda09589514d224cd241f5578f42438be22c374aded5161b9101600b"
+    },
+    {
+      "run": 3,
+      "frame": 331,
+      "screen": "world",
+      "tick_ms": {
+        "n": 300,
+        "min": 13.949800000002142,
+        "p50": 22.50500000000102,
+        "p95": 27.1791000000012,
+        "max": 41.122299999999086
+      },
+      "decode_ms": {
+        "n": 300,
+        "min": 1.33140000000094,
+        "p50": 2.103500000001077,
+        "p95": 2.5106999999989057,
+        "max": 2.997299999999086
+      },
+      "cpu_total_ms": {
+        "n": 300,
+        "min": 15.29780000000028,
+        "p50": 24.745499999999083,
+        "p95": 29.699500000000626,
+        "max": 43.37129999999888
+      },
+      "output_bytes": {
+        "n": 300,
+        "min": 415306,
+        "p50": 415737,
+        "p95": 415803,
+        "max": 415815
+      },
+      "wasm_capacity": {
+        "before": 50331648,
+        "after": 50331648,
+        "min": 50331648,
+        "max": 50331648
+      },
+      "equivalence": {
+        "world_without_default_application": "8b89ba7a72ed14ae283843abfa08f5dac09c27d00f61de9350ab4a654a30751f",
+        "ui": "fc0a9272f9114e3a42ad74bb7680e879863234eb47447db774ab5465976ff478",
+        "entities": "61de9edf6261fd8009687ea92c17b9ed52c7b96f6f8eeb6db453eba5467ffba2",
+        "observations": "f0af648a39b84bb9a91c8704bdd74458f83cd0f431420ded5d267535a704f4e1",
+        "save": "ea71e6ee50d6ac0f5c8aed024d1675a3d1649e95b09d800ce86c0d9ef845ef09"
+      },
+      "observation_digest": "sha256:0f3f36d2dda09589514d224cd241f5578f42438be22c374aded5161b9101600b"
+    }
+  ]
+}

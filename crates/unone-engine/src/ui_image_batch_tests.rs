@@ -15,6 +15,18 @@ fn screen(node: Value) -> Value {
 }
 
 #[test]
+fn image_batch_rejects_anchor_before_it_can_drift_from_absolute_quads() {
+    let mut node = batch();
+    node.as_object_mut().unwrap().remove("rect");
+    node["anchor"] = json!("center");
+    node["size"] = json!({"width": 100, "height": 100});
+    for aspect in [16.0 / 9.0, 9.0 / 16.0] {
+        assert!(UiTree::from_json_for_viewport(screen(node.clone()), aspect)
+            .unwrap_err().contains("UI_IMAGE_BATCH_PLACEMENT"));
+    }
+}
+
+#[test]
 fn image_batch_roundtrip_order_and_usage() {
     let mut value = screen(batch());
     value["children"][0]["quads"][1]["opacity"] = json!(0.5);

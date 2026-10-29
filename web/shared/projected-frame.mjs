@@ -46,7 +46,9 @@ export function projectedFrame(snapshot){return decodeFrame(snapshot,geometry);}
 // every other field is revalidated on each call. Callers receive copies, so in-place edits of
 // decoded arrays cannot alter retained bytes. Only the last accepted frame's content is retained,
 // and a rejected frame leaves the previous generation unchanged.
-export function createProjectedFrameDecoder(){
+// copyGeometry=false is reserved for a renderer-owned decoder: its borrowed arrays must never
+// be mutated or exposed to presentation hooks. Public/default decodes remain detached copies.
+export function createProjectedFrameDecoder({copyGeometry=true}={}){
  let retained=new Map(),decodes=0,reuses=0;
  const find=(map,d,profile)=>map.get(d.vertices)?.find(r=>r.indices===d.indices&&r.vertex_count===d.vertex_count&&r.index_count===d.index_count&&r.clip_policy===d.clip_policy&&r.profile===profile);
  function decode(snapshot){
@@ -57,7 +59,7 @@ export function createProjectedFrameDecoder(){
    else{const data=geometry(d,profile);built++;
     r={indices:d.indices,vertex_count:d.vertex_count,index_count:d.index_count,clip_policy:d.clip_policy,profile,data};}
    if(!find(next,d,profile)){if(next.has(d.vertices))next.get(d.vertices).push(r);else next.set(d.vertices,[r]);}
-   return {vertices:r.data.vertices.slice(),indices:r.data.indices.slice()};
+   return copyGeometry?{vertices:r.data.vertices.slice(),indices:r.data.indices.slice()}:r.data;
   });
   // An absent frame publishes nothing and keeps the last accepted generation.
   if(frame){retained=next;decodes+=built;reuses+=found;}

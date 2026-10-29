@@ -13,10 +13,26 @@ pub(crate) fn declaration() -> Value {
     json!({"contract":"unone.native-input-replay.v1", "argument":"--input-sequence",
         "format":"JSON array of normalized unone_engine::InputFrame", "max_bytes":MAX_BYTES,
         "max_frames":MAX_FRAMES, "live_input":false,
+        "simulation_viewport":"fixed_at_startup_dimensions",
+        "spatial_backend":"explicit_cpu_or_gpu; auto_rejected",
         "initial_window_focus":"disabled_on_windows",
         "requires":["--fixed-tick","--warmup 0","--prewarm-ticks 0","--frames N>0"],
         "incompatible":["--freeze-simulation","nonzero --seconds"],
         "exhaustion":"empty input each subsequent simulation tick"})
+}
+
+pub(crate) fn validate_spatial_backend(replaying:bool,backend:&str)->Result<(),String> {
+    match backend {
+        "auto" if replaying=>Err("NATIVE_INPUT_SEQUENCE_SPATIAL_BACKEND: replay requires cpu or gpu; auto depends on the machine; use --spatial-backend cpu or gpu".into()),
+        "cpu"|"gpu"|"auto"=>Ok(()),
+        _=>Err("SPATIAL_BACKEND_INVALID: expected cpu, gpu or auto".into()),
+    }
+}
+
+/// The display surface can resize, but OS window events are not replay input.
+pub(crate) fn update_runtime_viewport(runtime:&mut unone_engine::EngineRuntime,replaying:bool,width:u32,height:u32)->Result<(),String> {
+    if !replaying && height>0 {runtime.set_viewport_size(width.max(1),height).map_err(|e|e.explanation)?;}
+    Ok(())
 }
 
 pub(crate) fn validate_options(
@@ -157,6 +173,32 @@ mod tests {
             (true,0,0,false,0,0.), (true,0,0,false,1,1.)] {
             assert!(validate_options(options.0, options.1, options.2, options.3, options.4, options.5).is_err());
         }
+    }
+
+    #[test]
+    fn replay_rejects_machine_selected_spatial_backend() {
+        for backend in ["cpu","gpu"] {assert!(validate_spatial_backend(true,backend).is_ok());}
+        assert!(validate_spatial_backend(true,"auto").unwrap_err().contains("NATIVE_INPUT_SEQUENCE_SPATIAL_BACKEND"));
+        assert!(validate_spatial_backend(false,"auto").is_ok());
+        assert!(validate_spatial_backend(false,"typo").unwrap_err().contains("SPATIAL_BACKEND_INVALID"));
+    }
+
+    #[test]
+    fn replay_window_events_cannot_change_simulation_viewport_or_digest() {
+        let project=json!({"config":{"name":"replay-viewport","entry_script":"main.luau",
+            "systems":{"physics2d":false,"physics3d":false}},"viewport_size":[1280,720],"scene":{"entities":[]},
+            "script":"return {start=function(api) end,update=function(api) api.observation.set('viewport',api.ui.getViewport()) end}"});
+        let make=||unone_engine::HostProject::parse(&serde_json::to_vec(&project).unwrap()).unwrap().into_runtime(42).unwrap();
+        let mut expected=make();let mut replay=make();
+        for [width,height] in [[800,600],[720,1280],[0,0],[2560,1440]] {
+            update_runtime_viewport(&mut replay,true,width,height).unwrap();
+            let a=expected.tick().unwrap();let b=replay.tick().unwrap();
+            assert_eq!(unone_engine::observation_digest(&a).unwrap(),unone_engine::observation_digest(&b).unwrap());
+        }
+        let before=unone_engine::observation_digest(&replay.observe()).unwrap();
+        let mut live=make();update_runtime_viewport(&mut live,false,720,1280).unwrap();
+        for _ in 0..4 {live.tick().unwrap();}
+        assert_ne!(before,unone_engine::observation_digest(&live.observe()).unwrap());
     }
 
     #[test]

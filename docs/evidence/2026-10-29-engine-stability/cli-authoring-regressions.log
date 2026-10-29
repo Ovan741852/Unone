@@ -1,0 +1,35 @@
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+   Compiling unone-cli v0.1.0 (D:\Projects\Unone\crates\unone-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 11.89s
+     Running tests\api_search_contract.rs (target\debug\deps\api_search_contract-8450e9203d7573c8.exe)
+
+running 14 tests
+test no_match_contract_has_fixed_facts_and_discovery_actions ... ok
+test empty_query_returns_the_full_index_without_empty_warning ... ok
+test full_index_action_executes_with_a_true_empty_query_from_an_unrelated_cwd ... ok
+test nonexistent_project_keeps_search_global_and_blocks_only_systems_action ... ok
+test invalid_project_keeps_matching_and_full_index_global_but_blocks_no_match_systems ... ok
+test relative_caller_project_is_canonicalized_before_systems_argv_runs_elsewhere ... ok
+test visual_search_guides_cli_and_mcp_to_native_particle_authoring ... ok
+test systems_action_is_bound_to_the_caller_project_across_cwds ... ok
+test cli_and_mcp_unpacked_results_have_parity_for_no_match_and_full_index ... ok
+test typography_search_guides_cli_and_mcp_to_the_same_official_ui_contract ... ok
+test shared_component_search_has_cli_mcp_parity_and_typed_package_guidance ... ok
+test responsive_layout_discovery_has_typed_cli_mcp_parity_and_intent_isolation ... ok
+test composed_ui_queries_preserve_cli_mcp_parity_and_complete_word_isolation ... ok
+test ui_control_and_action_queries_have_precise_cli_mcp_parity ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.73s
+
+     Running tests\api_typings_update.rs (target\debug\deps\api_typings_update-edbe321304d29e5f.exe)
+
+running 6 tests
+test update_script_conflicts_with_output_and_leaves_both_paths_untouched ... ok
+test output_cannot_overwrite_an_existing_game_or_type_file ... ok
+test explicit_script_refresh_preserves_game_bytes_and_crlf_and_is_idempotent ... ok
+test project_init_uses_the_shared_marked_block_and_existing_typings_modes_are_unchanged ... ok
+test malformed_or_unmarked_scripts_fail_without_modifying_any_bytes ... ok
+test missing_targets_and_unsafe_paths_are_not_created_or_written ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s
+

@@ -103,10 +103,14 @@ end
 local function setRoot(nextRoot)
  publish(nextRoot)
  root=nextRoot
+ -- No virtual registry means no handles to retire. Ordinary UI trees do not
+ -- need a second Lua traversal after Core has validated their publication.
+ if next(registry)==nil then return end
  local live={}
  local function visit(n)
   if n.kind=="scroll_view" and n.scroll.virtual_items then live[n.id]=true end
-  for _,c in ipairs(n.children or {}) do visit(c) end
+  -- Avoid allocating a throwaway empty table for every leaf on every tick.
+  if n.children then for _,c in ipairs(n.children) do visit(c) end end
  end
  visit(root)
  for id in pairs(registry) do if not live[id] then registry[id]=nil end end

@@ -9,6 +9,7 @@ export function createUiTree(layer, { resolveAsset = null } = {}) {
   let sliceCleanups=[];
   function requireLegacySupport(nodes){
     for(const node of nodes??[]){
+      if(node.kind==='input_region'||node.style?.text_shadow)throw Error('UI_HOST_CAPABILITY_UNSUPPORTED: input_region/text_shadow require the official Canvas UI host, not legacy DOM');
       if(node.kind==='image_batch')throw Error('UI_HOST_CAPABILITY_UNSUPPORTED: image_batch requires the official Canvas UI host, not the legacy DOM renderer');
       if(node.kind==='component')requireLegacySupport(node.children);
     }

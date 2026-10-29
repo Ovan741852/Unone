@@ -10,6 +10,7 @@ fn main(){
  let mut moving=body(23,[0.,-5.,0.],0.5);moving.previous_position=Some([0.,5.,0.]);
  let mut category2=body(u32::MAX,[0.;3],0.5);category2.category=2;
  let mut batches=vec![
+  ("nearest-sqrt-rounded-tie",SpatialBatch{version:32,bodies:vec![body(1,[1.,0.0003,0.],0.),body(2,[1.,0.,0.],0.)],queries:vec![nearest([0.;3],2.)]}),
   ("filter-tie-contact",SpatialBatch{version:123,bodies:vec![body(42,[2.,0.,0.],1.),body(7,[-2.,0.,0.],1.),moving,category2],queries:vec![nearest([0.;3],2.),SpatialQuery::Nearest{point:[0.;3],max_distance:2.,mask:1,exclude_id:None},SpatialQuery::Nearest{point:[0.;3],max_distance:2.,mask:1,exclude_id:Some(7)},overlap([0.;3],1.),sweep([-8.,0.,0.],[8.,0.,0.],0.5),sweep([0.;3],[0.;3],1.)]}),
   ("empty-bodies",SpatialBatch{version:0,bodies:vec![],queries:vec![nearest([0.;3],3e38),overlap([0.;3],0.),sweep([0.;3],[1.;3],1.)]}),
   ("empty-queries",SpatialBatch{version:5,bodies:vec![body(1,[0.;3],0.)],queries:vec![]}),

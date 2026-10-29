@@ -143,11 +143,14 @@ fn disable_if_off(
         return Ok(table);
     }
     let disabled = lua.create_table()?;
-    let names: Vec<String> = table
+    let entries: Vec<(String, Value)> = table
         .pairs::<String, Value>()
-        .filter_map(|pair| pair.ok().map(|(name, _)| name))
-        .collect();
-    for name in names {
+        .collect::<mlua::Result<_>>()?;
+    for (name, value) in entries {
+        if let Value::Table(child) = value {
+            disabled.set(name, disable_if_off(lua, systems, system, child)?)?;
+            continue;
+        }
         let message = format!(
             "SYSTEM_DISABLED: system '{system}' is disabled in project.unone.json, so api.{name} is unavailable. To use it, run game systems set --id {system} --enabled true."
         );

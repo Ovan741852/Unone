@@ -1,0 +1,69 @@
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.11s
+     Running tests\input_admission.rs (target\debug\deps\input_admission-1e65ce7c1aaa5977.exe)
+
+running 3 tests
+test generic_script_failure_retains_semantic_events_for_an_empty_frame_retry ... ok
+test conflicting_pending_input_is_rejected_without_replacing_any_accepted_event ... ok
+test retryable_spatial_barrier_preserves_physical_and_ui_input_until_success ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests\input_edges.rs (target\debug\deps\input_edges-9d95eae55c5ec787.exe)
+
+running 5 tests
+test incremental_native_host_writes_use_final_held_state_at_the_tick_boundary ... ok
+test edges_are_repeated_readable_press_hold_release_and_repress_snapshots ... ok
+test failed_ticks_restore_published_edges_and_preserve_the_retry_baseline ... ok
+test headless_input_sequence_has_the_same_edges_and_releases_missing_frames ... ok
+test reload_and_replay_reads_do_not_publish_or_consume_pending_host_edges ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests\slider_input_retry.rs (target\debug\deps\slider_input_retry-af97616b1c1145db.exe)
+
+running 1 test
+test failed_ticks_preserve_pending_slider_events_until_a_successful_retry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests\spatial_faults.rs (target\debug\deps\spatial_faults-0b4804f0ab60a697.exe)
+
+running 5 tests
+test cancelling_completed_unconsumed_work_rejects_its_late_duplicate_without_a_fault ... ok
+test rejected_completion_attempts_preserve_state_and_allow_the_valid_retry ... ok
+test failed_reload_preserves_pending_work_profiles_and_future_handles ... ok
+test terminal_executor_failure_does_not_partially_commit_a_multi_batch_tick ... ok
+test host_fault_retires_late_work_and_successful_reload_restores_the_existing_backend ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests\spatial_runtime.rs (target\debug\deps\spatial_runtime-390b65b7d65af6c2.exe)
+
+running 11 tests
+test spatial_observation_records_pass_strict_types_without_casts_and_reject_bad_fields ... ignored, requires the official luau-analyze; run explicitly with --ignored
+test external_cpu_job_barrier_can_be_retried_without_poisoning_spatial ... ok
+test cancelled_external_work_is_not_dispatched_and_destroy_keeps_frozen_work_valid ... ok
+test full_info_and_results_publish_without_adapters_including_unsigned_ids ... ok
+test table_and_packed_buffer_api_freeze_submissions_and_deliver_once_next_tick ... ok
+test external_results_share_cpu_snapshots_and_enforce_host_barrier_and_envelopes ... ok
+test reading_spatial_profiles_preserves_world_digests_and_exposes_measured_work ... ok
+test reload_preserves_indices_and_backend_while_invalidating_previous_tickets ... ok
+test failed_reload_preserves_future_handle_sequence_and_canonical_state ... ok
+test executors_dispatch_after_successful_script_update_and_fault_on_invalid_results ... ok
+test spatial_state_enters_canonical_snapshot_only_after_an_index_is_created ... ok
+
+test result: ok. 10 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests\ui_preview_fixture.rs (target\debug\deps\ui_preview_fixture-e0143cc5b4936f10.exe)
+
+running 6 tests
+test ui_preview_fixture_metadata_is_deserialization_only_and_schema_declared ... ok
+test ui_preview_fixture_reports_invalid_json_missing_files_and_unsafe_paths ... ok
+test ui_preview_fixture_supports_unicode_space_paths_without_modifying_inputs ... ok
+test ui_preview_fixture_verify_uses_saved_state_then_input_replay ... ok
+test ui_preview_fixture_restores_before_start_and_preserves_fresh_default ... ok
+test ui_preview_fixture_cannot_follow_a_windows_symlink_outside_the_project ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

@@ -88,6 +88,12 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         }
         value["$defs"]["UiStyle"]["properties"]["font_family"]["minLength"] = serde_json::json!(1);
         value["$defs"]["UiStyle"]["properties"]["font_family"]["maxLength"] = serde_json::json!(256);
+        for field in ["offset_x", "offset_y"] {
+            value["$defs"]["UiTextShadow"]["properties"][field]["minimum"] = serde_json::json!(-100);
+            value["$defs"]["UiTextShadow"]["properties"][field]["maximum"] = serde_json::json!(100);
+        }
+        value["$defs"]["UiTextShadow"]["properties"]["color"]["items"]["minimum"] = serde_json::json!(0);
+        value["$defs"]["UiTextShadow"]["properties"]["color"]["items"]["maximum"] = serde_json::json!(1);
     }
     value["$id"] = serde_json::json!(format!("https://unone.dev/schema/{name}.schema.json"));
     value["$comment"] = serde_json::json!(

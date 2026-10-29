@@ -47,6 +47,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/ui-text-input.mjs",
         "shared/ui-cursor.mjs",
         "shared/ui-style.mjs",
+        "shared/ui-presentation.mjs",
         "shared/ui-scroll.mjs",
         "shared/ui-contract.mjs",
         "shared/ui-geometry.mjs",
@@ -221,7 +222,10 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             || (path == "shared/audio-playback.js" && !settings.is_enabled("audio"))
             || (path == "shared/ui-tree.js" && !settings.is_enabled("ui"))
             || (path == "shared/canvas-ui.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-text-input.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-cursor.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-style.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-presentation.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-scroll.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-contract.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-geometry.mjs" && !settings.is_enabled("ui"))
@@ -239,7 +243,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                 text = replace_required(
                     text,
                     "import { createParticleRenderer } from \"./particles.js?build=particle-texture-colorbins-v1\";",
-                    "const createParticleRenderer = () => ({draw(){}, clear(){}, dispose(){}, count:0});",
+                    "const createParticleRenderer = () => ({draw(){}, clear(){}, dispose(){}, count:0,debugBatches:[],metrics:()=>({groups:0,capacity:0,instance_buffer_bytes:0,compactions:0})});",
                 )?;
             }
             if !settings.is_enabled("effekseer") {
@@ -263,11 +267,14 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                 text = replace_required(
                     text,
                     "import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';",
-                    "const createCanvasUi = () => ({draw(){},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){}}); const loadPresentationFonts = async () => {};",
+                    "const createCanvasUi = () => ({draw(){},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})}); const loadPresentationFonts = async () => {};",
                 )?;
                 text = replace_required(text,
                     "import {createUiTextInputHost} from '../shared/ui-text-input.mjs';",
                     "const createUiTextInputHost = () => ({draw:s=>s,pointer:()=>false,routeKey:()=>false,setExternalInput(){},suspend(){},dispose(){}});")?;
+                text = replace_required(text,
+                    "import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';",
+                    "const createUiCursorHost = () => ({update(){},dispose(){},report:()=>({kind:'default'})}); const loadCursorImage = async () => null;")?;
                 text = replace_required(text,
                     "import {createUiScrollHost} from '../shared/ui-scroll.mjs';",
                     "const createUiScrollHost = () => ({draw:s=>s,pointer:()=>false,routeKey:()=>false,routeWheel:()=>false,setExternalInput(){},cancel(){},dispose(){}});")?;
@@ -520,6 +527,12 @@ mod tests {
             fs::write(dir.path().join("project.unone.json"),serde_json::to_vec(&json!({"name":"dependency closure","entry_script":"main.luau","systems":systems})).unwrap()).unwrap();
             let output=dir.path().join(if minimal {"minimal"}else{"full"});
             let report=web_with_templates(dir.path(),&output,Some(&runtime),false,&repo).unwrap();
+            assert_eq!(output.join("web/shared/ui-presentation.mjs").is_file(), !minimal,
+                "UI-only presentation dependency follows the enabled UI inventory");
+            for name in ["ui-text-input.mjs", "ui-cursor.mjs"] {
+                assert_eq!(output.join("web/shared").join(name).is_file(), !minimal,
+                    "disabled UI cannot retain a dangling {name} module");
+            }
             let files=report["files"].as_array().unwrap().iter().map(|f|{let path=f["path"].as_str().unwrap();(path.into(),fs::read(output.join(path)).unwrap())}).collect::<Vec<_>>();
             crate::web_dependencies::validate(&files).unwrap();
         }

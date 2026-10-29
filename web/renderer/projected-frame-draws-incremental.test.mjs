@@ -43,12 +43,15 @@ test('changed geometry keeps its material; changed material keeps geometry; scis
  const t=fixture(),f=frame();t.prepare(f);const a=t.draw();
  const raw=Buffer.from(f.draws[1].vertices,'base64');raw.writeFloatLE(raw.readFloatLE(0)+.01,0);
  f.draws[1].vertices=raw.toString('base64');f.revision++;t.prepare(f);const b=t.draw();
- assert.notEqual(b[1].geometry,a[1].geometry);assert.equal(b[1].material,a[1].material);
- assert.equal(b[0].geometry,a[0].geometry);assert.deepEqual(t.built,{geometry:4,material:3});
+ // C01 r5 contract: a same-length vertex change updates the existing geometry with the exact new bytes
+ // (was: build a new geometry). Same object, new owned array, one update, no extra build.
+ assert.equal(b[1].geometry,a[1].geometry);assert.equal(b[1].geometry.getAttribute('clipPosition').data.array[0],raw.readFloatLE(0));
+ assert.equal(t.api.metrics().frame_geometry_updates,1);assert.equal(b[1].material,a[1].material);
+ assert.equal(b[0].geometry,a[0].geometry);assert.deepEqual(t.built,{geometry:3,material:3});
  f.draws[1].material.depth.write=!f.draws[1].material.depth.write;f.draws.reverse();f.draws[0].scissor={x:10,y:20,width:100,height:200};f.revision++;
  t.prepare(f);const c=t.draw();assert.equal(c[1].geometry,b[1].geometry);assert.notEqual(c[1].material,b[1].material);
  assert.equal(c[0].mesh,b[2].mesh);assert.deepEqual(t.events[0],['scissor',10,20,100,200]);
- assert.deepEqual(t.built,{geometry:4,material:4});t.clear();assert.deepEqual(t.disposed,t.built);
+ assert.deepEqual(t.built,{geometry:3,material:4});t.clear();assert.deepEqual(t.disposed,t.built);
 });
 test('new Core revision1 uses content identity, even at the same frame revision',()=>{
  const t=fixture(),f=frame(1);t.prepare(f);const a=t.draw()[0];
@@ -66,17 +69,24 @@ test('same decoded object with in-place same-length vertex/index mutations canno
  const t=fixture(),f=projectedFrame({projected_frame:frame(1)});t.api.prepare(f,t.specs);const a=t.draw()[0];
  const before=a.geometry.getAttribute('clipPosition').data.array[0];f.draws[0].data.vertices[0]+=.125;
  assert.equal(a.geometry.getAttribute('clipPosition').data.array[0],before,'host arrays must be detached');
- t.api.prepare(f,t.specs);const b=t.draw()[0];assert.notEqual(b.geometry,a.geometry);assert.equal(b.material,a.material);
+ // C01 r5 contract: the in-place edit is detected and uploaded into the same geometry (was: new geometry).
+ t.api.prepare(f,t.specs);const b=t.draw()[0];assert.equal(b.geometry,a.geometry);assert.equal(b.material,a.material);
+ assert.equal(b.geometry.getAttribute('clipPosition').data.array[0],f.draws[0].data.vertices[0]);assert.notEqual(b.geometry.getAttribute('clipPosition').data.array,f.draws[0].data.vertices,'still detached');
  [f.draws[0].data.indices[0],f.draws[0].data.indices[1]]=[f.draws[0].data.indices[1],f.draws[0].data.indices[0]];
- t.api.prepare(f,t.specs);const c=t.draw()[0];assert.notEqual(c.geometry,b.geometry);assert.equal(c.material,b.material);t.clear();
+ t.api.prepare(f,t.specs);const c=t.draw()[0];assert.equal(c.geometry,b.geometry);assert.equal(c.material,b.material);
+ assert.deepEqual(Array.from(c.geometry.index.array),Array.from(f.draws[0].data.indices));assert.equal(t.api.metrics().frame_geometry_updates,2);t.clear();
 });
 test('failed staged update preserves the previous usable frame and disposes newly staged resources',()=>{
  const t=fixture(),f=frame(3);t.prepare(f);const old=t.draw();const next=structuredClone(f);next.revision++;
  const raw=Buffer.from(next.draws[0].vertices,'base64');raw.writeFloatLE(.75,0);next.draws[0].vertices=raw.toString('base64');
  next.draws[1].material.depth.write=!next.draws[1].material.depth.write;t.failMaterial();
+ const oldArray=old[0].geometry.getAttribute('clipPosition').data.array;
  assert.throws(()=>t.prepare(next),/fixture-material-fault/);const after=t.draw();
  for(let i=0;i<3;i++){assert.equal(after[i].geometry,old[i].geometry);assert.equal(after[i].material,old[i].material);}
- assert.deepEqual(t.built,{geometry:4,material:3});assert.deepEqual(t.disposed,{geometry:1,material:0});
+ // C01 r5 contract: the vertex change was staged as an owned update (no geometry build), so the failure
+ // leaves the old array in place and nothing is built or disposed (was: one staged geometry built+disposed).
+ assert.equal(after[0].geometry.getAttribute('clipPosition').data.array,oldArray);
+ assert.deepEqual(t.built,{geometry:3,material:3});assert.deepEqual(t.disposed,{geometry:0,material:0});
  t.recover();assert(t.prepare(next));t.clear();assert.deepEqual(t.disposed,t.built);
  const metrics=t.api.metrics();assert.equal(metrics.frame_live_geometries,0);assert.equal(metrics.frame_live_materials,0);assert.equal(metrics.frame_live_textures,0);
 });

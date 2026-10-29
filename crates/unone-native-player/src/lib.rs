@@ -382,17 +382,18 @@ impl App {
         if !settings.measure_seconds.is_finite() || settings.measure_seconds < 0. {
             return Err("INVALID_MEASUREMENT_DURATION".into());
         }
+        let presentation: Value = package.files.get("content/presentation.json")
+            .map(|bytes| serde_json::from_slice(bytes)).transpose()
+            .map_err(|e| e.to_string())?.unwrap_or_else(|| json!({}));
+        let spatial_backend = settings.spatial_backend.as_deref()
+            .or_else(|| presentation.get("spatial_backend").and_then(Value::as_str)).unwrap_or("cpu");
+        replay::validate_spatial_backend(settings.input_sequence.is_some(),spatial_backend)?;
         let input_replay = if let Some(path) = &settings.input_sequence {
             replay::validate_options(settings.fixed_tick, settings.warmup, settings.prewarm_ticks,
                 settings.freeze_simulation, settings.frames, settings.measure_seconds)?;
             Some(replay::InputSequence::load(path)?)
         } else { None };
         let mut runtime = package.runtime_with_viewport(settings.seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]))?;
-        let presentation: Value = package.files.get("content/presentation.json")
-            .map(|bytes| serde_json::from_slice(bytes)).transpose()
-            .map_err(|e| e.to_string())?.unwrap_or_else(|| json!({}));
-        let spatial_backend = settings.spatial_backend.as_deref()
-            .or_else(|| presentation.get("spatial_backend").and_then(Value::as_str)).unwrap_or("cpu");
         match spatial_backend {
             "cpu" => {},
             "gpu" => runtime.set_spatial_executor(Box::new(unone_spatial_gpu::SpatialGpuExecutor::new()?))?,
@@ -486,7 +487,7 @@ impl App {
             }
         }
         let r = self.renderer.as_ref();
-        let mut value = json!({"host":std::env::consts::OS,"renderer":if self.settings.headless{"none"}else{"wgpu-native-instanced"},"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"},"adapter":r.map(|r|&r.adapter),"resolution":r.map(|r|r.resolution()),"bloom_enabled":r.map(|r|r.bloom_enabled()),"simulation_hz_measured":self.measured_initial_frame.map(|f|(self.snapshot.frame-f) as f64*1000./self.measured_ms.max(0.001)),"measured_seconds":self.measured_ms/1000.,"package_sha256":self.package.digest,"boot_ms":self.boot_ms,"frame":self.snapshot.frame,"observation_digest":unone_engine::observation_digest(&self.snapshot).ok(),"battle":self.snapshot.observations.get("battle"),"fx":self.snapshot.observations.get("fx"),"particle_count":self.snapshot.particles.len(),"camera3d":self.snapshot.camera3d,"observations":self.snapshot.observations,"heightfield_revisions":self.snapshot.heightfields.iter().map(|(id,field)|(id,field.revision())).collect::<BTreeMap<_,_>>(),"drawn":self.drawn,"dropped_ticks":self.dropped,"submitted_instances_last_frame":r.map(|r|r.submitted),"draw_calls_last_frame":r.map(|r|r.draws),"upload_bytes_last_frame":r.map(|r|r.uploaded),"mesh_triangles_last_frame":r.map(|r|r.triangles),"lod_instances_last_frame":r.map(|r|r.lod_counts),"presentation_batches":r.map(|r|&r.presentation_batches),"instance_prepare_ms_last_frame":r.map(|r|r.lod_ms),"presentation_warnings":self.presentation_warnings,"interval":stats(&self.samples.interval_ms),"tick":stats(&self.samples.tick_ms),"render_submit":stats(&self.samples.render_submit_ms),"renderer_cpu_phases":self.samples.renderer_phases.iter().map(|(k,v)|(*k,stats(v))).collect::<BTreeMap<_,_>>(),"fps":if self.samples.interval_ms.is_empty(){0.}else{1000.*self.samples.interval_ms.len() as f64/self.samples.interval_ms.iter().sum::<f64>()},"error":self.error,"measurement":{"timing_window_capacity":16384,"seed":self.settings.seed,"warmup_presentations":self.settings.warmup,"prewarm_ticks":self.settings.prewarm_ticks,"fixed_tick":self.settings.fixed_tick,"gpu_time_available":false,"submitted_is_not_visible_count":true,"render_submit_includes_driver_wait":true,"digest_outside_timing":true,"capture_enabled":self.settings.capture_dir.is_some(),"freeze_simulation":self.settings.freeze_simulation,"lod_enabled":!self.settings.disable_lod}});
+        let mut value = json!({"host":std::env::consts::OS,"renderer":if self.settings.headless{"none"}else{"wgpu-native-instanced"},"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"},"adapter":r.map(|r|&r.adapter),"resolution":r.map(|r|r.resolution()),"bloom_enabled":r.map(|r|r.bloom_enabled()),"simulation_hz_measured":self.measured_initial_frame.map(|f|(self.snapshot.frame-f) as f64*1000./self.measured_ms.max(0.001)),"measured_seconds":self.measured_ms/1000.,"package_sha256":self.package.digest,"boot_ms":self.boot_ms,"frame":self.snapshot.frame,"observation_digest":unone_engine::observation_digest(&self.snapshot).ok(),"battle":self.snapshot.observations.get("battle"),"fx":self.snapshot.observations.get("fx"),"particle_count":self.snapshot.particles.len(),"camera3d":self.snapshot.camera3d,"observations":self.snapshot.observations,"heightfield_revisions":self.snapshot.heightfields.iter().map(|(id,field)|(id,field.revision())).collect::<BTreeMap<_,_>>(),"drawn":self.drawn,"dropped_ticks":self.dropped,"submitted_instances_last_frame":r.map(|r|r.submitted),"draw_calls_last_frame":r.map(|r|r.draws),"upload_bytes_last_frame":r.map(|r|r.uploaded),"mesh_triangles_last_frame":r.map(|r|r.triangles),"lod_instances_last_frame":r.map(|r|r.lod_counts),"presentation_batches":r.map(|r|r.presentation_report(&self.snapshot)),"projected_buffer_bytes_last_frame":r.map(|r|r.projected_buffer_bytes()),"instance_prepare_ms_last_frame":r.map(|r|r.lod_ms),"presentation_warnings":self.presentation_warnings,"interval":stats(&self.samples.interval_ms),"tick":stats(&self.samples.tick_ms),"render_submit":stats(&self.samples.render_submit_ms),"renderer_cpu_phases":self.samples.renderer_phases.iter().map(|(k,v)|(*k,stats(v))).collect::<BTreeMap<_,_>>(),"fps":if self.samples.interval_ms.is_empty(){0.}else{1000.*self.samples.interval_ms.len() as f64/self.samples.interval_ms.iter().sum::<f64>()},"error":self.error,"measurement":{"timing_window_capacity":16384,"seed":self.settings.seed,"warmup_presentations":self.settings.warmup,"prewarm_ticks":self.settings.prewarm_ticks,"fixed_tick":self.settings.fixed_tick,"gpu_time_available":false,"submitted_is_not_visible_count":true,"render_submit_includes_driver_wait":true,"digest_outside_timing":true,"capture_enabled":self.settings.capture_dir.is_some(),"freeze_simulation":self.settings.freeze_simulation,"lod_enabled":!self.settings.disable_lod}});
         value["audio"] = self.audio.report();
         value["application"] = json!(self.snapshot.application);
         value["quit_request_presented"] = json!(self.quit_request_presented);
@@ -544,11 +545,9 @@ impl ApplicationHandler for App {
         match result {
             Ok((w, r)) => {
                 let size = w.inner_size();
-                if let Err(e) = self
-                    .runtime
-                    .set_viewport_size(size.width.max(1),size.height.max(1))
+                if let Err(e) = replay::update_runtime_viewport(&mut self.runtime,self.input_replay.is_some(),size.width,size.height)
                 {
-                    self.fail(e.explanation, event_loop);
+                    self.fail(e, event_loop);
                     return;
                 }
                 self.snapshot = self.runtime.observe();
@@ -579,14 +578,9 @@ impl ApplicationHandler for App {
                 event_loop.exit();
             }
             WindowEvent::Resized(s) => {
-                if s.height > 0 {
-                    if let Err(e) = self
-                        .runtime
-                        .set_viewport_size(s.width.max(1),s.height)
-                    {
-                        self.fail(e.explanation, event_loop);
-                        return;
-                    }
+                if let Err(e) = replay::update_runtime_viewport(&mut self.runtime,self.input_replay.is_some(),s.width,s.height) {
+                    self.fail(e, event_loop);
+                    return;
                 }
                 if let Some(r) = &mut self.renderer {
                     r.resize(s.width, s.height);
@@ -1025,5 +1019,19 @@ mod telemetry_tests {
         assert_eq!(samples.len(), 16384);
         assert_eq!(samples.iter().copied().min_by(f64::total_cmp), Some(3616.));
         assert_eq!(samples.iter().copied().max_by(f64::total_cmp), Some(19999.));
+    }
+
+    #[test]
+    fn replay_auto_backend_is_rejected_before_loading_script_or_input_file() {
+        // Neither file exists: the stable backend gate must run before either
+        // input decoding or Game.start can have observable side effects.
+        let make=|presentation| super::Package {digest:"fixture".into(),files:std::collections::BTreeMap::from([
+            ("content/presentation.json".into(),serde_json::to_vec(&presentation).unwrap())])};
+        for (configured,override_backend) in [("auto",None),("cpu",Some("auto".to_owned()))] {
+            let settings=super::Settings {input_sequence:Some("absent-input-sequence.json".into()),
+                spatial_backend:override_backend,fixed_tick:true,frames:1,..Default::default()};
+            let error=super::App::new(make(serde_json::json!({"spatial_backend":configured})),settings,None,std::time::Instant::now()).err().unwrap();
+            assert!(error.contains("NATIVE_INPUT_SEQUENCE_SPATIAL_BACKEND"),"{error}");
+        }
     }
 }

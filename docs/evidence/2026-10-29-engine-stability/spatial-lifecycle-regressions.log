@@ -1,0 +1,26 @@
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.02s
+     Running unittests src\lib.rs (target\debug\deps\unone_engine-565649b8dc0a302e.exe)
+
+running 18 tests
+test runtime::spatial::tests::failed_reload_first_use_does_not_change_live_snapshot ... ok
+test runtime::spatial::tests::cancelled_and_failed_ticks_never_dispatch_work ... ok
+test runtime::spatial::tests::canonical_snapshot_captures_future_handle_sequence ... ok
+test runtime::spatial::tests::lifecycle_diagnostics_distinguish_next_tick_and_unknown_ticket ... ok
+test runtime::spatial::tests::limits_and_invalid_updates_are_atomic ... ok
+test runtime::spatial::tests::external_barrier_rejects_missing_duplicate_and_invalid_completions ... ok
+test runtime::spatial::tests::terminal_failures_are_bounded_and_failed_reload_preserves_live_diagnostics ... ok
+test runtime::spatial::tests::diagnostic_counters_reset_on_committed_reload_and_failures_do_not_leak_from_candidates ... ok
+test runtime::spatial::tests::reload_preserves_indices_and_isolates_uncommitted_candidate_ids ... ok
+test runtime::spatial::tests::host_result_and_profile_diagnostics_preserve_the_pending_completion ... ok
+test runtime::spatial::tests::handle_and_version_exhaustion_do_not_wrap_or_mutate_data ... ok
+test runtime::spatial::tests::unrelated_tick_failure_keeps_unused_spatial_retryable_but_authored_state_is_terminal ... ok
+test runtime::spatial::tests::versions_are_frozen_and_tickets_deliver_once_on_next_tick ... ok
+test runtime::spatial::tests::structured_input_facts_are_one_based_atomic_and_detached_from_state ... ok
+test runtime::spatial::tests::snapshot_hides_host_completion_timing_and_backend ... ok
+test runtime::spatial::tests::startup_closes_before_first_update_and_outstanding_tickets_are_bounded ... ok
+test runtime::spatial::tests::profiling_is_non_consuming_bounded_and_excluded_from_canonical_state ... ok
+test runtime::spatial::tests::optional_external_profiles_are_validated_atomically_and_old_hosts_still_work ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 330 filtered out; finished in 0.00s
+

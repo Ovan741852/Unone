@@ -145,6 +145,14 @@ and validate the actual WGSL using Naga, and verify sorted submission evidence
 including SHA256 of uploaded source bytes. Web tests use actual Three geometry
 and materials plus lifecycle/unsupported-backend tests. Native reports expose
 `kind:projected` rows with vertex/index hashes; compare those to game-owned bytes.
+Native computes these hashes only when emitting the final report, outside the
+render timing window. `projected_buffer_bytes_last_frame` reports retained
+geometry buffer capacity. Removed batches release their buffers. Capacity reuse
+allows up to twice the active payload (a 4 MiB floor), capped at the world's
+64 MiB live-payload limit; crossing that budget compacts oversized buffers.
+This bounds retained resources while avoiding reallocations for ordinary count
+fluctuations. The opt-in native GPU rotating-batch test checks actual buffer
+sizes, zero uploads on unchanged frames and release after removing every batch.
 CPU tests alone do not establish GPU pixel equivalence. An actual official-player
 capture of asymmetric UV/color/depth triangles is the next host-boundary gate.
 

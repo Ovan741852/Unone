@@ -913,10 +913,30 @@ impl EngineRuntime {
         frame: &InputFrame,
     ) -> Result<WorldSnapshot, Box<Diagnostic>> {
         frame.validate()?;
-        self.input.borrow_mut().physical.stage(frame.physical.clone()).map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_INVALID","Physical input admission rejected",e)))?;
-        self.input.borrow_mut().down = frame.actions.clone();
-        self.input.borrow_mut().pending_ui_sliders = frame.ui_sliders.clone();
-        self.input.borrow_mut().pending_ui_text_inputs = frame.ui_text_inputs.clone();
+        {
+            let mut input = self.input.borrow_mut();
+            // Retryable host barriers must not discard an unconsumed semantic
+            // event. Repeated frames are idempotent; conflicting replacements
+            // are rejected before admitting any part of the new frame.
+            let conflicts = frame.ui_sliders.iter().any(|(id, event)|
+                input.pending_ui_sliders.get(id).is_some_and(|old| old != event))
+                || frame.ui_text_inputs.iter().any(|(id, event)|
+                    input.pending_ui_text_inputs.get(id).is_some_and(|old| old != event));
+            let slider_count = input.pending_ui_sliders.len() + frame.ui_sliders.keys()
+                .filter(|id| !input.pending_ui_sliders.contains_key(*id)).count();
+            let text_count = input.pending_ui_text_inputs.len() + frame.ui_text_inputs.keys()
+                .filter(|id| !input.pending_ui_text_inputs.contains_key(*id)).count();
+            if conflicts || slider_count > 256 || text_count > 64 {
+                return Err(Box::new(Diagnostic::error(
+                    "INPUT_UI_PENDING", "Semantic input is still pending",
+                    "Complete the pending tick with tick() or an unchanged input frame before submitting replacement UI events; no part of this frame was admitted.",
+                )));
+            }
+            input.physical.stage(frame.physical.clone()).map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_INVALID","Physical input admission rejected",e)))?;
+            input.down = frame.actions.clone();
+            input.pending_ui_sliders.extend(frame.ui_sliders.clone());
+            input.pending_ui_text_inputs.extend(frame.ui_text_inputs.clone());
+        }
         if let Some(pointer) = &frame.pointer {
             let mut input = self.input.borrow_mut();
             input.pointer.position = pointer.position;
@@ -995,7 +1015,6 @@ impl EngineRuntime {
         self.input.borrow().physical.healthy().map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_TERMINAL","Physical input session faulted",e)))?;
         self.host_time.borrow().healthy().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         let started = std::time::Instant::now();
-        let input_tick = InputTick::begin(&self.input);
         // External jobs may still be pending. Keep that preflight retryable
         // before activating the spatial update phase.
         #[cfg(feature = "jobs")]
@@ -1007,10 +1026,14 @@ impl EngineRuntime {
             .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         let host_time_tick = host_time::TimeScope::begin(&self.host_time, "tick", self.world.borrow().frame)
             .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
+        // Input becomes accepted execution only after every retryable host
+        // barrier has passed. A pending spatial/job result is not a failed
+        // physical-input execution and must leave the staged batch intact.
+        let input_tick = InputTick::begin(&self.input);
         let spatial_fault = Rc::clone(&self.spatial);
         let spatial_paths = self.paths.clone();
         let fail_spatial = |message: String| {
-            spatial_fault.borrow_mut().fail(message.clone());
+            spatial_fault.borrow_mut().abort_tick(message.clone());
             Box::new(script_diagnostic(&spatial_paths, message))
         };
         let allocated_before = self.lua.used_memory();
@@ -1058,7 +1081,7 @@ impl EngineRuntime {
             self.jobs.borrow_mut().fail(error.explanation.clone());
         }
         if let Err(error) = &script {
-            self.spatial.borrow_mut().fail(error.explanation.clone());
+            self.spatial.borrow_mut().abort_tick(error.explanation.clone());
         }
         script?;
         let (physics_result, physics_time) = timed(|| -> Result<(), Box<Diagnostic>> {
@@ -1089,7 +1112,7 @@ impl EngineRuntime {
             self.jobs.borrow_mut().fail(error.explanation.clone());
         }
         if let Err(error) = &physics_result {
-            self.spatial.borrow_mut().fail(error.explanation.clone());
+            self.spatial.borrow_mut().abort_tick(error.explanation.clone());
         }
         physics_result?;
         #[cfg(feature = "jobs")]
@@ -1205,6 +1228,9 @@ impl EngineRuntime {
             Ok(value) => value,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
+        if let Err(diagnostic) = Self::require_replayable_host_time(&config) {
+            return EngineResult::failure(*diagnostic);
+        }
         if paths.test_files.is_empty() {
             return EngineResult::failure(Diagnostic::error(
                 "TESTS_NOT_CONFIGURED",
@@ -1275,6 +1301,9 @@ impl EngineRuntime {
                 }
             };
             let mut failures = Vec::new();
+            if let Err(error) = runtime.host_time_replay_complete() {
+                failures.push(error);
+            }
             for assertion in &spec.assertions {
                 match evaluate_assertion(&report.world, assertion) {
                     Ok(()) => {}

@@ -9,9 +9,23 @@ function sameGeometry(r,d){
  return r&&sameArray(r.mesh.geometry.getAttribute('clipPosition').data.array,d.data.vertices)
   &&sameArray(r.mesh.geometry.index.array,d.data.indices);
 }
+// Geometry decision for one draw against its previous record (same draw id): null = same bytes (reuse);
+// 'update' = same f32x10 interleaved and u32 index element counts, so the existing buffers receive new
+// owned arrays and Three re-uploads them in place (r179: bufferSubData for an unchanged byte size);
+// 'build' = new id or changed lengths/layout, so a new geometry is built exactly as before.
+function geometryPlan(r,d){
+ if(!r)return {kind:'build',reason:null};
+ const vertices=r.mesh.geometry.getAttribute('clipPosition').data,index=r.mesh.geometry.index;
+ const vertexSame=sameArray(vertices.array,d.data.vertices),indexSame=sameArray(index.array,d.data.indices);
+ if(vertexSame&&indexSame)return null;
+ if(vertices.stride!==10||!(vertices.array instanceof Float32Array)||vertices.array.length!==d.data.vertices.length)return {kind:'build',reason:'vertex_length'};
+ if(!(index.array instanceof Uint32Array)||index.array.length!==d.data.indices.length)return {kind:'build',reason:'index_length'};
+ // Owned copies of only the changed arrays: decoder arrays may be edited in place by their caller.
+ return {kind:'update',vertices,index,vertexArray:vertexSame?null:d.data.vertices.slice(),indexArray:indexSame?null:d.data.indices.slice()};
+}
 // Resource ownership is separate from frame identity and draw order.
 function createResources(THREE){
- let geometryBuilds=0,materialBuilds=0,geometryDisposes=0,materialDisposes=0;
+ let geometryBuilds=0,materialBuilds=0,geometryDisposes=0,materialDisposes=0,buildBytes=0;
  const freeGeometry=g=>{g.dispose();geometryDisposes++;},freeMaterial=m=>{m.dispose();materialDisposes++;};
  function geometry(d){
   const g=new THREE.BufferGeometry(),interleaved=new THREE.InterleavedBuffer(d.data.vertices.slice(),10);geometryBuilds++;
@@ -20,13 +34,13 @@ function createResources(THREE){
    g.setAttribute('position',new THREE.InterleavedBufferAttribute(interleaved,3,0));
    g.setAttribute('uv',new THREE.InterleavedBufferAttribute(interleaved,2,4));
    g.setAttribute('linearRgba',new THREE.InterleavedBufferAttribute(interleaved,4,6));
-   g.setIndex(new THREE.BufferAttribute(d.data.indices.slice(),1));return g;
+   g.setIndex(new THREE.BufferAttribute(d.data.indices.slice(),1));buildBytes+=d.data.vertices.byteLength+d.data.indices.byteLength;return g;
   }catch(error){freeGeometry(g);throw error;}
  }
  function material(d){const m=createFrameMaterial(THREE,d.material);materialBuilds++;return m;}
  return {geometry,material,freeGeometry,freeMaterial,
   dispose(rows){for(const r of rows){freeGeometry(r.mesh.geometry);freeMaterial(r.mesh.material);}},
-  metrics:()=>({frame_geometry_builds:geometryBuilds,frame_material_builds:materialBuilds,
+  metrics:()=>({frame_geometry_builds:geometryBuilds,frame_geometry_build_bytes:buildBytes,frame_material_builds:materialBuilds,
    frame_geometry_disposes:geometryDisposes,frame_material_disposes:materialDisposes,
    frame_live_geometries:geometryBuilds-geometryDisposes,frame_live_materials:materialBuilds-materialDisposes})};
 }
@@ -66,38 +80,58 @@ function createFrameTextures(THREE){
   metrics:()=>({frame_texture_builds:builds,frame_texture_disposes:disposes,frame_live_textures:builds-disposes})};
 }
 function createFrameRecords(THREE,resources){
- let records=[],geometryReuses=0,materialReuses=0;
+ let records=[];
+ const counts={geometryReuses:0,materialReuses:0,updates:0,vertexBytes:0,indexBytes:0,fallbacks:0,vertexLength:0,indexLength:0};
  function stage(d,old,signature){
-  const {sampler,...shaderState}=d.material,materialKey=JSON.stringify(shaderState);let g,m;
+  const {sampler,...shaderState}=d.material,materialKey=JSON.stringify(shaderState),plan=geometryPlan(old,d);let g,m;
   try{
-   if(!sameGeometry(old,d))g=resources.geometry(d);
+   if(plan?.kind==='build')g=resources.geometry(d);
    if(!old||old.materialKey!==materialKey)m=resources.material(d);
    let fresh;
    if(!old){const mesh=new THREE.Mesh(g,m),scene=new THREE.Scene();mesh.frustumCulled=false;scene.add(mesh);fresh={mesh,scene,id:d.id};}
-   return {old,fresh,id:d.id,signature,materialKey,geometry:g,material:m};
+   return {old,fresh,id:d.id,signature,materialKey,geometry:g,material:m,
+    update:plan?.kind==='update'?plan:null,fallback:old&&plan?.kind==='build'?plan.reason:null};
   }catch(error){if(g)resources.freeGeometry(g);if(m)resources.freeMaterial(m);throw error;}
  }
+ const discard=pending=>{for(const r of pending){if(r.geometry)resources.freeGeometry(r.geometry);if(r.material)resources.freeMaterial(r.material);}};
  function stageFrame(frame,signatures){
   const previous=new Map(records.map(r=>[r.id,r])),pending=[];
   try{for(let i=0;i<frame.draws.length;i++)pending.push(stage(frame.draws[i],previous.get(frame.draws[i].id),signatures[i]));}
-  catch(error){for(const r of pending){if(r.geometry)resources.freeGeometry(r.geometry);if(r.material)resources.freeMaterial(r.material);}throw error;}
+  catch(error){discard(pending);throw error;}
   return {previous,pending};
  }
+ // Every reference assignment is recorded for undo; replaced resources are only collected here.
+ function assign(p,undo,retired){
+  const set=(o,k,v)=>{undo.push([o,k,o[k]]);o[k]=v;},r=p.old??p.fresh,u=p.update;
+  if(u?.vertexArray){set(u.vertices,'array',u.vertexArray);u.vertices.needsUpdate=true;}
+  if(u?.indexArray){set(u.index,'array',u.indexArray);u.index.needsUpdate=true;}
+  if(p.old&&p.geometry){retired.push(['geometry',r.mesh.geometry]);set(r.mesh,'geometry',p.geometry);}
+  if(p.old&&p.material){retired.push(['material',r.mesh.material]);set(r.mesh,'material',p.material);}
+  set(r,'signature',p.signature);set(r,'materialKey',p.materialKey);
+  return r;
+ }
+ function count(p){
+  if(!p.old)return;
+  if(p.update){counts.updates++;counts.vertexBytes+=p.update.vertexArray?.byteLength??0;counts.indexBytes+=p.update.indexArray?.byteLength??0;}
+  else if(!p.geometry)counts.geometryReuses++;
+  if(p.fallback){counts.fallbacks++;counts[p.fallback==='vertex_length'?'vertexLength':'indexLength']++;}
+  if(!p.material)counts.materialReuses++;
+ }
+ // A failure while assigning restores every reference and frees staged resources: the previous frame
+ // stays renderable. A needsUpdate already raised before the failure only re-uploads the restored bytes.
+ // Replaced geometry/materials and removed records are disposed only after the whole commit succeeded.
  function commit({previous,pending}){
-  const next=[];
-  for(const p of pending){
-   let r=p.old;
-   if(r){
-    previous.delete(p.id);
-    if(p.geometry){resources.freeGeometry(r.mesh.geometry);r.mesh.geometry=p.geometry;}else geometryReuses++;
-    if(p.material){resources.freeMaterial(r.mesh.material);r.mesh.material=p.material;}else materialReuses++;
-   }else r=p.fresh;
-   r.signature=p.signature;r.materialKey=p.materialKey;next.push(r);
-  }
-  resources.dispose([...previous.values()]);records=next;
+  const undo=[],retired=[],next=[];
+  try{for(const p of pending){if(p.old)previous.delete(p.id);next.push(assign(p,undo,retired));}}
+  catch(error){for(let i=undo.length-1;i>=0;i--){const [o,k,v]=undo[i];o[k]=v;}discard(pending);throw error;}
+  pending.forEach(count);records=next;
+  for(const [kind,x] of retired)kind==='geometry'?resources.freeGeometry(x):resources.freeMaterial(x);
+  resources.dispose([...previous.values()]);
  }
  return {stage:stageFrame,commit,list:()=>records,clear(){resources.dispose(records);records=[];},
-  metrics:()=>({frame_geometry_reuses:geometryReuses,frame_material_reuses:materialReuses})};
+  metrics:()=>({frame_geometry_reuses:counts.geometryReuses,frame_material_reuses:counts.materialReuses,
+   frame_geometry_updates:counts.updates,frame_geometry_vertex_update_bytes:counts.vertexBytes,frame_geometry_index_update_bytes:counts.indexBytes,
+   frame_geometry_update_fallbacks:counts.fallbacks,frame_geometry_fallback_vertex_length:counts.vertexLength,frame_geometry_fallback_index_length:counts.indexLength})};
 }
 export function createFrameDraws(THREE,textureFor){
  const resources=createResources(THREE),textures=createFrameTextures(THREE),records=createFrameRecords(THREE,resources);
@@ -113,7 +147,7 @@ export function createFrameDraws(THREE,textureFor){
   const plan=textures.plan(frame,sources);
   if(revision!==String(frame.revision)||!same){
    let staged;try{staged=records.stage(frame,next);}catch(error){textures.discard(plan);throw error;}
-   records.commit(staged);revision=String(frame.revision);signatures=next;rebuilds++;
+   try{records.commit(staged);}catch(error){textures.discard(plan);throw error;}revision=String(frame.revision);signatures=next;rebuilds++;
   }
   textures.commit(plan);
   records.list().forEach((r,i)=>{r.scissor=frame.draws[i].scissor;r.mesh.material.uniforms.frameTexture.value=plan.textures[i];});

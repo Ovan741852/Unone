@@ -1,4 +1,5 @@
 import {UI_CONTRACT} from './ui-contract.mjs';
+import {validateInputRegion} from './ui-presentation.mjs';
 export {UI_CONTRACT};
 
 export function uiBudget(tree) {
@@ -51,7 +52,8 @@ export function uiUsage(tree){
    out.leaf_nodes++;out.render_regions_upper_bound+=quads.length;
   }
   else if(n.kind==='component'||n.kind==='scroll_view')for(const [i,c]of (n.children??[]).entries())visit(c,`${path}.children[${i}]`,depth+1,local||n.kind==='scroll_view');
-  else{out.leaf_nodes++;out.render_regions_upper_bound+=n.slice?9:1;}
+  else{out.leaf_nodes++;if(n.kind==='input_region')validateInputRegion(n);
+   else out.render_regions_upper_bound+=(n.slice?9:1)+Number(!!n.style?.text_shadow);}
   return out.logical_nodes-before+1;
  }
  for(const [i,n]of (tree?.children??[]).entries())out.subtrees.push([n.id,visit(n,`root.children[${i}]`,1)]);

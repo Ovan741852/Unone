@@ -1,6 +1,7 @@
 // Shared official UI typography and box painting. All declared lengths use
 // viewport-height design units (1 unit = 1% of the presentation viewport height).
 import {slicePatches} from './ui-geometry.mjs';
+import {validateTextShadow} from './ui-presentation.mjs';
 const segmenter=typeof Intl.Segmenter==='function'?new Intl.Segmenter(undefined,{granularity:'grapheme'}):null;
 export const textGraphemes=text=>segmenter?[...segmenter.segment(String(text))].map(v=>v.segment):Array.from(String(text));
 export const uiColor=(value,fallback='transparent')=>Array.isArray(value)?`rgba(${value.slice(0,3).map(v=>Math.round(v*255)).join(',')},${value[3]})`:fallback;
@@ -111,22 +112,30 @@ export function layoutUiText(ctx,node,{x,y,width,height,viewportHeight,fontFamil
   const placed=lines.map((text,index)=>{const measured=measureUiText(ctx,text,spacing);return {text,x:content.x+(align==='start'?0:align==='end'?content.width-measured:(content.width-measured)/2),y:content.y+offset+(index+.5)*advance,width:measured};});
   return {font:uiFont(family,size,weight),size,spacing,lineHeight,content,lines:placed,color:uiColor(style.color,textColor)};
 }
-export function paintUiText(ctx,node,bounds){
-  if(!node.text)return null;
-  const layout=layoutUiText(ctx,node,bounds),c=layout.content;
-  ctx.save();ctx.beginPath();ctx.rect(c.x,c.y,c.width,c.height);ctx.clip();ctx.font=layout.font;ctx.fillStyle=layout.color;ctx.textAlign='left';ctx.textBaseline='middle';
+function paintTextLayout(ctx,layout,dx,dy,color,box){
+  const c=layout.content;
+  ctx.save();
+  if(box)clipUiBox(ctx,box.style,box.x+dx,box.y+dy,box.width,box.height,box.viewportHeight/100);
+  ctx.beginPath();ctx.rect(c.x+dx,c.y+dy,c.width,c.height);ctx.clip();ctx.font=layout.font;ctx.fillStyle=color;ctx.textAlign='left';ctx.textBaseline='middle';
   try{
     const nativeTracking='letterSpacing' in ctx;
     if(nativeTracking)ctx.letterSpacing=`${layout.spacing}px`;
     for(const line of layout.lines){
-      if(!layout.spacing||nativeTracking)ctx.fillText(line.text,line.x,line.y);
+      if(!layout.spacing||nativeTracking)ctx.fillText(line.text,line.x+dx,line.y+dy);
       else {
         if(/[^\p{Script=Latin}\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\p{Script=Bopomofo}\p{Script=Cyrillic}\p{Script=Greek}\p{Script=Common}\p{Script=Inherited}]/u.test(line.text))throw Error('UI_TEXT_TRACKING_UNSUPPORTED: this host needs Canvas letterSpacing support to preserve shaping for this script');
-        let offset=0,prefix='';for(const glyph of textGraphemes(line.text)){ctx.fillText(glyph,line.x+offset,line.y);prefix+=glyph;offset=ctx.measureText(prefix).width+textGraphemes(prefix).length*layout.spacing;}
+        let offset=0,prefix='';for(const glyph of textGraphemes(line.text)){ctx.fillText(glyph,line.x+offset+dx,line.y+dy);prefix+=glyph;offset=ctx.measureText(prefix).width+textGraphemes(prefix).length*layout.spacing;}
       }
     }
   }finally{ctx.restore();}
-  return layout;
+}
+export function paintUiText(ctx,node,bounds){
+  const shadow=validateTextShadow(node.style?.text_shadow);
+  if(!node.text)return null;
+  const layout=layoutUiText(ctx,node,bounds),unit=bounds.viewportHeight/100;
+  const box=shadow?{...bounds,style:node.style}:undefined;
+  if(shadow)paintTextLayout(ctx,layout,shadow.offset_x*unit,shadow.offset_y*unit,uiColor(shadow.color),box);
+  paintTextLayout(ctx,layout,0,0,layout.color,box);return layout;
 }
 
 export function presentationFontFaces(ui={}){

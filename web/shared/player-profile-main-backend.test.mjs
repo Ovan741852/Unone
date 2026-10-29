@@ -27,7 +27,7 @@ test('main-thread backend: identical ABI sequence when disabled; enabled command
  assert.deepEqual(on.log,off.log);assert.deepEqual(on.values,off.values);
  const tick=profiler.report().events.find(e=>e.attrs.owner==='update:1');
  assert.deepEqual(tick.spans.filter(s=>s.parent===null).map(s=>s.name),['queue_wait','execute']);
- assert.deepEqual(tick.spans.filter(s=>s.parent==='execute').map(s=>s.name),['barrier_wait','input_abi','tick_abi_atomic','observation_copy','observation_utf8','observation_parse','jobs_dispatch','spatial_dispatch']);
+ assert.deepEqual(tick.spans.filter(s=>s.parent==='execute').map(s=>s.name),['barrier_wait','input_abi','tick_abi_atomic','observation_view','observation_utf8','observation_parse','jobs_dispatch','spatial_dispatch']);
  assert.equal(tick.attrs.backend,'main');assert.equal(tick.attrs.tick_abi,'atomic_update_and_serialization_unsplit');
  abi.fail=true;await assert.rejects(on.backend.request({kind:'tick',input:{}},'update:3'));
  const failed=profiler.report().events.at(-1);assert.equal(failed.status,'error');

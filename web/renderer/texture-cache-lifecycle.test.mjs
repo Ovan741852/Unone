@@ -108,7 +108,7 @@ test('production hidden sprite path detaches maps before sweep',()=>{
   const hidden=section('    for (const [id, record] of records) {','    shaderMaterials.retain(');
   const visible={mesh:{visible:true},material:{map:{id:'shared'}}};
   const hiddenRecord={mesh:{visible:true},material:{map:{id:'idle'}}};
-  new Function('records','alive',hidden)(new Map([['visible',visible],['hidden',hiddenRecord]]),new Set(['visible']));
+  new Function('records','alive','world',hidden)(new Map([['visible',visible],['hidden',hiddenRecord]]),new Set(['visible']),{entities:{hidden:{sprite:{}}}});
   assert.equal(visible.mesh.visible,true);assert.equal(visible.material.map.id,'shared');
   assert.equal(hiddenRecord.mesh.visible,false);assert.equal(hiddenRecord.material.map,null);
   assert(source.indexOf(hidden)<source.indexOf('    textureCache.sweep();'));

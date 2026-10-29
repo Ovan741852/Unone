@@ -1,9 +1,10 @@
 import {createRasterTarget,saveRasterState,restoreRasterState,reflectedScissorRenderer} from './projected-raster-target.js';
 // Same target and copy path serve private conformance and actual game batches.
 export function createProjectedRasterPass(THREE,renderer){
- const target=createRasterTarget(THREE,'C');let disposed=false;
+ let target=createRasterTarget(THREE,'C'),generation=0,disposed=false;
  function draw(projected,camera){
   if(disposed)throw Error('PROJECTED_RASTER_DISPOSED');
+  target??=createRasterTarget(THREE,'C');
   const state=saveRasterState(THREE,renderer);
   if(state.target!==null)throw Error('PROJECTED_RASTER_PROFILE_UNSUPPORTED: incoming target must be default framebuffer');
   try{
@@ -14,6 +15,8 @@ export function createProjectedRasterPass(THREE,renderer){
    target.compose(renderer,camera,size.x,size.y);
   }finally{restoreRasterState(renderer,state);}
  }
- return {draw,invalidate(){target.invalidate();},metrics:target.metrics,readCoverage:(...values)=>target.read(renderer,...values),
-  dispose(){if(disposed)return;disposed=true;target.dispose();}};
+ return {draw,invalidate(){target?.invalidate();},metrics(){const m=target?.metrics()??{generation:0,physical_size:null};return {...m,generation:generation+m.generation};},
+  readCoverage:(...values)=>{if(!target)throw Error('PROJECTED_RASTER_TARGET_MISSING');return target.read(renderer,...values);},
+  contextLost(){if(disposed||!target)return;generation+=target.metrics().generation;target.dispose();target=null;},
+  dispose(){if(disposed)return;disposed=true;target?.dispose();target=null;}};
 }

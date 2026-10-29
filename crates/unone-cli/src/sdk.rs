@@ -648,7 +648,7 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
     // Official package sources come from this CLI's compiled contract, never
     // from a possibly unrelated checkout passed as the Web template source.
     for (path, source) in unone_engine::runtime_package_files() {
-        files.push((path.to_string(), source.as_bytes().to_vec()));
+        files.push((path.to_string(), runtime_package_payload(path, source)?));
     }
     for (path, source) in authoring_files() {
         // The example source owns only markers and fixture code. Ship the exact
@@ -749,10 +749,53 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
     result
 }
 
+/// Publish structural schemas from this binary's Rust contract, just like its
+/// canonical Luau types. Embedded authoring docs may be stale after a type edit;
+/// a different checkout must not replace or roll back the packaged contract.
+fn runtime_package_payload(path: &str, source: &str) -> Result<Vec<u8>> {
+    let Some(name)=path.strip_prefix("docs/").and_then(|p|p.strip_suffix(".schema.json")) else {
+        return Ok(source.as_bytes().to_vec());
+    };
+    let schema=unone_engine::contract_schema(name)
+        .with_context(||format!("SDK_SCHEMA_UNKNOWN: {name}; package schemas require a compiled contract"))?;
+    Ok(format!("{}\n",serde_json::to_string_pretty(&schema)?).into_bytes())
+}
+
+#[cfg(test)]
+mod schema_pack_tests {
+    use super::*;
+
+    #[test]
+    fn ui_doc_comes_from_compiled_contract_even_if_embedded_doc_is_stale() {
+        let bytes=runtime_package_payload("docs/ui.schema.json",r#"{"stale":true}"#).unwrap();
+        let value:Value=serde_json::from_slice(&bytes).unwrap();
+        assert!(value["$defs"]["UiStyle"]["properties"].get("text_shadow").is_some());
+        assert!(value["$defs"].get("UiTextShadow").is_some());
+        assert_eq!(value,unone_engine::contract_schema("ui").unwrap());
+    }
+
+    #[test]
+    fn project_doc_uses_its_current_compiled_contract() {
+        let bytes=runtime_package_payload("docs/project.schema.json",r#"{"stale":true}"#).unwrap();
+        let value:Value=serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(value.get("$id"),unone_engine::contract_schema("project").unwrap().get("$id"));
+    }
+
+    #[test]
+    fn unrecognized_schema_cannot_silently_publish_stale_data() {
+        assert!(runtime_package_payload("docs/not_a_contract.schema.json","{}").is_err());
+    }
+
+    #[test]
+    fn ordinary_package_bytes_remain_exact() {
+        assert_eq!(runtime_package_payload("docs/ui-components.md","exact\n").unwrap(),b"exact\n");
+    }
+}
+
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 19] {
+fn authoring_files() -> [(&'static str, &'static str); 20] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/spatial-batches.md", include_str!("../../../docs/spatial-batches.md")),
@@ -764,6 +807,7 @@ fn authoring_files() -> [(&'static str, &'static str); 19] {
         ("docs/ui-preview-fixtures.md", include_str!("../../../docs/ui-preview-fixtures.md")),
         ("docs/ui-cursor.md", include_str!("../../../docs/ui-cursor.md")),
         ("docs/ui-text-input.md", include_str!("../../../docs/ui-text-input.md")),
+        ("docs/ui-presentation-input.md", include_str!("../../../docs/ui-presentation-input.md")),
         ("docs/ordered-physical-input.md", include_str!("../../../docs/ordered-physical-input.md")),
         ("scripts/serve-player.py", include_str!("../../../scripts/serve-player.py")),
         ("scripts/verify-ui-example-browser.mjs", include_str!("../../../scripts/verify-ui-example-browser.mjs")),

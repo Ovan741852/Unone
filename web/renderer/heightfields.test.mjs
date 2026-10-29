@@ -51,7 +51,7 @@ test('actual Three draw rejects before presentation hooks or renderer resets', a
     constructor(){this.info={reset(){globalThis.__heightfieldDrawEffects.push('reset')},render:{},memory:{}}}
     async init(){} setPixelRatio(){} setClearColor(){} dispose(){}
   }`;
-  const renderer=await createThreeRenderer({}, {kind:'three-webgpu',threeModuleUrl:'data:text/javascript;base64,'+Buffer.from(module).toString('base64'),beforeRender(){effects.push('hook')}});
+  const renderer=await createThreeRenderer({addEventListener(){},removeEventListener(){}}, {kind:'three-webgpu',threeModuleUrl:'data:text/javascript;base64,'+Buffer.from(module).toString('base64'),beforeRender(){effects.push('hook')}});
   try {
     assert.throws(()=>renderer.draw({world:{heightfields:{ground:{}}}}),/HEIGHTFIELD_INVALID/);
     assert.deepEqual(effects,[]);
@@ -120,7 +120,7 @@ test('actual Three adapter requires perspective camera before hooks for valid te
   const core=new URL('../vendor/three/three.core.js',import.meta.url).href;
   const module=`export * from ${JSON.stringify(core)};
     export class WebGPURenderer {constructor(){this.info={reset(){globalThis.__heightfieldDrawEffects.push('reset')},render:{},memory:{}}}async init(){}setPixelRatio(){}setClearColor(){}dispose(){}}`;
-  const renderer=await createThreeRenderer({}, {kind:'three-webgpu',threeModuleUrl:'data:text/javascript;base64,'+Buffer.from(module).toString('base64'),beforeRender(){effects.push('hook')}});
+  const renderer=await createThreeRenderer({addEventListener(){},removeEventListener(){}}, {kind:'three-webgpu',threeModuleUrl:'data:text/javascript;base64,'+Buffer.from(module).toString('base64'),beforeRender(){effects.push('hook')}});
   try {
     assert.throws(()=>renderer.draw({world:{heightfields:{ground:field()}}}),/HEIGHTFIELD_CAMERA3D_REQUIRED/);
     assert.deepEqual(effects,[]);
@@ -135,7 +135,7 @@ test('actual Three draw joins asynchronous host texture loading with heightfield
     export class WebGPURenderer {constructor(){this.info={reset(){},render:{calls:0,triangles:0},memory:{textures:0}}}
       async init(){}setPixelRatio(){}setClearColor(){}setSize(){}render(){this.info.render.calls++}dispose(){}}`;
   let context;
-  const renderer=await createThreeRenderer({clientWidth:640,clientHeight:360},{kind:'three-webgpu',
+  const renderer=await createThreeRenderer({clientWidth:640,clientHeight:360,addEventListener(){},removeEventListener(){}},{kind:'three-webgpu',
     threeModuleUrl:'data:text/javascript;base64,'+Buffer.from(module).toString('base64'),
     getAssetManifest:()=>({assets:[{id:'texture://terrain',kind:'texture2d',source:'terrain.png'}]}),
     loadAssetUrl:async()=>'data:image/png;base64,fixture',beforeRender(value){context=value}});

@@ -1,0 +1,73 @@
+{
+  "ok": true,
+  "scope": "real WebGL uploads, full default-framebuffer pixels, conformance, context restore; no FPS claim",
+  "conformance": {
+    "samples": 1028,
+    "passed": 1028,
+    "failures": [],
+    "readback": "actual-default-RGB;attachment-query-and-GPU-textureSize;four-corner-RGB/depth"
+  },
+  "changed_uploads": {
+    "bufferData": 0,
+    "bufferSubData": 2,
+    "bytes": 132
+  },
+  "unchanged_redraws": 12,
+  "packetCases": [
+    {
+      "tick": 71,
+      "draws": 32
+    },
+    {
+      "tick": 72,
+      "draws": 32
+    }
+  ],
+  "resourcesBeforeClear": {
+    "frame_draws": 1,
+    "frame_rebuilds": 6,
+    "frame_geometry_builds": 36,
+    "frame_geometry_build_bytes": 644532,
+    "frame_material_builds": 35,
+    "frame_geometry_disposes": 35,
+    "frame_material_disposes": 34,
+    "frame_live_geometries": 1,
+    "frame_live_materials": 1,
+    "frame_geometry_reuses": 0,
+    "frame_material_reuses": 33,
+    "frame_geometry_updates": 32,
+    "frame_geometry_vertex_update_bytes": 225600,
+    "frame_geometry_index_update_bytes": 12,
+    "frame_geometry_update_fallbacks": 1,
+    "frame_geometry_fallback_vertex_length": 1,
+    "frame_geometry_fallback_index_length": 0,
+    "frame_texture_builds": 7,
+    "frame_texture_disposes": 6,
+    "frame_live_textures": 1
+  },
+  "resourcesAfterClear": {
+    "frame_draws": 0,
+    "frame_rebuilds": 6,
+    "frame_geometry_builds": 36,
+    "frame_geometry_build_bytes": 644532,
+    "frame_material_builds": 35,
+    "frame_geometry_disposes": 36,
+    "frame_material_disposes": 35,
+    "frame_live_geometries": 0,
+    "frame_live_materials": 0,
+    "frame_geometry_reuses": 0,
+    "frame_material_reuses": 33,
+    "frame_geometry_updates": 32,
+    "frame_geometry_vertex_update_bytes": 225600,
+    "frame_geometry_index_update_bytes": 12,
+    "frame_geometry_update_fallbacks": 1,
+    "frame_geometry_fallback_vertex_length": 1,
+    "frame_geometry_fallback_index_length": 0,
+    "frame_texture_builds": 7,
+    "frame_texture_disposes": 7,
+    "frame_live_textures": 0
+  },
+  "browser": "156.0.4314.50",
+  "browserErrors": [],
+  "consoleErrors": []
+}

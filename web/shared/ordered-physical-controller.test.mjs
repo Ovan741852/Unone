@@ -15,7 +15,7 @@ function fixture(slider=false,{initialFocus=true,focusCallSucceeds=false,synchro
  const rect={x:0,y:50,width:50,height:50},node=slider?{kind:'slider',id:'gain',rect,drag:{axis:'horizontal',reverse:false,enabled:true,track_rect:rect,hit_rect:rect}}:{kind:'button',id:'button',text:'button',action:'UI',rect};
  const tree=children=>({kind:'screen',id:'screen',node:'screen',children});ui.setTree(tree([node]));
  const errors=[],context={canvas,input,orderedQueue:null,orderedRouter:null,orderedEpoch:0,physicalProfile:'ordered_physical_v1',snapshot:{},hasWorldPointer:false,audio:null,
-  uiRenderer:ui,uiScroll:{cancel(){},setExternalInput(){},pointer:()=>false,routeKey:()=>false,routeWheel:()=>false},routeBrowserPointer,routeBrowserKey,createOrderedPhysicalQueue,
+  uiRenderer:ui,textInputs:{setExternalInput(){},suspend(){},routeKey:()=>false,pointer:()=>false},uiScroll:{cancel(){},setExternalInput(){},pointer:()=>false,routeKey:()=>false,routeWheel:()=>false},routeBrowserPointer,routeBrowserKey,createOrderedPhysicalQueue,
   createOrderedPhysicalRouter:options=>createOrderedPhysicalRouter({...options,window:win,document:doc,nowUs:()=>++clock}),publishPhysical(){},fail:e=>errors.push(e),worldFromPointer:(_,e)=>({x:e.clientX,y:e.clientY})};
  vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function pointer(event,down,kind){'),source.indexOf("canvas.addEventListener('pointerdown'")),context);
  vm.runInContext(source.slice(source.indexOf('function configurePhysical(){'),source.indexOf('async function json(')),context);context.configurePhysical();if(activate)context.orderedRouter.activate();

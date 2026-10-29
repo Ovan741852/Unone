@@ -577,7 +577,7 @@
     },
     "UiStyle": {
       "additionalProperties": false,
-      "description": "Platform-neutral style data. Fonts name installed host families, not files\nor URLs. An explicit font_size is never inferred from the node's box and is\nnever silently shrunk to fit it. A styled text leaf defaults to font_size=2,\nweight=400, line_height=1.2, centered/middle, no-wrap and clipped overflow.\nAbsence of the entire style object preserves the legacy presentation path.",
+      "description": "Portable style data. Sharp text_shadow requires the official Web Canvas host;\neditable text_input and native glyph-shadow parity are unsupported.\nFonts name installed host families, not files\nor URLs. An explicit font_size is never inferred from the node's box and is\nnever silently shrunk to fit it. A styled text leaf defaults to font_size=2,\nweight=400, line_height=1.2, centered/middle, no-wrap and clipped overflow.\nAbsence of the entire style object preserves the legacy presentation path.",
       "properties": {
         "background": {
           "items": {
@@ -722,6 +722,16 @@
             }
           ]
         },
+        "text_shadow": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiTextShadow"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "vertical_align": {
           "anyOf": [
             {
@@ -759,6 +769,41 @@
         "ellipsis"
       ],
       "type": "string"
+    },
+    "UiTextShadow": {
+      "additionalProperties": false,
+      "description": "A sharp copy of the foreground glyph layout, painted before foreground.\nOffsets use viewport-height design units (1 = 1% viewport height); positive\nx is right and positive y is down. No blur, second shaping, or font changes.\nEach pass clips to its own translated content rectangle, then parent/viewport.",
+      "properties": {
+        "color": {
+          "items": {
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "offset_x": {
+          "format": "double",
+          "maximum": 100,
+          "minimum": -100,
+          "type": "number"
+        },
+        "offset_y": {
+          "format": "double",
+          "maximum": 100,
+          "minimum": -100,
+          "type": "number"
+        }
+      },
+      "required": [
+        "offset_x",
+        "offset_y",
+        "color"
+      ],
+      "type": "object"
     },
     "UiTextWrap": {
       "enum": [

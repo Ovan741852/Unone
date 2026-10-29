@@ -2,8 +2,9 @@
 // game controls, hit testing and visual layering are not DOM elements.
 import {uiUsage} from './ui-geometry.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
+import {textPaintBounds,validateInputRegion,validateTextShadow} from './ui-presentation.mjs';
 import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces,layoutUiText,measureUiText} from './ui-style.mjs';
-const actionNode=n=>n.kind==='button'||n.kind==='combobox';
+const actionNode=n=>n.kind==='button'||n.kind==='combobox'||n.kind==='input_region';
 const dragNode=n=>n.kind==='slider'&&n.drag;
 const inputNode=n=>actionNode(n)||dragNode(n)||n.kind==='text_input';
 const inside=(r,x,y)=>x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
@@ -19,7 +20,10 @@ export function flattenUi(tree){
   function walk(nodes,depth){
     for(const n of nodes??[]){
       if(n.kind==='component'){walk(n.children,depth+1);continue;}
-      if(!['text','button','image','image_batch','slider','combobox','panel','text_input'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
+      if(!['text','button','image','image_batch','slider','combobox','panel','text_input','input_region'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
+      if(n.kind==='input_region')validateInputRegion(n);
+      validateTextShadow(n.style?.text_shadow);
+      if(n.style?.text_shadow&&['image','panel','text_input'].includes(n.kind))throw Error(`UI_TEXT_SHADOW_KIND: ${n.id}; nonediting text required`);
       if(n.kind==='text_input'&&(typeof n.text!=='string'||(n.placeholder!==undefined&&typeof n.placeholder!=='string')
         ||(n.max_length!==undefined&&(!Number.isInteger(n.max_length)||n.max_length<1||n.max_length>16384))
         ||['focused','enabled'].some(k=>n[k]!==undefined&&typeof n[k]!=='boolean')))throw Error(`UI_TEXT_INPUT_INVALID: ${n.id}`);
@@ -139,6 +143,16 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       if(focus&&editing.composing){target.fillStyle=layout.color;target.fillRect(x,y+layout.size*.6,Math.max(1,measureUiText(target,node.text,layout.spacing)),1);}
     }finally{target.restore();}
   }
+  function boxPhase(target,node,bounds,phase){
+    const {x,y,width,height,viewportHeight}=bounds;
+    target.save();
+    try{
+      // Shadow glyph passes own translated clips. The background and border
+      // still need their original unshifted leaf clip, independently of glyphs.
+      if(node.style.text_shadow)clipUiBox(target,node.style,x,y,width,height,viewportHeight/100);
+      paintUiBox(target,node.style,x,y,width,height,viewportHeight/100,phase);
+    }finally{target.restore();}
+  }
   return {
     draw(snapshot,{width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}={}){
       if(disposed)throw Error('UI_DISPOSED');if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return;
@@ -150,17 +164,22 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
         for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
       if(!dirty)return;dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
       for(const node of nodes){const r=node.rect,x=r.x*bw/100,y=(100-r.y-r.height)*bh/100,w=r.width*bw/100,h=r.height*bh/100;
+        if(node.kind==='input_region')continue;
+        const paintBounds=textPaintBounds(node.style,{x,y,width:w,height:h,viewportHeight:bh});
         const c=node.clip;
-        if(c){if(r.x>=c.x+c.width||r.x+r.width<=c.x||r.y>=c.y+c.height||r.y+r.height<=c.y)continue;ctx.save();ctx.beginPath();ctx.rect(c.x*bw/100,(100-c.y-c.height)*bh/100,c.width*bw/100,c.height*bh/100);ctx.clip();}
+        if(c){const cx=c.x*bw/100,cy=(100-c.y-c.height)*bh/100,cw=c.width*bw/100,ch=c.height*bh/100;
+          if(paintBounds.x>=cx+cw||paintBounds.x+paintBounds.width<=cx||paintBounds.y>=cy+ch||paintBounds.y+paintBounds.height<=cy)continue;
+          ctx.save();ctx.beginPath();ctx.rect(cx,cy,cw,ch);ctx.clip();}
         try{
           if(node.kind==='image_batch')imageBatch(node);
-          else if(node.style){opacityPainter.paint(ctx,node.style.opacity??1,{x,y,width:w,height:h},target=>{
+          else if(node.style){opacityPainter.paint(ctx,node.style.opacity??1,paintBounds,target=>{
             target.save();
             try{
-              clipUiBox(target,node.style,x,y,w,h,bh/100);paintUiBox(target,node.style,x,y,w,h,bh/100,'background');
+              if(!node.style.text_shadow)clipUiBox(target,node.style,x,y,w,h,bh/100);
+              boxPhase(target,node,{x,y,width:w,height:h,viewportHeight:bh},'background');
               if(node.kind==='image')image(node,x,y,w,h,target);
-              else {if(node.kind==='text_input')textInput(target,node,{x,y,width:w,height:h,viewportHeight:bh});else if(node.kind!=='panel')paintUiText(target,node,{x,y,width:w,height:h,viewportHeight:bh,fontFamily,textColor});renderRegions++;}
-              paintUiBox(target,node.style,x,y,w,h,bh/100,'border');
+              else {if(node.kind==='text_input')textInput(target,node,{x,y,width:w,height:h,viewportHeight:bh});else if(node.kind!=='panel')paintUiText(target,node,{x,y,width:w,height:h,viewportHeight:bh,fontFamily,textColor});renderRegions+=1+Number(!!node.style.text_shadow);}
+              boxPhase(target,node,{x,y,width:w,height:h,viewportHeight:bh},'border');
             }finally{target.restore();}
           });}
           else if(node.kind==='image')image(node,x,y,w,h);

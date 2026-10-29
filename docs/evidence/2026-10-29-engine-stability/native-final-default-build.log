@@ -1,0 +1,17 @@
+   Compiling wgpu-core v30.0.1
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+error[E0463]: can't find crate for `document_features`
+ --> D:\Projects\Unone\.toolcache\cargo\registry\src\index.crates.io-1949cf8c6b5b557f\wgpu-core-30.0.1\src\lib.rs:6:10
+  |
+6 | #![doc = document_features::document_features!()]
+  |          ^^^^^^^^^^^^^^^^^ can't find crate
+
+error: attribute value must be a literal
+ --> D:\Projects\Unone\.toolcache\cargo\registry\src\index.crates.io-1949cf8c6b5b557f\wgpu-core-30.0.1\src\lib.rs:6:10
+  |
+6 | #![doc = document_features::document_features!()]
+  |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0463`.
+error: could not compile `wgpu-core` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

@@ -1,0 +1,629 @@
+{
+  "scope": "Real official production Web export with UI/particles disabled, fresh context,90ticks and repeated30-draw metrics; no FPS or global memory claim.",
+  "root": "D:\\Projects\\Unone\\artifacts\\stability-20261030-ui-disabled-web",
+  "frame": 91,
+  "error": null,
+  "metrics": {
+    "bridge_ms": 0.19999992847442627,
+    "render_ms": 0.2999999523162842,
+    "texture_cache": {
+      "enabled": false,
+      "entries": 0,
+      "decoded_texture_bytes_estimate": 0,
+      "pinned_bytes_estimate": 0,
+      "loading": 0,
+      "evicted": 0,
+      "released_bytes_estimate": 0,
+      "pressure_bytes": 0,
+      "pressure_entries": 0,
+      "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+      "policy": null,
+      "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+    },
+    "raster": {
+      "antialias_requested": true,
+      "context_antialias": true,
+      "scope": "default_framebuffer",
+      "reconfigure": "relaunch",
+      "offscreen_antialias": "not_configured",
+      "projected": {
+        "requested": "host",
+        "declared": false,
+        "status": "host",
+        "context_epoch": 1,
+        "target_generation": null,
+        "physical_size": null,
+        "dpr": null,
+        "profile_version": null,
+        "probe_hash": null,
+        "last_validation": null,
+        "failure": null,
+        "limitations": "host raster; no upper-left validation claim"
+      },
+      "clear_state_recovery": {
+        "losses": 0,
+        "restores": 0,
+        "pending": false,
+        "last_restored_clear": null,
+        "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+      }
+    },
+    "shader_materials": 0,
+    "instances": 0,
+    "instance_cells": 0,
+    "submitted_instance_cells": 0,
+    "submitted_instances": 0,
+    "culled_instances": 0,
+    "heightfields": 0,
+    "heightfield_triangles": 0,
+    "heightfield_rebuilds": 0,
+    "projected_batches": 0,
+    "projected_triangles": 0,
+    "projected_rebuilds": 0,
+    "draw_calls": 0,
+    "triangles": 0,
+    "textures": 0,
+    "particles": 0,
+    "particle_pool": {
+      "groups": 0,
+      "capacity": 0,
+      "instance_buffer_bytes": 0,
+      "compactions": 0
+    },
+    "particle_batches": [],
+    "effects": 0,
+    "bloom": false,
+    "ao": false,
+    "ao_method": "depth-ssao-12",
+    "postprocessing": null,
+    "output_pipeline": "legacy",
+    "bloom_resolution": [
+      1,
+      1
+    ],
+    "hdr": true,
+    "gpu_timer_available": true,
+    "gpu_timer_context": {
+      "epoch": 1,
+      "lost": false,
+      "disposed": false,
+      "pending": 1,
+      "active": false
+    },
+    "gpu_on": null,
+    "gpu_off": {
+      "samples": 89,
+      "median_ms": 0,
+      "p95_ms": 0.000192
+    },
+    "gpu_ao_only": null,
+    "gpu_bloom_with_ao": null,
+    "gpu_samples_by_mode": {
+      "bloom_on_ao_off": null,
+      "bloom_off_ao_off": {
+        "samples": 89,
+        "median_ms": 0,
+        "p95_ms": 0.000192
+      },
+      "bloom_on_ao_on": null,
+      "bloom_off_ao_on": null
+    },
+    "gpu_comparison": {
+      "gpu_on_off_same_ao_only": true,
+      "active_mode": "bloom_off_ao_off"
+    },
+    "ui": {
+      "backend": "disabled",
+      "nodes": 0,
+      "render_regions": 0,
+      "assets": [],
+      "diagnostics": []
+    },
+    "drawing_buffer": [
+      640,
+      360
+    ],
+    "frozen": false,
+    "dropped_steps": 0,
+    "backend": {
+      "backend": "main",
+      "jobs": {
+        "policy": {
+          "workers": 0,
+          "reason": "jobs_disabled"
+        },
+        "pool": null,
+        "binary_transport": {
+          "format": "UJB1",
+          "requests": 0,
+          "metadata_sent_bytes": 0,
+          "metadata_received_bytes": 0,
+          "payload_sent_bytes": 0,
+          "payload_received_bytes": 0,
+          "copied_payload_from_wasm_bytes": 0,
+          "encode_ms": 0,
+          "abi_ms": 0,
+          "decode_ms": 0,
+          "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms."
+        },
+        "spatial": {
+          "requested": "cpu",
+          "backend": "cpu",
+          "fallback_reason": null,
+          "fault": null,
+          "profile": null,
+          "metrics": {
+            "api_version": 1,
+            "clock": "host_monotonic",
+            "scope": "Since latest host load. JSON encode includes stringify/TextEncoder; copy_in covers WASM allocation/copy; abi includes the synchronous WASM request and its internal serialization, not GPU execution; response_decode covers readObservation copy/TextDecoder/JSON parse. Setup includes executor creation/configuration; configure_ms overlaps bridge configure timings. Excludes project load, Worker messaging, caller application and report cloning. Failed request metrics include only phases reached.",
+            "setup": {
+              "success": true,
+              "total_ms": 0,
+              "executor_create_ms": 0,
+              "configure_ms": 0,
+              "gpu_initialized": false
+            },
+            "bridge": {
+              "totals": {
+                "requests": 0,
+                "failed_requests": 0,
+                "request_bytes": 0,
+                "response_bytes": 0,
+                "json_encode_ms": 0,
+                "copy_in_ms": 0,
+                "abi_ms": 0,
+                "response_decode_ms": 0
+              },
+              "by_kind": {}
+            }
+          }
+        },
+        "viewport": {
+          "mode": "physical",
+          "required": false,
+          "physical_api": true,
+          "aspect_api": true
+        },
+        "fault": null
+      },
+      "viewport": {
+        "mode": "physical",
+        "required": false,
+        "physical_api": true,
+        "aspect_api": true
+      },
+      "execute_ms": 0.19999992847442627,
+      "wasm_linear_bytes": 16777216,
+      "pending": 0,
+      "closed": false
+    },
+    "interpolation": {
+      "enabled": false,
+      "instance_batches": [],
+      "interpolated_entities": 0,
+      "interpolated_instances": 0,
+      "snaps": 1,
+      "semantics": "Display-only delayed interpolation. Packed rows must retain identity/order; count/asset changes snap. Does not alter canonical state or tick rate."
+    }
+  },
+  "boot": {
+    "runtime_ready_ms": 104.89999997615814,
+    "renderer_mode": "official",
+    "renderer": "three-webgl",
+    "renderer_module": null,
+    "raster": {
+      "antialias_requested": true,
+      "context_antialias": true,
+      "scope": "default_framebuffer",
+      "reconfigure": "relaunch",
+      "offscreen_antialias": "not_configured",
+      "projected": {
+        "requested": "host",
+        "declared": false,
+        "status": "host",
+        "context_epoch": 1,
+        "target_generation": null,
+        "physical_size": null,
+        "dpr": null,
+        "profile_version": null,
+        "probe_hash": null,
+        "last_validation": null,
+        "failure": null,
+        "limitations": "host raster; no upper-left validation claim"
+      },
+      "clear_state_recovery": {
+        "losses": 0,
+        "restores": 0,
+        "pending": false,
+        "last_restored_clear": null,
+        "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+      }
+    },
+    "first_presented_ms": 239,
+    "backend": "main",
+    "resources": [
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/player/main.js",
+        "transfer_bytes": 20858,
+        "encoded_bytes": 20558,
+        "duration_ms": 8.399999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/renderer-selection.mjs",
+        "transfer_bytes": 4772,
+        "encoded_bytes": 4472,
+        "duration_ms": 5.600000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/host-input.js",
+        "transfer_bytes": 9425,
+        "encoded_bytes": 9125,
+        "duration_ms": 6.400000095367432
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/three.js",
+        "transfer_bytes": 29464,
+        "encoded_bytes": 29164,
+        "duration_ms": 5.200000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/player-input.js",
+        "transfer_bytes": 3265,
+        "encoded_bytes": 2965,
+        "duration_ms": 6.300000071525574
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/ordered-physical-queue.mjs",
+        "transfer_bytes": 3501,
+        "encoded_bytes": 3201,
+        "duration_ms": 6.800000071525574
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/async-scheduler.mjs",
+        "transfer_bytes": 2202,
+        "encoded_bytes": 1902,
+        "duration_ms": 7
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/ordered-physical-router.mjs",
+        "transfer_bytes": 8465,
+        "encoded_bytes": 8165,
+        "duration_ms": 6.899999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/presentation-interpolation.mjs",
+        "transfer_bytes": 4000,
+        "encoded_bytes": 3700,
+        "duration_ms": 7.899999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/runtime-backend.mjs",
+        "transfer_bytes": 5814,
+        "encoded_bytes": 5514,
+        "duration_ms": 7.899999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/startup-presentation.mjs",
+        "transfer_bytes": 4257,
+        "encoded_bytes": 3957,
+        "duration_ms": 9.699999928474426
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/raster-diagnostics.mjs",
+        "transfer_bytes": 8300,
+        "encoded_bytes": 8000,
+        "duration_ms": 9.5
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/asset-encoding.js",
+        "transfer_bytes": 5254,
+        "encoded_bytes": 4954,
+        "duration_ms": 8.100000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/webgpu-snapshot.js",
+        "transfer_bytes": 20670,
+        "encoded_bytes": 20370,
+        "duration_ms": 8.199999928474426
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster-policy.js",
+        "transfer_bytes": 1587,
+        "encoded_bytes": 1287,
+        "duration_ms": 6.400000095367432
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/texture-cache-policy.js",
+        "transfer_bytes": 3268,
+        "encoded_bytes": 2968,
+        "duration_ms": 6.700000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-policy.js",
+        "transfer_bytes": 1575,
+        "encoded_bytes": 1275,
+        "duration_ms": 6.600000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/physical-input.js",
+        "transfer_bytes": 1569,
+        "encoded_bytes": 1269,
+        "duration_ms": 6.200000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/ordered-physical-events.mjs",
+        "transfer_bytes": 4092,
+        "encoded_bytes": 3792,
+        "duration_ms": 6.100000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/instance-transfer.mjs",
+        "transfer_bytes": 3447,
+        "encoded_bytes": 3147,
+        "duration_ms": 7.299999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/runtime-core.mjs",
+        "transfer_bytes": 8285,
+        "encoded_bytes": 7985,
+        "duration_ms": 6.199999928474426
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/mesh.js",
+        "transfer_bytes": 1648,
+        "encoded_bytes": 1348,
+        "duration_ms": 7.400000095367432
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/shader-materials.js",
+        "transfer_bytes": 5098,
+        "encoded_bytes": 4798,
+        "duration_ms": 7.200000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/instances3d.js",
+        "transfer_bytes": 5764,
+        "encoded_bytes": 5464,
+        "duration_ms": 7.600000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/presentation3d.js",
+        "transfer_bytes": 1078,
+        "encoded_bytes": 778,
+        "duration_ms": 9.5
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/bloom.js",
+        "transfer_bytes": 8912,
+        "encoded_bytes": 8612,
+        "duration_ms": 7.800000071525574
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/heightfields.js",
+        "transfer_bytes": 5544,
+        "encoded_bytes": 5244,
+        "duration_ms": 8.899999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected.js",
+        "transfer_bytes": 5249,
+        "encoded_bytes": 4949,
+        "duration_ms": 9.5
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster-capability.js",
+        "transfer_bytes": 3200,
+        "encoded_bytes": 2900,
+        "duration_ms": 9.700000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster.js",
+        "transfer_bytes": 1947,
+        "encoded_bytes": 1647,
+        "duration_ms": 9.799999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/projected-frame.mjs",
+        "transfer_bytes": 5452,
+        "encoded_bytes": 5152,
+        "duration_ms": 11
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-draws.js",
+        "transfer_bytes": 12067,
+        "encoded_bytes": 11767,
+        "duration_ms": 11.200000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-pass.js",
+        "transfer_bytes": 2455,
+        "encoded_bytes": 2155,
+        "duration_ms": 11.399999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-publication.js",
+        "transfer_bytes": 1500,
+        "encoded_bytes": 1200,
+        "duration_ms": 11.399999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-target-query.js",
+        "transfer_bytes": 4303,
+        "encoded_bytes": 4003,
+        "duration_ms": 13.199999928474426
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-validator.js",
+        "transfer_bytes": 4286,
+        "encoded_bytes": 3986,
+        "duration_ms": 13.299999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/renderer-clear-lifecycle.js",
+        "transfer_bytes": 1507,
+        "encoded_bytes": 1207,
+        "duration_ms": 13.699999928474426
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster-validator.js",
+        "transfer_bytes": 4370,
+        "encoded_bytes": 4070,
+        "duration_ms": 13.299999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/startup-presentation-state.js",
+        "transfer_bytes": 2640,
+        "encoded_bytes": 2340,
+        "duration_ms": 13.799999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/projected-geometry.js",
+        "transfer_bytes": 6960,
+        "encoded_bytes": 6660,
+        "duration_ms": 14.5
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/projected-frame-material.mjs",
+        "transfer_bytes": 3769,
+        "encoded_bytes": 3469,
+        "duration_ms": 5.799999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/job-binary.mjs",
+        "transfer_bytes": 6707,
+        "encoded_bytes": 6407,
+        "duration_ms": 5.299999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/load-project.js",
+        "transfer_bytes": 2073,
+        "encoded_bytes": 1773,
+        "duration_ms": 5.100000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/spatial-host.mjs",
+        "transfer_bytes": 5268,
+        "encoded_bytes": 4968,
+        "duration_ms": 5.600000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/job-pool.mjs",
+        "transfer_bytes": 7087,
+        "encoded_bytes": 6787,
+        "duration_ms": 5.700000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/bloom-timer.js",
+        "transfer_bytes": 3373,
+        "encoded_bytes": 3073,
+        "duration_ms": 5.200000047683716
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster-shaders.js",
+        "transfer_bytes": 3371,
+        "encoded_bytes": 3071,
+        "duration_ms": 6.299999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-target.js",
+        "transfer_bytes": 4035,
+        "encoded_bytes": 3735,
+        "duration_ms": 6.799999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster-target.js",
+        "transfer_bytes": 3499,
+        "encoded_bytes": 3199,
+        "duration_ms": 7
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-shaders.js",
+        "transfer_bytes": 2326,
+        "encoded_bytes": 2026,
+        "duration_ms": 7.299999952316284
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-material.js",
+        "transfer_bytes": 2260,
+        "encoded_bytes": 1960,
+        "duration_ms": 7.699999928474426
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster-profile.js",
+        "transfer_bytes": 5298,
+        "encoded_bytes": 4998,
+        "duration_ms": 7.899999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-raster-profile-expected.js",
+        "transfer_bytes": 41520,
+        "encoded_bytes": 41220,
+        "duration_ms": 8.399999976158142
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-gouraud-profile.js",
+        "transfer_bytes": 2900,
+        "encoded_bytes": 2600,
+        "duration_ms": 9.300000071525574
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/renderer/projected-frame-profile.js",
+        "transfer_bytes": 6702,
+        "encoded_bytes": 6402,
+        "duration_ms": 9.300000071525574
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/projected-base64.js",
+        "transfer_bytes": 797,
+        "encoded_bytes": 497,
+        "duration_ms": 9.100000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/shared/spatial-metrics.mjs",
+        "transfer_bytes": 2239,
+        "encoded_bytes": 1939,
+        "duration_ms": 2.1999999284744263
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/content/project.json",
+        "transfer_bytes": 812,
+        "encoded_bytes": 512,
+        "duration_ms": 6.699999928474426
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/content/assets.json",
+        "transfer_bytes": 325,
+        "encoded_bytes": 25,
+        "duration_ms": 6.800000071525574
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/content/presentation.json",
+        "transfer_bytes": 632,
+        "encoded_bytes": 332,
+        "duration_ms": 6.600000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/runtime/unone-player.js",
+        "transfer_bytes": 102261,
+        "encoded_bytes": 101961,
+        "duration_ms": 2.0999999046325684
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/runtime/unone_player.wasm",
+        "transfer_bytes": 2400681,
+        "encoded_bytes": 2400381,
+        "duration_ms": 11.600000023841858
+      },
+      {
+        "path": "/releases/c9005b2ff534d21cce3564815c1a4b3c88f034fe0c8d5dc0392aa6a1490e715a/web/vendor/three/three.player.min.js",
+        "transfer_bytes": 494520,
+        "encoded_bytes": 494220,
+        "duration_ms": 4.699999928474426
+      }
+    ]
+  },
+  "uiEnabled": false,
+  "errors": [],
+  "uiRequests": [],
+  "browser": "156.0.4314.50"
+}

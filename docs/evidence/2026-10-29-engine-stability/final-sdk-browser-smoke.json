@@ -1,0 +1,244 @@
+{
+  "schema": "unone.final-sdk-browser-acceptance.v1",
+  "date": "2026-10-30",
+  "ok": true,
+  "sdk": {
+    "root": "D:/Projects/Unone/artifacts/core-sdk-stability-20261030",
+    "manifestSha256": "3aa4666b322a8093189f4e6eb7eaafac38aa4f9fc77700826f660a3d60a37299",
+    "cliSha256": "486aa48dc81155035001e5c6c651ea958451bfb98a841898bc366afb1a6fc3cc",
+    "verifiedInventoryFiles": 138
+  },
+  "browser": "156.0.4314.50",
+  "scope": "Actual SDK-only official production Web exports and fresh-context browser startup through90ticks: JYRogue world, Populous root-project main menu and automatic SDK platform export fixture.",
+  "routes": {
+    "realGames": "SDK/bin/game.exe --project <game-root> export web --sdk <SDK> --runtime <SDK>/runtimes/web-production-0 --output <new-Unone-artifact> --json",
+    "automaticSelection": "SDK/bin/game.exe --sdk <SDK> --project .cache/stability-sdk-project export platform --target web --output <new-Unone-artifact> --json"
+  },
+  "firstSourceRouteAttempt": "export web --sdk without --runtime could not infer a source-build runtime; preserved .cache/stability-final-sdk-jyrogue-export.json. This is the documented source/publisher route limit; automatic SDK selection uses export platform and passed.",
+  "results": [
+    {
+      "name": "jyrogue",
+      "ok": true,
+      "exportRoot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-jyrogue-web-r2",
+      "release": "releases/895dde08a8a27ea0cad5c714172bb91a4f1af4bfa7f7325039e383be3166f2cd/",
+      "exportManifestSha256": "a04764b08f3189450a55c977b22cbde1c3647026fd7176f192315e1a0668a48c",
+      "gameScriptSha256": "9f0acfafc95a3455dd0ea8beb7b611c768aeaefbebf7f251c774fa393dac0bbe",
+      "frame": 90,
+      "snapshotFrame": 93,
+      "screen": "world",
+      "frontendState": null,
+      "renderer": "official",
+      "officialReady": true,
+      "firstPresentedMs": 577.2999999523163,
+      "rasterStatus": "host",
+      "rasterScope": "host raster; no upper-left validation claim",
+      "uiPresentationModuleRequested": true,
+      "unchangedModules": [
+        {
+          "path": "web/shared/ui-presentation.mjs",
+          "exportSha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487",
+          "sdkSha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487"
+        },
+        {
+          "path": "web/shared/canvas-ui.mjs",
+          "exportSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04",
+          "sdkSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04"
+        },
+        {
+          "path": "web/renderer/projected-frame-draws.js",
+          "exportSha256": "081c5dca1bf1f173ce53275d7297acd8476ae8265055a9eaefd3de6bc5d50492",
+          "sdkSha256": "081c5dca1bf1f173ce53275d7297acd8476ae8265055a9eaefd3de6bc5d50492"
+        },
+        {
+          "path": "web/shared/load-project.js",
+          "exportSha256": "d9ad8efc55caef91d74778c5921768c9ec4d725a280150e270d878e9d8c1b6d3",
+          "sdkSha256": "d9ad8efc55caef91d74778c5921768c9ec4d725a280150e270d878e9d8c1b6d3"
+        }
+      ],
+      "playerMainSha256": "985f858c41f02e332a5282b1d3ebc4999b24b4aed2f7938d3a1a6a248d085039",
+      "wasmSha256": "52a1e0abcfb2ee84e60b7a39972c5e7bd2115dd5f430729d9ed9aac1a971599a",
+      "compiledSystems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "errors": [],
+      "requestFailures": [],
+      "consoleWarnings": [],
+      "uiDiagnostics": [
+        {
+          "code": "UI_SLICE_BOUNDS",
+          "node": "minimap-ground-aperture-1",
+          "asset": "texture://jy/exploration/world-atlas",
+          "message": "UI_SLICE_BOUNDS: source/borders exceed image 4096x2048; correct slice source pixels, do not stretch the whole image"
+        },
+        {
+          "code": "UI_SLICE_BOUNDS",
+          "node": "minimap-survey-140-aperture-1",
+          "asset": "texture://jy/world-tiles/isometric-selected",
+          "message": "UI_SLICE_BOUNDS: source/borders exceed image 96x48; correct slice source pixels, do not stretch the whole image"
+        },
+        {
+          "code": "UI_SLICE_BOUNDS",
+          "node": "minimap-survey-141-aperture-1",
+          "asset": "texture://jy/world-tiles/isometric-selected",
+          "message": "UI_SLICE_BOUNDS: source/borders exceed image 96x48; correct slice source pixels, do not stretch the whole image"
+        }
+      ],
+      "saveFixture": {
+        "path": "D:/Projects/JYRogue/game/tests/ui-fixtures/named-fresh.save.json",
+        "sha256": "098d5f27cc79f1750327dcbe163708ea4567e8fc4cfa857ffc3abad92f732deb",
+        "scope": "Legal named-fresh fixture loaded only into new isolated browser storage"
+      },
+      "evidence": {
+        "snapshot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/jyrogue/snapshot.json",
+        "screenshot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/jyrogue/official-player.png",
+        "facts": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/jyrogue/facts.json"
+      }
+    },
+    {
+      "name": "populous",
+      "ok": true,
+      "exportRoot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-populous-web",
+      "release": "releases/0c51a4dc391edbfd7b8a892fccc39b31edd9a85f56b19945d3a692668616d268/",
+      "exportManifestSha256": "3fdbb240ea7a5bbb5faec7bef28e52bee70ab334814006e24c7d9d164101f7ee",
+      "gameScriptSha256": "17fe671a55d11058031be45a258eb6ec8653c626267382ee0651e1f7f2258d67",
+      "frame": 90,
+      "snapshotFrame": 91,
+      "screen": null,
+      "frontendState": "main",
+      "renderer": "official",
+      "officialReady": true,
+      "firstPresentedMs": 1198,
+      "rasterStatus": "host",
+      "rasterScope": "host raster; no upper-left validation claim",
+      "uiPresentationModuleRequested": true,
+      "unchangedModules": [
+        {
+          "path": "web/shared/ui-presentation.mjs",
+          "exportSha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487",
+          "sdkSha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487"
+        },
+        {
+          "path": "web/shared/canvas-ui.mjs",
+          "exportSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04",
+          "sdkSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04"
+        },
+        {
+          "path": "web/renderer/projected-frame-draws.js",
+          "exportSha256": "081c5dca1bf1f173ce53275d7297acd8476ae8265055a9eaefd3de6bc5d50492",
+          "sdkSha256": "081c5dca1bf1f173ce53275d7297acd8476ae8265055a9eaefd3de6bc5d50492"
+        },
+        {
+          "path": "web/shared/load-project.js",
+          "exportSha256": "d9ad8efc55caef91d74778c5921768c9ec4d725a280150e270d878e9d8c1b6d3",
+          "sdkSha256": "d9ad8efc55caef91d74778c5921768c9ec4d725a280150e270d878e9d8c1b6d3"
+        }
+      ],
+      "playerMainSha256": "e5841198c8e55652ba966c7ad2e0cabc2158c14eae7e5dac2021404bbd7c8799",
+      "wasmSha256": "52a1e0abcfb2ee84e60b7a39972c5e7bd2115dd5f430729d9ed9aac1a971599a",
+      "compiledSystems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "errors": [],
+      "requestFailures": [],
+      "consoleWarnings": [],
+      "uiDiagnostics": [],
+      "saveFixture": null,
+      "evidence": {
+        "snapshot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/populous/snapshot.json",
+        "screenshot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/populous/official-player.png",
+        "facts": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/populous/facts.json"
+      }
+    },
+    {
+      "name": "sdk-auto",
+      "ok": true,
+      "exportRoot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-auto-web",
+      "release": "releases/0a8ad34eabefce3290ef18f4a6ffc177cca397d77fc6f341b0a1663db7819c00/",
+      "exportManifestSha256": "bc41b81766149568685da1b600fa544a1b30db69bc9f601af1895218ad39c9fd",
+      "gameScriptSha256": "90f1b7a57d8fcafbf25b4a479e3ef85774d3c352a37d8d2936cea30763e35766",
+      "frame": 90,
+      "snapshotFrame": 90,
+      "screen": null,
+      "frontendState": null,
+      "renderer": "official",
+      "officialReady": true,
+      "firstPresentedMs": 135.29999995231628,
+      "rasterStatus": "host",
+      "rasterScope": "host raster; no upper-left validation claim",
+      "uiPresentationModuleRequested": true,
+      "unchangedModules": [
+        {
+          "path": "web/shared/ui-presentation.mjs",
+          "exportSha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487",
+          "sdkSha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487"
+        },
+        {
+          "path": "web/shared/canvas-ui.mjs",
+          "exportSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04",
+          "sdkSha256": "5c4a54310a2bad51f6a88385f7a5f4a90fb218d146fceb16664a2a26dd6dbe04"
+        },
+        {
+          "path": "web/renderer/projected-frame-draws.js",
+          "exportSha256": "081c5dca1bf1f173ce53275d7297acd8476ae8265055a9eaefd3de6bc5d50492",
+          "sdkSha256": "081c5dca1bf1f173ce53275d7297acd8476ae8265055a9eaefd3de6bc5d50492"
+        },
+        {
+          "path": "web/shared/load-project.js",
+          "exportSha256": "d9ad8efc55caef91d74778c5921768c9ec4d725a280150e270d878e9d8c1b6d3",
+          "sdkSha256": "d9ad8efc55caef91d74778c5921768c9ec4d725a280150e270d878e9d8c1b6d3"
+        }
+      ],
+      "playerMainSha256": "985f858c41f02e332a5282b1d3ebc4999b24b4aed2f7938d3a1a6a248d085039",
+      "wasmSha256": "52a1e0abcfb2ee84e60b7a39972c5e7bd2115dd5f430729d9ed9aac1a971599a",
+      "compiledSystems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "errors": [],
+      "requestFailures": [],
+      "consoleWarnings": [],
+      "uiDiagnostics": [],
+      "saveFixture": null,
+      "evidence": {
+        "snapshot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/sdk-auto/snapshot.json",
+        "screenshot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/sdk-auto/official-player.png",
+        "facts": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser/sdk-auto/facts.json"
+      }
+    }
+  ],
+  "evidenceRoot": "D:/Projects/Unone/artifacts/stability-20261030-final-sdk-browser",
+  "runnerSha256": "6a92e4abaf4ae7c240d8edf63345c9170421707e963b34aa2e079047cc0630df",
+  "limitations": [
+    "No game files, released SDKs/exports, existing browser pages/storage, existing servers or latest pointers were modified. All exports, servers, browser contexts and writes were newly owned Unone artifacts.",
+    "All138SDK inventory files were rehashed against sdk.json; selected Web WASM bytes match the SDK descriptor. The production main module receives only the official exporter feature/marker transformations; no test route or runtime substitution was used.",
+    "JYRogue current source hash differs from earlier frozen performance benchmarks; this smoke cannot be used as an FPS comparison. Three existing minimap UI_SLICE_BOUNDS diagnostics persist and are preserved.",
+    "Populous scope is the actual root-project main menu with host raster; no projected World, original-game/fullinput or complete game compatibility acceptance is implied.",
+    "90ticks and successful official renderer startup are not60FPS, long-soak, no-leak or GC-frequency proofs. No development runtime was involved."
+  ]
+}

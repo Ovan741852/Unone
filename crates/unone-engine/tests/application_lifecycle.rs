@@ -9,11 +9,15 @@ fn runtime(script: &str) -> unone_engine::EngineRuntime {
 }
 
 #[test]
-fn defaults_are_legacy_quit_and_published_in_the_canonical_snapshot() {
+fn defaults_are_legacy_quit_and_do_not_change_legacy_snapshot_bytes() {
     let game=runtime("return {start=function()end, update=function()end}");
     assert_eq!(game.observe().application, ApplicationState::default());
-    assert_eq!(serde_json::to_value(&game.observe()).unwrap()["application"],
-               json!({"escape_behavior":"quit","quit_requested":false}));
+    let snapshot = game.observe();
+    let encoded = serde_json::to_string(&snapshot).unwrap();
+    assert!(!encoded.contains("\"application\""));
+    // The pre-application idle snapshot, including field order, is the replay
+    // boundary. New default host state must not change these exact bytes.
+    assert_eq!(encoded, r#"{"frame":0,"time_seconds":0.0,"camera":{"position":{"x":0.0,"y":0.0},"zoom":1.0,"view_height":10.0},"entities":{},"observations":{}}"#);
 }
 
 #[test]

@@ -79,7 +79,7 @@ impl PointerRouter {
         let hit = tree.and_then(|t| {
             leaves(t).into_iter().rev().find(|n| {
                 let r = match n { UiNode::Slider { drag: Some(drag), .. } => &drag.hit_rect, _ => n.rect() };
-                matches!(n, UiNode::Button { .. } | UiNode::ComboBox { .. } | UiNode::Slider { drag: Some(_), .. })
+                matches!(n, UiNode::InputRegion { .. } | UiNode::Button { .. } | UiNode::ComboBox { .. } | UiNode::Slider { drag: Some(_), .. })
                     && x >= r.x
                     && y >= r.y
                     && x < r.x + r.width
@@ -99,7 +99,7 @@ impl PointerRouter {
             }
             return true;
         }
-        if let UiNode::Button { id: node, action, .. } | UiNode::ComboBox { id: node, action, .. } = hit {
+        if let UiNode::InputRegion { id: node, action, .. } | UiNode::Button { id: node, action, .. } | UiNode::ComboBox { id: node, action, .. } = hit {
             let n = self.holds.entry(action.clone()).or_default();
             if *n == 0 {
                 self.edges.push_back((action.clone(), true));
@@ -151,7 +151,7 @@ impl PointerRouter {
             .filter_map(|(id, capture)| {
                 let valid = match capture {
                     Capture::Action { node, action } => nodes.iter().any(
-                        |n| matches!(n,UiNode::Button{id,action:a,..}|UiNode::ComboBox{id,action:a,..}if id==node&&a==action)),
+                        |n| matches!(n,UiNode::InputRegion{id,action:a,..}|UiNode::Button{id,action:a,..}|UiNode::ComboBox{id,action:a,..}if id==node&&a==action)),
                     Capture::Slider { node, rect, drag, .. } => nodes.iter().any(
                         |n| matches!(n,UiNode::Slider{id,rect:r,drag:Some(d),..}if id==node&&r==rect&&d==drag&&d.enabled)),
                     Capture::Suppressed => true,
@@ -516,6 +516,9 @@ impl Rasterizer {
         rect: [f64; 4],
         unit: f64,
     ) -> R<()> {
+        if style.text_shadow.is_some() {
+            return Err("UI_HOST_CAPABILITY_UNSUPPORTED: text_shadow currently requires the official Web Canvas host; native glyph-shadow parity is not implemented".into());
+        }
         if text.is_empty() {
             return Ok(());
         }
@@ -611,6 +614,7 @@ impl Rasterizer {
         );
         let mut defined_images = BTreeMap::new();
         for (index, node) in leaves(tree).into_iter().enumerate() {
+            if matches!(node,UiNode::InputRegion{..}) {continue;}
             let r = node.rect();
             let x = r.x * width as f64 / 100.;
             let y = (100. - r.y - r.height) * height as f64 / 100.;

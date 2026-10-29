@@ -50,6 +50,14 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-29/30: runtime input/replay/value bounds, production compiler policy,
+  native/Web resource lifecycles, publication allocations and SDK UI capability
+  compatibility. Independent Codex cross-review identified and corrected the
+  missing UI module inventory; original findings, interrupted/blocked commands,
+  bounded GPU/retention/FPS evidence and unmet Web 60 Hz cases are preserved:
+  [review](reviews/2026-10-29-engine-stability.md) and
+  [corrections/evidence](issues/2026-10-29-engine-stability.md).
+
 - 2026-10-16: VOIDWAKE adoption of official responsive regions, layered native
   particles and engine sprite shaders, real desktop/portrait acceptance and a
   shared JSON binary64 roundtrip correction. Both bounded Claude scopes timed

@@ -30,8 +30,11 @@ names `"Insert"`, `"Home"` and `"PageUp"`; P already publishes `"P"`.
 
 `requestQuit()` sets a monotonic, idempotent latch. It does not show a confirmation
 dialog or save data. The game calls it after its own explicit confirmation.
-Both values persist across scene replacement and are visible in every canonical
-world snapshot (and its observation digest):
+Both values persist across scene replacement and remain available on the typed
+world snapshot. Canonical JSON omits `application` while both values equal the
+legacy defaults (`escape_behavior="quit"`, `quit_requested=false`), preserving
+existing replay digests for games that do not use this API. Non-default state is
+included in canonical JSON and its observation digest:
 
 ```json
 {"application":{"escape_behavior":"action","quit_requested":true}}

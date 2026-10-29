@@ -1,0 +1,170 @@
+{
+  "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+  "application": {
+    "escape_behavior": "quit",
+    "quit_requested": false
+  },
+  "audio": {
+    "available": false,
+    "declared_assets": 0,
+    "failures": [],
+    "live": [],
+    "unavailable": null
+  },
+  "battle": null,
+  "bloom_enabled": false,
+  "boot_ms": 604.5139,
+  "camera3d": null,
+  "draw_calls_last_frame": 1,
+  "drawn": 631,
+  "dropped_ticks": 0,
+  "error": null,
+  "fps": 60.00692565788911,
+  "frame": 625,
+  "fx": null,
+  "heightfield_revisions": {},
+  "host": "windows",
+  "instance_prepare_ms_last_frame": 0.0,
+  "interval": {
+    "count": 601,
+    "max_ms": 19.990000000000002,
+    "mean_ms": 16.664743094841914,
+    "p95_ms": 17.04
+  },
+  "lod_instances_last_frame": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "measured_seconds": 10.015510599999994,
+  "measurement": {
+    "capture_enabled": false,
+    "digest_outside_timing": true,
+    "fixed_tick": false,
+    "freeze_simulation": false,
+    "gpu_time_available": false,
+    "lod_enabled": true,
+    "prewarm_ticks": 0,
+    "render_submit_includes_driver_wait": true,
+    "seed": 42,
+    "submitted_is_not_visible_count": true,
+    "timing_window_capacity": 16384,
+    "warmup_presentations": 30
+  },
+  "mesh_triangles_last_frame": 2000,
+  "native_codegen_compiled": false,
+  "observation_digest": "sha256:5a110b4165831f00256788715bdc4910504e30df308a08d6169bf341dee05dfe",
+  "observations": {},
+  "package_sha256": "a574ef034b8a975ea96e1b1509adbe1c041a4b162ef461a91d98fdda5cbf0832",
+  "particle_count": 0,
+  "presentation_batches": [],
+  "presentation_warnings": [],
+  "profile": "release",
+  "projected_buffer_bytes_last_frame": 0,
+  "quit_request_presented": false,
+  "render_submit": {
+    "count": 601,
+    "max_ms": 18.7732,
+    "mean_ms": 15.573049750415981,
+    "p95_ms": 16.1273
+  },
+  "renderer": "wgpu-native-instanced",
+  "renderer_cpu_phases": {
+    "acquire": {
+      "count": 601,
+      "max_ms": 18.2972,
+      "mean_ms": 15.160611813643918,
+      "p95_ms": 15.7359
+    },
+    "classify": {
+      "count": 601,
+      "max_ms": 0.0,
+      "mean_ms": 0.0,
+      "p95_ms": 0.0
+    },
+    "encode_submit": {
+      "count": 601,
+      "max_ms": 0.5659000000000001,
+      "mean_ms": 0.2563595673876872,
+      "p95_ms": 0.3565
+    },
+    "instance_upload": {
+      "count": 601,
+      "max_ms": 0.0,
+      "mean_ms": 0.0,
+      "p95_ms": 0.0
+    },
+    "prepare": {
+      "count": 601,
+      "max_ms": 0.1536,
+      "mean_ms": 0.06329217970049918,
+      "p95_ms": 0.0948
+    },
+    "present": {
+      "count": 601,
+      "max_ms": 0.2584,
+      "mean_ms": 0.08797787021630611,
+      "p95_ms": 0.1807
+    },
+    "sprite_prepare": {
+      "count": 601,
+      "max_ms": 0.1199,
+      "mean_ms": 0.03166638935108155,
+      "p95_ms": 0.054
+    },
+    "sprite_upload": {
+      "count": 601,
+      "max_ms": 0.0876,
+      "mean_ms": 0.028296672212978356,
+      "p95_ms": 0.0406
+    },
+    "ui_raster": {
+      "count": 601,
+      "max_ms": 0.0,
+      "mean_ms": 0.0,
+      "p95_ms": 0.0
+    }
+  },
+  "resolution": [
+    1280,
+    720
+  ],
+  "simulation_hz_measured": 60.00692565788911,
+  "spatial": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bodies": 0,
+    "delivery": "next_tick",
+    "external": false,
+    "fault": null,
+    "indices": 0,
+    "limits": {
+      "bodies": 131072,
+      "bodies_per_index": 65536,
+      "coordinate_abs": 1000000.0,
+      "hits_per_query": 64,
+      "indices": 8,
+      "queries_per_batch": 1024,
+      "safe_integer": 9007199254740991,
+      "submissions_per_tick": 4,
+      "tickets": 16
+    },
+    "operations": [
+      "nearest",
+      "overlap_sphere",
+      "sweep_sphere"
+    ],
+    "packed_format": "USB1",
+    "pending": 0,
+    "tickets": 0
+  },
+  "submitted_instances_last_frame": 1000,
+  "tick": {
+    "count": 601,
+    "max_ms": 1.3819,
+    "mean_ms": 0.9207495840266227,
+    "p95_ms": 1.2207
+  },
+  "upload_bytes_last_frame": 24000
+}

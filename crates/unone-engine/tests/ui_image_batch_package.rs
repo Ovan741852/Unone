@@ -21,6 +21,7 @@ return {start=function(api)
     assert(art.quads[1].source.x==32 and art.quads[2].opacity==.6)
     for _,bad in ipairs({
         function()ui.imageBatch({id='a',rect=art.rect,quads=art.quads,action='Attack'})end,
+        function()ui.imageBatch({id='a',anchor='center',size={width=100,height=100},quads=art.quads})end,
         function()ui.imageBatch({id='a',rect=art.rect,quads={{asset='x',rect=art.rect,text='Hidden'}}})end,
         function()ui.imageBatch({id='a',rect=art.rect,quads={[2]=art.quads[1]}})end,
     })do local ok=pcall(bad);assert(not ok)end

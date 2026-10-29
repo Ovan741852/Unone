@@ -2,6 +2,7 @@ import {createBinaryJobTransport} from './job-binary.mjs';
 import {chooseJobWorkers,createJobPool,jobRequest} from './job-pool.mjs';
 import {loadProject,readObservation} from './load-project.js';
 import {createSpatialHost} from './spatial-host.mjs';
+const commandEncoder=new TextEncoder();
 export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBackend='cpu',createSpatialExecutor,requirePhysicalViewport=true,profile=false}={}){
  if(typeof requirePhysicalViewport!=='boolean')throw Error('VIEWPORT_POLICY_INVALID');
  if(typeof profile!=='boolean')throw Error('RUNTIME_PROFILE_POLICY_INVALID');
@@ -11,7 +12,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  const mark=(name,bytes)=>{lastTrace.marks.push([name,performance.now()]);if(bytes!==undefined)lastTrace.observation_bytes=bytes;};
  const spatial=createSpatialHost(module,{backend:spatialBackend,createExecutor:createSpatialExecutor});
  const read=()=>readObservation(module),binary=createBinaryJobTransport(module);
- function send(name,value){const bytes=new TextEncoder().encode(JSON.stringify(value)),p=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,p);if(module[name](p,bytes.length)!==0)throw Error(JSON.stringify(read()));}
+ function send(name,value){const bytes=commandEncoder.encode(JSON.stringify(value)),p=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,p);if(module[name](p,bytes.length)!==0)throw Error(JSON.stringify(read()));}
  let loaded=false,latest,pool,policy={workers:0,reason:'jobs_disabled'},pending=[],fault=null,instanceTransport=1;
  const hasPhysicalViewport=()=>typeof module._unone_web_set_viewport_size==='function';
  const validSize=(width,height)=>[width,height].every(n=>Number.isInteger(n)&&n>0&&n<=32768);

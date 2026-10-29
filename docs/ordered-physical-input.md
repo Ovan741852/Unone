@@ -93,6 +93,12 @@ stay behind the in-flight lease. A direct C ABI second input setter rejects a
 pending ordered batch without replacing it. Timeout or unknown completion is
 terminal; the host does not resend or silently switch to legacy input.
 
+Core host barriers such as `SPATIAL_PENDING` occur before physical execution
+begins. They preserve the staged lease without faulting the session. After the
+host completes the missing result, `tick()` or an unchanged input frame retries
+that lease; an omitted batch does not clear it and a conflicting replacement is
+rejected with `INPUT_PHYSICAL_ALREADY_QUEUED` before changing game input.
+
 A fresh Core does not borrow an epoch from presentation. Its first valid batch
 must start after zero; only successful tick commit pins epoch, cursor and receive
 time. Validation rejection has no game effects. An accepted execution failure

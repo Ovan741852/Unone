@@ -1,0 +1,14 @@
+Optional development Web runtime attempts, 2026-10-30.
+Command: scripts/build-web-live.ps1 -Player -Development -Project D:/Projects/Unone/.cache/stability-sdk-project -OutputRoot D:/Projects/Unone/artifacts/stability-20261030-web-development-runtime -EmsdkRoot D:/Projects/Unone/.toolcache/emsdk/unone-layout
+Both attempts exited 1 before a development runtime was produced.
+Original terminal result:
+
+ResourceUnavailable: D:\Projects\Unone\scripts\build-web-live.ps1:76
+Line |
+  76 |      $systemJson = & $cli --project $systemsProject systems list --jso …
+     |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Program 'game.exe' failed to run: StandardOutputEncoding is only supported when standard output is redirected.At
+     | D:\Projects\Unone\scripts\build-web-live.ps1:76 char:19 + …    $systemJson = & $cli --project $systemsProject
+     | systems list --json +                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+
+The delivered SDK contains production Web and Windows runtimes only. This failure is not a completed development build or parity gate. No Windows security policy was changed.

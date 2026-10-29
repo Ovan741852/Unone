@@ -14,6 +14,8 @@ canonical strict types accompany the portable SDK's verified package inventory.
 decorative art. Its typed quads preserve source crops and opacity; every quad
 still counts against the normal UI budget. Use a matching runtime supporting
 the `image_batch` node, and keep text and controls as ordinary UI nodes.
+Batch placement uses an explicit stage `rect`; quads use absolute stage
+coordinates. Anchors do not translate the quads and are rejected.
 
 Declare the exact installed version in `project.unone.json`:
 

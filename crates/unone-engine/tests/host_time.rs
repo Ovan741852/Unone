@@ -112,6 +112,51 @@ fn live_is_explicit_and_does_not_retain_session_tape() {
 }
 
 #[test]
+fn developer_recording_captures_time_before_start_and_replay_requires_the_tape() {
+    use unone_engine::{DeveloperProtocol, DeveloperRequest};
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::write(dir.path().join("main.luau"), SOURCE).unwrap();
+    std::fs::write(dir.path().join("project.unone.json"), json!({
+        "name":"developer-clock", "entry_script":"main.luau", "host_time":{"mode":"live"}
+    }).to_string()).unwrap();
+    let mut protocol = DeveloperProtocol::default();
+    let opened = protocol.execute_json(dir.path(), json!({"command":"open","seed":42}));
+    assert!(opened.ok, "{:?}", opened.diagnostics);
+    let id = opened.value.unwrap()["session"].clone();
+    let step = protocol.execute_json(dir.path(), json!({"command":"step","session":id,"expected_revision":0,"frames":1}));
+    assert!(step.ok, "{:?}", step.diagnostics);
+    let output = protocol.execute_json(dir.path(), json!({"command":"recording","session":id}));
+    assert!(output.ok, "{:?}", output.diagnostics);
+    let mut recording = output.value.unwrap();
+    assert_eq!(recording["host_time"]["transactions"].as_array().unwrap().len(), 2);
+    std::thread::sleep(std::time::Duration::from_millis(5));
+    let replay = protocol.execute(dir.path(), DeveloperRequest::Replay { recording: recording.clone() });
+    assert!(replay.ok, "{:?}", replay.diagnostics);
+    assert_eq!(replay.value.unwrap()["identical"], true);
+    recording.as_object_mut().unwrap().remove("host_time");
+    let missing = protocol.execute(dir.path(), DeveloperRequest::Replay { recording });
+    assert!(!missing.ok);
+    assert_eq!(missing.diagnostics[0].code, "HOST_TIME_REPLAY_TAPE_MISSING");
+}
+
+#[test]
+fn deterministic_tests_and_ui_preview_require_replay_time_and_consume_the_tape() {
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::write(dir.path().join("main.luau"), SOURCE).unwrap();
+    std::fs::write(dir.path().join("clock.test.json"), json!({"name":"clock", "frames":1}).to_string()).unwrap();
+    for policy in [json!({"mode":"live"}), json!({"mode":"record"}), json!({"mode":"replay","tape":tape()})] {
+        let replay = policy["mode"] == "replay";
+        std::fs::write(dir.path().join("project.unone.json"), json!({
+            "name":"test-clock", "entry_script":"main.luau", "test_files":["clock.test.json"], "host_time":policy
+        }).to_string()).unwrap();
+        let tests = EngineRuntime::run_tests(dir.path());
+        assert_eq!(tests.ok, replay, "{:?}", tests.diagnostics);
+        assert_eq!(EngineRuntime::load_ui_preview(dir.path(), 42, None).is_ok(), replay);
+        if !replay { assert_eq!(tests.diagnostics[0].code, "HOST_TIME_REPLAY_TAPE_MISSING"); }
+    }
+}
+
+#[test]
 fn record_capacity_fails_without_dropping_and_invalid_tapes_fail_before_start() {
     let mut runtime=load(SOURCE,json!({"mode":"record","max_samples":2,"max_transactions":4}));
     assert!(runtime.tick().is_err());

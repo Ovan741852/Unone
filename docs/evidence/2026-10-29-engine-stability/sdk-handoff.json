@@ -1,0 +1,347 @@
+{
+  "schema": "unone.stability.handoff.v1",
+  "started": "2026-10-29",
+  "packaged": "2026-10-30",
+  "timezone": "Asia/Taipei",
+  "checkpoint_commit": "735e1cb4101459021a08bb76c6544bf691edc013",
+  "sdk": {
+    "path": "D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030",
+    "manifest_sha256": "3aa4666b322a8093189f4e6eb7eaafac38aa4f9fc77700826f660a3d60a37299",
+    "cli_sha256": "486aa48dc81155035001e5c6c651ea958451bfb98a841898bc366afb1a6fc3cc",
+    "variants": "Production Web and Windows; prior SDKs remain untouched. This package contains no development runtime.",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "target": "web",
+        "path": "D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\web-production-0",
+        "descriptor_sha256": "9c6c15002485b54b82028569d2d4a99da97620371d8eb9afd28bb10bca356cea",
+        "descriptor": {
+          "wasm_sha256": "52a1e0abcfb2ee84e60b7a39972c5e7bd2115dd5f430729d9ed9aac1a971599a",
+          "source_dirty": true,
+          "wasm": "unone_player.wasm",
+          "profile": "release",
+          "dev_tools": false,
+          "source_commit": "735e1cb4101459021a08bb76c6544bf691edc013",
+          "exports": [
+            "init",
+            "alloc",
+            "load_project",
+            "set_save_payload",
+            "set_input_frame",
+            "set_viewport_aspect",
+            "set_viewport_size",
+            "set_instance_transport",
+            "tick",
+            "ui_request",
+            "jobs_request",
+            "jobs_binary",
+            "spatial_request",
+            "host_time_request",
+            "observation_ptr",
+            "observation_len",
+            "particle_alloc",
+            "particle_sample",
+            "particle_output_ptr",
+            "particle_output_len"
+          ],
+          "preview_tools": false,
+          "runtime_packages": {
+            "@unone/ui": "0.4.0"
+          },
+          "wasm_bytes": 2407185,
+          "javascript": "unone-player.js",
+          "javascript_sha256": "52b6849c1c9eb8566af79eed2d74f2d1ebdb3e8db0ae2e72306bdce8d0037caa",
+          "compiled_systems": [
+            "audio",
+            "camera2d",
+            "camera3d",
+            "input",
+            "observation",
+            "particle",
+            "random",
+            "save",
+            "ui",
+            "world"
+          ],
+          "cargo_features": [
+            "audio",
+            "camera2d",
+            "camera3d",
+            "particle",
+            "random",
+            "save",
+            "ui"
+          ]
+        }
+      },
+      {
+        "id": "windows-production-1",
+        "target": "windows",
+        "path": "D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\windows-production-1",
+        "descriptor_sha256": "d99b6687388bdc78120e2ad33400c5b7367664afde14f1fe0d0525ca3a75a1b0",
+        "descriptor": {
+          "preview_tools": false,
+          "source_dirty": true,
+          "decoders": [
+            "unone-mesh-json",
+            "png-rgb-rgba",
+            "jpeg-rgba",
+            "webp-rgba",
+            "svg-static",
+            "audio-rodio"
+          ],
+          "profile": "release",
+          "presentation": [
+            "mesh3d",
+            "instances3d",
+            "heightfield",
+            "sprite2d",
+            "particle",
+            "ui",
+            "bloom",
+            "projected_geometry"
+          ],
+          "ui": {
+            "backend": "cpu-raster-wgpu-overlay",
+            "font": "system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported",
+            "images": [
+              "png",
+              "svg-static"
+            ],
+            "input": "mouse/touch semantic down-up; rectangular reverse-order hit testing",
+            "limitations": [
+              "UI redraws/uploads the full surface when the tree changes",
+              "File drag/drop is not a supported input contract; Windows OLE registration is disabled",
+              "Spine skeletal animation and Effekseer effects still require their native runtimes",
+              "Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately",
+              "Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"
+            ],
+            "nodes": [
+              "text",
+              "button",
+              "image",
+              "panel",
+              "slider",
+              "combobox",
+              "component"
+            ],
+            "styles": "typed leaf typography and box styles; vertical design units; explicit font size never shrinks"
+          },
+          "dev_tools": false,
+          "native_codegen_compiled": false,
+          "renderer": "wgpu-native-instanced",
+          "compiled_systems": [
+            "jobs",
+            "world",
+            "input",
+            "observation",
+            "physics3d",
+            "physics2d",
+            "camera2d",
+            "camera3d",
+            "random",
+            "ui",
+            "save",
+            "audio",
+            "spine",
+            "particle",
+            "effekseer"
+          ],
+          "input_replay": {
+            "argument": "--input-sequence",
+            "contract": "unone.native-input-replay.v1",
+            "exhaustion": "empty input each subsequent simulation tick",
+            "format": "JSON array of normalized unone_engine::InputFrame",
+            "incompatible": [
+              "--freeze-simulation",
+              "nonzero --seconds"
+            ],
+            "initial_window_focus": "disabled_on_windows",
+            "live_input": false,
+            "max_bytes": 8388608,
+            "max_frames": 60000,
+            "ordered_physical": {
+              "live": "unsupported",
+              "normalized_core_replay": true,
+              "text_ime": false
+            },
+            "requires": [
+              "--fixed-tick",
+              "--warmup 0",
+              "--prewarm-ticks 0",
+              "--frames N>0"
+            ],
+            "simulation_viewport": "fixed_at_startup_dimensions",
+            "spatial_backend": "explicit_cpu_or_gpu; auto_rejected"
+          },
+          "runtime_packages": {
+            "@unone/ui": "0.4.0"
+          },
+          "source_commit": "735e1cb4101459021a08bb76c6544bf691edc013",
+          "readiness": {
+            "contract": "unone.native-ready.v1",
+            "emission": "once_after_first_render_ok_true",
+            "fields": [
+              "contract",
+              "package_sha256",
+              "host",
+              "renderer",
+              "adapter",
+              "resolution",
+              "process_id"
+            ],
+            "headless": "never_emits",
+            "requires_surface": true,
+            "stdout_prefix": "UNONE_NATIVE_READY "
+          },
+          "files": [
+            {
+              "sha256": "dabff38318d8903450c0d34cd2bb537d2dcb2317ec4a74d6c823b19d6e54600f",
+              "path": "unone-native-player.exe"
+            }
+          ],
+          "version": 1,
+          "target": "windows"
+        }
+      }
+    ]
+  },
+  "selection": {
+    "JYRogue": {
+      "ok": true,
+      "value": {
+        "output": null,
+        "project": "D:/Projects/JYRogue/game",
+        "runtime": {
+          "descriptor": "\\\\?\\D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\web-production-0\\runtime.json",
+          "engine_version": "0.1.0",
+          "family": "web-wasm",
+          "readiness": null,
+          "runtime_id": "web-production-0",
+          "runtime_packages": {
+            "@unone/ui": "0.4.0"
+          },
+          "runtime_root": "\\\\?\\D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\web-production-0",
+          "target": "web",
+          "variant": "production",
+          "verified": true
+        },
+        "schema": "unone.project-prepare-preflight.v1",
+        "status": "compatible",
+        "target": "web"
+      },
+      "diagnostics": [],
+      "effects": []
+    },
+    "Populous": {
+      "ok": true,
+      "value": {
+        "output": null,
+        "project": "D:/Projects/Populous-Reborn",
+        "runtime": {
+          "descriptor": "\\\\?\\D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\web-production-0\\runtime.json",
+          "engine_version": "0.1.0",
+          "family": "web-wasm",
+          "readiness": null,
+          "runtime_id": "web-production-0",
+          "runtime_packages": {
+            "@unone/ui": "0.4.0"
+          },
+          "runtime_root": "\\\\?\\D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\web-production-0",
+          "target": "web",
+          "variant": "production",
+          "verified": true
+        },
+        "schema": "unone.project-prepare-preflight.v1",
+        "status": "compatible",
+        "target": "web"
+      },
+      "diagnostics": [],
+      "effects": []
+    }
+  },
+  "verification": {
+    "runtime_units": {
+      "passed": 345,
+      "failed": 0,
+      "ignored": 3
+    },
+    "native_units": {
+      "passed": 64,
+      "failed": 0,
+      "ignored": 2
+    },
+    "web_tests": {
+      "passed": 419,
+      "failed": 0
+    },
+    "webgl_conformance": {
+      "passed": 1028,
+      "failed": 0
+    },
+    "canvas_pixels": {
+      "passed": 928,
+      "failed": 0
+    },
+    "cli_authoring": {
+      "passed": 20,
+      "failed": 0
+    },
+    "export_dependency_closure": {
+      "passed": 1,
+      "failed": 0
+    },
+    "retained_ui": "600 ticks, 256 regenerated panels per tick; explicit two-cycle diagnostic settling, then 32 KiB warmup allowance. No forced GC in the frame loop.",
+    "interruption": "Earlier Windows4551 blocks, first stale-schema/diagnostic regressions, single-cycle retention variance, stale-exporter module gate, and optional development-build PowerShell launcher capture failure are preserved as limits/failures, not passes."
+  },
+  "native_realtime": {
+    "scope": "Official release wgpu native, RTX5080 Vulkan, 1280x720, 1000 moving sprites, 10-second measurement after30 warmup presentations, ordinary realtime scheduler.",
+    "fps": 60.00692565788911,
+    "simulation_hz": 60.00692565788911,
+    "dropped_ticks": 0,
+    "interval": {
+      "count": 601,
+      "max_ms": 19.990000000000002,
+      "mean_ms": 16.664743094841914,
+      "p95_ms": 17.04
+    },
+    "tick": {
+      "count": 601,
+      "max_ms": 1.3819,
+      "mean_ms": 0.9207495840266227,
+      "p95_ms": 1.2207
+    },
+    "error": null,
+    "player_sha256": "dabff38318d8903450c0d34cd2bb537d2dcb2317ec4a74d6c823b19d6e54600f",
+    "screenshot": "native-realtime-moving-1000.png",
+    "claim": "Bounded synthetic acceptance only, not every game or a long soak."
+  },
+  "publication": {
+    "source_sha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+    "before_run_p50_ms": [
+      22.33050000000003,
+      28.263100000000122,
+      32.485499999998865
+    ],
+    "after_run_p50_ms": [
+      17.872100000000046,
+      17.982200000000375,
+      22.50500000000102
+    ],
+    "before_median_ms": 28.263100000000122,
+    "after_median_ms": 17.982200000000375,
+    "same_end_frame_outputs": true,
+    "scope": "Node production CPU, three sequential300-tick windows each; not displayed FPS or statistical significance. Runtime reloads retain allocator capacity; capacity plateau does not prove no leak."
+  },
+  "unmet": {
+    "web_game_60hz": "JYRogue final isolated opt2 idle31.94, drag31.88, travel26.21 ticks/s with dropped steps. Atlas and constructed battle windows separately reached approximately60.",
+    "memory": "No universal absence-of-leaks or GC-frequency proof. Bounded GPU lifecycle/retention and Lua same-phase collection tests passed.",
+    "game_acceptance": "Full89-case JYRogue parity was interrupted for performance isolation; Populous whole-game/World FPS and complete port acceptance remain game-owned work.",
+    "capabilities": "Native durable save/wall clock/seed policy and the remaining capability/authoring gaps are listed in docs/roadmap.md."
+  },
+  "final_sdk_smoke": {
+    "evidence": "final-sdk-browser-smoke.json",
+    "ok": true,
+    "scope": "SDK-only JYRogue world, Populous main menu and automatic platform export each rendered official through90ticks;138SDK hashes verified. Not FPS, fullgame or soak acceptance."
+  }
+}

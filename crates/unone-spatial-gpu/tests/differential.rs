@@ -54,6 +54,23 @@ fn check(gpu: &mut SpatialGpuExecutor, batch: SpatialBatch) {
 }
 
 #[test]
+fn required_gpu_nearest_preserves_order_when_square_roots_round_to_a_tie() {
+    let mut gpu = SpatialGpuExecutor::new().expect("required real GPU compute adapter");
+    let farther_squared = 1.0_f32 + 0.0003_f32 * 0.0003_f32;
+    assert!(farther_squared > 1.0);
+    assert_eq!(farther_squared.sqrt(), 1.0);
+    for bodies in [
+        vec![body(1, [1.0, 0.0003, 0.0], 0.0), body(2, [1.0, 0.0, 0.0], 0.0)],
+        vec![body(2, [1.0, 0.0, 0.0], 0.0), body(1, [1.0, 0.0003, 0.0], 0.0)],
+    ] {
+        let batch = SpatialBatch { version: 32, bodies, queries: vec![nearest([0.0; 3], 2.0)] };
+        let cpu = execute_cpu(&batch).unwrap();
+        assert_eq!(cpu.results[0].hits[0].id, 2);
+        compare(&cpu, &gpu.execute(&batch).unwrap());
+    }
+}
+
+#[test]
 fn required_gpu_keeps_valid_contact_normals_at_tiny_zero_and_large_scales() {
     let mut gpu = SpatialGpuExecutor::new().expect("required real GPU compute adapter");
     eprintln!("Spatial tiny-normal adapter: {}", gpu.adapter_name());

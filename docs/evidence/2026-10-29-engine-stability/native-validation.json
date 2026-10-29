@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "timezone": "Asia/Taipei",
+  "review_base": "735e1cb4101459021a08bb76c6544bf691edc013",
+  "source_state": "Working-tree snapshots during this change, plus the frozen-source native phase below; not a pinned final commit or final-WASM certification.",
+  "operator": "Codex /root/native_performance",
+  "host": "Windows x86_64-pc-windows-gnu",
+  "working_directory": "D:\\Projects\\Unone",
+  "toolchain": {
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "cargo": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)",
+    "environment": {
+      "CARGO_HOME": "D:\\Projects\\Unone\\.toolcache\\cargo",
+      "RUSTUP_HOME": "D:\\Projects\\Unone\\.toolcache\\rustup",
+      "PATH_prefix": [
+        "D:\\Projects\\Unone\\.toolcache\\cargo\\bin",
+        "D:\\Projects\\Unone\\.toolcache\\w64devkit\\bin"
+      ],
+      "LIBRARY_PATH": "D:\\Projects\\Unone\\.toolcache\\rustup\\toolchains\\1.95.0-x86_64-pc-windows-gnu\\lib\\rustlib\\x86_64-pc-windows-gnu\\lib\\self-contained"
+    },
+    "environment_note": "LIBRARY_PATH supplies Rust's genuine bundled libgcc_eh.a, absent from the local w64devkit 16.2 library directory. No Windows security policy was changed.",
+    "release_build_overrides": [
+      "profile.release.package.document-features.debug=true",
+      "profile.release.package.document-features.strip=\"none\""
+    ],
+    "release_build_override_note": "Keep debug information only for the build-time document-features proc-macro DLL. The native runtime retains the normal optimized release profile. This avoids the local stripped proc-macro loading failure; no repository profile override was added."
+  },
+  "completed_runs": [
+    {
+      "id": "native-unit",
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib -- --nocapture",
+      "exit_code": 0,
+      "passed": 64,
+      "failed": 0,
+      "ignored": 2,
+      "ignored_tests": [
+        "projected::tests::gpu_rotating_batches_compact_and_unchanged_frames_do_not_upload",
+        "ui::tests::gpu_png_cjk_transparent_button_surface"
+      ],
+      "elapsed_test_seconds": 15.40,
+      "coverage": "Includes replay viewport digest equality, replay auto-backend rejection before script/input loading, projected budget policy, input host routing, UI CPU raster and shader validation.",
+      "raw_log": null,
+      "evidence_origin": "Completed command output in this chat's tool transcript; no original raw log file was written."
+    },
+    {
+      "id": "native-gpu-buffers",
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib projected::tests::gpu_rotating -- --ignored --nocapture",
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "filtered_out": 64,
+      "elapsed_test_seconds": 0.90,
+      "adapter": {
+        "name": "NVIDIA GeForce RTX 5080",
+        "vendor": 4318,
+        "device": 11266,
+        "device_type": "DiscreteGpu",
+        "device_pci_bus_id": "0000:01:00.0",
+        "driver": "NVIDIA",
+        "driver_info": "610.88",
+        "backend": "Vulkan"
+      },
+      "workload": "32 live batch IDs; rotate a 100000-vertex payload across them, prepare each unchanged snapshot again, then remove all batches.",
+      "peak_retained_geometry_buffer_bytes": 8003984,
+      "final_retained_geometry_buffer_bytes": 0,
+      "unchanged_frame_upload_bytes": 0,
+      "measurement_scope": "Actual wgpu Buffer::size totals and upload accounting. Does not measure process-wide memory, driver-deferred VRAM reclamation, rendered FPS or game pixel equivalence.",
+      "raw_log": null,
+      "evidence_origin": "Completed command output in this chat's tool transcript; no original raw log file was written."
+    },
+    {
+      "id": "native-release-build",
+      "command": "cargo build --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --release --bin unone-native-player --config 'profile.release.package.document-features.debug=true' --config 'profile.release.package.document-features.strip=\"none\"'",
+      "exit_code": 0,
+      "elapsed_build_seconds": 29.04,
+      "binary_path": "D:\\Projects\\Unone\\target\\native-player\\release\\unone-native-player.exe",
+      "raw_log": null,
+      "evidence_origin": "Completed command output in this chat's tool transcript; no original raw log file was written."
+    },
+    {
+      "id": "native-release-shader-contract",
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --release --test projected_contract --config 'profile.release.package.document-features.debug=true' --config 'profile.release.package.document-features.strip=\"none\"' -- --nocapture",
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "test": "native_projected_shader_is_valid_wgsl_and_direct_clip_output",
+      "coverage": "Naga parse/validation of the actual native WGSL, direct clip output and material layout/alpha contract; not a rendered screenshot comparison.",
+      "raw_log": null,
+      "evidence_origin": "Completed command output in this chat's tool transcript; no original raw log file was written."
+    },
+    {
+      "id": "native-describe",
+      "command": "& 'D:\\Projects\\Unone\\target\\native-player\\release\\unone-native-player.exe' --describe",
+      "exit_code": 0,
+      "renderer": "wgpu-native-instanced",
+      "raw_log": "native-describe.json",
+      "raw_log_source": ".cache/stability-native-describe.json",
+      "coverage": "Release descriptor reports @unone/ui 0.4.0, fixed startup simulation viewport during replay, and rejection of automatic replay spatial backend."
+    }
+  ],
+  "failed_or_interrupted_runs": [
+    {
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib projected::tests -- --nocapture",
+      "result": "Initial compilation found an existing WorldSnapshot test initializer missing ui_cursor; fixed to ui_cursor:None before successful runs.",
+      "raw_log": null
+    },
+    {
+      "result": "Initial GNU linking could not find libgcc_eh.a; resolved with the genuine Rust bundled library path above.",
+      "raw_log": null
+    },
+    {
+      "result": "Initial release wgpu compilation reported missing cached crate metadata, then Windows error 4551 loading the stripped document-features proc-macro DLL. Rebuilt local wgpu dependencies and used the build-time-only debug/strip overrides above; final release build and shader test succeeded.",
+      "raw_log": null
+    },
+    {
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player -- --nocapture",
+      "exit_code": 1,
+      "result": "Unrestricted debug test build tried to link the native cdylib and exceeded the Windows GNU export ordinal limit: export ordinal too large:198717. Separate --lib tests and release shader integration passed.",
+      "raw_log": null
+    },
+    {
+      "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib -- --nocapture 2>&1 | Tee-Object -FilePath docs/evidence/2026-10-29-engine-stability/native-unit.log",
+      "exit_code": 1,
+      "result": "A later raw-log capture attempt was interrupted with Ctrl-C to keep the concurrent final browser benchmark uncontended. Its partial output is not a completed test result and does not replace the earlier completed 64/0/2 result. The following GPU capture command in that script was never reached.",
+      "raw_log": "native-unit-interrupted.log"
+    }
+  ],
+  "limits": [
+    "The earlier completed_runs precede later source-policy/output-buffer changes. The frozen_source_native_phase separately revalidates native after source freeze; neither phase claims an exact final commit or final-WASM acceptance.",
+    "Original completed command output exists in the tool transcript, not in fabricated reconstructed raw logs.",
+    "No sustained final-WASM 60 FPS claim, zero-GC claim, universal no-leak claim or native game visual-completion claim is made by this record."
+  ],
+  "frozen_source_native_phase": {
+    "date": "2026-10-30",
+    "source_base": "735e1cb4101459021a08bb76c6544bf691edc013",
+    "source_dirty": true,
+    "source_scope": "Root declared source frozen after the reusable SDK UI compatibility port; subsequent edits limited to tests/evidence. Runtime includes the non-preview bytecode optimization-2 policy and native input-region source routing/shadow rejection.",
+    "environment": "Same toolchain/environment recorded above; no source Cargo profile or Windows security-policy changes.",
+    "official_build": {
+      "default_command": "& scripts/build-native-player.ps1 -Target windows -OutputRoot artifacts/stability-20261030-windows-runtime",
+      "default_exit_code": 1,
+      "default_result": "wgpu-core could not load the default stripped document_features proc-macro crate; native script reported Native player build failed.",
+      "default_raw_log": "native-final-default-build.log",
+      "retry_process_local_setup": "$taskNativeCargoPath='D:\\Projects\\Unone\\.toolcache\\cargo\\bin\\cargo.exe'; function cargo { & $taskNativeCargoPath @args --config 'profile.release.package.document-features.debug=true' --config 'profile.release.package.document-features.strip=\"none\"' }",
+      "retry_command": "& scripts/build-native-player.ps1 -Target windows -OutputRoot artifacts/stability-20261030-windows-runtime",
+      "retry_exit_code": 0,
+      "retry_raw_log": "native-final-official-build.log",
+      "elapsed_cargo_build_seconds": 23.46,
+      "artifact_directory": "D:\\Projects\\Unone\\artifacts\\stability-20261030-windows-runtime",
+      "binary": "unone-native-player.exe",
+      "binary_bytes": 40057084,
+      "binary_sha256": "dabff38318d8903450c0d34cd2bb537d2dcb2317ec4a74d6c823b19d6e54600f",
+      "binary_hash_verified_against_manifest": true,
+      "manifest": "runtime.json",
+      "manifest_evidence_copy": "native-final-runtime.json",
+      "profile": "release",
+      "renderer": "wgpu-native-instanced",
+      "dev_tools": false,
+      "preview_tools": false,
+      "native_codegen_compiled": false,
+      "old_artifacts": "Untouched; this was a new output directory."
+    },
+    "checks": [
+      {
+        "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib -- --nocapture",
+        "exit_code": 0,
+        "passed": 64,
+        "failed": 0,
+        "ignored": 2,
+        "elapsed_test_seconds": 15.46,
+        "raw_log": "native-final-unit.log"
+      },
+      {
+        "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --lib projected::tests::gpu_rotating -- --ignored --nocapture",
+        "exit_code": 0,
+        "passed": 1,
+        "failed": 0,
+        "filtered_out": 65,
+        "elapsed_test_seconds": 0.48,
+        "raw_log": "native-final-gpu-buffers.log",
+        "adapter": "NVIDIA GeForce RTX 5080; Vulkan; driver 610.88; PCI 0000:01:00.0",
+        "peak_retained_geometry_buffer_bytes": 8003984,
+        "final_retained_geometry_buffer_bytes": 0,
+        "unchanged_frame_upload_bytes": 0
+      },
+      {
+        "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --target-dir target/native-player --release --test projected_contract --config 'profile.release.package.document-features.debug=true' --config 'profile.release.package.document-features.strip=\"none\"' -- --nocapture",
+        "exit_code": 0,
+        "passed": 1,
+        "failed": 0,
+        "raw_log": "native-final-release-shader.log"
+      }
+    ],
+    "limits": "These are optimized native build/package, unit, shader and actual GPU resource-retention checks. No FPS benchmark was run, no game screenshot acceptance is claimed, and native editable/scroll/glyph-shadow parity is not established. Original interrupted and failed attempts remain preserved separately."
+  }
+}

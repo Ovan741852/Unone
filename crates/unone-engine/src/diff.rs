@@ -124,7 +124,7 @@ fn recorded_frame(index: u64, snapshot: &WorldSnapshot) -> RecordedFrame {
     }
 }
 
-fn load_record_runtime(root: &Path, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
+pub(crate) fn load_record_runtime(root: &Path, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
     let (config, _) = crate::ProjectPaths::discover(root)?;
     let policy = match config.host_time {
         Some(crate::HostTimeConfig::Live) => Some(crate::HostTimeConfig::Record {

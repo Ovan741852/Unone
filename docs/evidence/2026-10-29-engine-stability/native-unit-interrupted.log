@@ -1,0 +1,75 @@
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+   Compiling unone-spatial-gpu v0.1.0 (D:\Projects\Unone\crates\unone-spatial-gpu)
+   Compiling unone-native-player v0.1.0 (D:\Projects\Unone\crates\unone-native-player)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.65s
+     Running unittests src\lib.rs (target/native-player\debug\deps\unone_native_player-c8cd071a7a6f9405.exe)
+
+running 66 tests
+test application::tests::legacy_escape_quits_only_on_physical_press_and_action_mode_never_quits ... ok
+test projected::tests::gpu_rotating_batches_compact_and_unchanged_frames_do_not_upload ... ignored, requires a native GPU; run explicitly on a verified host
+test mouse::tests::primary_pointer_priority_defers_action_and_coordinates_together ... ok
+test audio::tests::fade_gain_is_frame_deterministic ... ok
+test application::tests::quit_waits_for_successful_presentation_and_headless_never_claims_it ... ok
+test keyboard::tests::short_tap_survives_until_a_down_tick_then_an_up_tick ... ok
+test keyboard::tests::held_keys_and_autorepeat_do_not_create_extra_edges ... ok
+test keyboard::tests::reset_discards_pending_taps_and_releases_held_keys ... ok
+UNONE_NATIVE_ASSET_LOOKUP_FIXTURE unset; external manifest not exercised
+test lod::tests::distance_boundaries ... ok
+test lod::tests::malformed_geometry_fails ... ok
+test mouse::tests::focus_reset_releases_held_state_and_discards_pending_clicks ... ok
+test mouse::tests::held_button_does_not_repeat_and_duplicate_events_do_not_move_the_edge ... ok
+test mouse::tests::independent_middle_and_right_edges_keep_coordinates_and_primary_priority ... ok
+test lod::view_tests::vertical_camera_has_nonzero_basis ... ok
+test lod::view_tests::frustum_rejects_offscreen_and_behind_camera ... ok
+test mouse::tests::short_click_preserves_press_and_release_positions_on_separate_ticks ... ok
+test projected::tests::ordering_and_evidence_use_exact_core_payloads ... ok
+test presentation_raster::tests::content_hash_validation_precedes_raster_admission ... ok
+test presentation_raster::tests::direct_native_rejects_explicit_physical_input_without_opening_runtime_or_gpu ... ok
+test keyboard::tests::rapid_taps_keep_their_order_and_chords_advance_together ... ok
+test audio::tests::verified_pcm_wav_decodes_without_an_output_device ... ok
+test presentation_raster::tests::direct_native_package_admission_rejects_declared_raster_before_any_runtime_or_gpu ... ok
+test render::tests::asset_index_rejects_duplicate_ids_including_identical_and_cross_kind_entries ... ok
+test render::tests::external_asset_index_differential ... ok
+test render::tests::asset_index_matches_linear_texture_lookup_without_reordering ... ok
+test render::tests::native_texture_decoder_rejects_external_svg_resources ... ok
+test replay::tests::replay_options_cannot_silently_skip_or_prewarm_frames ... ok
+test replay::tests::input_is_not_consumed_until_success_and_exhaustion_releases_held_state ... ok
+test replay::tests::replay_rejects_machine_selected_spatial_backend ... ok
+test telemetry_tests::gui_executable_path_accepts_a_shallow_runtime ... ok
+test telemetry_tests::gui_executable_path_limit_counts_utf16_code_units ... ok
+UNONE_UI_ROUTE_FIXTURE unset; external application snapshots not exercised
+test telemetry_tests::physical_keys_have_game_neutral_names ... ok
+test render::tests::native_texture_decoder_accepts_static_svg ... ok
+test telemetry_tests::readiness_declaration_freezes_host_contract ... ok
+test projected::tests::rotating_large_batches_cannot_accumulate_historical_peaks ... ok
+test ui::tests::gpu_png_cjk_transparent_button_surface ... ignored, requires a native GPU and installed fonts; run explicitly on a verified host
+test telemetry_tests::replay_auto_backend_is_rejected_before_loading_script_or_input_file ... ok
+test replay::tests::byte_limit_and_exact_raw_file_digest_are_enforced ... ok
+test ui::tests::external_pointer_route_fixture ... ok
+test ui::tests::font_catalog_rejects_unsupported_or_invalid_sources ... ok
+test telemetry_tests::timing_window_is_bounded_and_retains_recent_samples ... ok
+test ui::tests::paragraph_breaks_preserve_graphemes_and_cjk_word_boundaries ... ok
+test ui::image_batch_tests::image_batch_native_is_noninteractive_and_does_not_block_buttons ... ok
+test ui::tests::semantic_slider_pause_reset_preserves_cancel_after_an_already_consumed_start ... ok
+test render::tests::sprite_shader_parses_and_validates ... ok
+test ui::tests::pointer_short_press_and_removed_button_releases_but_keeps_capture ... ok
+test ui::tests::legacy_slider_remains_passthrough_and_foreground_button_keeps_action_ownership ... ok
+test ui::tests::semantic_slider_disabled_and_second_finger_consume_without_replacing_owner ... ok
+test ui::tests::semantic_slider_captures_clamps_and_keeps_start_drag_end_on_separate_ticks ... ok
+test render::tests::bloom_shader_parses_and_validates ... ok
+test particles::tests::particle_shader_parses_and_validates ... ok
+test ui::tests::semantic_slider_vertical_reverse_and_final_release_coordinates ... ok
+test ui::tests::semantic_slider_reconcile_cancels_geometry_disable_and_removal_without_click_through ... ok
+test ui::tests::semantic_slider_queue_coalesces_moves_preserves_edges_and_reports_overflow ... ok
+test presentation_raster::tests::material_profile_and_runtime_snapshot_reject_before_gpu ... ok
+test sprites::tests::batching_preserves_paint_order_and_handles_visibility_removal_and_growth ... ok
+test replay::tests::headless_kernel_replay_preserves_press_hold_release_and_frame_numbering ... ok
+test telemetry_tests::native_runtime_rejects_shader_resources_instead_of_silently_ignoring_them ... ok
+test replay::tests::malformed_unknown_and_semantically_invalid_frames_fail ... ok
+test replay::tests::replay_window_events_cannot_change_simulation_viewport_or_digest ... ok
+test ui::image_batch_tests::image_batch_native_visits_every_asset_and_rejects_bad_decoded_crop ... ok
+test ui::tests::styled_panel_opacity_border_radius_and_noninteractive_input ... ok
+native styled font fixture rendered: same glyph bounds (7, 154, 105, 168)/(7, 114, 105, 128); top (7, 48, 105, 62); bottom (7, 180, 105, 194)
+test ui::tests::font_catalog_aliases_and_styled_typography_pixels ... ok
+test ui::tests::svg_static_validation_and_scaled_pixels ... ok
+test ui::image_batch_tests::image_batch_native_crop_opacity_and_original_paint_order ... ok

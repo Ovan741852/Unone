@@ -2,6 +2,9 @@ use std::collections::BTreeSet;
 
 use serde::{Deserialize, Serialize};
 
+mod text_shadow;
+pub use text_shadow::UiTextShadow;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UiContract {
     pub version: u32,
@@ -315,7 +318,9 @@ pub enum UiTextWrap { None, Word }
 #[serde(rename_all = "snake_case")]
 pub enum UiTextOverflow { Clip, Ellipsis }
 
-/// Platform-neutral style data. Fonts name installed host families, not files
+/// Portable style data. Sharp text_shadow requires the official Web Canvas host;
+/// editable text_input and native glyph-shadow parity are unsupported.
+/// Fonts name installed host families, not files
 /// or URLs. An explicit font_size is never inferred from the node's box and is
 /// never silently shrunk to fit it. A styled text leaf defaults to font_size=2,
 /// weight=400, line_height=1.2, centered/middle, no-wrap and clipped overflow.
@@ -324,6 +329,8 @@ pub enum UiTextOverflow { Clip, Ellipsis }
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct UiStyle {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_shadow: Option<UiTextShadow>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_family: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -360,6 +367,7 @@ pub struct UiStyle {
 
 impl UiStyle {
     pub fn validate(&self) -> Result<(), String> {
+        if let Some(shadow) = self.text_shadow { shadow.validate()?; }
         let range = |name: &str, value: Option<f64>, min: f64, max: f64, inclusive_min: bool| {
             if value.is_some_and(|v| !v.is_finite() || v > max || if inclusive_min { v < min } else { v <= min }) {
                 Err(format!("UI_STYLE_INVALID: {name} must be finite and {} {min} and <= {max}", if inclusive_min { ">=" } else { ">" }))
@@ -396,7 +404,7 @@ impl UiStyle {
     }
 
     fn has_text_fields(&self) -> bool {
-        self.font_family.is_some() || self.font_size.is_some() || self.font_weight.is_some()
+        self.text_shadow.is_some() || self.font_family.is_some() || self.font_size.is_some() || self.font_weight.is_some()
             || self.line_height.is_some() || self.letter_spacing.is_some() || self.color.is_some()
             || self.text_align.is_some() || self.vertical_align.is_some() || self.wrap.is_some()
             || self.overflow.is_some()
@@ -546,6 +554,9 @@ impl UiImageQuad {
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "kind")]
 pub enum UiNode {
+    /// Nonvisual action/capture leaf using ordinary button boundaries and lifetime.
+    #[serde(rename = "input_region")]
+    InputRegion { id: String, rect: UiRect, action: String },
     #[serde(rename = "text_input")]
     TextInput {
         id: String, rect: UiRect, text: String,
@@ -672,7 +683,7 @@ pub enum UiImageFit {
 impl UiNode {
     pub fn id(&self) -> &str {
         match self {
-            Self::TextInput { id, .. } | Self::Text { id, .. }
+            Self::InputRegion { id, .. } | Self::TextInput { id, .. } | Self::Text { id, .. }
             | Self::Button { id, .. }
             | Self::Image { id, .. }
             | Self::ImageBatch { id, .. }
@@ -686,7 +697,7 @@ impl UiNode {
 
     pub fn rect(&self) -> &UiRect {
         match self {
-            Self::TextInput { rect, .. } | Self::Text { rect, .. }
+            Self::InputRegion { rect, .. } | Self::TextInput { rect, .. } | Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
             | Self::ImageBatch { rect, .. }
@@ -700,7 +711,7 @@ impl UiNode {
 
     pub fn rect_mut(&mut self) -> &mut UiRect {
         match self {
-            Self::TextInput { rect, .. } | Self::Text { rect, .. }
+            Self::InputRegion { rect, .. } | Self::TextInput { rect, .. } | Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
             | Self::ImageBatch { rect, .. }
@@ -718,7 +729,7 @@ impl UiNode {
             | Self::Button { text, .. }
             | Self::Slider { text, .. }
             | Self::ComboBox { text, .. } => Some(text),
-            Self::Image { .. } | Self::ImageBatch { .. } | Self::Panel { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
+            Self::InputRegion { .. } | Self::Image { .. } | Self::ImageBatch { .. } | Self::Panel { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
         }
     }
 
@@ -726,7 +737,7 @@ impl UiNode {
         match self {
             Self::TextInput { style, .. } | Self::Text { style, .. } | Self::Button { style, .. } | Self::Image { style, .. }
             | Self::Slider { style, .. } | Self::ComboBox { style, .. } | Self::Panel { style, .. } => style.as_ref(),
-            Self::ImageBatch { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
+            Self::InputRegion { .. } | Self::ImageBatch { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
         }
     }
 
@@ -777,6 +788,8 @@ impl UiNode {
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct UiTree {
+    #[serde(skip)]
+    pub(crate) viewport_aspect: f64,
     pub kind: String,
     pub id: String,
     pub node: String,
@@ -964,6 +977,7 @@ impl UiTree {
         fn count(node: &UiNode, out: &mut UiUsage) -> usize {
             out.logical_nodes += 1;
             match node {
+                UiNode::InputRegion { .. } => { out.leaf_nodes += 1; 1 }
                 UiNode::Component { children, .. } | UiNode::ScrollView { children, .. } => {
                     1 + children.iter().map(|n| count(n, out)).sum::<usize>()
                 }
@@ -984,6 +998,7 @@ impl UiTree {
                             1
                         };
                     if let Some(style) = node.style() {
+                        out.render_regions_upper_bound += usize::from(style.text_shadow.is_some());
                         out.render_regions_upper_bound += usize::from(style.background.is_some());
                         out.render_regions_upper_bound += usize::from(style.border_color.is_some()
                             && style.border_width.is_some_and(|width| width > 0.0));
@@ -1057,10 +1072,15 @@ impl UiTree {
                 ui_contract().host_max_nodes
             ));
         }
-        let mut stack = vec![(&value, String::from("root"), 0usize)];
+        let mut stack = vec![(&value, 0usize, 0usize)];
+        let mut indices = Vec::new();
         let mut count: usize = 0;
         let mut bytes: usize = 0;
-        while let Some((n, path, depth)) = stack.pop() {
+        while let Some((n, index, depth)) = stack.pop() {
+            // Retain only index coordinates on the successful hot path. Full
+            // diagnostic paths are formatted lazily when validation fails.
+            indices.truncate(depth.saturating_sub(1));
+            if depth > 0 { indices.push(index); }
             if depth > 0 {
                 count += 1;
                 if n["kind"] == "image_batch" {
@@ -1073,8 +1093,8 @@ impl UiTree {
             if count > limit {
                 return Err(format!(
                     "UI_NODE_LIMIT: path={path}, node={}, used={count}, limit={limit}, host_max_nodes={}; raise screen.budget.max_nodes within the host limit or use one image with slice for each nine-slice panel",
-                    n["id"],
-                    ui_contract().host_max_nodes
+                    n["id"], ui_contract().host_max_nodes,
+                    path = validation_path(&indices),
                 ));
             }
             if depth > ui_contract().max_component_depth + 1
@@ -1082,7 +1102,7 @@ impl UiTree {
             {
                 return Err(format!(
                     "UI_DEPTH_LIMIT: {path} exceeds the maximum component nesting depth of {}",
-                    ui_contract().max_component_depth
+                    ui_contract().max_component_depth, path = validation_path(&indices),
                 ));
             }
             if let Some(obj) = n.as_object() {
@@ -1098,19 +1118,19 @@ impl UiTree {
                     bytes += component.len();
                 }
                 if let Some(keys) = n["scroll"]["virtual_items"]["keys"].as_array() {
-                    if keys.len() > 100_000 { return Err(format!("UI_VIRTUAL_ITEM_LIMIT: {path}; maximum 100000 keys")); }
+                    if keys.len() > 100_000 { return Err(format!("UI_VIRTUAL_ITEM_LIMIT: {path}; maximum 100000 keys", path = validation_path(&indices))); }
                     bytes += keys.iter().filter_map(|k| k.as_str()).map(str::len).sum::<usize>();
                 }
             }
             if bytes > ui_contract().max_string_bytes {
                 return Err(format!(
                     "UI_STRING_LIMIT: {path}, used={bytes}, limit={}; reduce UI text/identifiers",
-                    ui_contract().max_string_bytes
+                    ui_contract().max_string_bytes, path = validation_path(&indices),
                 ));
             }
             if let Some(children) = n["children"].as_array() {
                 for (i, c) in children.iter().enumerate().rev() {
-                    stack.push((c, format!("{path}.children[{i}]"), depth + 1));
+                    stack.push((c, i, depth + 1));
                 }
             }
         }
@@ -1133,6 +1153,7 @@ impl UiTree {
         validate_background_scopes(&children, &mut Vec::new(), false)?;
 
         Ok(Self {
+            viewport_aspect: aspect,
             kind: raw.kind,
             id: raw.id,
             node: raw.node,
@@ -1140,6 +1161,15 @@ impl UiTree {
             budget: raw.budget,
         })
     }
+}
+
+fn validation_path(indices: &[usize]) -> String {
+    use std::fmt::Write;
+    let mut path = String::from("root");
+    for index in indices {
+        write!(&mut path, ".children[{index}]").expect("writing into a String cannot fail");
+    }
+    path
 }
 
 fn parse_node(
@@ -1167,6 +1197,10 @@ fn parse_node(
     *node_count += 1;
     if raw_node.quads.is_some() && raw_node.kind != "image_batch" {
         return Err(format!("UI_IMAGE_BATCH_KIND: '{}' only accepts quads on image_batch", raw_node.id));
+    }
+    if raw_node.kind == "image_batch" && (raw_node.anchor.is_some() || raw_node.pivot.is_some()
+        || raw_node.offset.is_some() || raw_node.size.is_some()) {
+        return Err(format!("UI_IMAGE_BATCH_PLACEMENT: '{}' requires an explicit stage rect matching its absolute quad coordinates; anchors are not supported", raw_node.id));
     }
     if raw_node.expanded.is_some() && raw_node.kind != "combobox" {
         return Err(format!("ui.setRoot node '{}' only supports expanded on combobox", raw_node.id));
@@ -1211,6 +1245,9 @@ fn parse_node(
             return Err(format!("UI_STYLE_INVALID: '{}' is a container; apply style to its leaves or a panel (styles do not inherit)", raw_node.id));
         }
         style.validate().map_err(|error| format!("{error}; node={}", raw_node.id))?;
+        if raw_node.kind=="text_input" && style.text_shadow.is_some() {
+            return Err(format!("UI_TEXT_SHADOW_KIND: '{}' is editable; shadow currently requires text, button, slider or combobox",raw_node.id));
+        }
         if matches!(raw_node.kind.as_str(), "image" | "panel") && style.has_text_fields() {
             return Err(format!("UI_STYLE_INVALID: '{}' has no text; typography fields require text, button, slider or combobox", raw_node.id));
         }
@@ -1225,6 +1262,16 @@ fn parse_node(
     }
     let id = raw_node.id;
     match raw_node.kind.as_str() {
+        "input_region" => {
+            if raw_node.text.is_some() || raw_node.style.is_some() || raw_node.asset.is_some()
+                || raw_node.fit.is_some() || raw_node.alt.is_some() || raw_node.component.is_some()
+                || raw_node.children.is_some() {
+                return Err(format!("UI_INPUT_REGION_FIELDS: '{id}' accepts action and placement only"));
+            }
+            let action=raw_node.action.ok_or_else(||format!("UI_INPUT_REGION_ACTION: '{id}' requires an action"))?;
+            ensure_non_empty("input_region action", &action)?;
+            Ok(UiNode::InputRegion{id,rect,action})
+        }
         "text_input" => {
             if raw_node.action.is_some() || raw_node.asset.is_some() || raw_node.fit.is_some()
                 || raw_node.alt.is_some() || raw_node.component.is_some() || raw_node.children.is_some()

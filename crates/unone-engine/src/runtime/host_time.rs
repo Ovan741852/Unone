@@ -23,6 +23,15 @@ impl Drop for TimeScope {
 }
 
 impl EngineRuntime {
+    #[cfg(feature = "dev-tools")]
+    pub(crate) fn require_replayable_host_time(config: &crate::ProjectConfig) -> Result<(), Box<Diagnostic>> {
+        if matches!(config.host_time, Some(crate::HostTimeConfig::Live | crate::HostTimeConfig::Record { .. })) {
+            return Err(Box::new(Diagnostic::error("HOST_TIME_REPLAY_TAPE_MISSING",
+                "Deterministic authoring requires recorded host-time inputs",
+                "Set project.host_time to replay with a recorded tape for tests and UI preview; live resampling cannot verify deterministic behavior.")));
+        }
+        Ok(())
+    }
     /// Detached diagnostics. Reading does not sample time or advance replay.
     pub fn host_time_report(&self) -> serde_json::Value { self.host_time.borrow().report() }
     pub fn host_time_tape(&self) -> Option<crate::HostTimeTape> { self.host_time.borrow().tape() }

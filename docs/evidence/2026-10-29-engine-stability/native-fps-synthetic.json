@@ -1,0 +1,1255 @@
+{
+  "player": "D:\\Projects\\Unone\\artifacts\\stability-20261030-windows-runtime\\unone-native-player.exe",
+  "player_sha256": "dabff38318d8903450c0d34cd2bb537d2dcb2317ec4a74d6c823b19d6e54600f",
+  "runs": 3,
+  "frames": 120,
+  "warmup": 30,
+  "scope": "Windows native GPU Sprite renderer; synthetic scenes, not game FPS or mobile evidence",
+  "results": [
+    {
+      "mode": "static",
+      "count": 1000,
+      "run": 1,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\static-1000\\run-1.json",
+      "package_sha256": "94e85e4bb15893a41282d1112f5651390b9ee2201a7bae94a6f92f72f8bb7990",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:0d102426eeb578c04585aee3e3d8d715a0d4f373e930363a6984fb1c64784cd3",
+      "screenshot_sha256": "0720c81c619283592b4ec7c8c20076518eefc4acb32bb780c1288252992d9933",
+      "draws": 1,
+      "upload_bytes": 0,
+      "submitted": 1000,
+      "fps": 59.965313064657764,
+      "render": {
+        "count": 120,
+        "max_ms": 17.0046,
+        "mean_ms": 16.501486666666672,
+        "p95_ms": 16.775000000000002
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.516,
+          "mean_ms": 16.092877499999997,
+          "p95_ms": 16.3575
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.3951,
+          "mean_ms": 0.25140250000000003,
+          "p95_ms": 0.3248
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.1053,
+          "mean_ms": 0.06679333333333332,
+          "p95_ms": 0.0837
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.2478,
+          "mean_ms": 0.08500499999999998,
+          "p95_ms": 0.1784
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.0965,
+          "mean_ms": 0.06032416666666669,
+          "p95_ms": 0.0768
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0049,
+          "mean_ms": 0.0030550000000000004,
+          "p95_ms": 0.0039
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "static",
+      "count": 1000,
+      "run": 2,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\static-1000\\run-2.json",
+      "package_sha256": "94e85e4bb15893a41282d1112f5651390b9ee2201a7bae94a6f92f72f8bb7990",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:0d102426eeb578c04585aee3e3d8d715a0d4f373e930363a6984fb1c64784cd3",
+      "screenshot_sha256": "0720c81c619283592b4ec7c8c20076518eefc4acb32bb780c1288252992d9933",
+      "draws": 1,
+      "upload_bytes": 0,
+      "submitted": 1000,
+      "fps": 60.12381598043934,
+      "render": {
+        "count": 120,
+        "max_ms": 16.997000000000003,
+        "mean_ms": 16.462040000000002,
+        "p95_ms": 16.773300000000003
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.5807,
+          "mean_ms": 16.057886666666658,
+          "p95_ms": 16.3892
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.3773,
+          "mean_ms": 0.25279833333333335,
+          "p95_ms": 0.3303
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.11120000000000001,
+          "mean_ms": 0.0629775,
+          "p95_ms": 0.0791
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.24869999999999998,
+          "mean_ms": 0.08318083333333333,
+          "p95_ms": 0.1126
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.0896,
+          "mean_ms": 0.05618416666666667,
+          "p95_ms": 0.0703
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0478,
+          "mean_ms": 0.0034350000000000006,
+          "p95_ms": 0.0040999999999999995
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "static",
+      "count": 1000,
+      "run": 3,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\static-1000\\run-3.json",
+      "package_sha256": "94e85e4bb15893a41282d1112f5651390b9ee2201a7bae94a6f92f72f8bb7990",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:0d102426eeb578c04585aee3e3d8d715a0d4f373e930363a6984fb1c64784cd3",
+      "screenshot_sha256": "0720c81c619283592b4ec7c8c20076518eefc4acb32bb780c1288252992d9933",
+      "draws": 1,
+      "upload_bytes": 0,
+      "submitted": 1000,
+      "fps": 59.96015348000483,
+      "render": {
+        "count": 120,
+        "max_ms": 16.887800000000002,
+        "mean_ms": 16.50657583333333,
+        "p95_ms": 16.7199
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.4248,
+          "mean_ms": 16.08998416666667,
+          "p95_ms": 16.3081
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.5055,
+          "mean_ms": 0.2560758333333334,
+          "p95_ms": 0.3257
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.1326,
+          "mean_ms": 0.06310999999999999,
+          "p95_ms": 0.0857
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.27,
+          "mean_ms": 0.09193000000000001,
+          "p95_ms": 0.1916
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.09849999999999999,
+          "mean_ms": 0.05648333333333332,
+          "p95_ms": 0.0781
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0048,
+          "mean_ms": 0.0028416666666666686,
+          "p95_ms": 0.0037
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "moving",
+      "count": 1000,
+      "run": 1,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\moving-1000\\run-1.json",
+      "package_sha256": "a574ef034b8a975ea96e1b1509adbe1c041a4b162ef461a91d98fdda5cbf0832",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:6de1232ff105a1f937f89cbb39081813fc39537b4af0e122aeb9cfdb68100bad",
+      "screenshot_sha256": "096551f362f2840316ded7344b86f9655757b06656061ed6771ac90707a67330",
+      "draws": 1,
+      "upload_bytes": 24000,
+      "submitted": 1000,
+      "fps": 59.95494685518566,
+      "render": {
+        "count": 120,
+        "max_ms": 16.413400000000003,
+        "mean_ms": 15.682689166666668,
+        "p95_ms": 16.0931
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 15.9954,
+          "mean_ms": 15.322605000000012,
+          "p95_ms": 15.7418
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.3379,
+          "mean_ms": 0.2312500000000001,
+          "p95_ms": 0.3119
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.10679999999999999,
+          "mean_ms": 0.04667833333333335,
+          "p95_ms": 0.0799
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.1772,
+          "mean_ms": 0.07776749999999999,
+          "p95_ms": 0.1037
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.0502,
+          "mean_ms": 0.021599166666666666,
+          "p95_ms": 0.0368
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.06420000000000001,
+          "mean_ms": 0.022272499999999997,
+          "p95_ms": 0.0414
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": {
+        "count": 120,
+        "max_ms": 1.1374,
+        "mean_ms": 0.8478225000000005,
+        "p95_ms": 1.0522
+      }
+    },
+    {
+      "mode": "moving",
+      "count": 1000,
+      "run": 2,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\moving-1000\\run-2.json",
+      "package_sha256": "a574ef034b8a975ea96e1b1509adbe1c041a4b162ef461a91d98fdda5cbf0832",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:6de1232ff105a1f937f89cbb39081813fc39537b4af0e122aeb9cfdb68100bad",
+      "screenshot_sha256": "096551f362f2840316ded7344b86f9655757b06656061ed6771ac90707a67330",
+      "draws": 1,
+      "upload_bytes": 24000,
+      "submitted": 1000,
+      "fps": 59.956873021235815,
+      "render": {
+        "count": 120,
+        "max_ms": 16.2305,
+        "mean_ms": 15.652534166666664,
+        "p95_ms": 15.969500000000002
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 15.728800000000001,
+          "mean_ms": 15.2440275,
+          "p95_ms": 15.5668
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.4417,
+          "mean_ms": 0.2649025,
+          "p95_ms": 0.3689
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.09129999999999999,
+          "mean_ms": 0.04651250000000002,
+          "p95_ms": 0.0678
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.2121,
+          "mean_ms": 0.09254000000000001,
+          "p95_ms": 0.171
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.0402,
+          "mean_ms": 0.02118166666666667,
+          "p95_ms": 0.0354
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0491,
+          "mean_ms": 0.022299999999999997,
+          "p95_ms": 0.035800000000000005
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": {
+        "count": 120,
+        "max_ms": 1.1826,
+        "mean_ms": 0.8607974999999999,
+        "p95_ms": 1.0697
+      }
+    },
+    {
+      "mode": "moving",
+      "count": 1000,
+      "run": 3,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\moving-1000\\run-3.json",
+      "package_sha256": "a574ef034b8a975ea96e1b1509adbe1c041a4b162ef461a91d98fdda5cbf0832",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:6de1232ff105a1f937f89cbb39081813fc39537b4af0e122aeb9cfdb68100bad",
+      "screenshot_sha256": "096551f362f2840316ded7344b86f9655757b06656061ed6771ac90707a67330",
+      "draws": 1,
+      "upload_bytes": 24000,
+      "submitted": 1000,
+      "fps": 59.95864652149411,
+      "render": {
+        "count": 120,
+        "max_ms": 16.2968,
+        "mean_ms": 15.651850000000003,
+        "p95_ms": 16.040100000000002
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 15.8451,
+          "mean_ms": 15.247073333333336,
+          "p95_ms": 15.6
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.4535,
+          "mean_ms": 0.26197416666666673,
+          "p95_ms": 0.315
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.10239999999999999,
+          "mean_ms": 0.045392500000000016,
+          "p95_ms": 0.0688
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.24330000000000002,
+          "mean_ms": 0.09243666666666671,
+          "p95_ms": 0.17229999999999998
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.034100000000000005,
+          "mean_ms": 0.019235833333333327,
+          "p95_ms": 0.031
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.06559999999999999,
+          "mean_ms": 0.023141666666666668,
+          "p95_ms": 0.0426
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": {
+        "count": 120,
+        "max_ms": 1.236,
+        "mean_ms": 0.8592200000000002,
+        "p95_ms": 1.0439
+      }
+    },
+    {
+      "mode": "static",
+      "count": 10000,
+      "run": 1,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\static-10000\\run-1.json",
+      "package_sha256": "c63072e223e0c020d7562171cc9bd2e9cf76b966b987502cf29feaeee8c692ad",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:4951aeb067de53dd45da10765c4c2653e7654f09fb8aed6f12ebdaca9cff846b",
+      "screenshot_sha256": "f10241d4bee30a1db32dff417cdbb226e9fb0ab9e80ed198620c2f5f0206d414",
+      "draws": 1,
+      "upload_bytes": 0,
+      "submitted": 10000,
+      "fps": 60.12255080142609,
+      "render": {
+        "count": 120,
+        "max_ms": 16.911099999999998,
+        "mean_ms": 16.357543333333332,
+        "p95_ms": 16.655
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.1209,
+          "mean_ms": 15.496080833333334,
+          "p95_ms": 15.848600000000001
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.419,
+          "mean_ms": 0.2569324999999999,
+          "p95_ms": 0.3396
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.9039,
+          "mean_ms": 0.5145824999999998,
+          "p95_ms": 0.6787
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.2216,
+          "mean_ms": 0.08478833333333331,
+          "p95_ms": 0.13369999999999999
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.8777,
+          "mean_ms": 0.4957841666666666,
+          "p95_ms": 0.6526000000000001
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0248,
+          "mean_ms": 0.01465666666666666,
+          "p95_ms": 0.0219
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "static",
+      "count": 10000,
+      "run": 2,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\static-10000\\run-2.json",
+      "package_sha256": "c63072e223e0c020d7562171cc9bd2e9cf76b966b987502cf29feaeee8c692ad",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:4951aeb067de53dd45da10765c4c2653e7654f09fb8aed6f12ebdaca9cff846b",
+      "screenshot_sha256": "f10241d4bee30a1db32dff417cdbb226e9fb0ab9e80ed198620c2f5f0206d414",
+      "draws": 1,
+      "upload_bytes": 0,
+      "submitted": 10000,
+      "fps": 59.96684732845444,
+      "render": {
+        "count": 120,
+        "max_ms": 16.9347,
+        "mean_ms": 16.427202499999996,
+        "p95_ms": 16.697400000000002
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.1043,
+          "mean_ms": 15.588161666666663,
+          "p95_ms": 15.905
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.4017,
+          "mean_ms": 0.25110999999999994,
+          "p95_ms": 0.3413
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.7345,
+          "mean_ms": 0.49129999999999985,
+          "p95_ms": 0.5712999999999999
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.2268,
+          "mean_ms": 0.09143250000000004,
+          "p95_ms": 0.17340000000000003
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.7127,
+          "mean_ms": 0.47421833333333335,
+          "p95_ms": 0.5532
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0233,
+          "mean_ms": 0.013335000000000017,
+          "p95_ms": 0.015099999999999999
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "static",
+      "count": 10000,
+      "run": 3,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\static-10000\\run-3.json",
+      "package_sha256": "c63072e223e0c020d7562171cc9bd2e9cf76b966b987502cf29feaeee8c692ad",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:4951aeb067de53dd45da10765c4c2653e7654f09fb8aed6f12ebdaca9cff846b",
+      "screenshot_sha256": "f10241d4bee30a1db32dff417cdbb226e9fb0ab9e80ed198620c2f5f0206d414",
+      "draws": 1,
+      "upload_bytes": 0,
+      "submitted": 10000,
+      "fps": 59.956172038240055,
+      "render": {
+        "count": 120,
+        "max_ms": 16.84,
+        "mean_ms": 16.43972999999999,
+        "p95_ms": 16.7515
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.2892,
+          "mean_ms": 15.62185166666667,
+          "p95_ms": 15.961699999999999
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.4321,
+          "mean_ms": 0.2469341666666666,
+          "p95_ms": 0.3417
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.7635,
+          "mean_ms": 0.48876166666666665,
+          "p95_ms": 0.5643999999999999
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.2068,
+          "mean_ms": 0.07732416666666668,
+          "p95_ms": 0.14229999999999998
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.7293999999999999,
+          "mean_ms": 0.4713533333333334,
+          "p95_ms": 0.5465
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0281,
+          "mean_ms": 0.013561666666666673,
+          "p95_ms": 0.0183
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "moving",
+      "count": 10000,
+      "run": 1,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\moving-10000\\run-1.json",
+      "package_sha256": "f400a38b64c128f7415bac0e1149a41e6c33307797e4b244a083d754cd6485a2",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:5c60d93becd85f1421bfda04e34922b55e50416c95e3c2a02bfebed97ee1e7ad",
+      "screenshot_sha256": "df08c428e22f76f43a081f6b82d2f80e1bcebd62731cf8063ae06493c76a6934",
+      "draws": 1,
+      "upload_bytes": 240000,
+      "submitted": 10000,
+      "fps": 59.95354799101654,
+      "render": {
+        "count": 120,
+        "max_ms": 9.5077,
+        "mean_ms": 7.452113333333335,
+        "p95_ms": 8.3329
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 8.9747,
+          "mean_ms": 6.667739166666663,
+          "p95_ms": 7.6075
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.363,
+          "mean_ms": 0.20464333333333332,
+          "p95_ms": 0.3059
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 1.0384,
+          "mean_ms": 0.5054258333333334,
+          "p95_ms": 0.6883
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.2193,
+          "mean_ms": 0.07018749999999999,
+          "p95_ms": 0.1005
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.9357,
+          "mean_ms": 0.4298008333333332,
+          "p95_ms": 0.5994
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0975,
+          "mean_ms": 0.07104750000000003,
+          "p95_ms": 0.0818
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": {
+        "count": 120,
+        "max_ms": 13.7742,
+        "mean_ms": 9.032603333333332,
+        "p95_ms": 9.7888
+      }
+    },
+    {
+      "mode": "moving",
+      "count": 10000,
+      "run": 2,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\moving-10000\\run-2.json",
+      "package_sha256": "f400a38b64c128f7415bac0e1149a41e6c33307797e4b244a083d754cd6485a2",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:5c60d93becd85f1421bfda04e34922b55e50416c95e3c2a02bfebed97ee1e7ad",
+      "screenshot_sha256": "df08c428e22f76f43a081f6b82d2f80e1bcebd62731cf8063ae06493c76a6934",
+      "draws": 1,
+      "upload_bytes": 240000,
+      "submitted": 10000,
+      "fps": 59.95923072107119,
+      "render": {
+        "count": 120,
+        "max_ms": 10.0888,
+        "mean_ms": 7.588639166666666,
+        "p95_ms": 8.8061
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 9.6231,
+          "mean_ms": 6.806760833333332,
+          "p95_ms": 8.013
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.3884,
+          "mean_ms": 0.22451833333333326,
+          "p95_ms": 0.30160000000000003
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.9007000000000001,
+          "mean_ms": 0.47646833333333327,
+          "p95_ms": 0.6825
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.22719999999999999,
+          "mean_ms": 0.07661249999999994,
+          "p95_ms": 0.1014
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.7768,
+          "mean_ms": 0.40473416666666684,
+          "p95_ms": 0.6099
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.1204,
+          "mean_ms": 0.0674075,
+          "p95_ms": 0.08059999999999999
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": {
+        "count": 120,
+        "max_ms": 15.341099999999999,
+        "mean_ms": 8.880460000000001,
+        "p95_ms": 13.1517
+      }
+    },
+    {
+      "mode": "moving",
+      "count": 10000,
+      "run": 3,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\moving-10000\\run-3.json",
+      "package_sha256": "f400a38b64c128f7415bac0e1149a41e6c33307797e4b244a083d754cd6485a2",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:5c60d93becd85f1421bfda04e34922b55e50416c95e3c2a02bfebed97ee1e7ad",
+      "screenshot_sha256": "df08c428e22f76f43a081f6b82d2f80e1bcebd62731cf8063ae06493c76a6934",
+      "draws": 1,
+      "upload_bytes": 240000,
+      "submitted": 10000,
+      "fps": 59.96011752782638,
+      "render": {
+        "count": 120,
+        "max_ms": 8.7324,
+        "mean_ms": 6.8917933333333306,
+        "p95_ms": 8.350399999999999
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 7.8283,
+          "mean_ms": 6.027256666666668,
+          "p95_ms": 7.5782
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.383,
+          "mean_ms": 0.23335749999999997,
+          "p95_ms": 0.31129999999999997
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 1.0051,
+          "mean_ms": 0.5500083333333333,
+          "p95_ms": 0.7864
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.1729,
+          "mean_ms": 0.07666583333333334,
+          "p95_ms": 0.1036
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.8945,
+          "mean_ms": 0.4728258333333332,
+          "p95_ms": 0.6903
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.2314,
+          "mean_ms": 0.0723583333333333,
+          "p95_ms": 0.09390000000000001
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": {
+        "count": 120,
+        "max_ms": 17.4056,
+        "mean_ms": 9.562195833333334,
+        "p95_ms": 14.6426
+      }
+    },
+    {
+      "mode": "layering",
+      "count": 12,
+      "run": 1,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\layering-12\\run-1.json",
+      "package_sha256": "0158a21b42083e6654ed6ea7d1936b6924c6af465a63ffdaa31a264667d0b8f6",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:ff07dbe30f59c585bb78b23f773eaae9615d2de33df9f8e4c8a09ae4dbe0fac3",
+      "screenshot_sha256": "d1e63a161e871c6613b448bdaa5199274c99fecca05907c4f310ee9559c51c10",
+      "draws": 3,
+      "upload_bytes": 0,
+      "submitted": 12,
+      "fps": 59.9630867238128,
+      "render": {
+        "count": 120,
+        "max_ms": 17.1842,
+        "mean_ms": 16.52324333333333,
+        "p95_ms": 16.7769
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.7937,
+          "mean_ms": 16.186982499999996,
+          "p95_ms": 16.452499999999997
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.3872,
+          "mean_ms": 0.2402975000000001,
+          "p95_ms": 0.2921
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.0126,
+          "mean_ms": 0.007620000000000003,
+          "p95_ms": 0.0096
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.2385,
+          "mean_ms": 0.0835225,
+          "p95_ms": 0.1681
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.0070999999999999995,
+          "mean_ms": 0.004256666666666667,
+          "p95_ms": 0.0058000000000000005
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0006,
+          "mean_ms": 0.00024083333333333368,
+          "p95_ms": 0.0005
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "layering",
+      "count": 12,
+      "run": 2,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\layering-12\\run-2.json",
+      "package_sha256": "0158a21b42083e6654ed6ea7d1936b6924c6af465a63ffdaa31a264667d0b8f6",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:ff07dbe30f59c585bb78b23f773eaae9615d2de33df9f8e4c8a09ae4dbe0fac3",
+      "screenshot_sha256": "d1e63a161e871c6613b448bdaa5199274c99fecca05907c4f310ee9559c51c10",
+      "draws": 3,
+      "upload_bytes": 0,
+      "submitted": 12,
+      "fps": 60.12530112754979,
+      "render": {
+        "count": 120,
+        "max_ms": 17.0789,
+        "mean_ms": 16.509142500000003,
+        "p95_ms": 16.9191
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.766199999999998,
+          "mean_ms": 16.23181750000001,
+          "p95_ms": 16.595200000000002
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.3594,
+          "mean_ms": 0.19727583333333332,
+          "p95_ms": 0.30029999999999996
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.0178,
+          "mean_ms": 0.006323333333333332,
+          "p95_ms": 0.0108
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.15410000000000001,
+          "mean_ms": 0.06987833333333335,
+          "p95_ms": 0.1017
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.0107,
+          "mean_ms": 0.0036708333333333345,
+          "p95_ms": 0.0061
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0011,
+          "mean_ms": 0.00025416666666666676,
+          "p95_ms": 0.0006
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    },
+    {
+      "mode": "layering",
+      "count": 12,
+      "run": 3,
+      "report": "D:\\Projects\\Unone\\artifacts\\stability-20261030-native-fps\\layering-12\\run-3.json",
+      "package_sha256": "0158a21b42083e6654ed6ea7d1936b6924c6af465a63ffdaa31a264667d0b8f6",
+      "adapter": "AdapterInfo { name: \"NVIDIA GeForce RTX 5080\", vendor: 4318, device: 11266, device_type: DiscreteGpu, device_pci_bus_id: \"0000:01:00.0\", driver: \"NVIDIA\", driver_info: \"610.88\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 32, transient_saves_memory: Some(false), limit_bucket: None }",
+      "resolution": [
+        1280,
+        720
+      ],
+      "digest": "sha256:ff07dbe30f59c585bb78b23f773eaae9615d2de33df9f8e4c8a09ae4dbe0fac3",
+      "screenshot_sha256": "d1e63a161e871c6613b448bdaa5199274c99fecca05907c4f310ee9559c51c10",
+      "draws": 3,
+      "upload_bytes": 0,
+      "submitted": 12,
+      "fps": 59.96141482955718,
+      "render": {
+        "count": 120,
+        "max_ms": 17.05,
+        "mean_ms": 16.52625916666667,
+        "p95_ms": 16.8268
+      },
+      "cpu": {
+        "acquire": {
+          "count": 120,
+          "max_ms": 16.6632,
+          "mean_ms": 16.174169999999993,
+          "p95_ms": 16.448500000000003
+        },
+        "classify": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "encode_submit": {
+          "count": 120,
+          "max_ms": 0.4127,
+          "mean_ms": 0.24896166666666666,
+          "p95_ms": 0.3466
+        },
+        "instance_upload": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        },
+        "prepare": {
+          "count": 120,
+          "max_ms": 0.0159,
+          "mean_ms": 0.007566666666666665,
+          "p95_ms": 0.0097
+        },
+        "present": {
+          "count": 120,
+          "max_ms": 0.257,
+          "mean_ms": 0.09053250000000004,
+          "p95_ms": 0.1844
+        },
+        "sprite_prepare": {
+          "count": 120,
+          "max_ms": 0.0102,
+          "mean_ms": 0.0042691666666666685,
+          "p95_ms": 0.005699999999999999
+        },
+        "sprite_upload": {
+          "count": 120,
+          "max_ms": 0.0006,
+          "mean_ms": 0.00027166666666666707,
+          "p95_ms": 0.0005
+        },
+        "ui_raster": {
+          "count": 120,
+          "max_ms": 0,
+          "mean_ms": 0,
+          "p95_ms": 0
+        }
+      },
+      "tick": null
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+   Compiling unone-spatial-gpu v0.1.0 (D:\Projects\Unone\crates\unone-spatial-gpu)
+   Compiling unone-native-player v0.1.0 (D:\Projects\Unone\crates\unone-native-player)
+    Finished `release` profile [optimized] target(s) in 23.46s
+{
+  "preview_tools": false,
+  "source_dirty": true,
+  "decoders": [
+    "unone-mesh-json",
+    "png-rgb-rgba",
+    "jpeg-rgba",
+    "webp-rgba",
+    "svg-static",
+    "audio-rodio"
+  ],
+  "profile": "release",
+  "presentation": [
+    "mesh3d",
+    "instances3d",
+    "heightfield",
+    "sprite2d",
+    "particle",
+    "ui",
+    "bloom",
+    "projected_geometry"
+  ],
+  "ui": {
+    "backend": "cpu-raster-wgpu-overlay",
+    "font": "system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported",
+    "images": [
+      "png",
+      "svg-static"
+    ],
+    "input": "mouse/touch semantic down-up; rectangular reverse-order hit testing",
+    "limitations": [
+      "UI redraws/uploads the full surface when the tree changes",
+      "File drag/drop is not a supported input contract; Windows OLE registration is disabled",
+      "Spine skeletal animation and Effekseer effects still require their native runtimes",
+      "Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately",
+      "Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"
+    ],
+    "nodes": [
+      "text",
+      "button",
+      "image",
+      "panel",
+      "slider",
+      "combobox",
+      "component"
+    ],
+    "styles": "typed leaf typography and box styles; vertical design units; explicit font size never shrinks"
+  },
+  "dev_tools": false,
+  "native_codegen_compiled": false,
+  "renderer": "wgpu-native-instanced",
+  "compiled_systems": [
+    "jobs",
+    "world",
+    "input",
+    "observation",
+    "physics3d",
+    "physics2d",
+    "camera2d",
+    "camera3d",
+    "random",
+    "ui",
+    "save",
+    "audio",
+    "spine",
+    "particle",
+    "effekseer"
+  ],
+  "input_replay": {
+    "argument": "--input-sequence",
+    "contract": "unone.native-input-replay.v1",
+    "exhaustion": "empty input each subsequent simulation tick",
+    "format": "JSON array of normalized unone_engine::InputFrame",
+    "incompatible": [
+      "--freeze-simulation",
+      "nonzero --seconds"
+    ],
+    "initial_window_focus": "disabled_on_windows",
+    "live_input": false,
+    "max_bytes": 8388608,
+    "max_frames": 60000,
+    "ordered_physical": {
+      "live": "unsupported",
+      "normalized_core_replay": true,
+      "text_ime": false
+    },
+    "requires": [
+      "--fixed-tick",
+      "--warmup 0",
+      "--prewarm-ticks 0",
+      "--frames N>0"
+    ],
+    "simulation_viewport": "fixed_at_startup_dimensions",
+    "spatial_backend": "explicit_cpu_or_gpu; auto_rejected"
+  },
+  "runtime_packages": {
+    "@unone/ui": "0.4.0"
+  },
+  "source_commit": "735e1cb4101459021a08bb76c6544bf691edc013",
+  "readiness": {
+    "contract": "unone.native-ready.v1",
+    "emission": "once_after_first_render_ok_true",
+    "fields": [
+      "contract",
+      "package_sha256",
+      "host",
+      "renderer",
+      "adapter",
+      "resolution",
+      "process_id"
+    ],
+    "headless": "never_emits",
+    "requires_surface": true,
+    "stdout_prefix": "UNONE_NATIVE_READY "
+  },
+  "files": [
+    {
+      "sha256": "dabff38318d8903450c0d34cd2bb537d2dcb2317ec4a74d6c823b19d6e54600f",
+      "path": "unone-native-player.exe"
+    }
+  ],
+  "version": 1,
+  "target": "windows"
+}

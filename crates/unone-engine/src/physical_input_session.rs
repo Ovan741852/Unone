@@ -14,7 +14,16 @@ impl PhysicalSession {
     return Err("INPUT_PHYSICAL_TIME: received_us decreased".into());
    }
   }
-  self.pending=b.map(|b|b.canonical()).transpose()?;Ok(())
+  if let Some(b)=b.map(|b|b.canonical()).transpose()? {
+   if let Some(pending)=&self.pending {
+    // The same frame may be retried after a host barrier. Never substitute
+    // another batch for the lease that has not executed yet.
+    if serde_json::to_vec(pending).map_err(|e|e.to_string())? != serde_json::to_vec(&b).map_err(|e|e.to_string())? {
+     return Err("INPUT_PHYSICAL_ALREADY_QUEUED: complete the pending tick before replacing its batch".into());
+    }
+   } else {self.pending=Some(b);}
+  }
+  Ok(())
  }
  pub fn begin(&mut self){self.active=self.pending.take();self.last_attempt=self.active.clone();}
  pub fn commit(&mut self){if let Some(b)=self.active.take(){

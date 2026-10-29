@@ -407,6 +407,18 @@ impl SpatialJobs {
         Ok(())
     }
 
+    /// A generic failed game tick must not make an unused spatial subsystem
+    /// terminal. Once spatial state has been authored, partial Lua/World state
+    /// cannot be rolled back and the established fail-closed rule still applies.
+    pub fn abort_tick(&mut self, error: String) {
+        if self.used {
+            self.fail(error);
+        } else {
+            self.active = false;
+            self.begun = false;
+        }
+    }
+
     pub fn fail(&mut self, error: String) {
         self.record(EngineDiagnostic::new("SPATIAL_HOST_FAILED", "spatial.fail", &error, "new_session",
             "Inspect the host failure and create a new runtime or successfully reload."), None, None);
@@ -654,6 +666,28 @@ mod tests {
         assert_eq!(consumed.actual, Some(serde_json::json!(ticket)));
         assert_eq!(consumed.context.frame, 11);
         assert_eq!(consumed.recovery.retry, "after_correction");
+    }
+
+    #[test]
+    fn unrelated_tick_failure_keeps_unused_spatial_retryable_but_authored_state_is_terminal() {
+        let mut jobs = SpatialJobs::new();
+        jobs.loaded();
+        jobs.begin(0).unwrap();
+        jobs.abort_tick("unrelated script error".into());
+        assert!(jobs.snapshot().is_none());
+        assert!(jobs.last_diagnostic().is_none());
+        jobs.begin(0).unwrap();
+        jobs.finish().unwrap();
+        jobs.begin(1).unwrap();
+        jobs.abort_tick("later unrelated script error".into());
+        jobs.begin(1).unwrap();
+        jobs.create(Vec::new()).unwrap();
+        jobs.abort_tick("error after spatial mutation".into());
+        assert!(jobs.begin(1).unwrap_err().contains("SPATIAL_FAILED"));
+
+        let mut host_failed = SpatialJobs::new();
+        host_failed.fail("explicit host failure".into());
+        assert!(host_failed.begin(0).unwrap_err().contains("SPATIAL_FAILED"));
     }
 
     #[test]

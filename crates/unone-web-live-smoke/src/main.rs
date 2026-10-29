@@ -127,7 +127,12 @@ fn write_snapshot(
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let presentation_started = measuring.then(std::time::Instant::now);
     let mut retained = Vec::new();
-    let world = {
+    let world = if snapshot.instances3d.is_empty() {
+        // With no instance transport to rewrite, the canonical JSON already
+        // is the presentation JSON. Avoid parsing and serializing the entire
+        // UI/entity tree again on every fixed tick.
+        world
+    } else {
         let mut value: serde_json::Value =
             serde_json::from_str(world.get()).map_err(|e| e.to_string())?;
         if INSTANCE_MEMORY.with(|m| m.get()) {
@@ -166,9 +171,12 @@ fn write_snapshot(
             }
         }),
     };
-    let bytes = serde_json::to_vec(&observation)
-        .map_err(|error| format!("snapshot serialization failed: {error}"))?;
-    OUTPUT.with(|output| *output.borrow_mut() = bytes);
+    OUTPUT.with(|output| {
+        let mut bytes = output.borrow_mut();
+        bytes.clear();
+        serde_json::to_writer(&mut *bytes, &observation)
+            .map_err(|error| format!("snapshot serialization failed: {error}"))
+    })?;
     INSTANCE_BUFFERS.with(|buffers| *buffers.borrow_mut() = retained);
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     if let Some(start) = envelope_started {

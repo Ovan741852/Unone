@@ -2,6 +2,23 @@ use serde_json::json;
 use unone_engine::{EngineRuntime, HostProject};
 
 #[test]
+fn exponentially_shared_save_is_rejected_without_replacing_previous_payload() {
+    let runtime = EngineRuntime::load_source(
+        "save-expansion-budget", "main.luau", r#"
+return {start=function(api)
+    api.save.set({preserved=true})
+    local graph={1}
+    for _=1,40 do graph={graph,graph} end
+    local ok,message=pcall(api.save.set,graph)
+    assert(not ok and string.find(tostring(message),'maximum serialized node count',1,true))
+    api.observation.set('previous',api.save.get())
+end,update=function()end}
+"#, None).unwrap();
+    assert_eq!(runtime.save_payload().unwrap(), json!({"preserved":true}));
+    assert_eq!(runtime.semantic_observations()["previous"], json!({"preserved":true}));
+}
+
+#[test]
 fn generic_array_helper_and_save_roundtrip_preserve_empty_array_identity() {
     let runtime = EngineRuntime::load_source(
         "observation-array-contract", "main.luau", r#"

@@ -176,6 +176,12 @@ rejects holes, mixed string/integer keys, functions, buffers, cycles and nonfini
 numbers after mutation. The runtime keeps array identity with weak keys, so the
 hint does not retain otherwise unreachable tables. Save round trips preserve
 array shape through the same generic boundary without widening save numbers.
+The shared Lua-to-JSON boundary accepts at most 64 nesting levels and 1,048,576
+expanded value occurrences per call. Repeated references count each time they
+would appear in JSON, so an acyclic `{child,child}` graph cannot expand without
+bound. Cycles fail immediately. Rejected saves and observations preserve the
+previous value. Integral save numbers use the signed-i32 range even when the VM
+reports them as a floating `Number`; finite observation numbers retain binary64.
 
 Use `api.observation.setArray(key, values?)` to publish a typed number/record array
 directly, or omit values to publish `[]`. It validates and marks the array, then

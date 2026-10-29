@@ -83,7 +83,7 @@ fn main(@builtin(global_invocation_id) invocation: vec3<u32>) {
     let destination = qvec(query+8u);
     let max_distance = bitcast<f32>(queries[query+11u]);
     var count = 0u;
-    var best_distance = max_distance;
+    var best_distance_squared = 0.0;
     var best_fraction = 1.0;
     var best_id = 0xffffffffu;
     for (var i = 0u; i < params.body_count; i = i+1u) {
@@ -93,12 +93,13 @@ fn main(@builtin(global_invocation_id) invocation: vec3<u32>) {
         let body_radius = bitcast<f32>(bodies[body+2u]);
         let position = bvec(body+4u);
         let relative = origin-position;
-        let distance = sqrt(squared(relative));
+        let distance_squared = squared(relative);
+        let distance = sqrt(distance_squared);
         if kind == 0u {
-            if distance <= max_distance && (count == 0u || distance < best_distance || (distance == best_distance && id < best_id)) {
+            if distance <= max_distance && (count == 0u || distance_squared < best_distance_squared || (distance_squared == best_distance_squared && id < best_id)) {
                 let normal = normal_between(origin,position);
                 write_hit(output,0u,id,distance,0.0,position+normal*body_radius,normal);
-                best_distance = distance;
+                best_distance_squared = distance_squared;
                 best_id = id;
                 count = 1u;
             }

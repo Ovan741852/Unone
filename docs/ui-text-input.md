@@ -25,7 +25,11 @@ composition text beyond that committed limit. The game must not save candidates.
 Input frames carry `ui_text_inputs={id={phase,text,composing}}` where phase is
 `change`, `submit`, `cancel`, `focus` or `blur`. The read-only per-tick snapshot is
 non-consuming; a following empty successful tick clears it. Failed ticks preserve
-pending data for retry. Hosts retain per-ID event order; they may coalesce adjacent
+pending data for retry. Empty retry frames retain unconsumed events; an identical
+event may be resubmitted, while a conflicting pending event or accumulated
+capacity overflow rejects the whole frame with `INPUT_UI_PENDING`. Complete the
+pending tick with `tick()` or unchanged input before admitting its successor.
+Hosts retain per-ID event order; they may coalesce adjacent
 changes with the same composition state, never submit/cancel/focus/blur boundaries.
 Core accepts up to64 IDs per frame, each<=1024 UTF-8 bytes, and single-line text
 up to65536 UTF-8 bytes. Submit with `composing=true` is rejected.

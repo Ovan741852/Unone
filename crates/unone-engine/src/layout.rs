@@ -48,6 +48,9 @@ pub struct LayoutNode {
     pub id: String,
     pub kind: String,
     pub rect: UiRect,
+    /// Visible paint envelope; input_region has no paint. Authored rect remains
+    /// the capture/placement authority. Shadow offsets use the parsed viewport.
+    pub paint_rect: Option<UiRect>,
     pub text: String,
     pub action: Option<String>,
     pub asset: Option<String>,
@@ -161,6 +164,7 @@ pub fn apply_overlap_policy(
 
 fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option<&str>) {
     match node {
+        UiNode::InputRegion { id, rect, action } => ("input_region",id,rect,"",Some(action),None),
         UiNode::TextInput { id, rect, text, .. } => ("text_input", id, rect, text, None, None),
         UiNode::Text { id, rect, text, .. } => ("text", id, rect, text, None, None),
         UiNode::Button {
@@ -194,6 +198,20 @@ fn overlap(left: &UiRect, right: &UiRect) -> Option<(f64, f64)> {
     let x = (left.x + left.width).min(right.x + right.width) - left.x.max(right.x);
     let y = (left.y + left.height).min(right.y + right.height) - left.y.max(right.y);
     (x > 0.01 && y > 0.01).then_some((x, y))
+}
+
+/// Visual collisions use paint bounds; capture conflicts use authored bounds.
+/// A nonvisual region cannot occlude art, but two interactive owners conflict.
+fn collision_bounds(left:&UiNode,right:&UiNode,aspect:f64)->Option<(UiRect,UiRect)> {
+    let region=|n:&UiNode|matches!(n,UiNode::InputRegion{..});
+    let interactive=|n:&UiNode|matches!(n,UiNode::InputRegion{..}|UiNode::Button{..}
+        |UiNode::Slider{..}|UiNode::ComboBox{..}|UiNode::TextInput{..});
+    if region(left)||region(right) {
+        return (interactive(left)&&interactive(right)).then_some((*left.rect(),*right.rect()));
+    }
+    let paint=|n:&UiNode|n.style().and_then(|s|s.text_shadow)
+        .map_or(*n.rect(),|s|s.paint_rect(*n.rect(),aspect));
+    Some((paint(left),paint(right)))
 }
 
 /// Inspection needs the actual component instances, not merely matching names:
@@ -309,6 +327,8 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
             id: id.to_string(),
             kind: kind.to_string(),
             rect: *rect,
+            paint_rect: if kind=="input_region" {None} else {Some(node.style()
+                .and_then(|s|s.text_shadow).map_or(*rect,|s|s.paint_rect(*rect,tree.viewport_aspect)))},
             text: text.to_string(),
             action: action.map(str::to_string),
             asset: asset.map(str::to_string),
@@ -329,7 +349,8 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
                 break 'pairs;
             }
             let (_, right_id, right_rect, _, _, _) = node_parts(right.node);
-            if let Some((x, y)) = overlap(left_rect, right_rect) {
+            let Some((left_bounds,right_bounds))=collision_bounds(left.node,right.node,tree.viewport_aspect) else {continue;};
+            if let Some((x, y)) = overlap(&left_bounds, &right_bounds) {
                 // Classify explicit ownership before accumulating collision
                 // findings. Art beneath a whole component is declared once.
                 if let Some(reason) = declared_background_reason(left, right) {

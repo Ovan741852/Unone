@@ -982,6 +982,7 @@ fn decode_texture(bytes: &[u8]) -> R<(u32, u32, Vec<u8>)> {
     Ok((size.width(), size.height(), pixmap.take()))
 }
 impl Renderer {
+    pub fn projected_buffer_bytes(&self)->usize {self.projected.retained_bytes()}
     pub fn bloom_enabled(&self) -> bool {
         self.bloom.is_some()
     }
@@ -1868,7 +1869,6 @@ impl Renderer {
         self.prepare(s)?;
         self.projected.prepare(&self.device,&self.queue,&self.textures,&s.projected_geometry)?;
         self.uploaded+=self.projected.uploaded;
-        if let Some(rows)=self.presentation_batches.as_array_mut() {rows.extend(crate::projected::rows(&s.projected_geometry));}
         self.ui.prepare(&self.device,&self.queue,s.ui.as_ref(),self.config.width,self.config.height)?;
         self.uploaded+=self.ui.upload_bytes;
         self.prepare_ms = started.elapsed().as_secs_f64() * 1000.;
@@ -1896,6 +1896,13 @@ impl Renderer {
         self.queue.present(output);
         self.present_ms = started.elapsed().as_secs_f64() * 1000.;
         Ok(true)
+    }
+    // Full geometry hashes are evidence for reports, not rendering work. In
+    // particular, animated multi-megabyte batches must not be hashed at 60 Hz.
+    pub fn presentation_report(&self,s:&WorldSnapshot)->serde_json::Value {
+        let mut rows=self.presentation_batches.as_array().cloned().unwrap_or_default();
+        rows.extend(crate::projected::rows(&s.projected_geometry));
+        serde_json::Value::Array(rows)
     }
     pub fn capture(&mut self, path: &std::path::Path) -> R<()> {
         let width = self.config.width;

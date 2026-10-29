@@ -12,6 +12,21 @@ fn update(root: &Path, script: &str) -> (bool, Value) {
 }
 
 #[test]
+fn output_cannot_overwrite_an_existing_game_or_type_file() {
+    let directory = tempfile::tempdir().unwrap();
+    for name in ["main.luau", "engine.d.luau"] {
+        let path = directory.path().join(name);
+        let original = b"-- game and types must survive\nreturn {}\n";
+        fs::write(&path, original).unwrap();
+        let output = cli(directory.path(), &["api", "typings", "--output", path.to_str().unwrap()]);
+        assert!(!output.status.success());
+        let result: Value = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(result["diagnostics"][0]["code"], "API_TYPINGS_OUTPUT_EXISTS");
+        assert_eq!(fs::read(&path).unwrap(), original);
+    }
+}
+
+#[test]
 fn explicit_script_refresh_preserves_game_bytes_and_crlf_and_is_idempotent() {
     let directory=tempfile::tempdir().unwrap();
     let script=directory.path().join("gameplay.luau");

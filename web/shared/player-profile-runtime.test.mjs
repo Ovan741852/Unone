@@ -66,7 +66,7 @@ test('each backend command is one event with disjoint host spans, aligned worker
  for(let i=1;i<top.length;i++)assert(Math.abs(top[i].start_ms-top[i-1].end_ms)<1e-6,'consecutive top-level spans');
  assert(top[0].start_ms>=tick.start_ms-1e-6&&top.at(-1).end_ms<=tick.end_ms+1e-6,'spans inside event wall');
  const core=tick.spans.filter(s=>s.parent==='worker_execute');
- assert.deepEqual(core.map(s=>s.name),['barrier_wait','input_abi','tick_abi_atomic','observation_copy','observation_utf8','observation_parse','jobs_dispatch','spatial_dispatch']);
+ assert.deepEqual(core.map(s=>s.name),['barrier_wait','input_abi','tick_abi_atomic','observation_view','observation_utf8','observation_parse','jobs_dispatch','spatial_dispatch']);
  const exec=top.find(s=>s.name==='worker_execute');for(const s of core)assert(s.start_ms>=exec.start_ms-1e-6&&s.end_ms<=exec.end_ms+1e-6,'core span inside worker_execute');
  assert.equal(tick.attrs.tick_abi,'atomic_update_and_serialization_unsplit');assert.equal(tick.attrs.backend,'worker');
  assert.equal(tick.attrs.observation_bytes,new TextEncoder().encode(JSON.stringify(values[1])).length);

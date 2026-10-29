@@ -7,6 +7,7 @@ import { activateGeneration, readActiveAsset, readActiveText, rollbackGeneration
 import { createAudioPlayback } from "../shared/audio-playback.js?v=2";
 import { createFixedStepScheduler } from "../shared/fixed-step-scheduler.mjs?v=2";
 import { createHostInput } from "../shared/host-input.js?v=2";
+import { routeBrowserKey } from "../shared/player-input.js";
 import { assertScriptOnlyUpdate } from "../shared/script-reload.js?v=2";
 import { readSave, writeSave } from "./save-store.js?v=1";
 import { createSpriteLayer } from "./sprite-layer.js?v=3";
@@ -475,19 +476,6 @@ function renderFrame(result = {}) {
     : `running ${projectRoot.pathname} / frame ${frameOf(snapshot)}${result.droppedSteps ? ` — dropped ${result.droppedSteps} late steps` : ""}`;
 }
 
-function keyAction(event) {
-  if (event.key === "ArrowLeft") return "Left";
-  if (event.key === "ArrowRight") return "Right";
-  if (event.key === "ArrowUp" || event.key.toLowerCase() === "a") return "Accelerate";
-  if (event.key === " ") return "Shoot";
-  if (event.key.toLowerCase() === "s") return "Save";
-  if (event.key.toLowerCase() === "m") return "Move";
-  if (event.key.toLowerCase() === "b") return "Build";
-  if (event.key.toLowerCase() === "r") return "Roll";
-  if (event.key.toLowerCase() === "t") return "Battle";
-  return null;
-}
-
 async function start() {
   if (window.Module._unone_web_init() !== 0) throw new Error("generic host engine init failed");
   await loadProject();
@@ -548,21 +536,8 @@ async function start() {
   };
   document.querySelector("#asset-retry")?.addEventListener("click", () => retryFailedAssets().catch(showFailure));
   uiLayer.addEventListener("click", (event) => queueAction(event.target?.dataset?.action));
-  window.addEventListener("keydown", (event) => {
-    const action = keyAction(event);
-    if (action) {
-      event.preventDefault();
-      hostInput.setHeld(action, true);
-      // A key press is also an edge. This preserves a quick press that lands
-      // entirely between two display callbacks while held input still drives
-      // continuous movement on later fixed ticks.
-      hostInput.queueAction(action);
-    }
-  });
-  window.addEventListener("keyup", (event) => {
-    const action = keyAction(event);
-    if (action) { event.preventDefault(); hostInput.setHeld(action, false); }
-  });
+  window.addEventListener("keydown", event => routeBrowserKey(hostInput, event, true));
+  window.addEventListener("keyup", event => routeBrowserKey(hostInput, event, false));
   canvas.addEventListener("pointerdown", (event) => {
     canvas.setPointerCapture(event.pointerId);
     const nextPointer = { position: worldFromPointer(canvas, event, snapshot), screen_position: screenFromPointer(canvas, event), down: true };

@@ -368,6 +368,75 @@
       ],
       "type": "object"
     },
+    "HostTimeSample": {
+      "additionalProperties": false,
+      "properties": {
+        "milliseconds": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag",
+        "milliseconds"
+      ],
+      "type": "object"
+    },
+    "HostTimeTape": {
+      "additionalProperties": false,
+      "description": "Schema 1 is runtime-creation-origin, floor elapsed milliseconds, safe integer.\nEpoch labels are identities supplied by the recording host, never OS uptime.",
+      "properties": {
+        "schema_version": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "source_epoch": {
+          "default": "runtime-creation",
+          "type": "string"
+        },
+        "transactions": {
+          "items": {
+            "$ref": "#/$defs/HostTimeTransaction"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "transactions"
+      ],
+      "type": "object"
+    },
+    "HostTimeTransaction": {
+      "additionalProperties": false,
+      "properties": {
+        "frame": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "phase": {
+          "type": "string"
+        },
+        "samples": {
+          "items": {
+            "$ref": "#/$defs/HostTimeSample"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "phase",
+        "frame",
+        "samples"
+      ],
+      "type": "object"
+    },
     "InputFrame": {
       "additionalProperties": false,
       "properties": {
@@ -1093,6 +1162,17 @@
         },
         "engine_version": {
           "type": "string"
+        },
+        "host_time": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HostTimeTape"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "initial_digest": {
           "type": "string"

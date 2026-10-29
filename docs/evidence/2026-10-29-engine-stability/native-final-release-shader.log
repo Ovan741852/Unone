@@ -1,0 +1,9 @@
+   Compiling unone-native-player v0.1.0 (D:\Projects\Unone\crates\unone-native-player)
+    Finished `release` profile [optimized] target(s) in 0.71s
+     Running tests\projected_contract.rs (target/native-player\release\deps\projected_contract-2abd05f524401d69.exe)
+
+running 1 test
+test native_projected_shader_is_valid_wgsl_and_direct_clip_output ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

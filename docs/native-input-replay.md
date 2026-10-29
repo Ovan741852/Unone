@@ -32,6 +32,11 @@ Replay requires `--fixed-tick`, `--warmup 0`, `--prewarm-ticks 0`, and a positiv
 `--frames` limit. `--freeze-simulation` and nonzero `--seconds` are rejected.
 The normal desktop default of 60 warmup presentations must be explicitly changed
 to zero. These restrictions apply equally to GUI and headless runs.
+Replay rejects `spatial_backend: "auto"` before creating the runtime: choose
+`--spatial-backend cpu` or `--spatial-backend gpu` explicitly (the default is
+CPU). A configured GPU must initialize successfully; replay never silently
+falls back based on the machine's available adapters. Compare runs with the
+same explicit backend.
 
 `Game.start` executes normally with empty input at simulation frame 0. Array
 index 0 supplies the first update, simulation frame 1. Each successful tick
@@ -44,8 +49,10 @@ GUI replay advances once per successful presentation. If a surface timeout or
 loss requires retrying the render, it retries the same snapshot before advancing
 the next input. Headless replay advances once per loop iteration. Captures,
 window resizing and machine performance can change wall-clock timing; they do
-not select a different input index. Window size may still affect game-authored
-viewport-dependent behavior, so compare runs at the same dimensions/aspect.
+not select a different input index. The simulation viewport remains fixed at
+the initial `--width` / `--height` (defaults 1280 by 720), including during
+initial window creation, resizing and resume. Only the display surface resizes.
+Compare runs with the same startup simulation dimensions.
 
 During replay all live keyboard, mouse and touch gameplay input is ignored,
 including semantic UI routing. Sequence actions and `ui_sliders` are already

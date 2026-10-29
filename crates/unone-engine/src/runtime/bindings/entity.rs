@@ -16,12 +16,10 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         "getPosition",
         lua.create_function(move |lua, id: String| {
             let world = get_world.borrow();
-            let entity = world.entities.get(&id).ok_or_else(|| {
-                mlua::Error::RuntimeError(format!("Entity '{id}' does not exist."))
-            })?;
+            let transform = world.get_transform2d(&id).map_err(mlua::Error::RuntimeError)?;
             let table = lua.create_table()?;
-            table.set("x", entity.transform.x)?;
-            table.set("y", entity.transform.y)?;
+            table.set("x", transform.position.x)?;
+            table.set("y", transform.position.y)?;
             Ok(table)
         })?,
     )?;

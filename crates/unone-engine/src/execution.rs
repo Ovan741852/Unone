@@ -23,6 +23,8 @@ pub struct ExecutionMode {
     pub native_codegen_requested: bool,
     pub native_codegen_fallback: &'static str,
     pub luau_execution: &'static str,
+    /// Default compiler settings for VM-loaded source chunks. Authored Luau
+    /// directives and separately compiled cached job bytecode may differ.
     pub bytecode_optimization_level: u8,
     pub bytecode_type_info_level: u8,
     pub wasm_host_compilation: &'static str,
@@ -30,6 +32,14 @@ pub struct ExecutionMode {
     /// equivalence still needs an explicit comparison policy.
     pub determinism_contract: &'static str,
     pub limitation: &'static str,
+}
+
+pub(crate) fn bytecode_optimization_level() -> u8 {
+    if cfg!(feature = "preview-tools") { 1 } else { 2 }
+}
+
+pub(crate) fn bytecode_type_info_level() -> u8 {
+    if cfg!(all(feature = "native-codegen", not(feature = "preview-tools"))) { 1 } else { 0 }
 }
 
 pub fn execution_mode() -> ExecutionMode {
@@ -72,15 +82,15 @@ pub fn execution_mode() -> ExecutionMode {
         } else {
             "interpreter"
         },
-        bytecode_optimization_level: if requested { 2 } else { 1 },
-        bytecode_type_info_level: if requested { 1 } else { 0 },
+        bytecode_optimization_level: bytecode_optimization_level(),
+        bytecode_type_info_level: bytecode_type_info_level(),
         wasm_host_compilation: if cfg!(target_arch = "wasm32") {
             "host-managed-not-probed"
         } else {
             "not-applicable"
         },
         determinism_contract: "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
-        limitation: "Eligibility is not per-function compilation proof. Diagnostic preview builds disable Luau codegen. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        limitation: "Eligibility is not per-function compilation proof. Diagnostic preview builds disable Luau codegen and use bytecode optimization 1; non-preview VMs default to bytecode optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
     }
 }
 
@@ -94,6 +104,8 @@ mod tests {
         assert_eq!(mode.vm_implementation, "luau-upstream-vendored");
         assert_eq!(mode.host_binding, "rust-mlua");
         assert_eq!(mode.native_codegen_fallback, "interpreter");
+        assert_eq!(mode.bytecode_optimization_level, if mode.preview_tools { 1 } else { 2 });
+        assert_eq!(mode.bytecode_type_info_level, if mode.native_codegen_requested { 1 } else { 0 });
         if mode.preview_tools {
             assert!(!mode.native_codegen_requested);
             assert_eq!(mode.luau_execution, "interpreter");

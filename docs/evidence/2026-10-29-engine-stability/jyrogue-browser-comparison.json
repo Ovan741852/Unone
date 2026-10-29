@@ -1,0 +1,1307 @@
+{
+  "schema": "unone.jyrogue.browser-comparison.v1",
+  "scope": "Isolated official production Web player, current same frozen gameplay payload, main backend, fresh browser contexts,1600x900/DPR1,10-second windows, official profiling disabled.",
+  "evidenceQuality": "Historical candidate1/baseline windows may overlap root tests or parity CPU work; they are not an uncontended causal performance comparison. See jyrogue-opt2-browser-final.json for final opt2 windows after confirmed root CPU stop.",
+  "comparison": "Runtime candidate1 versus old runtime; host renderer/templates from current engine in both exports. Sequential windows, machine load unreserved; no material throughput improvement demonstrated by candidate1.",
+  "exactProjectPayloadMatch": true,
+  "artifacts": {
+    "candidate": {
+      "root": "artifacts/stability-20261029-jyrogue-web",
+      "release": "releases/ec0d064bf4cd1236d2eeace03b39c5b2d6c2c42ae8e1dac00c8e29c1b444dd60/",
+      "projectPayloadSha256": "be4886c9dd5cb0295f69f13d39bc268ef8706c9dae2e72ff93e55a30bd9e9e1d",
+      "gameScriptSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "runtime": {
+        "cargo_features": [
+          "audio",
+          "camera2d",
+          "particle",
+          "random",
+          "save",
+          "ui"
+        ],
+        "compiled_systems": [
+          "audio",
+          "camera2d",
+          "input",
+          "observation",
+          "particle",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_viewport_size",
+          "set_instance_transport",
+          "tick",
+          "ui_request",
+          "jobs_request",
+          "jobs_binary",
+          "spatial_request",
+          "host_time_request",
+          "observation_ptr",
+          "observation_len",
+          "particle_alloc",
+          "particle_sample",
+          "particle_output_ptr",
+          "particle_output_len"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "52b6849c1c9eb8566af79eed2d74f2d1ebdb3e8db0ae2e72306bdce8d0037caa",
+        "preview_tools": false,
+        "profile": "release",
+        "runtime_packages": {
+          "@unone/ui": "0.4.0"
+        },
+        "source_commit": "735e1cb4101459021a08bb76c6544bf691edc013",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 2400201,
+        "wasm_sha256": "9a1dc18a8e90f117588ad868f8003fdfde97da0589bcb306e9954c6cc4c51a34"
+      }
+    },
+    "baseline": {
+      "root": "artifacts/stability-20261029-jyrogue-old-runtime-web",
+      "release": "releases/b6aa0b4f0a7a2a2f693deab5e43d9a9c6dee5519d2cf43e25be4a77b1b0a26a8/",
+      "projectPayloadSha256": "be4886c9dd5cb0295f69f13d39bc268ef8706c9dae2e72ff93e55a30bd9e9e1d",
+      "gameScriptSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "runtime": {
+        "cargo_features": [
+          "audio",
+          "camera2d",
+          "camera3d",
+          "effekseer",
+          "jobs",
+          "particle",
+          "physics2d",
+          "physics3d",
+          "random",
+          "save",
+          "spine",
+          "ui"
+        ],
+        "compiled_systems": [
+          "audio",
+          "camera2d",
+          "camera3d",
+          "effekseer",
+          "input",
+          "jobs",
+          "observation",
+          "particle",
+          "physics2d",
+          "physics3d",
+          "random",
+          "save",
+          "spine",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_viewport_size",
+          "set_instance_transport",
+          "tick",
+          "ui_request",
+          "jobs_request",
+          "jobs_binary",
+          "spatial_request",
+          "host_time_request",
+          "observation_ptr",
+          "observation_len",
+          "particle_alloc",
+          "particle_sample",
+          "particle_output_ptr",
+          "particle_output_len"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "a31138e17ac1fc7eee17151d28fd3666c29e769ffffcd41c9537470876f572fe",
+        "preview_tools": false,
+        "profile": "release",
+        "runtime_packages": {
+          "@unone/ui": "0.4.0"
+        },
+        "source_commit": "7b9424cf42d0409633c9ce782503075bd09018f9",
+        "source_dirty": true,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 3458317,
+        "wasm_sha256": "c4b265506da24ed53023fc67ef22690af9cf6236a99424972b7d3c4eb70801b4"
+      }
+    }
+  },
+  "candidate": [
+    {
+      "scenario": "idle",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.0315,
+        "rafCallbacks": 566,
+        "rafFps": 56.42226984997259,
+        "simulationFrames": 280,
+        "simulationFps": 27.912076957583615,
+        "simulationSeconds": 4.666666666666667,
+        "simulationToWall": 0.4652012826263936,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 565,
+        "p50": 16.699999999999818,
+        "p95": 33.30000000000018,
+        "p99": 33.400000000001455,
+        "min": 16.30000000000109,
+        "max": 50,
+        "mean": 17.758761061946903
+      },
+      "dropped": {
+        "before": 65,
+        "after": 390,
+        "delta": 325,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": false,
+        "simulation": false,
+        "rafTail": false,
+        "noReportedDropped": false,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": false
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 19,
+          "p50": 30.899999976158142,
+          "p95": 45.89999997615814,
+          "p99": 45.89999997615814,
+          "min": 27.100000023841858,
+          "max": 45.89999997615814,
+          "mean": 31.442105274451407
+        },
+        "render": {
+          "n": 19,
+          "p50": 1.899999976158142,
+          "p95": 2.4000000953674316,
+          "p99": 2.4000000953674316,
+          "min": 1.600000023841858,
+          "max": 2.4000000953674316,
+          "mean": 1.9421052744514065
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29520,
+            "top": 15270,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29520,
+            "top": 15270,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "drag",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.015899999976158,
+        "rafCallbacks": 543,
+        "rafFps": 54.21380005803698,
+        "simulationFrames": 268,
+        "simulationFps": 26.75745564558731,
+        "simulationSeconds": 4.466666666666667,
+        "simulationToWall": 0.44595759409312186,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 542,
+        "p50": 16.699999999999818,
+        "p95": 33.30000000000109,
+        "p99": 33.400000000001455,
+        "min": 16.399999999999636,
+        "max": 83.40000000000055,
+        "mean": 18.45073800738007
+      },
+      "dropped": {
+        "before": 80,
+        "after": 411,
+        "delta": 331,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": false,
+        "simulation": false,
+        "rafTail": false,
+        "noReportedDropped": false,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": false
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 18,
+          "p50": 30.5,
+          "p95": 52.299999952316284,
+          "p99": 52.299999952316284,
+          "min": 23.899999976158142,
+          "max": 52.299999952316284,
+          "mean": 31.38888888888889
+        },
+        "render": {
+          "n": 18,
+          "p50": 1.899999976158142,
+          "p95": 9.599999904632568,
+          "p99": 9.599999904632568,
+          "min": 1.1999999284744263,
+          "max": 9.599999904632568,
+          "mean": 2.9666666520966425
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29520,
+            "top": 15270,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29576.21037597656,
+            "top": 15269.474897460934,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "atlas",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.014899999976159,
+        "rafCallbacks": 600,
+        "rafFps": 59.91073300796097,
+        "simulationFrames": 601,
+        "simulationFps": 60.01058422964091,
+        "simulationSeconds": 10.016666666666666,
+        "simulationToWall": 1.0001764038273484,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 599,
+        "p50": 16.69999999999891,
+        "p95": 16.799999999999272,
+        "p99": 16.80000000000109,
+        "min": 16.399999999999636,
+        "max": 16.899999999999636,
+        "mean": 16.667278797996662
+      },
+      "dropped": {
+        "before": 37,
+        "after": 37,
+        "delta": 0,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": true,
+        "simulation": true,
+        "rafTail": true,
+        "noReportedDropped": true,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": true
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 20,
+          "p50": 9.299999952316284,
+          "p95": 12.400000095367432,
+          "p99": 23.199999928474426,
+          "min": 6.599999904632568,
+          "max": 23.199999928474426,
+          "mean": 10.109999990463256
+        },
+        "render": {
+          "n": 20,
+          "p50": 0.8999999761581421,
+          "p95": 1.100000023841858,
+          "p99": 1.1999999284744263,
+          "min": 0.7000000476837158,
+          "max": 1.1999999284744263,
+          "mean": 0.9050000131130218
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "atlas",
+          "map_zoom": 20.16,
+          "map_zoom_target": 20.16,
+          "map_viewport": {
+            "height": 1088.6399999999999,
+            "left": 29224.32,
+            "top": 15103.68,
+            "width": 1935.3600000000001
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "atlas",
+          "map_zoom": 20.16,
+          "map_zoom_target": 20.16,
+          "map_viewport": {
+            "height": 1088.6399999999999,
+            "left": 29224.32,
+            "top": 15103.68,
+            "width": 1935.3600000000001
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "travel",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.061200000047684,
+        "rafCallbacks": 424,
+        "rafFps": 42.1420904065112,
+        "simulationFrames": 229,
+        "simulationFps": 22.760704488422324,
+        "simulationSeconds": 3.816666666666667,
+        "simulationToWall": 0.3793450748070387,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 423,
+        "p50": 16.700000000000728,
+        "p95": 50,
+        "p99": 50.100000000000364,
+        "min": 15.799999999999272,
+        "max": 50.100000000000364,
+        "mean": 23.68085106382979
+      },
+      "dropped": {
+        "before": 196,
+        "after": 566,
+        "delta": 370,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": false,
+        "simulation": false,
+        "rafTail": false,
+        "noReportedDropped": false,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": false
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 14,
+          "p50": 29.399999976158142,
+          "p95": 36.799999952316284,
+          "p99": 36.799999952316284,
+          "min": 22.5,
+          "max": 36.799999952316284,
+          "mean": 29.135714284011296
+        },
+        "render": {
+          "n": 14,
+          "p50": 2.700000047683716,
+          "p95": 9.399999976158142,
+          "p99": 9.399999976158142,
+          "min": 1.6999999284744263,
+          "max": 9.399999976158142,
+          "mean": 4.821428579943521
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 135033,
+          "selected_tile": 135033,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29474.974352659658,
+            "top": 15247.487176329829,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 12,
+          "travelling": true,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 136064,
+          "destination_id": 135033,
+          "selected_tile": 135033,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29538.8624030643,
+            "top": 15183.431232326187,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 9,
+          "travelling": true,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "battle",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.012299999952317,
+        "rafCallbacks": 601,
+        "rafFps": 60.026167813875155,
+        "simulationFrames": 601,
+        "simulationFps": 60.026167813875155,
+        "simulationSeconds": 10.016666666666667,
+        "simulationToWall": 1.0004361302312528,
+        "battleElapsedDelta": 10.016666666666884
+      },
+      "rafIntervalMs": {
+        "n": 600,
+        "p50": 16.69999999999891,
+        "p95": 16.800000000000182,
+        "p99": 16.80000000000109,
+        "min": 13.600000000000364,
+        "max": 19.700000000000728,
+        "mean": 16.667333333333335
+      },
+      "dropped": {
+        "before": 62,
+        "after": 62,
+        "delta": 0,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": true,
+        "simulation": true,
+        "rafTail": true,
+        "noReportedDropped": true,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": true
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 20,
+          "p50": 7.299999952316284,
+          "p95": 12.200000047683716,
+          "p99": 17.5,
+          "min": 5.399999976158142,
+          "max": 17.5,
+          "mean": 7.909999978542328
+        },
+        "render": {
+          "n": 20,
+          "p50": 3,
+          "p95": 3.3000000715255737,
+          "p99": 3.700000047683716,
+          "min": 1.2000000476837158,
+          "max": 3.700000047683716,
+          "mean": 2.6050000131130218
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "battle",
+          "position": 8,
+          "destination_id": 8,
+          "selected_tile": 8,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 23376,
+            "top": 14502,
+            "width": 1344
+          },
+          "map_card_open": true,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 2.716666666666662
+        },
+        "after": {
+          "screen": "battle",
+          "position": 8,
+          "destination_id": 8,
+          "selected_tile": 8,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 23376,
+            "top": 14502,
+            "width": 1344
+          },
+          "map_card_open": true,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 12.733333333333546
+        }
+      }
+    }
+  ],
+  "baseline": [
+    {
+      "scenario": "idle",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.041400000095367,
+        "rafCallbacks": 552,
+        "rafFps": 54.97241420466842,
+        "simulationFrames": 273,
+        "simulationFps": 27.187443981656664,
+        "simulationSeconds": 4.55,
+        "simulationToWall": 0.4531240663609444,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 551,
+        "p50": 16.699999999999818,
+        "p95": 33.30000000000018,
+        "p99": 33.400000000001455,
+        "min": 16.399999999999636,
+        "max": 33.600000000000364,
+        "mean": 18.20998185117967
+      },
+      "dropped": {
+        "before": 69,
+        "after": 392,
+        "delta": 323,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": false,
+        "simulation": false,
+        "rafTail": false,
+        "noReportedDropped": false,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": false
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 18,
+          "p50": 31.700000047683716,
+          "p95": 35.5,
+          "p99": 35.5,
+          "min": 24.600000023841858,
+          "max": 35.5,
+          "mean": 30.75555557012558
+        },
+        "render": {
+          "n": 18,
+          "p50": 1.899999976158142,
+          "p95": 2.3000000715255737,
+          "p99": 2.3000000715255737,
+          "min": 1.3000000715255737,
+          "max": 2.3000000715255737,
+          "mean": 1.8499999973509047
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29520,
+            "top": 15270,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29520,
+            "top": 15270,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "drag",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.027299999952316,
+        "rafCallbacks": 555,
+        "rafFps": 55.34889751006146,
+        "simulationFrames": 275,
+        "simulationFps": 27.4251293968773,
+        "simulationSeconds": 4.583333333333334,
+        "simulationToWall": 0.45708548994795506,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 554,
+        "p50": 16.699999999999818,
+        "p95": 33.30000000000018,
+        "p99": 33.400000000000546,
+        "min": 16.200000000000728,
+        "max": 50.100000000000364,
+        "mean": 18.08104693140794
+      },
+      "dropped": {
+        "before": 58,
+        "after": 393,
+        "delta": 335,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": false,
+        "simulation": false,
+        "rafTail": false,
+        "noReportedDropped": false,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": false
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 19,
+          "p50": 31.899999976158142,
+          "p95": 37.60000002384186,
+          "p99": 37.60000002384186,
+          "min": 21.100000023841858,
+          "max": 37.60000002384186,
+          "mean": 30.389473682955693
+        },
+        "render": {
+          "n": 19,
+          "p50": 1.8000000715255737,
+          "p95": 8.399999976158142,
+          "p99": 8.399999976158142,
+          "min": 1.3000000715255737,
+          "max": 8.399999976158142,
+          "mean": 2.7052631754624215
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29520,
+            "top": 15270,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29566.536994628907,
+            "top": 15270.280675048838,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "atlas",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.0205,
+        "rafCallbacks": 600,
+        "rafFps": 59.87725163414999,
+        "simulationFrames": 603,
+        "simulationFps": 60.17663789232074,
+        "simulationSeconds": 10.049999999999999,
+        "simulationToWall": 1.0029439648720122,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 599,
+        "p50": 16.69999999999891,
+        "p95": 16.800000000000182,
+        "p99": 16.80000000000109,
+        "min": 16.299999999999272,
+        "max": 17,
+        "mean": 16.6669449081803
+      },
+      "dropped": {
+        "before": 37,
+        "after": 37,
+        "delta": 0,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": true,
+        "simulation": true,
+        "rafTail": true,
+        "noReportedDropped": true,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": true
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 20,
+          "p50": 11.699999928474426,
+          "p95": 14.100000023841858,
+          "p99": 15.200000047683716,
+          "min": 8.5,
+          "max": 15.200000047683716,
+          "mean": 11.440000015497208
+        },
+        "render": {
+          "n": 20,
+          "p50": 0.8999999761581421,
+          "p95": 1.1999999284744263,
+          "p99": 1.1999999284744263,
+          "min": 0.7999999523162842,
+          "max": 1.1999999284744263,
+          "mean": 0.9549999952316284
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "atlas",
+          "map_zoom": 20.16,
+          "map_zoom_target": 20.16,
+          "map_viewport": {
+            "height": 1088.6399999999999,
+            "left": 29224.32,
+            "top": 15103.68,
+            "width": 1935.3600000000001
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 1,
+          "selected_tile": 1,
+          "map_view_mode": "atlas",
+          "map_zoom": 20.16,
+          "map_zoom_target": 20.16,
+          "map_viewport": {
+            "height": 1088.6399999999999,
+            "left": 29224.32,
+            "top": 15103.68,
+            "width": 1935.3600000000001
+          },
+          "map_card_open": false,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "travel",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.029200000047684,
+        "rafCallbacks": 426,
+        "rafFps": 42.47597016691008,
+        "simulationFrames": 225,
+        "simulationFps": 22.43449128533983,
+        "simulationSeconds": 3.75,
+        "simulationToWall": 0.3739081880889972,
+        "battleElapsedDelta": null
+      },
+      "rafIntervalMs": {
+        "n": 425,
+        "p50": 16.700000000000728,
+        "p95": 49.899999999999636,
+        "p99": 50.100000000000364,
+        "min": 16.299999999999272,
+        "max": 50.400000000001455,
+        "mean": 23.53341176470588
+      },
+      "dropped": {
+        "before": 214,
+        "after": 587,
+        "delta": 373,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": false,
+        "simulation": false,
+        "rafTail": false,
+        "noReportedDropped": false,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": false
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 14,
+          "p50": 29.5,
+          "p95": 41.10000002384186,
+          "p99": 41.10000002384186,
+          "min": 23.399999976158142,
+          "max": 41.10000002384186,
+          "mean": 30.700000013623917
+        },
+        "render": {
+          "n": 14,
+          "p50": 2.5,
+          "p95": 16.100000023841858,
+          "p99": 16.100000023841858,
+          "min": 1.2000000476837158,
+          "max": 16.100000023841858,
+          "mean": 5.464285714285714
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "world",
+          "position": 1,
+          "destination_id": 135033,
+          "selected_tile": 135033,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29478.89043625614,
+            "top": 15249.44521812807,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 12,
+          "travelling": true,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        },
+        "after": {
+          "screen": "world",
+          "position": 136064,
+          "destination_id": 135033,
+          "selected_tile": 135033,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 29545.015754973014,
+            "top": 15186.508155403115,
+            "width": 1344
+          },
+          "map_card_open": false,
+          "route_length": 9,
+          "travelling": true,
+          "battle_paused": false,
+          "battle_elapsed": 0
+        }
+      }
+    },
+    {
+      "scenario": "battle",
+      "sourceSha256": "e3f14b61a1b43c24ae1778b89cef68613cf11072854ef02ab314a7c10126a34c",
+      "rates": {
+        "wallSeconds": 10.013600000023843,
+        "rafCallbacks": 600,
+        "rafFps": 59.91851082513496,
+        "simulationFrames": 601,
+        "simulationFps": 60.01837500984352,
+        "simulationSeconds": 10.016666666666667,
+        "simulationToWall": 1.0003062501640587,
+        "battleElapsedDelta": 10.016666666666888
+      },
+      "rafIntervalMs": {
+        "n": 599,
+        "p50": 16.69999999999891,
+        "p95": 16.800000000000182,
+        "p99": 16.80000000000109,
+        "min": 15.800000000001091,
+        "max": 17.399999999999636,
+        "mean": 16.66677796327212
+      },
+      "dropped": {
+        "before": 47,
+        "after": 47,
+        "delta": 0,
+        "precision": "Official host publishes every 30 draws; endpoint counters can be up to 29 draws stale. Not an exact scheduler-private count."
+      },
+      "target60": {
+        "criteria": {
+          "minimumRafFps": 59,
+          "minimumSimulationFps": 59,
+          "rafP95Ms": 18.5,
+          "rafP99Ms": 25,
+          "reportedDroppedDelta": 0
+        },
+        "raf": true,
+        "simulation": true,
+        "rafTail": true,
+        "noReportedDropped": true,
+        "scenarioMaintained": true,
+        "visible": true,
+        "passed": true
+      },
+      "cpuMs": {
+        "bridge": {
+          "n": 20,
+          "p50": 10,
+          "p95": 12.899999976158142,
+          "p99": 15.200000047683716,
+          "min": 6.399999976158142,
+          "max": 15.200000047683716,
+          "mean": 9.589999997615815
+        },
+        "render": {
+          "n": 20,
+          "p50": 2.600000023841858,
+          "p95": 3.1999999284744263,
+          "p99": 3.1999999284744263,
+          "min": 1.100000023841858,
+          "max": 3.1999999284744263,
+          "mean": 2.494999998807907
+        }
+      },
+      "instrumentation": {
+        "profiling": false,
+        "setupHook": "Isolated HTTP response appends input.queueAction hook; used for authored MapZoomOut setup only. No tick/dt/renderer/gameplay changes or hook calls during timed windows.",
+        "readOnlySnapshots": "Decoded once at each boundary, outside the timed clocks; no per-frame full JSON decode.",
+        "rafObserver": "Timestamps only, plus JSON parse when the official 30-draw metrics publication changes.",
+        "renderer": "Unmodified official player and assets; no game/script/renderer/clock edits; no animation pause."
+      },
+      "observations": {
+        "before": {
+          "screen": "battle",
+          "position": 8,
+          "destination_id": 8,
+          "selected_tile": 8,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 23376,
+            "top": 14502,
+            "width": 1344
+          },
+          "map_card_open": true,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 2.7833333333333283
+        },
+        "after": {
+          "screen": "battle",
+          "position": 8,
+          "destination_id": 8,
+          "selected_tile": 8,
+          "map_view_mode": "detail",
+          "map_zoom": 14,
+          "map_zoom_target": 14,
+          "map_viewport": {
+            "height": 756,
+            "left": 23376,
+            "top": 14502,
+            "width": 1344
+          },
+          "map_card_open": true,
+          "route_length": 0,
+          "travelling": false,
+          "battle_paused": false,
+          "battle_elapsed": 12.800000000000216
+        }
+      }
+    }
+  ],
+  "errors": [
+    {
+      "phase": "initial candidate atlas setup",
+      "error": "Error: Atlas settled timeout\n    at Object.wait (file:///D:/Projects/JYRogue/game/tools/folio-native-support.mjs:74:9)\n    at async prepare (file:///D:/Projects/Unone/.cache/jyrogue-browser-benchmark.mjs:58:176)\n    at async file:///D:/Projects/Unone/.cache/jyrogue-browser-benchmark.mjs:108:81",
+      "retry": "Separate extra run used setup-only authored MapZoomOut input hook; original failed run preserved."
+    }
+  ],
+  "evidence": {
+    "candidate": "artifacts/stability-20261029-jyrogue-browser",
+    "extra": "artifacts/stability-20261029-jyrogue-browser-extra",
+    "baseline": "artifacts/stability-20261029-jyrogue-browser-old-runtime"
+  },
+  "limitations": [
+    "RAF callback throughput is not display-present FPS.",
+    "Scheduler dropped counters are published every30draws and can be29draws stale at endpoints.",
+    "Atlas setup-only hook appends input.queueAction to the isolated HTTP main.js response. No tick/dt/gameplay/renderer logic edits.",
+    "Battle fixture derives Blackwind position/exploration from full named-fresh save; entry uses visible StartBlackwind UI. No natural travel claim.",
+    "Existing game source/assets/save/live browser page were not modified; all writes and server responses belong to new Unone artifacts.",
+    "No long soak, heap plateau or GC frequency proof from these10-second windows."
+  ]
+}

@@ -261,7 +261,10 @@ export type UiRect = {x: number, y: number, width: number, height: number}
 -- font_size does not change when its box changes and never silently shrinks.
 export type UiColor = {number} -- exactly four RGBA values, each in 0..1
 export type UiInsets = {left: number?, top: number?, right: number?, bottom: number?}
+-- Viewport-height units; positive y paints downward. Sharp same-layout glyph copy.
+export type UiTextShadow = {offset_x: number, offset_y: number, color: UiColor}
 export type UiStyle = {
+    text_shadow: UiTextShadow?,
     font_family: string?, font_size: number?, font_weight: number?,
     line_height: number?, letter_spacing: number?, color: UiColor?,
     text_align: ("start" | "center" | "end")?,
@@ -279,6 +282,10 @@ export type UiTextNode = UiPlacement & {
 }
 export type UiButtonNode = UiPlacement & {
     kind: "button", id: string, text: string?, action: string, style: UiStyle?,
+}
+-- No paint/style/children; ordinary semantic action and button capture lifetime.
+export type UiInputRegionNode = UiPlacement & {
+    kind: "input_region", id: string, action: string,
 }
 export type UiTextInputNode = UiPlacement & {
     kind: "text_input", id: string, text: string?, placeholder: string?, max_length: number?,
@@ -337,8 +344,8 @@ export type UiImageQuad = {
     asset: string, rect: UiRect,
     source: {x:number,y:number,width:number,height:number}?, opacity: number?,
 }
-export type UiImageBatchNode = UiPlacement & {
-    kind: "image_batch", id: string, quads: {UiImageQuad},
+export type UiImageBatchNode = {
+    kind: "image_batch", id: string, rect: UiRect, quads: {UiImageQuad},
     background_for: UiBackgroundScope?,
 }
 export type UiPanelNode = UiPlacement & {
@@ -354,7 +361,7 @@ export type UiScrollNode = UiPlacement & {
     scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
     children: {UiNode}?,
 }
-export type UiNode = UiTextInputNode | UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
+export type UiNode = UiInputRegionNode | UiTextInputNode | UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiImageBatchNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
 -- @unone/ui: pure constructors and explicitly selected declarative layout.
@@ -366,6 +373,9 @@ export type UiComponentsTheme = {
 }
 export type UiComponentTextProps = UiPlacement & {
     id: string, text: string?, style: UiStyle?,
+}
+export type UiComponentInputRegionProps = UiPlacement & {
+    id: string, action: string,
 }
 export type UiComponentTextInputProps = UiPlacement & {
     id: string, text: string?, placeholder: string?, max_length: number?,
@@ -391,8 +401,8 @@ export type UiComponentImageProps = UiPlacement & {
     id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
     alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
 }
-export type UiComponentImageBatchProps = UiPlacement & {
-    id: string, quads: {UiImageQuad}, background_for: UiBackgroundScope?,
+export type UiComponentImageBatchProps = {
+    id: string, rect: UiRect, quads: {UiImageQuad}, background_for: UiBackgroundScope?,
 }
 export type UiComponentSurface = {
     kind: "panel", style: UiStyle?,
@@ -437,6 +447,7 @@ export type UiResponsiveLayout<T> = {
     resolve: (viewport: {aspect: number}, bounds: UiViewport?) -> UiResponsiveLayoutResult<T>,
 }
 export type UiComponentKit = {
+    inputRegion: (props: UiComponentInputRegionProps) -> UiInputRegionNode,
     textInput: (props: UiComponentTextInputProps) -> UiTextInputNode,
     -- Create once with authored groups/thresholds; resolve each View for reflow.
     createResponsiveLayout: <T>(options: UiResponsiveLayoutOptions<T>) -> UiResponsiveLayout<T>,

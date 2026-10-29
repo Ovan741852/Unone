@@ -1,6 +1,7 @@
 use std::{
     borrow::Cow,
     fs,
+    io::Write,
     path::{Path, PathBuf},
     process::ExitCode,
     sync::Arc,
@@ -363,7 +364,7 @@ enum ApiCommand {
     },
     /// Print canonical Luau types, write a contract file, or refresh an explicitly marked script block.
     Typings {
-        #[arg(long, conflicts_with = "update_script", help = "Write the type contract to this path instead of stdout")]
+        #[arg(long, conflicts_with = "update_script", help = "Write the type contract to a new file; use --update-script for existing game scripts")]
         output: Option<PathBuf>,
         #[arg(long, conflicts_with = "output", help = "Refresh exactly one marked API type block in this existing project-relative script")]
         update_script: Option<String>,
@@ -952,13 +953,15 @@ fn run() -> Result<ExitCode> {
                         cli.json,
                     );
                 }
-                if let Err(error) = fs::write(&path, types) {
+                let write_result = fs::OpenOptions::new().write(true).create_new(true).open(&path)
+                    .and_then(|mut file| file.write_all(types.as_bytes()));
+                if let Err(error) = write_result {
                     return print_result(
                         EngineResult::<serde_json::Value>::failure(
                             unone_engine::Diagnostic::error(
-                                "API_TYPINGS_WRITE_FAILED",
+                                if error.kind() == std::io::ErrorKind::AlreadyExists { "API_TYPINGS_OUTPUT_EXISTS" } else { "API_TYPINGS_WRITE_FAILED" },
                                 "Could not write the type contract",
-                                format!("{}: {}", path.display(), error),
+                                format!("{}: {}. Output must be a new file; use --update-script to refresh a marked game script without replacing gameplay.", path.display(), error),
                             ),
                         ),
                         cli.json,

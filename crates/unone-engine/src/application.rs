@@ -18,6 +18,10 @@ pub struct ApplicationState {
 }
 
 impl ApplicationState {
+    pub(crate) fn is_default(&self) -> bool {
+        self.escape_behavior == EscapeBehavior::Quit && !self.quit_requested
+    }
+
     pub(crate) fn set_escape_behavior(&mut self, behavior: &str) -> Result<(), String> {
         self.escape_behavior = match behavior {
             "action" => EscapeBehavior::Action,

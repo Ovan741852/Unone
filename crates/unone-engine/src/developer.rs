@@ -818,12 +818,22 @@ impl DeveloperSession {
                 Ok(report)
             }
             DeveloperRequest::Recording { .. } => {
+                if self.runtime.host_time_report()["fault"].is_string() {
+                    return Err(error("HOST_TIME_FAILED_RECORDING_UNSUPPORTED",
+                        "A failed clock transaction is not a replayable committed tape; preserve diagnosis and open a fresh session"));
+                }
                 let mut value=json!({"schema_version": 1, "seed": self.seed,
                 "initial_digest": self.initial_digest, "commands": self.recording,
                 "script_digest": self.runtime.developer_script_digest(), "engine_version": env!("CARGO_PKG_VERSION"),
                 "scope": "runtime commands; replay against the same project sources and engine version"});
                 if self.recording.iter().any(|command|command["input"].get("physical").is_some()){
                     value["physical_input_profile"]=json!(crate::physical_input::PROFILE);
+                }
+                if let Some(tape) = self.runtime.host_time_recorded_prefix() {
+                    value["host_time"] = json!(tape);
+                }
+                if serde_json::to_vec(&value).expect("recording serializes").len() > MAX_RECORDING_BYTES {
+                    return Err(error("RECORDING_FULL", "Recording including host-time inputs exceeds 16 MiB"));
                 }
                 Ok(value)
             }
@@ -854,7 +864,7 @@ impl DeveloperProtocol {
                     "Close the current session before opening another",
                 ));
             }
-            return match EngineRuntime::load_with_seed(project, seed) {
+            return match crate::diff::load_record_runtime(project, seed) {
                 Ok(runtime) => {
                     let session = DeveloperSession::new(runtime, seed);
                     let report = session
@@ -903,6 +913,8 @@ struct Recording {
     engine_version: String,
     #[serde(default,deserialize_with="crate::physical_input::present")]
     physical_input_profile:Option<String>,
+    #[serde(default)]
+    host_time: Option<crate::HostTimeTape>,
 }
 
 #[derive(Deserialize)]
@@ -990,7 +1002,15 @@ fn replay(project: &Path, value: Value) -> Result<Value, Box<Diagnostic>> {
             "Replay is limited to 60,000 ticks",
         ));
     }
-    let runtime = EngineRuntime::load_with_seed(project, recording.seed)?;
+    let runtime = if let Some(tape) = recording.host_time {
+        EngineRuntime::load_with_host_time(project, recording.seed, crate::HostTimeConfig::Replay { tape })?
+    } else {
+        let (config, _) = crate::ProjectPaths::discover(project)?;
+        if config.host_time.is_some() {
+            return Err(error("HOST_TIME_REPLAY_TAPE_MISSING", "Enabled host time requires recorded inputs; replay must not sample the live clock"));
+        }
+        EngineRuntime::load_with_seed(project, recording.seed)?
+    };
     let mut session = DeveloperSession::new(runtime, recording.seed);
     let source_changed = recording.script_digest != session.runtime.developer_script_digest();
     let engine_changed = recording.engine_version != env!("CARGO_PKG_VERSION");
@@ -1051,6 +1071,8 @@ fn replay(project: &Path, value: Value) -> Result<Value, Box<Diagnostic>> {
         }
         session.runtime.take_developer_trace();
     }
+    session.runtime.host_time_replay_complete()
+        .map_err(|detail| error("HOST_TIME_REPLAY_MISMATCH", detail))?;
     Ok(
         json!({"identical": true, "reproduced_failure": session.faulted,
         "script_changed": source_changed, "engine_version_changed": engine_changed,

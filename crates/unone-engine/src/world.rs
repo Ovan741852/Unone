@@ -808,6 +808,7 @@ pub struct RigidBodySnapshot {
 pub struct WorldSnapshot {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub physical_input_receipt: Option<crate::PhysicalReceipt>,
+    #[serde(skip_serializing_if = "crate::ApplicationState::is_default")]
     pub application: crate::ApplicationState,
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub projected_geometry: BTreeMap<String,crate::ProjectedBatch>,
@@ -1421,6 +1422,9 @@ impl World {
             .entities
             .get(id)
             .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        if entity.transform3d.is_some() {
+            return Err(format!("ENTITY_DIMENSION_MISMATCH: '{id}' has Transform3D; use getTransform3D"));
+        }
         Ok(Transform2DData {
             position: entity.transform,
             rotation: entity.rotation,
@@ -1435,6 +1439,9 @@ impl World {
             .entities
             .get_mut(id)
             .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        if entity.transform3d.is_some() {
+            return Err(format!("ENTITY_DIMENSION_MISMATCH: '{id}' has Transform3D; use setTransform3D or physics3d movement APIs"));
+        }
         entity.transform = position;
         Ok(())
     }
@@ -1455,6 +1462,9 @@ impl World {
             .entities
             .get_mut(id)
             .ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        if entity.transform3d.is_some() {
+            return Err(format!("ENTITY_DIMENSION_MISMATCH: '{id}' has Transform3D; use setTransform3D or physics3d movement APIs"));
+        }
         entity.transform = transform.position;
         entity.rotation = transform.rotation;
         entity.scale = transform.scale;

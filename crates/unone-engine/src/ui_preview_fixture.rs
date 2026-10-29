@@ -25,6 +25,8 @@ impl EngineRuntime {
         project_root: impl AsRef<Path>, seed: u64, save_fixture: Option<&str>,
     ) -> Result<Self, Box<Diagnostic>> {
         let root = project_root.as_ref();
+        let (config, _) = crate::ProjectPaths::discover(root)?;
+        Self::require_replayable_host_time(&config)?;
         let payload = save_fixture.map(|path| read_fixture(root, path)).transpose()?;
         Self::load_with_seed_and_save(root, seed, payload)
     }

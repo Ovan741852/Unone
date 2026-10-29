@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "value": {
+    "output": null,
+    "project": "D:/Projects/Populous-Reborn",
+    "runtime": {
+      "descriptor": "\\\\?\\D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\web-production-0\\runtime.json",
+      "engine_version": "0.1.0",
+      "family": "web-wasm",
+      "readiness": null,
+      "runtime_id": "web-production-0",
+      "runtime_packages": {
+        "@unone/ui": "0.4.0"
+      },
+      "runtime_root": "\\\\?\\D:\\Projects\\Unone\\artifacts\\core-sdk-stability-20261030\\runtimes\\web-production-0",
+      "target": "web",
+      "variant": "production",
+      "verified": true
+    },
+    "schema": "unone.project-prepare-preflight.v1",
+    "status": "compatible",
+    "target": "web"
+  },
+  "diagnostics": [],
+  "effects": []
+}

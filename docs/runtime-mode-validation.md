@@ -49,10 +49,23 @@ Unsupported or unprobed facts remain explicit, not assumed true.
 
 - Diagnostic `preview-tools` disables Luau codegen even if compiled in. Default
   bytecode optimization is level 1 and type info level 0.
-- Non-diagnostic `native-codegen` requests codegen and bytecode optimization 2 /
-  type info 1, matching the existing production engine policy.
+- Every non-preview VM defaults to bytecode optimization level 2, including
+  production interpreters and Wasm. This enables compiler inlining without
+  requiring native machine-code generation. Line information stays enabled;
+  optimized function boundaries/backtraces can differ from diagnostic builds.
+- Non-diagnostic `native-codegen` additionally requests codegen and type info
+  level 1. Other VMs keep type info level 0. Native-codegen eligibility remains
+  separate from the bytecode optimization policy.
 - Wasm host compilation is `host-managed-not-probed`. A Rust/Wasm build cannot
   report which browser JIT tier is currently executing it merely from cfg flags.
+
+The bytecode fields report source-chunk compiler defaults, not proof of every
+function's emitted options. Authored `--!optimize`/`--!native` directives can
+override upstream compiler settings. The separately compiled job program cache
+retains `Compiler::default()` bytecode (level 1); this change does not rewrite
+cached job compilation. Validate same-source observations, save and replay
+outputs through the actual production payload as well as diagnostic CLI output
+before adopting a new compiler build. A compiler setting is not an FPS result.
 
 ## Paired headless validation
 

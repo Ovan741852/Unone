@@ -1,0 +1,9 @@
+   Compiling unone-engine v0.1.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.34s
+     Running tests\ui_retention.rs (target\debug\deps\ui_retention-ef13262260fc0755.exe)
+
+running 1 test
+test repeated_full_ui_publications_retain_only_the_current_lua_tree ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.48s
+

@@ -64,3 +64,21 @@ test('failed decode is atomic, retention is bounded to the last accepted frame a
  assert.equal(countAtob(()=>decode.decode({projected_frame:a})),8);
  assert.equal(decode.decode({}),null);assert.equal(decode.metrics().retained_geometries,4,'absent frame does not evict');
 });
+
+test('renderer-owned decoder borrows stable validated geometry without per-redraw buffer copies',()=>{
+ const decode=frameModule.createProjectedFrameDecoder({copyGeometry:false}),f=frame(4);
+ const first=decode.decode({projected_frame:f});
+ for(let i=0;i<120;i++){
+  const next=decode.decode({projected_frame:f});
+  next.draws.forEach((d,n)=>assert.equal(d.data,first.draws[n].data));
+ }
+ const changed=reparse(f);changed.draws[2].vertices=changedVertices(changed.draws[2],.1);
+ const next=decode.decode({projected_frame:changed});
+ assert.equal(next.draws[0].data,first.draws[0].data);
+ assert.notEqual(next.draws[2].data,first.draws[2].data);
+ // The default/public decoder still owns separate arrays; borrowed renderer storage never
+ // aliases a fresh decoder or the caller's input (which contains only packed strings).
+ const detached=decoder().decode({projected_frame:changed});detached.draws[0].data.vertices[0]=999;
+ assert.notEqual(next.draws[0].data.vertices[0],999);
+ decode.clear();assert.equal(decode.metrics().retained_geometries,0);
+});

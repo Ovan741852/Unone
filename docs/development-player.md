@@ -16,6 +16,10 @@ cargo build -p unone-cli
 ```
 
 Both variants select the same project systems; see [optional systems](optional-systems.md).
+Production VMs default to Luau bytecode optimization level 2 even when executing
+through the interpreter/Wasm; development keeps level 1 for sampler attribution.
+This is separate from optional native machine-code generation. See
+[execution-mode policy and parity](runtime-mode-validation.md).
 
 Build scripts may update the invoking shell's SDK environment; run independent
 build invocations from a fresh shell when selecting Node/toolchains. Runtime

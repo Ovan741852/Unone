@@ -63,6 +63,12 @@ before start. An enabled-clock recording without a tape is rejected; no hidden
 resampling occurs. Old disabled-clock schema-1 recordings remain compatible.
 These are SDK replay inputs, not any particular game's original save/demo format.
 
+Developer sessions also select record before start, export `host_time` with their
+command recording, and require that tape on replay. A failed clock transaction
+cannot be exported as a successful committed recording. Deterministic tests and
+UI preview reject `live`/`record` policies; provide an explicit project replay
+tape, including startup samples. Tests require complete consumption of that tape.
+
 ## Lifecycle and faults
 
 Ordinary tick is not an all-World/Luau rollback transaction. A failed enabled-clock

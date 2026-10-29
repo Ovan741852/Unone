@@ -102,7 +102,7 @@ async function adapter(t) {
     export class WebGPURenderer {constructor(){this.info={reset(){},render:{calls:0,triangles:0},memory:{textures:0}}}
       async init(){}setPixelRatio(){}setClearColor(){}setSize(){}render(){}dispose(){}}`;
   let context;
-  const renderer=await createThreeRenderer({clientWidth:640,clientHeight:360},{kind:'three-webgpu',
+  const renderer=await createThreeRenderer({clientWidth:640,clientHeight:360,addEventListener(){},removeEventListener(){}},{kind:'three-webgpu',
     threeModuleUrl:'data:text/javascript;base64,'+Buffer.from(module).toString('base64'),
     getAssetManifest:()=>({assets:[{id:'texture://test',kind:'texture2d',source:'fixture.png'}]}),
     loadAssetUrl:async()=>'data:image/png;base64,fixture',beforeRender:value=>{context=value;}});

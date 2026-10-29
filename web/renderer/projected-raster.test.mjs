@@ -60,3 +60,11 @@ test('actual validator skips lost context before allocation and treats loss duri
  assert.deepEqual(result,{lost:true});assert.equal(during.events.filter(e=>e[0]==='read').length,1);
  assert.equal(during.events.filter(e=>e[0]==='marker').length,0);assert.deepEqual(during.state(),during.initial);during.pass.dispose();
 });
+
+test('legacy raster context loss releases its fullscreen owner and retains monotonic target generations',()=>{
+ const f=fixture(),camera=new THREE.PerspectiveCamera();f.pass.draw({draw(){}},camera);
+ const mesh=f.events.find(e=>e[0]==='mesh')[2];let disposed=0;mesh.geometry.addEventListener('dispose',()=>disposed++);
+ const generation=f.pass.metrics().generation;f.lose();f.pass.contextLost();f.pass.contextLost();
+ assert.equal(disposed,1);assert.equal(f.pass.metrics().generation,generation);assert.equal(f.pass.metrics().physical_size,null);
+ assert.throws(()=>f.pass.readCoverage(0,0,1,1,new Uint8Array(4)),/TARGET_MISSING/);f.pass.dispose();assert.equal(disposed,1);
+});
