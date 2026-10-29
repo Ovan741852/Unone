@@ -230,9 +230,16 @@
     "source": "Production runtime metadata records clean ff617f581357cb03d71ffd9fc8a6b8e059081bd0. No manual SDK guide/index edits."
   },
   "diagnostics": {
-    "matching_phase_runtime": null,
+    "matching_phase_runtime": {
+      "path": "D:/Projects/Unone/artifacts/web-retained-20261030-phase-profile-candidate8",
+      "wasm_sha256": "c2c1834b0e6cbf8206cfa20044e8e63cc07bd2f48b923e6c91419a0ea5dea621",
+      "source_commit": "da74da06b45cb3b65f91dfdc0f2673312513d510",
+      "source_dirty": false,
+      "mode": "phase-only opt2;hasPressedActions supported;noVM/functioncallbacks",
+      "verification": "docs/evidence/2026-10-29-engine-stability/phase8-production-policy-validation.json"
+    },
     "matching_sampling_runtime": null,
-    "status": "Old phase/sampler artifacts lack hasPressedActions and are historical only; do not run newly integrated Game source against them.",
+    "status": "Matching phase8 verified with new API:68digestcheckpoints/60activeCore+publicationframes/VMnotcollected/stopfreeze/samplingrejected. Function-sampling runtime remains historical and not matching SDK8.",
     "historical": {
       "phase": {
         "path": "D:/Projects/Unone/artifacts/web-retained-20261030-phase-profile-candidate1",

@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "scope": "Actual matching opt2 phase-only WASM in Node. All68 canonical checkpoints across fresh load,8 warmup+60 active ticks, then3 stopped ticks. Diagnostic fixture calls hasPressedActions in Game.update. No FPS, overhead, GC-frequency or browser rendering claim.",
+  "command": "node .cache/verify-phase8-runtime.mjs --expected-wasm c2c1834b0e6cbf8206cfa20044e8e63cc07bd2f48b923e6c91419a0ea5dea621",
+  "started_utc": "2026-10-29T22:03:05.472Z",
+  "finished_utc": "2026-10-29T22:03:05.632Z",
+  "runtime": {
+    "source_commit": "da74da06b45cb3b65f91dfdc0f2673312513d510",
+    "source_dirty": false,
+    "bytecode_optimization_level": 2,
+    "dev_tools": false,
+    "preview_tools": true,
+    "phase_profile": true,
+    "sampling_profile": false,
+    "profile_mode": "phase-only"
+  },
+  "runtime_manifest_sha256": "9fb659689ecea3e0931faea7cf6f741e11c60a6ebf96c82b943cfe73f35f7eab",
+  "wasm_sha256": "c2c1834b0e6cbf8206cfa20044e8e63cc07bd2f48b923e6c91419a0ea5dea621",
+  "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+  "runner_sha256": "b4892ba69422818a623dc9a01952311e115c9e5b57bfd33c73c86c16decea366",
+  "host_loader_sha256": "2d446e73423d701fe9a113e07af14cdd787cf274862e45570aa1d6b175d3da58",
+  "fixture": {
+    "root": "D:/Projects/Unone/.cache/sdk8-official-fixture",
+    "config_sha256": "a506cc289c7b2e96d0605d73d21c22a96e61aabeadf94f1401b695054f970716",
+    "entry_script": "scripts/main.luau",
+    "source_sha256": "fb4ff5ffc5efc2aea79d5963017460c883b70700a06a5ba40b863cc70abd40e5",
+    "update_calls_hasPressedActions": true
+  },
+  "canonical": {
+    "compared_checkpoints": 68,
+    "warmup_frames": 8,
+    "active_frames": 60,
+    "all_equal": true,
+    "initial_digest": "sha256:9b0c1edfe7b22c9d6933174eb362b63b8995c1609207cd4f39fec96f98395d7b",
+    "first": {
+      "digest": "sha256:f939553544f3960e1b0e1b111573f36dd3e82752256225f102c499f4a70e8b0e",
+      "frame": 1
+    },
+    "last": {
+      "digest": "sha256:0a4cbe18d922f31df8df15644ecc1e65293d1eb63364249cfdcdaf5317759b15",
+      "frame": 68
+    },
+    "checkpoints_sha256": "60bedabe7562256dfd5bf4dbb12f5dcb9e0a7c2506e4b7a977132052c97f410f"
+  },
+  "phase_coverage": {
+    "attempted": 60,
+    "completed": 60,
+    "failed": 0,
+    "retained": 60,
+    "first_frame": 9,
+    "last_frame": 68,
+    "calls": {
+      "image_batch_convert_ms": 0,
+      "image_batch_remove_ms": 0,
+      "image_batch_validate_commit_ms": 0,
+      "observations_clone_ms": 60,
+      "observe_host_state_ms": 60,
+      "observe_total_ms": 60,
+      "physics_ms": 60,
+      "script_total_ms": 60,
+      "tick_total_ms": 60,
+      "ui_clone_ms": 60,
+      "ui_commit_drop_ms": 60,
+      "ui_convert_ms": 60,
+      "ui_parse_validate_ms": 60,
+      "world_snapshot_ms": 60
+    }
+  },
+  "publication_coverage": {
+    "publications": 60,
+    "retained": 60,
+    "paths": [
+      "retained"
+    ],
+    "first_frame": 9,
+    "last_frame": 68
+  },
+  "vm": {
+    "availability": {
+      "allocation_growth": "not-collected",
+      "full_gc_wall_time": "unsupported",
+      "incremental_gc_wall_time": "not-collected",
+      "js_gc": "not-applicable",
+      "rust_allocations": "not-collected"
+    },
+    "not_collected_reason": "phase-profile deliberately installs no function, allocation or GC callbacks",
+    "allocation_growth_bytes": null,
+    "allocation_growth_events": null,
+    "incremental_gc_steps": null,
+    "incremental_gc_ms": null,
+    "incremental_gc_max_step_ms": null,
+    "tick_count": null,
+    "retained_vm_frames": 0,
+    "function_samples": 0
+  },
+  "stop": {
+    "post_stop_ticks": 3,
+    "core_window_frozen": true,
+    "publication_frozen": true,
+    "performance_window_frozen": true
+  },
+  "sampling": {
+    "requested_true_rejected": true,
+    "code": "PROFILE_SAMPLING_UNAVAILABLE",
+    "rejected_request_preserved_frozen_window": true,
+    "matching_sampler_ready": false,
+    "reason": "This artifact is phase-only and cannot sample functions. The older f60e... sampler artifact was not rebuilt or revalidated as matching SDK8."
+  },
+  "reload": {
+    "executed": false,
+    "export_available": false,
+    "reason": "Phase-only preview ABI has no reload_script export. Native13 behavior tests remain compiled but unexecuted due to Windows App Control4551; reload is not inferred from fresh load."
+  },
+  "raw_evidence": {
+    "path": ".cache/phase8-runtime-actual-validation.json",
+    "sha256": "93c9ee285390fc3d01619f3f08fda773eb33eda12f4b5cd7dbdbdafa587e2609",
+    "bytes": 122763
+  },
+  "limitations": [
+    "Diagnostic active/stopped windows were compared on the same opt2 phase artifact; this is not cross-artifact production/diagnostic timing equivalence.",
+    "No browser, GPU or game performance workload was executed. Small-fixture phase values are not production FPS, profiling overhead or GC-frequency measurements.",
+    "Native13 behavior tests remain compiled but unexecuted due to Windows App Control4551; production/phase reload has no export and was not executed."
+  ]
+}

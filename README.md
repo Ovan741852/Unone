@@ -19,8 +19,9 @@ choice. Follow the [AI workflow](docs/ai-workflow.md) and
 gameplay evidence, so inspect the exported player before claiming visual completion.
 
 The official [`@unone/ui` shared component package](docs/ui-components.md) ships
-with Core and the portable SDK. Declare `"runtime_packages":{"@unone/ui":"0.2.0"}`,
-discover `ui.components.info` / `ui.components.create`, then use the module's
+with Core and the portable SDK. Declare its exact bundled version in
+`runtime_packages`, following the [package contract](docs/ui-components.md).
+Discover `ui.components.info` / `ui.components.create`, then use the module's
 typed text/button/slider/combobox/panel/image/component/screen constructors and
 scrollView/virtualList/virtualGrid wrappers, or the same methods on a themed kit.
 Search `"create button"`, `"button click"`, `"按下瞬間"`, `"滑桿"` or `"下拉選單"`
