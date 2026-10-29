@@ -150,6 +150,13 @@ fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
         && tokens.iter().any(|term| inertia.contains(term)) {
         return Some(["ui.components.scrollView", "ui.components.virtualList", "ui.components.virtualGrid", "ui.scrollView"].into_iter().filter_map(describe).collect());
     }
+    let any_press = ["any", "has", "haspressedactions", "pressed", "press", "edge", "edges", "action", "actions", "semantic", "input", "button", "buttons", "discrete", "scan", "scanning", "gate", "任何", "任意", "是否有", "按下", "動作", "动作", "事件", "離散", "离散", "掃描", "扫描"];
+    if let Some(tokens)=fully_segment_ui_terms(terms,&any_press)
+        && (tokens.contains(&"haspressedactions")
+            || (tokens.iter().any(|t|["any","has","任何","任意","是否有"].contains(t))
+                && tokens.iter().any(|t|["pressed","press","按下"].contains(t)))) {
+        return Some(["input.hasPressedActions","input.wasPressed"].into_iter().filter_map(describe).collect());
+    }
     let press = ["click", "clicked", "pressed", "press", "onclick", "buttonclick", "buttonpressed", "按鈕點擊", "按钮点击", "點擊", "点击", "按一下", "按下", "按下瞬間", "按下瞬间", "單次觸發", "单次触发"];
     let release = ["release", "released", "放開", "放开", "釋放", "释放"];
     let hold = ["hold", "held", "holding", "長按", "长按", "按住", "持續按住", "持续按住"];
@@ -1892,6 +1899,20 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["input.wasReleased", "input.isDown", "ui.components.button", "ui.components.combobox"],
         ),
         descriptor(
+            "input.hasPressedActions",
+            "input",
+            "Read whether the current semantic press-edge snapshot contains any action, in O(1).",
+            "Gate a large discrete wasPressed action scanner when no action was newly pressed. Search any pressed action, has pressed actions, 是否有按下動作 or 任意按下事件. Keep action dispatch and gameplay in Luau.",
+            "Do not skip the whole update, held movement, release handling, pointer/drag, text editing or slider interaction work. Raw physical events alone are not semantic presses.",
+            vec![],
+            "boolean: at least one action would return true from wasPressed(action) in this same tick snapshot.",
+            vec!["Read-only O(1) input snapshot; never consumes an edge or scans action names"],
+            "Uses the same pressed set as wasPressed. Stable across repeated reads; only successful ticks advance the prior held snapshot. Failed execution restores the previously published press snapshot, reload preserves it, and a fresh runtime starts false. Existing host/UI/physical mappings and replay feed the same semantic actions; held-only, release-only, raw-physical-only, text-only and slider-only input do not create a press.",
+            vec!["Takes no arguments or option table; unexpected arguments are rejected. This is not an any-input-activity or pending-event query."],
+            "if api.input.hasPressedActions() then scanDiscreteCommands(api.input) end",
+            vec!["input.wasPressed", "input.wasReleased", "input.isDown", "input.getPhysicalBatch", "input.getSliderInteraction", "input.getTextInputInteraction"],
+        ),
+        descriptor(
             "input.wasReleased",
             "input",
             "Read a non-consuming semantic action release edge: up now and down in the previous successful tick.",
@@ -2960,6 +2981,22 @@ mod tests {
                 .contains("Available without a runtime_packages declaration")
         );
         assert!(info.returns.contains("declared:boolean"));
+    }
+
+    #[test]
+    fn aggregate_press_intent_is_scoped_and_describes_the_existing_snapshot() {
+        for query in ["input.hasPressedActions","hasPressedActions","any pressed action","has pressed actions","any semantic press edge","是否有按下動作","任意按下事件"] {
+            assert_eq!(search(query).first().map(|api|api.name.as_str()),Some("input.hasPressedActions"),"{query}");
+        }
+        for query in ["any pressed action unfindable","any held action","any text activity"] {
+            assert!(!search(query).iter().any(|api|api.name=="input.hasPressedActions"),"{query}");
+        }
+        let api=describe("input.hasPressedActions").unwrap();
+        assert!(api.parameters.is_empty());assert!(api.purpose.contains("O(1)"));
+        assert!(api.frame_semantics.contains("same pressed set as wasPressed"));
+        assert!(api.when_not_to_use.contains("whole update"));
+        assert!(typings().contains("hasPressedActions: () -> boolean"));
+        assert!(describe("input.hasPressedAction").is_none());
     }
 
     #[test]

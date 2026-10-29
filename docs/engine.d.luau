@@ -134,6 +134,9 @@ export type InputApi = {
     -- Non-consuming edges for the current simulation tick. Read in update;
     -- multiple reads return the same result. Held actions press only once.
     wasPressed: (action: string) -> boolean,
+    -- O(1), non-consuming: any semantic wasPressed edge in this same snapshot.
+    -- Gate only discrete press scanners; held/release/pointer/text/slider work stays live.
+    hasPressedActions: () -> boolean,
     wasReleased: (action: string) -> boolean,
     getPointerPosition: () -> Vec2,
     getScreenPointerPosition: () -> Vec2,

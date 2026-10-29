@@ -812,3 +812,23 @@ and [executed tests](../evidence/2026-10-29-engine-stability/ui-leaf-owned-style
 The earlier 18-case pre-purity-fix result remains cache history, not the final
 result. Independent Codex source re-review found no remaining concrete P1/P2.
 SDK6 remains immutable; this package/helper slice requires a separate runtime.
+
+## Aggregate semantic pressed-action query
+
+The actual game sampled a second reusable cost: empty discrete-action dispatch
+still built hundreds of action names and crossed the binding once per recipe,
+inventory operation and skill. `input.hasPressedActions()` now returns whether
+the same existing `InputState.pressed` set used by `wasPressed` is nonempty.
+The query is O(1), non-consuming and zero-argument, with no new cached state or
+wire field. Raw physical presence, held/release-only, text and slider events do
+not invent semantic press edges. Games may gate discrete scanners while still
+updating held movement, text, sliders, pointer capture and releases normally.
+
+Independent Codex source review found no additional concrete P1/P2 in binding,
+transaction/reload visibility, canonical types or discovery. API metadata/search
+and type coverage executed **17/17**. The eight new behavioral cases and five
+existing edge cases compiled, but Windows App Control blocked their executables
+with 4551 on launch; **none of those 13 cases executed**. One ordinary retry is
+preserved; no policy changes, file renaming or bypass was attempted. Production
+Node/WASM behavior verification is prepared separately and remains pending the
+new emitted runtime. This is not a completed behavior or actual-game FPS gate.

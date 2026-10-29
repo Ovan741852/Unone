@@ -1,0 +1,9 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running tests\input_edges.rs (target\debug\deps\input_edges-0e2ca8443947b0a4.exe)
+error: test failed, to rerun pass `-p unone-engine --test input_edges`
+
+Caused by:
+  could not execute process `D:\Projects\Unone\target\debug\deps\input_edges-0e2ca8443947b0a4.exe` (never executed)
+
+Caused by:
+  應用程式控制原則已封鎖此檔案。 (os error 4551)

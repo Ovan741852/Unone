@@ -1,0 +1,9 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests\input_pressed_actions.rs (target\debug\deps\input_pressed_actions-4421b47964cfba29.exe)
+error: test failed, to rerun pass `-p unone-engine --test input_pressed_actions`
+
+Caused by:
+  could not execute process `D:\Projects\Unone\target\debug\deps\input_pressed_actions-4421b47964cfba29.exe` (never executed)
+
+Caused by:
+  應用程式控制原則已封鎖此檔案。 (os error 4551)

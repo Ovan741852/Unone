@@ -46,6 +46,18 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         "wasPressed",
         lua.create_function(move |_, action: String| Ok(pressed_input.borrow().pressed.contains(&action)))?,
     )?;
+    let any_pressed_input = Rc::clone(&input);
+    input_api.set(
+        "hasPressedActions",
+        lua.create_function(move |_, arguments: mlua::MultiValue| {
+            if !arguments.is_empty() {
+                return Err(mlua::Error::RuntimeError(
+                    "INPUT_ARGUMENTS_INVALID: input.hasPressedActions takes no arguments or options".into(),
+                ));
+            }
+            Ok(!any_pressed_input.borrow().pressed.is_empty())
+        })?,
+    )?;
     let released_input = Rc::clone(&input);
     input_api.set(
         "wasReleased",

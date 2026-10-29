@@ -266,6 +266,25 @@ application model changes and screen transitions in project Luau. The kit does
 not install callbacks or automatically modify an application model. A combobox's
 `expanded` flag and option nodes remain authored state.
 
+For a large discrete command scanner, `api.input.hasPressedActions()` is an
+O(1), non-consuming test of that exact `wasPressed` snapshot. It is true when
+at least one semantic action has a press edge, including existing host-mapped
+keys and projected UI actions. It takes no arguments or options. For example:
+
+```luau
+if api.input.hasPressedActions() then
+    scanDiscreteCommands(api.input) -- project-owned wasPressed dispatch
+end
+```
+
+Gate only that press scanner. Held-only and release-only frames return false;
+pointer movement, raw physical events, slider changes and text edits do not
+create semantic press edges themselves. Continue held/release, pointer/drag,
+text and slider processing normally. Repeated reads never consume input.
+Failures and reload retain the same published edge snapshot as `wasPressed`;
+a fresh runtime starts with no presses. Search `"any pressed action"` or
+`"是否有按下動作"` to discover this query.
+
 ## Interactive sliders
 
 Use `api.ui.components.createSlider(options)` or the same method on a themed
