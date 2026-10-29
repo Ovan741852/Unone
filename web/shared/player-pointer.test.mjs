@@ -6,6 +6,7 @@ import {createHostInput} from './host-input.js';
 import * as inputRouting from './player-input.js';
 import {createUiPointerRouter} from './canvas-ui.mjs';
 import {projectScreenPointer,worldFromPointer} from './webgpu-snapshot.js';
+import {serializedSavePayload} from './save-publication.mjs';
 
 const source=readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
 // Exercise the actual official-player tick boundary with a transport stub.
@@ -23,13 +24,13 @@ const plain=value=>JSON.parse(JSON.stringify(value));
 function harness({world=snapshot(),hasWorldPointer=true}={}){
  const frames=[];
  const context=vm.createContext({
-  canvas,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,profiler:null,orderedQueue:null,
+  canvas,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,profiler:null,orderedQueue:null,serializedSavePayload,
   performance:{now:()=>0},projectScreenPointer,worldFromPointer,
   backend:{request:async request=>{frames.push(plain(request.input));return context.snapshot;}},
   acceptSnapshot:value=>{context.snapshot=value;},audio:null,saved:'null',key:'pointer-test',
   localStorage:{setItem:()=>{}},bridgeMs:0,
  });
- vm.runInContext(advanceSource+'\n'+pointerSource,context);
+ vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw(){'))+advanceSource+'\n'+pointerSource,context);
  return {context,frames,tick:()=>context.advance()};
 }
 

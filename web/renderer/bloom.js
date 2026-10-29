@@ -74,6 +74,7 @@ export function createBloom(THREE,renderer,settings) {
     }finally{renderer.toneMapping=previousTone;renderer.toneMappingExposure=previousExposure;}
   }
   return {
+    contextLost(retire){retire(base);retire(a);retire(b);retire(bright);retire(blur);retire(combine);retire(quad.geometry);},
     resetMeasurements(){timer.reset();},
     setEnabled(value){enabled=Boolean(value);},
     setAO(value){aoEnabled=Boolean(value);},

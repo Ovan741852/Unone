@@ -537,3 +537,119 @@ Its accepted one-pixel outer coverage rim differs from Canvas antialiasing;
 this is not universal pixel equivalence. The reviewer read that report and did
 not rerun the GPU workload. Final SDK/exported-player smoke, game FPS/GC and
 artifact certification remain separately identified evidence.
+
+## Performance follow-up: save publication ownership
+
+Codex `/root/native_performance` independently reviewed the new save lease in
+`save_transport.rs`, its complete/direct/UI-filtered envelope integration,
+`load-project.js`, `save-publication.mjs`, worker deltas and the main persistence
+hook. No concrete P1/P2 was found for valid official Core/main/worker paths.
+Prepared publication keeps the old encoded lease alive until envelope success;
+change/clear/reload use a new revision or epoch, and mode/close retirement drops
+private ownership. Readers keep frozen detached JSON/text and never heap views.
+Worker packets restore complete public observations and stage save admission
+before committing their private cache. Replacing a public save field invalidates
+the private serialization grant. This was a source-only independent review;
+the implementation owner records execution and byte/digest evidence separately.
+
+A malformed save descriptor after a valid UI descriptor can update the private
+image-reader cache before save admission fails because the two restoration
+functions run in sequence. No valid Core publication produces that combination;
+cross-cache malformed-admission testing remains a hardening opportunity, not a
+claimed production failure. Unchanged Rust saves still compare cached encoded
+text; removing clone/encode work does not imply zero save-publication cost.
+
+The same follow-up adds the explicit native `image_batch.pixel_snap` capability
+gate: nested inline requests fail before GPU/asset preparation; unsnapped inline
+batches retain admission. Its focused native regression executed 1/1. Native
+pixel snapping itself is unsupported. See
+[RAF scheduling evidence](../evidence/2026-10-29-engine-stability/raf-scheduling-validation.json)
+for the separate scheduler change and its current verification limits.
+
+## Pixel snapping and follow-up independent source checks
+
+`image_batch.pixel_snap` is optional instance state, defaulting to false, for
+both inline and retained artwork. Core rejects non-boolean/null values,
+placement on other node kinds, and snapped retained shear/rotation before
+publication. Signed or zero axis scales remain legal; the host skips collapsed
+quads. Source rectangles and the explicit clip are unchanged. The change covers
+the Core node/parser and schema, canonical declarations and their docs mirror,
+the package constructor whitelist, API discovery, and focused integration and
+schema regressions. Resource definitions, generations and encoded bytes do not
+change when only snapping changes.
+
+The ordinary final-source command
+`cargo test -p unone-engine --test ui_image_batch_pixel_snap` executed **2/2**
+successfully in `.cache/image-batch-pixel-snap-final-normal.log`. Earlier App
+Control 4551 launch failures are retained in
+`.cache/image-batch-pixel-snap-core-tests.log` and
+`.cache/image-batch-pixel-snap-instance-tests.log`; the passing retry supersedes
+the integration target's launch failure, not the unexecuted package/unit targets.
+The UI JSON schema was emitted from the current compiled Core schema function.
+Host snapping pixels and SDK acceptance remain separate evidence.
+
+Codex `/root/runtime_audit` also independently read the final GPU prefix buffer
+reuse, RAF scheduler, and save publication/worker transport source. No concrete
+P1/P2 was found within this bounded review. The GPU check covered shared old/new
+generations, selected-resource compaction, material/group ordering, sweep and
+fallback/context retirement. The scheduler check covered in-flight
+pause/hide/reset/stop/start, catch-up caps and bounded rounding debt. The save
+check covered commit-after-publication leases, load/unload reset, direct and
+UI/mixed-instance envelopes, synchronous detached decoding, worker delta/full
+restoration, persistence ownership and export/build inventory. This reviewer ran
+no additional browser, GPU or CPU workload; the implementation owners' reported
+81 GPU cases, 28 scheduler regressions and save transport results are separate
+execution evidence. These checks do not establish sustained 60 FPS, leak freedom
+or GC frequency.
+
+Codex `/root/runtime_audit` independently reviewed the final RAF-owned async
+scheduler and found no concrete P1/P2. The review covered stop/start during an
+in-flight transaction, pause/visibility/reset generations, finally scheduling,
+bounded sequential catch-up/drop accounting, high-refresh zero-step redraws
+and retained early-step rounding debt. The reviewer ran no tests or builds.
+The implementation's combined focused run passed 38/38, including real-worker
+backend plus actual main entry wiring, readiness, input and completion cases.
+It leaves the completion counter definitions unchanged. This establishes
+scheduling correctness under the controlled cases, not final SDK/game FPS.
+
+## Candidate5 exported acceptance and remaining game gate
+
+The final recursive Web inventory executed **519/519**, zero failures/skips,
+including the real adjacent projected-packet fixture. Current targeted Core
+integration executed **15/15** (retained resources, cached saves, package props and
+pixel snapping); production ABI executed **12/12**, including actual leased save
+publication with/without artwork, change/clear, full inspection and unload.
+These do not relabel the earlier full Core run as a new one.
+
+Actual immutable SDK candidate4 failed context recovery with particles disabled:
+the exporter-generated empty particle implementation lacked the new lifecycle
+method. Candidate4 and its failed report remain unchanged. The explicit disabled
+stub now provides `contextLost`, and the export dependency/interface regressions
+cover it. Actual candidate5 production exports passed main/worker **9 phases
+each**, including 112 KiB startup save persistence before READY, no unchanged save
+resend/storage write, one changed-save update, pixel snapping, UI ordering/input,
+resource replacement/removal/recreation and lost/restored context completion.
+The main initial and worker restored screenshots were inspected. All 99 SDK Web
+template fingerprints match the frozen production source.
+
+The ordinary-world context regression also supplies a negative control: removing
+the retirement call grows dispose listeners from 1 to 4 through three restores
+and produces 151 stale-handle warnings. The fixed renderer preserves CPU
+objects/images and pixels, performs no refetch, retains one current listener,
+and releases geometry/texture/program ownership on teardown. Custom presentation
+hooks and optional Effekseer restoration remain outside that verification scope.
+
+The prescribed Claude CLI attempt used version **2.1.308**, a fixed six-file
+source bundle on stdin, `-p --tools "" --max-turns 1 --output-format json`.
+It produced no stdout/stderr and was interrupted with exit 1 after the bounded
+attempt; it is **incomplete**, not a passing review. Independent Codex source
+reviews and executed regressions are recorded separately. The first rebuilt
+release CLI was blocked by Windows App Control; the normal debug and subsequent
+standard release builds executed successfully without policy changes. Candidate5
+ships the standard optimized release CLI and production WASM.
+
+Candidate3's actual game review1 failed all complete performance gates; candidate5
+is an integration candidate awaiting the same five scenarios and longer memory/GC
+measurements. No stable 60 FPS, universal leak freedom or zero-GC claim is made.
+See the [current SDK handoff](../evidence/2026-10-29-engine-stability/retained-web-sdk-handoff.json)
+and its linked raw acceptance/fingerprint records.

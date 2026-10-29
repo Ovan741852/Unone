@@ -185,6 +185,10 @@
           ],
           "default": null
         },
+        "pixel_snap": {
+          "default": false,
+          "type": "boolean"
+        },
         "placeholder": {
           "default": null,
           "type": [

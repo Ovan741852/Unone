@@ -1,0 +1,1339 @@
+{
+  "ok": true,
+  "scope": "Actual official Three world renderer: sprite/custom shader, primitive box/sphere, decoded mesh, packed instancing, particles, heightfield and Bloom; three loss/restore epochs. CPU objects/arrays/images and load/fetch counts retained, no game code.",
+  "nonBackgroundPixels": 16136,
+  "loads": [
+    "asset://checker",
+    "mesh://qa"
+  ],
+  "fetches": [
+    "/qa/triangle.mesh.json"
+  ],
+  "initialListeners": [
+    {
+      "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+      "type": "PlaneGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+      "type": "ShaderMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+      "type": 1009,
+      "listeners": 1
+    },
+    {
+      "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+      "type": "BoxGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+      "type": "MeshNormalMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+      "type": "SphereGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+      "type": "MeshNormalMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+      "type": "BufferGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+      "type": "MeshBasicMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+      "type": "PlaneGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+      "type": "Mesh",
+      "listeners": 1
+    },
+    {
+      "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+      "type": "MeshBasicMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+      "type": 1009,
+      "listeners": 1
+    },
+    {
+      "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+      "type": "BufferGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+      "type": "MeshBasicMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+      "type": "Mesh",
+      "listeners": 1
+    }
+  ],
+  "cycles": [
+    {
+      "epoch": 1,
+      "lostOutcome": {
+        "status": "skipped",
+        "reason": "raster_unavailable"
+      },
+      "lostListeners": [
+        {
+          "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+          "type": "PlaneGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+          "type": "ShaderMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+          "type": 1009,
+          "listeners": 0
+        },
+        {
+          "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+          "type": "BoxGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+          "type": "MeshNormalMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+          "type": "SphereGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+          "type": "MeshNormalMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+          "type": "BufferGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+          "type": "PlaneGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+          "type": "Mesh",
+          "listeners": 0
+        },
+        {
+          "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+          "type": 1009,
+          "listeners": 0
+        },
+        {
+          "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+          "type": "BufferGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+          "type": "Mesh",
+          "listeners": 0
+        }
+      ],
+      "restoredListeners": [
+        {
+          "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+          "type": "BoxGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+          "type": "SphereGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+          "type": "Mesh",
+          "listeners": 1
+        },
+        {
+          "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+          "type": "Mesh",
+          "listeners": 1
+        }
+      ],
+      "pixelDifferences": 0,
+      "maxChannelDifference": 0,
+      "metrics": {
+        "texture_cache": {
+          "enabled": false,
+          "entries": 1,
+          "decoded_texture_bytes_estimate": 256,
+          "pinned_bytes_estimate": 256,
+          "loading": 0,
+          "evicted": 0,
+          "released_bytes_estimate": 0,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+          "policy": null,
+          "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+        },
+        "raster": {
+          "antialias_requested": true,
+          "context_antialias": true,
+          "scope": "default_framebuffer",
+          "reconfigure": "relaunch",
+          "offscreen_antialias": "not_configured",
+          "projected": {
+            "requested": "host",
+            "declared": false,
+            "status": "host",
+            "context_epoch": 2,
+            "target_generation": null,
+            "physical_size": null,
+            "dpr": null,
+            "profile_version": null,
+            "probe_hash": null,
+            "last_validation": null,
+            "failure": null,
+            "limitations": "host raster; no upper-left validation claim"
+          },
+          "clear_state_recovery": {
+            "losses": 1,
+            "restores": 1,
+            "pending": false,
+            "last_restored_clear": {
+              "linear_rgb": [
+                0.005605391621829108,
+                0.009134058699157796,
+                0.02028856305209031
+              ],
+              "alpha": 1
+            },
+            "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+          }
+        },
+        "ui_image_batches": {
+          "draws": 0,
+          "prefix_nodes": 0,
+          "prefix_quads": 0,
+          "coverage": "pixel_center",
+          "fallback_reason": "empty",
+          "geometry_builds": 0,
+          "geometry_disposes": 0,
+          "geometry_updates": 0,
+          "live_geometries": 0,
+          "buffer_capacity_quads": 0,
+          "active_resource_quads": 0,
+          "material_builds": 0,
+          "material_disposes": 0,
+          "live_materials": 0,
+          "mesh_builds": 0,
+          "mesh_disposes": 0,
+          "live_meshes": 0,
+          "texture_builds": 0,
+          "texture_disposes": 0,
+          "live_textures": 0
+        },
+        "shader_materials": 1,
+        "instances": 1,
+        "instance_cells": 1,
+        "submitted_instance_cells": 1,
+        "submitted_instances": 1,
+        "culled_instances": 0,
+        "heightfields": 1,
+        "heightfield_triangles": 2,
+        "heightfield_rebuilds": 1,
+        "projected_batches": 0,
+        "projected_triangles": 0,
+        "projected_rebuilds": 0,
+        "projected_geometry_decodes": 0,
+        "projected_geometry_decode_reuses": 0,
+        "projected_retained_geometries": 0,
+        "projected_geometry_builds": 0,
+        "projected_geometry_disposes": 0,
+        "projected_live_geometries": 0,
+        "projected_material_builds": 0,
+        "projected_material_disposes": 0,
+        "projected_live_materials": 0,
+        "projected_geometry_updates": 0,
+        "projected_vertex_update_bytes": 0,
+        "projected_index_update_bytes": 0,
+        "draw_calls": 12,
+        "triangles": 382,
+        "textures": 6,
+        "particles": 1,
+        "particle_pool": {
+          "groups": 1,
+          "capacity": 1,
+          "instance_buffer_bytes": 64,
+          "compactions": 0
+        },
+        "particle_batches": [
+          {
+            "key": "soft_circle|0|7|7|3|1",
+            "count": 1,
+            "firstMatrix": [
+              0.5617974996566772,
+              0,
+              -0.21067406237125397,
+              0,
+              -0.04801707714796066,
+              0.5842077732086182,
+              -0.12804552912712097,
+              0,
+              0.34188172221183777,
+              0.22792115807533264,
+              0.9116846323013306,
+              0,
+              1.5,
+              1.2000000476837158,
+              0,
+              1
+            ]
+          }
+        ],
+        "effects": 0,
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "postprocessing": null,
+        "output_pipeline": "legacy",
+        "bloom_resolution": [
+          80,
+          60
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_timer_context": {
+          "epoch": 2,
+          "lost": false,
+          "disposed": false,
+          "pending": 1,
+          "active": false
+        },
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    },
+    {
+      "epoch": 2,
+      "lostOutcome": {
+        "status": "skipped",
+        "reason": "raster_unavailable"
+      },
+      "lostListeners": [
+        {
+          "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+          "type": "PlaneGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+          "type": "ShaderMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+          "type": 1009,
+          "listeners": 0
+        },
+        {
+          "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+          "type": "BoxGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+          "type": "MeshNormalMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+          "type": "SphereGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+          "type": "MeshNormalMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+          "type": "BufferGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+          "type": "PlaneGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+          "type": "Mesh",
+          "listeners": 0
+        },
+        {
+          "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+          "type": 1009,
+          "listeners": 0
+        },
+        {
+          "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+          "type": "BufferGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+          "type": "Mesh",
+          "listeners": 0
+        }
+      ],
+      "restoredListeners": [
+        {
+          "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+          "type": "BoxGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+          "type": "SphereGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+          "type": "Mesh",
+          "listeners": 1
+        },
+        {
+          "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+          "type": "Mesh",
+          "listeners": 1
+        }
+      ],
+      "pixelDifferences": 0,
+      "maxChannelDifference": 0,
+      "metrics": {
+        "texture_cache": {
+          "enabled": false,
+          "entries": 1,
+          "decoded_texture_bytes_estimate": 256,
+          "pinned_bytes_estimate": 256,
+          "loading": 0,
+          "evicted": 0,
+          "released_bytes_estimate": 0,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+          "policy": null,
+          "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+        },
+        "raster": {
+          "antialias_requested": true,
+          "context_antialias": true,
+          "scope": "default_framebuffer",
+          "reconfigure": "relaunch",
+          "offscreen_antialias": "not_configured",
+          "projected": {
+            "requested": "host",
+            "declared": false,
+            "status": "host",
+            "context_epoch": 3,
+            "target_generation": null,
+            "physical_size": null,
+            "dpr": null,
+            "profile_version": null,
+            "probe_hash": null,
+            "last_validation": null,
+            "failure": null,
+            "limitations": "host raster; no upper-left validation claim"
+          },
+          "clear_state_recovery": {
+            "losses": 2,
+            "restores": 2,
+            "pending": false,
+            "last_restored_clear": {
+              "linear_rgb": [
+                0.005605391621829108,
+                0.009134058699157796,
+                0.02028856305209031
+              ],
+              "alpha": 1
+            },
+            "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+          }
+        },
+        "ui_image_batches": {
+          "draws": 0,
+          "prefix_nodes": 0,
+          "prefix_quads": 0,
+          "coverage": "pixel_center",
+          "fallback_reason": "empty",
+          "geometry_builds": 0,
+          "geometry_disposes": 0,
+          "geometry_updates": 0,
+          "live_geometries": 0,
+          "buffer_capacity_quads": 0,
+          "active_resource_quads": 0,
+          "material_builds": 0,
+          "material_disposes": 0,
+          "live_materials": 0,
+          "mesh_builds": 0,
+          "mesh_disposes": 0,
+          "live_meshes": 0,
+          "texture_builds": 0,
+          "texture_disposes": 0,
+          "live_textures": 0
+        },
+        "shader_materials": 1,
+        "instances": 1,
+        "instance_cells": 1,
+        "submitted_instance_cells": 1,
+        "submitted_instances": 1,
+        "culled_instances": 0,
+        "heightfields": 1,
+        "heightfield_triangles": 2,
+        "heightfield_rebuilds": 1,
+        "projected_batches": 0,
+        "projected_triangles": 0,
+        "projected_rebuilds": 0,
+        "projected_geometry_decodes": 0,
+        "projected_geometry_decode_reuses": 0,
+        "projected_retained_geometries": 0,
+        "projected_geometry_builds": 0,
+        "projected_geometry_disposes": 0,
+        "projected_live_geometries": 0,
+        "projected_material_builds": 0,
+        "projected_material_disposes": 0,
+        "projected_live_materials": 0,
+        "projected_geometry_updates": 0,
+        "projected_vertex_update_bytes": 0,
+        "projected_index_update_bytes": 0,
+        "draw_calls": 12,
+        "triangles": 382,
+        "textures": 6,
+        "particles": 1,
+        "particle_pool": {
+          "groups": 1,
+          "capacity": 1,
+          "instance_buffer_bytes": 64,
+          "compactions": 0
+        },
+        "particle_batches": [
+          {
+            "key": "soft_circle|0|7|7|3|1",
+            "count": 1,
+            "firstMatrix": [
+              0.5617974996566772,
+              0,
+              -0.21067406237125397,
+              0,
+              -0.04801707714796066,
+              0.5842077732086182,
+              -0.12804552912712097,
+              0,
+              0.34188172221183777,
+              0.22792115807533264,
+              0.9116846323013306,
+              0,
+              1.5,
+              1.2000000476837158,
+              0,
+              1
+            ]
+          }
+        ],
+        "effects": 0,
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "postprocessing": null,
+        "output_pipeline": "legacy",
+        "bloom_resolution": [
+          80,
+          60
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_timer_context": {
+          "epoch": 3,
+          "lost": false,
+          "disposed": false,
+          "pending": 1,
+          "active": false
+        },
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    },
+    {
+      "epoch": 3,
+      "lostOutcome": {
+        "status": "skipped",
+        "reason": "raster_unavailable"
+      },
+      "lostListeners": [
+        {
+          "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+          "type": "PlaneGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+          "type": "ShaderMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+          "type": 1009,
+          "listeners": 0
+        },
+        {
+          "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+          "type": "BoxGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+          "type": "MeshNormalMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+          "type": "SphereGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+          "type": "MeshNormalMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+          "type": "BufferGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+          "type": "PlaneGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+          "type": "Mesh",
+          "listeners": 0
+        },
+        {
+          "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+          "type": 1009,
+          "listeners": 0
+        },
+        {
+          "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+          "type": "BufferGeometry",
+          "listeners": 0
+        },
+        {
+          "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+          "type": "MeshBasicMaterial",
+          "listeners": 0
+        },
+        {
+          "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+          "type": "Mesh",
+          "listeners": 0
+        }
+      ],
+      "restoredListeners": [
+        {
+          "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+          "type": "BoxGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+          "type": "SphereGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+          "type": "Mesh",
+          "listeners": 1
+        },
+        {
+          "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+          "type": "Mesh",
+          "listeners": 1
+        }
+      ],
+      "pixelDifferences": 0,
+      "maxChannelDifference": 0,
+      "metrics": {
+        "texture_cache": {
+          "enabled": false,
+          "entries": 1,
+          "decoded_texture_bytes_estimate": 256,
+          "pinned_bytes_estimate": 256,
+          "loading": 0,
+          "evicted": 0,
+          "released_bytes_estimate": 0,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+          "policy": null,
+          "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+        },
+        "raster": {
+          "antialias_requested": true,
+          "context_antialias": true,
+          "scope": "default_framebuffer",
+          "reconfigure": "relaunch",
+          "offscreen_antialias": "not_configured",
+          "projected": {
+            "requested": "host",
+            "declared": false,
+            "status": "host",
+            "context_epoch": 4,
+            "target_generation": null,
+            "physical_size": null,
+            "dpr": null,
+            "profile_version": null,
+            "probe_hash": null,
+            "last_validation": null,
+            "failure": null,
+            "limitations": "host raster; no upper-left validation claim"
+          },
+          "clear_state_recovery": {
+            "losses": 3,
+            "restores": 3,
+            "pending": false,
+            "last_restored_clear": {
+              "linear_rgb": [
+                0.005605391621829108,
+                0.009134058699157796,
+                0.02028856305209031
+              ],
+              "alpha": 1
+            },
+            "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+          }
+        },
+        "ui_image_batches": {
+          "draws": 0,
+          "prefix_nodes": 0,
+          "prefix_quads": 0,
+          "coverage": "pixel_center",
+          "fallback_reason": "empty",
+          "geometry_builds": 0,
+          "geometry_disposes": 0,
+          "geometry_updates": 0,
+          "live_geometries": 0,
+          "buffer_capacity_quads": 0,
+          "active_resource_quads": 0,
+          "material_builds": 0,
+          "material_disposes": 0,
+          "live_materials": 0,
+          "mesh_builds": 0,
+          "mesh_disposes": 0,
+          "live_meshes": 0,
+          "texture_builds": 0,
+          "texture_disposes": 0,
+          "live_textures": 0
+        },
+        "shader_materials": 1,
+        "instances": 1,
+        "instance_cells": 1,
+        "submitted_instance_cells": 1,
+        "submitted_instances": 1,
+        "culled_instances": 0,
+        "heightfields": 1,
+        "heightfield_triangles": 2,
+        "heightfield_rebuilds": 1,
+        "projected_batches": 0,
+        "projected_triangles": 0,
+        "projected_rebuilds": 0,
+        "projected_geometry_decodes": 0,
+        "projected_geometry_decode_reuses": 0,
+        "projected_retained_geometries": 0,
+        "projected_geometry_builds": 0,
+        "projected_geometry_disposes": 0,
+        "projected_live_geometries": 0,
+        "projected_material_builds": 0,
+        "projected_material_disposes": 0,
+        "projected_live_materials": 0,
+        "projected_geometry_updates": 0,
+        "projected_vertex_update_bytes": 0,
+        "projected_index_update_bytes": 0,
+        "draw_calls": 12,
+        "triangles": 382,
+        "textures": 6,
+        "particles": 1,
+        "particle_pool": {
+          "groups": 1,
+          "capacity": 1,
+          "instance_buffer_bytes": 64,
+          "compactions": 0
+        },
+        "particle_batches": [
+          {
+            "key": "soft_circle|0|7|7|3|1",
+            "count": 1,
+            "firstMatrix": [
+              0.5617974996566772,
+              0,
+              -0.21067406237125397,
+              0,
+              -0.04801707714796066,
+              0.5842077732086182,
+              -0.12804552912712097,
+              0,
+              0.34188172221183777,
+              0.22792115807533264,
+              0.9116846323013306,
+              0,
+              1.5,
+              1.2000000476837158,
+              0,
+              1
+            ]
+          }
+        ],
+        "effects": 0,
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "postprocessing": null,
+        "output_pipeline": "legacy",
+        "bloom_resolution": [
+          80,
+          60
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_timer_context": {
+          "epoch": 4,
+          "lost": false,
+          "disposed": false,
+          "pending": 1,
+          "active": false
+        },
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    }
+  ],
+  "afterDispose": [
+    {
+      "uuid": "55bb9956-103c-4002-8aea-b214fed0621a",
+      "type": "PlaneGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "27a67162-c31c-4b31-bf72-9edb9cf79f0b",
+      "type": "ShaderMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "9f992131-406a-4086-89f6-a28434cebedd",
+      "type": 1009,
+      "listeners": 0
+    },
+    {
+      "uuid": "5f9516f0-fe18-40f6-a8cb-e336107abdbe",
+      "type": "BoxGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "0bf12194-0acc-45dc-a94b-a6c28030d3dd",
+      "type": "MeshNormalMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "9b9c9596-24ba-42b6-8c5c-6a3585cee061",
+      "type": "SphereGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "a2084e22-904a-4807-86fe-3692b4e6e522",
+      "type": "MeshNormalMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "37e834b1-d259-4008-aa1d-0f2bb566a2db",
+      "type": "BufferGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "6e814954-4532-4795-b5d8-25b9420d9f3e",
+      "type": "MeshBasicMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "56b939f5-efff-4ce4-9167-775bbfa2ae3d",
+      "type": "PlaneGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "c9078fa5-506d-4901-ac79-7a784cba09a0",
+      "type": "Mesh",
+      "listeners": 0
+    },
+    {
+      "uuid": "c5374300-b03e-47cf-99f6-8f2d7bb97666",
+      "type": "MeshBasicMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "ec14df58-de49-44fb-9053-f118232a4e2d",
+      "type": 1009,
+      "listeners": 0
+    },
+    {
+      "uuid": "597c2ebb-c0f9-44b9-9230-a45033c2cb35",
+      "type": "BufferGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "63c67630-05fb-4b20-b352-f23d94e3f1a2",
+      "type": "MeshBasicMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "f52b1bfe-daea-4171-9350-5270afbf1e71",
+      "type": "Mesh",
+      "listeners": 0
+    }
+  ],
+  "finalGpuMemory": {
+    "geometries": 0,
+    "textures": 0,
+    "programs": 0
+  },
+  "finalMetrics": {
+    "texture_cache": {
+      "enabled": false,
+      "entries": 0,
+      "decoded_texture_bytes_estimate": 0,
+      "pinned_bytes_estimate": 0,
+      "loading": 0,
+      "evicted": 1,
+      "released_bytes_estimate": 256,
+      "pressure_bytes": 0,
+      "pressure_entries": 0,
+      "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+      "policy": null,
+      "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+    },
+    "raster": {
+      "antialias_requested": true,
+      "context_antialias": true,
+      "scope": "default_framebuffer",
+      "reconfigure": "relaunch",
+      "offscreen_antialias": "not_configured",
+      "projected": {
+        "requested": "host",
+        "declared": false,
+        "status": "disposed",
+        "context_epoch": 4,
+        "target_generation": null,
+        "physical_size": null,
+        "dpr": null,
+        "profile_version": null,
+        "probe_hash": null,
+        "last_validation": null,
+        "failure": null,
+        "limitations": "host raster; no upper-left validation claim"
+      },
+      "clear_state_recovery": {
+        "losses": 3,
+        "restores": 3,
+        "pending": false,
+        "last_restored_clear": {
+          "linear_rgb": [
+            0.005605391621829108,
+            0.009134058699157796,
+            0.02028856305209031
+          ],
+          "alpha": 1
+        },
+        "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+      }
+    },
+    "ui_image_batches": {
+      "draws": 0,
+      "prefix_nodes": 0,
+      "prefix_quads": 0,
+      "coverage": "pixel_center",
+      "fallback_reason": "empty",
+      "geometry_builds": 0,
+      "geometry_disposes": 0,
+      "geometry_updates": 0,
+      "live_geometries": 0,
+      "buffer_capacity_quads": 0,
+      "active_resource_quads": 0,
+      "material_builds": 0,
+      "material_disposes": 0,
+      "live_materials": 0,
+      "mesh_builds": 0,
+      "mesh_disposes": 0,
+      "live_meshes": 0,
+      "texture_builds": 0,
+      "texture_disposes": 0,
+      "live_textures": 0
+    },
+    "shader_materials": 0,
+    "instances": 0,
+    "instance_cells": 0,
+    "submitted_instance_cells": 0,
+    "submitted_instances": 0,
+    "culled_instances": 0,
+    "heightfields": 0,
+    "heightfield_triangles": 0,
+    "heightfield_rebuilds": 1,
+    "projected_batches": 0,
+    "projected_triangles": 0,
+    "projected_rebuilds": 0,
+    "projected_geometry_decodes": 0,
+    "projected_geometry_decode_reuses": 0,
+    "projected_retained_geometries": 0,
+    "projected_geometry_builds": 0,
+    "projected_geometry_disposes": 0,
+    "projected_live_geometries": 0,
+    "projected_material_builds": 0,
+    "projected_material_disposes": 0,
+    "projected_live_materials": 0,
+    "projected_geometry_updates": 0,
+    "projected_vertex_update_bytes": 0,
+    "projected_index_update_bytes": 0,
+    "draw_calls": 4,
+    "triangles": 8,
+    "textures": 0,
+    "particles": 0,
+    "particle_pool": {
+      "groups": 0,
+      "capacity": 0,
+      "instance_buffer_bytes": 0,
+      "compactions": 0
+    },
+    "particle_batches": [],
+    "effects": 0,
+    "bloom": true,
+    "ao": false,
+    "ao_method": "depth-ssao-12",
+    "postprocessing": null,
+    "output_pipeline": "legacy",
+    "bloom_resolution": [
+      80,
+      60
+    ],
+    "hdr": true,
+    "gpu_timer_available": false,
+    "gpu_timer_context": {
+      "epoch": 4,
+      "lost": false,
+      "disposed": true,
+      "pending": 0,
+      "active": false
+    },
+    "gpu_on": null,
+    "gpu_off": null,
+    "gpu_ao_only": null,
+    "gpu_bloom_with_ao": null,
+    "gpu_samples_by_mode": {
+      "bloom_on_ao_off": null,
+      "bloom_off_ao_off": null,
+      "bloom_on_ao_on": null,
+      "bloom_off_ao_on": null
+    },
+    "gpu_comparison": {
+      "gpu_on_off_same_ao_only": true,
+      "active_mode": "bloom_on_ao_off"
+    }
+  },
+  "browser": "156.0.4314.50",
+  "variant": "production source",
+  "errors": [],
+  "warnings": []
+}

@@ -30,6 +30,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/startup-presentation.mjs",
         "shared/player-completion.mjs",
         "shared/retained-image-generation.mjs",
+        "shared/save-publication.mjs",
         "renderer/presentation3d.js",
         "shared/projected-geometry.js",
         "shared/projected-base64.js",
@@ -248,7 +249,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                 text = replace_required(
                     text,
                     "import { createParticleRenderer } from \"./particles.js?build=particle-texture-colorbins-v1\";",
-                    "const createParticleRenderer = () => ({draw(){}, clear(){}, dispose(){}, count:0,debugBatches:[],metrics:()=>({groups:0,capacity:0,instance_buffer_bytes:0,compactions:0})});",
+                    "const createParticleRenderer = () => ({draw(){}, clear(){}, contextLost(_retire){}, dispose(){}, count:0,debugBatches:[],metrics:()=>({groups:0,capacity:0,instance_buffer_bytes:0,compactions:0})});",
                 )?;
             }
             if !settings.is_enabled("effekseer") {
@@ -541,6 +542,17 @@ mod tests {
             for name in ["player-completion.mjs", "retained-image-generation.mjs"] {
                 assert!(output.join("web/shared").join(name).is_file(),
                     "always-imported host dependency {name} survives the UI-disabled export");
+            }
+            let renderer=fs::read_to_string(output.join("web/renderer/three.js")).unwrap();
+            assert!(renderer.contains("particles.contextLost(retire);"),
+                "actual renderer retains its explicit particle owner lifecycle consumer");
+            if minimal {
+                assert!(renderer.contains("const createParticleRenderer = () => ({draw(){}, clear(){}, contextLost(_retire){}, dispose(){}"),
+                    "disabled particle renderer implements the same context-loss owner contract");
+            }
+            for name in ["renderer/shader-materials.js", "renderer/instances3d.js", "renderer/bloom.js", "shared/heightfields.js"] {
+                assert!(fs::read_to_string(output.join("web").join(name)).unwrap().contains("contextLost(retire)"),
+                    "always-included engine owner {name} implements the lifecycle consumer contract");
             }
             let files=report["files"].as_array().unwrap().iter().map(|f|{let path=f["path"].as_str().unwrap();(path.into(),fs::read(output.join(path)).unwrap())}).collect::<Vec<_>>();
             crate::web_dependencies::validate(&files).unwrap();

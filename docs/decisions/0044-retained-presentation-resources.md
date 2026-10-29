@@ -165,6 +165,34 @@ general mesh resource APIs and dense independent-instance updates remain future
 slices. A retained artwork group is appropriate for content that moves together;
 it is not a claim that changing every independent object's data is free.
 
+The Web presenter stores a capacity-backed geometry per admitted definition and
+uses consecutive texture groups with one shared material. Changed dynamic
+generations reuse retired storage only when no current instance references its
+old generation. Small updates use existing buffers; bounded capacity bins and
+shrink hysteresis prevent a transient peak from pinning arbitrary GPU memory.
+Camera-only movement uploads no geometry. Texture groups preserve A/B/A order.
+
+Pixel snapping is optional instance state (`pixel_snap=true`), applied after an
+axis-aligned affine transform in physical framebuffer pixels, with halfway values
+away from zero. UVs and the explicit stage clip remain unchanged. Both Canvas
+fallback and GPU presentation implement it; geometry remains local and retained.
+It is not inferred from a game name, fog, map topology or the texture filter.
+Default subpixel movement remains available. See the
+[public artwork contract](../ui-components.md#retained-artwork-and-camera-movement).
+
+Official-player save publication similarly retains one immutable encoded
+generation. The private WASM lease and worker delta omit unchanged save bytes;
+receivers restore the full read-only save value before normal host consumers.
+Full inspection JSON and canonical world digests remain complete. Host storage
+uses the retained encoding, rather than stringifying an unchanged save each tick.
+
+Visible presentation uses one RAF-owned fixed-step update/accept/draw boundary.
+An independent simulation timer could publish N+1 and N+2 between two RAFs,
+redrawing N and skipping N+1 despite both loops averaging 60 Hz. Worker requests
+remain sequential; bounded catch-up steps may intentionally coalesce intermediate
+states and report drops. Completion counters continue to count actual submissions
+and distinct submitted frames; scheduling never manufactures presentation counts.
+
 `runtime/bindings/projected.rs` copies both supplied buffers and constructs a
 validated candidate before `World::set_projected` compares it with the old batch.
 An identical call therefore still performs admission work. A retained world

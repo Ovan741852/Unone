@@ -801,7 +801,7 @@ impl ApplicationHandler for App {
 pub fn desktop() -> R<()> {
     if std::env::args().nth(1).as_deref() == Some("--describe") {
         let mut descriptor =
-            json!({"compiled_systems":unone_engine::compiled_systems(),"runtime_packages":unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default()),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","heightfield","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","retained_image_batch":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"nodes":["text","button","image","panel","slider","combobox","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported","styles":"typed leaf typography and box styles; vertical design units; explicit font size never shrinks","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
+            json!({"compiled_systems":unone_engine::compiled_systems(),"runtime_packages":unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default()),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","heightfield","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","retained_image_batch":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"image_batch_pixel_snap":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"nodes":["text","button","image","panel","slider","combobox","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported","styles":"typed leaf typography and box styles; vertical design units; explicit font size never shrinks","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
         ;
         descriptor["input_replay"] = replay::declaration();
         descriptor["input_replay"]["ordered_physical"]=json!({"live":"unsupported","normalized_core_replay":true,"text_ime":false});
@@ -1041,6 +1041,19 @@ mod telemetry_tests {
         assert!(super::ensure_shader_backend(&snapshot).unwrap_err().starts_with("UI_HOST_CAPABILITY_UNSUPPORTED: retained image_batch"));
         snapshot.ui=None;
         assert!(super::ensure_shader_backend(&snapshot).is_ok(),"unused definitions require no host rendering");
+    }
+
+    #[test]
+    fn native_pixel_snapped_ui_is_rejected_before_any_gpu_or_asset_preparation() {
+        for snap in [false,true] {
+            let source=r#"return {start=function(api)
+                api.ui.setRoot({kind='screen',id='s',node='s',children={{kind='component',id='nested',component='group',rect={x=0,y=0,width=10,height=10},children={{kind='image_batch',id='art',rect={x=0,y=0,width=10,height=10},pixel_snap=SNAP,quads={{asset='texture://missing',rect={x=0,y=0,width=10,height=10}}}}}}}})
+                end,update=function()end}"#.replace("SNAP",if snap {"true"}else{"false"});
+            let runtime=unone_engine::EngineRuntime::load_source("snapped-ui","main.luau",source,None).unwrap();
+            let result=super::ensure_shader_backend(&runtime.observe());
+            if snap {assert!(result.unwrap_err().starts_with("UI_HOST_CAPABILITY_UNSUPPORTED: image_batch pixel_snap"));}
+            else {assert!(result.is_ok(),"unsnapped inline batches retain existing admission");}
+        }
     }
 
     #[test]

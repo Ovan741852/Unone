@@ -4,6 +4,7 @@ use unone_engine::{BundleSpec, BundleVerifier};
 
 use serde::Serialize;
 mod ui_transport;
+mod save_transport;
 use unone_engine::{
     Diagnostic, EngineRuntime, HostInputState, HostProject, Vec2, WorldSnapshot, parse_input_frame,
 };
@@ -89,13 +90,14 @@ fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<
     project.into_runtime(seed)
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Serialize)]
 struct ProjectObservation<'a> {
     compiled_systems: &'static [String],
     project: &'a str,
     world: &'a serde_json::value::RawValue,
     observation_digest: &'a str,
-    save_payload: Option<&'a serde_json::value::RawValue>,
+    #[serde(flatten)]
+    save: &'a save_transport::Prepared<'a>,
     #[serde(skip_serializing_if = "Option::is_none")]
     instance_transport: Option<&'static str>,
 }
@@ -105,11 +107,17 @@ fn write_snapshot(
     snapshot: &WorldSnapshot,
     save_payload: Option<&serde_json::value::RawValue>,
 ) -> Result<(), String> {
+    let save=save_transport::prepare(save_payload,ui_transport::enabled(),ui_transport::epoch())?;
+    write_snapshot_prepared(project,snapshot,&save)?;
+    save.commit();Ok(())
+}
+
+fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_transport::Prepared<'_>)->Result<(),String>{
     if ui_transport::enabled() && !snapshot.ui_image_batches.is_empty() {
-        return ui_transport::write(project, snapshot, save_payload);
+        return ui_transport::write(project, snapshot, save);
     }
     if snapshot.instances3d.is_empty() {
-        return write_direct_snapshot(project, snapshot, save_payload);
+        return write_direct_snapshot(project, snapshot, save);
     }
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let measuring = PUBLICATION_PROFILE.with(|p| p.borrow().active);
@@ -165,7 +173,7 @@ fn write_snapshot(
         project,
         world: &world,
         observation_digest: &observation_digest,
-        save_payload,
+        save,
         instance_transport: INSTANCE_MEMORY.with(|m| {
             if m.get() {
                 Some("wasm-memory-v1")
@@ -207,7 +215,7 @@ fn append_json<T: Serialize + ?Sized>(bytes: &mut Vec<u8>, value: &T) -> Result<
 // appending the remaining fields; no temporary RawValue/world-sized copy.
 // Only constant JSON punctuation is authored here: every value uses serde.
 fn write_direct_snapshot(project: &str, snapshot: &WorldSnapshot,
-    save_payload: Option<&serde_json::value::RawValue>) -> Result<(), String> {
+    save: &save_transport::Prepared<'_>) -> Result<(), String> {
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let measuring = PUBLICATION_PROFILE.with(|p| p.borrow().active);
     #[cfg(not(any(feature = "dev-tools", feature = "preview-tools")))]
@@ -232,7 +240,7 @@ fn write_direct_snapshot(project: &str, snapshot: &WorldSnapshot,
         let hash_ms=hash_started.map_or(0., |s| s.elapsed().as_secs_f64()*1000.);
         let suffix_started=measuring.then(std::time::Instant::now);
         bytes.extend_from_slice(b",\"observation_digest\":");append_json(&mut bytes, &digest)?;
-        bytes.extend_from_slice(b",\"save_payload\":");append_json(&mut bytes, &save_payload)?;
+        save.append_fields(&mut bytes)?;
         if INSTANCE_MEMORY.with(|mode| mode.get()) {
             bytes.extend_from_slice(b",\"instance_transport\":");append_json(&mut bytes, "wasm-memory-v1")?;
         }
@@ -276,8 +284,9 @@ mod direct_publication_tests {
                 let expected=serde_json::to_vec(&PreviousEnvelope {compiled_systems:unone_engine::compiled_systems(),project,
                     world:&world,observation_digest:&digest,save_payload:save.clone(),instance_transport:memory.then_some("wasm-memory-v1")}).unwrap();
                 let cached=runtime.serialized_save_payload();
+                let prepared=save_transport::prepare(cached.as_deref(),false,1).unwrap();
                 let typed=serde_json::to_vec(&ProjectObservation {compiled_systems:unone_engine::compiled_systems(),project,
-                    world:&world,observation_digest:&digest,save_payload:cached.as_deref(),instance_transport:memory.then_some("wasm-memory-v1")}).unwrap();
+                    world:&world,observation_digest:&digest,save:&prepared,instance_transport:memory.then_some("wasm-memory-v1")}).unwrap();
                 assert_eq!(expected,typed,"cached raw values and the typed envelope preserve the previous wire contract");
                 write_snapshot(project,&snapshot,cached.as_deref()).unwrap();
                 OUTPUT.with(|out|assert_eq!(*out.borrow(),expected));

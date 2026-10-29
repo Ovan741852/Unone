@@ -2,7 +2,7 @@
 // game controls, hit testing and visual layering are not DOM elements.
 import {uiUsage} from './ui-geometry.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
-import {createImageBatchResolver,imageBatchCanvasTransform} from './ui-image-batch.mjs';
+import {createImageBatchResolver,imageBatchCanvasTransform,imageBatchSnappedRect} from './ui-image-batch.mjs';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 import {textPaintBounds,validateInputRegion,validateTextShadow} from './ui-presentation.mjs';
 import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces,layoutUiText,measureUiText} from './ui-style.mjs';
@@ -132,12 +132,14 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
   function imageBatch(node){
     const instance=batches.get(node);ctx.save();
     try{
-    if(instance.retained){const r=instance.clip;ctx.beginPath();ctx.rect(r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100);ctx.clip();
-      ctx.transform(...imageBatchCanvasTransform(instance.transform,canvas.width,canvas.height,instance.definition.originX,instance.definition.originY));}
+    if(instance.retained||instance.pixelSnap){const r=instance.clip;ctx.beginPath();ctx.rect(r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100);ctx.clip();
+      if(!instance.pixelSnap)ctx.transform(...imageBatchCanvasTransform(instance.transform,canvas.width,canvas.height,instance.definition.originX,instance.definition.originY));}
     for(const [index,q]of instance.definition.quads.entries()){
       const r=q.rect,leaf={id:node.id,asset:q.asset,fit:'stretch',...(q.source?{slice:{left:0,top:0,right:0,bottom:0,pixels_per_unit:1,source:q.source}}:{})};
       ctx.save();
-      try{ctx.globalAlpha=(ctx.globalAlpha??1)*(q.opacity??1);if(instance.retained)image(leaf,r.x-instance.definition.originX,-(r.y-instance.definition.originY)-r.height,r.width,r.height,ctx,index);
+      try{ctx.globalAlpha=(ctx.globalAlpha??1)*(q.opacity??1);if(instance.pixelSnap){const snapped=imageBatchSnappedRect(instance,r,canvas.width,canvas.height);if(!snapped.width||!snapped.height)continue;
+          ctx.transform(Math.sign(snapped.width),0,0,Math.sign(snapped.height),snapped.x,snapped.y);image(leaf,0,0,Math.abs(snapped.width),Math.abs(snapped.height),ctx,index);}
+        else if(instance.retained)image(leaf,r.x-instance.definition.originX,-(r.y-instance.definition.originY)-r.height,r.width,r.height,ctx,index);
         else image(leaf,r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100,ctx,index);}
       finally{ctx.restore();}
     }

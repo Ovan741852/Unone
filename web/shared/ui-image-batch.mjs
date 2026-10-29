@@ -60,7 +60,8 @@ export function createImageBatchResolver(){
   const result=Object.freeze({...candidate,token:Object.freeze({})});raw.set(id,{key,result});return result;
  }
  function resolve(node,resources){
-  fields(node,['kind','id','rect','quads','content','transform','background_for'],'UI_IMAGE_BATCH_FIELDS',node.id);
+  fields(node,['kind','id','rect','quads','content','transform','pixel_snap','background_for'],'UI_IMAGE_BATCH_FIELDS',node.id);
+  if(node.pixel_snap!==undefined&&typeof node.pixel_snap!=='boolean')fail('UI_IMAGE_BATCH_PIXEL_SNAP',node.id);
   const clip=rect(node.rect,'UI_IMAGE_BATCH_BOUNDS',node.id,true),retained=node.content!==undefined;
   let data;
   if(retained){if(node.quads!==undefined)fail('UI_IMAGE_BATCH_FIELDS',node.id);data=resource(node.content,resources);}
@@ -70,7 +71,9 @@ export function createImageBatchResolver(){
    if(old?.key===key)data=old.result;
    else{data=Object.freeze({...candidate,token:Object.freeze({})});inline.set(node.id,{key,result:data});}
   }
-  return {node,definition:data,transform:imageBatchTransform(node,data.bounds),clip,retained};
+  const transform=imageBatchTransform(node,data.bounds),pixelSnap=node.pixel_snap===true;
+  if(pixelSnap&&(transform.b!==0||transform.c!==0))fail('UI_IMAGE_BATCH_PIXEL_SNAP_TRANSFORM',node.id);
+  return {node,definition:data,transform,clip,retained,pixelSnap};
  }
  return {resolve,resource,
   prune(nodes){const ids=new Set(),inlineIds=new Set();for(const n of nodes)if(n.kind==='image_batch'){if(n.content!==undefined)ids.add(n.content);else inlineIds.add(n.id);}
@@ -81,4 +84,14 @@ export function createImageBatchResolver(){
 export function imageBatchCanvasTransform(t,width,height,originX=0,originY=0){
  const tx=t.a*originX+t.c*originY+t.tx,ty=t.b*originX+t.d*originY+t.ty;
  return [width/100*t.a,-height/100*t.b,-width/100*t.c,height/100*t.d,width/100*tx,height-height/100*ty];
+}
+
+// Pixel snapping belongs to final presentation, after the authored transform.
+// Signed dimensions retain reflection; source UVs and the viewport clip stay
+// unchanged. Collapsed rectangles have no covered pixels.
+export function imageBatchSnappedRect(instance,rect,width,height){
+ const t=instance.transform,round=n=>Math.sign(n)*Math.floor(Math.abs(n)+.5),
+  left=round((t.a*rect.x+t.tx)*width/100),right=round((t.a*(rect.x+rect.width)+t.tx)*width/100),
+  bottom=round((t.d*rect.y+t.ty)*height/100),top=round((t.d*(rect.y+rect.height)+t.ty)*height/100);
+ return {x:left,y:height-top,width:right-left,height:top-bottom};
 }

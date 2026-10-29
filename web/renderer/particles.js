@@ -148,6 +148,7 @@ export function createParticleRenderer(THREE, scene) {
 
   return {
     draw,
+    contextLost(retire){retire(geometry);for(const texture of textures.values())retire(texture);for(const group of groups.values()){retire(group.mesh);retire(group.material);}},
     get count() { return count; },
     metrics(){return {groups:groups.size,capacity:retainedCapacity,instance_buffer_bytes:retainedCapacity*64,compactions};},
     get drawCalls() { let total=0; for (const group of groups.values()) if (group.mesh.count > 0) total++; return total; },

@@ -93,6 +93,6 @@ export function createHeightfieldRenderer(THREE,scene,textureFor) {
     }
     for(const [id,record] of records)if(!alive.has(id)){dispose(record);records.delete(id);}
   }
-  return {draw,clear(){for(const record of records.values())dispose(record);records.clear();},
+  return {draw,contextLost(retire){for(const record of records.values()){retire(record.mesh.geometry);retire(record.material);}},clear(){for(const record of records.values())dispose(record);records.clear();},
     metrics(){return {heightfields:records.size,heightfield_triangles:[...records.values()].reduce((n,r)=>n+r.triangles,0),heightfield_rebuilds:rebuilds};}};
 }

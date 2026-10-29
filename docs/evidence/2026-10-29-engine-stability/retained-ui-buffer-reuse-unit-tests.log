@@ -1,0 +1,18 @@
+✔ same-image replacement that falls back retires every old GPU owner instead of only hiding it (2.2633ms)
+✔ target mismatch and a partially selected prefix retire non-selected instances and definitions (0.4776ms)
+✔ GPU image limits fall back before Three can silently resize a valid source crop (0.2881ms)
+✔ changed inline generations update owned same-capacity storage without geometry, mesh or material churn (4.6282ms)
+✔ texture runs share one geometry/material and preserve authored A/B/A order across instance reorder (0.9704ms)
+✔ capacity grows geometrically, draw ranges shrink safely and active peak storage compacts (8.603ms)
+✔ resource migration never overwrites a still selected shared generation or trusts a reused revision (1.6341ms)
+✔ decoded source replacement and dimension changes update UVs and retire old textures without rebuilding geometry (0.4916ms)
+✔ aggregate capacity stays bounded when many active resources take turns peaking (60.8354ms)
+✔ each group uploads current per-instance snap and framebuffer uniforms without changing topology (0.7014ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 162.2259

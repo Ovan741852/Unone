@@ -157,6 +157,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
   function rasterLost(){
     if(['lost','failed','disposed'].includes(rasterCapability.metrics().status))return;
+    retireWorldGpuBindings();
     projected.clear();uiImageBatchPrefix.clear();frameDraws?.clear();framePass?.contextLost?.();rasterPass?.contextLost?.();framePass?.invalidate();rasterPass?.invalidate();rasterCapability.lost();
     profile?.record('context','lost',{context_epoch:rasterCapability.metrics().context_epoch});
   }
@@ -282,6 +283,23 @@ export async function createThreeRenderer(canvas, options = {}) {
     }).catch(error => { if(!record.discarded&&meshAssets.get(id)===record)record.error = new Error(`${error.message} [/${asset.source}]`); });
     meshAssets.set(id, record);
     return record;
+  }
+
+  function retireWorldGpuBindings() {
+    // Three replaces its WebGL managers on restore. Detach their listeners
+    // while the old context is lost, keeping CPU arrays, images and owners.
+    // Only explicit engine resources participate; presentation hooks own theirs.
+    const seen=new Set(),retire=value=>{if(value&&!seen.has(value)){seen.add(value);value.dispose();}};
+    retire(geometry);
+    for(const record of records.values())retire(record.material);
+    for(const mesh of meshes3d.values())if(mesh.userData.asset.startsWith('mesh://primitive/')){retire(mesh.geometry);retire(mesh.material);}
+    for(const record of meshAssets.values()){retire(record.geometry);retire(record.material);}
+    for(const record of textureRecords.values())retire(record.texture);
+    shaderMaterials.contextLost(retire);
+    instances.contextLost(retire);
+    particles.contextLost(retire);
+    heightfields.contextLost(retire);
+    bloom?.contextLost(retire);
   }
 
   // Opt-in profiling: resource counters copied at each draw scope entry/exit by the player profiler.

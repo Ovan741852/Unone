@@ -358,12 +358,12 @@ export type UiImageBatchApi = {
 }
 export type UiInlineImageBatchNode = {
     kind: "image_batch", id: string, rect: UiRect, quads: {UiImageQuad},
-    background_for: UiBackgroundScope?,
+    background_for: UiBackgroundScope?, pixel_snap:boolean?,
 }
 export type UiRetainedImageBatchNode = {
     -- rect is the stage clip/layout bound; it never translates the resource.
     kind:"image_batch", id:string, rect:UiRect, content:string,
-    transform:UiImageTransform?, background_for:UiBackgroundScope?,
+    transform:UiImageTransform?, background_for:UiBackgroundScope?, pixel_snap:boolean?,
 }
 export type UiImageBatchNode = UiInlineImageBatchNode | UiRetainedImageBatchNode
 export type UiPanelNode = UiPlacement & {
@@ -423,10 +423,14 @@ export type UiComponentImageProps = UiPlacement & {
 export type UiInlineImageBatchProps = {
     read id:string, read rect:UiRect, read quads:{UiImageQuad},
     read background_for:UiBackgroundScope?, read content:never?, read transform:never?,
+    -- Optional physical-pixel edge rounding, ties away from zero; clip/UV unchanged.
+    read pixel_snap:boolean?,
 }
 export type UiRetainedImageBatchProps = {
     read id:string, read rect:UiRect, read content:string,
     read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read quads:never?,
+    -- true requires b=c=0; negative/zero a/d are allowed, collapsed quads skip.
+    read pixel_snap:boolean?,
 }
 export type UiComponentImageBatchProps = UiInlineImageBatchProps | UiRetainedImageBatchProps
 export type UiComponentSurface = {

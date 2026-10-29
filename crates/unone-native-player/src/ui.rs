@@ -17,15 +17,16 @@ fn leaves(tree: &UiTree) -> Vec<&UiNode> {
     out
 }
 pub(crate) fn ensure_retained_images_supported(tree: &UiTree) -> R<()> {
-    fn unsupported(node:&UiNode)->bool {
+    fn unsupported(node:&UiNode)->Option<&'static str> {
         match node {
-            UiNode::ImageBatch{content:Some(_),..}|UiNode::ImageBatch{transform:Some(_),..}=>true,
-            UiNode::Component{children,..}|UiNode::ScrollView{children,..}=>children.iter().any(unsupported),
-            _=>false,
+            UiNode::ImageBatch{content:Some(_),..}|UiNode::ImageBatch{transform:Some(_),..}=>Some("retained image_batch content/transform requires the official Web host; native retained image resources are not implemented"),
+            UiNode::ImageBatch{pixel_snap:true,..}=>Some("image_batch pixel_snap requires the official Web host; native physical-pixel edge snapping is not implemented"),
+            UiNode::Component{children,..}|UiNode::ScrollView{children,..}=>children.iter().find_map(unsupported),
+            _=>None,
         }
     }
-    if tree.children.iter().any(unsupported) {
-        return Err("UI_HOST_CAPABILITY_UNSUPPORTED: retained image_batch content/transform requires the official Web host; native retained image resources are not implemented".into());
+    if let Some(reason)=tree.children.iter().find_map(unsupported) {
+        return Err(format!("UI_HOST_CAPABILITY_UNSUPPORTED: {reason}"));
     }
     Ok(())
 }

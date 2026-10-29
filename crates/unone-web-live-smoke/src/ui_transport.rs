@@ -9,6 +9,7 @@ thread_local! {
     static CANONICAL: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
 }
 pub(super) fn enabled()->bool { ENABLED.with(Cell::get) }
+pub(super) fn epoch()->u64 { EPOCH.with(Cell::get) }
 pub(super) fn retire(){
     let had_cache=CANONICAL.with(|v|{let mut bytes=v.borrow_mut();let retained=bytes.capacity()>0;*bytes=Vec::new();retained});
     let had_leases=LEASES.with(|v|{let mut leases=v.borrow_mut();let retained=!leases.is_empty();*leases=Vec::new();retained});
@@ -17,13 +18,14 @@ pub(super) fn retire(){
     if had_cache||had_leases{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
 }
 pub(super) fn unload(){
+    super::save_transport::clear();
     LEASES.with(|v|*v.borrow_mut()=Vec::new());
     CANONICAL.with(|v|*v.borrow_mut()=Vec::new());
     ENABLED.with(|v|v.set(false));
 }
 pub(super) fn new_runtime()->Result<(),String>{
     let next=EPOCH.with(|e|e.get().checked_add(1)).ok_or("UI_IMAGE_TRANSPORT_EPOCH_LIMIT")?;
-    EPOCH.with(|e|e.set(next));ENABLED.with(|v|v.set(false));Ok(())
+    EPOCH.with(|e|e.set(next));ENABLED.with(|v|v.set(false));super::save_transport::clear();Ok(())
 }
 #[derive(Serialize)]
 struct Memory {offset:usize,byte_length:usize}
@@ -34,7 +36,9 @@ struct Transport {format:&'static str,epoch:String,resources:BTreeMap<String,Res
 #[derive(Serialize)]
 struct Observation<'a,W:Serialize+?Sized>{
     compiled_systems:&'static [String],project:&'a str,world:&'a W,
-    observation_digest:&'a str,save_payload:Option<&'a serde_json::value::RawValue>,
+    observation_digest:&'a str,
+    #[serde(flatten)]
+    save:&'a super::save_transport::Prepared<'a>,
     #[serde(skip_serializing_if="Option::is_none")]
     instance_transport:Option<&'static str>,
     ui_transport:Transport,
@@ -93,15 +97,15 @@ impl<S:serde::Serializer> serde::Serializer for WithoutRegistry<S>{
     fn collect_str<T:std::fmt::Display+?Sized>(self,value:&T)->Result<Self::Ok,Self::Error>{self.serializer.collect_str(value)}
     fn is_human_readable(&self)->bool{self.serializer.is_human_readable()}
 }
-fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:Option<&serde_json::value::RawValue>,resources:BTreeMap<String,Resource>)->Result<(),String>{
+fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:&super::save_transport::Prepared<'_>,resources:BTreeMap<String,Resource>)->Result<(),String>{
     let observation=Observation{compiled_systems:unone_engine::compiled_systems(),project,world,
-        observation_digest:digest,save_payload:save,
+        observation_digest:digest,save,
         instance_transport:INSTANCE_MEMORY.with(|m|m.get().then_some("wasm-memory-v1")),
         ui_transport:Transport{format:"retained-image-batches-v1",epoch:EPOCH.with(|e|e.get().to_string()),resources}};
     OUTPUT.with(|out|{let mut bytes=out.borrow_mut();bytes.clear();
         serde_json::to_writer(&mut *bytes,&observation).map_err(|error|error.to_string())})
 }
-pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:Option<&serde_json::value::RawValue>)->Result<(),String>{
+pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_transport::Prepared<'_>)->Result<(),String>{
     let digest=CANONICAL.with(|cache|{
         let mut bytes=cache.borrow_mut();bytes.clear();
         serde_json::to_writer(&mut *bytes,snapshot).map_err(|e|e.to_string())?;
@@ -146,6 +150,10 @@ pub extern "C" fn unone_web_set_ui_transport(mode:i32)->i32{
 #[cfg(test)]
 mod tests{
  use super::*;
+ fn write(project:&str,snapshot:&WorldSnapshot,save:Option<&serde_json::value::RawValue>)->Result<(),String>{
+  let prepared=super::super::save_transport::prepare(save,true,epoch())?;
+  super::write(project,snapshot,&prepared)?;prepared.commit();Ok(())
+ }
  fn output()->serde_json::Value{OUTPUT.with(|o|serde_json::from_slice(&o.borrow()).unwrap())}
  fn load(asset:&str){
   let script=format!(r#"local q={{asset='{asset}',rect={{x=0,y=0,width=100,height=100}},opacity=0.5}}

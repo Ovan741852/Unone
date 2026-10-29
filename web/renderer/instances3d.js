@@ -70,5 +70,5 @@ export function createInstanceRenderer(THREE,scene,assetFor,memory){
     }
     for(const [id,r]of records)if(!alive.has(id)){dispose(r);records.delete(id);}
   }
-  return {draw,get count(){return count;},metrics(){let cells=0,submitted=0;for(const r of records.values())cells+=r.cells.size;for(const mesh of rendered)submitted+=mesh.count;return {instance_cells:cells,submitted_instance_cells:rendered.size,submitted_instances:submitted,culled_instances:count-submitted};},clear(){for(const r of records.values())dispose(r);records.clear();rendered.clear();count=0;}};
+  return {draw,contextLost(retire){for(const r of records.values())for(const c of r.cells.values())retire(c.mesh);},get count(){return count;},metrics(){let cells=0,submitted=0;for(const r of records.values())cells+=r.cells.size;for(const mesh of rendered)submitted+=mesh.count;return {instance_cells:cells,submitted_instance_cells:rendered.size,submitted_instances:submitted,culled_instances:count-submitted};},clear(){for(const r of records.values())dispose(r);records.clear();rendered.clear();count=0;}};
 }

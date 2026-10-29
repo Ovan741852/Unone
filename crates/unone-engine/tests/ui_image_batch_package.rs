@@ -9,8 +9,9 @@ fn retained_image_batch_constructor_is_pure_and_copies_only_small_instance_state
         api.ui.imageBatch.define('shared',{bounds={x=0,y=0,width=10,height=10},quads={{asset='texture://tile',rect={x=0,y=0,width=10,height=10}}}})
         local kit=api.ui.components.create()
         local transform={a=1,b=0,c=0,d=1,tx=2,ty=3}
-        local art=kit.imageBatch({id='art',content='shared',rect={x=0,y=0,width=100,height=100},transform=transform})
-        transform.tx=99;assert(art.transform.tx==2 and art.quads==nil)
+        local art=kit.imageBatch({id='art',content='shared',rect={x=0,y=0,width=100,height=100},transform=transform,pixel_snap=true})
+        transform.tx=99;assert(art.transform.tx==2 and art.quads==nil and art.pixel_snap==true)
+        assert(not pcall(kit.imageBatch,{id='bad',content='shared',rect=art.rect,pixel_snap='true'}))
         assert(not pcall(kit.imageBatch,{id='bad',content='shared',rect=art.rect,quads={}}))
         assert(not pcall(kit.imageBatch,{id='bad',content='shared',rect=art.rect,transform={a=1,b=0,c=0,d=1,tx=0,ty=0,extra=true}}))
         api.ui.setRoot(kit.screen({id='s',node='s',children={art}}))
@@ -21,6 +22,7 @@ fn retained_image_batch_constructor_is_pure_and_copies_only_small_instance_state
     let wire=serde_json::to_value(snapshot.ui.unwrap()).unwrap();
     assert_eq!(wire["children"][0]["content"],"shared");
     assert_eq!(wire["children"][0]["transform"]["tx"],2.);
+    assert_eq!(wire["children"][0]["pixel_snap"],true);
 }
 
 #[test]

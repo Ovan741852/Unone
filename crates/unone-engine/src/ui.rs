@@ -7,6 +7,11 @@ pub use text_shadow::UiTextShadow;
 mod image_batch;
 pub use image_batch::{UiImageBatchDefinition, UiImageBatchResource, UiImageTransform};
 
+fn is_false(value:&bool)->bool { !*value }
+fn present_bool<'de,D:serde::Deserializer<'de>>(deserializer:D)->Result<Option<bool>,D::Error> {
+    bool::deserialize(deserializer).map(Some)
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UiContract {
     pub version: u32,
@@ -623,6 +628,9 @@ pub enum UiNode {
         content: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         transform: Option<UiImageTransform>,
+        /// Presentation-only edge rounding in physical framebuffer pixels.
+        #[serde(skip_serializing_if = "is_false")]
+        pixel_snap: bool,
         #[serde(skip)]
         resource_quad_count: usize,
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -878,6 +886,9 @@ struct RawUiNode {
     content: Option<String>,
     #[serde(default)]
     transform: Option<UiImageTransform>,
+    #[serde(default,deserialize_with="present_bool")]
+    #[cfg_attr(feature = "dev-tools", schemars(with = "bool"))]
+    pixel_snap: Option<bool>,
     #[serde(default)]
     fit: Option<UiImageFit>,
     #[serde(default)]
@@ -1238,8 +1249,8 @@ fn parse_node(
         ));
     }
     *node_count += 1;
-    if (raw_node.quads.is_some() || raw_node.content.is_some() || raw_node.transform.is_some()) && raw_node.kind != "image_batch" {
-        return Err(format!("UI_IMAGE_BATCH_KIND: '{}' only accepts quads, content and transform on image_batch", raw_node.id));
+    if (raw_node.quads.is_some() || raw_node.content.is_some() || raw_node.transform.is_some() || raw_node.pixel_snap.is_some()) && raw_node.kind != "image_batch" {
+        return Err(format!("UI_IMAGE_BATCH_KIND: '{}' only accepts quads, content, transform and pixel_snap on image_batch", raw_node.id));
     }
     if raw_node.kind == "image_batch" && (raw_node.anchor.is_some() || raw_node.pivot.is_some()
         || raw_node.offset.is_some() || raw_node.size.is_some()) {
@@ -1539,14 +1550,17 @@ fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool, resources:&BTree
         || raw.slice.is_some() || raw.alt.is_some() || raw.style.is_some()
         || raw.component.is_some() || raw.children.is_some() || raw.scroll.is_some()
         || raw.expanded.is_some() || raw.drag.is_some() {
-        return Err(format!("UI_IMAGE_BATCH_FIELDS: '{}' accepts rect, either quads or content, optional transform and background_for only", raw.id));
+        return Err(format!("UI_IMAGE_BATCH_FIELDS: '{}' accepts rect, either quads or content, optional transform, pixel_snap and background_for only", raw.id));
     }
     if let Some(content)=raw.content {
         if raw.quads.is_some() { return Err(format!("UI_IMAGE_BATCH_CONTENT: '{}' must choose quads or content, not both",raw.id)); }
         let resource=resources.get(&content).ok_or_else(||format!("UI_IMAGE_BATCH_CONTENT: unknown content '{content}'"))?;
         raw.transform.unwrap_or_default().validate(resource.bounds())?;
+        if raw.pixel_snap==Some(true) && raw.transform.is_some_and(|t|t.b!=0. || t.c!=0.) {
+            return Err("UI_IMAGE_BATCH_SNAP_TRANSFORM: pixel_snap requires an axis-aligned transform (b=c=0)".into());
+        }
         return Ok(UiNode::ImageBatch {id:raw.id,rect,quads:Vec::new(),content:Some(content),transform:raw.transform,
-            resource_quad_count:resource.quads().len(),background_for:raw.background_for});
+            pixel_snap:raw.pixel_snap.unwrap_or(false),resource_quad_count:resource.quads().len(),background_for:raw.background_for});
     }
     if raw.transform.is_some() { return Err("UI_IMAGE_BATCH_TRANSFORM: transform requires retained content; inline quads keep absolute stage coordinates".into()); }
     let quads = raw.quads.ok_or_else(|| format!("UI_IMAGE_BATCH_QUADS: '{}' requires quads or retained content", raw.id))?;
@@ -1556,7 +1570,7 @@ fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool, resources:&BTree
     for (index, quad) in quads.iter().enumerate() {
         quad.validate(rect).map_err(|e| format!("{e}; batch={}; quad={index}", raw.id))?;
     }
-    Ok(UiNode::ImageBatch { id: raw.id, rect, quads, content:None, transform:None, resource_quad_count:0, background_for: raw.background_for })
+    Ok(UiNode::ImageBatch { id: raw.id, rect, quads, content:None, transform:None, pixel_snap:raw.pixel_snap.unwrap_or(false),resource_quad_count:0, background_for: raw.background_for })
 }
 
 fn validate_background_scopes<'a>(

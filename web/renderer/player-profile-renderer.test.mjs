@@ -21,7 +21,7 @@ function fixture(profiler){
  const calls=[],noop=()=>{},texture=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);
  const records={white:{state:'ready',texture},pending:{state:'loading'}};let available=true,status='validated',epoch=1;
  const frameDraws=createFrameDraws(THREE,s=>records[s.id]),textureRecords=new Map();
- const context={DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:profiler?.renderer??null,options:profiler?{profiler}:{},textureCache:createTextureCachePolicy(textureRecords),frameDecoder:createProjectedFrameDecoder(),
+ const context={retireWorldGpuBindings:noop,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:profiler?.renderer??null,options:profiler?{profiler}:{},textureCache:createTextureCachePolicy(textureRecords),frameDecoder:createProjectedFrameDecoder(),
   framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,assertFrameSnapshot,
   assertProjectedBackend:noop,assertRasterSnapshot:noop,assertFrameGpuError:noop,rasterAvailable:()=>available,projectedEntries:()=>[],heightfieldEntries:()=>[],
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],

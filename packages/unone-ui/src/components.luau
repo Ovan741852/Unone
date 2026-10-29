@@ -25,7 +25,7 @@ local leafFields: {[string]: Fields} = {
     combobox={id=true,text=true,action=true,expanded=true,style=true},
     panel={id=true,style=true,background_for=true},
     image={id=true,asset=true,fit=true,slice=true,alt=true,style=true,background_for=true},
-    image_batch={id=true,quads=true,content=true,transform=true,background_for=true},
+    image_batch={id=true,quads=true,content=true,transform=true,pixel_snap=true,background_for=true},
 }
 local componentFields: Fields = {id=true,component=true,children=true,surface=true}
 local screenFields: Fields = {id=true,node=true,children=true,budget=true}
@@ -47,7 +47,7 @@ end
 for key in pairs(placement) do componentFields[key] = true end
 -- Quad coordinates are absolute stage coordinates, so batch bounds must be
 -- authored in the same space instead of moving independently with an anchor.
-leafFields.image_batch = {id=true,rect=true,quads=true,content=true,transform=true,background_for=true}
+leafFields.image_batch = {id=true,rect=true,quads=true,content=true,transform=true,pixel_snap=true,background_for=true}
 
 local function available()
     assert(declared, "UI_PACKAGE_NOT_DECLARED: declare runtime_packages={['"..metadata.name.."']='"..metadata.version.."'} in project.unone.json (JSON: \"runtime_packages\":{\""..metadata.name.."\":\""..metadata.version.."\"})")
@@ -602,6 +602,7 @@ local function makeKit(theme: any?): any
     kit.imageBatch = function(props: any): any
         available()
         fields(props,leafFields.image_batch,"imageBatch")
+        assert(props.pixel_snap==nil or type(props.pixel_snap)=="boolean","UI_IMAGE_BATCH_PIXEL_SNAP: pixel_snap must be a boolean")
         assert((props.quads~=nil)~=(props.content~=nil),"UI_IMAGE_BATCH_CONTENT: choose quads or retained content")
         if props.content~=nil then
             assert(type(props.content)=="string" and props.content~="","UI_IMAGE_BATCH_CONTENT: stable resource id required")

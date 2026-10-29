@@ -33,6 +33,24 @@ periodic `data-player-performance` report remains coarse, while this accessor
 reads current counters. Its last dirty UI render cost is not the cost of every
 draw. Resource/context skips must not be assigned zero render time.
 
+The visible official player owns simulation acceptance and rendering in one RAF
+transaction. It awaits sequential fixed 60 Hz ticks before submitting the latest
+state, with at most five catch-up steps and explicit excess-step drops. Faster
+displays may redraw without a tick. A bounded timestamp-rounding tolerance keeps
+negative debt instead of inventing simulation time. Pause/hidden/reset generations
+cancel stale post-await draws and reset elapsed-time accumulation. This avoids
+independent timer/RAF phase aliasing, while counters still expose any repeated or
+skipped simulation frames. Slow displays or overloaded updates can combine several
+catch-up steps into one presentation. Worker backpressure never creates a second
+tick request. Compare simulation, completed-submission and changed-frame counters
+during the same measured window.
+
+Unchanged official-player saves use an engine-issued immutable memory lease and
+worker generation delta. The host reuses decoded read-only content and its encoded
+storage string until replacement, clear, reload or unload. Canonical inspection
+still contains the full save. This reduces publication/decode/JS allocation work;
+it does not imply that game-owned save generation is allocation-free.
+
 ## Developer profiling
 
 Execution mode is now explicit in `execution` on profile reports and platform /

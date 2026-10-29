@@ -113,7 +113,7 @@ fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
     // Ordinary artwork discovery starts with logical resources/instances. GPU
     // acceleration is a host decision; expert projected buffers stay explicit.
     let artwork = ["artwork", "image", "images", "imagebatch", "image_batch", "圖片", "图片", "圖像", "图像", "大量圖片", "大量图片"];
-    let artwork_context = ["2d", "gpu", "ui", "retained", "batch", "batches", "batching", "resource", "resources", "camera", "pan", "panning", "transform", "affine", "clip", "crop", "opacity", "many", "大量", "相機", "相机", "平移"];
+    let artwork_context = ["2d", "gpu", "ui", "retained", "batch", "batches", "batching", "resource", "resources", "camera", "pan", "panning", "transform", "affine", "clip", "crop", "opacity", "pixel", "snap", "pixel_snap", "many", "大量", "相機", "相机", "平移"];
     if let Some(tokens)=fully_segment_ui_terms(terms,&[&artwork[..],&artwork_context[..]].concat()) {
         let image_intent=tokens.iter().any(|term|artwork.contains(term))
             && tokens.iter().any(|term|["gpu","retained","batch","batches","batching","imagebatch","image_batch","many","大量","大量圖片","大量图片"].contains(term));
@@ -2576,7 +2576,7 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
         ("combobox", "UiComponentComboBoxProps", "UiComboBoxNode", "Create a typed combobox/dropdown control with a semantic action and project-owned expanded state.", "local choice = api.ui.components.combobox({id=\"quality\",text=\"High\",action=\"ChooseQuality\",expanded=false,rect={x=10,y=45,width=40,height=8}})"),
         ("panel", "UiComponentPanelProps", "UiPanelNode", "Construct a decorative panel leaf with box styles and optional explicit background scope.", "local panel = api.ui.components.panel({id=\"paper\",rect={x=10,y=10,width=80,height=80},background_for={screen=true},style={background={0.03,0.05,0.08,1}}})"),
         ("image", "UiComponentImageProps", "UiImageNode", "Construct a typed image leaf with optional fit, nine-slice, box style and background scope.", "local image = api.ui.components.image({id=\"portrait\",asset=\"portrait\",rect={x=10,y=20,width=25,height=30},fit=\"contain\"})"),
-        ("imageBatch", "UiComponentImageBatchProps", "UiImageBatchNode", "Construct an ordered, noninteractive artwork batch for tilemap terrain, fog or decorative image layers. Every quad counts toward the normal UI node budget; text and controls remain separate nodes.", "local art = api.ui.components.imageBatch({id=\"terrain\",rect={x=0,y=0,width=100,height=100},quads={{asset=\"tiles\",rect={x=10,y=20,width=5,height=5},source={x=0,y=0,width=32,height=32},opacity=1}}})"),
+        ("imageBatch", "UiComponentImageBatchProps", "UiImageBatchNode", "Construct ordered noninteractive artwork from inline quads or retained content. Optional pixel_snap=false by default; true rounds transformed edges to physical framebuffer pixels with ties away from zero, keeps clip/UV unchanged, and skips collapsed quads. Snapped retained transforms require b=c=0; signed or zero a/d are valid. Native explicitly rejects pixel_snap=true until supported. Every quad counts toward the UI node budget; text/controls retain authored order.", "local art = api.ui.components.imageBatch({id=\"terrain\",rect={x=0,y=0,width=100,height=100},pixel_snap=true,quads={{asset=\"texture://tiles\",rect={x=10,y=20,width=5,height=5},source={x=0,y=0,width=32,height=32},opacity=1}}})"),
         ("component", "UiComponentProps", "UiComponentNode", "Compose a reusable component wrapper and optional scoped surface without changing child coordinates.", "local card = api.ui.components.component({id=\"card\",component=\"project.card\",rect={x=10,y=10,width=80,height=80},surface={kind=\"panel\"},children={}})"),
         ("screen", "UiComponentScreenProps", "UiScreen", "Construct a typed screen root; publish it explicitly with ui.setRoot.", "api.ui.setRoot(api.ui.components.screen({id=\"settings\",node=\"settings\",children={}}))"),
     ] {
@@ -3188,7 +3188,7 @@ mod tests {
         assert!(define.when_to_use.contains("retained-image-artwork"));
         assert_eq!(search("ui.imageBatch.define")[0].name,"ui.imageBatch.define");
         assert!(describe("ui.imageBatch.remove").unwrap().common_errors.iter().any(|error|error.contains("UI_IMAGE_BATCH_IN_USE")));
-        for query in ["2D GPU artwork","image batching","retained images","many images","camera pan","大量圖片","大量 图片","相機平移"] {
+        for query in ["2D GPU artwork","image batching","image batch pixel snap","retained images","many images","camera pan","大量圖片","大量 图片","相機平移"] {
             let matches=search(query);
             assert_eq!(matches.first().map(|entry|entry.name.as_str()),Some("ui.imageBatch.define"),"{query}");
             assert!(matches.iter().any(|entry|entry.name=="ui.components.imageBatch"),"{query}");

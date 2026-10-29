@@ -1,0 +1,41 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.48s
+     Running tests\retained_image_batch.rs (target\debug\deps\retained_image_batch-1d096e0432c685dd.exe)
+
+running 8 tests
+test pure_virtual_callbacks_cannot_mutate_resources_and_error_restores_the_guard ... ok
+test live_budget_transform_overflow_and_unknown_fields_reject_without_partial_change ... ok
+test large_origin_rounded_endpoints_cannot_admit_an_oversized_replacement ... ok
+test removal_requires_no_published_reference_and_recreation_gets_new_revision ... ok
+test camera_changes_only_instance_state_and_keeps_owned_content_and_cached_bytes ... ok
+test replacement_is_atomic_updates_live_counts_and_preserves_old_snapshot_generation ... ok
+test retained_content_is_explicitly_stage_only_and_inline_serialization_is_unchanged ... ok
+test reload_rollback_restores_matching_resource_and_instance_generations ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests\save_publication.rs (target\debug\deps\save_publication-3866b5f97b8d0c08.exe)
+
+running 3 tests
+test rejected_lua_saves_preserve_encoded_generation_and_nil_keeps_existing_json_null_semantics ... ok
+test immutable_save_encoding_reuses_one_generation_and_owned_reads_remain_detached ... ok
+test reload_commit_and_rollback_preserve_the_matching_save_encoding ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests\ui_image_batch_package.rs (target\debug\deps\ui_image_batch_package-729bdadef8eeba98.exe)
+
+running 2 tests
+test retained_image_batch_constructor_is_pure_and_copies_only_small_instance_state ... ok
+test image_batch_constructor_is_detached_typed_artwork_with_no_theme_or_actions ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests\ui_image_batch_pixel_snap.rs (target\debug\deps\ui_image_batch_pixel_snap-3bfea5c89223455d.exe)
+
+running 2 tests
+test pixel_snap_is_cheap_instance_state_and_rejects_rotated_or_sheared_publication_atomically ... ok
+test unsnapped_retained_affine_and_inline_snapping_keep_their_separate_contracts ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

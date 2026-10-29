@@ -1,0 +1,1486 @@
+{
+  "ok": false,
+  "scope": "Actual official Three world renderer: sprite/custom shader, primitive box/sphere, decoded mesh, packed instancing, particles, heightfield and Bloom; three loss/restore epochs. CPU objects/arrays/images and load/fetch counts retained, no game code.",
+  "nonBackgroundPixels": 16136,
+  "loads": [
+    "asset://checker",
+    "mesh://qa"
+  ],
+  "fetches": [
+    "/qa/triangle.mesh.json"
+  ],
+  "initialListeners": [
+    {
+      "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+      "type": "PlaneGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+      "type": "ShaderMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+      "type": 1009,
+      "listeners": 1
+    },
+    {
+      "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+      "type": "BoxGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+      "type": "MeshNormalMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+      "type": "SphereGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+      "type": "MeshNormalMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+      "type": "BufferGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+      "type": "MeshBasicMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+      "type": "PlaneGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+      "type": "Mesh",
+      "listeners": 1
+    },
+    {
+      "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+      "type": "MeshBasicMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+      "type": 1009,
+      "listeners": 1
+    },
+    {
+      "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+      "type": "BufferGeometry",
+      "listeners": 1
+    },
+    {
+      "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+      "type": "MeshBasicMaterial",
+      "listeners": 1
+    },
+    {
+      "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+      "type": "Mesh",
+      "listeners": 1
+    }
+  ],
+  "cycles": [
+    {
+      "epoch": 1,
+      "lostOutcome": {
+        "status": "skipped",
+        "reason": "raster_unavailable"
+      },
+      "lostListeners": [
+        {
+          "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+          "type": "BoxGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+          "type": "SphereGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+          "type": "PlaneGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+          "type": "Mesh",
+          "listeners": 1
+        },
+        {
+          "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+          "type": 1009,
+          "listeners": 1
+        },
+        {
+          "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+          "type": "BufferGeometry",
+          "listeners": 1
+        },
+        {
+          "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+          "type": "Mesh",
+          "listeners": 1
+        }
+      ],
+      "restoredListeners": [
+        {
+          "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+          "type": "PlaneGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+          "type": 1009,
+          "listeners": 2
+        },
+        {
+          "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+          "type": "BoxGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+          "type": "SphereGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+          "type": "BufferGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+          "type": "PlaneGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+          "type": "Mesh",
+          "listeners": 2
+        },
+        {
+          "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+          "type": 1009,
+          "listeners": 2
+        },
+        {
+          "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+          "type": "BufferGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+          "type": "Mesh",
+          "listeners": 2
+        }
+      ],
+      "pixelDifferences": 0,
+      "maxChannelDifference": 0,
+      "metrics": {
+        "texture_cache": {
+          "enabled": false,
+          "entries": 1,
+          "decoded_texture_bytes_estimate": 256,
+          "pinned_bytes_estimate": 256,
+          "loading": 0,
+          "evicted": 0,
+          "released_bytes_estimate": 0,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+          "policy": null,
+          "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+        },
+        "raster": {
+          "antialias_requested": true,
+          "context_antialias": true,
+          "scope": "default_framebuffer",
+          "reconfigure": "relaunch",
+          "offscreen_antialias": "not_configured",
+          "projected": {
+            "requested": "host",
+            "declared": false,
+            "status": "host",
+            "context_epoch": 2,
+            "target_generation": null,
+            "physical_size": null,
+            "dpr": null,
+            "profile_version": null,
+            "probe_hash": null,
+            "last_validation": null,
+            "failure": null,
+            "limitations": "host raster; no upper-left validation claim"
+          },
+          "clear_state_recovery": {
+            "losses": 1,
+            "restores": 1,
+            "pending": false,
+            "last_restored_clear": {
+              "linear_rgb": [
+                0.005605391621829108,
+                0.009134058699157796,
+                0.02028856305209031
+              ],
+              "alpha": 1
+            },
+            "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+          }
+        },
+        "ui_image_batches": {
+          "draws": 0,
+          "prefix_nodes": 0,
+          "prefix_quads": 0,
+          "coverage": "pixel_center",
+          "fallback_reason": "empty",
+          "geometry_builds": 0,
+          "geometry_disposes": 0,
+          "geometry_updates": 0,
+          "live_geometries": 0,
+          "buffer_capacity_quads": 0,
+          "active_resource_quads": 0,
+          "material_builds": 0,
+          "material_disposes": 0,
+          "live_materials": 0,
+          "mesh_builds": 0,
+          "mesh_disposes": 0,
+          "live_meshes": 0,
+          "texture_builds": 0,
+          "texture_disposes": 0,
+          "live_textures": 0
+        },
+        "shader_materials": 1,
+        "instances": 1,
+        "instance_cells": 1,
+        "submitted_instance_cells": 1,
+        "submitted_instances": 1,
+        "culled_instances": 0,
+        "heightfields": 1,
+        "heightfield_triangles": 2,
+        "heightfield_rebuilds": 1,
+        "projected_batches": 0,
+        "projected_triangles": 0,
+        "projected_rebuilds": 0,
+        "projected_geometry_decodes": 0,
+        "projected_geometry_decode_reuses": 0,
+        "projected_retained_geometries": 0,
+        "projected_geometry_builds": 0,
+        "projected_geometry_disposes": 0,
+        "projected_live_geometries": 0,
+        "projected_material_builds": 0,
+        "projected_material_disposes": 0,
+        "projected_live_materials": 0,
+        "projected_geometry_updates": 0,
+        "projected_vertex_update_bytes": 0,
+        "projected_index_update_bytes": 0,
+        "draw_calls": 12,
+        "triangles": 382,
+        "textures": 6,
+        "particles": 1,
+        "particle_pool": {
+          "groups": 1,
+          "capacity": 1,
+          "instance_buffer_bytes": 64,
+          "compactions": 0
+        },
+        "particle_batches": [
+          {
+            "key": "soft_circle|0|7|7|3|1",
+            "count": 1,
+            "firstMatrix": [
+              0.5617974996566772,
+              0,
+              -0.21067406237125397,
+              0,
+              -0.04801707714796066,
+              0.5842077732086182,
+              -0.12804552912712097,
+              0,
+              0.34188172221183777,
+              0.22792115807533264,
+              0.9116846323013306,
+              0,
+              1.5,
+              1.2000000476837158,
+              0,
+              1
+            ]
+          }
+        ],
+        "effects": 0,
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "postprocessing": null,
+        "output_pipeline": "legacy",
+        "bloom_resolution": [
+          80,
+          60
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_timer_context": {
+          "epoch": 2,
+          "lost": false,
+          "disposed": false,
+          "pending": 1,
+          "active": false
+        },
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    },
+    {
+      "epoch": 2,
+      "lostOutcome": {
+        "status": "skipped",
+        "reason": "raster_unavailable"
+      },
+      "lostListeners": [
+        {
+          "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+          "type": "PlaneGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+          "type": 1009,
+          "listeners": 2
+        },
+        {
+          "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+          "type": "BoxGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+          "type": "SphereGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+          "type": "BufferGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+          "type": "PlaneGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+          "type": "Mesh",
+          "listeners": 2
+        },
+        {
+          "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+          "type": 1009,
+          "listeners": 2
+        },
+        {
+          "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+          "type": "BufferGeometry",
+          "listeners": 2
+        },
+        {
+          "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+          "type": "Mesh",
+          "listeners": 2
+        }
+      ],
+      "restoredListeners": [
+        {
+          "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+          "type": "PlaneGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+          "type": 1009,
+          "listeners": 3
+        },
+        {
+          "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+          "type": "BoxGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+          "type": "SphereGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+          "type": "BufferGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+          "type": "PlaneGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+          "type": "Mesh",
+          "listeners": 3
+        },
+        {
+          "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+          "type": 1009,
+          "listeners": 3
+        },
+        {
+          "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+          "type": "BufferGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+          "type": "Mesh",
+          "listeners": 3
+        }
+      ],
+      "pixelDifferences": 0,
+      "maxChannelDifference": 0,
+      "metrics": {
+        "texture_cache": {
+          "enabled": false,
+          "entries": 1,
+          "decoded_texture_bytes_estimate": 256,
+          "pinned_bytes_estimate": 256,
+          "loading": 0,
+          "evicted": 0,
+          "released_bytes_estimate": 0,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+          "policy": null,
+          "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+        },
+        "raster": {
+          "antialias_requested": true,
+          "context_antialias": true,
+          "scope": "default_framebuffer",
+          "reconfigure": "relaunch",
+          "offscreen_antialias": "not_configured",
+          "projected": {
+            "requested": "host",
+            "declared": false,
+            "status": "host",
+            "context_epoch": 3,
+            "target_generation": null,
+            "physical_size": null,
+            "dpr": null,
+            "profile_version": null,
+            "probe_hash": null,
+            "last_validation": null,
+            "failure": null,
+            "limitations": "host raster; no upper-left validation claim"
+          },
+          "clear_state_recovery": {
+            "losses": 2,
+            "restores": 2,
+            "pending": false,
+            "last_restored_clear": {
+              "linear_rgb": [
+                0.005605391621829108,
+                0.009134058699157796,
+                0.02028856305209031
+              ],
+              "alpha": 1
+            },
+            "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+          }
+        },
+        "ui_image_batches": {
+          "draws": 0,
+          "prefix_nodes": 0,
+          "prefix_quads": 0,
+          "coverage": "pixel_center",
+          "fallback_reason": "empty",
+          "geometry_builds": 0,
+          "geometry_disposes": 0,
+          "geometry_updates": 0,
+          "live_geometries": 0,
+          "buffer_capacity_quads": 0,
+          "active_resource_quads": 0,
+          "material_builds": 0,
+          "material_disposes": 0,
+          "live_materials": 0,
+          "mesh_builds": 0,
+          "mesh_disposes": 0,
+          "live_meshes": 0,
+          "texture_builds": 0,
+          "texture_disposes": 0,
+          "live_textures": 0
+        },
+        "shader_materials": 1,
+        "instances": 1,
+        "instance_cells": 1,
+        "submitted_instance_cells": 1,
+        "submitted_instances": 1,
+        "culled_instances": 0,
+        "heightfields": 1,
+        "heightfield_triangles": 2,
+        "heightfield_rebuilds": 1,
+        "projected_batches": 0,
+        "projected_triangles": 0,
+        "projected_rebuilds": 0,
+        "projected_geometry_decodes": 0,
+        "projected_geometry_decode_reuses": 0,
+        "projected_retained_geometries": 0,
+        "projected_geometry_builds": 0,
+        "projected_geometry_disposes": 0,
+        "projected_live_geometries": 0,
+        "projected_material_builds": 0,
+        "projected_material_disposes": 0,
+        "projected_live_materials": 0,
+        "projected_geometry_updates": 0,
+        "projected_vertex_update_bytes": 0,
+        "projected_index_update_bytes": 0,
+        "draw_calls": 12,
+        "triangles": 382,
+        "textures": 6,
+        "particles": 1,
+        "particle_pool": {
+          "groups": 1,
+          "capacity": 1,
+          "instance_buffer_bytes": 64,
+          "compactions": 0
+        },
+        "particle_batches": [
+          {
+            "key": "soft_circle|0|7|7|3|1",
+            "count": 1,
+            "firstMatrix": [
+              0.5617974996566772,
+              0,
+              -0.21067406237125397,
+              0,
+              -0.04801707714796066,
+              0.5842077732086182,
+              -0.12804552912712097,
+              0,
+              0.34188172221183777,
+              0.22792115807533264,
+              0.9116846323013306,
+              0,
+              1.5,
+              1.2000000476837158,
+              0,
+              1
+            ]
+          }
+        ],
+        "effects": 0,
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "postprocessing": null,
+        "output_pipeline": "legacy",
+        "bloom_resolution": [
+          80,
+          60
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_timer_context": {
+          "epoch": 3,
+          "lost": false,
+          "disposed": false,
+          "pending": 1,
+          "active": false
+        },
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    },
+    {
+      "epoch": 3,
+      "lostOutcome": {
+        "status": "skipped",
+        "reason": "raster_unavailable"
+      },
+      "lostListeners": [
+        {
+          "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+          "type": "PlaneGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+          "type": 1009,
+          "listeners": 3
+        },
+        {
+          "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+          "type": "BoxGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+          "type": "SphereGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+          "type": "BufferGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+          "type": "PlaneGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+          "type": "Mesh",
+          "listeners": 3
+        },
+        {
+          "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+          "type": 1009,
+          "listeners": 3
+        },
+        {
+          "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+          "type": "BufferGeometry",
+          "listeners": 3
+        },
+        {
+          "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+          "type": "Mesh",
+          "listeners": 3
+        }
+      ],
+      "restoredListeners": [
+        {
+          "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+          "type": "PlaneGeometry",
+          "listeners": 4
+        },
+        {
+          "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+          "type": "ShaderMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+          "type": 1009,
+          "listeners": 4
+        },
+        {
+          "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+          "type": "BoxGeometry",
+          "listeners": 4
+        },
+        {
+          "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+          "type": "SphereGeometry",
+          "listeners": 4
+        },
+        {
+          "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+          "type": "MeshNormalMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+          "type": "BufferGeometry",
+          "listeners": 4
+        },
+        {
+          "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+          "type": "PlaneGeometry",
+          "listeners": 4
+        },
+        {
+          "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+          "type": "Mesh",
+          "listeners": 4
+        },
+        {
+          "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+          "type": 1009,
+          "listeners": 4
+        },
+        {
+          "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+          "type": "BufferGeometry",
+          "listeners": 4
+        },
+        {
+          "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+          "type": "MeshBasicMaterial",
+          "listeners": 1
+        },
+        {
+          "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+          "type": "Mesh",
+          "listeners": 4
+        }
+      ],
+      "pixelDifferences": 0,
+      "maxChannelDifference": 0,
+      "metrics": {
+        "texture_cache": {
+          "enabled": false,
+          "entries": 1,
+          "decoded_texture_bytes_estimate": 256,
+          "pinned_bytes_estimate": 256,
+          "loading": 0,
+          "evicted": 0,
+          "released_bytes_estimate": 0,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+          "policy": null,
+          "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+        },
+        "raster": {
+          "antialias_requested": true,
+          "context_antialias": true,
+          "scope": "default_framebuffer",
+          "reconfigure": "relaunch",
+          "offscreen_antialias": "not_configured",
+          "projected": {
+            "requested": "host",
+            "declared": false,
+            "status": "host",
+            "context_epoch": 4,
+            "target_generation": null,
+            "physical_size": null,
+            "dpr": null,
+            "profile_version": null,
+            "probe_hash": null,
+            "last_validation": null,
+            "failure": null,
+            "limitations": "host raster; no upper-left validation claim"
+          },
+          "clear_state_recovery": {
+            "losses": 3,
+            "restores": 3,
+            "pending": false,
+            "last_restored_clear": {
+              "linear_rgb": [
+                0.005605391621829108,
+                0.009134058699157796,
+                0.02028856305209031
+              ],
+              "alpha": 1
+            },
+            "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+          }
+        },
+        "ui_image_batches": {
+          "draws": 0,
+          "prefix_nodes": 0,
+          "prefix_quads": 0,
+          "coverage": "pixel_center",
+          "fallback_reason": "empty",
+          "geometry_builds": 0,
+          "geometry_disposes": 0,
+          "geometry_updates": 0,
+          "live_geometries": 0,
+          "buffer_capacity_quads": 0,
+          "active_resource_quads": 0,
+          "material_builds": 0,
+          "material_disposes": 0,
+          "live_materials": 0,
+          "mesh_builds": 0,
+          "mesh_disposes": 0,
+          "live_meshes": 0,
+          "texture_builds": 0,
+          "texture_disposes": 0,
+          "live_textures": 0
+        },
+        "shader_materials": 1,
+        "instances": 1,
+        "instance_cells": 1,
+        "submitted_instance_cells": 1,
+        "submitted_instances": 1,
+        "culled_instances": 0,
+        "heightfields": 1,
+        "heightfield_triangles": 2,
+        "heightfield_rebuilds": 1,
+        "projected_batches": 0,
+        "projected_triangles": 0,
+        "projected_rebuilds": 0,
+        "projected_geometry_decodes": 0,
+        "projected_geometry_decode_reuses": 0,
+        "projected_retained_geometries": 0,
+        "projected_geometry_builds": 0,
+        "projected_geometry_disposes": 0,
+        "projected_live_geometries": 0,
+        "projected_material_builds": 0,
+        "projected_material_disposes": 0,
+        "projected_live_materials": 0,
+        "projected_geometry_updates": 0,
+        "projected_vertex_update_bytes": 0,
+        "projected_index_update_bytes": 0,
+        "draw_calls": 12,
+        "triangles": 382,
+        "textures": 6,
+        "particles": 1,
+        "particle_pool": {
+          "groups": 1,
+          "capacity": 1,
+          "instance_buffer_bytes": 64,
+          "compactions": 0
+        },
+        "particle_batches": [
+          {
+            "key": "soft_circle|0|7|7|3|1",
+            "count": 1,
+            "firstMatrix": [
+              0.5617974996566772,
+              0,
+              -0.21067406237125397,
+              0,
+              -0.04801707714796066,
+              0.5842077732086182,
+              -0.12804552912712097,
+              0,
+              0.34188172221183777,
+              0.22792115807533264,
+              0.9116846323013306,
+              0,
+              1.5,
+              1.2000000476837158,
+              0,
+              1
+            ]
+          }
+        ],
+        "effects": 0,
+        "bloom": true,
+        "ao": false,
+        "ao_method": "depth-ssao-12",
+        "postprocessing": null,
+        "output_pipeline": "legacy",
+        "bloom_resolution": [
+          80,
+          60
+        ],
+        "hdr": true,
+        "gpu_timer_available": true,
+        "gpu_timer_context": {
+          "epoch": 4,
+          "lost": false,
+          "disposed": false,
+          "pending": 1,
+          "active": false
+        },
+        "gpu_on": null,
+        "gpu_off": null,
+        "gpu_ao_only": null,
+        "gpu_bloom_with_ao": null,
+        "gpu_samples_by_mode": {
+          "bloom_on_ao_off": null,
+          "bloom_off_ao_off": null,
+          "bloom_on_ao_on": null,
+          "bloom_off_ao_on": null
+        },
+        "gpu_comparison": {
+          "gpu_on_off_same_ao_only": true,
+          "active_mode": "bloom_on_ao_off"
+        }
+      }
+    }
+  ],
+  "afterDispose": [
+    {
+      "uuid": "ee0d9d7e-b190-4558-ac64-22d2e1e52ddd",
+      "type": "PlaneGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "9dd23e59-5fce-4bb1-8d15-3c276ee4e2a5",
+      "type": "ShaderMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "3bf0c713-c102-431b-a5fa-fbc28a887a48",
+      "type": 1009,
+      "listeners": 0
+    },
+    {
+      "uuid": "5a87efbb-f5be-475e-b933-e5f0312b5317",
+      "type": "BoxGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "f479b35b-80ab-43ed-8327-0b8f92c00e63",
+      "type": "MeshNormalMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "b748df6f-f4ad-41c2-ad36-29ee3a9e852e",
+      "type": "SphereGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "5dcde264-5f3e-485b-b7e4-eaa0472cc953",
+      "type": "MeshNormalMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "89a467e7-2ed1-4c5e-9018-40b4780f913d",
+      "type": "BufferGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "31ff8df3-6027-4bf8-baae-c36a4f52c422",
+      "type": "MeshBasicMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "768109ae-2e7b-44ac-83a7-32b9e20e06e6",
+      "type": "PlaneGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "404c4874-a0ff-4ab9-b57f-67a5470c6ddc",
+      "type": "Mesh",
+      "listeners": 0
+    },
+    {
+      "uuid": "944b68b6-f4d7-4321-9fd0-0c9ed2b992c2",
+      "type": "MeshBasicMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "b7f990ee-c943-467a-98f3-4263226303c6",
+      "type": 1009,
+      "listeners": 0
+    },
+    {
+      "uuid": "3ef277db-03de-48bd-a30c-8bbd2db901fe",
+      "type": "BufferGeometry",
+      "listeners": 0
+    },
+    {
+      "uuid": "a5de8212-b336-4f67-8a4a-d0412d229203",
+      "type": "MeshBasicMaterial",
+      "listeners": 0
+    },
+    {
+      "uuid": "b422aff4-dda7-48f3-b418-d09339651ea9",
+      "type": "Mesh",
+      "listeners": 0
+    }
+  ],
+  "finalMetrics": {
+    "texture_cache": {
+      "enabled": false,
+      "entries": 0,
+      "decoded_texture_bytes_estimate": 0,
+      "pinned_bytes_estimate": 0,
+      "loading": 0,
+      "evicted": 1,
+      "released_bytes_estimate": 256,
+      "pressure_bytes": 0,
+      "pressure_entries": 0,
+      "scope": "2D sprite textures; active and non-sprite dependencies are protected",
+      "policy": null,
+      "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets"
+    },
+    "raster": {
+      "antialias_requested": true,
+      "context_antialias": true,
+      "scope": "default_framebuffer",
+      "reconfigure": "relaunch",
+      "offscreen_antialias": "not_configured",
+      "projected": {
+        "requested": "host",
+        "declared": false,
+        "status": "disposed",
+        "context_epoch": 4,
+        "target_generation": null,
+        "physical_size": null,
+        "dpr": null,
+        "profile_version": null,
+        "probe_hash": null,
+        "last_validation": null,
+        "failure": null,
+        "limitations": "host raster; no upper-left validation claim"
+      },
+      "clear_state_recovery": {
+        "losses": 3,
+        "restores": 3,
+        "pending": false,
+        "last_restored_clear": {
+          "linear_rgb": [
+            0.005605391621829108,
+            0.009134058699157796,
+            0.02028856305209031
+          ],
+          "alpha": 1
+        },
+        "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+      }
+    },
+    "ui_image_batches": {
+      "draws": 0,
+      "prefix_nodes": 0,
+      "prefix_quads": 0,
+      "coverage": "pixel_center",
+      "fallback_reason": "empty",
+      "geometry_builds": 0,
+      "geometry_disposes": 0,
+      "geometry_updates": 0,
+      "live_geometries": 0,
+      "buffer_capacity_quads": 0,
+      "active_resource_quads": 0,
+      "material_builds": 0,
+      "material_disposes": 0,
+      "live_materials": 0,
+      "mesh_builds": 0,
+      "mesh_disposes": 0,
+      "live_meshes": 0,
+      "texture_builds": 0,
+      "texture_disposes": 0,
+      "live_textures": 0
+    },
+    "shader_materials": 0,
+    "instances": 0,
+    "instance_cells": 0,
+    "submitted_instance_cells": 0,
+    "submitted_instances": 0,
+    "culled_instances": 0,
+    "heightfields": 0,
+    "heightfield_triangles": 0,
+    "heightfield_rebuilds": 1,
+    "projected_batches": 0,
+    "projected_triangles": 0,
+    "projected_rebuilds": 0,
+    "projected_geometry_decodes": 0,
+    "projected_geometry_decode_reuses": 0,
+    "projected_retained_geometries": 0,
+    "projected_geometry_builds": 0,
+    "projected_geometry_disposes": 0,
+    "projected_live_geometries": 0,
+    "projected_material_builds": 0,
+    "projected_material_disposes": 0,
+    "projected_live_materials": 0,
+    "projected_geometry_updates": 0,
+    "projected_vertex_update_bytes": 0,
+    "projected_index_update_bytes": 0,
+    "draw_calls": 4,
+    "triangles": 8,
+    "textures": 0,
+    "particles": 0,
+    "particle_pool": {
+      "groups": 0,
+      "capacity": 0,
+      "instance_buffer_bytes": 0,
+      "compactions": 0
+    },
+    "particle_batches": [],
+    "effects": 0,
+    "bloom": true,
+    "ao": false,
+    "ao_method": "depth-ssao-12",
+    "postprocessing": null,
+    "output_pipeline": "legacy",
+    "bloom_resolution": [
+      80,
+      60
+    ],
+    "hdr": true,
+    "gpu_timer_available": false,
+    "gpu_timer_context": {
+      "epoch": 4,
+      "lost": false,
+      "disposed": true,
+      "pending": 0,
+      "active": false
+    },
+    "gpu_on": null,
+    "gpu_off": null,
+    "gpu_ao_only": null,
+    "gpu_bloom_with_ao": null,
+    "gpu_samples_by_mode": {
+      "bloom_on_ao_off": null,
+      "bloom_off_ao_off": null,
+      "bloom_on_ao_on": null,
+      "bloom_off_ao_on": null
+    },
+    "gpu_comparison": {
+      "gpu_on_off_same_ao_only": true,
+      "active_mode": "bloom_on_ao_off"
+    }
+  },
+  "browser": "156.0.4314.50",
+  "variant": "diagnostic current official renderer with only retirement call omitted; old-epoch reproduction",
+  "errors": [],
+  "warnings": [
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: delete: object does not belong to this context",
+    "WebGL: INVALID_OPERATION: deleteVertexArray: object does not belong to this context"
+  ]
+}

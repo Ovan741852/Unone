@@ -1,0 +1,154 @@
+{
+  "date": "2026-10-30",
+  "production_source_frozen": true,
+  "source_hashes": [
+    {
+      "file": "web/renderer/ui-image-batch-prefix.js",
+      "sha256": "1b45068c4e77b578f6d5f6f30d626de05d4e9d9e0823d91ff2687170822219b3"
+    },
+    {
+      "file": "web/renderer/three.js",
+      "sha256": "7c1e305722575e3ac04d43a9de4affb65426839b10f9952e853f67c6e04545d1"
+    },
+    {
+      "file": "web/renderer/shader-materials.js",
+      "sha256": "2ae6f8f2d0a12ecdf90ab5ff85697e08e89258e5bd507d50e766258f3a061cbf"
+    },
+    {
+      "file": "web/renderer/instances3d.js",
+      "sha256": "587903c5cd11dafac0ff5a61e8c17a298cbc661b8263dd32c6f4d2077d500020"
+    },
+    {
+      "file": "web/renderer/particles.js",
+      "sha256": "65367b9ddce209913bd1a62580b3a2445bba62df92f20725b3cb40a90bdcbeb4"
+    },
+    {
+      "file": "web/shared/heightfields.js",
+      "sha256": "656bc0c7e98f5aa0a38f63a0dbbde4643f9c2203d00d8b29c707f2dd4106c857"
+    },
+    {
+      "file": "web/renderer/bloom.js",
+      "sha256": "1c81a677953fcf0477974476b6a189b58146f400d45002e5a9fa9612f1a56921"
+    },
+    {
+      "file": "web/shared/ui-image-batch.mjs",
+      "sha256": "63df9a53a2f8bb1555ea63233190f9223b48f4b6c3147ec747623a656b7c2e26"
+    },
+    {
+      "file": "web/shared/canvas-ui.mjs",
+      "sha256": "7f762be070cd22d7002d2402b8fc0b294ea1a2ca97ecc904797b35c00dc726b2"
+    },
+    {
+      "file": "web/renderer/ui-image-batch-prefix.test.mjs",
+      "sha256": "442c90eac527f6820fe03c784e6642ae3ddf75bd357d3c5c36efea8741939ac9"
+    },
+    {
+      "file": "web/renderer/world-context-lifecycle.test.mjs",
+      "sha256": "cc0e305a79efbddf098b7782065f0156c4a1b56d3bf94dd76c2c70b8474eb96d"
+    },
+    {
+      "file": "scripts/verify-ui-image-batch-prefix-browser.mjs",
+      "sha256": "73ac0cf0c069916ba997f7fbe317716fd8fc2716e71ff70c2fc2f7d8a006e92d"
+    },
+    {
+      "file": "scripts/verify-world-context-browser.mjs",
+      "sha256": "53534e322400d96f91545b3abbb5024cf6ffa1c8662010c359e5835dc40fdae1"
+    },
+    {
+      "file": "crates/unone-cli/src/export.rs",
+      "sha256": "5b318d81ba4b24dba2fcaf57ee3f9387151ffdb88faec76d219692773d0c590c"
+    }
+  ],
+  "unit_suite": {
+    "passed": 490,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "Top-level test files in web/renderer and web/shared; not recursive all-web inventory",
+    "raw_log": "retained-ui-reuse-context-web-tests.log",
+    "powershell_command": [
+      "$env:UNONE_PROJECTED_PACKETS='D:/Projects/Populous-Reborn/reports/root-c01-geometry-r5/packets/pan-adjacent.json'",
+      "$webTests=Get-ChildItem web/renderer,web/shared -Filter '*.test.mjs' -File | ForEach-Object FullName",
+      "node --test @webTests *> .cache/retained-ui-reuse-context-web-tests.log",
+      "$webTestExit=$LASTEXITCODE",
+      "Get-Content .cache/retained-ui-reuse-context-web-tests.log -Tail 15",
+      "exit $webTestExit"
+    ],
+    "note": "490 whole-Web result precedes the final disabled-particle export-stub regression addition. That exact Rust stub was then evaluated by focused world-context-lifecycle.test.mjs:2/2 PASS. Parent owns final recursive all-web run on final source."
+  },
+  "buffer_reuse": {
+    "focused_tests": 10,
+    "raw_unit_log": "retained-ui-buffer-reuse-unit-tests.log",
+    "unit_command": "node --test web/renderer/ui-image-batch-prefix.test.mjs",
+    "gpu_command": "node scripts/verify-ui-image-batch-prefix-browser.mjs artifacts/retained-ui-prefix-buffer-reuse-r5",
+    "report": "retained-ui-buffer-reuse-browser.json",
+    "viewed_screenshot": "retained-ui-buffer-reuse-browser.png",
+    "default_cases": 30,
+    "dynamic_cases": 24,
+    "snap_cases": 27,
+    "errors": 0,
+    "warnings": 0,
+    "design": "One capacity-backed interleaved geometry per definition; contiguous texture groups; one presenter ShaderMaterial; one Mesh per node. Active-token ownership protects shared old generations before storage migration. Aggregate capacity pressure plus delayed shrink retires historical peaks.",
+    "verified": "200 changed inline generations build1 geometry/material/mesh. Source/opacity/geometry updates, same-count texture-only no vertex upload, growth/shrink/draw range, removal, shared generations/reused revisions/raw mutation and source dimension changes validated. 32 active resources taking turns peaking stay bounded without steady-frame churn.",
+    "camera_only_buffer_uploads": 0,
+    "dynamic_growth_geometry_builds_per_fixture": 1,
+    "dynamic_material_mesh_builds_after_warmup": 0,
+    "dynamic_pixel_max_channel_difference": 2,
+    "snap_pixel_max_channel_difference_excluding_unsnapped_clip": 2,
+    "default_edge_policy": "GPU pixel-center coverage differs from Canvas AA only within tested one-pixel edge rims; tested interior tolerance2/255 and no shared-edge gaps.",
+    "snap_policy": "Explicit snap uses physical-framebuffer transform then ties-away-from-zero rounding in vertex shader. Source UVs/unsnapped clip unchanged. GPU f32 precision around discontinuous half-pixel thresholds remains ordinary renderer precision; not an arbitrary-f64 exactness promise.",
+    "clip_rim_max_difference": 30,
+    "collapsed_quad_max_difference": 0
+  },
+  "context_retirement": {
+    "command": "node scripts/verify-world-context-browser.mjs artifacts/world-context-browser-fixed-r3",
+    "fixed_report": "world-context-fixed.json",
+    "viewed_screenshot": "world-context-fixed.png",
+    "non_background_pixels": 16136,
+    "fixed_cycles": 3,
+    "fixed_lost_listener_count": 0,
+    "fixed_restored_listener_count": 1,
+    "fixed_pixel_differences": 0,
+    "fixed_load_asset_calls": [
+      "asset://checker",
+      "mesh://qa"
+    ],
+    "fixed_fetches": [
+      "/qa/triangle.mesh.json"
+    ],
+    "fixed_errors": 0,
+    "fixed_warnings": 0,
+    "fixed_after_disposal_listener_count": 0,
+    "fixed_final_texture_count": 0,
+    "verified_owners": "Sprite/custom shader, primitive box/sphere, decoded mesh, packed instancing, particles, heightfield and Bloom. Explicit owner hooks dispose GPU bindings while context is lost, retain CPU objects/arrays/images/cache entries, and avoid refetch.",
+    "negative_command": "node scripts/verify-world-context-browser.mjs artifacts/world-context-browser-no-retire-r2 --diagnostic-omit-retire",
+    "negative_report": "world-context-no-retire.json",
+    "negative_variant": "Current official renderer response with ONLY retireWorldGpuBindings() call omitted by isolated QA server; reproduces prior behavior. Not a game modification or shipped SDK variant.",
+    "negative_restored_listener_counts": [
+      2,
+      3,
+      4
+    ],
+    "negative_warnings": 151,
+    "negative_warning": "WebGL INVALID_OPERATION delete/deleteVertexArray: object does not belong to this context",
+    "negative_pixel_differences": 0,
+    "limits": "Ordinary engine-owned Three resources only. External presentation hooks and optional Effekseer restoration are outside this claim. Driver context loss frees old GPU storage; evidence proves stale CPU manager/listener ownership, not a measured live VRAM leak.",
+    "fixed_final_gpu_memory": {
+      "geometries": 0,
+      "textures": 0,
+      "programs": 0
+    },
+    "disabled_owner_contract_fix": "Actual minimal official SDK export exposed missing contextLost on disabled particle stub. Exporter now emits explicit contextLost(_retire) no-op; actual export full/minimal closure test asserts the consumer/producer interface and all always-included owner hooks. Exact Rust stub behavior is executed by a Node regression. SDK candidate4 is preserved failed/unshipped; parent rebuilds candidate5."
+  },
+  "independent_source_review": {
+    "reviewer": "Codex /root/runtime_audit",
+    "execution": "Read-only; no reviewer tests or browser workloads",
+    "prefix_result": "No concrete P1/P2: checked complete active-token ownership, shared generations, compaction, authored group order, mesh rebinding/sweep, per-group uniforms and fallback/context disposal.",
+    "context_result": "No concrete P1/P2: checked explicit ownership and dedup, InstancedMesh CPU retention, Bloom depth texture retirement, once-per-epoch guard and later removal/dispose. Late async loads create unuploaded objects while lost; discarded/map-identity guards cover clear/dispose before completion."
+  },
+  "scope_limits": [
+    "No actual game FPS, bridge time, GC pause or long-duration heap acceptance measured by these component fixtures.",
+    "QA readbacks, screenshots and private dispose-listener inspection are diagnostic only. Production rendering performs no added readback.",
+    "Dynamic asset-set removal still deliberately clears the prefix before Canvas closes decoded images; selective image retirement is a possible later optimization.",
+    "Parent owns final recursive all-web run and final SDK/runtime manifest after all source owners freeze."
+  ]
+}

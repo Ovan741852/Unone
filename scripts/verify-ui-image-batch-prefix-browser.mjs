@@ -37,8 +37,8 @@ window.run=async()=>{
     {kind:'button',id:'button',rect:{x:60,y:75,width:35,height:15},text:'Go',action:'Go'}]}}};
   const clear=uiCanvas.getContext('2d').clearRect.bind(uiCanvas.getContext('2d'));let canvasClears=0;uiCanvas.getContext('2d').clearRect=(...args)=>{canvasClears++;return clear(...args);};
   const gl=renderer.getContext(),uploads={bufferData:0,bufferSubData:0};for(const name of Object.keys(uploads)){const original=gl[name].bind(gl);gl[name]=(...args)=>{uploads[name]++;return original(...args);};}
-  const draw=async(pan,time,origin=0,zoom=1,expectedPrefix=2)=>{
-   first.transform=matrix(pan,origin,zoom);tileNode.transform=matrix(pan,0,zoom);background.uniforms.time.value=time;renderer.render(scene,camera);ec.clearRect(0,0,pw,ph);ec.drawImage(worldCanvas,0,0);
+  const draw=async(pan,time,origin=0,zoom=1,expectedPrefix=2,panY=0)=>{
+   first.transform=matrix(pan,origin,zoom);tileNode.transform=matrix(pan,0,zoom);first.transform.ty+=100/height*panY;tileNode.transform.ty+=100/height*panY;background.uniforms.time.value=time;renderer.render(scene,camera);ec.clearRect(0,0,pw,ph);ec.drawImage(worldCanvas,0,0);
    actual.draw(snapshot,{width,height,dpr});reference.draw(snapshot,{width,height,dpr});await Promise.all([actual.ready(),reference.ready()]);
    // Redraw the world before each UI attempt: an unchanged UI must still draw
    // its GPU prefix, while the Canvas HUD can retain its previous raster.
@@ -47,14 +47,14 @@ window.run=async()=>{
    if(outcome.status!=='completed')throw Error('UI_NOT_COMPLETE '+JSON.stringify(outcome));if(presenter.metrics().prefix_nodes!==expectedPrefix)throw Error('PREFIX_NOT_ACCELERATED '+JSON.stringify(presenter.metrics()));
    return {a:ac.getImageData(0,0,pw,ph).data,e:ec.getImageData(0,0,pw,ph).data};
   };
-  const compare=(a,e,pan,zoom=1)=>{
+  const compare=(a,e,pan,zoom=1,{snap=false,panY=0}={})=>{
     let max=0,differences=0,interiorBad=0,seamBad=0;
-    const rectangles=[...art.quads,...tiles.quads].map(q=>({left:(q.rect.x*zoom+pan)*dpr,right:((q.rect.x+q.rect.width)*zoom+pan)*dpr,bottom:q.rect.y*zoom*dpr,top:(q.rect.y+q.rect.height)*zoom*dpr}));
+    const round=n=>snap?Math.sign(n)*Math.floor(Math.abs(n)+.5):n,rectangles=[...art.quads,...tiles.quads].map(q=>({left:round((q.rect.x*zoom+pan)*dpr),right:round(((q.rect.x+q.rect.width)*zoom+pan)*dpr),bottom:round((q.rect.y*zoom+panY)*dpr),top:round(((q.rect.y+q.rect.height)*zoom+panY)*dpr)}));
     if(first.rect!==bounds){const r=first.rect;rectangles.push({left:r.x*pw/100,right:(r.x+r.width)*pw/100,bottom:r.y*ph/100,top:(r.y+r.height)*ph/100});}
     for(let y=0;y<ph;y++)for(let x=0;x<pw;x++){
      const py=ph-y-.5,px=x+.5,near=rectangles.some(r=>py>=r.bottom-1&&py<=r.top+1&&(Math.abs(px-r.left)<=1||Math.abs(px-r.right)<=1)||px>=r.left-1&&px<=r.right+1&&(Math.abs(py-r.bottom)<=1||Math.abs(py-r.top)<=1));
      for(let c=0;c<4;c++){const delta=Math.abs(a[(y*pw+x)*4+c]-e[(y*pw+x)*4+c]);max=Math.max(max,delta);if(delta>2){differences++;if(!near)interiorBad++;}}
-     if(py>=dpr&&py<7*zoom*dpr&&px>=pan*dpr+.5&&px<(32*zoom+pan)*dpr-.5)for(let c=0;c<3;c++)if(a[(y*pw+x)*4+c]!==255)seamBad++;
+     if(py>=round((panY+1)*dpr)&&py<round((7*zoom+panY)*dpr)&&px>=round(pan*dpr)+.5&&px<round((32*zoom+pan)*dpr)-.5)for(let c=0;c<3;c++)if(a[(y*pw+x)*4+c]!==255)seamBad++;
     }
     if(interiorBad||seamBad)throw Error('COVERAGE_OR_INTERIOR '+JSON.stringify({pan,zoom,interiorBad,seamBad,max,differences}));return {panCssPixels:pan,zoom,maxChannelDifference:max,edgeChannelsDifferingAbove2:differences,interiorBad,seamBad};
   };
@@ -69,6 +69,23 @@ window.run=async()=>{
    const after=presenter.metrics(),cameraUploads={bufferData:uploads.bufferData-beforeUploads.bufferData,bufferSubData:uploads.bufferSubData-beforeUploads.bufferSubData},cameraCanvasClears=canvasClears-beforeClears;if(after.geometry_builds!==before.geometry_builds||cameraUploads.bufferData||cameraUploads.bufferSubData)throw Error('CAMERA_RESOURCE_CHURN');
    if(canvasClears!==beforeClears)throw Error('HUD_RASTER_CHURN '+beforeClears+' -> '+canvasClears);
    if(actual.hitTest(70,80).action!=='Go')throw Error('HUD_INPUT_CHANGED');
+   snapshot.world.ui_image_batches.art=def(Array.from({length:4},(_,i)=>quad(i%2?'asset://blue':'asset://red',4+i%3,10+i%2,16,16,{opacity:.5})));await draw(0,3);
+   const dynamicBefore=presenter.metrics(),dynamicCases=[];
+   for(const [frame,count]of [4,4,4,7,3,7,2,7].entries()){
+    const dynamic=def(Array.from({length:count},(_,i)=>quad((i+frame)%2?'asset://blue':'asset://red',4+i%3,10+i%2,16,16,{opacity:.5})));
+    snapshot.world.ui_image_batches.art=dynamic;const pair=await draw(0,3+frame);let max=0;for(let i=0;i<pair.a.length;i++)max=Math.max(max,Math.abs(pair.a[i]-pair.e[i]));
+    if(max>2)throw Error('DYNAMIC_GPU_PIXEL_MISMATCH '+JSON.stringify({frame,count,max}));dynamicCases.push({frame,count,maxChannelDifference:max});
+   }
+   const dynamicAfter=presenter.metrics();if(dynamicAfter.geometry_builds-dynamicBefore.geometry_builds!==1||dynamicAfter.material_builds!==dynamicBefore.material_builds||dynamicAfter.mesh_builds!==dynamicBefore.mesh_builds)throw Error('DYNAMIC_GPU_OWNER_CHURN '+JSON.stringify({dynamicBefore,dynamicAfter}));
+   snapshot.world.ui_image_batches.art=art;first.pixel_snap=tileNode.pixel_snap=true;await draw(.125,12,0,1,2,.375);const snapBefore=presenter.metrics(),snapUploads={...uploads},snapCases=[];
+   for(const [pan,panY,zoom]of [[.125,.375,1],[.375,.625,1],[.5,.5,1],[.625,.875,1],[.875,.125,1],[-.5,-.5,1],[.375,.625,1.125]]){
+    const pair=await draw(pan,12,0,zoom,2,panY),result=compare(pair.a,pair.e,pan,zoom,{snap:true,panY});if(result.maxChannelDifference>2)throw Error('SNAPPED_EDGE_OR_UV_MISMATCH '+JSON.stringify({...result,panY}));snapCases.push({...result,panCssY:panY});
+   }
+   first.rect={x:8.7,y:5.1,width:15.2,height:12.4};const snapClip=await draw(.375,12,0,1,2,.625);snapCases.push({...compare(snapClip.a,snapClip.e,.375,1,{snap:true,panY:.625}),case:'unsnapped_viewport_clip'});first.rect=bounds;
+   const collapsed=await draw(.125,12,0,.001,2,.125);let collapsedMax=0;for(let i=0;i<collapsed.a.length;i++)collapsedMax=Math.max(collapsedMax,Math.abs(collapsed.a[i]-collapsed.e[i]));if(collapsedMax>2)throw Error('SNAPPED_COLLAPSED_QUAD '+collapsedMax);snapCases.push({case:'collapsed_quads',maxChannelDifference:collapsedMax});
+   const snapAfter=presenter.metrics(),snapCameraUploads={bufferData:uploads.bufferData-snapUploads.bufferData,bufferSubData:uploads.bufferSubData-snapUploads.bufferSubData};
+   if(snapCameraUploads.bufferData||snapCameraUploads.bufferSubData||snapAfter.geometry_builds!==snapBefore.geometry_builds)throw Error('SNAPPED_CAMERA_RESOURCE_CHURN');
+   delete first.pixel_snap;delete tileNode.pixel_snap;
    snapshot.world.ui.children.unshift({kind:'text',id:'before-art',rect:{x:0,y:2,width:40,height:12},text:'BOTTOM',fontSize:12});
    const fallback=await draw(.375,3,0,1,0);for(let i=0;i<fallback.a.length;i++)if(fallback.a[i]!==fallback.e[i])throw Error('LEADING_TEXT_ORDER_MISMATCH '+i);snapshot.world.ui.children.shift();
    const offset=1e8;const shifted=def(art.quads.map(q=>({...q,rect:{...q.rect,x:q.rect.x+offset,y:q.rect.y+offset}})),{x:offset,y:offset,width:64,height:48});
@@ -82,10 +99,10 @@ window.run=async()=>{
    }
    const resourcesBeforeClear=presenter.metrics();actual.dispose();reference.dispose();const resourcesAfterClear=presenter.metrics();
    if(resourcesAfterClear.live_geometries||resourcesAfterClear.live_materials||resourcesAfterClear.live_textures)throw Error('RESOURCE_RETAINED');
-   reports.push({width,height,dpr,cases,geometryBuildsDuringCamera:after.geometry_builds-before.geometry_builds,uploadsDuringCamera:cameraUploads,canvasHudRepaints:cameraCanvasClears,overlappingHudOrderCorrect:true,leadingTextFullFallbackPixelsEqual:true,largeOriginAccelerated:true,largeOriginPixelsEqual:true,contextRestorePixelsEqual:restored,resourcesBeforeClear,resourcesAfterClear});
+   reports.push({width,height,dpr,cases,dynamicCases,dynamicGeometryBuilds:dynamicAfter.geometry_builds-dynamicBefore.geometry_builds,dynamicMaterialBuilds:dynamicAfter.material_builds-dynamicBefore.material_builds,dynamicMeshBuilds:dynamicAfter.mesh_builds-dynamicBefore.mesh_builds,snapCases,snappedCameraUploads:snapCameraUploads,geometryBuildsDuringCamera:after.geometry_builds-before.geometry_builds,uploadsDuringCamera:cameraUploads,canvasHudRepaints:cameraCanvasClears,overlappingHudOrderCorrect:true,leadingTextFullFallbackPixelsEqual:true,largeOriginAccelerated:true,largeOriginPixelsEqual:true,contextRestorePixelsEqual:restored,resourcesBeforeClear,resourcesAfterClear});
   }finally{actual.dispose();reference.dispose();presenter.dispose();plane.dispose();background.dispose();renderer.dispose();}
  }
- return {ok:true,scope:'Official WebGL UI prefix plus real Canvas HUD; fractional pan/shared-edge coverage, source crop/alpha/order, ordinary world shader underlay, DPR, retained geometry and release. GPU pixel-center edge coverage is intentionally distinct from Canvas AA, without snapping.',reports};
+ return {ok:true,scope:'Official WebGL UI prefix plus real Canvas HUD; fractional pan/shared-edge coverage, source crop/alpha/order, ordinary world shader underlay, DPR, dynamic buffer reuse and release. Default GPU pixel-center edge coverage differs from Canvas AA; explicit pixel_snap rounds transformed framebuffer edges with source UV and viewport clip unchanged.',reports};
 };
 </script>`;
 const server=http.createServer(async(req,res)=>{try{const pathname=new URL(req.url,'http://localhost').pathname;if(pathname==='/'){res.writeHead(200,{'content-type':'text/html'});res.end(html);return;}if(pathname==='/favicon.ico'){res.writeHead(204);res.end();return;}const path=resolve(root,'.'+pathname);if(!path.startsWith(root+sep)||!pathname.startsWith('/web/')){res.writeHead(404);res.end();return;}res.writeHead(200,{'content-type':['.js','.mjs'].includes(extname(path))?'text/javascript':'application/octet-stream'});res.end(await readFile(path));}catch(error){res.writeHead(500);res.end(error.message);}});

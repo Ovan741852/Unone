@@ -33,7 +33,7 @@ function fixture({getAssetManifest,getAssetCatalog,profiler=null}){
  // Host texture loader: records which declared spec (id/source/kind) every decision used.
  const textureFor=spec=>{calls.push(['texture',spec?.id,spec?.source]);if(state.failed.has(spec.id))return {state:'error',error:Error('TEXTURE_LOAD_FAILED: '+spec.id)};return state.pending.has(spec.id)?{state:'loading'}:{state:'ready',texture};};
  const frameDraws=createFrameDraws(THREE,textureFor);
- const context={DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},...encoding,profile:profiler?.renderer??null,options:{...(getAssetManifest?{getAssetManifest}:{}),...(getAssetCatalog?{getAssetCatalog}:{})},
+ const context={retireWorldGpuBindings:noop,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},...encoding,profile:profiler?.renderer??null,options:{...(getAssetManifest?{getAssetManifest}:{}),...(getAssetCatalog?{getAssetCatalog}:{})},
   textureCache:createTextureCachePolicy(new Map()),frameDecoder:createProjectedFrameDecoder(),framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,assertFrameSnapshot,
   assertProjectedBackend:noop,assertRasterSnapshot:noop,assertFrameGpuError:noop,rasterAvailable:()=>true,projectedEntries:()=>[],heightfieldEntries:()=>[],
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],

@@ -470,6 +470,66 @@ This new node requires matching native and Web runtimes with image-batch
 support; updating JavaScript alone is insufficient. The official renderers
 include every quad asset in their normal image lifetime management.
 
+### Retained artwork and camera movement
+
+Use an immutable logical resource when many images move together. Define it in
+`Game.start` or when content changes, then publish a small reference in the pure
+View. The engine constructs geometry, consecutive texture runs and material
+state. Games do not build GPU buffers or regroup A/B/A textures.
+
+```luau
+-- Mutation phase, once per changed resource content:
+api.ui.imageBatch.define("scenery", {
+    bounds={x=0,y=0,width=200,height=100},
+    quads={
+        {asset="texture://atlas",rect={x=10,y=20,width=8,height=4},
+         source={x=32,y=16,width=64,height=32}},
+    },
+})
+
+-- Pure View; retain local artwork and change only this placement:
+local artwork = kit.imageBatch({
+    id="world-scenery",content="scenery",rect=viewportRect,
+    transform={a=zoom,b=0,c=0,d=zoom,tx=panX,ty=panY},
+})
+```
+
+`bounds` and quad rectangles are local y-up coordinates. The optional transform
+defaults to identity and maps to stage y-up:
+`x'=a*x+c*y+tx`, `y'=b*x+d*y+ty`. The node's `rect` is an explicit stage clip and
+layout bound; it is not an origin or an implicit scale. Source rectangles are
+top-left image pixels. Array/node order, crop and per-quad alpha remain explicit.
+Ordinary artwork uses encoded-color linear sampling and source-over compositing;
+expert projected meshes remain a separate capability.
+
+Set optional `pixel_snap=true` only when final rectangle edges must align with
+physical framebuffer pixels. It rounds after the transform, with halfway values
+away from zero, independently at the actual X/Y framebuffer resolution. Shared
+edges stay shared; UVs/crops and the node's unsnapped clip do not change. A
+rectangle collapsed by rounding draws nothing. This mode requires an
+axis-aligned transform (`b=c=0`), including reflection/zero scale. Other transforms
+fail `UI_IMAGE_BATCH_PIXEL_SNAP_TRANSFORM`; malformed values fail
+`UI_IMAGE_BATCH_PIXEL_SNAP`. The default false retains subpixel placement.
+This is a rendering choice, not a layout or simulation transform. It is also
+accepted by inline `imageBatch` nodes. GPU positions/uniforms use ordinary f32
+precision: arbitrary f64 values extremely close to a half-pixel threshold can
+choose the adjacent pixel compared with Canvas f64 arithmetic. Camera placement
+is composed in physical units before upload; no hidden rounding epsilon is added.
+
+`define` validates and copies the complete supplied content even when equal;
+do not call it per frame for unchanged artwork. The registry holds at most 256
+resources, 16 MiB encoded JSON per resource and 32 MiB total; normal UI budgets
+also count referenced quads and strings. A failed definition/tree replacement
+leaves the current publication intact. A scene reset releases registry ownership.
+Drop tree references before `api.ui.imageBatch.remove(id)`; in-use removal fails
+`UI_IMAGE_BATCH_IN_USE`, and otherwise returns whether the resource existed.
+Old immutable snapshots may retain their own generation until released.
+
+The official Web player supports retained artwork and pixel snapping. Native
+currently rejects these new capabilities explicitly; inline unsnapped artwork
+keeps its existing native support. Stage coordinates are required: image batches
+inside scroll content fail `UI_IMAGE_BATCH_SPACE`.
+
 ## Verify the actual player and fonts
 
 Keep `renderer_mode: "official"` and inspect the exported player, including

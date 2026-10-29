@@ -48,5 +48,5 @@ export function createShaderMaterials(THREE,renderer,backend){
  }
  function retain(ids){for(const [id,record] of records)if(!ids.has(id)){record.material.dispose();records.delete(id);}}
  function clear(){retain(new Set());}
- return {assign,retain,clear,get count(){return records.size},dispose(){clear();white.dispose();if(renderer.debug?.onShaderError===onShaderError){renderer.debug.onShaderError=previousError;renderer.debug.checkShaderErrors=previousCheck;}}};
+ return {assign,retain,clear,contextLost(retire){retire(white);for(const record of records.values())retire(record.material);},get count(){return records.size},dispose(){clear();white.dispose();if(renderer.debug?.onShaderError===onShaderError){renderer.debug.onShaderError=previousError;renderer.debug.checkShaderErrors=previousCheck;}}};
 }

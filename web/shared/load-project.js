@@ -1,4 +1,5 @@
 import {retainImageResource} from './retained-image-generation.mjs';
+import {createSavePublication,attachSavePublication} from './save-publication.mjs';
 // One config contract: never pick individual ProjectConfig declarations here.
 export async function assembleProject(config, readText, readJson) {
   const job_sources=Object.fromEntries(await Promise.all(Object.entries(config.job_scripts??{}).map(async([id,path])=>[id,await readText(path)])));
@@ -8,8 +9,24 @@ const observationDecoder=new TextDecoder(),projectEncoder=new TextEncoder();
 // Optional trusted Core ABI grant: immutable resource generations are leased by
 // the runtime until its next successful publication. Never retain a heap view.
 const imageResources=new WeakMap();
+const saves=new WeakMap();
 const uint64=value=>typeof value==='string'&&/^[1-9][0-9]{0,19}$/.test(value)&&BigInt(value)<=18446744073709551615n;
-export function releaseObservationResources(module){imageResources.delete(module);}
+export function releaseObservationResources(module){imageResources.delete(module);saves.delete(module);}
+function restoreSave(module,value){
+ if(!value?.world)return value;
+ const wire=value.save_transport;
+ if(wire===undefined){saves.delete(module);return value;}
+ const memory=wire?.memory,invalid=()=>{throw Error('SAVE_TRANSPORT_INVALID');};
+ if(!wire||Object.keys(wire).some(k=>!['format','epoch','revision','memory'].includes(k))||wire.format!=='save-memory-v1'||!uint64(wire.epoch)||!uint64(wire.revision)
+  ||Object.hasOwn(value,'save_payload')||!memory||Object.keys(memory).some(k=>!['offset','byte_length'].includes(k))||!Number.isSafeInteger(memory.offset)||memory.offset<0
+  ||!Number.isSafeInteger(memory.byte_length)||memory.byte_length<1||!Number.isSafeInteger(memory.offset+memory.byte_length)||memory.offset+memory.byte_length>module.HEAPU8.byteLength)invalid();
+ let entry=saves.get(module);
+ if(!entry||entry.epoch!==wire.epoch||entry.revision!==wire.revision||entry.bytes!==memory.byte_length){
+  entry={epoch:wire.epoch,revision:wire.revision,bytes:memory.byte_length,publication:createSavePublication(observationDecoder.decode(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length)))};
+ }
+ const {save_transport,...observation}=value,result=attachSavePublication({...observation,save_payload:entry.publication.value},entry.publication);
+ saves.set(module,entry);return result;
+}
 function restoreImages(module,value){
  if(!value?.world)return value;
  const transport=value.ui_transport;
@@ -47,7 +64,7 @@ export function readObservation(module,mark) {
   const bytes=module.HEAPU8.subarray(pointer,pointer+length);
   if(mark)mark('observation_view',bytes.length);
   const text=observationDecoder.decode(bytes);if(mark)mark('observation_utf8');
-  const value=JSON.parse(text);if(mark)mark('observation_parse');return restoreImages(module,value);
+  const value=JSON.parse(text);if(mark)mark('observation_parse');return restoreSave(module,restoreImages(module,value));
 }
 export function loadProject(module,payload,seed=42n) {
   const bytes=projectEncoder.encode(JSON.stringify(payload));

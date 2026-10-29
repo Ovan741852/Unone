@@ -1,0 +1,46 @@
+✔ one RAF advances, accepts and draws in order; a finishing tick cannot publish twice between RAFs (2.878ms)
+✔ delayed worker ticks apply backpressure without overlap or claiming a stale snapshot as a new frame (0.9156ms)
+✔ RAF timestamp rounding does not alternate duplicate and skipped frames; early debt is retained (20.3102ms)
+✔ high-refresh RAFs redraw honestly while simulation stays fixed-step; long stalls have bounded catch-up (1.1279ms)
+✔ pause and hidden intervals reset simulation time; an in-flight old generation cannot draw on return (0.4723ms)
+✔ stop cancels the next RAF and suppresses late work; restart attaches a fresh clock/listener (0.1956ms)
+✔ failed ticks do not draw, failed draws stop scheduling, and errors are reported once (0.5006ms)
+✔ reset during a tick suppresses its catch-up tail and resumes only at a new RAF boundary (0.2696ms)
+✔ a worker response spanning hide and restore cannot draw in the old generation or catch up hidden time (0.2783ms)
+✔ actual player advance leases one prefix, accepts exact Core world receipt, then admits later arrivals (3.9321ms)
+✔ actual player advance fails closed for missing/mismatched receipt and unknown worker completion (1.8799ms)
+✔ legacy omission uses unchanged snapshot input and does not require a receipt (0.7739ms)
+✔ completion requires explicit world, UI and cursor readiness and keeps simulation distinct (1.0489ms)
+✔ interval storage is bounded, stale windows are empty and reads never advance counters (1.6489ms)
+✔ owned read-only accessor preserves existing names and permits safe teardown and reattachment (0.2409ms)
+✔ screen reprojection shares DOM pointer mapping across camera position, zoom and aspect (1.0112ms)
+✔ stationary mouse stays ahead of a following camera on consecutive fixed ticks (1.2809ms)
+✔ camera reprojection preserves consumed pointer edge order and each edge screen location (0.7096ms)
+✔ releaseAll cannot restore a pressed button or queued pointer edge during reprojection (0.7337ms)
+✔ default pointer stays untouched until a routed physical world event exists (0.6753ms)
+✔ developer manual world input bypasses projection and does not drain browser edges (0.6085ms)
+✔ official player routes complete slider streams into semantic frames without world pointer edges (2.0538ms)
+✔ main-thread backend: identical ABI sequence when disabled; enabled commands carry execute and atomic tick spans (4.2413ms)
+✔ main-thread accepted publications and performance reads do not imply completed presentation or invoke the ABI (0.8579ms)
+✔ disabled profiling leaves draw/update/save behavior and published datasets unchanged (61.9653ms)
+✔ updates and draws are distinct identities; redraws of one snapshot are flagged, not new updates (45.826ms)
+✔ failed updates and draws keep identity and status, then rethrow unchanged (32.4188ms)
+✔ an in-flight update evicted by a command backlog still completes the real tick unchanged (556.3648ms)
+✔ actual main entry with worker snapshots counts only complete world/UI/cursor submissions (143.4116ms)
+✔ actual player tick/accept/draw with real worker backend presents each regular RAF update once (1890.9296ms)
+✔ actual player awaiting worker cannot draw the old publication or enqueue another tick before acceptance (15.5864ms)
+✔ actual production startup entry waits raw-loss event gap, redraws, then publishes exactly one READY and starts scheduler once (4.4021ms)
+✔ actual production startup entry pagehide cancellation prevents late READY and scheduler creation (1.0467ms)
+✔ actual production factory assignment disposes a late resolved renderer after pagehide (1.0285ms)
+✔ actual READY commit resamples/cancels after metrics callbacks, without a later await gap (0.8491ms)
+✔ actual ordinary and checked startup wait for delayed Canvas-only images without polling RAF or starting simulation (3.2401ms)
+✔ startup never treats an unknown renderer outcome as a completed presentation (0.7868ms)
+✔ pointer entry at the final RAF barrier cannot READY a newly required pending cursor (1.3647ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2857.8259

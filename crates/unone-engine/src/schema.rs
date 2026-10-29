@@ -66,6 +66,7 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         value["properties"]["children"]["maxItems"] = serde_json::json!(contract.host_max_nodes);
         value["$defs"]["RawUiNode"]["properties"]["quads"]["minItems"] = serde_json::json!(1);
         value["$defs"]["RawUiNode"]["properties"]["quads"]["maxItems"] = serde_json::json!(contract.host_max_nodes - 1);
+        value["$defs"]["RawUiNode"]["properties"]["pixel_snap"]["default"] = serde_json::json!(false);
         value["$defs"]["UiImageQuad"]["properties"]["asset"]["minLength"] = serde_json::json!(1);
         value["$defs"]["UiImageQuad"]["properties"]["opacity"]["minimum"] = serde_json::json!(0);
         value["$defs"]["UiImageQuad"]["properties"]["opacity"]["maximum"] = serde_json::json!(1);

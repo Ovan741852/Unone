@@ -15,6 +15,34 @@ fn screen(node: Value) -> Value {
 }
 
 #[test]
+fn pixel_snap_is_an_optional_nonnullable_boolean_on_image_batch_instances_only() {
+    let original=screen(batch());
+    let mut value=original.clone();
+    value["children"][0]["pixel_snap"]=json!(false);
+    assert_eq!(serde_json::to_value(UiTree::from_json(value).unwrap()).unwrap(),serde_json::to_value(UiTree::from_json(original.clone()).unwrap()).unwrap());
+    let mut value=original.clone();value["children"][0]["pixel_snap"]=json!(true);
+    assert_eq!(serde_json::to_value(UiTree::from_json(value).unwrap()).unwrap()["children"][0]["pixel_snap"],true);
+    for bad in [json!(0),json!("true"),json!({}),Value::Null] {
+        let mut value=original.clone();value["children"][0]["pixel_snap"]=bad;
+        assert!(UiTree::from_json(value).is_err());
+    }
+    let mut value=original.clone();value["children"][0]["pixelSnap"]=json!(true);
+    assert!(UiTree::from_json(value).unwrap_err().contains("unknown field"));
+    let value=screen(json!({"kind":"panel","id":"panel","rect":{"x":0,"y":0,"width":10,"height":10},"pixel_snap":false}));
+    assert!(UiTree::from_json(value).unwrap_err().contains("UI_IMAGE_BATCH_KIND"));
+}
+
+#[cfg(feature="dev-tools")]
+#[test]
+fn pixel_snap_schema_declares_optional_boolean_without_null() {
+    let schema=crate::contract_schema("ui").unwrap();
+    let node=&schema["$defs"]["RawUiNode"];
+    assert_eq!(node["properties"]["pixel_snap"]["type"],"boolean");
+    assert_eq!(node["properties"]["pixel_snap"]["default"],false);
+    assert!(!node["required"].as_array().unwrap().iter().any(|field|field=="pixel_snap"));
+}
+
+#[test]
 fn image_batch_rejects_anchor_before_it_can_drift_from_absolute_quads() {
     let mut node = batch();
     node.as_object_mut().unwrap().remove("rect");

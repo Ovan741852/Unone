@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createImageBatchResolver} from './ui-image-batch.mjs';
+import {createImageBatchResolver,imageBatchSnappedRect} from './ui-image-batch.mjs';
 import {retainImageResource} from './retained-image-generation.mjs';
 import {uiUsage} from './ui-geometry.mjs';
 import {createCanvasUi} from './canvas-ui.mjs';
@@ -8,6 +8,37 @@ import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 const rect={x:0,y:0,width:100,height:100};
 const resource=(extra={})=>({revision:1,bounds:{x:-10,y:-5,width:30,height:20},quads:[{asset:'asset://a',rect:{x:-10,y:-5,width:20,height:10},source:{x:1,y:2,width:3,height:4},opacity:.5}],...extra});
 const node=(content='art',extra={})=>({kind:'image_batch',id:'map',rect,content,...extra});
+
+test('pixel snapping is explicit final-framebuffer placement, preserves shared edges and rejects unsupported transforms',()=>{
+ const resolver=createImageBatchResolver(),resources={art:retainImageResource(resource())},n=node('art',{pixel_snap:true,transform:{a:1.25,b:0,c:0,d:.75,tx:20.25,ty:30.5}}),instance=resolver.resolve(n,resources);
+ assert.equal(instance.pixelSnap,true);assert.equal(resolver.resolve(node(),resources).pixelSnap,false);
+ for(const [width,height]of [[100,100],[1600,900],[3200,1800]]){
+  const a=imageBatchSnappedRect(instance,{x:0,y:0,width:3.125,height:4.25},width,height),b=imageBatchSnappedRect(instance,{x:3.125,y:0,width:2,height:4.25},width,height);
+  assert.equal(a.x+a.width,b.x);assert.equal(a.y,b.y);assert.equal(a.height,b.height);
+  for(const v of Object.values(a))assert(Number.isInteger(v));
+ }
+ const t={...instance,transform:{a:1,b:0,c:0,d:1,tx:0,ty:0}};
+ assert.deepEqual(imageBatchSnappedRect(t,{x:-.5,y:-.5,width:1,height:1},100,100),{x:-1,y:99,width:2,height:2});
+ assert.deepEqual(imageBatchSnappedRect({...t,transform:{a:-1,b:0,c:0,d:-1,tx:0,ty:0}},{x:0,y:0,width:1,height:2},100,100),{x:0,y:102,width:-1,height:-2});
+ assert.equal(imageBatchSnappedRect(t,{x:0,y:0,width:.1,height:1},100,100).width,0);
+ assert.throws(()=>resolver.resolve({...n,pixel_snap:'true'},resources),/UI_IMAGE_BATCH_PIXEL_SNAP/);
+ for(const extra of [{b:1},{c:1}])assert.throws(()=>resolver.resolve({...n,transform:{...n.transform,...extra}},resources),/UI_IMAGE_BATCH_PIXEL_SNAP_TRANSFORM/);
+ assert.equal(resolver.resolve({...n,pixel_snap:false,transform:{...n.transform,b:1}},resources).pixelSnap,false);
+});
+
+test('Canvas snaps after affine placement at DPR, retains source/opacity/clip and skips collapsed quads',async()=>{
+ const calls=[],transforms=[],clips=[],stack=[],ctx={globalAlpha:1,setTransform(){},clearRect(){},beginPath(){},rect(...r){clips.push(r)},clip(){},
+  save(){stack.push(this.globalAlpha)},restore(){this.globalAlpha=stack.pop()},transform(...t){transforms.push(t)},drawImage(...args){calls.push({args,alpha:this.globalAlpha})}};
+ const ui=createCanvasUi({width:100,height:100,getContext:()=>ctx},{resolveAsset:()=>({width:10,height:10})});
+ const data=resource({bounds:{x:0,y:0,width:10,height:10},quads:[{asset:'asset://a',rect:{x:0,y:0,width:3.125,height:4.25},source:{x:1,y:2,width:3,height:4},opacity:.25},{asset:'asset://a',rect:{x:0,y:0,width:.001,height:1}}]}),
+  snapshot={world:{ui_image_batches:{art:retainImageResource(data)},ui:{children:[node('art',{rect:{x:10.1,y:20.2,width:80,height:70},pixel_snap:true,transform:{a:1.25,b:0,c:0,d:.75,tx:20.25,ty:30.5}})]}}};
+ ui.draw(snapshot,{width:200,height:100,dpr:2});await new Promise(setImmediate);calls.length=transforms.length=clips.length=0;
+ assert.equal(ui.draw(snapshot,{width:200,height:100,dpr:2}),DRAW_COMPLETED);
+ assert.deepEqual(clips[0],[40.4,19.599999999999994,320,140]);
+ assert.deepEqual(transforms[0],[1,0,0,1,81,133]);assert.equal(calls.length,1);
+ assert.deepEqual(calls[0].args.slice(1),[1,2,3,4,0,0,16,6]);assert.equal(calls[0].alpha,.25);
+ ui.dispose();
+});
 
 test('resource IDs use the Core1024 UTF8-byte bound including Unicode and prototype-like names',()=>{
  const resolver=createImageBatchResolver();

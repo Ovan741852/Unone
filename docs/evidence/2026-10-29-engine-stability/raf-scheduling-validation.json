@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Official Web player RAF-owned asynchronous fixed-step update/accept/draw scheduling; no gameplay changes or completion-counter inflation",
+  "prior_browser_evidence": {
+    "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261029/browser-retained-review1/result.json",
+    "atlas": {"simulation_hz": 60.063, "raf_hz": 59.963, "presented_frame_changes_hz": 48.670, "dropped_steps": 0},
+    "battle": {"simulation_hz": 59.995, "raf_hz": 59.995, "presented_frame_changes_hz": 55.603, "dropped_steps": 0},
+    "interpretation": "The unchanged completion counter exposes actual repeated snapshot submissions followed by skipped snapshot numbers. Source inspection identifies independent timer simulation and RAF drawing as a phase-aliasing path; simulation and submitted-frame advances near 60 do not imply 60 distinct submissions."
+  },
+  "implementation": {
+    "source": "web/shared/async-scheduler.mjs",
+    "sha256": "8906423485e79740b03f8f9b4de2db813d6d440dfab1018624a2eab0c77d78d9",
+    "clock": "RAF timestamps, fixed 1000/60 ms simulation steps",
+    "boundary": "Await bounded sequential tick transactions, then draw once before scheduling the next RAF",
+    "backpressure": "One update transaction at a time, including worker requests; no independent simulation timer or separate free-running completion-driven draw loop",
+    "catch_up": "At most 5 steps per draw; excess whole steps counted as dropped; fractional remainder retained",
+    "rounded_timestamps": "Early step tolerance min(0.25 ms,stepMs/100), approximately 0.167 ms at 60 Hz; negative accumulator debt retained rather than discarded",
+    "visibility": "Hidden time excluded; generation changes suppress old asynchronous draws/catch-up tails; paused UI redraws remain allowed",
+    "counter_contract": "Unchanged: accepted simulation publications, completed world/UI/cursor submissions and changed submitted frame numbers stay separate"
+  },
+  "validation": {
+    "node": "C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "command": "node --test web/shared/async-scheduler.test.mjs web/shared/player-completion.test.mjs web/shared/player-profile-main.test.mjs web/shared/player-profile-main-backend.test.mjs web/shared/startup-player-entry.test.mjs web/shared/ordered-physical-player-entry.test.mjs web/shared/player-pointer.test.mjs",
+    "result": {"passed": 38, "failed": 0, "skipped": 0},
+    "raw_log": "docs/evidence/2026-10-29-engine-stability/raf-scheduling-focused-tests.log",
+    "historical_log": ".cache/raf-scheduling-focused-tests.log",
+    "historical_disposition": "Concurrent save-publication import initially required the extracted-main VM fixtures to import the actual serializedSavePayload helper; the final run includes that fixture update",
+    "cases": [
+      "600 rounded 60 Hz RAF timestamps submit each advanced snapshot exactly once without dropped steps",
+      "Actual player tick/accept/draw plus real worker backend: 120 RAF transactions, 120 tick commands, 120 changed snapshot submissions, drop 0",
+      "Pending actual worker response schedules no additional tick and claims no stale completed draw",
+      "High-refresh zero-step redraws and low-refresh multiple-step draws keep distinct presentation counts honest",
+      "Long-stall catch-up is bounded and fractional time is retained",
+      "Pause, visibility transitions, stop/restart and reset during asynchronous work suppress stale draws and hidden-time catch-up",
+      "Update/render errors stop scheduling and report once",
+      "Existing readiness, incomplete-world/UI/cursor and read-only completion metrics regressions remain passing"
+    ]
+  },
+  "independent_review": {
+    "reviewer": "Codex /root/runtime_audit",
+    "scope": "Read-only final async-scheduler.mjs: stop/start during an in-flight tick, generation invalidation, finally scheduling, sequential catch-up/drop bounds, high-refresh redraws and retained rounding debt",
+    "result": "No concrete P1/P2 found",
+    "execution": "Reviewer ran no tests or builds"
+  },
+  "native_pixel_snap_gate": {
+    "command": "cargo test --manifest-path crates/unone-native-player/Cargo.toml --lib native_pixel_snapped_ui_is_rejected_before_any_gpu_or_asset_preparation",
+    "toolchain": "Rust 1.95.0 GNU; pinned RUSTC, task-local CARGO_HOME/RUSTUP_HOME, w64devkit PATH and self-contained LIBRARY_PATH; normal debug profile",
+    "result": {"passed": 1, "failed": 0, "filtered_out": 68},
+    "evidence": "Tool execution transcript; no separate raw log captured",
+    "contract": "Nested inline pixel_snap=true fails with UI_HOST_CAPABILITY_UNSUPPORTED before asset/GPU preparation; false retains existing admission; native capability descriptor reports unsupported with the official Web host required"
+  },
+  "limits": [
+    "These controlled scheduling tests are correctness evidence, not an actual browser FPS benchmark or GPU scanout proof",
+    "Combined update/draw CPU work still has to fit the display budget; catch-up under overload intentionally reduces distinct presentations",
+    "No JYRogue game files, gameplay rules, renderer replacement or reported completion-counter definitions were changed"
+  ]
+}

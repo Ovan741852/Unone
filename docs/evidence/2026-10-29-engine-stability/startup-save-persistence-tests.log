@@ -1,0 +1,36 @@
+✔ actual player advance leases one prefix, accepts exact Core world receipt, then admits later arrivals (2.4934ms)
+✔ actual player advance fails closed for missing/mismatched receipt and unknown worker completion (1.3693ms)
+✔ legacy omission uses unchanged snapshot input and does not require a receipt (0.5791ms)
+✔ screen reprojection shares DOM pointer mapping across camera position, zoom and aspect (0.8116ms)
+✔ stationary mouse stays ahead of a following camera on consecutive fixed ticks (1.1564ms)
+✔ camera reprojection preserves consumed pointer edge order and each edge screen location (0.6078ms)
+✔ releaseAll cannot restore a pressed button or queued pointer edge during reprojection (0.6052ms)
+✔ default pointer stays untouched until a routed physical world event exists (0.4788ms)
+✔ developer manual world input bypasses projection and does not drain browser edges (0.4989ms)
+✔ official player routes complete slider streams into semantic frames without world pointer edges (1.6542ms)
+✔ disabled profiling leaves draw/update/save behavior and published datasets unchanged (75.5224ms)
+✔ updates and draws are distinct identities; redraws of one snapshot are flagged, not new updates (31.1447ms)
+✔ failed updates and draws keep identity and status, then rethrow unchanged (16.2402ms)
+✔ an in-flight update evicted by a command backlog still completes the real tick unchanged (540.6357ms)
+✔ actual main entry with worker snapshots counts only complete world/UI/cursor submissions (159.0684ms)
+✔ actual player tick/accept/draw with real worker backend presents each regular RAF update once (1912.7707ms)
+✔ actual player awaiting worker cannot draw the old publication or enqueue another tick before acceptance (31.2612ms)
+✔ actual tick persistence skips unchanged saves and commits the marker only after successful change/clear writes (143.0789ms)
+✔ actual production startup entry waits raw-loss event gap, redraws, then publishes exactly one READY and starts scheduler once (4.4896ms)
+✔ actual production startup entry pagehide cancellation prevents late READY and scheduler creation (1.0531ms)
+✔ actual production factory assignment disposes a late resolved renderer after pagehide (1.0478ms)
+✔ actual READY commit resamples/cancels after metrics callbacks, without a later await gap (0.8007ms)
+✔ actual ordinary and checked startup wait for delayed Canvas-only images without polling RAF or starting simulation (2.9597ms)
+✔ startup never treats an unknown renderer outcome as a completed presentation (0.7001ms)
+✔ pointer entry at the final RAF barrier cannot READY a newly required pending cursor (1.1536ms)
+✔ Game.start save changes are persisted exactly once before READY, including private encoded publications (2.0636ms)
+✔ a startup storage failure preserves the persisted marker and prevents READY/scheduler creation (1.2465ms)
+✔ restarting while paused persists new Game.start contents without waiting for a tick (0.686ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2993.0558

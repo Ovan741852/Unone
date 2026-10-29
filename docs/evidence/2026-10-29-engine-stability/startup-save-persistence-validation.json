@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "problem": "Startup previously assigned the current Game.start save to the persisted marker after publishing READY without writing localStorage. Unchanged later ticks then skipped the write indefinitely.",
+  "implementation": {
+    "source": "web/player/main.js",
+    "sha256": "f54cfae627222875c011546853617d3fa79f2b063553bb941cbfa3da9a325bcb",
+    "helper": "persistSave compares serializedSavePayload(snapshot) with the last successfully stored text and advances the marker only after localStorage.setItem returns",
+    "startup": "Seed the marker from the actual stored text, restore the parsed payload, and persist the post-Game.start save before READY or scheduler creation",
+    "tick": "Use the same helper; immutable save publications supply cached encoded text without re-stringifying",
+    "restart": "Persist the newly loaded Game.start save even if the player remains paused and no update tick follows",
+    "failure": "Storage errors propagate; a rejected write leaves the prior persisted marker intact and startup cannot publish READY"
+  },
+  "validation": {
+    "node": "C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "command": "node --test web/shared/startup-player-entry.test.mjs web/shared/player-profile-main.test.mjs web/shared/ordered-physical-player-entry.test.mjs web/shared/player-pointer.test.mjs",
+    "result": {"passed": 28, "failed": 0, "skipped": 0},
+    "raw_log": "docs/evidence/2026-10-29-engine-stability/startup-save-persistence-tests.log",
+    "cases": [
+      "Actual ordinary and checked startup functions persist a changed 112 KiB granted save exactly once before READY",
+      "120 unchanged granted-save persistence calls perform zero payload JSON.stringify calls and no additional writes",
+      "Changed payload and clear-to-null each persist their exact encoded text once",
+      "Startup storage exceptions preserve the old marker and produce no READY or scheduler",
+      "Actual tick function with real worker backend skips unchanged saves, persists change/clear and preserves/retries after a rejected storage write",
+      "Actual restart function persists a new Game.start payload while remaining paused without requiring an update tick",
+      "Existing startup loss/readiness, ordered physical input, pointer and profiling behavior stays passing"
+    ]
+  },
+  "limits": [
+    "VM entry tests execute the actual main helper and startup/update/restart bodies with controlled storage and presentation dependencies",
+    "Real exported-player main/worker validation and final SDK certification are recorded separately",
+    "No gameplay, renderer or completion-counter definitions changed"
+  ]
+}
