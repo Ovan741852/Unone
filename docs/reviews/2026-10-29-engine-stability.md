@@ -832,3 +832,33 @@ with 4551 on launch; **none of those 13 cases executed**. One ordinary retry is
 preserved; no policy changes, file renaming or bypass was attempted. Production
 Node/WASM behavior verification is prepared separately and remains pending the
 new emitted runtime. This is not a completed behavior or actual-game FPS gate.
+
+## Bounded declared-background evidence
+
+Keeping retained world artwork beneath a real overlay exposed a diagnostic
+scaling issue: inventory contained 200 inspection leaves / 916 logical units,
+but generated 992 separate typed-background proof records. Adding otherwise
+valid exact-pair policies exhausted the existing 1024 evidence bound. Image
+batch quads were not flattened into inspection leaves; the repeated records
+came from background-versus-later-leaf pairs.
+
+`LayoutReport.declared_backgrounds` now groups successful proofs by actual
+authored background leaf and resolved scope owner. It retains complete pair
+counts and at most two example IDs. Public background leaf ordinals and stable
+pair traversal order distinguish internally duplicated IDs; pointer identities
+are lookup-only. `allowed_overlaps` holds explicit external exact pairs.
+Geometry, order, scope and containment are still checked for every candidate
+pair. There is no subtree pruning or new exemption, and comparison, node,
+finding and combined evidence limits are unchanged. Exact policy application
+still commits transactionally only after every supplied pair is validated.
+
+Focused executed tests passed **31/31**, including same-background cardinality,
+distinct-group caps, duplicate internal IDs/owners, interactive collisions,
+partial/later/sibling cases, inline/retained equality, policy rollback and
+existing presentation/input regressions. Independent Codex source review found
+no concrete P1/P2. Read-only analysis of the owner's old report maps inventory's
+992 typed records to 85 groups and card's 296 to 30; it does not erase inventory
+68 / card 23 raw findings, or the four card findings remaining under its then
+current policy. The real game must rerun with the newly compiled CLI; this
+analysis is not a passing rerun. See
+[bounded evidence validation](../evidence/2026-10-29-engine-stability/layout-background-evidence-validation.json).

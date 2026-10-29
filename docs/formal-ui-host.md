@@ -77,8 +77,13 @@ coverage, siblings outside a component scope and later backgrounds occluding
 earlier leaves still produce findings. Scope metadata changes neither rendering
 order nor input, placement, clipping or style inheritance. See the
 [reusable card example](ui-styling.md#reuse-existing-components).
-Accepted scoped pairs remain visible in `allowed_overlaps` as
-`UI_INTENTIONAL_ART_OVERLAP` with their explicit scope reason.
+Accepted scoped pairs are summarized in `declared_backgrounds`, one group per
+actual authored background leaf and declared scope owner. Each group exposes
+`background`, its zero-based `background_node_index` in report `nodes`, the typed
+`scope`, the full `pair_count`, and at most two later leaf ID `examples`. Every
+counted pair still passes the same paint-order, scope and rectangle-containment
+checks; aggregation changes diagnostic output only. Reusing a component type or
+retained artwork resource does not merge distinct authored backgrounds.
 
 The declaration travels with each component instance, so ordinary card
 backgrounds do not require an external policy naming every internal leaf.
@@ -99,8 +104,12 @@ remain in `allowed_overlaps` as `UI_INTENTIONAL_ART_OVERLAP`; remaining findings
 still determine readability. A panel's background is not a reason to disable
 unrelated overlap checks.
 
-Typed background declarations and exact-pair policies share the bounded
-`allowed_overlaps` evidence budget (`max_layout_findings` from the UI contract).
+Declared-background groups and exact-pair policy records share one bounded
+evidence budget: `declared_backgrounds.length + allowed_overlaps.length` cannot
+exceed `max_layout_findings` from the UI contract. A group's `pair_count` does not
+consume another output record for each checked descendant. Findings retain their
+independent limit, and every pair still counts toward `max_layout_comparisons`;
+there is no subtree or geometry-check exemption.
 Exceeding it returns `UI_LAYOUT_WORK_LIMIT`; it cannot turn an incomplete
 inspection into a pass. Repeated ordered policy pairs produce one entry using
 the first reason; every supplied reason must still be nonempty. A policy error

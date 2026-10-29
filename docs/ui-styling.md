@@ -240,6 +240,12 @@ space, and `UI_BACKGROUND_BOUNDS` reports a background outside its scope.
 Structural errors can use the general `ui.setRoot` tree-parse diagnostic.
 These rules do not move, resize, clip, reorder
 or inherit styles; hosts keep the same authored drawing and input behavior.
+The inspector summarizes successful proofs in `declared_backgrounds`, grouped
+by the actual background node and scope owner, with a full `pair_count` and at
+most two example later leaf IDs. It still checks every pair individually.
+Grouped proofs and external exact-pair records share the existing evidence limit;
+findings, comparison limits and screen/node budgets are unchanged. See the
+[diagnostic report contract](formal-ui-host.md#intentional-art-overlaps-without-disabling-strict-checks).
 
 Put the declaration inside the reusable Luau function so every instance carries
 its background intent with its internal IDs. Normal card backgrounds then need

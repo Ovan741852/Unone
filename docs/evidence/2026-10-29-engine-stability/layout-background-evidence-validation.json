@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "source_base": "eae3173",
+  "source_state": "Working-tree validator slice; not a final-commit or official-player certification",
+  "layout_source_sha256": "209f39f287d3f3ec10f9aa78049177d194d32dfc4214b77703205023bb3c3ffb",
+  "change": "Summarize successful typed-background pair proofs by actual authored background and actual scope owner. Preserve all ordered pair, collision, scope and rectangle containment checks; keep exact external policy evidence separate.",
+  "report_schema": {
+    "declared_backgrounds": ["background", "background_node_index", "scope", "pair_count", "examples"],
+    "examples_per_group_max": 2,
+    "group_identity": "Actual leaf ordinal plus actual scope-owner identity; pointer used only for lookup, never serialized",
+    "allowed_overlaps": "External exact-pair policy records only",
+    "combined_evidence_limit": 1024,
+    "comparison_limit": 1000000,
+    "limits_changed": false
+  },
+  "environment": {
+    "cwd": "D:/Projects/Unone",
+    "CARGO_HOME": "D:/Projects/Unone/.toolcache/cargo",
+    "RUSTUP_HOME": "D:/Projects/Unone/.toolcache/rustup",
+    "RUSTC": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/bin/rustc.exe",
+    "PATH_prefix": ["D:/Projects/Unone/.toolcache/cargo/bin", "D:/Projects/Unone/.toolcache/w64devkit/bin"],
+    "LIBRARY_PATH": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/self-contained",
+    "cargo_profile_overrides": []
+  },
+  "executed_tests": [
+    {
+      "command": "cargo test -p unone-engine --lib layout:: -- --nocapture",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "raw_log": "layout-background-groups-unit-tests.log"
+    },
+    {
+      "command": "cargo test -p unone-engine --lib ui::image_batch_tests::image_batch_layout_composite_keeps_external_control_checks -- --nocapture",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "raw_log": "layout-background-batch-tests.log"
+    },
+    {
+      "command": "cargo test -p unone-engine --test ui_components component_backgrounds_do_not_hide_foreground_collisions -- --nocapture",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "raw_log": "layout-background-component-tests.log"
+    },
+    {
+      "command": "cargo test -p unone-engine --test ui_presentation_input -- --nocapture",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "raw_log": "layout-background-presentation-tests.log"
+    }
+  ],
+  "regression_scope": [
+    "One background proves 1050 later leaves with complete pair_count and two bounded examples, below the unchanged comparison limit",
+    "Distinct authored background groups still stop at the 1024 evidence limit and retain an incomplete-inspection finding",
+    "Three overlapping typed backgrounds do not waive button/button collisions",
+    "Partial coverage, later occlusion, unrelated sibling scope and scroll coordinate boundary checks remain active",
+    "Combined group plus exact-pair 1024 boundary, overflow atomicity, duplicate policy and invalid reason behavior",
+    "Internally constructed duplicate authored IDs and scope IDs cannot merge actual owners; repeated report serialization is deterministic",
+    "Inline and retained image batches produce identical complete diagnostic reports",
+    "Nonvisual input conflicts and visible text-shadow paint behavior remain covered"
+  ],
+  "existing_fixture_readonly_analysis": [
+    {
+      "path": "D:/Projects/JYRogue/game/evidence/retained-overlays/strict/inventory-raw.json",
+      "sha256": "1ad94b328391fa10af8c92423ccd803f77a8d07ee3731e9f7bf1921cdc8ae74b",
+      "logical_nodes": 916,
+      "inspection_leaves": 200,
+      "existing_typed_pair_records": 992,
+      "distinct_background_scope_groups": 85,
+      "existing_raw_findings": 68,
+      "three_full_screen_background_pair_records": [199, 198, 195]
+    },
+    {
+      "path": "D:/Projects/JYRogue/game/evidence/retained-overlays/strict/world-travel-card-raw.json",
+      "sha256": "063bf8624787fe161541053ea6fdba888473f912a4791e279f7b0f9926e06f63",
+      "logical_nodes": 828,
+      "inspection_leaves": 60,
+      "existing_typed_pair_records": 296,
+      "distinct_background_scope_groups": 30,
+      "existing_raw_findings": 23,
+      "existing_findings_after_current_exact_policies": 4
+    }
+  ],
+  "review": {
+    "reviewer": "Independent Codex /root/runtime_audit",
+    "mode": "Read-only source and test review versus eae3173; reviewer did not execute tests",
+    "concrete_P1_P2_findings": 0
+  },
+  "limitations": [
+    "The existing game fixture numbers are read-only grouping analysis of previously generated raw reports, not execution of a newly built CLI against that game",
+    "Typed evidence aggregation cannot approve the remaining 68 inventory or 23 card raw findings; exact policies must independently pass their unchanged validation",
+    "One initial unit command used the wrong module prefix and executed zero tests; its raw output remains .cache/layout-background-batch-empty-filter.log and is not counted. The corrected command executed and passed the intended test",
+    "No Game source, input API, node/screen/host budget, comparison limit, renderer or official-player output was changed or exercised by this validator slice"
+  ]
+}

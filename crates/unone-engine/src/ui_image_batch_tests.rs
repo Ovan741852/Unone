@@ -150,7 +150,9 @@ fn image_batch_layout_composite_keeps_external_control_checks() {
     value["children"][0]["background_for"] = json!({"screen":true});
     let report = crate::layout::inspect(&UiTree::from_json(value).unwrap(), 32, 16);
     assert!(report.findings.is_empty());
-    assert_eq!(report.allowed_overlaps.len(), 1);
+    assert!(report.allowed_overlaps.is_empty());
+    assert_eq!(report.declared_backgrounds.len(), 1);
+    assert_eq!(report.declared_backgrounds[0].pair_count, 1);
 }
 
 #[test]

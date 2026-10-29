@@ -1,0 +1,31 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.43s
+     Running unittests src\lib.rs (target\debug\deps\unone_engine-f2969870dc6adf45.exe)
+
+running 23 tests
+test layout::tests::background_declaration_preserves_partial_and_foreground_collisions ... ok
+test layout::tests::grouped_backgrounds_never_waive_interactive_pairs ... ok
+test layout::tests::declared_component_background_reaches_nested_descendants_only ... ok
+test layout::tests::declared_screen_background_covers_later_leaves_with_auditable_evidence ... ok
+test layout::tests::exact_art_policy_still_supports_partial_pairs_alongside_declared_backgrounds ... ok
+test layout::tests::nested_components_are_inspected_by_their_visible_leaves ... ok
+test layout::tests::overlapping_nodes_are_reported_and_marked_in_the_picture ... ok
+test layout::tests::later_declared_background_cannot_waive_its_occlusion_of_earlier_content ... ok
+test layout::tests::text_fullness_is_measured_but_never_becomes_a_finding ... ok
+test layout::tests::panel_layers_require_explicit_policy_and_cannot_hide_text_or_controls ... ok
+test layout::tests::a_clean_screen_reports_no_findings_and_draws_its_boxes ... ok
+test layout::tests::background_pair_allowance_preserves_interactive_overlap_gate ... ok
+test layout::tests::background_inspection_stops_at_the_scroll_coordinate_boundary ... ok
+test layout::tests::invalid_duplicate_reason_is_rejected_without_partial_policy_mutation ... ok
+test layout::tests::actual_background_and_scope_identity_never_merge_duplicate_internal_ids ... ok
+test layout::tests::retained_and_inline_batch_backgrounds_have_identical_layout_evidence ... ok
+test layout::tests::large_overlapping_screens_bound_diagnostics_without_claiming_a_pass ... ok
+test layout::tests::one_background_summarizes_more_than_the_evidence_limit_without_skipping_pairs ... ok
+test layout::tests::background_declarations_do_not_bypass_the_pair_comparison_budget ... ok
+test layout::tests::typed_and_external_overlap_evidence_share_the_exact_output_cap ... ok
+test layout::tests::duplicate_external_pairs_cannot_amplify_evidence_at_the_combined_cap ... ok
+test layout::tests::combined_overlap_evidence_overflow_leaves_the_entire_report_unchanged ... ok
+test layout::tests::intentional_background_evidence_is_bounded_without_claiming_a_pass ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 339 filtered out; finished in 0.17s
+

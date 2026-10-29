@@ -1,0 +1,14 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.38s
+     Running tests\ui_presentation_input.rs (target\debug\deps\ui_presentation_input-90530a9789dcaaa4.exe)
+
+running 6 tests
+test shadow_is_typed_data_without_altering_foreground_geometry ... ok
+test input_region_has_no_visual_or_typography_fields_and_zero_paint_cost ... ok
+test shadow_invalid_and_inapplicable_contracts_are_rejected ... ok
+test shadow_paint_bounds_use_the_actual_aspect_and_keep_capture_rect ... ok
+test nonvisual_input_does_not_collide_with_art_but_interactive_conflicts_remain ... ok
+test canonical_package_publishes_typed_region_and_shadow_in_the_normal_runtime ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

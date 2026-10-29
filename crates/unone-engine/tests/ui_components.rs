@@ -465,7 +465,7 @@ api.ui.setRoot({kind='screen',id='screen',node='test',children={
 }})
 "#, true).unwrap();
     let report = unone_engine::inspect_layout(&runtime.observe().ui.unwrap(), 80, 45);
-    assert!(report.allowed_overlaps.iter().any(|finding| finding.nodes.contains(&"card/surface".to_string())));
+    assert!(report.declared_backgrounds.iter().any(|group| group.background=="card/surface" && group.pair_count==2));
     assert!(report.findings.iter().any(|finding| finding.code == "UI_NODES_OVERLAP"
         && finding.nodes.contains(&"one".to_string()) && finding.nodes.contains(&"two".to_string())));
 }
