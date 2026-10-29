@@ -1,0 +1,11 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.22s
+     Running unittests src\lib.rs (target\debug\deps\unone_engine-2f227fcb4876ce61.exe)
+
+running 3 tests
+test runtime::profiling::tests::errors_end_sampling_and_typo_is_rejected ... ok
+test runtime::profiling::tests::stopped_window_freezes_heap_and_serialization_counters ... ok
+test runtime::profiling::tests::sampling_finds_function_preserves_digest_and_freezes_window ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 354 filtered out; finished in 0.12s
+

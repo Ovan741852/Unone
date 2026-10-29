@@ -631,6 +631,48 @@ Actual exported-player acceptance and final SDK evidence are separate from
 these controlled VM-entry tests. See
 [startup save evidence](../evidence/2026-10-29-engine-stability/startup-save-persistence-validation.json).
 
+## RAF diagnostics and withdrawn render-first draft
+
+The next browser result corrected snapshot throughput (about 60 distinct frames
+per second), while actual CPU submission intervals still failed the existing
+temporal gate. A proposed render-first pipeline passed 52 focused scheduling,
+metrics and lifecycle cases. Its first independent review covered memory leases,
+buffer ownership and cancellation; that bounded result did not establish
+game-owned input/projector coherence.
+
+The game owner and Codex `/root/runtime_audit` then found a P2 in that proposal:
+preparing the next `Game.update`/View while the previous View remains visible
+advances private Luau camera/hit-target caches. `InputFrame` and ordered physical
+points carry no presented-world/View revision or history. Host snapshots cannot
+reconstruct private game caches. JY's actual update processes map input before
+camera stepping and View publication, so adding a whole-frame cache-ahead gap
+changes which visible target a screen click can select.
+
+Root withdrew that default before SDK6 packaging. Source, tests, hashes and the
+working diff are preserved in `.cache/render-first-withdrawn-20261030/` with the
+reason and scope. The official scheduler retains update → acceptance → draw;
+the additive RAF diagnostics stay. Original completion timestamps and acceptance
+gates are unchanged. The synchronous drawing continuation is measured after
+awaited preparation, so worker waits cannot be labelled synchronous callback
+work. The restoration removes the added mismatch; it does not invent historical
+event-time input semantics for existing backlog/worker cases. Moving-camera and
+drag-release interaction evidence remains part of actual exported-player QA.
+
+The restored implementation passed 53/53 focused Node cases, with no skips.
+Tests preserve actual 15 ms completion intervals even when RAF intervals are
+10 ms, distinguish 1 ms synchronous drawing from 9 ms awaited preparation,
+preserve the originating RAF token across an actual worker backend and verify
+cancelled-generation exclusion. A private moving-projector regression protects
+input-before-next-View ordering. Metrics retain bounded primitive storage;
+default queries construct no paired rows and explicit queries filter/freeze
+at most 512 rows. Codex `/root/native_performance` independently reviewed the
+helper built by `/root/web_lifecycle`; non-RAF wall and cancelled-preparation
+pollution were corrected before the final run. Codex `/root/runtime_audit`
+then re-reviewed restored scheduler/main timing, lease and cancellation paths
+and found no additional concrete P1/P2. Reviewer claims are source-only.
+Final hashes and raw output are in
+[coherent RAF diagnostics evidence](../evidence/2026-10-29-engine-stability/raf-coherent-diagnostics-validation.json).
+
 ## Candidate5 exported acceptance and remaining game gate
 
 The final recursive Web inventory executed **519/519**, zero failures/skips,
@@ -672,3 +714,66 @@ is an integration candidate awaiting the same five scenarios and longer memory/G
 measurements. No stable 60 FPS, universal leak freedom or zero-GC claim is made.
 See the [current SDK handoff](../evidence/2026-10-29-engine-stability/retained-web-sdk-handoff.json)
 and its linked raw acceptance/fingerprint records.
+
+## Opt2 diagnosis and candidate6 instrumentation
+
+The retained publication fast path previously bypassed publication phase
+accounting. The diagnostic now measures its actual canonical encode/hash and
+envelope work once, with bounded successful frame/path records. Production
+compiles out Core diagnostic scopes and VM probes and does not read new
+publication clocks. Coarse phase-only opt2 diagnosis and opt2 safe-point
+sampling are separate artifacts; ordinary preview keeps its opt1 policy.
+Phase-only rejects function sampling before resetting a window and installs no
+VM allocation/GC callbacks. Cargo feature unification gives phase-only precedence.
+
+The current ordinary Core suite executed 354 passed / 3 ignored, plus one
+execution-policy test. Phase integration/policy executed four cases and its
+module two cases; opt2 sampling executed five cases and combined-feature
+precedence four. Current production ABI executed 12/12 with no diagnostic
+features, and phase ABI executed 14/14, including all four publication paths.
+The final recursive Web inventory executed 531/531 with no skips. Actual emitted
+phase WASM matched all 68 canonical digest checkpoints, including 60 active
+frames; actual emitted sampler WASM matched baseline/unsampled/sampled runs at
+all 13 checkpoints, attributed an escaping named function and froze VM and
+publication reports after stop. These synthetic measurements establish neither
+sampler overhead nor browser FPS. See the
+[actual sampler validation](../evidence/2026-10-29-engine-stability/sampling-profile-actual-wasm-validation.json).
+
+The game owner's actual phase-only travel window completed 635 frames with no
+failed attempts. Script p95 was 15.6 ms, versus UI conversion 0.8 ms and UI
+parse/validation 0.3 ms; publication phases were around 1 ms combined. The script
+residual includes package wrappers and other engine bindings, not just game
+Luau. The owner subsequently preserved a paired game-only presentation-cache
+change: on unchanged SDK5, travel achieved 601 updates / 601 new submissions,
+59.990 Hz, zero drops, worst one-second new-frame rate 59.014 Hz and RAF p99
+16.8 ms. Its original completion-end p95/p99 gate still failed. Neither a single
+case nor a diagnostic profile is a five-scenario pass. Read-only scalar summaries
+and source hashes are in
+[real game diagnosis](../evidence/2026-10-29-engine-stability/retained-real-game-diagnosis.json).
+
+Candidate6 retains update → accept → draw, the original completion-end clock and
+every existing acceptance gate. It adds originating-RAF and advancing-snapshot
+distributions, explicitly scoped synchronous wall/preparation diagnostics, and
+opt-in bounded detached paired rows. Actual candidate6 official production
+exports passed main/worker nine functional phases each; initial and restored
+screenshots were inspected. The specific RAF fields receive a separate exported
+main/worker functional check before handoff. No renderer timing from this small
+fixture is treated as actual-game acceptance.
+
+The newly compiled release CLI was blocked on execution by Windows App Control.
+Candidate6 therefore uses the unchanged functioning candidate5 release CLI,
+with its exact binary hash retained. Its new production WASM and frozen Web
+templates are explicit separate inputs. The current profiling guide is copied
+into the SDK and its indexed hash updated; every indexed file is verified after
+that operation. Embedded CLI guide/search content keeps candidate5 provenance.
+Runtime metadata honestly records base e3d4f6d plus dirty source rather than
+claiming a later clean-commit build.
+
+Independent Codex review found no additional concrete P1/P2 in the restored
+RAF implementation or in diagnostic mode, callback, production feature-off,
+publication ring/error/stop and ownership boundaries. These are source-only
+reviews. A fresh fixed four-file Claude CLI 2.1.308 review used tools disabled,
+one turn, no session persistence and a 60-second bound. It returned no stdout or
+stderr and was terminated; it remains incomplete. Command, source hashes and
+exit/signal are preserved in the candidate6 evidence, with no passing-review
+claim. Actual game five-case and longer memory/GC acceptance remain open.

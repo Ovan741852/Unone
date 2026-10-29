@@ -3,6 +3,8 @@ use super::value::{json_to_lua, lua_value_to_json, observation_value_to_json, ob
 use super::{ApiState, Lua, Table, Value};
 use crate::ui::UiTree;
 use std::rc::Rc;
+#[cfg(feature = "phase-profile")]
+use super::super::phase_profile::{self, Phase};
 
 pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let observations = Rc::clone(&state.observations);
@@ -51,20 +53,34 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let define_world=Rc::clone(&state.world);
     let define_ui=Rc::clone(&ui);
     let define_pure=Rc::clone(&pure_depth);
-    resources.set("define",lua.create_function(move |_,(id,value):(String,Value)| {
+    resources.set("define",lua.create_function(move |_lua,(id,value):(String,Value)| {
         if define_pure.get()>0 { return Err(mlua::Error::RuntimeError("UI_PURE_VIEW: image batch resources cannot be defined inside renderItem; define them in Game.start/update".into())); }
-        let value=lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
-        let definition=serde_json::from_value::<crate::UiImageBatchDefinition>(value)
-            .map_err(|e|mlua::Error::RuntimeError(format!("UI_IMAGE_BATCH_DEFINITION: {e}")))?;
-        define_world.borrow_mut().define_ui_image_batch(id,definition,define_ui.borrow_mut().as_mut())
-            .map_err(mlua::Error::RuntimeError)
+        #[cfg(feature = "phase-profile")]
+        let value=phase_profile::measure(_lua,Phase::ImageBatchConvert,||lua_value_to_json(value));
+        #[cfg(not(feature = "phase-profile"))]
+        let value=lua_value_to_json(value);
+        let value=value.map_err(mlua::Error::RuntimeError)?;
+        let admit=|| {
+            let definition=serde_json::from_value::<crate::UiImageBatchDefinition>(value)
+                .map_err(|e|mlua::Error::RuntimeError(format!("UI_IMAGE_BATCH_DEFINITION: {e}")))?;
+            define_world.borrow_mut().define_ui_image_batch(id,definition,define_ui.borrow_mut().as_mut())
+                .map_err(mlua::Error::RuntimeError)
+        };
+        #[cfg(feature = "phase-profile")]
+        { phase_profile::measure(_lua,Phase::ImageBatchValidateCommit,admit) }
+        #[cfg(not(feature = "phase-profile"))]
+        { admit() }
     })?)?;
     let remove_world=Rc::clone(&state.world);
     let remove_ui=Rc::clone(&ui);
     let remove_pure=Rc::clone(&pure_depth);
-    resources.set("remove",lua.create_function(move |_,id:String| {
+    resources.set("remove",lua.create_function(move |_lua,id:String| {
         if remove_pure.get()>0 { return Err(mlua::Error::RuntimeError("UI_PURE_VIEW: image batch resources cannot be removed inside renderItem".into())); }
-        remove_world.borrow_mut().remove_ui_image_batch(&id,remove_ui.borrow().as_ref()).map_err(mlua::Error::RuntimeError)
+        let remove=|| remove_world.borrow_mut().remove_ui_image_batch(&id,remove_ui.borrow().as_ref()).map_err(mlua::Error::RuntimeError);
+        #[cfg(feature = "phase-profile")]
+        { phase_profile::measure(_lua,Phase::ImageBatchRemove,remove) }
+        #[cfg(not(feature = "phase-profile"))]
+        { remove() }
     })?)?;
     ui_api.set("imageBatch",resources)?;
     super::ui_cursor::install(lua,state,&ui_api)?;
@@ -81,21 +97,33 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let resource_world=Rc::clone(&state.world);
     ui_api.set(
         "setRoot",
-        lua.create_function(move |_, value: Value| {
-            let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+        lua.create_function(move |_lua, value: Value| {
+            #[cfg(feature = "phase-profile")]
+            let value=phase_profile::measure(_lua,Phase::UiConvert,||lua_value_to_json(value));
+            #[cfg(not(feature = "phase-profile"))]
+            let value=lua_value_to_json(value);
+            let value = value.map_err(mlua::Error::RuntimeError)?;
             // Anchored nodes resolve against the host's real viewport, so the
             // same declaration lands in the same corner on any screen shape.
             // Name the vocabulary this build accepts. A host binary that is
             // older than the CLI fails here, and without this the message sends
             // the author to debug their game instead of their toolchain.
-            let tree = UiTree::from_json_for_viewport_with_resources(value, *ui_aspect.borrow(),&resource_world.borrow().ui_image_batches).map_err(
+            let parse=|| UiTree::from_json_for_viewport_with_resources(value, *ui_aspect.borrow(),&resource_world.borrow().ui_image_batches).map_err(
                 |error| {
                     mlua::Error::RuntimeError(format!(
                         "{error} — this engine build accepts node placement as                          rect{{x,y,width,height}} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up"
                     ))
                 },
-            )?;
-            *ui_state.borrow_mut() = Some(tree);
+            );
+            #[cfg(feature = "phase-profile")]
+            let tree=phase_profile::measure(_lua,Phase::UiValidate,parse)?;
+            #[cfg(not(feature = "phase-profile"))]
+            let tree=parse()?;
+            let commit=|| { *ui_state.borrow_mut() = Some(tree); };
+            #[cfg(feature = "phase-profile")]
+            phase_profile::measure(_lua,Phase::UiCommitDrop,commit);
+            #[cfg(not(feature = "phase-profile"))]
+            commit();
             Ok(())
         })?,
     )?;

@@ -3,6 +3,10 @@ param(
     # Where Emscripten lives. Defaults to $env:UNONE_EMSDK_ROOT, then $env:EMSDK.
     [switch]$Player,
     [switch]$Development,
+    # Diagnostic spans with production opt2 and no VM/function callbacks.
+    [switch]$PhaseProfile,
+    # Separate opt2 diagnostic with the existing safe-point sampler/VM probes.
+    [switch]$SamplingProfile,
     [string]$Project,
     [string]$OutputRoot,
     # Explicit current publisher CLI; defaults to the checkout's debug build.
@@ -15,6 +19,10 @@ param(
 $ErrorActionPreference = 'Stop'
 if ($Project -and -not $Player) { throw '-Project requires -Player' }
 if ($Development -and -not $Player) { throw '-Development requires -Player' }
+if ($PhaseProfile -and -not $Player) { throw '-PhaseProfile requires -Player' }
+if ($SamplingProfile -and -not $Player) { throw '-SamplingProfile requires -Player' }
+if (([int][bool]$Development+[int][bool]$PhaseProfile+[int][bool]$SamplingProfile) -gt 1) { throw 'Choose -PhaseProfile, -SamplingProfile or -Development' }
+$diagnosticPlayer = $Development -or $PhaseProfile -or $SamplingProfile
 $parityNode = if ($Player) { (Get-Command node -ErrorAction Stop).Source } else { $null }
 
 # The SDK path belongs to the machine, not to this repository. It used to be one
@@ -73,7 +81,7 @@ if ($Player) {
     }
     if ($BinaryenRoot) { $env:EM_BINARYEN_ROOT = [IO.Path]::GetFullPath($BinaryenRoot) }
     $exports = @('init','alloc','load_project','unload_project','set_save_payload','set_input_frame','set_viewport_aspect','set_viewport_size','set_instance_transport','set_ui_transport','tick','ui_request','jobs_request','jobs_binary','spatial_request','host_time_request','observation_ptr','observation_len')
-    if ($Development) { $exports += 'developer_request' }
+    if ($diagnosticPlayer) { $exports += 'developer_request' }
     $cli = if ($Cli) { [IO.Path]::GetFullPath($Cli) } else { Join-Path $repoRoot 'target/debug/game.exe' }
     if (-not (Test-Path -LiteralPath $cli)) { throw 'Build the current CLI first: cargo build -p unone-cli' }
     $systemsProject = if ($Project) { [IO.Path]::GetFullPath($Project) } else { Join-Path $repoRoot 'tests/host-parity-project' }
@@ -93,7 +101,9 @@ if ($Player) {
         $runtimePackages[$uiPackage.name] = [string]$uiPackage.version
     }
     $features = @($selected | Where-Object { $_.build_feature } | ForEach-Object { $_.build_feature } | Sort-Object -Unique)
-    if ($Development) { $features += 'preview-tools' }
+    if ($PhaseProfile) { $features += 'phase-profile' }
+    elseif ($SamplingProfile) { $features += 'sampling-profile' }
+    elseif ($Development) { $features += 'preview-tools' }
     $featureArgs = @('--no-default-features')
     if ($features.Count) { $featureArgs += @('--features', ($features -join ',')) }
     $env:RUSTFLAGS = (($exports | ForEach-Object { "-C link-arg=--export=unone_web_$_" }) -join ' ') + ' -C link-arg=-sENVIRONMENT=web -C link-arg=-sALLOW_MEMORY_GROWTH=1 -C link-arg=-sASSERTIONS=1'
@@ -104,20 +114,22 @@ if ($Player) {
     $javascript = Get-ChildItem -LiteralPath $releaseRoot -Filter '*.js' | Select-Object -First 1
     if (-not $wasm -or -not $javascript) { throw 'Release output missing.' }
     if (-not $OutputRoot) {
-        $variant = if ($Development) { 'player-development-runtime' } else { 'player-runtime' }
+        $variant = if ($PhaseProfile) { 'player-phase-profile-runtime' } elseif ($SamplingProfile) { 'player-sampling-profile-runtime' } elseif ($Development) { 'player-development-runtime' } else { 'player-runtime' }
         $OutputRoot = if ($Project) { Join-Path $systemsProject "dist/$variant" } else { Join-Path $repoRoot "artifacts/$variant" }
     }
     $outputRoot = [IO.Path]::GetFullPath($OutputRoot)
     New-Item -ItemType Directory -Force $outputRoot | Out-Null
     Copy-Item -LiteralPath $wasm.FullName -Destination $outputRoot -Force
     Copy-Item -LiteralPath $javascript.FullName -Destination $outputRoot -Force
-    $report = @{ compiled_systems=$compiledSystems; runtime_packages=$runtimePackages; cargo_features=$features; profile='release'; dev_tools=$false; preview_tools=[bool]$Development; javascript=$javascript.Name; wasm=$wasm.Name;
+    $report = @{ compiled_systems=$compiledSystems; runtime_packages=$runtimePackages; cargo_features=$features; profile='release'; dev_tools=$false; preview_tools=[bool]$diagnosticPlayer; phase_profile=[bool]$PhaseProfile; sampling_profile=[bool]$SamplingProfile;
+        bytecode_optimization_level=$(if($Development){1}else{2});
+        profile_mode=$(if($PhaseProfile){'phase-only'}elseif($SamplingProfile){'opt2-sampling'}elseif($Development){'development-vm'}else{'none'}); javascript=$javascript.Name; wasm=$wasm.Name;
         wasm_bytes=$wasm.Length; wasm_sha256=(Get-FileHash $wasm.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         javascript_sha256=(Get-FileHash $javascript.FullName -Algorithm SHA256).Hash.ToLowerInvariant();
         exports=$exports; source_commit=(git -C $repoRoot rev-parse HEAD); source_dirty=[bool](git -C $repoRoot status --porcelain) }
     [IO.File]::WriteAllText((Join-Path $outputRoot 'runtime.json'), ($report | ConvertTo-Json -Depth 6), [Text.UTF8Encoding]::new($false))
     # Run the actual export gate with Node selected before the SDK changed PATH.
-    [string[]]$parityArgs = if ($Development) { @('--development') } else { @() }
+    [string[]]$parityArgs = if ($diagnosticPlayer) { @('--development') } else { @() }
     if ($Project) { $parityArgs += @('--fixture', $systemsProject) }
     & $parityNode (Join-Path $repoRoot 'scripts/verify-player-parity.mjs') --cli $cli --runtime $outputRoot --timeout-ms $ParityTimeoutMs @parityArgs
     if ($LASTEXITCODE -ne 0) { throw 'Player artifact parity failed. Build the current native CLI with cargo build -p unone-cli, fix any mismatch, then rerun this player build.' }

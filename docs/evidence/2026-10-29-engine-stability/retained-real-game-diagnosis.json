@@ -1,0 +1,229 @@
+{
+  "schema": "unone.retained-real-game-diagnosis.v1",
+  "date": "2026-10-30",
+  "scope": "Read-only summaries of game-owner actual official Web exports. Diagnostic phase recording is not production FPS acceptance. No acceptance gate is changed.",
+  "phase": {
+    "source": "D:/Projects/JYRogue/game/evidence/performance-audit-20261029/core-phase-diagnostic1-travel-r2/travel/core-phase-profile.json",
+    "sha256": "188a8a967537c669293bdbbdaad7e7725a23ddaf9a007ec0f59a245ccd31ef9d",
+    "diagnostic_only": true,
+    "acceptance_eligible": false,
+    "core": {
+      "attempted_frames": 635,
+      "completed_frames": 635,
+      "failed_frames": 0,
+      "frame_join": "Attempted next world frame; completed=true joins the returned host world frame. Failed attempts may repeat a frame number.",
+      "limit": 1024,
+      "measurement_overhead": "Coarse host clock reads and bounded per-frame storage only; no function sampler or VM allocation/GC callbacks. Compare active and stopped windows on the same artifact. Percentiles use retained attempts; totals span the window.",
+      "mode": "phase-only",
+      "nesting": "UI conversion/parse/commit and imageBatch calls are inside script_total. World snapshot, host state, observations and UI clones are inside observe_total. Do not add parents and children.",
+      "phases": {
+        "image_batch_convert_ms": {
+          "calls": 48,
+          "mean_ms": 0.05055116850393701,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "p99_ms": 1.699999,
+          "total_ms": 32.099992
+        },
+        "image_batch_remove_ms": {
+          "calls": 48,
+          "mean_ms": 0.00015748031496062994,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "p99_ms": 0,
+          "total_ms": 0.1
+        },
+        "image_batch_validate_commit_ms": {
+          "calls": 48,
+          "mean_ms": 0.015590560629921259,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "p99_ms": 0.500001,
+          "total_ms": 9.900006
+        },
+        "observations_clone_ms": {
+          "calls": 635,
+          "mean_ms": 0.07748033858267717,
+          "p50_ms": 0.1,
+          "p95_ms": 0.2,
+          "p99_ms": 0.20000099999999998,
+          "total_ms": 49.200015
+        },
+        "observe_host_state_ms": {
+          "calls": 635,
+          "mean_ms": 0.00047244094488188977,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "p99_ms": 0,
+          "total_ms": 0.3
+        },
+        "observe_total_ms": {
+          "calls": 635,
+          "mean_ms": 0.22094491338582675,
+          "p50_ms": 0.2,
+          "p95_ms": 0.30000099999999996,
+          "p99_ms": 0.4,
+          "total_ms": 140.30002
+        },
+        "physics_ms": {
+          "calls": 635,
+          "mean_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "p99_ms": 0,
+          "total_ms": 0
+        },
+        "script_total_ms": {
+          "calls": 635,
+          "mean_ms": 9.669606285039372,
+          "p50_ms": 8.9,
+          "p95_ms": 15.600001,
+          "p99_ms": 19.5,
+          "total_ms": 6140.199991
+        },
+        "tick_total_ms": {
+          "calls": 635,
+          "mean_ms": 9.905196870866142,
+          "p50_ms": 9.100001,
+          "p95_ms": 15.9,
+          "p99_ms": 19.599999999999998,
+          "total_ms": 6289.800013
+        },
+        "ui_clone_ms": {
+          "calls": 635,
+          "mean_ms": 0.01826771496062992,
+          "p50_ms": 0,
+          "p95_ms": 0.1,
+          "p99_ms": 0.10000099999999999,
+          "total_ms": 11.599999
+        },
+        "ui_commit_drop_ms": {
+          "calls": 635,
+          "mean_ms": 0.01921259842519685,
+          "p50_ms": 0,
+          "p95_ms": 0.1,
+          "p99_ms": 0.10000099999999999,
+          "total_ms": 12.200000000000001
+        },
+        "ui_convert_ms": {
+          "calls": 635,
+          "mean_ms": 0.6411023748031496,
+          "p50_ms": 0.6999989999999999,
+          "p95_ms": 0.8000010000000001,
+          "p99_ms": 0.9,
+          "total_ms": 407.100008
+        },
+        "ui_parse_validate_ms": {
+          "calls": 635,
+          "mean_ms": 0.2064566929133858,
+          "p50_ms": 0.2,
+          "p95_ms": 0.3,
+          "p99_ms": 0.30000099999999996,
+          "total_ms": 131.1
+        },
+        "world_snapshot_ms": {
+          "calls": 635,
+          "mean_ms": 0.12173229291338585,
+          "p50_ms": 0.1,
+          "p95_ms": 0.20000099999999998,
+          "p99_ms": 0.20000099999999998,
+          "total_ms": 77.30000600000001
+        }
+      },
+      "retained": 635,
+      "schema_version": 1,
+      "scope": "Active profiling window, accepted tick attempt through observation and input commit. Manual tools, load/start and standalone observe are excluded. Phase calls count attempts, including caught validation failures.",
+      "script_outside_measured_ui": "Script total minus measured raw UI binding spans; includes Luau wrappers, gameplay and other engine bindings. It is not pure Luau time."
+    },
+    "publication": {
+      "active": false,
+      "frame_join": "Completed world frame; successful publications only, multiple host publications can share a simulation frame.",
+      "hash_work": {
+        "cache_hit_publications": 614,
+        "hashed_bytes": 110335653,
+        "input_bytes": 188896933,
+        "last_cache_storage_bytes": 313424,
+        "max_retained_prefix_bytes": 4194304,
+        "reused_bytes": 78561280
+      },
+      "id": 1,
+      "limit": 1024,
+      "note": "Disjoint successful world-publication CPU spans. Excludes simulation and initial world capture; includes extra timing/collection overhead. Totals span the window; p95 uses retained samples. Not GPU or browser decode time.",
+      "phase_order": [
+        "canonical_encode_ms",
+        "canonical_hash_ms",
+        "presentation_ms",
+        "envelope_ms"
+      ],
+      "phases": {
+        "canonical_encode_ms": {
+          "mean_ms": 0.3370078031496086,
+          "p50_ms": 0.30000099999999996,
+          "p95_ms": 0.5,
+          "p99_ms": 0.5,
+          "total_ms": 213.99995500000145
+        },
+        "canonical_hash_ms": {
+          "mean_ms": 0.3869291716535455,
+          "p50_ms": 0.4,
+          "p95_ms": 0.5,
+          "p99_ms": 0.7,
+          "total_ms": 245.7000240000014
+        },
+        "envelope_ms": {
+          "mean_ms": 0.3163779496063008,
+          "p50_ms": 0.3,
+          "p95_ms": 0.400001,
+          "p99_ms": 0.5,
+          "total_ms": 200.899998000001
+        },
+        "presentation_ms": {
+          "mean_ms": 0.002677162204724409,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "p99_ms": 0.1,
+          "total_ms": 1.699998
+        }
+      },
+      "publications": 635,
+      "retained": 635
+    },
+    "interpretation": "Script residual includes gameplay, Luau wrappers and other engine bindings. UI/publishing child phases cannot be added again to parents. No pure-Luau/GC claim."
+  },
+  "production_game_cache_pair": {
+    "source": "D:/Projects/JYRogue/game/evidence/performance-audit-20261029/browser-retained-review3/result.json",
+    "sha256": "90fdd8d4a90949c2e49b61d74a68bd1a57e491729a72eb5434e4b8d60fa663e4",
+    "release": "releases/9574a39d9f222277b02f9547f902388ca3fd5154351be98409a875e9c9005939/",
+    "expected_source": "4937c57cfa97939c40e52048f08487c8901f0f9394b8f9e9f10d370ff114f7b2",
+    "source_manifest": "game/dist/player-performance-retained-review3/export.json",
+    "profiling": false,
+    "target60Passed": false,
+    "results": [
+      {
+        "name": "travel",
+        "simulation_hz": 59.989619100997196,
+        "raf_hz": 59.989619100997196,
+        "new_snapshot_hz": 59.990217901526265,
+        "dropped_steps": 0,
+        "raf_intervals_ms": {
+          "n": 600,
+          "p50": 16.69999999999891,
+          "p95": 16.799999999999272,
+          "p99": 16.80000000000109,
+          "min": 16.5,
+          "max": 16.899999999997817,
+          "mean": 16.667000000000005
+        },
+        "worst_one_second_new_snapshot_hz": 59.01445854649458,
+        "maximum_window_completion_p95_ms": 25.100000023841858,
+        "maximum_window_completion_p99_ms": 38.299999952316284
+      }
+    ],
+    "scope": "Same SDK5, game-only presentation cache change. Single travel case; original completion-time gate remains failing. Not SDK6 or a five-scenario final pass."
+  },
+  "remaining": [
+    "SDK6 official main/worker functional and paired-RAF diagnostics validation",
+    "Actual game five-scenario unchanged acceptance gates",
+    "Longer actual game memory, resource lifecycle and browser/Luau GC diagnostics"
+  ]
+}

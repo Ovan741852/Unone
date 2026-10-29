@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Official Web player retains update/accept/draw ordering and adds honest bounded RAF/submission diagnostics",
+  "sources": {
+    "web/shared/async-scheduler.mjs": "0f743b61721c20052707fa15d0e5d52b596ce53d1b904c3bd7ff6286cdcfe6e7",
+    "web/shared/player-completion.mjs": "be4339501cfd5c93c20e19869d31f630c190dcb17f371b549c8341905ae06996",
+    "web/player/main.js": "6af6020b66377f124ab256402b2a9383ca3afe2e3b20d56bff4ce79a2f190463"
+  },
+  "decision": {
+    "order": "An actual RAF token owns bounded sequential fixed updates, snapshot acceptance, then drawing; only one update transaction may be in flight",
+    "withdrawn_draft": "Render-first preparing the next Luau View while the old View remains visible advanced private camera/hit caches before input on the visible view was consumed",
+    "finding": "P2 reported by game owner and independent Codex Core reviewer; InputFrame/physical input has no presented-world/View history with which to reconstruct private Lua caches",
+    "preservation": ".cache/render-first-withdrawn-20261030 contains source/test/doc copies, SHA inventory, working diff and reason",
+    "limits": "Restoring the existing order removes the added whole-frame mismatch; it does not introduce historical event-time hit testing for preexisting worker/backlog conditions"
+  },
+  "diagnostics": {
+    "existing_contract": "Version1 counters, actual completed_intervals timestamps and acceptance gates remain unchanged",
+    "successful_submission_raf_intervals": "Actual originating browser RAF timestamp intervals for successful world/UI/cursor submissions only",
+    "new_snapshot_raf_intervals": "Only globally first shown valid advancing frames submitted under a scheduler RAF; manual/startup already-shown frames, repeats and regressions are excluded",
+    "paired_samples": "At most 512 fixed primitive rows; detached frozen objects are constructed only for snapshot({includeRafSamples:true}) after window filtering",
+    "default_publication": "The read-only default query and periodic 30-draw report contain summaries, never paired rows",
+    "wall_scopes": "Preparation elapsed time includes worker/job waits. Submission and callback wall durations cover only the known synchronous drawing continuation after preparation. Cancelled/stale preparation does not contaminate active wall/deadline distributions",
+    "deadline_scope": "Supplied RAF timestamp plus nominal target budget; estimated wall/readiness diagnostics, not GPU/OS/compositor acknowledgements",
+    "source_tags": ["scheduler_raf", "startup", "manual", "unknown"]
+  },
+  "validation": {
+    "command": "node --test web/shared/async-scheduler.test.mjs web/shared/player-completion.test.mjs web/shared/player-profile-main.test.mjs web/shared/player-profile-main-backend.test.mjs web/shared/startup-player-entry.test.mjs web/shared/ordered-physical-player-entry.test.mjs web/shared/player-pointer.test.mjs",
+    "node": "C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "result": {"passed": 53, "failed": 0, "skipped": 0},
+    "raw_log": "docs/evidence/2026-10-29-engine-stability/raf-coherent-paired-tests.log",
+    "cases": [
+      "An actual 15ms completion interval remains 15ms while originating RAF cadence is 10ms; no timestamp substitution makes it pass",
+      "Submission/callback synchronous wall 1ms remains distinct from awaited preparation 9ms",
+      "Original RAF token is preserved across a delayed actual worker backend; no stale draw, overlapping request or extra Core command",
+      "Private moving projector input is consumed before publishing the next ordinary fixed-tick View",
+      "Pause/hidden/reset/stop/restart generations cancel stale drawing; cancelled preparation retains counts without active wall/cadence contamination",
+      "High/low-refresh, timestamp rounding debt and bounded catch-up/drop behavior remain honest",
+      "Packed lease consumption and optional interpolation preserve canonical state",
+      "700 writes retain 512 primitive rows; default/stale queries construct no row objects; opt-in rows are filtered and frozen",
+      "Manual/startup, repeated/regressed/unknown frames, skipped/error/no-submission outcomes and nominal deadline estimates are explicit",
+      "Public accessor rejects malformed options and adds no runtime operation; existing save readiness, physical receipts and pointer behavior remain passing"
+    ]
+  },
+  "independent_review": {
+    "restored_scheduler_and_main": "Codex /root/runtime_audit reviewed update/accept/draw, one-chain retirement, original RAF token, post-await synchronous wall boundaries, cancellation/epoch guards and private-camera regression; no additional concrete P1/P2 found",
+    "metrics_helper": "Codex /root/native_performance reviewed the helper implemented by /root/web_lifecycle; non-RAF wall pollution and cancelled-preparation pollution were corrected before the final run; no remaining concrete P1/P2 found in that scope",
+    "reviewer_execution": "Source-only reviews; no reviewer builds, browser workloads or tests are claimed"
+  },
+  "not_claimed": [
+    "A final SDK artifact or final commit identity",
+    "A new actual browser FPS result or a pass of the owner's unchanged temporal gate",
+    "GPU/OS scanout, universal pixel correctness, historical input reconstruction or no memory leak/no GC"
+  ]
+}

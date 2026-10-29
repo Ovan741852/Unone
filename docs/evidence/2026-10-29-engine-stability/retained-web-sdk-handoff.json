@@ -2,15 +2,15 @@
   "schema": "unone.retained-web-sdk-handoff.v2",
   "date": "2026-10-30",
   "status": "integration_candidate_actual_game_FPS_and_soak_acceptance_pending",
-  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate5",
-  "sdk_manifest_sha256": "60187c3dd1ca4eaa03b284bca971b55011167d0945f783537f265ada8a7dc3d1",
+  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate6",
+  "sdk_manifest_sha256": "c90b7374a19d70bfa8572fe0371de640b7e5450b45948e14905e132100d909f9",
   "engine_version": "0.2.0",
   "runtime_package": "@unone/ui@0.5.0",
   "runtime_id": "web-production-0",
   "runtime_profile": "release",
-  "wasm_sha256": "665ce1bb5259f107c43783c01392703615ceadbba9c54f7279f50146961ef46c",
+  "wasm_sha256": "423f90c4d64c916931887d83cfc9562e46d1bdcb4718373327588fa8c0c54f25",
   "cli_sha256": "0a7b257dc357f5b9846fb2ef13f480f3f65c5d4ed6918955c8321b5dc330e929",
-  "template_checkpoint": "D:/Projects/Unone/artifacts/web-retained-20261030-template-checkpoint5",
+  "template_checkpoint": "D:/Projects/Unone/artifacts/web-retained-20261030-template-checkpoint6",
   "api": {
     "define": "api.ui.imageBatch.define(id, {bounds, quads})",
     "remove": "api.ui.imageBatch.remove(id)",
@@ -40,10 +40,17 @@
       "dropped_steps_total",
       "completed_intervals",
       "presented_frame_changes",
-      "accepted_publications"
+      "accepted_publications",
+      "successful_submission_raf_intervals",
+      "new_snapshot_raf_intervals",
+      "submit_sync_wall",
+      "callback_sync_wall",
+      "preparation_wall",
+      "raf_diagnostics"
     ],
     "scope": "Synchronous complete world/UI/cursor submissions. Not physical scanout. Query never ticks/pauses/decodes another world.",
-    "scheduling": "One RAF-owned fixed60 update/accept/draw transaction, sequential worker requests, capped catch-up/drop. Completion definitions unchanged; measure changed submissions as well as simulation and completed draws."
+    "scheduling": "Existing update → accept → draw order retained. Render-first draft withdrawn because preparing another private Luau projector/View before visible-view input was consumed added a whole-frame mismatch.",
+    "diagnostics": "Original completed_intervals remains actual CPU submission completion time. Additional originating-RAF distributions and opt-in ≤512 frozen paired rows do not change old gates. Synchronous wall starts after awaited preparation, excludes worker wait; no GPU/OS acknowledgement."
   },
   "implementation": {
     "dynamic_artwork": "Capacity-backed geometry per definition; consecutive texture groups with shared material, safe old-generation storage migration and bounded shrink.",
@@ -51,11 +58,11 @@
     "context": "Retire explicit ordinary-world old-epoch GPU listeners/bindings while lost; retain CPU arrays/images and asset identity. Disabled particle export stub supplies the same lifecycle interface."
   },
   "verification": {
-    "web_unit_passed": 519,
+    "web_unit_passed": 531,
     "web_skipped": 0,
     "production_abi_passed": 12,
     "core_integration_passed": 15,
-    "core_scope": "8 retained image batch +3 save publication +2 package constructor +2 pixel snapping integration tests; current full Core suite was not repeated.",
+    "core_scope": "Current ordinary Core354passed/3ignored plus execution policy1; phase tests4+unit2; opt2 sampler5 and combined-feature precedence4. Prior candidate5 retained/save/pixel cases are historical evidence, not relabeled as a current targeted rerun.",
     "previous_full_core_evidence": "Candidate3 records prior352passed/3ignored full Core scope; it is not relabeled as a new full run.",
     "official_smoke": true,
     "smoke_backends": [
@@ -70,18 +77,19 @@
         "cases": 9
       }
     ],
-    "smoke_release": "releases/010f64077e3d4a241c2ec784969157221ad41b8e772f389d71985668c45a2066/",
-    "smoke_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-official-web-smoke-candidate5.json",
+    "smoke_release": "releases/c4cfb706d594ed37f0a9ad7786853490f4b3d9fb79faab99d69a40a68f5ebcb8/",
+    "smoke_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-official-web-smoke-candidate6.json",
     "gpu_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-ui-buffer-reuse-browser.json",
     "gpu_cases": 81,
     "ordinary_world_context": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/world-context-fixed.json",
     "actual_screenshots_viewed": [
-      "main/initial.png",
-      "worker/restored.png",
-      "world-context-fixed.png",
-      "retained-ui-buffer-reuse-browser.png"
+      "candidate6/main/initial.png",
+      "candidate6/worker/restored.png"
     ],
-    "template_fingerprints": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-candidate5-template-fingerprints.json"
+    "template_fingerprints": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-candidate6-template-fingerprints.json",
+    "phase_abi_passed": 14,
+    "raf_diagnostic_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-raf-browser-candidate6.json",
+    "indexed_files_verified": 142
   },
   "coverage": {
     "gpu_policy": "pixel_center",
@@ -104,11 +112,103 @@
       "candidate": 4,
       "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate4",
       "outcome": "Failed actual exported context restore: disabled particle stub missing contextLost hook. Preserved unchanged; superseded by candidate5."
+    },
+    {
+      "candidate": 5,
+      "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate5",
+      "sdk_manifest_sha256": "60187c3dd1ca4eaa03b284bca971b55011167d0945f783537f265ada8a7dc3d1",
+      "wasm_sha256": "665ce1bb5259f107c43783c01392703615ceadbba9c54f7279f50146961ef46c",
+      "outcome": "Full strict game review2 still failed. Game-only cache review3 travel on same SDK5 achieved601/601sim/new,59.990Hz,drops0,worst1s59.014Hz,RAF p99 16.8ms, but actual completion-end p95/p99 still failed. No gate changed."
     }
   ],
   "remaining_acceptance": [
-    "Actual game idle,drag,travel,atlas,battle: >=59 simulation ticks/s, RAF/s, completed submissions/s and changed submitted frames/s; p95<=18.5ms,p99<=25ms, no sustained drops.",
+    "Actual game idle/drag/travel/atlas/battle with SDK6 and frozen game source; retain original completion gate and separately report originating-RAF/new-snapshot coverage.",
     "Longer actual-game CPU/GPU retention and browser/Luau GC measurement; bounded lifecycle tests do not establish universal leak freedom or zero GC.",
-    "Use candidate5; candidate3 failed performance and candidate4 failed exported lifecycle acceptance."
-  ]
+    "No final stable60FPS claim. Use production runtime for acceptance; diagnostic runtimes carry collection overhead."
+  ],
+  "provenance": {
+    "runtime": {
+      "sampling_profile": false,
+      "bytecode_optimization_level": 2,
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "source_commit": "e3d4f6d9c4058ca210883e07f39ffde6d3581e7f",
+      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "wasm_sha256": "423f90c4d64c916931887d83cfc9562e46d1bdcb4718373327588fa8c0c54f25",
+      "wasm": "unone_player.wasm",
+      "wasm_bytes": 3276069,
+      "phase_profile": false,
+      "profile_mode": "none",
+      "preview_tools": false,
+      "exports": [
+        "init",
+        "alloc",
+        "load_project",
+        "unload_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_viewport_size",
+        "set_instance_transport",
+        "set_ui_transport",
+        "tick",
+        "ui_request",
+        "jobs_request",
+        "jobs_binary",
+        "spatial_request",
+        "host_time_request",
+        "observation_ptr",
+        "observation_len",
+        "particle_alloc",
+        "particle_sample",
+        "particle_output_ptr",
+        "particle_output_len"
+      ],
+      "dev_tools": false,
+      "profile": "release",
+      "javascript": "unone-player.js",
+      "runtime_packages": {
+        "@unone/ui": "0.5.0"
+      },
+      "cargo_features": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "particle",
+        "random",
+        "save",
+        "ui"
+      ],
+      "source_dirty": true
+    },
+    "cli": "Unchanged functioning candidate5 release CLI. Newly compiled CLI6 was blocked by Windows App Control on execution; no policy change or bypass attempted.",
+    "documentation": "Current docs/profiling.md copied after supported SDK pack; its bytes/hash were updated in sdk.json. Every indexed file was independently verified afterward. Embedded CLI guide/search content retains candidate5 provenance.",
+    "source": "WASM metadata truthfully records e3d4f6d plus dirty working tree; subsequent source/evidence commit does not relabel it as a clean-commit build."
+  },
+  "diagnostics": {
+    "phase": {
+      "path": "D:/Projects/Unone/artifacts/web-retained-20261030-phase-profile-candidate1",
+      "wasm_sha256": "e76b6a6fd258b6e5fbf457e666b9aaf0df3aa77d437e170249d0802548d55f1d",
+      "mode": "phase-only opt2 without VM/function callbacks",
+      "actual_wasm_digest_comparisons": 68,
+      "active_frames": 60
+    },
+    "sampling": {
+      "path": "D:/Projects/Unone/artifacts/web-retained-20261030-sampling-profile-candidate1",
+      "wasm_sha256": "f60ee4dea07be9581ec52d773d8b42214b2c13a44eeca4465b76cddc55e0c808",
+      "mode": "opt2 safe-point sampler and VM probes; not FPS acceptance",
+      "evidence": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/sampling-profile-actual-wasm-validation.json"
+    },
+    "real_game_phase": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-real-game-diagnosis.json"
+  }
 }

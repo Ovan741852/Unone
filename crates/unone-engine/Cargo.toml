@@ -9,6 +9,11 @@ native-codegen = ["mlua/luau-jit"]
 default = ["dev-tools", "all-systems"]
 dev-tools = ["dep:schemars", "preview-tools"]
 preview-tools = []
+# Coarse Core timings with the production interpreter's bytecode policy.
+# Function sampling and VM allocation/GC hooks are deliberately unavailable.
+phase-profile = ["preview-tools"]
+# Safe-point attribution at production bytecode optimization; not an FPS mode.
+sampling-profile = ["preview-tools"]
 all-systems = ["physics2d", "physics3d", "camera", "random", "ui", "save", "audio", "spine", "particle", "effekseer", "jobs"]
 jobs = []
 physics2d = []

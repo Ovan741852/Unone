@@ -21,6 +21,8 @@ spine = ["unone-engine/spine"]
 particle = ["unone-engine/particle"]
 effekseer = ["unone-engine/effekseer"]
 preview-tools = ["unone-engine/preview-tools"]
+phase-profile = ["preview-tools", "unone-engine/phase-profile"]
+sampling-profile = ["preview-tools", "unone-engine/sampling-profile"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

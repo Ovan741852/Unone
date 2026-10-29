@@ -1,8 +1,9 @@
-// One visible RAF owns update -> accepted snapshot -> draw. Independent timer
-// updates can redraw N and then replace N+1 with N+2 before the next RAF, even
-// when both simulation and drawing individually average 60 Hz.
+// One RAF owns update -> acceptance -> draw. Preparing another game View while
+// the old one remains visible would advance private Luau projector/hit caches
+// before input on that visible view is consumed. Keep the coherent order.
 export function createAsyncScheduler({
  tick,render,onError=console.error,onVisibilityChange=()=>{},onWake=null,
+ onRafEnd=null,onPreparationStart=null,onPreparationEnd=null,
  stepMs=1000/60,maxCatchUpSteps=5,now=()=>performance.now(),
  raf=cb=>requestAnimationFrame(cb),cancelRaf=id=>cancelAnimationFrame(id),
  visibilityTarget=globalThis.document,
@@ -22,25 +23,30 @@ export function createAsyncScheduler({
  async function draw(timestamp){
   frame=null;if(!started||hidden()||busy)return;
   const token=generation,at=Number.isFinite(timestamp)?timestamp:now(),began=now(),elapsed=Math.max(0,at-last);
-  last=at;busy=true;let steps=0,error=null;
+  last=at;busy=true;let steps=0,error=null,preparationStart=null,tag,preparationReported=false,submissionStart=null,submissionEnd=null;
   try{
    if(!paused){
-    acc+=elapsed;
-    const lost=Math.max(0,Math.floor((acc+toleranceMs)/stepMs)-maxCatchUpSteps);
+    acc+=elapsed;const due=Math.floor((acc+toleranceMs)/stepMs),lost=Math.max(0,due-maxCatchUpSteps);
     dropped+=lost;acc-=lost*stepMs;
-    while(steps<maxCatchUpSteps&&acc+toleranceMs>=stepMs){
-     acc-=stepMs;steps++;
-     // Each step owns its usual input transaction. Awaiting also prevents a
-     // worker publication from replacing a snapshot while it is being drawn.
-     await tick();
-     if(!started||hidden()||paused||token!==generation)return;
+    const count=Math.min(maxCatchUpSteps,Math.floor((acc+toleranceMs)/stepMs));
+    if(count>0){
+     preparationStart=now();tag=onPreparationStart?.();
+     while(steps<count&&started&&!hidden()&&!paused&&token===generation&&acc+toleranceMs>=stepMs){acc-=stepMs;await tick();steps++;}
+     preparationReported=true;onPreparationEnd?.(tag,at,preparationStart,now(),steps,!started||hidden()||paused||token!==generation,stepMs);
     }
    }
-   if(started&&!hidden()&&token===generation)render();
+   if(started&&!hidden()&&token===generation){
+    // The originating browser RAF timestamp survives awaits. Only this known
+    // synchronous submission continuation contributes callback_sync_wall;
+    // worker/job waits belong to preparation_wall, never sync CPU/wall work.
+    submissionStart=now();try{render(at,submissionStart,false,'scheduler_raf',stepMs);}finally{submissionEnd=now();}
+   }
   }catch(cause){error=String(cause?.message??cause);stop();onError(cause);}
   finally{
+   if(preparationStart!==null&&!preparationReported)onPreparationEnd?.(tag,at,preparationStart,now(),steps,true,stepMs);
    busy=false;
-   try{onWake?.({source:'raf',start_ms:began,end_ms:now(),timestamp_ms:at,elapsed_ms:elapsed,steps,busy:false,dropped_steps:dropped,error});}
+   try{if(submissionStart!==null)onRafEnd?.(at,submissionStart,submissionEnd,false,stepMs);
+    onWake?.({source:'raf',start_ms:began,end_ms:now(),timestamp_ms:at,elapsed_ms:elapsed,steps,busy:false,dropped_steps:dropped,error});}
    finally{schedule();}
   }
  }

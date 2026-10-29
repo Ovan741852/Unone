@@ -23,7 +23,7 @@ function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED
  const playerCompletion=createPlayerCompletionMetrics({now:()=>0}),ui=uiRenderer??{draw:()=>DRAW_COMPLETED,ready:async()=>{},releaseAll(){}},events=new Map();
  const canvas={addEventListener(name,fn){const list=events.get(name)??new Set();list.add(fn);events.set(name,list);},removeEventListener(name,fn){events.get(name)?.delete(fn);}};
  const context={renderer,canvas,playerCompletion,metrics,serializedSavePayload,startupAbort:abort,startupCancelled,assertRasterReady,renderCount:0,orderedRouter:null,publishPhysical(){},
-  draw(){draws++;context.renderCount++;const world=available()?worldOutcome:DRAW_SKIPPED.raster_unavailable;if(available()){cap.ensure(view);state.drawn();}playerCompletion.attempt();return playerCompletion.finish(world,ui.draw(context.snapshot,{width:100,height:100,dpr:1}),cursorOutcome(),0,0);},
+  draw(at=null,start=null,inFlight=false,source='manual',budget=1000/60){draws++;context.renderCount++;const world=available()?worldOutcome:DRAW_SKIPPED.raster_unavailable;if(available()){cap.ensure(view);state.drawn();}playerCompletion.attempt();return playerCompletion.finish(world,ui.draw(context.snapshot,{width:100,height:100,dpr:1}),cursorOutcome(),0,0,source,at,start,inFlight,budget);},
   requestAnimationFrame:raf,completeStartupPresentation:opts=>completeStartupPresentation({...opts,nextFrame:raf,cancelFrame:n=>frames.delete(n)}),
   performance:{now:()=>0,getEntriesByType:()=>[]},window:{playerBoot:0,addEventListener(){}},URL,
   document:{body:{dataset:{}}},console:{info:s=>logs.push(s)},status:{textContent:'loading'},snapshot:{world:{frame:0,...(uiSnapshot?{ui:uiSnapshot}:{})},save_payload:savePayload},
@@ -31,7 +31,7 @@ function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED
   createAsyncScheduler(){made++;return {start:()=>starts++};},frozen:false,tickOnce:async()=>{},fail(){},
   uiScroll:{cancel(){}},uiRenderer:ui,cursorHost:{ready:cursorReady},input:{releaseAll(){}},audio:null,physicalViewport:()=>[1280,720],backend:{request:async()=>{}}};
  let source=fs.readFileSync(process.env.UNONE_STARTUP_MAIN_SOURCE??new URL('../player/main.js',import.meta.url),'utf8');
- const persistSource=source.slice(source.indexOf('function persistSave('),source.indexOf('function draw(){'));
+ const persistSource=source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('));
  const begin=source.indexOf('async function finishStartup(');
  if(begin>=0)source=source.slice(begin,source.indexOf('async function start(){',begin));
  else source='async function finishStartup(presentation,kind){'+source.slice(source.indexOf(' draw();await renderer.ready();'),source.indexOf('\n}\nfunction pointer'))+'\n}';
@@ -47,6 +47,7 @@ test('actual production startup entry waits raw-loss event gap, redraws, then pu
  assert.deepEqual(h.counts(),{draws:4,validations:2,starts:1,made:1,disposed:0});
  assert.equal(h.metrics.raster.projected.completed_game_draw.context_epoch,2);assert.equal(h.metrics.startup_presentation.phase,'ready');
  assert.equal(h.logs.filter(x=>x.startsWith('UNONE_PLAYER_READY')).length,1);
+ assert.equal(h.context.playerCompletion.snapshot().raf_diagnostics.source_counts.startup,4);assert.equal(h.context.playerCompletion.snapshot().successful_submission_raf_intervals.retained,0,'startup barriers never masquerade as scheduler RAF samples');
 });
 test('actual production startup entry pagehide cancellation prevents late READY and scheduler creation',async()=>{
  const h=fixture();await flush();h.abort.abort();await flush();assert.equal(h.result.settled,true);await h.promise;
@@ -125,6 +126,6 @@ test('restarting while paused persists new Game.start contents without waiting f
   localStorage:{setItem:(key,text)=>writes.push({key,text})},canvas:{clientWidth:100,clientHeight:100},physicalViewport:()=>[100,100],json:async()=>({config:{}}),
   setPaused:async value=>{context.frozen=value;},backend:{request:async command=>{assert.equal(command.kind,'load');assert.equal(command.payload.restored_save.coins,1);return{world:{frame:0},save_payload:{coins:2}};}},
   acceptSnapshot:value=>context.snapshot=value,configurePhysical(){},orderedRouter:null,audio:null,scheduler:{resetClock(){}},draw(){}};
- vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw(){'))+source.slice(source.indexOf('async function restart(){'),source.indexOf('async function finishStartup(')),context);
+ vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+source.slice(source.indexOf('async function restart(){'),source.indexOf('async function finishStartup(')),context);
  await context.restart();assert.deepEqual(writes,[{key:'restart-save',text:'{"coins":2}'}]);assert.equal(context.saved,'{"coins":2}');assert.equal(context.frozen,true);
 });

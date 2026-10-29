@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "reviewer": "Claude CLI",
+  "version": "2.1.308 (Claude Code)",
+  "command": [
+    "C:/Users/liNao/.local/bin/claude.exe",
+    "-p",
+    "--tools",
+    "",
+    "--max-turns",
+    "1",
+    "--output-format",
+    "json",
+    "--no-session-persistence"
+  ],
+  "base": "e3d4f6d9c4058ca210883e07f39ffde6d3581e7f",
+  "files": {
+    "crates/unone-engine/src/execution.rs": "982ddb244fdd5f31805596e7befe285b761c0ffcf532e92fd387985c30f06492",
+    "crates/unone-engine/src/runtime/phase_profile.rs": "b51b6c22e553a21ca611e81882fb99c4a86ad22910a7b8549517d664fd5cfedd",
+    "crates/unone-web-live-smoke/src/main.rs": "fec8afca2c113af4f4859f6decd50580097642a4ac0cd79c5516181096ddca40",
+    "crates/unone-web-live-smoke/src/ui_transport.rs": "073e835ca6febfb0deb5603c0978313f0996bba51cd157baaf921f849332ddb3"
+  },
+  "read_only_fixed_stdin": true,
+  "elapsed_ms": 60047,
+  "timed_out": true,
+  "code": null,
+  "signal": "SIGTERM",
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "status": "incomplete"
+}

@@ -30,7 +30,7 @@ function harness({world=snapshot(),hasWorldPointer=true}={}){
   acceptSnapshot:value=>{context.snapshot=value;},audio:null,saved:'null',key:'pointer-test',
   localStorage:{setItem:()=>{}},bridgeMs:0,
  });
- vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw(){'))+advanceSource+'\n'+pointerSource,context);
+ vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+advanceSource+'\n'+pointerSource,context);
  return {context,frames,tick:()=>context.advance()};
 }
 

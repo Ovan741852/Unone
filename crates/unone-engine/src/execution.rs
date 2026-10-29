@@ -18,6 +18,9 @@ pub struct ExecutionMode {
     /// release-like measurement. It is not a performance result.
     pub build_intent: &'static str,
     pub preview_tools: bool,
+    pub phase_profile: bool,
+    /// Effective mode: phase-profile takes precedence when Cargo unifies both.
+    pub sampling_profile: bool,
     pub native_codegen_compiled: bool,
     pub native_codegen_supported: Option<bool>,
     pub native_codegen_requested: bool,
@@ -35,7 +38,7 @@ pub struct ExecutionMode {
 }
 
 pub(crate) fn bytecode_optimization_level() -> u8 {
-    if cfg!(feature = "preview-tools") { 1 } else { 2 }
+    if cfg!(all(feature = "preview-tools", not(any(feature = "phase-profile", feature = "sampling-profile")))) { 1 } else { 2 }
 }
 
 pub(crate) fn bytecode_type_info_level() -> u8 {
@@ -65,7 +68,11 @@ pub fn execution_mode() -> ExecutionMode {
         } else {
             "release"
         },
-        build_intent: if cfg!(feature = "preview-tools") {
+        build_intent: if cfg!(feature = "phase-profile") {
+            "phase-diagnostic"
+        } else if cfg!(feature = "sampling-profile") {
+            "sampling-diagnostic"
+        } else if cfg!(feature = "preview-tools") {
             "diagnostic"
         } else if cfg!(debug_assertions) {
             "development"
@@ -73,6 +80,8 @@ pub fn execution_mode() -> ExecutionMode {
             "shipping-candidate"
         },
         preview_tools: cfg!(feature = "preview-tools"),
+        phase_profile: cfg!(feature = "phase-profile"),
+        sampling_profile: cfg!(all(feature = "sampling-profile", not(feature = "phase-profile"))),
         native_codegen_compiled: cfg!(feature = "native-codegen"),
         native_codegen_supported: supported,
         native_codegen_requested: requested,
@@ -90,7 +99,7 @@ pub fn execution_mode() -> ExecutionMode {
             "not-applicable"
         },
         determinism_contract: "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
-        limitation: "Eligibility is not per-function compilation proof. Diagnostic preview builds disable Luau codegen and use bytecode optimization 1; non-preview VMs default to bytecode optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        limitation: "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
     }
 }
 
@@ -104,12 +113,14 @@ mod tests {
         assert_eq!(mode.vm_implementation, "luau-upstream-vendored");
         assert_eq!(mode.host_binding, "rust-mlua");
         assert_eq!(mode.native_codegen_fallback, "interpreter");
-        assert_eq!(mode.bytecode_optimization_level, if mode.preview_tools { 1 } else { 2 });
+        assert_eq!(mode.phase_profile, cfg!(feature = "phase-profile"));
+        assert_eq!(mode.sampling_profile, cfg!(feature = "sampling-profile") && !mode.phase_profile);
+        assert_eq!(mode.bytecode_optimization_level, if mode.preview_tools && !mode.phase_profile && !mode.sampling_profile { 1 } else { 2 });
         assert_eq!(mode.bytecode_type_info_level, if mode.native_codegen_requested { 1 } else { 0 });
         if mode.preview_tools {
             assert!(!mode.native_codegen_requested);
             assert_eq!(mode.luau_execution, "interpreter");
-            assert_eq!(mode.build_intent, "diagnostic");
+            assert_eq!(mode.build_intent, if mode.phase_profile { "phase-diagnostic" } else if mode.sampling_profile { "sampling-diagnostic" } else { "diagnostic" });
         }
     }
 }

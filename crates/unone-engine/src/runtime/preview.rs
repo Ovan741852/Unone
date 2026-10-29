@@ -192,6 +192,13 @@ impl EngineRuntime {
         }
         match &request {
             PreviewRequest::ProfileStart { sampling } => {
+                if cfg!(feature = "phase-profile") && *sampling {
+                    return Err(Box::new(Diagnostic::error(
+                        "PROFILE_SAMPLING_UNAVAILABLE",
+                        "Function sampling is unavailable in the phase-only diagnostic",
+                        "Use sampling=false for production-bytecode Core timings, or an ordinary preview build for function and VM sampling.",
+                    )));
+                }
                 if profiling::state(&self.lua).borrow().active {
                     return Err(Box::new(Diagnostic::error(
                         "PROFILE_ACTIVE",

@@ -1,0 +1,17 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.27s
+     Running tests\execution_policy.rs (target\debug\deps\execution_policy-58c098aaddcaf341.exe)
+
+running 1 test
+test source_bytecode_policy_is_independent_of_native_codegen_eligibility ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\sampling_profile.rs (target\debug\deps\sampling_profile-5068a607cf980b6d.exe)
+error: test failed, to rerun pass `-p unone-engine --test sampling_profile`
+
+Caused by:
+  could not execute process `D:\Projects\Unone\target\debug\deps\sampling_profile-5068a607cf980b6d.exe` (never executed)
+
+Caused by:
+  應用程式控制原則已封鎖此檔案。 (os error 4551)

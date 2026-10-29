@@ -44,7 +44,10 @@ let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=nu
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
 const playerCompletion=createPlayerCompletionMetrics();
-const removePerformanceAccessor=installPlayerPerformanceAccessor(window,(options={})=>playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:options.windowMs??5000}));
+const removePerformanceAccessor=installPlayerPerformanceAccessor(window,(options={})=>{
+ if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples'].includes(key)))throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
+ return playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false});
+});
 let orderedQueue=null,orderedRouter=null,orderedEpoch=0,physicalProfile;
 // Explicit opt-in host profiling (?unone_profile=1). Null when disabled: each site is one branch.
 let profiler=null,profileFlight=null,profileLastSource=null;
@@ -70,25 +73,26 @@ async function json(path){const r=await fetch(new URL(path,document.baseURI),{ca
 function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
 function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 function persistSave(){const next=serializedSavePayload(snapshot);if(next!==saved){localStorage.setItem(key,next);saved=next;}}
-function draw(){
- if(!profiler)return drawFrame(null);
+function draw(rafTime=null,rafStart=null,inFlight=false,drawSource='manual',budgetMs=1000/60){
+ if(!profiler)return drawFrame(null,rafTime,rafStart,inFlight,drawSource,budgetMs);
  const source=profiler.sourceOf(snapshot),pd=profiler.begin('draw',{source_command:source,snapshot_frame:snapshot?.world?.frame??null,redraw:source!==null&&source===profileLastSource,paused:frozen});
  profileLastSource=source;
- let outcome;try{outcome=drawFrame(pd);}catch(error){profiler.end(pd,'error',{error});throw error;}
+ let outcome;try{outcome=drawFrame(pd,rafTime,rafStart,inFlight,drawSource,budgetMs);}catch(error){profiler.end(pd,'error',{error});throw error;}
  profiler.end(pd,profiler.outcomeOf(pd)??'returned');
  return outcome;
 }
-function drawFrame(pd){
+function drawFrame(pd,rafTime,rafStart,inFlight,drawSource,budgetMs){
+ const startedAt=Number.isFinite(rafStart)?rafStart:performance.now();
  playerCompletion.attempt();
- try{return submitDrawFrame(pd);}catch(error){playerCompletion.error();throw error;}
+ try{return submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs);}catch(error){playerCompletion.error(drawSource,rafTime,startedAt,inFlight,performance.now(),snapshot?.world?.frame,budgetMs);throw error;}
 }
-function submitDrawFrame(pd){
+function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
  if(pd)profiler.mark(pd,'interpolation_sample');
  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
  const uiOutcome=renderUi(snapshot);if(pd)profiler.mark(pd,'ui_draw');const submittedAt=performance.now();renderMs=submittedAt-began;
  const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
- const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now());
+ const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
  document.body.dataset.playerFrame=String(snapshot.world.frame);
  publishPhysical();
@@ -147,19 +151,22 @@ async function finishStartup(presentation,kind){
  };
  const subscribe=listener=>{listeners.add(listener);const unsubscribe=gate?.subscribe(listener);return()=>{listeners.delete(listener);unsubscribe?.();};};
  const commit=()=>{
- draw();
+ draw(null,null,false,'startup');
  metrics.raster=renderer.metrics().raster;
  if(startupAbort.signal.aborted)throw startupCancelled();
  if(sample().state!=='presented')return false;
  assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
- scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
+ scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,
+  onRafEnd:(at,start,end,flight,budget)=>playerCompletion.rafEnd(at,start,end,flight,budget),onPreparationStart:()=>playerCompletion.epoch(),
+  onPreparationEnd:(tag,at,start,end,steps,cancelled,budget)=>playerCompletion.preparationEnd(tag,at,start,end,steps,cancelled,budget),
+  onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
  /* DEVELOPER_CONNECT */
  scheduler.start();
  window.addEventListener('resize',()=>{const [width,height]=physicalViewport();backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
  };
  canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
  try{
-  await completeStartupPresentation({draw,waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready()]),sample,subscribe,
+  await completeStartupPresentation({draw:()=>draw(null,null,false,'startup'),waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready()]),sample,subscribe,
    commit,signal:startupAbort.signal,onState:state=>{metrics.startup_presentation=state;metrics.raster=renderer.metrics().raster;
     document.body.dataset.playerMetrics=JSON.stringify(metrics);document.body.dataset.playerStartupPresentation=JSON.stringify(state);}});
  }finally{canvas.removeEventListener('webglcontextlost',lost);canvas.removeEventListener('webglcontextrestored',restored);listeners.clear();}

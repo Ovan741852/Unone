@@ -40,8 +40,9 @@ pub(super) fn new_job_vm() -> Result<Lua, Box<crate::Diagnostic>> {
 fn create_vm(job:bool) -> Result<Lua, Box<crate::Diagnostic>> {
     let lua = Lua::new();
     // Bytecode optimization is independent of native machine-code generation:
-    // production interpreters/Wasm benefit from inlining too. Diagnostic VMs
-    // keep level 1 so the sampler retains attributable function boundaries.
+    // production interpreters/Wasm benefit from inlining too. Ordinary sampling
+    // diagnostics keep level 1 for function boundaries; explicit opt2 diagnostic
+    // modes retain production bytecode and disclose optimized attribution limits.
     lua.set_compiler(mlua::Compiler::new()
         .set_optimization_level(crate::execution::bytecode_optimization_level())
         .set_type_info_level(crate::execution::bytecode_type_info_level()));

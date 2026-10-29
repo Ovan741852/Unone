@@ -7,7 +7,7 @@ import vm from 'node:vm';
 import {createRuntimeBackend} from './runtime-backend.mjs';
 import {createPresentationInterpolator} from './presentation-interpolation.mjs';
 import {createPlayerProfiler} from './raster-diagnostics.mjs';
-import {createPlayerCompletionMetrics} from './player-completion.mjs';
+import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from './player-completion.mjs';
 import {createAsyncScheduler} from './async-scheduler.mjs';
 import {serializedSavePayload} from './save-publication.mjs';
 const source=fs.readFileSync(process.env.UNONE_PROFILE_MAIN_SOURCE??new URL('../player/main.js',import.meta.url),'utf8');
@@ -91,30 +91,39 @@ test('actual main entry with worker snapshots counts only complete world/UI/curs
  f.context.acceptSnapshot({world:{frame:0,time_seconds:0}},{reset:true,newSession:true});r=f.context.playerCompletion.snapshot();assert.equal(r.draw_attempts,0);assert.equal(r.simulation_frame,0);f.backend.close();
 });
 
-test('actual player tick/accept/draw with real worker backend presents each regular RAF update once',async()=>{
- const f=await fixture(null,{drawOutcome:{status:'completed'}}),frames=new Map();let time=0,id=0,woken,failure=null;
+test('actual player with real worker accepts then draws each fixed tick under its originating RAF token',async()=>{
+ const f=await fixture(null,{drawOutcome:{status:'completed'}}),frames=new Map();let time=0,id=0,prepared,failure=null;
+ f.context.performance={now:()=>time};f.context.playerCompletion=createPlayerCompletionMetrics({now:()=>time});f.context.acceptSnapshot(f.context.snapshot,{reset:true,newSession:true});
  const scheduler=createAsyncScheduler({now:()=>time,raf:fn=>{frames.set(++id,fn);return id;},cancelRaf:n=>frames.delete(n),visibilityTarget:null,
-  tick:()=>f.context.tickOnce(),render:()=>f.context.draw(),onWake:()=>woken?.(),onError:error=>failure=error});f.context.scheduler=scheduler;
+  tick:()=>f.context.tickOnce(),render:(at,start,flight,source,budget)=>f.context.draw(at,start,flight,source,budget),onError:error=>failure=error,
+  onRafEnd:(...args)=>f.context.playerCompletion.rafEnd(...args),onPreparationStart:()=>f.context.playerCompletion.epoch(),
+  onPreparationEnd:(...args)=>{f.context.playerCompletion.preparationEnd(...args);prepared?.();}});f.context.scheduler=scheduler;
  scheduler.start();
  for(let i=1;i<=120;i++){
   time=Math.round(i*1000/60*10)/10;const pending=[...frames.values()];frames.clear();assert.equal(pending.length,1);
-  const done=new Promise(resolve=>woken=resolve);pending[0](time);await done;assert.equal(failure,null);
+  const done=new Promise(resolve=>prepared=resolve);pending[0](time);await done;assert.equal(failure,null);
  }
  const r=f.context.playerCompletion.snapshot();assert.equal(r.simulation_frame,120);assert.equal(r.completed_draws,120);assert.equal(r.presented_frame_changes,120);assert.equal(r.last_presented_snapshot_frame,120);
- assert.deepEqual(f.log.filter(x=>x[0]==='render').map(x=>x[1]),Array.from({length:120},(_,i)=>i+1));assert.equal(scheduler.totalDroppedSteps,0);
+ assert.deepEqual(f.log.filter(x=>x[0]==='render').map(x=>x[1]),Array.from({length:120},(_,i)=>i+1));assert.equal(scheduler.totalDroppedSteps,0);assert(Math.abs(r.completed_intervals.p99_ms-16.7)<1e-6);
+ assert.equal(r.raf_diagnostics.source_counts.scheduler_raf,120);assert.equal(r.raf_diagnostics.preparation_steps,120);assert.equal('samples'in r.raf_diagnostics,false);assert(Math.abs(r.successful_submission_raf_intervals.p99_ms-16.7)<1e-6);
+ const pairs=f.context.playerCompletion.snapshot({includeRafSamples:true,windowMs:1000}).raf_diagnostics.samples;assert(pairs.length<=61);assert.equal(pairs.at(-1).snapshot_frame,120);assert.equal(pairs.at(-1).source,'scheduler_raf');assert.equal(pairs.at(-1).callback_end_ms,2000);
  assert.deepEqual(f.remote().posts,['init',...Array(120).fill('tick')]);scheduler.stop();f.backend.close();
 });
 
-test('actual player awaiting worker cannot draw the old publication or enqueue another tick before acceptance',async()=>{
- const f=await fixture(null,{drawOutcome:{status:'completed'}}),frames=new Map();let time=0,id=0,woken,failure=null;
+test('actual player awaits one worker publication and draws once in its originating RAF continuation',async()=>{
+ const f=await fixture(null,{drawOutcome:{status:'completed'}}),frames=new Map();let time=0,id=0,prepared,failure=null;
+ f.context.performance={now:()=>time};f.context.playerCompletion=createPlayerCompletionMetrics({now:()=>time});f.context.acceptSnapshot(f.context.snapshot,{reset:true,newSession:true});
  const scheduler=createAsyncScheduler({now:()=>time,raf:fn=>{frames.set(++id,fn);return id;},cancelRaf:n=>frames.delete(n),visibilityTarget:null,
-  tick:()=>f.context.tickOnce(),render:()=>f.context.draw(),onWake:()=>woken?.(),onError:error=>failure=error});f.context.scheduler=scheduler;
- f.remote().holdTick=true;scheduler.start();time=16.7;const draw=[...frames.values()][0];frames.clear();const done=new Promise(resolve=>woken=resolve);draw(time);
+  tick:()=>f.context.tickOnce(),render:(at,start,flight,source,budget)=>f.context.draw(at,start,flight,source,budget),onError:error=>failure=error,
+  onRafEnd:(...args)=>f.context.playerCompletion.rafEnd(...args),onPreparationStart:()=>f.context.playerCompletion.epoch(),
+  onPreparationEnd:(...args)=>{f.context.playerCompletion.preparationEnd(...args);prepared?.();}});f.context.scheduler=scheduler;
+ f.remote().holdTick=true;scheduler.start();time=16.7;const draw=[...frames.values()][0];frames.clear();const done=new Promise(resolve=>prepared=resolve);draw(time);
  for(let i=0;i<8;i++)await Promise.resolve();
  assert.deepEqual(f.remote().posts,['init','tick']);assert.equal(frames.size,0);assert.equal(f.context.playerCompletion.snapshot().completed_draws,0);assert.equal(f.context.playerCompletion.snapshot().last_presented_snapshot_frame,null);
  time=30;f.remote().release();await done;assert.equal(failure,null);
- const r=f.context.playerCompletion.snapshot();assert.equal(r.completed_draws,1);assert.equal(r.presented_frame_changes,1);assert.equal(r.last_presented_snapshot_frame,1);assert.equal(frames.size,1);
- assert.deepEqual(f.log.filter(x=>x[0]==='render'),[['render',1]]);scheduler.stop();f.backend.close();
+ const r=f.context.playerCompletion.snapshot({includeRafSamples:true});assert.equal(r.completed_draws,1);assert.equal(r.presented_frame_changes,1);assert.equal(r.last_presented_snapshot_frame,1);assert.equal(frames.size,1);
+ assert.deepEqual(f.log.filter(x=>x[0]==='render'),[['render',1]]);assert.equal(r.raf_diagnostics.samples[0].raf_time_ms,16.7);assert.equal(r.raf_diagnostics.samples[0].start_ms,30);assert.equal(r.callback_sync_wall.max_ms,0);assert(Math.abs(r.preparation_wall.max_ms-13.3)<1e-6);
+ time=33.4;const next=[...frames.values()][0];frames.clear();const again=new Promise(resolve=>prepared=resolve);next(time);await again;assert.equal(f.context.playerCompletion.snapshot().last_presented_snapshot_frame,2);scheduler.stop();f.backend.close();
 });
 
 test('actual tick persistence skips unchanged saves and commits the marker only after successful change/clear writes',async()=>{
@@ -127,4 +136,13 @@ test('actual tick persistence skips unchanged saves and commits the marker only 
  await assert.rejects(f.context.tickOnce(),e=>e===error);assert.equal(f.context.saved,'null','failed storage cannot mark accepted simulation data as persisted');
  f.context.localStorage.setItem=(key,text)=>{writes.push(text);setItem(key,text);};await f.context.tickOnce();
  assert.deepEqual(writes,['{"coins":2}','null','{"coins":3}']);assert.equal(f.context.saved,'{"coins":3}');f.backend.close();
+});
+
+test('actual public accessor forwards opt-in paired RAF samples and rejects unknown or malformed options without backend work',()=>{
+ const context={window:{},playerCompletion:createPlayerCompletionMetrics({now:()=>10}),installPlayerPerformanceAccessor,scheduler:null,frozen:false,backend:{kind:'worker'}};
+ vm.createContext(context);vm.runInContext(source.slice(source.indexOf('const removePerformanceAccessor='),source.indexOf('let orderedQueue=')),context);
+ const read=context.window.unonePlayerPerformance.snapshot;
+ for(const options of [null,1,[],{unknown:true},{includeRafSamples:null},{includeRafSamples:1},{windowMs:null}])assert.throws(()=>read(options),/PLAYER_PERFORMANCE/);
+ const done={status:'completed'};context.playerCompletion.finish(done,done,done,1,9,'scheduler_raf',5,6);context.playerCompletion.rafEnd(5,6,10);
+ assert.equal(read().backend,'worker');assert.equal('samples'in read().raf_diagnostics,false);const requested=read({includeRafSamples:true,windowMs:1000});assert.equal(requested.version,1);assert.equal(requested.raf_diagnostics.samples.length,1);assert.equal(requested.raf_diagnostics.samples[0].raf_time_ms,5);vm.runInContext('removePerformanceAccessor()',context);assert.equal('unonePlayerPerformance'in context.window,false);
 });

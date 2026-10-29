@@ -61,6 +61,7 @@ impl EngineRuntime {
 mod tests {
     use super::*;
     #[test]
+    #[cfg(not(feature = "phase-profile"))]
     fn adapter_sampling_is_excluded_and_resumes_after_failure() {
         let mut r = EngineRuntime::load_source(
             "adapter",

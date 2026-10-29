@@ -1,0 +1,18 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 19.70s
+     Running tests\execution_policy.rs (target\debug\deps\execution_policy-dfb81762c3705eb2.exe)
+
+running 1 test
+test source_bytecode_policy_is_independent_of_native_codegen_eligibility ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\phase_profile.rs (target\debug\deps\phase_profile-fdae79578da4b157.exe)
+
+running 3 tests
+test phase_only_window_preserves_state_counts_ui_boundaries_and_excludes_manual_tools ... ok
+test caught_invalid_ui_attempts_are_timed_without_inventing_a_commit ... ok
+test phase_only_rejects_sampling_before_mutating_a_window_and_freezes_on_update_error ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

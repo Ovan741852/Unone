@@ -49,6 +49,20 @@ test('observations reads cached game state without a WASM call or packed scene s
  assert.equal(result.ok,true);assert.deepEqual(result.value,{frame:9,observations:{alive:10000},renderer:{draw_calls:15},paused:true});
  assert.equal((await api.request({method:'observations',typo:true})).ok,false);
 });
+
+test('phase-only diagnosis is discoverable and preserves Core execution/phase availability metadata',async()=>{
+ const bytes=new Uint8Array(8192);let length=0;const commands=[];
+ const execution={phase_profile:true,bytecode_optimization_level:2,luau_execution:'interpreter'};
+ const module={HEAPU8:bytes,_unone_web_alloc:()=>0,_unone_web_observation_ptr:()=>4096,_unone_web_observation_len:()=>length,
+  _unone_web_developer_request(p,n){const command=JSON.parse(new TextDecoder().decode(bytes.subarray(p,p+n)));commands.push(command);const output={ok:true,value:{execution,performance:{frames:2},window:{core_phases:{mode:'phase-only'},vm:{allocation_growth_bytes:null,availability:{allocation_growth:'not-collected'}}}}};const encoded=new TextEncoder().encode(JSON.stringify(output));bytes.set(encoded,4096);length=encoded.length;return 0;}};
+ const api=createDeveloperAPI({module,getSnapshot:()=>({world:{frame:2}}),getStats:()=>null,getPaused:()=>false},{});
+ const description=(await api.request({method:'describe'})).value.profiling;
+ assert.equal(description.paths.core_phases,'window.core_phases');assert.equal(description.paths.execution,'execution');
+ const report=await api.request({method:'profile.start',sampling:false});assert.equal(report.ok,true);
+ assert.deepEqual(report.value.execution,execution);assert.equal(report.value.window.core_phases.mode,'phase-only');
+ assert.equal(report.value.window.vm.allocation_growth_bytes,null);assert.equal(report.value.window.vm.availability.allocation_growth,'not-collected');
+ assert.deepEqual(commands,[{method:'profile_start',sampling:false}]);
+});
 function setup(){let paused=false,ticks=0,queued=null;const host={module:{},getSnapshot:()=>({world:{frame:ticks}}),getPaused:()=>paused,setPaused:value=>{paused=value;},releaseInput(){},tick(){ticks++;},draw(){},queueInput:value=>{queued=value;}};return {api:createDeveloperAPI(host,{}),ticks:()=>ticks,queued:()=>queued};}
 test('step requires pause, validates bounds, and executes the exact requested count',async()=>{
  const {api,ticks}=setup();assert.equal((await api.request({method:'step'})).ok,false);assert.equal(ticks(),0);

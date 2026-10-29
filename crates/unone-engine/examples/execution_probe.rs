@@ -44,7 +44,7 @@ fn run(args: &[String]) -> Result<serde_json::Value, Box<dyn std::error::Error>>
         #[cfg(feature = "preview-tools")]
         if index == scenario.warmup {
             runtime
-                .preview_request(unone_engine::PreviewRequest::ProfileStart { sampling: true })
+                .preview_request(unone_engine::PreviewRequest::ProfileStart { sampling: !cfg!(feature = "phase-profile") })
                 .map_err(|e| e.explanation)?;
         }
         let input = if index < scenario.warmup {

@@ -33,17 +33,65 @@ periodic `data-player-performance` report remains coarse, while this accessor
 reads current counters. Its last dirty UI render cost is not the cost of every
 draw. Resource/context skips must not be assigned zero render time.
 
-The visible official player owns simulation acceptance and rendering in one RAF
-transaction. It awaits sequential fixed 60 Hz ticks before submitting the latest
-state, with at most five catch-up steps and explicit excess-step drops. Faster
-displays may redraw without a tick. A bounded timestamp-rounding tolerance keeps
-negative debt instead of inventing simulation time. Pause/hidden/reset generations
-cancel stale post-await draws and reset elapsed-time accumulation. This avoids
-independent timer/RAF phase aliasing, while counters still expose any repeated or
-skipped simulation frames. Slow displays or overloaded updates can combine several
-catch-up steps into one presentation. Worker backpressure never creates a second
-tick request. Compare simulation, completed-submission and changed-frame counters
-during the same measured window.
+The foreground official player retains the update → acceptance → draw order
+within one originating RAF transaction. It awaits bounded fixed 60 Hz updates,
+then submits their accepted snapshot before preparing another tick. Only one
+update chain can be in flight; a delayed worker cannot enqueue another update
+or claim a completed draw before acceptance. Catch-up is capped at five steps
+and excess whole steps are counted as dropped. A bounded timestamp-rounding
+tolerance retains negative debt. Paused players may redraw UI, while hidden
+time is excluded on resume. Neither 60 simulation steps nor 60 completed
+submissions establishes 60 changed presentations; compare all three counters.
+
+A render-first preparation draft was withdrawn before packaging: updating the
+next Luau View while the previous view remains visible advances game-owned
+private projector/hit caches before input on that view is consumed. The current
+input contract has no presented-view revision/history with which to reconstruct
+those private caches. Keeping a last-drawn host snapshot alone cannot repair
+them. The retained order avoids adding that whole-frame mismatch; it does not
+create a new event-time or historical-view input guarantee.
+
+Additional version-1 fields retain the original `completed_intervals` clock and
+meaning. They never turn a failed completion-time gate into a passing result:
+
+| Field | Meaning |
+|---|---|
+| `successful_submission_raf_intervals` | Browser RAF timestamp intervals for explicit successful scheduler RAF submissions. Pending, unknown and failed passes do not count. Repeated snapshots can count. |
+| `new_snapshot_raf_intervals` | RAF intervals only when a valid advancing frame is globally first submitted in that RAF. Startup/manual frames already shown, repeats and regressions are excluded. |
+| `submit_sync_wall`, `callback_sync_wall` | Actual wall duration of scheduler submission and its known synchronous drawing continuation, measured after awaited preparation. Startup/manual and worker/job waits are excluded. These are nested scopes, not additive CPU totals. |
+| `preparation_wall` | Active update-chain elapsed time, including worker/job waits. Cancelled or stale-session chains cannot pollute this distribution. It is not a CPU measurement. |
+| `raf_diagnostics` | Per-source and outcome totals, scheduler repeats/regressions/in-flight counts, callback/preparation totals and explicitly nominal deadline estimates. |
+
+Each new distribution uses at most 512 numeric samples and reports max,
+percentiles and coverage. Nominal deadlines compare actual work/readiness time
+with the supplied RAF timestamp plus its target step budget (normally 16.667 ms).
+They are estimates, not GPU, compositor, physical refresh or OS acknowledgements.
+Update or draw work can still delay submission, a later RAF or physical scanout.
+These diagnostics do not make over-budget work disappear.
+
+Default queries and the existing 30-draw report include summaries only. To
+inspect paired events separately from a low-overhead acceptance run:
+
+```javascript
+const diagnostic = window.unonePlayerPerformance.snapshot({
+  windowMs: 1000,
+  includeRafSamples: true,
+});
+const rows = diagnostic.raf_diagnostics.samples;
+```
+
+The opt-in array contains at most 512 detached frozen rows after window
+filtering: `source`, `raf_time_ms`, `start_ms`, `end_ms`, `callback_end_ms`,
+`snapshot_frame`, `outcome`, `new_snapshot`, `regression` and `in_flight`.
+Sources distinguish `scheduler_raf`, `startup`, `manual` and unknown callers.
+`end_ms` remains the actual submission attempt's completion clock, never the
+RAF timestamp. A real scheduler RAF token survives asynchronous preparation;
+its `start_ms` and `callback_end_ms` measure the actual synchronous drawing
+continuation, not the elapsed await. Cancelled preparation has no successful
+submission/cadence sample. Startup/manual draws retain null RAF fields.
+`includeRafSamples`
+must be a boolean; unknown public query options fail explicitly. Recording uses
+fixed primitive storage and constructs row objects only for the opted-in query.
 
 Unchanged official-player saves use an engine-issued immutable memory lease and
 worker generation delta. The host reuses decoded read-only content and its encoded
@@ -52,6 +100,63 @@ still contains the full save. This reduces publication/decode/JS allocation work
 it does not imply that game-owned save generation is allocation-free.
 
 ## Developer profiling
+
+### Phase-only opt2 diagnosis
+
+Use the separate `phase-profile` diagnostic runtime when locating Core costs in
+an opt2 production workload. Build with `build-web-live.ps1 -Player -PhaseProfile`
+and export it as a development artifact. It keeps production bytecode optimization
+2 and installs no function sampler, allocation callback or GC callback. Ordinary
+sampling development builds retain opt1. Production players expose neither
+diagnostic request ABI. Check `runtime.json` (`phase_profile=true`,
+`profile_mode="phase-only"`) and the report's `execution.phase_profile` and
+`execution.bytecode_optimization_level`; native codegen remains disabled.
+
+```javascript
+await window.unoneDeveloper.request({method:"profile.start",sampling:false});
+// Run the existing scenario; query after the measured window.
+const report = await window.unoneDeveloper.request({method:"profile.stop"});
+```
+
+Core/Node uses `profile_start` / `profile_stop` through the existing developer
+ABI. `sampling:true` fails `PROFILE_SAMPLING_UNAVAILABLE` in phase-only mode
+without starting/resetting a window. `window.vm` reports null values with
+`availability="not-collected"`; this mode cannot diagnose Luau GC or functions.
+It is a diagnostic artifact, not a production FPS acceptance run. Measure active
+versus stopped-window overhead on the same artifact and verify paired canonical
+outputs before attributing a production workload.
+
+`window.core_phases` retains the last 1,024 accepted tick attempts, tagged with
+attempted/completed world frame. It splits raw UI conversion, typed parse/layout
+validation, owned-tree commit/drop and image resource admission. These are
+children of `script_total_ms`. `script_outside_measured_ui_ms` includes Luau
+wrappers, gameplay and other bindings; it is not pure Luau time. World snapshot,
+observation clone, UI clone and host-state clone are children of
+`observe_total_ms`. Do not add parent and child spans. Failed attempts are
+explicit, manual tools/load/start are excluded, and stop/error freezes the window.
+Percentiles use retained attempts; totals span the window. There are no per-node
+or per-quad clock reads.
+
+`publication.frames` joins successful world publications by frame and path
+(`direct`, `instances`, `retained`, `retained-instances`). Its four disjoint
+`phase_order` entries cover canonical encode, exact hash, presentation metadata
+and envelope. Retained resources use the same actual encode/hash operations;
+diagnosis does not perform a second probe serialization. The ring is bounded to
+1,024, with p50/p95/p99 calculated on read. Save preparation, final temporary/
+lease retirement and ABI ingress can remain outside these spans. Treat the
+outer ABI time minus measured phases as residual, not proof of Luau or GC.
+
+For a separate opt2 function-attribution experiment, build with
+`-Player -SamplingProfile`. This is `profile_mode="opt2-sampling"`, with
+`execution.sampling_profile=true`; it uses the existing function safe-point
+sampler and VM allocation/GC probes. Start with `sampling:true` and compare with
+an unsampled window on the same artifact. Unlike phase-only mode it carries
+callback overhead, and opt2 inlining can hide small functions. Counts are
+safe-point samples, not exact milliseconds; native binding work is not sampled
+asynchronously. This artifact is not eligible for production FPS acceptance.
+The build script makes `-Development`, `-PhaseProfile` and `-SamplingProfile`
+mutually exclusive. If Cargo features are combined directly, phase-only policy
+takes precedence and function sampling remains unavailable.
 
 Execution mode is now explicit in `execution` on profile reports and platform /
 developer-session metadata. Diagnostic preview builds disable Luau native codegen

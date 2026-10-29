@@ -1,0 +1,211 @@
+{
+  "ok": true,
+  "scope": "Actual emitted opt2 WASM in Node only; small synthetic escaping-call fixture, no browser/GPU/game workload or FPS/overhead claim.",
+  "started_utc": "2026-10-29T20:47:40.866Z",
+  "finished_utc": "2026-10-29T20:47:41.201Z",
+  "artifact": {
+    "path": "artifacts/web-retained-20261030-sampling-profile-candidate1",
+    "wasm_sha256": "f60ee4dea07be9581ec52d773d8b42214b2c13a44eeca4465b76cddc55e0c808",
+    "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+    "source_commit": "e3d4f6d9c4058ca210883e07f39ffde6d3581e7f",
+    "source_dirty": true,
+    "profile_mode": "opt2-sampling"
+  },
+  "command": "node .cache/verify-sampling-runtime.mjs",
+  "runner_sha256": "77bede00010a29ce645fdde116cd2f0422e04a05b287f617edff556d1e6dad77",
+  "fixture_source_sha256": "e409deddc0cc098b4998cb4586f5820dcef6d8aa9e7ad545e4480649bb72e9d3",
+  "canonical": {
+    "fresh_baseline_compared": true,
+    "initial_digest": "sha256:ae32a1fe28d422237b1aff1cc67fde57cc13299b916546ec8db9a4e80f7825b2",
+    "warmup_ticks": 2,
+    "active_ticks": 8,
+    "post_stop_ticks": 3,
+    "compared_frames_per_mode": 13,
+    "compared_modes": [
+      "active-unsampled",
+      "active-sampled"
+    ],
+    "all_tick_digests_matched": true,
+    "checkpoints": [
+      "sha256:c438522685292a825839effadecd1385ea10e6d7d97eae611056990c45a46c80",
+      "sha256:b9ad109ccf1405816facd1e15461c6dc8d6c0ce9deacb5c60221def5463c00f9",
+      "sha256:159ce5d0437e3766c765fd66d5661a853b2c66a302bcc92102675958a5758ae6",
+      "sha256:229a72d9c67fcb851b3adea4e0682a2867ffd62db67b2fb2901870c941f0062d",
+      "sha256:d49f6dc824255f5357f0a5fe25819e80aeec02206247e9ad492c6e1559e994ed",
+      "sha256:242e7ee91e5bdd48ffb05fd7b097375f129f565a66030aabf11e2fabb0432c30",
+      "sha256:7ca03014fe83e207cfec90bd11c66e4b9d10ccbb4d07a45e4d49d88afc35d9cb",
+      "sha256:7091437ca9ec362fe1845f8bd37d4a5816d9ed73b2db7a0ede154c897ace18ac",
+      "sha256:a6cb56857eee1d82077081ef064583dc58143f9d45edb04f0cdda19bdddf4825",
+      "sha256:15f50304fee08c87ddae6ce5a3690761e1e19207a9897652e0d59c4bea26f96d",
+      "sha256:24f564359d3bb98eac05e21f441406192ca7dd071ea7983e6a6f7d1d411141df",
+      "sha256:e4234a0cf57579c6509787b7045e6a632f2d7e3fab5081dc1443b639aa3462f6",
+      "sha256:0ee6e3e47df2874b8820a4b85fbd29e733265f661dd3e51bed4895d1795ed094"
+    ]
+  },
+  "windows": [
+    {
+      "sampling": false,
+      "execution": {
+        "build_intent": "sampling-diagnostic",
+        "bytecode_optimization_level": 2,
+        "bytecode_type_info_level": 0,
+        "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+        "host_binding": "rust-mlua",
+        "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        "luau_execution": "interpreter",
+        "native_codegen_compiled": false,
+        "native_codegen_fallback": "interpreter",
+        "native_codegen_requested": false,
+        "native_codegen_supported": false,
+        "phase_profile": false,
+        "preview_tools": true,
+        "runtime": "luau",
+        "rust_profile": "release",
+        "sampling_profile": true,
+        "schema_version": 2,
+        "target_arch": "wasm32",
+        "target_os": "emscripten",
+        "vm_implementation": "luau-upstream-vendored",
+        "wasm_host_compilation": "host-managed-not-probed"
+      },
+      "canonical_digests_equal": true,
+      "stop": {
+        "active": false,
+        "frozen_after_additional_ticks": 3,
+        "window_and_publication_equal": true
+      },
+      "sample_count": 0,
+      "attributed_functions": [],
+      "stack_count": 0,
+      "vm": {
+        "tick_count": 8,
+        "first_frame": 3,
+        "last_frame": 10,
+        "allocation_growth_bytes": 4104192,
+        "allocation_growth_events": 512,
+        "incremental_gc_steps": 286,
+        "incremental_gc_ms": 0.45969499999999996,
+        "incremental_gc_max_step_ms": 0.0466,
+        "availability": {
+          "allocation_growth": "measured",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "measured",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        }
+      },
+      "publication": {
+        "publications": 8,
+        "paths": [
+          "retained"
+        ]
+      }
+    },
+    {
+      "sampling": true,
+      "execution": {
+        "build_intent": "sampling-diagnostic",
+        "bytecode_optimization_level": 2,
+        "bytecode_type_info_level": 0,
+        "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+        "host_binding": "rust-mlua",
+        "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        "luau_execution": "interpreter",
+        "native_codegen_compiled": false,
+        "native_codegen_fallback": "interpreter",
+        "native_codegen_requested": false,
+        "native_codegen_supported": false,
+        "phase_profile": false,
+        "preview_tools": true,
+        "runtime": "luau",
+        "rust_profile": "release",
+        "sampling_profile": true,
+        "schema_version": 2,
+        "target_arch": "wasm32",
+        "target_os": "emscripten",
+        "vm_implementation": "luau-upstream-vendored",
+        "wasm_host_compilation": "host-managed-not-probed"
+      },
+      "canonical_digests_equal": true,
+      "stop": {
+        "active": false,
+        "frozen_after_additional_ticks": 3,
+        "window_and_publication_equal": true
+      },
+      "sample_count": 90,
+      "attributed_functions": [
+        {
+          "inclusive_samples": 85,
+          "line": null,
+          "name": "pcall",
+          "self_samples": 0,
+          "source": "=[C]"
+        },
+        {
+          "inclusive_samples": 90,
+          "line": 13,
+          "name": "update",
+          "self_samples": 5,
+          "source": "opt2-sampling-runtime.luau"
+        },
+        {
+          "inclusive_samples": 85,
+          "line": 2,
+          "name": "escapingHot",
+          "self_samples": 85,
+          "source": "opt2-sampling-runtime.luau"
+        }
+      ],
+      "stack_count": 2,
+      "vm": {
+        "tick_count": 8,
+        "first_frame": 3,
+        "last_frame": 10,
+        "allocation_growth_bytes": 4104192,
+        "allocation_growth_events": 512,
+        "incremental_gc_steps": 286,
+        "incremental_gc_ms": 0.482707,
+        "incremental_gc_max_step_ms": 0.008899,
+        "availability": {
+          "allocation_growth": "measured",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "measured",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        }
+      },
+      "publication": {
+        "publications": 8,
+        "paths": [
+          "retained"
+        ]
+      }
+    }
+  ],
+  "production_abi": {
+    "command": "cargo test -p unone-web-live-smoke --no-default-features --bin unone-web-live-smoke",
+    "status": "executed-pass",
+    "passed": 12,
+    "failed": 0,
+    "ignored": 0,
+    "requested_diagnostic_features": [],
+    "dependency_diagnostic_features_present": [],
+    "feature_check_command": "cargo tree -p unone-web-live-smoke --no-default-features -e features",
+    "raw_log": "sampling-followup-production-abi-tests.log",
+    "raw_log_sha256": "7b0a304976232e39bd9758168141ec6f0b29612a8cadba9b9d12c3ed39912e94",
+    "cli_rebuilt": false
+  },
+  "limitations": [
+    "Synthetic Node/WASM correctness and source-attribution self-test; no browser/GPU/game performance workload.",
+    "Opt2 may inline small functions; sampled source/callers do not recover eliminated call frames.",
+    "Samples are VM safe-point counts, not exact function time. Active VM callbacks have overhead.",
+    "No FPS, sampling overhead, leak freedom or GC-frequency acceptance claim.",
+    "Phase14/14 was not rerun; separate existing evidence remains authoritative.",
+    "This task did not rebuild or execute the WDAC-blocked new CLI; SDK5 CLI packaging is a separate root-owned step."
+  ],
+  "raw_cache": {
+    "validation": ".cache/sampling-runtime-actual-validation.json",
+    "log": ".cache/sampling-runtime-actual-validation.log",
+    "production_feature_tree": ".cache/sampling-followup-production-feature-tree.log"
+  }
+}

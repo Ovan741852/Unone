@@ -32,6 +32,8 @@ mod jobs;
 mod preview;
 #[cfg(feature = "preview-tools")]
 mod profiling;
+#[cfg(feature = "phase-profile")]
+mod phase_profile;
 #[cfg(feature = "preview-tools")]
 mod memory;
 #[cfg(feature = "dev-tools")]
@@ -1040,6 +1042,8 @@ impl EngineRuntime {
         // barrier has passed. A pending spatial/job result is not a failed
         // physical-input execution and must leave the staged batch intact.
         let input_tick = InputTick::begin(&self.input);
+        #[cfg(feature = "phase-profile")]
+        let phase_tick = phase_profile::TickScope::begin(&self.lua, self.world.borrow().frame + 1);
         let spatial_fault = Rc::clone(&self.spatial);
         let spatial_paths = self.paths.clone();
         let fail_spatial = |message: String| {
@@ -1055,7 +1059,7 @@ impl EngineRuntime {
                 world.audio.begin_frame(frame);
             }
         }
-        #[cfg(feature = "preview-tools")]
+        #[cfg(all(feature = "preview-tools", not(feature = "phase-profile")))]
         let vm_probe = if profiling::state(&self.lua).borrow().active {
             Some(
                 // SAFETY: this scope ends immediately after update.call, before
@@ -1076,7 +1080,9 @@ impl EngineRuntime {
                 .call::<()>((self.api.clone(), FIXED_DT))
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
         });
-        #[cfg(feature = "preview-tools")]
+        #[cfg(feature = "phase-profile")]
+        if let Some(scope)=&phase_tick { scope.record(phase_profile::Phase::Script,script_time); }
+        #[cfg(all(feature = "preview-tools", not(feature = "phase-profile")))]
         if let Some(probe) = vm_probe {
             let frame = probe.finish(self.world.borrow().frame + 1, script.is_ok());
             profiling::state(&self.lua).borrow_mut().record_vm(frame);
@@ -1117,6 +1123,8 @@ impl EngineRuntime {
             }
             Ok(())
         });
+        #[cfg(feature = "phase-profile")]
+        if let Some(scope)=&phase_tick { scope.record(phase_profile::Phase::Physics,physics_time); }
         #[cfg(feature = "jobs")]
         if let Err(error) = &physics_result {
             self.jobs.borrow_mut().fail(error.explanation.clone());
@@ -1164,6 +1172,8 @@ impl EngineRuntime {
             }
         }
         let (mut snapshot, observe_time) = timed(|| self.observe());
+        #[cfg(feature = "phase-profile")]
+        if let Some(scope)=&phase_tick { scope.record(phase_profile::Phase::Observe,observe_time); }
         self.cache_performance_counts(&snapshot);
         #[cfg(feature = "preview-tools")]
         let record = {
@@ -1202,6 +1212,8 @@ impl EngineRuntime {
         host_time_tick.commit().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         input_tick.commit();
         snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
+        #[cfg(feature = "phase-profile")]
+        if let Some(scope)=phase_tick { scope.complete(); }
         Ok(snapshot)
     }
 
@@ -1338,15 +1350,30 @@ impl EngineRuntime {
     }
 
     pub fn observe(&self) -> WorldSnapshot {
+        #[cfg(feature = "phase-profile")]
+        let mut snapshot = phase_profile::measure(&self.lua,phase_profile::Phase::WorldSnapshot,||self.world.borrow().snapshot());
+        #[cfg(not(feature = "phase-profile"))]
         let mut snapshot = self.world.borrow().snapshot();
-        snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
-        snapshot.spatial = self.spatial.borrow().snapshot();
-        #[cfg(feature = "jobs")]
-        if self.systems.is_enabled("jobs") {
-            snapshot.jobs = Some(self.jobs.borrow().snapshot());
-        }
+        let host_state=|| {
+            snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
+            snapshot.spatial = self.spatial.borrow().snapshot();
+            #[cfg(feature = "jobs")]
+            if self.systems.is_enabled("jobs") {
+                snapshot.jobs = Some(self.jobs.borrow().snapshot());
+            }
+        };
+        #[cfg(feature = "phase-profile")]
+        phase_profile::measure(&self.lua,phase_profile::Phase::ObserveHostState,host_state);
+        #[cfg(not(feature = "phase-profile"))]
+        { let mut host_state=host_state;host_state(); }
+        #[cfg(feature = "phase-profile")]
+        { snapshot.observations = phase_profile::measure(&self.lua,phase_profile::Phase::ObservationsClone,||self.observations.borrow().clone());
+          snapshot.ui = phase_profile::measure(&self.lua,phase_profile::Phase::UiClone,||self.ui.borrow().clone()); }
+        #[cfg(not(feature = "phase-profile"))]
+        {
         snapshot.observations = self.observations.borrow().clone();
         snapshot.ui = self.ui.borrow().clone();
+        }
         snapshot
     }
 

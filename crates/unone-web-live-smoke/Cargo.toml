@@ -12,6 +12,8 @@ path = "src/main.rs"
 default = ["dev-tools"]
 dev-tools = ["unone-engine/dev-tools"]
 preview-tools = ["unone-engine/preview-tools"]
+phase-profile = ["preview-tools", "unone-engine/phase-profile"]
+sampling-profile = ["preview-tools", "unone-engine/sampling-profile"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }

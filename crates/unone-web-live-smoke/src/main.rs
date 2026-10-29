@@ -38,11 +38,14 @@ struct PublicationProfile {
     cache_hits: u64,
     cache_storage_bytes: usize,
     totals: [f64; 4],
-    samples: std::collections::VecDeque<[f64; 4]>,
+    samples: std::collections::VecDeque<PublicationSample>,
 }
 #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
+#[derive(Serialize)]
+struct PublicationSample { frame:u64, path:&'static str, phases_ms:[f64;4] }
+#[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
 impl PublicationProfile {
-    fn record(&mut self, sample: [f64; 4], work: unone_engine::CanonicalHashWork) {
+    fn record(&mut self, sample: [f64; 4], work: unone_engine::CanonicalHashWork,frame:u64,path:&'static str) {
         if !self.active {
             return;
         }
@@ -60,7 +63,7 @@ impl PublicationProfile {
         if self.samples.len() == 1024 {
             self.samples.pop_front();
         }
-        self.samples.push_back(sample);
+        self.samples.push_back(PublicationSample{frame,path,phases_ms:sample});
     }
     fn report(&self) -> serde_json::Value {
         let mut phases = serde_json::Map::new();
@@ -73,13 +76,15 @@ impl PublicationProfile {
         .iter()
         .enumerate()
         {
-            let mut values: Vec<f64> = self.samples.iter().map(|v| v[i]).collect();
+            let mut values: Vec<f64> = self.samples.iter().map(|v| v.phases_ms[i]).collect();
             values.sort_by(f64::total_cmp);
             phases.insert(name.to_string(), serde_json::json!({"total_ms": self.totals[i],
                 "mean_ms": if self.count == 0 { 0. } else { self.totals[i] / self.count as f64 },
-                "p95_ms": if values.is_empty() { None } else { Some(values[(values.len()*95).div_ceil(100)-1]) }}));
+                "p50_ms": if values.is_empty() { None } else { Some(values[values.len().div_ceil(2)-1]) },
+                "p95_ms": if values.is_empty() { None } else { Some(values[(values.len()*95).div_ceil(100)-1]) },
+                "p99_ms": if values.is_empty() { None } else { Some(values[(values.len()*99).div_ceil(100)-1]) }}));
         }
-        serde_json::json!({"id":self.id,"active":self.active,"publications":self.count,"retained":self.samples.len(),"limit":1024,"phases":phases,"hash_work":{"input_bytes":self.input_bytes,"reused_bytes":self.reused_bytes,"hashed_bytes":self.hashed_bytes,"cache_hit_publications":self.cache_hits,"max_retained_prefix_bytes":unone_engine::CanonicalHasher::MAX_PREFIX_BYTES,"last_cache_storage_bytes":self.cache_storage_bytes},
+        serde_json::json!({"id":self.id,"active":self.active,"publications":self.count,"retained":self.samples.len(),"limit":1024,"phases":phases,"frames":self.samples,"phase_order":["canonical_encode_ms","canonical_hash_ms","presentation_ms","envelope_ms"],"frame_join":"Completed world frame; successful publications only, multiple host publications can share a simulation frame.","hash_work":{"input_bytes":self.input_bytes,"reused_bytes":self.reused_bytes,"hashed_bytes":self.hashed_bytes,"cache_hit_publications":self.cache_hits,"max_retained_prefix_bytes":unone_engine::CanonicalHasher::MAX_PREFIX_BYTES,"last_cache_storage_bytes":self.cache_storage_bytes},
             "note":"Disjoint successful world-publication CPU spans. Excludes simulation and initial world capture; includes extra timing/collection overhead. Totals span the window; p95 uses retained samples. Not GPU or browser decode time."})
     }
 }
@@ -200,6 +205,7 @@ fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_trans
                     start.elapsed().as_secs_f64() * 1000.,
                 ],
                 _hash_work,
+                snapshot.frame,"instances",
             )
         });
     }
@@ -252,7 +258,7 @@ fn write_direct_snapshot(project: &str, snapshot: &WorldSnapshot,
     // publication, including when the last instance batch was removed.
     INSTANCE_BUFFERS.with(|buffers| buffers.borrow_mut().clear());
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
-    if measuring {PUBLICATION_PROFILE.with(|p|p.borrow_mut().record(_phases,_work));}
+    if measuring {PUBLICATION_PROFILE.with(|p|p.borrow_mut().record(_phases,_work,snapshot.frame,"direct"));}
     Ok(())
 }
 
@@ -1562,16 +1568,48 @@ fn publication_profile_is_bounded_and_frozen_outside_window() {
         id: 7,
         ..Default::default()
     };
-    for _ in 0..1100 {
-        p.record([1., 2., 3., 4.], unone_engine::CanonicalHashWork::default());
+    for frame in 0..1100 {
+        p.record([1., 2., 3., 4.], unone_engine::CanonicalHashWork::default(),frame,"retained");
     }
     assert_eq!(p.report()["publications"], 1100);
     assert_eq!(p.report()["retained"], 1024);
     assert_eq!(p.report()["phases"]["canonical_hash_ms"]["mean_ms"], 2.);
+    assert_eq!(p.report()["phases"]["canonical_hash_ms"]["p50_ms"],2.);
+    assert_eq!(p.report()["phases"]["canonical_hash_ms"]["p99_ms"],2.);
+    assert_eq!(p.report()["frames"][0]["frame"],76);
+    assert_eq!(p.report()["frames"][1023]["path"],"retained");
     p.active = false;
     let stopped = p.report();
-    p.record([99.; 4], unone_engine::CanonicalHashWork::default());
+    p.record([99.; 4], unone_engine::CanonicalHashWork::default(),1100,"direct");
     assert_eq!(p.report(), stopped);
+}
+
+#[cfg(all(test, any(feature="dev-tools",feature="preview-tools")))]
+#[test]
+fn actual_publication_phase_windows_cover_all_paths_preserve_digest_and_freeze(){
+    fn output()->serde_json::Value{OUTPUT.with(|v|serde_json::from_slice(&v.borrow()).unwrap())}
+    fn request(text:&str)->serde_json::Value{
+        assert_eq!(unsafe{unone_web_developer_request(text.as_ptr(),text.len())},0,"{}",output());output()["value"].clone()
+    }
+    for (retained,instances,path) in [(false,false,"direct"),(false,true,"instances"),(true,false,"retained"),(true,true,"retained-instances")]{
+        let mut start=String::new();
+        if retained{start.push_str("api.ui.imageBatch.define('art',{bounds={x=0,y=0,width=1,height=1},quads={{asset='texture://x',rect={x=0,y=0,width=1,height=1}}}})");}
+        if instances{start.push_str("local b=buffer.create(40);buffer.writef32(b,24,1);buffer.writef32(b,28,1);buffer.writef32(b,32,1);buffer.writef32(b,36,1);api.instances3d.set('crowd','mesh://x',b)");}
+        let script=format!("return {{start=function(api){start} end,update=function(api) api.observation.set('advanced',true) end}}");
+        let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"publication phase","entry_script":"main.luau"},"script":script})).unwrap();
+        assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0,"{}",output());
+        assert_eq!(ui_transport::unone_web_set_ui_transport(1),0);assert_eq!(unone_web_set_instance_transport(1),0);
+        request(r#"{"method":"profile_start","sampling":false}"#);
+        for _ in 0..3{assert_eq!(unone_web_tick(),0);RUNTIME.with(|v|assert_eq!(output()["observation_digest"],unone_engine::observation_digest(&v.borrow().as_ref().unwrap().observe()).unwrap()));}
+        let report=request(r#"{"method":"profile"}"#);
+        let publication=&report["publication"];
+        assert_eq!(publication["publications"],3);assert_eq!(publication["frames"][0]["frame"],1);assert_eq!(publication["frames"][2]["frame"],3);
+        assert!(publication["frames"].as_array().unwrap().iter().all(|s|s["path"]==path&&s["phases_ms"].as_array().unwrap().iter().all(|n|n.as_f64().unwrap()>=0.)));
+        assert!(publication["hash_work"]["input_bytes"].as_u64().unwrap()>0);
+        let stopped=request(r#"{"method":"profile_stop"}"#)["publication"].clone();assert_eq!(stopped["active"],false);
+        assert_eq!(unone_web_tick(),0);assert_eq!(request(r#"{"method":"profile"}"#)["publication"],stopped);
+        unone_web_unload_project();
+    }
 }
 
 #[cfg(test)]

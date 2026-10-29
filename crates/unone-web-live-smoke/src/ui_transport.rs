@@ -106,11 +106,20 @@ fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:&super::s
         serde_json::to_writer(&mut *bytes,&observation).map_err(|error|error.to_string())})
 }
 pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_transport::Prepared<'_>)->Result<(),String>{
-    let digest=CANONICAL.with(|cache|{
+    #[cfg(any(feature="dev-tools",feature="preview-tools"))]
+    let measuring=PUBLICATION_PROFILE.with(|p|p.borrow().active);
+    #[cfg(not(any(feature="dev-tools",feature="preview-tools")))]
+    let measuring=false;
+    let (digest,_work,_encode_ms,_hash_ms)=CANONICAL.with(|cache|{
+        let started=measuring.then(std::time::Instant::now);
         let mut bytes=cache.borrow_mut();bytes.clear();
         serde_json::to_writer(&mut *bytes,snapshot).map_err(|e|e.to_string())?;
-        Ok::<_,String>(CANONICAL_HASHER.with(|h|h.borrow_mut().hash(&bytes).0))
+        let encode_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
+        let started=measuring.then(std::time::Instant::now);
+        let (digest,work)=CANONICAL_HASHER.with(|h|h.borrow_mut().hash(&bytes));
+        Ok::<_,String>((digest,work,encode_ms,started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.)))
     })?;
+    let presentation_started=measuring.then(std::time::Instant::now);
     let mut resources=BTreeMap::new();let mut leases=Vec::new();
     for (id,resource) in &snapshot.ui_image_batches {
         let bytes=resource.encoded_json().get().as_bytes();
@@ -118,9 +127,7 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
         leases.push(resource.clone());
     }
     let mut instances=Vec::new();
-    if snapshot.instances3d.is_empty(){
-        envelope(project,&Presentation(snapshot),&digest,save,resources)?;
-    }else{
+    let rewritten=if snapshot.instances3d.is_empty(){None}else{
         // Instance-bearing worlds retain the established transport rewrite.
         let mut world=serde_json::to_value(Presentation(snapshot)).map_err(|e|e.to_string())?;
         for (id,batch) in &snapshot.instances3d {
@@ -130,11 +137,19 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
                 instances.push(batch.packed.clone());
             }else{world["instances3d"][id]["data"]=serde_json::Value::String(batch.data().to_string());}
         }
-        envelope(project,&world,&digest,save,resources)?;
-    }
+        Some(world)
+    };
+    let _presentation_ms=presentation_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
+    let envelope_started=measuring.then(std::time::Instant::now);
+    if let Some(world)=rewritten.as_ref(){envelope(project,world,&digest,save,resources)?;}
+    else{envelope(project,&Presentation(snapshot),&digest,save,resources)?;}
+    let _envelope_ms=envelope_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     // Retire previous leases only after the complete envelope was written.
     INSTANCE_BUFFERS.with(|out|*out.borrow_mut()=instances);
-    LEASES.with(|out|*out.borrow_mut()=leases);Ok(())
+    LEASES.with(|out|*out.borrow_mut()=leases);
+    #[cfg(any(feature="dev-tools",feature="preview-tools"))]
+    if measuring{PUBLICATION_PROFILE.with(|p|p.borrow_mut().record([_encode_ms,_hash_ms,_presentation_ms,_envelope_ms],_work,snapshot.frame,if rewritten.is_some(){"retained-instances"}else{"retained"}));}
+    Ok(())
 }
 /// Enable the optional immutable-resource memory wire; 0 restores complete JSON.
 #[unsafe(no_mangle)]

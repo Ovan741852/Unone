@@ -20,6 +20,8 @@ pub(super) struct Profile {
     vm_frames: std::collections::VecDeque<super::vm_metrics::Frame>,
     vm_total: super::vm_metrics::Frame,
     vm_ticks: u64,
+    #[cfg(feature = "phase-profile")]
+    pub(super) phases: super::phase_profile::Profile,
 }
 #[derive(Default, Serialize)]
 pub(super) struct FunctionSamples {
@@ -30,6 +32,7 @@ pub(super) struct FunctionSamples {
     inclusive_samples: u64,
 }
 impl Profile {
+    #[cfg(not(feature = "phase-profile"))]
     pub fn record_vm(&mut self, frame: super::vm_metrics::Frame) {
         self.vm_ticks += 1;
         self.vm_total.allocation_growth_bytes = self
@@ -52,7 +55,7 @@ impl Profile {
         self.vm_frames.push_back(frame);
     }
     pub fn report(&self) -> serde_json::Value {
-        serde_json::json!({"id":self.id,"active":self.active,"first_frame":self.first_frame,"last_frame":self.last_frame,
+        let mut report=serde_json::json!({"id":self.id,"active":self.active,"first_frame":self.first_frame,"last_frame":self.last_frame,
             "sampling":self.sampling,"samples":self.samples,"dropped_samples":self.dropped,"truncated_stacks":self.truncated,
             "vm":{"schema_version":2,"scope":"Luau update call, including engine callbacks; manual tools and load/start are excluded",
                 "allocation_method":"Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
@@ -69,7 +72,24 @@ impl Profile {
                 "boundary_metrics":{"api_calls":{"status":"not-collected","scope":"Rust binding wrapper calls, not gameplay function calls"},"table_conversion":{"status":"not-collected","scope":"Luau/Rust value conversion object and byte counts"},"rust_allocations":{"status":"not-collected","scope":"Rust allocator traffic outside Luau onallocate"}}},
             "functions":self.functions,"stacks":self.stacks.iter().map(|(stack,count)|serde_json::json!({"leaf_first":stack,"samples":count})).collect::<Vec<_>>(),
             "limits":{"functions":1024,"stacks":4096,"depth":32,"minimum_interval_ms":1},
-            "semantics":"VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."})
+            "semantics":"VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."});
+        #[cfg(feature = "phase-profile")]
+        {
+            report["core_phases"]=self.phases.report();
+            for key in ["allocation_growth_bytes","allocation_growth_events","incremental_gc_steps","incremental_gc_ms","incremental_gc_max_step_ms","tick_count"] {
+                report["vm"][key]=serde_json::Value::Null;
+            }
+            report["vm"]["capabilities"]["allocation_growth"]=false.into();
+            report["vm"]["capabilities"]["incremental_gc_wall_time"]=false.into();
+            report["vm"]["availability"]["allocation_growth"]="not-collected".into();
+            report["vm"]["availability"]["incremental_gc_wall_time"]="not-collected".into();
+            report["vm"]["not_collected_reason"]="phase-profile deliberately installs no function, allocation or GC callbacks".into();
+            report["vm"]["measurement_overhead"]="VM probes disabled in phase-profile; coarse Core spans are reported separately".into();
+            report["semantics"]="Phase-only diagnostic with production bytecode optimization 2. Function sampling and VM allocation/GC probes are unavailable; coarse Core phase times include collection overhead.".into();
+        }
+        #[cfg(not(feature = "phase-profile"))]
+        { report["core_phases"]=serde_json::Value::Null; }
+        report
     }
 }
 pub(super) fn state(lua: &Lua) -> Rc<RefCell<Profile>> {
@@ -168,7 +188,7 @@ pub(super) fn start(lua: &Lua, frame: u64, sampling: bool) {
     });
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(feature = "phase-profile")))]
 mod tests {
     use super::*;
     fn runtime() -> EngineRuntime {
@@ -217,13 +237,14 @@ return {start=function()end,update=function(api) api.observation.set('sum',hot()
         assert_eq!(report["window"]["vm"]["tick_count"], 3);
         assert_eq!(report["window"]["vm"]["frames"][2]["frame"], 3);
         assert!(report["window"]["samples"].as_u64().unwrap() > 0);
-        assert!(
-            report["window"]["functions"]
-                .as_object()
-                .unwrap()
-                .values()
-                .any(|v| v["name"] == "hot" && v["inclusive_samples"].as_u64().unwrap() > 0)
-        );
+        let functions=report["window"]["functions"].as_object().unwrap();
+        if cfg!(feature="sampling-profile") {
+            // Opt2 may inline this small local function. Its source/caller is
+            // attributable; a separate escaping-call regression checks names.
+            assert!(functions.values().any(|v|v["source"].as_str().is_some_and(|s|s.contains("cost.luau"))&&v["inclusive_samples"].as_u64().unwrap()>0),"{functions:?}");
+        } else {
+            assert!(functions.values().any(|v|v["name"]=="hot"&&v["inclusive_samples"].as_u64().unwrap()>0),"{functions:?}");
+        }
         assert!(report.get("observation").is_none());
         sampled.tick().unwrap();
         let stopped = sampled.preview_request(PreviewRequest::Profile {}).unwrap();

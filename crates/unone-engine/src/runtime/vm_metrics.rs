@@ -2,14 +2,20 @@
 //! Luau 709's onallocate reports successful allocation/reallocation requests,
 //! but not frees. Its non-negative interrupt calls bracket incremental GC
 //! steps (including assists), not full collections. Re-audit on Luau upgrades.
+#[cfg(not(feature = "phase-profile"))]
 use mlua::{Lua, ffi};
 use serde::Serialize;
+#[cfg(not(feature = "phase-profile"))]
 use std::{cell::Cell, ptr, time::Instant};
 
+#[cfg(not(feature = "phase-profile"))]
 type Allocate = unsafe extern "C-unwind" fn(*mut ffi::lua_State, usize, usize);
+#[cfg(not(feature = "phase-profile"))]
 type Interrupt = unsafe extern "C-unwind" fn(*mut ffi::lua_State, i32);
+#[cfg(not(feature = "phase-profile"))]
 thread_local! { static ACTIVE: Cell<*const Counters> = const { Cell::new(ptr::null()) }; }
 
+#[cfg(not(feature = "phase-profile"))]
 struct Counters {
     callbacks: *mut ffi::lua_Callbacks,
     previous: *const Counters,
@@ -36,10 +42,12 @@ pub(super) struct Frame {
 
 /// Owns the VM and the stable callback storage until restoration, including on
 /// errors/unwind. mlua's userdata and existing sampling hook remain untouched.
+#[cfg(not(feature = "phase-profile"))]
 pub(super) struct Probe {
     _lua: Lua,
     counters: Box<Counters>,
 }
+#[cfg(not(feature = "phase-profile"))]
 impl Probe {
     /// # Safety
     /// Probes on this thread must finish/drop in reverse creation order. The
@@ -103,6 +111,7 @@ impl Probe {
         }
     }
 }
+#[cfg(not(feature = "phase-profile"))]
 impl Drop for Probe {
     fn drop(&mut self) {
         // SAFETY: same-thread, stack-scoped usage; owned Lua is still alive.
@@ -113,6 +122,7 @@ impl Drop for Probe {
         ACTIVE.with(|p| p.set(self.counters.previous));
     }
 }
+#[cfg(not(feature = "phase-profile"))]
 unsafe fn find(state: *mut ffi::lua_State) -> *const Counters {
     let callbacks = unsafe { ffi::lua_callbacks(state) };
     let mut cursor = ACTIVE.with(Cell::get);
@@ -125,6 +135,7 @@ unsafe fn find(state: *mut ffi::lua_State) -> *const Counters {
     }
     ptr::null()
 }
+#[cfg(not(feature = "phase-profile"))]
 unsafe extern "C-unwind" fn on_allocate(state: *mut ffi::lua_State, old: usize, new: usize) {
     let p = unsafe { find(state) };
     if p.is_null() {
@@ -142,6 +153,7 @@ unsafe extern "C-unwind" fn on_allocate(state: *mut ffi::lua_State, old: usize, 
         }
     }
 }
+#[cfg(not(feature = "phase-profile"))]
 unsafe extern "C-unwind" fn on_interrupt(state: *mut ffi::lua_State, gc: i32) {
     let p = unsafe { find(state) };
     if p.is_null() {
@@ -167,7 +179,7 @@ unsafe extern "C-unwind" fn on_interrupt(state: *mut ffi::lua_State, gc: i32) {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(feature = "phase-profile")))]
 mod tests {
     use super::*;
     #[test]
