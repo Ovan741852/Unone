@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "value": {
+    "project": "Retained Artwork Official Web QA",
+    "script": "\\\\?\\D:\\Projects\\Unone\\.cache\\sdk8-official-fixture\\scripts\\main.luau",
+    "strict_mode": true,
+    "entrypoints": [
+      "start",
+      "update"
+    ],
+    "type_check": {
+      "tool": "D:\\Projects\\Unone\\.toolcache/luau-0.734\\luau-analyze.exe",
+      "files": [
+        "D:\\Projects\\Unone\\.cache\\sdk8-official-fixture\\scripts\\main.luau"
+      ],
+      "passed": true,
+      "output": ""
+    }
+  },
+  "diagnostics": [],
+  "effects": []
+}

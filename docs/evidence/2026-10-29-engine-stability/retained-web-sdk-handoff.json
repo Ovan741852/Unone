@@ -1,15 +1,15 @@
 {
-  "schema": "unone.retained-web-sdk-handoff.v2",
+  "schema": "unone.retained-web-sdk-handoff.v3",
   "date": "2026-10-30",
-  "status": "integration_candidate_actual_game_FPS_and_soak_acceptance_pending",
-  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate6",
-  "sdk_manifest_sha256": "c90b7374a19d70bfa8572fe0371de640b7e5450b45948e14905e132100d909f9",
+  "status": "SDK8_functionally_validated_actual_game_acceptance_pending",
+  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8",
+  "sdk_manifest_sha256": "15f90f2df476bb1177c57a451e1eda691b62dc4653dccefd41ecad8c86aa60b7",
   "engine_version": "0.2.0",
   "runtime_package": "@unone/ui@0.5.0",
   "runtime_id": "web-production-0",
   "runtime_profile": "release",
-  "wasm_sha256": "423f90c4d64c916931887d83cfc9562e46d1bdcb4718373327588fa8c0c54f25",
-  "cli_sha256": "0a7b257dc357f5b9846fb2ef13f480f3f65c5d4ed6918955c8321b5dc330e929",
+  "wasm_sha256": "167456acc192215d1812fb8e3f08bbd47487b5ff18aabb9e385622b88081c625",
+  "cli_sha256": "48da876d01a8194828509f18fb3b7c18434ea0f33b7c633c08e1f837c80f36ad",
   "template_checkpoint": "D:/Projects/Unone/artifacts/web-retained-20261030-template-checkpoint6",
   "api": {
     "define": "api.ui.imageBatch.define(id, {bounds, quads})",
@@ -24,7 +24,8 @@
     "ownership": "Define on content change, publish references/cheap transforms, remove only after successful tree replacement drops the last reference. Pure renderItem cannot define/remove.",
     "limits": "256 resources; host quad/string budgets; 16 MiB encoded bytes per resource, 32 MiB registry.",
     "pixel_snap": "Optional boolean, default false. Final physical-framebuffer axis edge rounding after transform, ties away from zero, then unchanged viewport clip; UVs unchanged. Requires b=c=0. Reflection and zero scale allowed; collapsed rectangles draw nothing. Canvas fallback and GPU support DPR-aware placement. Ordinary GPU f32 precision near half-pixel thresholds applies; no hidden epsilon.",
-    "native": "New retained artwork and pixel snapping explicitly unsupported; inline unsnapped artwork retains existing native support."
+    "native": "New retained artwork and pixel snapping explicitly unsupported; inline unsnapped artwork retains existing native support.",
+    "hasPressedActions": "api.input.hasPressedActions():boolean; O(1) existing semantic pressed set, same visibility as wasPressed; non-consuming/repeated-readable, no args/options. Held/release/text/slider/rawphysical presence alone is not a semantic press. Gate discrete scanners only."
   },
   "completion": {
     "query": "window.unonePlayerPerformance.snapshot({windowMs:1000})",
@@ -62,7 +63,7 @@
     "web_skipped": 0,
     "production_abi_passed": 12,
     "core_integration_passed": 15,
-    "core_scope": "Current ordinary Core354passed/3ignored plus execution policy1; phase tests4+unit2; opt2 sampler5 and combined-feature precedence4. Prior candidate5 retained/save/pixel cases are historical evidence, not relabeled as a current targeted rerun.",
+    "core_scope": "Historical ordinary Core354passed/3ignored not rerun. UIowned style19 at757dc83, current validator31 and inputAPI17 passed; input behavior13compiled butAppControl4551 blocked. Current actual productionWASM8scenariosx2 pass.",
     "previous_full_core_evidence": "Candidate3 records prior352passed/3ignored full Core scope; it is not relabeled as a new full run.",
     "official_smoke": true,
     "smoke_backends": [
@@ -77,19 +78,39 @@
         "cases": 9
       }
     ],
-    "smoke_release": "releases/c4cfb706d594ed37f0a9ad7786853490f4b3d9fb79faab99d69a40a68f5ebcb8/",
-    "smoke_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-official-web-smoke-candidate6.json",
+    "smoke_release": "releases/199ce9f6715b85b1803726ccc5be822d7481f722caa4fdd824f5f509b279ae81/",
+    "smoke_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-official-web-smoke-candidate8.json",
     "gpu_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-ui-buffer-reuse-browser.json",
     "gpu_cases": 81,
     "ordinary_world_context": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/world-context-fixed.json",
     "actual_screenshots_viewed": [
-      "candidate6/main/initial.png",
-      "candidate6/worker/restored.png"
+      "candidate8/main/initial.png",
+      "candidate8/worker/restored.png"
     ],
-    "template_fingerprints": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-candidate6-template-fingerprints.json",
+    "template_fingerprints": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-candidate8-template-fingerprints.json",
     "phase_abi_passed": 14,
     "raf_diagnostic_report": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-raf-browser-candidate6.json",
-    "indexed_files_verified": 142
+    "indexed_files_verified": 142,
+    "web_scope": "Unchanged Web source: prior531/531 run is historical rather than a redundant rerun.",
+    "ui_owned_style_passed": 19,
+    "layout_focused_passed": 31,
+    "input_api_discovery_passed": 17,
+    "native_input_behavior": {
+      "compiled": 13,
+      "executed": 0,
+      "reason": "Windows App Control4551 blocks launch; no pass claimed."
+    },
+    "production_input_wasm": {
+      "scenarios": 8,
+      "repetitions": 2,
+      "ok": true,
+      "evidence": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/has-pressed-actions-production-wasm.json",
+      "reload": "Not exported in production; not executed."
+    },
+    "host_input_scope": "Own fixture asserts aggregate true for successful official keyboard/UI actions and repeated-read consistency in actual main and worker players.",
+    "fixture_typecheck": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-candidate8-fixture-typecheck.json",
+    "production_abi_scope": "Historical12/12 atSDK6. No redundant nativeABI rerun for SDK8; SDK8 actual production WASM8scenariosx2 and main/worker9each executed separately.",
+    "phase_abi_scope": "Historical phase14/14; old diagnostic runtime does not include new APIs."
   },
   "coverage": {
     "gpu_policy": "pixel_center",
@@ -119,17 +140,51 @@
       "sdk_manifest_sha256": "60187c3dd1ca4eaa03b284bca971b55011167d0945f783537f265ada8a7dc3d1",
       "wasm_sha256": "665ce1bb5259f107c43783c01392703615ceadbba9c54f7279f50146961ef46c",
       "outcome": "Full strict game review2 still failed. Game-only cache review3 travel on same SDK5 achieved601/601sim/new,59.990Hz,drops0,worst1s59.014Hz,RAF p99 16.8ms, but actual completion-end p95/p99 still failed. No gate changed."
+    },
+    {
+      "candidate": 6,
+      "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate6",
+      "sdk_manifest_sha256": "c90b7374a19d70bfa8572fe0371de640b7e5450b45948e14905e132100d909f9",
+      "wasm_sha256": "423f90c4d64c916931887d83cfc9562e46d1bdcb4718373327588fa8c0c54f25",
+      "outcome": "Five no-profile Game cases meet provisional advancing-RAF cadence but legacy end-time gates remain false. SDK6 calibration still finds headed21/361/headless80/357nominal overruns. Old Game overlay disabled retention; BC50 fixes card to60 but inventory remains15.2RAF/s. Not a final stable60/noGC/noLeak pass."
+    },
+    {
+      "candidate": 7,
+      "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate7",
+      "outcome": "UI style/identity slice only, no hasPressedActions. Matching release CLI/prodWASM, officialmain/worker9each and actual purity ABI parity passed; not selected for new Game integration."
     }
   ],
   "remaining_acceptance": [
-    "Actual game idle/drag/travel/atlas/battle with SDK6 and frozen game source; retain original completion gate and separately report originating-RAF/new-snapshot coverage.",
-    "Longer actual-game CPU/GPU retention and browser/Luau GC measurement; bounded lifecycle tests do not establish universal leak freedom or zero GC.",
-    "No final stable60FPS claim. Use production runtime for acceptance; diagnostic runtimes carry collection overhead."
+    "Integrate SDK8 formal typings and gate only discrete scanners; preserve held/text/slider/pointer/release updates.",
+    "Resolve remaining real Game overlay findings; run existing full correctness workflow without increasing budgets or exemptions.",
+    "Actual Game all5main scenarios plus card/inventory with frozen new source; retain old completion gates, nominal deadlines and advancing-RAF coverage separately.",
+    "No final stable60FPS claim. Natural V8 GC persists and45s heap sawtooth/resource tails do not prove no leaks or Luau GC frequency. Matched new diagnostics required if profiling new Game APIs."
   ],
   "provenance": {
     "runtime": {
-      "sampling_profile": false,
       "bytecode_optimization_level": 2,
+      "source_dirty": false,
+      "source_commit": "ff617f581357cb03d71ffd9fc8a6b8e059081bd0",
+      "phase_profile": false,
+      "cargo_features": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "particle",
+        "random",
+        "save",
+        "ui"
+      ],
+      "wasm_sha256": "167456acc192215d1812fb8e3f08bbd47487b5ff18aabb9e385622b88081c625",
+      "preview_tools": false,
+      "dev_tools": false,
+      "sampling_profile": false,
+      "profile": "release",
+      "runtime_packages": {
+        "@unone/ui": "0.5.0"
+      },
+      "javascript": "unone-player.js",
+      "wasm_bytes": 3278371,
       "compiled_systems": [
         "audio",
         "camera2d",
@@ -142,14 +197,9 @@
         "ui",
         "world"
       ],
-      "source_commit": "e3d4f6d9c4058ca210883e07f39ffde6d3581e7f",
-      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
-      "wasm_sha256": "423f90c4d64c916931887d83cfc9562e46d1bdcb4718373327588fa8c0c54f25",
       "wasm": "unone_player.wasm",
-      "wasm_bytes": 3276069,
-      "phase_profile": false,
+      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
       "profile_mode": "none",
-      "preview_tools": false,
       "exports": [
         "init",
         "alloc",
@@ -173,42 +223,43 @@
         "particle_sample",
         "particle_output_ptr",
         "particle_output_len"
-      ],
-      "dev_tools": false,
-      "profile": "release",
-      "javascript": "unone-player.js",
-      "runtime_packages": {
-        "@unone/ui": "0.5.0"
-      },
-      "cargo_features": [
-        "audio",
-        "camera2d",
-        "camera3d",
-        "particle",
-        "random",
-        "save",
-        "ui"
-      ],
-      "source_dirty": true
+      ]
     },
-    "cli": "Unchanged functioning candidate5 release CLI. Newly compiled CLI6 was blocked by Windows App Control on execution; no policy change or bypass attempted.",
-    "documentation": "Current docs/profiling.md copied after supported SDK pack; its bytes/hash were updated in sdk.json. Every indexed file was independently verified afterward. Embedded CLI guide/search content retains candidate5 provenance.",
-    "source": "WASM metadata truthfully records e3d4f6d plus dirty working tree; subsequent source/evidence commit does not relabel it as a clean-commit build."
+    "cli": "New matching standard release CLI built from ff617f5; executed API discovery, canonical typings generation, strict Luau typecheck, official export and actual Game inspector fixtures. Unlike candidate6, no older CLI was substituted.",
+    "templates": "Unchanged frozen checkpoint6 Web templates, independently99fingerprinted against current source; all142indexed SDK files verified.",
+    "source": "Production runtime metadata records clean ff617f581357cb03d71ffd9fc8a6b8e059081bd0. No manual SDK guide/index edits."
   },
   "diagnostics": {
-    "phase": {
-      "path": "D:/Projects/Unone/artifacts/web-retained-20261030-phase-profile-candidate1",
-      "wasm_sha256": "e76b6a6fd258b6e5fbf457e666b9aaf0df3aa77d437e170249d0802548d55f1d",
-      "mode": "phase-only opt2 without VM/function callbacks",
-      "actual_wasm_digest_comparisons": 68,
-      "active_frames": 60
+    "matching_phase_runtime": null,
+    "matching_sampling_runtime": null,
+    "status": "Old phase/sampler artifacts lack hasPressedActions and are historical only; do not run newly integrated Game source against them.",
+    "historical": {
+      "phase": {
+        "path": "D:/Projects/Unone/artifacts/web-retained-20261030-phase-profile-candidate1",
+        "wasm_sha256": "e76b6a6fd258b6e5fbf457e666b9aaf0df3aa77d437e170249d0802548d55f1d",
+        "mode": "phase-only opt2 without VM/function callbacks",
+        "actual_wasm_digest_comparisons": 68,
+        "active_frames": 60
+      },
+      "sampling": {
+        "path": "D:/Projects/Unone/artifacts/web-retained-20261030-sampling-profile-candidate1",
+        "wasm_sha256": "f60ee4dea07be9581ec52d773d8b42214b2c13a44eeca4465b76cddc55e0c808",
+        "mode": "opt2 safe-point sampler and VM probes; not FPS acceptance",
+        "evidence": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/sampling-profile-actual-wasm-validation.json"
+      },
+      "real_game_phase": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-real-game-diagnosis.json"
     },
-    "sampling": {
-      "path": "D:/Projects/Unone/artifacts/web-retained-20261030-sampling-profile-candidate1",
-      "wasm_sha256": "f60ee4dea07be9581ec52d773d8b42214b2c13a44eeca4465b76cddc55e0c808",
-      "mode": "opt2 safe-point sampler and VM probes; not FPS acceptance",
-      "evidence": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/sampling-profile-actual-wasm-validation.json"
-    },
-    "real_game_phase": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-real-game-diagnosis.json"
+    "raf_calibration": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-sdk6-raf-calibration.json",
+    "memory": [
+      "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-sdk6-memory-run2.json",
+      "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-sdk6-memory-idle-run3.json"
+    ]
+  },
+  "inspection": {
+    "declared_backgrounds": "New explicit LayoutBackgroundEvidence groups by actual background leaf and resolved scope owner; full pair_count and at most2exampleIDs. background_node_index is a public stable leaf ordinal, not an address.",
+    "allowed_overlaps": "External exact-pair policy evidence only; still transactional, stale/safety checks retained.",
+    "limits": "Every geometry/order/scope/containment pair check remains. max_layout_findings1024 combined group+exact evidence, independent findings cap, max comparisons1000000 and node/logical budgets unchanged.",
+    "actual_fixture": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/layout-background-sdk8-actual.json",
+    "outcome": "No work-limit. Raw inventory85groups/992pairs/68findings; originalpolicy leaves2. Card30groups/296pairs/23findings; originalpolicy leaves4. All4strict exits1 correctly preserve findings, not layout passes."
   }
 }

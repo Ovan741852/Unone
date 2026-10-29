@@ -1,0 +1,136 @@
+[
+  {
+    "mode": "headed",
+    "elapsed_ms": 6014.600000023842,
+    "status": "descriptive-calibration",
+    "raw_draw_counter_delta": 361,
+    "capacity": 512,
+    "truncated": false,
+    "eligible": 361,
+    "matched": 361,
+    "unidentifiable": 0,
+    "matched_fraction": 1,
+    "retained_span_ms": 6000.1,
+    "observer_rows": 361,
+    "observer_cadence_p50_ms": 16.69999999999891,
+    "observer_cadence_p99_ms": 16.80000000000109,
+    "end_T_p99_ms": 20.899999999999636,
+    "entry_T_p99_ms": 4.700000000000728,
+    "observer_cost_p99_ms": 0.10000002384185791,
+    "unknown_gap_p99_ms": 17.100000023841858,
+    "draw_sync_p99_ms": 3.700000047683716,
+    "end_entry_p99_ms": 20.799999952316284,
+    "hidden": 0,
+    "visibility_changes": 0,
+    "focus_changes": 0,
+    "context_losses": 0,
+    "backend": {
+      "begin": "main",
+      "end": "main"
+    },
+    "begin": {
+      "hidden": false,
+      "visibility": "visible",
+      "focused": true,
+      "device_pixel_ratio": 1,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "canvas": {
+        "width": 1600,
+        "height": 900,
+        "client_width": 1600,
+        "client_height": 900
+      },
+      "player_error": "",
+      "profiler_present": false
+    },
+    "end": {
+      "hidden": false,
+      "visibility": "visible",
+      "focused": true,
+      "device_pixel_ratio": 1,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "canvas": {
+        "width": 1600,
+        "height": 900,
+        "client_width": 1600,
+        "client_height": 900
+      },
+      "player_error": "",
+      "profiler_present": false
+    },
+    "errors": 0
+  },
+  {
+    "mode": "headless",
+    "elapsed_ms": 6020.5,
+    "status": "descriptive-calibration",
+    "raw_draw_counter_delta": 357,
+    "capacity": 512,
+    "truncated": false,
+    "eligible": 357,
+    "matched": 357,
+    "unidentifiable": 0,
+    "matched_fraction": 1,
+    "retained_span_ms": 5983.5,
+    "observer_rows": 357,
+    "observer_cadence_p50_ms": 16.69999999999891,
+    "observer_cadence_p99_ms": 16.80000000000109,
+    "end_T_p99_ms": 31.900000000001455,
+    "entry_T_p99_ms": 12.5,
+    "observer_cost_p99_ms": 0.10000002384185791,
+    "unknown_gap_p99_ms": 23.899999976158142,
+    "draw_sync_p99_ms": 4.600000023841858,
+    "end_entry_p99_ms": 28.5,
+    "hidden": 0,
+    "visibility_changes": 0,
+    "focus_changes": 0,
+    "context_losses": 0,
+    "backend": {
+      "begin": "main",
+      "end": "main"
+    },
+    "begin": {
+      "hidden": false,
+      "visibility": "visible",
+      "focused": true,
+      "device_pixel_ratio": 1,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "canvas": {
+        "width": 1600,
+        "height": 900,
+        "client_width": 1600,
+        "client_height": 900
+      },
+      "player_error": "",
+      "profiler_present": false
+    },
+    "end": {
+      "hidden": false,
+      "visibility": "visible",
+      "focused": true,
+      "device_pixel_ratio": 1,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "canvas": {
+        "width": 1600,
+        "height": 900,
+        "client_width": 1600,
+        "client_height": 900
+      },
+      "player_error": "",
+      "profiler_present": false
+    },
+    "errors": 0
+  }
+]

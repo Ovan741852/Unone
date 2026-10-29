@@ -862,3 +862,64 @@ no concrete P1/P2. Read-only analysis of the owner's old report maps inventory's
 current policy. The real game must rerun with the newly compiled CLI; this
 analysis is not a passing rerun. See
 [bounded evidence validation](../evidence/2026-10-29-engine-stability/layout-background-evidence-validation.json).
+
+## Candidate8 emitted production and actual authoring fixtures
+
+Candidate8 is built from clean **ff617f581357cb03d71ffd9fc8a6b8e059081bd0**
+with a matching new standard release CLI and production opt2 WASM. The new CLI
+executed successfully, generated the canonical aggregate-input typing and
+passed a strict Luau 0.734 check of the instrumented official-player fixture.
+All 142 indexed SDK files and all 99 unchanged Web template fingerprints were
+verified. No older CLI or manually patched SDK guide is substituted.
+
+Actual production WASM executed eight input scenarios twice across fresh loads,
+including press/held/release/multiple/custom actions, raw versus mapped input,
+non-action UI events, non-consuming/strict argument behavior, failed tick retry
+and reset cases. Every checkpoint/digest and expected error matched. Production
+has no reload export, so reload is explicitly unexecuted; the 13 native behavior
+cases remain AppControl-blocked, not relabeled as passing. Actual official
+main/worker exports passed nine phases each; the fixture additionally asserts
+aggregate press visibility for actual successful host keyboard/UI actions and
+repeated reads. Initial/restored screenshots were inspected.
+
+The new CLI also reran the actual Game inventory/card authoring fixtures without
+changing Game/project/input/save/policy files. Raw usage, nodes, findings and
+proven pair counts matched the original reports. Inventory is 85 groups / 992
+proven pairs / 68 raw findings; its original policy leaves two findings. Card is
+30 groups / 296 pairs / 23 raw findings; its original policy leaves four. All
+four strict invocations correctly exit 1 because of real residual findings;
+none produces `UI_LAYOUT_WORK_LIMIT`. These are not passing Game layout reports.
+See [actual CLI validation](../evidence/2026-10-29-engine-stability/layout-background-sdk8-actual.json)
+and [current artifact handoff](../evidence/2026-10-29-engine-stability/retained-web-sdk-handoff.json).
+
+## SDK6 real-game timing and memory limits
+
+Retained baseline Game five-case capture achieved about 60 advancing frames/s
+with no dropped simulation steps, but original completion-end gates stayed
+false. A separate same-artifact travel calibration recorded exact same-page RAF
+joins for 361 headed and 357 headless submissions. Original nominal overrun
+counts were 21 and 80; end-minus-RAF p99 was 20.9 and 31.9 ms. Independent
+observer-entry offsets and unknown preparation gaps are reported separately,
+without subtracting percentiles or calling either gap pure Core CPU. No result
+changes an existing clock or acceptance gate. Rendering-opportunity timestamps
+precede callback execution in the
+[HTML rendering algorithm](https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering);
+an observer entry is not the scheduler entry or a physical-presentation receipt.
+Execution context preserves the owner's later report that its named CPU batches
+ended before capture, while unrelated external activity remains unknown.
+
+Natural-GC diagnostics are separate instrumented runs. The first idle trace was
+insufficient because advisory category enumeration returned empty; it is not
+zero GC. A later 45-second idle run used browser-scoped tracing and bounded
+enumeration retry (empty then 289 categories), with page-scoped Performance
+metrics. Heap used ranged about 12.8–45.9 MB and ended 14.8→41.5 MB; that endpoint
+is a sawtooth sample, not a leak diagnosis. GPU geometry/material/mesh ownership
+stayed 4/1/4 and WASM capacity stayed 29,097,984 bytes; one texture was added.
+Travel's 45-second run also held WASM capacity stable and released geometry
+7→4/capacity1122→960 after arrival. It was not continuous travel for 45 seconds.
+V8 GC producer episodes still occurred; event durations/interval unions are not
+full collector-cycle counts, exact CPU or OS pause time, and do not measure
+Luau's collector. Sampler end-to-end latency is explicit and can be substantial.
+Neither stable resource tails nor these short heap windows proves universal
+leak freedom or no frequent GC. Compact evidence is retained; raw traces and
+user fixture data remain in the local cache.

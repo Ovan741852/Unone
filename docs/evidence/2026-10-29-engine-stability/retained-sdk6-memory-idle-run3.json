@@ -1,0 +1,166 @@
+{
+  "case": "idle",
+  "source": "4937c57cfa97939c40e52048f08487c8901f0f9394b8f9e9f10d370ff114f7b2",
+  "diagnostic_not_fps_acceptance": true,
+  "sample_count": 45,
+  "trace_status": "observed-partial",
+  "elapsed_s": 45.153508,
+  "category_session_scope": "browser",
+  "category_attempts": [
+    {
+      "attempt": 1,
+      "status": "enumerated-insufficient",
+      "category_count": 0
+    },
+    {
+      "attempt": 2,
+      "status": "enumerated-sufficient",
+      "category_count": 289
+    }
+  ],
+  "selected_categories": [
+    "devtools.timeline",
+    "v8",
+    "disabled-by-default-v8.gc",
+    "blink.user_timing"
+  ],
+  "trace_failure": null,
+  "sampler_duration_ms": {
+    "median": 15.909599999999045,
+    "p95": 145.1339999999982,
+    "max": 147.3087000000014
+  },
+  "js_heap_used_bytes": {
+    "first": 14777220,
+    "last": 41522032,
+    "min": 12809672,
+    "max": 45859156,
+    "tail_last10s_min": 15774632
+  },
+  "js_heap_capacity_bytes": {
+    "first": 44105728,
+    "last": 66912256,
+    "min": 44105728,
+    "max": 71106560
+  },
+  "v8_page_main_trace_episodes": {
+    "Minor": {
+      "availability": "observed",
+      "root_trace_episodes": 23,
+      "trace_interval_p95_ms": 2.276,
+      "trace_interval_max_ms": 2.388,
+      "wall_interval_union_ms": 31.104
+    },
+    "Major": {
+      "availability": "observed",
+      "root_trace_episodes": 82,
+      "trace_interval_p95_ms": 2.006,
+      "trace_interval_max_ms": 2.195,
+      "wall_interval_union_ms": 80.624
+    },
+    "Incremental": {
+      "availability": "observed",
+      "root_trace_episodes": 998,
+      "trace_interval_p95_ms": 0.155,
+      "trace_interval_max_ms": 0.439,
+      "wall_interval_union_ms": 44.373
+    }
+  },
+  "v8_main_episode_wall_union_ms": 156.101,
+  "renderer_cached_counters": {
+    "ui_image_batches.geometry_builds": {
+      "first": 4,
+      "last": 6,
+      "min": 4,
+      "max": 6,
+      "delta": 2
+    },
+    "ui_image_batches.live_geometries": {
+      "first": 4,
+      "last": 4,
+      "min": 4,
+      "max": 4,
+      "delta": 0
+    },
+    "ui_image_batches.buffer_capacity_quads": {
+      "first": 960,
+      "last": 960,
+      "min": 960,
+      "max": 960,
+      "delta": 0
+    },
+    "ui_image_batches.active_resource_quads": {
+      "first": 675,
+      "last": 679,
+      "min": 675,
+      "max": 679,
+      "delta": 4
+    },
+    "ui_image_batches.material_builds": {
+      "first": 1,
+      "last": 1,
+      "min": 1,
+      "max": 1,
+      "delta": 0
+    },
+    "ui_image_batches.live_materials": {
+      "first": 1,
+      "last": 1,
+      "min": 1,
+      "max": 1,
+      "delta": 0
+    },
+    "ui_image_batches.mesh_builds": {
+      "first": 4,
+      "last": 6,
+      "min": 4,
+      "max": 6,
+      "delta": 2
+    },
+    "ui_image_batches.live_meshes": {
+      "first": 4,
+      "last": 4,
+      "min": 4,
+      "max": 4,
+      "delta": 0
+    },
+    "ui_image_batches.live_textures": {
+      "first": 18,
+      "last": 19,
+      "min": 18,
+      "max": 19,
+      "delta": 1
+    },
+    "texture_cache.entries": {
+      "first": 14,
+      "last": 14,
+      "min": 14,
+      "max": 14,
+      "delta": 0
+    },
+    "ui.nodes": {
+      "first": 57,
+      "last": 57,
+      "min": 57,
+      "max": 57,
+      "delta": 0
+    },
+    "backend.wasm_linear_bytes": {
+      "first": 29097984,
+      "last": 29097984,
+      "min": 29097984,
+      "max": 29097984,
+      "delta": 0
+    }
+  },
+  "hidden_samples": 0,
+  "player_errors": [],
+  "engine_profiler_samples": 0,
+  "limitations": [
+    "Trace episodes are not stop-the-world pauses, CPU durations or complete collector-cycle counts.",
+    "V8 trace events do not measure Luau GC inside WASM.",
+    "JS heap endpoints include ordinary garbage; a45s diagnostic cannot prove or disprove a leak.",
+    "Sampling/tracing overhead perturbs scheduling; this run is not FPS acceptance.",
+    "WASM linear bytes and renderer counters describe capacity/owners, not live GPU/driver bytes."
+  ]
+}

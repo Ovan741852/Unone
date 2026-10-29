@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-partial",
+  "raw_summary": "D:\\Projects\\Unone\\.cache\\jy-memory-sdk6-20261030-run2\\summary.json",
+  "cases": [
+    {
+      "case": "idle",
+      "sample_seconds": 45.1508697,
+      "samples": 45,
+      "gc_status": "insufficient-evidence",
+      "gc_reason": "REQUIRED_GC_OR_CLOCK_MARKER_CATEGORY_UNAVAILABLE",
+      "trace_seconds": null,
+      "trace_bytes": null,
+      "trace_loss": null,
+      "canonical_gc_intervals": [
+        {
+          "name": "MinorGC",
+          "count": null,
+          "per_second": null,
+          "p95_interval_ms": null,
+          "max_interval_ms": null
+        },
+        {
+          "name": "MajorGC",
+          "count": null,
+          "per_second": null,
+          "p95_interval_ms": null,
+          "max_interval_ms": null
+        }
+      ],
+      "incremental_trace_episodes": null,
+      "all_recognized_main_interval_union_ms": null,
+      "heap_used": {
+        "availability": "observed",
+        "n": 45,
+        "first": 15413436,
+        "last": 14872932,
+        "delta": -540504,
+        "min": 12065572,
+        "max": 45899404,
+        "median": 22931184,
+        "p95": 43607976,
+        "slope_units_per_s": 101681.83862015807,
+        "tail_last_10s": {
+          "n": 10,
+          "min": 13818044,
+          "max": 45899404,
+          "median": 22931184,
+          "p95": 45899404,
+          "slope_units_per_s": -932366.8109824924
+        }
+      },
+      "heap_total_capacity": {
+        "availability": "observed",
+        "n": 45,
+        "first": 42532864,
+        "last": 71630848,
+        "delta": 29097984,
+        "min": 42532864,
+        "max": 76873728,
+        "median": 73728000,
+        "p95": 76873728,
+        "slope_units_per_s": 561370.9613815643,
+        "tail_last_10s": {
+          "n": 10,
+          "min": 71630848,
+          "max": 73728000,
+          "median": 72417280,
+          "p95": 73728000,
+          "slope_units_per_s": -190259.45076998993
+        }
+      },
+      "cached_owners": [
+        {
+          "key": "textures",
+          "first": 37,
+          "last": 38,
+          "peak": 38,
+          "tail_min": 38,
+          "tail_max": 38
+        },
+        {
+          "key": "ui_image_batches.live_geometries",
+          "first": 4,
+          "last": 4,
+          "peak": 4,
+          "tail_min": 4,
+          "tail_max": 4
+        },
+        {
+          "key": "ui_image_batches.live_materials",
+          "first": 1,
+          "last": 1,
+          "peak": 1,
+          "tail_min": 1,
+          "tail_max": 1
+        },
+        {
+          "key": "ui_image_batches.live_meshes",
+          "first": 4,
+          "last": 4,
+          "peak": 4,
+          "tail_min": 4,
+          "tail_max": 4
+        },
+        {
+          "key": "ui_image_batches.live_textures",
+          "first": 18,
+          "last": 19,
+          "peak": 19,
+          "tail_min": 19,
+          "tail_max": 19
+        },
+        {
+          "key": "ui_image_batches.buffer_capacity_quads",
+          "first": 960,
+          "last": 960,
+          "peak": 960,
+          "tail_min": 960,
+          "tail_max": 960
+        },
+        {
+          "key": "texture_cache.entries",
+          "first": 14,
+          "last": 14,
+          "peak": 14,
+          "tail_min": 14,
+          "tail_max": 14
+        },
+        {
+          "key": "texture_cache.decoded_texture_bytes_estimate",
+          "first": 28627248,
+          "last": 28627248,
+          "peak": 28627248,
+          "tail_min": 28627248,
+          "tail_max": 28627248
+        },
+        {
+          "key": "backend.wasm_linear_bytes",
+          "first": 29097984,
+          "last": 29097984,
+          "peak": 29097984,
+          "tail_min": 29097984,
+          "tail_max": 29097984
+        }
+      ],
+      "cdp_task_duration_seconds_delta": 39.640145,
+      "cdp_script_duration_seconds_delta": 0.066589,
+      "sampler_roundtrip_duration_ms": {
+        "median": 18.54950000000099,
+        "p95": 124.78859999999986,
+        "max": 138.95960000000196
+      },
+      "travelling_before": false,
+      "travelling_after": false,
+      "errors": [],
+      "sample_errors": [],
+      "hidden": 0,
+      "engine_profiler_samples": 0
+    },
+    {
+      "case": "travel",
+      "sample_seconds": 45.180210100000004,
+      "samples": 45,
+      "gc_status": "observed-partial",
+      "gc_reason": "Page main-thread trace episodes are not guaranteed stop-the-world pauses or whole collector cycles",
+      "trace_seconds": 45.042494,
+      "trace_bytes": 12368196,
+      "trace_loss": false,
+      "canonical_gc_intervals": [
+        {
+          "name": "MinorGC",
+          "count": 22,
+          "per_second": 0.4884276612214235,
+          "p95_interval_ms": 4.078,
+          "max_interval_ms": 4.327
+        },
+        {
+          "name": "MajorGC",
+          "count": 37,
+          "per_second": 0.8214465211451214,
+          "p95_interval_ms": 2.39,
+          "max_interval_ms": 2.614
+        }
+      ],
+      "incremental_trace_episodes": {
+        "availability": "observed",
+        "observed_duration_intervals": 2897,
+        "root_trace_intervals": 965,
+        "intervals_per_s": 21.424213321757893,
+        "wall_union_ms": 38.197,
+        "interval_p95_ms": 0.129,
+        "interval_max_ms": 0.358
+      },
+      "all_recognized_main_interval_union_ms": 162.312,
+      "heap_used": {
+        "availability": "observed",
+        "n": 45,
+        "first": 38118216,
+        "last": 37027588,
+        "delta": -1090628,
+        "min": 11797540,
+        "max": 43620312,
+        "median": 23255328,
+        "p95": 42935648,
+        "slope_units_per_s": 145577.34198892774,
+        "tail_last_10s": {
+          "n": 11,
+          "min": 15021820,
+          "max": 41674452,
+          "median": 24145408,
+          "p95": 41674452,
+          "slope_units_per_s": 924615.4352173026
+        }
+      },
+      "heap_total_capacity": {
+        "availability": "observed",
+        "n": 45,
+        "first": 80543744,
+        "last": 80543744,
+        "delta": 0,
+        "min": 78970880,
+        "max": 84738048,
+        "median": 81854464,
+        "p95": 84213760,
+        "slope_units_per_s": -50149.69070635787,
+        "tail_last_10s": {
+          "n": 11,
+          "min": 80543744,
+          "max": 81854464,
+          "median": 81068032,
+          "p95": 81854464,
+          "slope_units_per_s": -152663.1264590964
+        }
+      },
+      "cached_owners": [
+        {
+          "key": "textures",
+          "first": 40,
+          "last": 39,
+          "peak": 41,
+          "tail_min": 39,
+          "tail_max": 39
+        },
+        {
+          "key": "ui_image_batches.live_geometries",
+          "first": 7,
+          "last": 4,
+          "peak": 7,
+          "tail_min": 4,
+          "tail_max": 4
+        },
+        {
+          "key": "ui_image_batches.live_materials",
+          "first": 1,
+          "last": 1,
+          "peak": 1,
+          "tail_min": 1,
+          "tail_max": 1
+        },
+        {
+          "key": "ui_image_batches.live_meshes",
+          "first": 7,
+          "last": 4,
+          "peak": 7,
+          "tail_min": 4,
+          "tail_max": 4
+        },
+        {
+          "key": "ui_image_batches.live_textures",
+          "first": 21,
+          "last": 20,
+          "peak": 22,
+          "tail_min": 20,
+          "tail_max": 20
+        },
+        {
+          "key": "ui_image_batches.buffer_capacity_quads",
+          "first": 1122,
+          "last": 960,
+          "peak": 1122,
+          "tail_min": 960,
+          "tail_max": 960
+        },
+        {
+          "key": "texture_cache.entries",
+          "first": 14,
+          "last": 14,
+          "peak": 14,
+          "tail_min": 14,
+          "tail_max": 14
+        },
+        {
+          "key": "texture_cache.decoded_texture_bytes_estimate",
+          "first": 28627248,
+          "last": 28627248,
+          "peak": 28627248,
+          "tail_min": 28627248,
+          "tail_max": 28627248
+        },
+        {
+          "key": "backend.wasm_linear_bytes",
+          "first": 29097984,
+          "last": 29097984,
+          "peak": 29097984,
+          "tail_min": 29097984,
+          "tail_max": 29097984
+        }
+      ],
+      "cdp_task_duration_seconds_delta": 43.117209,
+      "cdp_script_duration_seconds_delta": 0.055263,
+      "sampler_roundtrip_duration_ms": {
+        "median": 20.615099999995437,
+        "p95": 153.26330000000598,
+        "max": 157.7085999999981
+      },
+      "travelling_before": true,
+      "travelling_after": false,
+      "errors": [],
+      "sample_errors": [],
+      "hidden": 0,
+      "engine_profiler_samples": 0
+    }
+  ],
+  "limits": [
+    "Idle category enumeration unavailable; no idle trace/GC count, not zero.",
+    "V8 trace durations/episodes are not a count of full collections or proof of OS pause time; Luau GC is unavailable.",
+    "CDP TaskDuration and ScriptDuration are reported counters with different scopes; do not infer all JS/WASM CPU by subtraction.",
+    "Heap capacity is not live retained memory; these natural-GC endpoints/tails do not establish no leak.",
+    "Travel reaches destination within this window; it is not continuous45s travel.",
+    "Instrumented diagnostic, no FPS acceptance. Raw trace remains cache only."
+  ]
+}

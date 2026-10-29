@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "value": {
+    "name": "input.hasPressedActions",
+    "category": "input",
+    "purpose": "Read whether the current semantic press-edge snapshot contains any action, in O(1).",
+    "when_to_use": "Gate a large discrete wasPressed action scanner when no action was newly pressed. Search any pressed action, has pressed actions, 是否有按下動作 or 任意按下事件. Keep action dispatch and gameplay in Luau.",
+    "when_not_to_use": "Do not skip the whole update, held movement, release handling, pointer/drag, text editing or slider interaction work. Raw physical events alone are not semantic presses.",
+    "parameters": [],
+    "returns": "boolean: at least one action would return true from wasPressed(action) in this same tick snapshot.",
+    "side_effects": [
+      "Read-only O(1) input snapshot; never consumes an edge or scans action names"
+    ],
+    "frame_semantics": "Uses the same pressed set as wasPressed. Stable across repeated reads; only successful ticks advance the prior held snapshot. Failed execution restores the previously published press snapshot, reload preserves it, and a fresh runtime starts false. Existing host/UI/physical mappings and replay feed the same semantic actions; held-only, release-only, raw-physical-only, text-only and slider-only input do not create a press.",
+    "common_errors": [
+      "Takes no arguments or option table; unexpected arguments are rejected. This is not an any-input-activity or pending-event query."
+    ],
+    "example": "if api.input.hasPressedActions() then scanDiscreteCommands(api.input) end",
+    "related_apis": [
+      "input.wasPressed",
+      "input.wasReleased",
+      "input.isDown",
+      "input.getPhysicalBatch",
+      "input.getSliderInteraction",
+      "input.getTextInputInteraction"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

@@ -1,0 +1,14 @@
+{
+  "exclusive": false,
+  "external_cpu_overlap": "possible; peer overlay agent may have been running Core/CLI correctness batches; completion was not confirmed before capture",
+  "root_owned_workloads": "Root reported CPU/build/GPU idle during the granted window",
+  "other_game_pages": "Peer later reported root QA8270 tab closed and original Game tabs hidden; exact overlap timing not established",
+  "selection": "First fixed headed-then-headless run preserved; no rerun or best-sample selection",
+  "browser_workloads": "Both modes awaited context.close and Browser.close; Node session75159 exited0",
+  "interpretation": "Descriptive per-row calibration only, no causal browser-mode attribution, exclusive-machine claim, metric normalization or acceptance-gate change",
+  "owner_reported_peer_batch_completion_taipei": "2026-10-30 05:27:39 Asia/Taipei",
+  "owner_reported_calibration_start_minute_taipei": "2026-10-30 05:28 Asia/Taipei (minute precision only)",
+  "known_peer_batch_overlap": false,
+  "updated_evidence_basis": "Owner report relayed by root after capture; not an independent OS/process trace. Named overlay Core/CLI batches ended before calibration. Root QA8270 was reported closed and original Game tabs hidden.",
+  "updated_interpretation": "The initial possible-overlap classification is superseded only for the named peer batches. Other external activity remains unknown; exclusive=false and no machine-all-idle or causal mode claim. Raw first report unchanged, no rerun."
+}

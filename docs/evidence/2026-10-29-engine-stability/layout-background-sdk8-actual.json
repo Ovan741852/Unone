@@ -1,0 +1,2242 @@
+{
+  "schema_version": 1,
+  "source_commit": "ff617f5",
+  "cli": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8/bin/game.exe",
+  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8",
+  "project": "D:/Projects/JYRogue/game/evidence/retained-overlays/qa-project",
+  "verification": {
+    "inputs_unmodified": true,
+    "raw_reports_present": true,
+    "raw_proofs_equal_previous": true,
+    "raw_findings_unchanged": true,
+    "raw_usage_unchanged": true,
+    "raw_nodes_unchanged": true,
+    "expected_group_counts": true,
+    "bounded_examples": true,
+    "no_work_limit": true
+  },
+  "results": [
+    {
+      "name": "inventory-raw",
+      "command": [
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8/bin/game.exe",
+        "--sdk",
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8",
+        "--project",
+        "D:/Projects/JYRogue/game/evidence/retained-overlays/qa-project",
+        "--json",
+        "ui",
+        "preview",
+        "--frames",
+        "4",
+        "--seed",
+        "42",
+        "--input-sequence",
+        "D:\\Projects\\JYRogue\\game\\evidence\\retained-overlays\\qa-project\\tests\\ui-inventory.input.json",
+        "--save-fixture",
+        "tests/ui-fixtures/named-fresh.save.json",
+        "--strict"
+      ],
+      "exit_code": 1,
+      "signal": null,
+      "error": null,
+      "elapsed_ms": 198.2337,
+      "parse_error": null,
+      "ok": false,
+      "diagnostics": [
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3' and 'map-fog-field-canopy-retained' overlap by 100.0 x 14.6 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-fog-field-canopy-retained' y by 14.6 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3' and 'items-inventory-window-opaque-paper' overlap by 67.0 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3",
+              "items-inventory-window-opaque-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-window-opaque-paper' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3' and 'items-inventory-window-skin/surface' overlap by 73.0 x 1.6 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3",
+              "items-inventory-window-skin/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-window-skin/surface' y by 1.6 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3-occlusion-2' and 'map-fog-field-canopy-retained' overlap by 17.0 x 67.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3-occlusion-2",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-fog-field-canopy-retained' x by 17.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3-occlusion-2' and 'items-inventory-window-opaque-paper' overlap by 0.0 x 67.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3-occlusion-2",
+              "items-inventory-window-opaque-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-window-opaque-paper' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3-occlusion-2' and 'items-inventory-window-skin/surface' overlap by 3.0 x 67.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3-occlusion-2",
+              "items-inventory-window-skin/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-window-skin/surface' x by 3.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3-occlusion-2' and 'items-detail-rule' overlap by 0.0 x 0.0 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3-occlusion-2",
+              "items-detail-rule"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-detail-rule' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-1' and 'minimap-frame' overlap by 5.6 x 1.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-1",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-1' y by 1.9 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-2' and 'minimap-frame' overlap by 7.4 x 1.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-2",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-2' y by 1.9 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-3' and 'minimap-survey-140-aperture-1' overlap by 0.5 x 0.5 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-3",
+              "minimap-survey-140-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-survey-140-aperture-1' y by 0.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-3' and 'minimap-view-2-aperture-1' overlap by 0.2 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-3",
+              "minimap-view-2-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-2-aperture-1' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-3' and 'minimap-frame' overlap by 8.2 x 1.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-3",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-3' y by 1.9 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-4' and 'minimap-survey-140-aperture-1' overlap by 0.5 x 0.5 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-4",
+              "minimap-survey-140-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-4' y by 0.5 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-4' and 'minimap-view-2-aperture-1' overlap by 0.2 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-4",
+              "minimap-view-2-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-4' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-4' and 'minimap-frame' overlap by 8.5 x 3.8 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-4",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-4' y by 3.8 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-5' and 'minimap-frame' overlap by 8.2 x 1.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-5",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-5' y by 1.9 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-6' and 'minimap-frame' overlap by 7.4 x 1.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-6",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-6' y by 1.9 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-ground-aperture-7' and 'minimap-frame' overlap by 5.6 x 1.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-ground-aperture-7",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-ground-aperture-7' y by 1.9 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-survey-140-aperture-1' and 'minimap-survey-141-aperture-1' overlap by 0.3 x 0.5 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-survey-140-aperture-1",
+              "minimap-survey-141-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-survey-141-aperture-1' x by 0.3 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-survey-140-aperture-1' and 'minimap-view-1-aperture-1' overlap by 0.2 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-survey-140-aperture-1",
+              "minimap-view-1-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-1-aperture-1' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-survey-140-aperture-1' and 'minimap-view-2-aperture-1' overlap by 0.2 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-survey-140-aperture-1",
+              "minimap-view-2-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-2-aperture-1' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-survey-140-aperture-1' and 'minimap-view-4-aperture-1' overlap by 0.1 x 0.2 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-survey-140-aperture-1",
+              "minimap-view-4-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-4-aperture-1' x by 0.1 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-survey-140-aperture-1' and 'minimap-frame' overlap by 0.5 x 0.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-survey-140-aperture-1",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-survey-140-aperture-1' x by 0.5 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-survey-141-aperture-1' and 'minimap-view-2-aperture-1' overlap by 0.2 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-survey-141-aperture-1",
+              "minimap-view-2-aperture-1"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-2-aperture-1' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-survey-141-aperture-1' and 'minimap-frame' overlap by 0.5 x 0.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-survey-141-aperture-1",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-survey-141-aperture-1' x by 0.5 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-view-1-aperture-1' and 'minimap-frame' overlap by 0.2 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-view-1-aperture-1",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-1-aperture-1' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-view-2-aperture-1' and 'minimap-frame' overlap by 0.2 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-view-2-aperture-1",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-2-aperture-1' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-view-3-aperture-1' and 'minimap-frame' overlap by 0.1 x 0.2 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-view-3-aperture-1",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-3-aperture-1' x by 0.1 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-view-4-aperture-1' and 'minimap-frame' overlap by 0.1 x 0.2 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-view-4-aperture-1",
+              "minimap-frame"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'minimap-view-4-aperture-1' x by 0.1 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-frame' and 'hud-system-control/surface' overlap by 2.3 x 1.8 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-frame",
+              "hud-system-control/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'hud-system-control/surface' y by 1.8 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'minimap-frame' and 'hud-system-open' overlap by 2.3 x 1.8 (design-space units).",
+          "facts": {
+            "nodes": [
+              "minimap-frame",
+              "hud-system-open"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'hud-system-open' y by 1.8 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'hud-profile-face' and 'hud-portrait-frame/surface' overlap by 5.6 x 9.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "hud-profile-face",
+              "hud-portrait-frame/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'hud-profile-face' x by 5.6 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'hud-profile-face' and 'hud-profile-open' overlap by 5.6 x 9.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "hud-profile-face",
+              "hud-profile-open"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'hud-profile-face' x by 5.6 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-status' and 'main-nav-status' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-status",
+              "main-nav-status"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-status' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-inventory' and 'main-nav-inventory' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-inventory",
+              "main-nav-inventory"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-inventory' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-training' and 'main-nav-training' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-training",
+              "main-nav-training"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-training' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-heroes' and 'main-nav-heroes' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-heroes",
+              "main-nav-heroes"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-heroes' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-journal' and 'main-nav-journal' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-journal",
+              "main-nav-journal"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-journal' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-inventory-window-skin/surface' overlap by 67.0 x 68.0 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-inventory-window-skin/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-window-opaque-paper' x by 67.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-inventory-window-close-frame/surface' overlap by 1.4 x 2.8 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-inventory-window-close-frame/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-window-close-frame/surface' x by 1.4 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-inventory-window-close' overlap by 1.4 x 2.8 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-inventory-window-close"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-window-close' x by 1.4 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-8/surface' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-8/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-8/surface' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-8-label' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-8-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-8-label' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-16/surface' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-16/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-16/surface' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-16-label' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-16-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-16-label' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-24/surface' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-24/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-24/surface' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-24-label' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-24-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-24-label' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-32/surface' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-32/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-32/surface' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-32-label' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-32-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-32-label' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-40/surface' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-40/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-40/surface' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-bag-slot-40-label' overlap by 4.9 x 8.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-bag-slot-40-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-40-label' x by 4.9 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-item-split-chrome/surface' overlap by 9.7 x 4.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-item-split-chrome/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-item-split-chrome/surface' y by 4.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-item-split' overlap by 9.7 x 4.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-item-split"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-item-split' y by 4.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-item-discard-chrome/surface' overlap by 9.7 x 4.0 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-item-discard-chrome/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-item-discard-chrome/surface' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-window-opaque-paper' and 'items-item-discard' overlap by 9.7 x 4.0 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-window-opaque-paper",
+              "items-item-discard"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-item-discard' y by 4.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-inventory-player-shadow' and 'items-inventory-player' overlap by 9.2 x 2.0 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-inventory-player-shadow",
+              "items-inventory-player"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-inventory-player-shadow' y by 2.0 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-head-icon' and 'items-equipment-head-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-head-icon",
+              "items-equipment-head-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-head-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-weapon-icon' and 'items-equipment-weapon-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-weapon-icon",
+              "items-equipment-weapon-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-weapon-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-offhand-icon' and 'items-equipment-offhand-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-offhand-icon",
+              "items-equipment-offhand-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-offhand-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-body-icon' and 'items-equipment-body-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-body-icon",
+              "items-equipment-body-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-body-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-ring-icon' and 'items-equipment-ring-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-ring-icon",
+              "items-equipment-ring-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-ring-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-belt-icon' and 'items-equipment-belt-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-belt-icon",
+              "items-equipment-belt-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-belt-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-charm-icon' and 'items-equipment-charm-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-charm-icon",
+              "items-equipment-charm-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-charm-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-equipment-feet-icon' and 'items-equipment-feet-label' overlap by 3.7 x 6.3 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-equipment-feet-icon",
+              "items-equipment-feet-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-equipment-feet-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-bag-slot-1-icon' and 'items-bag-slot-1-label' overlap by 3.7 x 7.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-bag-slot-1-icon",
+              "items-bag-slot-1-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-1-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-bag-slot-2-icon' and 'items-bag-slot-2-label' overlap by 3.7 x 7.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-bag-slot-2-icon",
+              "items-bag-slot-2-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-2-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-bag-slot-3-icon' and 'items-bag-slot-3-label' overlap by 3.7 x 7.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-bag-slot-3-icon",
+              "items-bag-slot-3-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-3-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'items-bag-slot-4-icon' and 'items-bag-slot-4-label' overlap by 3.7 x 7.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "items-bag-slot-4-icon",
+              "items-bag-slot-4-label"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'items-bag-slot-4-icon' x by 3.7 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        }
+      ],
+      "has_layout_report": true,
+      "logical_nodes": 916,
+      "inspection_leaves": 200,
+      "declared_group_count": 85,
+      "proven_pair_count": 992,
+      "max_examples": 2,
+      "exact_policy_count": 0,
+      "findings_count": 68,
+      "work_limit": false,
+      "prior_fixture_path": "D:/Projects/JYRogue/game/evidence/retained-overlays/strict/inventory-raw.json",
+      "prior_fixture_sha256": "1ad94b328391fa10af8c92423ccd803f77a8d07ee3731e9f7bf1921cdc8ae74b",
+      "previous_typed_pair_count": 992,
+      "same_usage": true,
+      "same_nodes": true,
+      "same_findings": true,
+      "same_proven_pair_count": true,
+      "findings_sha256": "2aede96b4fb170283d6ef876c0c1cd3dec098f53189bf67632beeb1388f27b42"
+    },
+    {
+      "name": "inventory-policy",
+      "command": [
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8/bin/game.exe",
+        "--sdk",
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8",
+        "--project",
+        "D:/Projects/JYRogue/game/evidence/retained-overlays/qa-project",
+        "--json",
+        "ui",
+        "preview",
+        "--frames",
+        "4",
+        "--seed",
+        "42",
+        "--input-sequence",
+        "D:\\Projects\\JYRogue\\game\\evidence\\retained-overlays\\qa-project\\tests\\ui-inventory.input.json",
+        "--save-fixture",
+        "tests/ui-fixtures/named-fresh.save.json",
+        "--strict",
+        "--overlap-policy",
+        "D:\\Projects\\JYRogue\\game\\evidence\\retained-overlays\\qa-project\\tests\\ui-isometric-inventory.overlap.json"
+      ],
+      "exit_code": 1,
+      "signal": null,
+      "error": null,
+      "elapsed_ms": 204.08460000000002,
+      "parse_error": null,
+      "ok": false,
+      "diagnostics": [
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3' and 'map-fog-field-canopy-retained' overlap by 100.0 x 14.6 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-fog-field-canopy-retained' y by 14.6 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-3-occlusion-2' and 'map-fog-field-canopy-retained' overlap by 17.0 x 67.9 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-3-occlusion-2",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-fog-field-canopy-retained' x by 17.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        }
+      ],
+      "has_layout_report": true,
+      "logical_nodes": 916,
+      "inspection_leaves": 200,
+      "declared_group_count": 85,
+      "proven_pair_count": 992,
+      "max_examples": 2,
+      "exact_policy_count": 66,
+      "findings_count": 2,
+      "work_limit": false,
+      "findings_sha256": "548a2115a83df5823ce28e6d3c63a29bf16343f61eb9386a17485e92e343157c"
+    },
+    {
+      "name": "world-travel-card-raw",
+      "command": [
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8/bin/game.exe",
+        "--sdk",
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8",
+        "--project",
+        "D:/Projects/JYRogue/game/evidence/retained-overlays/qa-project",
+        "--json",
+        "ui",
+        "preview",
+        "--frames",
+        "802",
+        "--seed",
+        "42",
+        "--input-sequence",
+        "D:\\Projects\\JYRogue\\game\\evidence\\retained-overlays\\qa-project\\tests\\ui-world-travel-card.input.json",
+        "--save-fixture",
+        "tests/ui-fixtures/named-fresh.save.json",
+        "--strict"
+      ],
+      "exit_code": 1,
+      "signal": null,
+      "error": null,
+      "elapsed_ms": 3551.4498999999996,
+      "parse_error": null,
+      "ok": false,
+      "diagnostics": [
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-origin' and 'map-fog-field-canopy-retained' overlap by 77.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-origin",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-navigation-origin' y by 34.7 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-origin' and 'location-card-paper' overlap by 0.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-origin",
+              "location-card-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-paper' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-origin' and 'location-card-edge' overlap by 0.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-origin",
+              "location-card-edge"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-edge' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4' and 'map-fog-field-canopy-retained' overlap by 100.0 x 21.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-scene-art-4' y by 21.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4' and 'location-card-paper' overlap by 21.0 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4",
+              "location-card-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-scene-art-4' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4' and 'location-card-edge' overlap by 21.0 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4",
+              "location-card-edge"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-scene-art-4' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-2' and 'map-fog-field-canopy-retained' overlap by 100.0 x 44.2 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-2",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-fog-field-canopy-retained' y by 44.2 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-2' and 'location-card-paper' overlap by 21.0 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-2",
+              "location-card-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-paper' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-2' and 'location-card-edge' overlap by 21.0 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-2",
+              "location-card-edge"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-edge' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-3' and 'map-fog-field-canopy-retained' overlap by 77.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-3",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-scene-art-4-occlusion-3' y by 34.7 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-3' and 'location-card-paper' overlap by 0.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-3",
+              "location-card-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-paper' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-3' and 'location-card-edge' overlap by 0.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-3",
+              "location-card-edge"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-edge' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-overlay' and 'location-card-paper' overlap by 21.0 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-overlay",
+              "location-card-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-paper' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-overlay' and 'location-card-edge' overlap by 21.0 x 0.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-overlay",
+              "location-card-edge"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-edge' y by 0.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-overlay-occlusion-2' and 'location-card-paper' overlap by 0.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-overlay-occlusion-2",
+              "location-card-paper"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-paper' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-overlay-occlusion-2' and 'location-card-edge' overlap by 0.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-overlay-occlusion-2",
+              "location-card-edge"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'location-card-edge' x by 0.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'hud-profile-face' and 'hud-portrait-frame/surface' overlap by 5.6 x 9.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "hud-profile-face",
+              "hud-portrait-frame/surface"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'hud-profile-face' x by 5.6 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'hud-profile-face' and 'hud-profile-open' overlap by 5.6 x 9.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "hud-profile-face",
+              "hud-profile-open"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'hud-profile-face' x by 5.6 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-status' and 'main-nav-status' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-status",
+              "main-nav-status"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-status' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-inventory' and 'main-nav-inventory' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-inventory",
+              "main-nav-inventory"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-inventory' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-training' and 'main-nav-training' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-training",
+              "main-nav-training"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-training' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-heroes' and 'main-nav-heroes' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-heroes",
+              "main-nav-heroes"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-heroes' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'main-nav-icon-journal' and 'main-nav-journal' overlap by 4.0 x 7.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "main-nav-icon-journal",
+              "main-nav-journal"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'main-nav-icon-journal' x by 4.0 (to the right), or reduce one of the widths.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        }
+      ],
+      "has_layout_report": true,
+      "logical_nodes": 828,
+      "inspection_leaves": 60,
+      "declared_group_count": 30,
+      "proven_pair_count": 296,
+      "max_examples": 2,
+      "exact_policy_count": 0,
+      "findings_count": 23,
+      "work_limit": false,
+      "prior_fixture_path": "D:/Projects/JYRogue/game/evidence/retained-overlays/strict/world-travel-card-raw.json",
+      "prior_fixture_sha256": "063bf8624787fe161541053ea6fdba888473f912a4791e279f7b0f9926e06f63",
+      "previous_typed_pair_count": 296,
+      "same_usage": true,
+      "same_nodes": true,
+      "same_findings": true,
+      "same_proven_pair_count": true,
+      "findings_sha256": "2be2dad83b502ddc796283294f56ebe9eeadf9e5fe0a7d4c14d18bdd4cb16801"
+    },
+    {
+      "name": "world-travel-card-policy",
+      "command": [
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8/bin/game.exe",
+        "--sdk",
+        "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8",
+        "--project",
+        "D:/Projects/JYRogue/game/evidence/retained-overlays/qa-project",
+        "--json",
+        "ui",
+        "preview",
+        "--frames",
+        "802",
+        "--seed",
+        "42",
+        "--input-sequence",
+        "D:\\Projects\\JYRogue\\game\\evidence\\retained-overlays\\qa-project\\tests\\ui-world-travel-card.input.json",
+        "--save-fixture",
+        "tests/ui-fixtures/named-fresh.save.json",
+        "--strict",
+        "--overlap-policy",
+        "D:\\Projects\\JYRogue\\game\\evidence\\retained-overlays\\qa-project\\tests\\ui-isometric-world-travel-card.overlap.json"
+      ],
+      "exit_code": 1,
+      "signal": null,
+      "error": null,
+      "elapsed_ms": 3468.7337999999995,
+      "parse_error": null,
+      "ok": false,
+      "diagnostics": [
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-navigation-origin' and 'map-fog-field-canopy-retained' overlap by 77.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-navigation-origin",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-navigation-origin' y by 34.7 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4' and 'map-fog-field-canopy-retained' overlap by 100.0 x 21.1 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-scene-art-4' y by 21.1 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-2' and 'map-fog-field-canopy-retained' overlap by 100.0 x 44.2 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-2",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-fog-field-canopy-retained' y by 44.2 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        },
+        {
+          "code": "UI_NODES_OVERLAP",
+          "severity": "ERROR",
+          "summary": "The UI layout has structural findings",
+          "explanation": "'map-scene-art-4-occlusion-3' and 'map-fog-field-canopy-retained' overlap by 77.0 x 34.7 (design-space units).",
+          "facts": {
+            "nodes": [
+              "map-scene-art-4-occlusion-3",
+              "map-fog-field-canopy-retained"
+            ]
+          },
+          "likely_causes": [],
+          "suggested_actions": [
+            {
+              "action": "resolve_layout_finding",
+              "description": "Increase 'map-scene-art-4-occlusion-3' y by 34.7 (upward; the design-space y axis points upward), or reduce one of the heights.",
+              "command": "game ui preview --strict"
+            }
+          ],
+          "source": null
+        }
+      ],
+      "has_layout_report": true,
+      "logical_nodes": 828,
+      "inspection_leaves": 60,
+      "declared_group_count": 30,
+      "proven_pair_count": 296,
+      "max_examples": 2,
+      "exact_policy_count": 19,
+      "findings_count": 4,
+      "work_limit": false,
+      "findings_sha256": "812efac2c07ceaf91440151959afed8d2b2e9b63b8afd8b9f52c7a5b111aab5a"
+    }
+  ],
+  "limitations": [
+    "Existing Game findings and strict nonzero exits are preserved; validator output compaction is not a layout pass.",
+    "Original policies are not edited or expanded; any stale or unsafe policy remains an error.",
+    "No official-player rendering, GPU, browser, FPS, GC or memory acceptance is derived from these headless authoring fixtures."
+  ],
+  "raw_report": "D:/Projects/Unone/.cache/layout-background-sdk8-actual-20261030-run1/report.json",
+  "raw_report_sha256": "cbb35dc515c324753b6b292580c200da2e14cfbf230c2f6ffd86b126be882dd4"
+}
