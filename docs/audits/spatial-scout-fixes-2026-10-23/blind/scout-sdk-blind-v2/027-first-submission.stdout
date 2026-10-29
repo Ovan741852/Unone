@@ -1,0 +1,380 @@
+{
+  "ok": true,
+  "value": {
+    "project": "Synthetic spatial batch author trial",
+    "seed": 42,
+    "status": "completed",
+    "frames": 1,
+    "observation_digest": "sha256:a7b2e12f2a4edd43de3a8496dc0b6b483b23bdfa25b53e4cf1316cae71c207f3",
+    "world": {
+      "spatial": {
+        "indices": [],
+        "sequence": 3,
+        "tickets": [
+          {
+            "batch": {
+              "bodies": [
+                {
+                  "category": 1,
+                  "id": 41,
+                  "position": [
+                    3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "previous_position": null,
+                  "radius": 0.5
+                },
+                {
+                  "category": 1,
+                  "id": 17,
+                  "position": [
+                    -3.0,
+                    0.0,
+                    0.0
+                  ],
+                  "previous_position": null,
+                  "radius": 0.5
+                },
+                {
+                  "category": 2,
+                  "id": 0,
+                  "position": [
+                    0.25,
+                    0.0,
+                    0.0
+                  ],
+                  "previous_position": null,
+                  "radius": 0.125
+                },
+                {
+                  "category": 1,
+                  "id": 4294967295,
+                  "position": [
+                    0.0,
+                    3.0,
+                    0.0
+                  ],
+                  "previous_position": null,
+                  "radius": 0.5
+                },
+                {
+                  "category": 4,
+                  "id": 73,
+                  "position": [
+                    8.0,
+                    0.0,
+                    0.0
+                  ],
+                  "previous_position": [
+                    12.0,
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 0.5
+                }
+              ],
+              "queries": [
+                {
+                  "exclude_id": 17,
+                  "kind": "nearest",
+                  "mask": 1,
+                  "max_distance": 3.0,
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "exclude_id": null,
+                  "kind": "overlap_sphere",
+                  "mask": 1,
+                  "radius": 2.5
+                },
+                {
+                  "exclude_id": null,
+                  "from": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "kind": "sweep_sphere",
+                  "mask": 4,
+                  "radius": 0.5,
+                  "to": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "exclude_id": null,
+                  "kind": "nearest",
+                  "mask": 2,
+                  "max_distance": 1.0,
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "version": 1
+            },
+            "delivered": false,
+            "id": 2,
+            "submit_tick": 0
+          },
+          {
+            "batch": {
+              "bodies": [
+                {
+                  "category": 7,
+                  "id": 9,
+                  "position": [
+                    100.0,
+                    100.0,
+                    100.0
+                  ],
+                  "previous_position": null,
+                  "radius": 0.5
+                }
+              ],
+              "queries": [
+                {
+                  "exclude_id": 17,
+                  "kind": "nearest",
+                  "mask": 1,
+                  "max_distance": 3.0,
+                  "point": [
+                    500.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "exclude_id": null,
+                  "kind": "overlap_sphere",
+                  "mask": 1,
+                  "radius": 2.5
+                },
+                {
+                  "exclude_id": null,
+                  "from": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "kind": "sweep_sphere",
+                  "mask": 4,
+                  "radius": 0.5,
+                  "to": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "exclude_id": null,
+                  "kind": "nearest",
+                  "mask": 2,
+                  "max_distance": 1.0,
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ]
+                }
+              ],
+              "version": 2
+            },
+            "delivered": false,
+            "id": 3,
+            "submit_tick": 0
+          }
+        ]
+      },
+      "frame": 1,
+      "time_seconds": 0.016666666666666666,
+      "camera": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "zoom": 1.0,
+        "view_height": 10.0
+      },
+      "entities": {
+        "unrelated": {
+          "id": "unrelated",
+          "name": "",
+          "transform": {
+            "x": -23.0,
+            "y": 47.0
+          },
+          "rotation": 0.0,
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "transform3d": null,
+          "sprite": null,
+          "mesh3d": null,
+          "rigidbody": null
+        }
+      },
+      "observations": {
+        "first_submission": {
+          "expected_version": 1,
+          "tick": 1,
+          "ticket": 2
+        },
+        "invalid_replacement": {
+          "error": "runtime error: duplicate body ID 9\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau\"]:632: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau\"]:631>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau\"]:631: in function 'update'\n",
+          "rejected": true
+        },
+        "next_tick_boundary": {
+          "error": "runtime error: SPATIAL_RESULT_NEXT_TICK\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau\"]:639: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau\"]:638>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau\"]:638: in function 'update'\n",
+          "rejected_same_tick": true
+        },
+        "repair": {
+          "packed_bytes": 48,
+          "version": 2
+        },
+        "spatial_info_after_destroy": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 0,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 0,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991.0,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 2,
+          "tickets": 2
+        },
+        "spatial_info_start": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 5,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 1,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991.0,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "unrelated_before": {
+          "x": -23,
+          "y": 47
+        },
+        "unrelated_current": {
+          "x": -23,
+          "y": 47
+        }
+      }
+    },
+    "save_payload": null,
+    "trace": [],
+    "performance": {
+      "frames": 1,
+      "total_ms": 0.244,
+      "mean_frame_ms": 0.244,
+      "median_frame_ms": 0.244,
+      "p95_frame_ms": 0.244,
+      "slowest_frame": {
+        "frame": 1,
+        "total_ms": 0.244,
+        "script_ms": 0.19,
+        "physics_ms": 0.0,
+        "observe_ms": 0.027
+      },
+      "sustained_fps": 4096.7,
+      "frame_budget_ms": 16.667,
+      "frames_over_budget": 0,
+      "phases": [
+        {
+          "name": "script",
+          "total_ms": 0.19,
+          "mean_ms": 0.19,
+          "share": 0.875
+        },
+        {
+          "name": "physics",
+          "total_ms": 0.0,
+          "mean_ms": 0.0,
+          "share": 0.002
+        },
+        {
+          "name": "observe",
+          "total_ms": 0.027,
+          "mean_ms": 0.027,
+          "share": 0.123
+        }
+      ],
+      "counts": {
+        "entities": 1,
+        "instances": 0,
+        "instance_bytes": 0,
+        "rigidbodies": 0,
+        "ui_nodes": 0,
+        "effects": 0,
+        "particles": 0,
+        "observations": 8
+      },
+      "luau_memory_bytes": 1035640,
+      "luau_positive_heap_delta_bytes_per_frame": 32720,
+      "profile": "release",
+      "notes": [
+        "wall clock timings, excluded from the observation digest",
+        "serialize is an optional canonical-JSON probe, not actual Web publication or decode time; measure those separately",
+        "luau_positive_heap_delta_bytes_per_frame is positive net heap growth, not total allocated bytes or GC pause attribution",
+        "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+      ]
+    }
+  },
+  "diagnostics": [],
+  "effects": []
+}

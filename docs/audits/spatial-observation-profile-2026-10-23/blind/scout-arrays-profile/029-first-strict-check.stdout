@@ -1,0 +1,39 @@
+{
+  "ok": false,
+  "value": {
+    "project": "Generic spatial author trial",
+    "script": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau",
+    "strict_mode": true,
+    "entrypoints": [
+      "start",
+      "update"
+    ],
+    "type_check": null
+  },
+  "diagnostics": [
+    {
+      "code": "LUAU_TYPECHECK_FAILED",
+      "severity": "ERROR",
+      "summary": "Luau static analyzer found type or lint issues",
+      "explanation": "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+      "facts": {
+        "exit_code": 1,
+        "files": [
+          "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau"
+        ],
+        "output": "C:/Users/liNao/AppData/Local/Temp/unone-spatial-author-wKNiQN/scripts/main.luau:669.36-669.127: TypeError: Expected this to be\r\n\t'SpatialNearestQuery | SpatialOverlapQuery | SpatialSweepQuery'\r\nbut got\r\n\t'{ kind: string, mask: number, max_distance: number, point: {number} }'",
+        "tool": "D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe"
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "fix_typecheck",
+          "description": "Fix Luau type or lint issues using the files, line numbers, and messages in the output.",
+          "command": "game check --types --json"
+        }
+      ],
+      "source": null
+    }
+  ],
+  "effects": []
+}

@@ -1,0 +1,11 @@
+{
+  "entities": [
+    {
+      "id": "unrelated_marker",
+      "transform": {
+        "x": 37,
+        "y": -11
+      }
+    }
+  ]
+}

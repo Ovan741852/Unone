@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "backend": "cpu",
+  "shapeChecks": "native nested results/hits/point/normal arrays, authored empty/numeric/record/nested arrays, plain object",
+  "lifecycle": {
+    "initialVersion": 1,
+    "afterInvalidVersion": 1,
+    "repairedVersion": 2,
+    "firstSubmitTick": 1,
+    "firstDeliveryTick": 2,
+    "consumedAndStaleRejected": true,
+    "unrelatedEntityUnchanged": true
+  },
+  "small": {
+    "submitted_batches": 1,
+    "completed_batches": 1,
+    "bodies": 3,
+    "queries": 4,
+    "pair_tests_upper_bound": 12,
+    "returned_hits": 3,
+    "input_body_bytes": 128,
+    "upload_bytes": 0,
+    "readback_bytes": 0,
+    "manager_ms": {
+      "result_apply": 0,
+      "result_validation": 0.0015,
+      "snapshot": 0.00009999999999999999,
+      "validation": 0.0040999999999999995
+    },
+    "executor": {
+      "clock": "host_monotonic",
+      "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+      "phases_ms": {
+        "cpu_execute": 0.0029000000000000002
+      },
+      "readback_bytes": 0,
+      "total_ms": 0.0029000000000000002,
+      "upload_bytes": 0
+    }
+  },
+  "large": {
+    "submitted_batches": 1,
+    "completed_batches": 1,
+    "bodies": 4096,
+    "queries": 256,
+    "pair_tests_upper_bound": 1048576,
+    "returned_hits": 256,
+    "input_body_bytes": 163848,
+    "upload_bytes": 0,
+    "readback_bytes": 0,
+    "manager_ms": {
+      "result_apply": 0,
+      "result_validation": 0.3799,
+      "snapshot": 0.031,
+      "validation": 0.3395
+    },
+    "executor": {
+      "clock": "host_monotonic",
+      "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+      "phases_ms": {
+        "cpu_execute": 1.2336999999999998
+      },
+      "readback_bytes": 0,
+      "total_ms": 1.2336999999999998,
+      "upload_bytes": 0
+    }
+  },
+  "completedBatches": 6
+}

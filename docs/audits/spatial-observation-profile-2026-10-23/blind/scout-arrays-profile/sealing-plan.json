@@ -1,0 +1,10 @@
+{
+  "plannedAt": "2026-10-23T16:12:33.549Z",
+  "command": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "argv": [
+    "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile\\seal.mjs"
+  ],
+  "cwd": "D:\\Projects\\YesSir",
+  "writePolicy": "Compute all evidence entries, write SHA256SUMS.json and detached SEAL.txt, then perform no further writes",
+  "sourceFallbackStep": null
+}

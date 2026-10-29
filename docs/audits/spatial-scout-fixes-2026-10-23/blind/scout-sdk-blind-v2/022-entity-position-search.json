@@ -1,0 +1,22 @@
+{
+  "order": 22,
+  "name": "entity-position-search",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "--json",
+    "api",
+    "search",
+    "entity.getPosition"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:17:04.7639640Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 152,
+  "endedUtc": "2026-10-23T14:17:04.9488752Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\022-entity-position-search.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\022-entity-position-search.stderr"
+}

@@ -627,6 +627,24 @@ For projects with UI, `verify` renders only the **opening screen** by default (1
 
 Each declaration becomes an independent `layout:<name>` gate. **Each step lists the node IDs actually present on that screen**. If two declarations list exactly the same nodes, they almost certainly ran the same screen twice, creating a gate that proves nothing. The engine reports this fact but does not judge it for you.
 
+For an existing save-dependent screen, use a replayable JSON save fixture instead
+of repeating a long journey before each layout check. Set
+`"save_fixture":"tests/fixtures/workshop-save.json"` on that `ui_previews` entry,
+or run `game ui preview --save-fixture tests/fixtures/workshop-save.json --strict`.
+The MCP `unone_ui_preview` tool accepts the same `save_fixture` string. Paths use
+forward slashes relative to the project root; absolute paths, traversal and
+symlinks outside the root fail explicitly. The normal save contract restores
+this payload before `Game.start`, then runs the requested frames and any input
+replay. The game still validates the save and applies its normal rules. Keep
+fixtures deterministic and regenerate them when the game's save format changes.
+
+This is an authoring-only initialization option. The field is accepted by the
+project schema but omitted when the typed project config is serialized for a
+player; the fixture file is not collected as a production asset. Unspecified
+previews keep their fresh-start behavior. A successful fixture layout check
+proves that saved screen's structure, not natural travel, save acquisition, or
+actual rendered pixels; retain separate gameplay and host rendering checks.
+
 `UI_NODES_OVERLAP` reports two node rectangles intersecting; the diagram marks
 the intersection with `#`. Explicit scoped backgrounds accept only their later,
 fully contained descendants, and exact-pair policies accept only their validated

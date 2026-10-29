@@ -1,0 +1,33 @@
+{
+  "name": "observation.setArray",
+  "category": "observation",
+  "purpose": "Publish a typed generic array as JSON, including an empty array, with runtime serialization validation.",
+  "when_to_use": "For direct publication of typed number/record arrays without casts or element adapters. Read docs/spatial-batches.md#observation-json-arrays in the SDK.",
+  "when_not_to_use": "Does not weaken observation.set's recursive value type. Serializability and contiguous keys are runtime constraints on the generic element type.",
+  "parameters": [
+    {
+      "name": "key",
+      "type_name": "string",
+      "meaning": "Nonempty observation key"
+    },
+    {
+      "name": "values",
+      "type_name": "{T}?",
+      "meaning": "Contiguous serializable array; omitted publishes []"
+    }
+  ],
+  "returns": "nil",
+  "side_effects": [
+    "Validate, mark array identity and replace only the named observation after success"
+  ],
+  "frame_semantics": "The supplied table is not copied by the marker; publication stores a JSON snapshot. Invalid input preserves the previous observation. Numeric element typing remains intact.",
+  "common_errors": [
+    "Invalid key, holes/mixed keys, functions, nonfinite values, buffers or cycles fail explicitly without publishing a replacement."
+  ],
+  "example": "local points: {number} = {1,2,3}; api.observation.setArray(\"points\", points); api.observation.setArray(\"empty\")",
+  "related_apis": [
+    "observation.set",
+    "observation.array",
+    "spatial.take"
+  ]
+}

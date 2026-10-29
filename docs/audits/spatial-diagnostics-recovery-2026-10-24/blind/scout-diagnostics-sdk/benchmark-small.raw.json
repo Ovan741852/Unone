@@ -1,0 +1,28 @@
+{
+  "executable": "node",
+  "args": [
+    "--import",
+    "D:/Projects/Unone/docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/trace-child-processes.mjs",
+    "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/tools/benchmark-spatial.mjs",
+    "--sdk",
+    "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2",
+    "--bodies",
+    "16",
+    "--queries",
+    "4",
+    "--warmup",
+    "3",
+    "--samples",
+    "9",
+    "--output",
+    "D:/Projects/Unone/docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/benchmark-small.json",
+    "--analyzer",
+    "D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe"
+  ],
+  "status": 1,
+  "signal": null,
+  "error": null,
+  "elapsed_ms": 85.8527,
+  "stdout": "",
+  "stderr": "node:internal/modules/esm/load:193\r\n    throw new ERR_UNSUPPORTED_ESM_URL_SCHEME(parsed, schemes);\r\n          ^\r\n\r\nError [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data, and node are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'd:'\r\n    at throwIfUnsupportedURLScheme (node:internal/modules/esm/load:193:11)\r\n    at defaultLoadSync (node:internal/modules/esm/load:146:3)\r\n    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:802:12)\r\n    at #loadSync (node:internal/modules/esm/loader:834:53)\r\n    at ModuleLoader.load (node:internal/modules/esm/loader:783:26)\r\n    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:494:31)\r\n    at #getOrCreateModuleJobAfterResolve (node:internal/modules/esm/loader:560:36)\r\n    at afterResolve (node:internal/modules/esm/loader:607:52)\r\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:613:12)\r\n    at node:internal/modules/esm/loader:632:32 {\r\n  code: 'ERR_UNSUPPORTED_ESM_URL_SCHEME'\r\n}\r\n\r\nNode.js v24.19.0\r\n"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "spatial.create",
+  "category": "spatial",
+  "purpose": "Create a generic spatial batch independent of scene entities.",
+  "when_to_use": "Reusable batch collision and spatial queries (空間查詢、批次碰撞查詢) on CPU or host-owned GPU compute; gameplay policy remains in Luau. Read docs/spatial-batches.md (bundled in the portable SDK) for the complete query, result, lifecycle, limits and host contracts; game api typings provides canonical SpatialBody, SpatialQuery and SpatialBatchResult types.",
+  "when_not_to_use": "No AI, movement integration, damage, scene mutation or renderer replacement. V1 uses bounded complete scans, not an accelerated grid.",
+  "parameters": [
+    {
+      "name": "bodies",
+      "type_name": "SpatialBody[] | buffer",
+      "meaning": "Table convenience form or USB1 packed buffer; at most 65536 records"
+    }
+  ],
+  "returns": "number",
+  "side_effects": [
+    "Updates bounded spatial handles and frozen batch snapshots"
+  ],
+  "frame_semantics": "Submit/take/cancel only in update; results become visible starting the next tick. Equal-distance/time ties use ascending numeric ID. Overlap returns at most 64 contacts and explicitly errors on overflow. GPU f32 results have a documented tolerance; no bitwise cross-device promise.",
+  "common_errors": [
+    "Invalid/non-finite records, duplicate IDs, stale handles, early take, pending host completion, capacity and contact overflow fail explicitly."
+  ],
+  "example": "local index = api.spatial.create({{id=1,position={0,0,0},radius=1}})",
+  "related_apis": [
+    "spatial.create",
+    "spatial.pack",
+    "spatial.submit",
+    "spatial.take",
+    "spatial.info",
+    "spatial.profile"
+  ]
+}

@@ -1,0 +1,67 @@
+# Game authoring contract
+
+Use Unone's official player and renderer by default. Keep gameplay in Luau and use engine APIs for presentation. Do not obtain a WebGL/OpenGL context or write a separate browser host for an ordinary game.
+
+The starter explicitly enables camera2d, ui and particle, and disables optional systems it does not use. Core world, input and observation remain required. Enable additional systems only when the game's actual API or scene needs them; inspect `game systems list --json`. Existing projects keep their own declarations and engine defaults.
+
+Start shared UI with `game api search "UI package"`, `game api describe ui.components.info` and `game api describe ui.components.create`. Declare the exact reported @unone/ui version in project runtime_packages, and use the typed kit for controls, themes and explicit component surfaces. The official SDK includes docs/ui-components.md. Keep themes, geometry, state and action meanings in game Luau; component children retain authored coordinates.
+
+Search `game api search "button click"` before implementing activation. Use api.input.wasPressed(action) for one activation, isDown(action) for held state and wasReleased(action) for release. These are read-only tick snapshots, not callbacks or consuming event queues. Keep canonical EngineApi types; after an SDK upgrade refresh the marked block with `game api typings --update-script scripts/main.luau`. Keep game-owned types and rules outside that block; do not replace the UI or EngineApi with any.
+
+Before adding effects, run `game api search particle`, `game api describe particle.play`, `game api search shader`, and `game systems list --json`. Author scene `particle_effects` for explosions, thrusters, sparks, smoke, trails and auras. Keep the particle system enabled when using these effects. Custom shaders go through scene `shader_materials` and `api.shader.*`; the engine owns GPU compilation and rendering. Use presentation Bloom when appropriate.
+
+`player.presentation.json` selects `renderer_mode: official`. Replace the renderer only as an explicitly selected extension for a stated project requirement, never merely to add effects or shaders: select `renderer_mode: custom`, set `renderer_module`, and list the entry plus local dependencies in `renderer_files`. This trusted Web extension is not a sandbox and does not claim official renderer coverage. Report the selected mode in validation.
+
+Run verify for the scaffold, then `game project preflight --target web` and `game project prepare --target web --output <new-output-directory>` to obtain an official player export and launch descriptor. Inspect SDK availability if preflight reports a missing runtime. The starter tests only check onboarding and movement; add game-specific acceptance and inspect rendered output before delivery.
+
+{
+  "entities": [
+    {
+      "id": "example",
+      "transform": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    }
+  ],
+  "particle_effects": {
+    "starter_sparks": {
+      "duration_frames": 120,
+      "emitters": [
+        {
+          "additive": true,
+          "color_end": [
+            1.0,
+            0.12,
+            0.0,
+            0.0
+          ],
+          "color_start": [
+            1.0,
+            0.65,
+            0.12,
+            1.0
+          ],
+          "count": 1,
+          "id": "sparks",
+          "interval_frames": 6,
+          "lifetime_frames": 30,
+          "size_end": 0.01,
+          "size_start": 0.18,
+          "velocity_max": {
+            "x": 0.6,
+            "y": 0.9,
+            "z": 0.0
+          },
+          "velocity_min": {
+            "x": -0.6,
+            "y": 0.3,
+            "z": 0.0
+          }
+        }
+      ],
+      "version": 1
+    }
+  }
+}
+

@@ -1,0 +1,35 @@
+Unone AI-native game developer CLI
+
+Usage: game.exe [OPTIONS] <COMMAND>
+
+Commands:
+  sdk       
+  export    Export one game with the separately compiled release player
+  particle  Deterministically sample a native particle definition at a frame
+  schema    Inspect/export a structural JSON Schema generated from the runtime Rust types
+  project   
+  asset     
+  api       
+  verify    Run every gate a game must pass and report one verdict
+  replay    Record a run, or replay a recording to find what changed
+  perf      Measure where a frame's time goes
+  ui        Draw the game's UI as text and report structural layout problems
+  systems   Inspect, search and switch the engine systems this project runs
+  platform  
+  check     
+  run       
+  test      
+  observe   
+  preview   
+  bundle    
+  plugin    Discover and call optional AI-facing plugins
+  mcp       Serve the existing Developer Protocol over MCP stdio
+  session   Stateful developer protocol: one JSON request and EngineResult per line on stdio
+  help      Print this message or the help of the given subcommand(s)
+
+Options:
+      --sdk <SDK>          Portable SDK root (otherwise environment or executable-relative discovery)
+      --project <PROJECT>  [default: .]
+      --json               
+  -h, --help               Print help
+  -V, --version            Print version

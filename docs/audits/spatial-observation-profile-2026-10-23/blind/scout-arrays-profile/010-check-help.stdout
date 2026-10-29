@@ -1,0 +1,8 @@
+Usage: game.exe check [OPTIONS]
+
+Options:
+      --sdk <SDK>          Portable SDK root (otherwise environment or executable-relative discovery)
+      --types              Also run the official luau-analyze tool
+      --project <PROJECT>  [default: .]
+      --json               
+  -h, --help               Print help

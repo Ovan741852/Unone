@@ -1,0 +1,7 @@
+SCOUT SDK BLIND TRIAL EVIDENCE SEAL
+UTC=2026-10-23T18:25:12.350Z
+SHA256SUMS.json SHA256=07772eefb848d205b064dbf7fc2bdc7af0e683601148b85337705f778f62cb16
+Covered files=87
+Covered bytes=1396983
+Exclusions=SHA256SUMS.json,SEAL.txt
+Seal created once. No evidence mutations after this point.

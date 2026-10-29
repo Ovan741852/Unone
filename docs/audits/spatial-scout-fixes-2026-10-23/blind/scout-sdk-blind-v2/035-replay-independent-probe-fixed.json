@@ -1,0 +1,23 @@
+{
+  "order": 35,
+  "name": "replay-independent-probe-fixed",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-ExecutionPolicy",
+    "Bypass",
+    "-File",
+    "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\Verify-Probe.ps1",
+    "-OutputDirectory",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:23:01.8048636Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 1023,
+  "endedUtc": "2026-10-23T14:23:02.8563152Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\035-replay-independent-probe-fixed.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\035-replay-independent-probe-fixed.stderr"
+}

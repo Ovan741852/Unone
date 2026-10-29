@@ -1,0 +1,10 @@
+Stateful developer protocol: one JSON request and EngineResult per line on stdio
+
+Usage: game.exe session [OPTIONS]
+
+Options:
+      --schema             Print the request JSON schema instead of starting a session transport
+      --sdk <SDK>          Portable SDK root (otherwise environment or executable-relative discovery)
+      --project <PROJECT>  [default: .]
+      --json               
+  -h, --help               Print help

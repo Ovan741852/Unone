@@ -1,0 +1,131 @@
+{
+  "completedLocalDate": "2026-10-24 Asia/Taipei",
+  "startedLocalDate": "2026-10-23",
+  "passed": true,
+  "productScope": "Generic engine observation serialization and spatial execution diagnostics only; no YesSir/game content, install, commit or push.",
+  "regressionLogs": [
+    {
+      "path": ".cache/spatial-observation-profile-tests-final.log",
+      "sha256": "b453203e6266f4f445d10c24374909fcbb7eb921b13048ba8f50704e785925ff",
+      "bytes": 32603,
+      "result": "325 library +2 array +15 geometry +10 runtime passed; 3 library and1 external-analyzer tests ignored in default run"
+    },
+    {
+      "path": ".cache/spatial-observation-profile-types-final.log",
+      "sha256": "e77b50ce5f6d0744392aa932ab71728f0deca24900b294b3de750b50462cceb4",
+      "bytes": 383,
+      "result": "Ignored official strict positive/negative regression explicitly run:1 passed"
+    },
+    {
+      "path": ".cache/spatial-observation-profile-bridge-tests.log",
+      "sha256": "7c0ea3b76515260d924c02ca44fd5dcb809edb0c1b956d1b11ebacecc8d7ab96",
+      "bytes": 1307,
+      "result": "Native Web bridge regression:11 passed"
+    },
+    {
+      "path": ".cache/spatial-observation-profile-sdk-tests.log",
+      "sha256": "cd77924d364f5f9587bd61a625fd214f252546b3493dd53785973a5f9dc505e2",
+      "bytes": 1681,
+      "result": "SDK packing regression:1 passed"
+    },
+    {
+      "path": ".cache/spatial-observation-profile-cli-release.log",
+      "sha256": "81f6ec800f173927ff8a9d60b015cc1f1356de7a72dab7a7a0b4fb144d60ef8b",
+      "bytes": 63,
+      "result": "Release CLI build succeeded"
+    },
+    {
+      "path": ".cache/spatial-observation-profile-cli-debug.log",
+      "sha256": "485c10fe23931fa950d793a3cb8c72155fcc1fc8fb14d44f1cc1f4e1259ed6ae",
+      "bytes": 216,
+      "result": "Debug CLI build succeeded"
+    },
+    {
+      "path": ".cache/spatial-observation-profile-web-build.log",
+      "sha256": "56ffd66a5480c86bd52a33f2a8500c82149def0f5ee6a86536406703a3a87c76",
+      "bytes": 2415,
+      "result": "Fresh release player WASM build and both five-frame parity fixtures passed"
+    },
+    {
+      "path": ".cache/spatial-observation-profile-sdk-pack.json",
+      "sha256": "8dd7e6c5d68ca7e67b999f02c3cd5172f86f54fd0f1baff04acb2cf66bb1a440",
+      "bytes": 28235,
+      "result": "Fresh SDK pack succeeded; canonical embedded guide/types checked against sources"
+    }
+  ],
+  "actualRecorderRuns": [
+    {
+      "name": "public",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-public.json",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputTruncated": false,
+      "sourceChanged": false,
+      "subjectFiles": 44
+    },
+    {
+      "name": "web",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-web.json",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputTruncated": false,
+      "sourceChanged": false,
+      "subjectFiles": 44
+    },
+    {
+      "name": "native",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-native.json",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputTruncated": false,
+      "sourceChanged": false,
+      "subjectFiles": 44
+    },
+    {
+      "name": "kernel",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-kernel.json",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputTruncated": false,
+      "sourceChanged": false,
+      "subjectFiles": 44
+    },
+    {
+      "name": "blind-replay",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-blind-replay-v2.json",
+      "exitCode": 0,
+      "timedOut": false,
+      "outputTruncated": false,
+      "sourceChanged": false,
+      "subjectFiles": 44
+    }
+  ],
+  "preservedDevelopmentAttempts": [
+    {
+      "path": ".cache/spatial-observation-profile-tests.log",
+      "result": "Initial Rust format-string brace compile failure, corrected."
+    },
+    {
+      "path": ".cache/spatial-observation-profile-tests-v2.log",
+      "result": "Accidentally embedded Rust test inside raw Lua string; moved outside and actually registered in final test run."
+    },
+    {
+      "path": ".cache/spatial-observation-profile-types.log",
+      "result": "Rejected unsafe table-intersection type design; final plain {T} preserves indexed writes and setArray publishes typed arrays."
+    },
+    {
+      "path": ".cache/spatial-observation-profile-types-v2.log",
+      "result": "Redundant zero-arg/nil overload ambiguity; final nil overload already permits omitted argument."
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-blind-replay.json",
+      "result": "Owner wrapper compared the LF starter block with CRLF api typings bytes. Verified newline-normalized content equality; new wrapper and actual capture-blind-replay-v2.json pass. Sealed author and product unchanged."
+    }
+  ],
+  "independentReview": "source-review.md records corrected weak typing, misplaced test and Web getter/snapshot intake findings; no unresolved source defect reported. Fresh blind author and semantic review are separate.",
+  "limitations": [
+    "Selected source fingerprints are not immutable copies or a full compiler dependency graph. Executable/analyzer hashes and runtime manifest pin tested binaries.",
+    "Native GPU integration is a cold2body4query correctness/profile case; fresh WASM uses4096x128 on CPU/GPU main/Worker. Fresh blind author uses CPU3x4 and4096x256.",
+    "Host phases exclude Luau/bridge/caller application and setup; no kernel timestamps, speedup/threshold benchmark, rendered player or other-device claim."
+  ]
+}

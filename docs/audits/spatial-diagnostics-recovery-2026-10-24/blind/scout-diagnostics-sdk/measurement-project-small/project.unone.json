@@ -1,0 +1,1 @@
+{"name":"Generic spatial benchmark","entry_script":"main.luau","systems":{"physics2d":false,"physics3d":false,"ui":false,"audio":false,"save":false,"jobs":false,"random":false,"particle":false,"effekseer":false,"spine":false,"camera2d":false,"camera3d":false}}

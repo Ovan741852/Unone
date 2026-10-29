@@ -14,5 +14,10 @@ struct Out {@builtin(position) clip:vec4f,@location(0) uv:vec2f,@location(1) wor
  // Web's imported mesh path uses MeshBasicMaterial. Keep native assets
  // unlit as well so sRGB texture values and scene brightness match across
  // WebGL/WebGPU, Windows native and Android native hosts.
- return vec4f(textureSample(texture,textureSampler,v.uv).rgb,1.);
+ // Match the static-mesh contract's alpha test. Cutout texels must not write
+ // depth: foliage and image-based characters otherwise occlude the world with
+ // their transparent rectangle. Surviving texels remain opaque/depth tested.
+ let color=textureSample(texture,textureSampler,v.uv);
+ if color.a < 0.05 { discard; }
+ return vec4f(color.rgb,1.);
 }

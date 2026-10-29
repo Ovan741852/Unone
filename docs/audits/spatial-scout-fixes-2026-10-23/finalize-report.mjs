@@ -1,0 +1,24 @@
+// Preserve the proposal; attach independent semantic review and actually evaluate.
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+import {resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const here=dirname(fileURLToPath(import.meta.url)),root=resolve(here,'../../..');
+const base='docs/audits/spatial-scout-fixes-2026-10-23';
+const report=JSON.parse(await readFile(resolve(here,'audit.proposed.json'),'utf8'));
+const review=await readFile(resolve(here,'semantic-review.md'));
+assert.ok(review.toString('utf8').includes('76.25'));
+report.evidence.push({id:'semantic-review',kind:'observation',path:base+'/semantic-review.md',sha256:createHash('sha256').update(review).digest('hex'),quote:'76.25'});
+report.checks.find(c=>c.id==='reproducibility').evidence.push('semantic-review');
+report.trial.limitations.push('An independent semantic reviewer checked the sealed author artifacts, final capture/source/probe hashes and scoring. Actual gate remains needs_work because 76.25 is below the fixed 80 threshold; no critical blocker is present. Task success and four P2 closures are distinct from the aggregate gate.');
+await writeFile(resolve(here,'audit.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
+const args=['plugins/org.unone.ai-native/cli.mjs','evaluate','--root',root,'--report',base+'/audit.json'];
+const r=spawnSync(process.execPath,args,{cwd:root,encoding:'utf8',windowsHide:true,timeout:30000,maxBuffer:1024*1024});
+await writeFile(resolve(here,'evaluation.json'),r.stdout,{flag:'wx'});
+assert.ok(!r.error);assert.equal(r.status,0,r.stdout+r.stderr);
+const result=JSON.parse(r.stdout);assert.equal(result.ok,true);
+assert.equal(result.value.index,76.25);assert.equal(result.value.gate,'needs_work');
+assert.deepEqual(result.value.blockers,[]);assert.equal(result.value.coveragePercent,100);
+console.log(JSON.stringify({index:result.value.index,gate:result.value.gate,criticalBlockers:result.value.blockers,coveragePercent:result.value.coveragePercent,report:base+'/README.md'}));

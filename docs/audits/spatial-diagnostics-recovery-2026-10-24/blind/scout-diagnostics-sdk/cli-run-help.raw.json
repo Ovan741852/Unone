@@ -1,0 +1,15 @@
+{
+  "executable": "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/bin/game.exe",
+  "args": [
+    "--sdk",
+    "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2",
+    "run",
+    "--help"
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "elapsed_ms": 83.11440000000002,
+  "stdout": "Usage: game.exe run [OPTIONS]\n\nOptions:\n      --frames <FRAMES>\n          [default: 60]\n      --sdk <SDK>\n          Portable SDK root (otherwise environment or executable-relative discovery)\n      --project <PROJECT>\n          [default: .]\n      --seed <SEED>\n          [default: 42]\n      --action <ACTION>\n          \n      --json\n          \n      --input-sequence <INPUT_SEQUENCE>\n          \n  -h, --help\n          Print help\n",
+  "stderr": ""
+}

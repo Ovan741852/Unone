@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Unone 特效編輯器</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="importmap">{"imports":{"three":"/web/vendor/three/three.module.js"}}</script>
+  <script type="module" src="./main.mjs"></script>
+</head>
+<body>
+  <header><div><small>UNONE · VFX WORKBENCH</small><h1>特效編輯器</h1></div><span id="source">讀取正式特效來源…</span></header>
+  <main>
+    <aside>
+      <label for="effect">正式特效</label>
+      <select id="effect" aria-label="正式特效" disabled></select>
+      <p id="description"></p>
+      <div class="transport"><button id="play" disabled>暫停</button><button id="restart" disabled>重播</button><label>速度<select id="speed" aria-label="播放速度"><option value="0.25">0.25 ×</option><option value="0.5">0.5 ×</option><option value="1" selected>1 ×</option></select></label></div>
+      <label for="time">時間 <output id="clock">0.000 秒</output></label>
+      <input id="time" type="range" min="0" max="1" step="0.001" value="0" disabled aria-label="時間軸">
+      <div class="timeline-ends"><span>0 秒</span><span id="duration">—</span></div>
+      <label class="check"><input id="loop" type="checkbox" checked> 循環播放</label>
+      <label for="parameters">參數 JSON</label>
+      <textarea id="parameters" aria-label="參數 JSON" spellcheck="false" rows="7">{}</textarea>
+      <button id="apply-parameters" disabled>套用參數</button>
+      <details><summary>完整特效定義</summary><p>編輯後驗證並套用到預覽。修改保留在此頁，匯出不會覆寫遊戲來源。</p><textarea id="definition" aria-label="完整特效定義 JSON" spellcheck="false" rows="15"></textarea><div class="actions"><button id="apply-definition" disabled>驗證並套用</button><button id="reset" disabled>還原來源</button></div></details>
+      <button id="export" disabled>匯出特效 JSON</button>
+      <p class="notice">預覽使用共用 VFX player。播放與編輯不會改動戰鬥或存檔。</p>
+    </aside>
+    <section id="viewport" aria-label="特效預覽區">
+      <canvas aria-label="3D 特效預覽"></canvas>
+      <div class="overlay"><span id="effect-title">正在載入</span><span>滑鼠拖曳旋轉 · 滾輪縮放</span></div>
+      <div id="status" role="status">正在準備共用渲染器…</div>
+      <div id="metrics"></div>
+    </section>
+  </main>
+</body>
+</html>

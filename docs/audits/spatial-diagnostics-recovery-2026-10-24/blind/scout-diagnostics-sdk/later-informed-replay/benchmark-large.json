@@ -1,0 +1,541 @@
+{
+  "schema": "unone.spatial.benchmark.v1",
+  "ok": true,
+  "backend": "cpu",
+  "clock": "host_monotonic",
+  "configuration": {
+    "bodies": 4096,
+    "queries": 128,
+    "warmup": 3,
+    "samples": 9
+  },
+  "summary": {
+    "executor_ms": {
+      "samples": 9,
+      "min": 1.4904,
+      "p50": 2.6208,
+      "p95": 3.7994,
+      "max": 3.7994,
+      "mean": 2.579233333333333
+    },
+    "input_decode_ms": {
+      "samples": 9,
+      "min": 0.40390000000000004,
+      "p50": 0.7175999999999999,
+      "p95": 1.0571,
+      "max": 1.0571,
+      "mean": 0.7323777777777778
+    },
+    "output_encode_ms": {
+      "samples": 9,
+      "min": 0.6547000000000001,
+      "p50": 0.9018,
+      "p95": 1.6286,
+      "max": 1.6286,
+      "mean": 1.0430555555555556
+    },
+    "manager_ms": {
+      "snapshot": {
+        "samples": 9,
+        "min": 0.0346,
+        "p50": 0.0499,
+        "p95": 0.10189999999999999,
+        "max": 0.10189999999999999,
+        "mean": 0.05765555555555556
+      },
+      "validation": {
+        "samples": 9,
+        "min": 1.1620000000000001,
+        "p50": 1.6668,
+        "p95": 2.6774,
+        "max": 2.6774,
+        "mean": 1.7509333333333332
+      },
+      "result_validation": {
+        "samples": 9,
+        "min": 1.0725,
+        "p50": 1.7395,
+        "p95": 2.3725,
+        "max": 2.3725,
+        "mean": 1.7104111111111113
+      },
+      "result_apply": {
+        "samples": 9,
+        "min": 0,
+        "p50": 0.00019999999999999998,
+        "p95": 0.0007,
+        "max": 0.0007,
+        "mean": 0.0002888888888888889
+      }
+    }
+  },
+  "process_total_ms": 909.3747999999999,
+  "identity": {
+    "sdk": "D:\\Projects\\Unone\\artifacts\\spatial-hardening-sdk-v2",
+    "binary_sha256": "d59c051d00ad47616978b6c4352a67092555baecfb090fb6b3442ca929c3e028",
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "samples": [
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 2.1164
+          },
+          "readback_bytes": 0,
+          "total_ms": 2.1164,
+          "upload_bytes": 0
+        },
+        "executor_ms": 2.1164,
+        "manager_ms": {
+          "result_apply": 0.0007,
+          "result_validation": 2.3725,
+          "snapshot": 0.0346,
+          "validation": 1.2501
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 5,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.5135,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 5
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0019,
+        "operation": "spatial.take",
+        "output_encode_ms": 0.6547000000000001,
+        "success": true,
+        "ticket": 5
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 2.6208
+          },
+          "readback_bytes": 0,
+          "total_ms": 2.6208,
+          "upload_bytes": 0
+        },
+        "executor_ms": 2.6208,
+        "manager_ms": {
+          "result_apply": 0.00019999999999999998,
+          "result_validation": 1.2105,
+          "snapshot": 0.0704,
+          "validation": 1.8134
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 6,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.8836999999999999,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 6
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0015999999999999999,
+        "operation": "spatial.take",
+        "output_encode_ms": 0.6717,
+        "success": true,
+        "ticket": 6
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 3.2813
+          },
+          "readback_bytes": 0,
+          "total_ms": 3.2813,
+          "upload_bytes": 0
+        },
+        "executor_ms": 3.2813,
+        "manager_ms": {
+          "result_apply": 0.00019999999999999998,
+          "result_validation": 1.4555,
+          "snapshot": 0.0472,
+          "validation": 1.6055
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 7,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.6456,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 7
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0031,
+        "operation": "spatial.take",
+        "output_encode_ms": 0.7683,
+        "success": true,
+        "ticket": 7
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 3.0098
+          },
+          "readback_bytes": 0,
+          "total_ms": 3.0098,
+          "upload_bytes": 0
+        },
+        "executor_ms": 3.0098,
+        "manager_ms": {
+          "result_apply": 0.0005,
+          "result_validation": 1.4105,
+          "snapshot": 0.0499,
+          "validation": 2.6774
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 8,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.9097999999999999,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 8
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0015,
+        "operation": "spatial.take",
+        "output_encode_ms": 1.3542,
+        "success": true,
+        "ticket": 8
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 1.7608000000000001
+          },
+          "readback_bytes": 0,
+          "total_ms": 1.7608000000000001,
+          "upload_bytes": 0
+        },
+        "executor_ms": 1.7608000000000001,
+        "manager_ms": {
+          "result_apply": 0,
+          "result_validation": 1.0725,
+          "snapshot": 0.0735,
+          "validation": 1.9096
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 9,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.7162,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 9
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0014,
+        "operation": "spatial.take",
+        "output_encode_ms": 1.6286,
+        "success": true,
+        "ticket": 9
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 3.7994
+          },
+          "readback_bytes": 0,
+          "total_ms": 3.7994,
+          "upload_bytes": 0
+        },
+        "executor_ms": 3.7994,
+        "manager_ms": {
+          "result_apply": 0.00039999999999999996,
+          "result_validation": 1.9989999999999999,
+          "snapshot": 0.10189999999999999,
+          "validation": 1.6668
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 10,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 1.0534999999999999,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 10
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0036,
+        "operation": "spatial.take",
+        "output_encode_ms": 1.5230000000000001,
+        "success": true,
+        "ticket": 10
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 2.0674
+          },
+          "readback_bytes": 0,
+          "total_ms": 2.0674,
+          "upload_bytes": 0
+        },
+        "executor_ms": 2.0674,
+        "manager_ms": {
+          "result_apply": 0.00019999999999999998,
+          "result_validation": 1.768,
+          "snapshot": 0.0465,
+          "validation": 1.2576
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 11,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.7056,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 11
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0023,
+        "operation": "spatial.take",
+        "output_encode_ms": 0.9018,
+        "success": true,
+        "ticket": 11
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 3.0668
+          },
+          "readback_bytes": 0,
+          "total_ms": 3.0668,
+          "upload_bytes": 0
+        },
+        "executor_ms": 3.0668,
+        "manager_ms": {
+          "result_apply": 0.0003,
+          "result_validation": 2.3657,
+          "snapshot": 0.057800000000000004,
+          "validation": 2.4160000000000004
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 12,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.7419,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 12
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.0023,
+        "operation": "spatial.take",
+        "output_encode_ms": 1.1375,
+        "success": true,
+        "ticket": 12
+      }
+    },
+    {
+      "batch": {
+        "bodies": 4096,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 1.4904
+          },
+          "readback_bytes": 0,
+          "total_ms": 1.4904,
+          "upload_bytes": 0
+        },
+        "executor_ms": 1.4904,
+        "manager_ms": {
+          "result_apply": 0.00009999999999999999,
+          "result_validation": 1.7395,
+          "snapshot": 0.0371,
+          "validation": 1.1620000000000001
+        },
+        "pair_tests_upper_bound": 524288,
+        "queries": 128,
+        "returned_hits": 128,
+        "ticket": 13,
+        "version": 1
+      },
+      "submit_boundary": {
+        "index": 1,
+        "input_decode_ms": 0.40190000000000003,
+        "operation": "spatial.submit",
+        "output_encode_ms": 0,
+        "success": true,
+        "ticket": 13
+      },
+      "take_boundary": {
+        "input_decode_ms": 0.002,
+        "operation": "spatial.take",
+        "output_encode_ms": 0.7477,
+        "success": true,
+        "ticket": 13
+      }
+    }
+  ],
+  "profile": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bindings": {
+      "calls": 26,
+      "clock": "host_monotonic",
+      "failed_calls": 0,
+      "input_decode_ms": 37.88949999999999,
+      "last": {
+        "index": 1,
+        "input_decode_ms": 0.0012,
+        "operation": "spatial.destroy",
+        "output_encode_ms": 0,
+        "success": true
+      },
+      "output_encode_ms": 13.0519,
+      "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+    },
+    "clock": "host_monotonic",
+    "last": {
+      "bodies": 4096,
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 1.4904
+        },
+        "readback_bytes": 0,
+        "total_ms": 1.4904,
+        "upload_bytes": 0
+      },
+      "executor_ms": 1.4904,
+      "manager_ms": {
+        "result_apply": 0.00009999999999999999,
+        "result_validation": 1.7395,
+        "snapshot": 0.0371,
+        "validation": 1.1620000000000001
+      },
+      "pair_tests_upper_bound": 524288,
+      "queries": 128,
+      "returned_hits": 128,
+      "ticket": 13,
+      "version": 1
+    },
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 49152,
+      "cancelled_tickets": 0,
+      "completed_batches": 12,
+      "executor_ms": 33.269999999999996,
+      "executor_phases_ms": {
+        "cpu_execute": 33.269999999999996
+      },
+      "executor_samples": 12,
+      "executor_wall_samples": 12,
+      "failed_batches": 0,
+      "input_body_bytes": 1966176,
+      "manager_ms": {
+        "result_apply": 0.0037999999999999996,
+        "result_validation": 21.3015,
+        "snapshot": 0.7522,
+        "validation": 19.7893
+      },
+      "pair_tests_upper_bound": 6291456,
+      "queries": 1536,
+      "readback_bytes": 0,
+      "returned_hits": 1536,
+      "submitted_batches": 12,
+      "upload_bytes": 0
+    }
+  },
+  "limitations": [
+    "Nearest-rank quantiles from bounded samples in one process; warmups excluded from per-batch distributions, included in process_total_ms.",
+    "process_total_ms includes CLI process, project/VM startup, all ticks, final observation serialization and parsing; it is not per-batch latency or GPU time.",
+    "Manager/executor/binding phases have separate scopes; do not sum nested phases. No rendering, gameplay, cross-device determinism, GPU speedup or automatic crossover claim."
+  ],
+  "temp": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-benchmark-yg7ZR3"
+}

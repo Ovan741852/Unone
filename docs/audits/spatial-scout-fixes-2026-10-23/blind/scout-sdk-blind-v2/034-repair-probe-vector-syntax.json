@@ -1,0 +1,19 @@
+{
+  "order": 34,
+  "name": "repair-probe-vector-syntax",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "$path='D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\Verify-Probe.ps1'\nCopy-Item -LiteralPath $path -Destination 'D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\Verify-Probe-first.ps1'\n$text=Get-Content -LiteralPath $path -Raw\n$text=$text.Replace('return ,@([double]$a[0]-$b[0],[double]$a[1]-$b[1],[double]$a[2]-$b[2])','return ,@(([double]$a[0]-$b[0]),([double]$a[1]-$b[1]),([double]$a[2]-$b[2]))')\n$text=$text.Replace('return ,@([double]$a[0]+$b[0],[double]$a[1]+$b[1],[double]$a[2]+$b[2])','return ,@(([double]$a[0]+$b[0]),([double]$a[1]+$b[1]),([double]$a[2]+$b[2]))')\n$text=$text.Replace('return ,@($a[0]*$s,$a[1]*$s,$a[2]*$s)','return ,@(($a[0]*$s),($a[1]*$s),($a[2]*$s))')\n[IO.File]::WriteAllText($path,$text)\nWrite-Output 'Preserved first probe and parenthesized PowerShell vector element expressions.'\n"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:23:00.9344211Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 292,
+  "endedUtc": "2026-10-23T14:23:01.2717183Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\034-repair-probe-vector-syntax.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\034-repair-probe-vector-syntax.stderr"
+}

@@ -1,0 +1,22 @@
+{
+  "order": 9,
+  "name": "describe-create",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "--json",
+    "api",
+    "describe",
+    "spatial.create"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:40.8224177Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 138,
+  "endedUtc": "2026-10-23T14:15:41.0133074Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\009-describe-create.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\009-describe-create.stderr"
+}

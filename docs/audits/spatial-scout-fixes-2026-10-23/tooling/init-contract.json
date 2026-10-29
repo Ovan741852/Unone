@@ -1,0 +1,112 @@
+{
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "plugins/org.unone.ai-native/cli.mjs",
+    "describe",
+    "--operation",
+    "ai_native.init",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "exitCode": 0,
+  "result": {
+    "ok": true,
+    "value": {
+      "id": "ai_native.init",
+      "version": "0.3.0",
+      "versionScope": "Per-operation input/output contract version; independent of the installed plugin/package release version.",
+      "summary": "回傳未填的逐題評測 JSON 範本；唯讀，不寫檔、不評分。新評測可從這裡開始。",
+      "keywords": [
+        "start",
+        "init",
+        "template",
+        "begin audit",
+        "new assessment",
+        "self assess",
+        "score myself",
+        "score",
+        "audit",
+        "ai native",
+        "評分",
+        "評測",
+        "評估",
+        "開始",
+        "建立",
+        "盲測",
+        "體驗",
+        "新評測",
+        "新評估",
+        "自評",
+        "自我評分",
+        "我要評估",
+        "評估自己"
+      ],
+      "available": {
+        "status": "available",
+        "requirements": [
+          "Node.js >=20"
+        ],
+        "scope": "Local read-only audit; no actual AI or target execution."
+      },
+      "readOnly": true,
+      "permissions": [
+        "project.read"
+      ],
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "surface": {
+            "type": "string",
+            "enum": [
+              "plugin",
+              "http",
+              "cli",
+              "mcp",
+              "ui",
+              "library",
+              "mixed"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "output": "Returns an unverified JSON skeleton on stdout only. No file is created and no score is assigned. Fill every answer; incomplete skeletons fail evaluation.",
+      "examples": [
+        {
+          "id": "equipment-planner",
+          "name": "Equipment planning",
+          "surface": "http"
+        }
+      ],
+      "errors": [
+        {
+          "code": "AUDIT_INVALID",
+          "cause": "Missing target ID/name or unknown field.",
+          "fix": "Supply id/name and optional surface from the schema."
+        }
+      ],
+      "standaloneCli": "node cli.mjs init --id <id> --name <name> [--surface http] --root <selected-project>",
+      "contractHash": "1eb611fb7364915135ab55ff5e1fa50c044b8cdab533dce6a60e82d5f658a307"
+    },
+    "diagnostics": [],
+    "effects": [],
+    "telemetry": {
+      "elapsed_ms": 0.35,
+      "gpu_ms": null,
+      "note": "Plugin wall time only, not target performance. No target commands or probes executed."
+    }
+  },
+  "stderr": ""
+}

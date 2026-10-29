@@ -1,0 +1,281 @@
+{
+  "schema": "unone.ai-native.probe.v1",
+  "startedAt": "2026-10-23T18:27:43.918Z",
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "D:\\Projects\\Unone\\docs\\audits\\spatial-diagnostics-recovery-2026-10-24\\blind-replay.mjs",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "node": "v24.19.0",
+  "platform": "win32/x64",
+  "mode": "fixture",
+  "limitations": [
+    "Selected archived text inputs and pinned local binaries; not full compiler provenance, real device-loss validation, blind GPU authorship, universal speedup or rendered-player certification."
+  ],
+  "subject": [
+    {
+      "path": "crates/unone-engine/src/diagnostics.rs",
+      "sha256": "6753bdcc7e62b68f3b899875415114658840934159be8ee9692ee271dc630148"
+    },
+    {
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "89f6377b5cad51a2f2376f0c9dc9d52a156a8c35b933609848f48c9d71442313"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime.rs",
+      "sha256": "c84789162a09a5e56f3298612a0318998c6d59aedf27c97b54dbb553ba4c1f3e"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial.rs",
+      "sha256": "1cfe90d3e848f497862de7fb72ff6c4e274532ba34abe99a1f87695fda0492ab"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial_metrics.rs",
+      "sha256": "179d02e04c7767e07635de430a4d8d7c564b70cf02bbeca39f88f68769df0acc"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/spatial.rs",
+      "sha256": "26df18d2bd77ae42dca2ab0bfd0b6d2eabe92af14631dff1497e64301962a77e"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "sha256": "eafffe3cb765d1941f71cc007e5a46b8e78b8cfbaf125c000b4d49d4298aa362"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "sha256": "cca1be46dd664a7dc87ea11e138c92aa6c925cb42305505a0aba4945ae09ae7e"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "eafffe3cb765d1941f71cc007e5a46b8e78b8cfbaf125c000b4d49d4298aa362"
+    },
+    {
+      "path": "docs/spatial-batches.md",
+      "sha256": "6df7d7da9a40f70af79a39ff449d2f0e16f75f347a5f86055f1d03f8a84fc11c"
+    },
+    {
+      "path": "docs/sdk-readme.md",
+      "sha256": "fc378bb05626a9d685daecb631e633bb9f92edaff700a17acd1d19f168513e87"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "10df10ed625f4759fe0b0fb81b6be862ec35445eb03525c59a624ca3edc54b21"
+    },
+    {
+      "path": "crates/unone-cli/src/export.rs",
+      "sha256": "d963d0628f8f8591cb8f56a6c1c9660e0021384e21100b87b9009c851a9df0c2"
+    },
+    {
+      "path": "crates/unone-web-live-smoke/src/main.rs",
+      "sha256": "f507f6eb24c7a52767e14a219cf69ce96f83184a5ae5c369efd03ec94feac9fa"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_diagnostics.rs",
+      "sha256": "346625bff14c328f84971c8eb092912d17bd726e5efc5fbb9bad5a1567a9d972"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_diagnostic_boundaries.rs",
+      "sha256": "1bd07037c3c8ffbef7c40009293426215cf4e74863fc62f3edb1cdd9deee54d7"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_faults.rs",
+      "sha256": "75f62c4b975724dbb6beb0d8278203e74a7d8919ad4b759e04d9a90b6be32d16"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_metrics.rs",
+      "sha256": "06e2be20225aa67d1c0497beb00468b3a847b5c31d7fbd7310503a6809d020f9"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_runtime.rs",
+      "sha256": "2e5b2144dedf41e7d06d0e66f75eaf2b5716c7bf31467d7402e30e93da6bc962"
+    },
+    {
+      "path": "web/shared/spatial-host.mjs",
+      "sha256": "271bdbc226f65a6d7e114e72af609985ec5b5a24c87085f50513985263155f5c"
+    },
+    {
+      "path": "web/shared/spatial-metrics.mjs",
+      "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+    },
+    {
+      "path": "web/shared/spatial-gpu.mjs",
+      "sha256": "79d630684148b94024cf3424472ac39801ba9cea14039f85183f88df353b760d"
+    },
+    {
+      "path": "web/shared/spatial.wgsl",
+      "sha256": "2de3388bf58f080cc97e5efc60106cc1b2df649f7a5cf0db7d89478d7b4385c7"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "web/shared/spatial-faults.test.mjs",
+      "sha256": "69a63df7e2854ffe7832a46584f2b98c3087729b37114100266b0ef0816838f8"
+    },
+    {
+      "path": "web/shared/spatial-metrics.test.mjs",
+      "sha256": "a21d7f313c89b77fa2a6d4b809bdc8b99f2190a8a99028f52ba02e98e1207343"
+    },
+    {
+      "path": "web/shared/spatial-host.test.mjs",
+      "sha256": "c8eba9af48b570a766580515ce3f2f76800393c583854d74534265f0a1ad71bb"
+    },
+    {
+      "path": "web/shared/spatial-gpu.test.mjs",
+      "sha256": "5898154aed08c6ecc93cc78eb5b5d5e9374c7f2de5846dfe7daeb9192a0840c4"
+    },
+    {
+      "path": "web/shared/runtime-core.test.mjs",
+      "sha256": "8d60792d4bf1f7ce7898a83851d637e9242c4abe3877a671e98dee71a8972435"
+    },
+    {
+      "path": "scripts/verify-spatial-runtime.mjs",
+      "sha256": "cc45495101e35888ec368bab921de478c2bca24db8d8ebe8eda17fe5fc603f3f"
+    },
+    {
+      "path": "scripts/benchmark-spatial.mjs",
+      "sha256": "59e5ec169dcf6ac100c0c24b114be63133c0fd2a3c235557239a6177132ac9b2"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.toml",
+      "sha256": "9d35c773ab4690eae049a73e2bb7e1b0a251c636062311b368ae0e176671e508"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.lock",
+      "sha256": "1e13e3f2ac20ae987ceeb959ee5427b813de0b1e2ab1b0321c4f4e8919edb6af"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/src/lib.rs",
+      "sha256": "e0e9ace2cca371f0f0a1242153245f9b49f94c80fb46e05420687e0925ecd9aa"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/examples/benchmark.rs",
+      "sha256": "81f52cb10e9c0419d70dd1c1168f5a0eae38db1103c95b6b9906c505c7c7e4ce"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/tests/runtime.rs",
+      "sha256": "0ae7938553863c3e315c686d2e4dcab74357531424c7f4f796d2f7cfac79b623"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "307b4996be867fbf0a178db498109768d91de88e81ac2a7208200ed5f9c81bb4"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "a54430ce3f1f0364f19d1596abea02015ae0a48d4af33f00c8b894ada414547e"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/README.md",
+      "sha256": "fc378bb05626a9d685daecb631e633bb9f92edaff700a17acd1d19f168513e87"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/sdk.json",
+      "sha256": "2c1a26633fe324a9442bb00846844dad28dd597f9cbc744a5d3c2badf6cc5db3"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/docs/spatial-batches.md",
+      "sha256": "6df7d7da9a40f70af79a39ff449d2f0e16f75f347a5f86055f1d03f8a84fc11c"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/docs/engine.d.luau",
+      "sha256": "eafffe3cb765d1941f71cc007e5a46b8e78b8cfbaf125c000b4d49d4298aa362"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/main.luau",
+      "sha256": "d17f5aae226838e602ee62945aef61779cff657bc3d2aa30cb759594bc19357e"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/project.unone.json",
+      "sha256": "12111a3fa24d51e5c718f080c63fdc9adeb877f956f35c1573437cd7c860ac61"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/scene.json",
+      "sha256": "a4c70d62ddfce7c478bbba1011eab933aa3d234dbe934cbf9aa93a8968e0915b"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/README.md",
+      "sha256": "5ea042fa4219af2f59ff1eaba83931035c091a88cbf8a5294e25b54d49190009"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/tools/benchmark-spatial.mjs",
+      "sha256": "59e5ec169dcf6ac100c0c24b114be63133c0fd2a3c235557239a6177132ac9b2"
+    },
+    {
+      "path": "artifacts/spatial-hardening-runtime/runtime.json",
+      "sha256": "18d07d7e028398dfb3345c2583865a7f8fee8598d9632e387d7e3d8690a94922"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/rubric.mjs",
+      "sha256": "9d1570cf3c4fe17e0eb7df09f6f5fd275a426a40e4ec36ca1e3fe63238ccfc98"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/audit.mjs",
+      "sha256": "dea4baa567707e4b6008f13af525fdf78015ec2a4ea8d2842c68c6168da905a0"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/environment.json",
+      "sha256": "d59ea466667c51385eae1ad934d60645576cd4e156b9cef4497a1db1182d163f"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/source-snapshot.json",
+      "sha256": "1a4a8315dcd7aad6e422bb0656edbff33f0caaef7a2d7ab1c408326675317144"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/final-project/project.unone.json",
+      "sha256": "073f74e4cb95a0dea2fb769adbc958edd78c6785e34c574138b0e971034f73c8"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/final-project/scripts/main.luau",
+      "sha256": "7d10e7dfaaa33e99707c6098007dc2e79514fd709a98ef8143f3ed7774d8ad15"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/final-project/scenes/main.scene.json",
+      "sha256": "1a780d737fb275940af1e2df9144e5ed40158889837b709aafc6497c4e2191be"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/verify-json.mjs",
+      "sha256": "2687281527b7d10f638c13703eb9c50d88313a9eff3052f6367336960283438b"
+    }
+  ],
+  "probe": {
+    "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind-replay.mjs",
+    "sha256": "4b910e4b18d605861a7409d7d352f3f8b0e1183c47a0978bf653542a12f63e9a"
+  },
+  "durationMs": 590.39,
+  "exitCode": 0,
+  "signal": null,
+  "spawnError": null,
+  "timedOut": false,
+  "outputTruncated": false,
+  "sourceChanged": false,
+  "sourceCheckError": null,
+  "stdout": "{\"event\":\"command\",\"label\":\"canonical types\",\"argv\":[\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-hardening-sdk-v2\\\\bin\\\\game.exe\",\"--sdk\",\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-hardening-sdk-v2\",\"--project\",\"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-diagnostic-sealed-replay-uxfUun\",\"api\",\"typings\",\"--json\"],\"status\":0,\"rawStdoutBytes\":32596,\"observed\":{\"canonicalBytes\":30987},\"stderr\":\"\"}\n{\"event\":\"command\",\"label\":\"official strict sealed project\",\"argv\":[\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-hardening-sdk-v2\\\\bin\\\\game.exe\",\"--sdk\",\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-hardening-sdk-v2\",\"--project\",\"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-diagnostic-sealed-replay-uxfUun\",\"check\",\"--types\",\"--json\"],\"status\":0,\"rawStdoutBytes\":596,\"observed\":{\"ok\":true,\"value\":{\"project\":\"Scout axis geometry\",\"script\":\"\\\\\\\\?\\\\C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-diagnostic-sealed-replay-uxfUun\\\\scripts\\\\main.luau\",\"strict_mode\":true,\"entrypoints\":[\"start\",\"update\"],\"type_check\":{\"tool\":\"D:\\\\Projects\\\\Unone\\\\.toolcache\\\\luau-0.734\\\\luau-analyze.exe\",\"files\":[\"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-diagnostic-sealed-replay-uxfUun\\\\scripts\\\\main.luau\"],\"passed\":true,\"output\":\"\"}},\"diagnostics\":[],\"effects\":[]},\"stderr\":\"\"}\n{\"event\":\"command\",\"label\":\"two-update sealed geometry\",\"argv\":[\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-hardening-sdk-v2\\\\bin\\\\game.exe\",\"--sdk\",\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-hardening-sdk-v2\",\"--project\",\"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-diagnostic-sealed-replay-uxfUun\",\"run\",\"--frames\",\"2\",\"--seed\",\"42\",\"--json\"],\"status\":0,\"rawStdoutBytes\":20618,\"observed\":{\"status\":\"completed\",\"frames\":2,\"observations\":{\"after_rejection_result\":{\"results\":[{\"hits\":[{\"distance\":4,\"fraction\":0,\"id\":90,\"normal\":[1,0,0],\"point\":[-3.5,0,0]}]},{\"hits\":[{\"distance\":8,\"fraction\":0,\"id\":7,\"normal\":[0,-1,0],\"point\":[0,6,0]},{\"distance\":6,\"fraction\":0,\"id\":41,\"normal\":[-1,0,0],\"point\":[5,0,0]},{\"distance\":4,\"fraction\":0,\"id\":90,\"normal\":[1,0,0],\"point\":[-3.5,0,0]}]},{\"hits\":[{\"distance\":4.000000476837158,\"fraction\":0.40000003576278687,\"id\":41,\"normal\":[-1,0,0],\"point\":[5,0,0]}]},{\"hits\":[]}],\"version\":1},\"after_submission_profile\":{\"api_version\":1,\"backend\":\"cpu\",\"bindings\":{\"calls\":9,\"clock\":\"host_monotonic\",\"failed_calls\":2,\"input_decode_ms\":0.17190000000000003,\"last\":{\"index\":1,\"input_decode_ms\":0,\"operation\":\"spatial.destroy\",\"output_encode_ms\":0,\"success\":true},\"output_encode_ms\":0,\"scope\":\"Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch.\"},\"clock\":\"host_monotonic\",\"limits\":{\"counter_max\":9007199254740991,\"retained_completed_batches\":1},\"scope\":\"Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.\",\"totals\":{\"bodies\":12,\"cancelled_tickets\":0,\"completed_batches\":0,\"executor_ms\":0,\"executor_phases_ms\":{},\"executor_samples\":0,\"executor_wall_samples\":0,\"failed_batches\":0,\"input_body_bytes\":512,\"manager_ms\":{\"result_apply\":0,\"result_validation\":0,\"snapshot\":0.0009,\"validation\":0.0098},\"pair_tests_upper_bound\":36,\"queries\":12,\"readback_bytes\":0,\"returned_hits\":0,\"submitted_batches\":4,\"upload_bytes\":0}},\"baseline_result\":{\"results\":[{\"hits\":[{\"distance\":4,\"fraction\":0,\"id\":90,\"normal\":[1,0,0],\"point\":[-3.5,0,0]}]},{\"hits\":[{\"distance\":8,\"fraction\":0,\"id\":7,\"normal\":[0,-1,0],\"point\":[0,6,0]},{\"distance\":6,\"fraction\":0,\"id\":41,\"normal\":[-1,0,0],\"point\":[5,0,0]},{\"distance\":4,\"fraction\":0,\"id\":90,\"normal\":[1,0,0],\"point\":[-3.5,0,0]}]},{\"hits\":[{\"distance\":4.000000476837158,\"fraction\":0.40000003576278687,\"id\":41,\"normal\":[-1,0,0],\"point\":[5,0,0]}]},{\"hits\":[]}],\"version\":1},\"complete\":true,\"consumed_diagnostic\":{\"actual\":2,\"api_version\":1,\"code\":\"SPATIAL_TICKET_UNKNOWN\",\"context\":{\"frame\":1,\"ticket\":2},\"expected\":\"a currently live handle owned by this runtime\",\"message\":\"SPATIAL_TICKET_UNKNOWN\",\"operation\":\"spatial.take\",\"path\":\"ticket\",\"recoverable\":true,\"recovery\":{\"action\":\"Use an unconsumed live ticket from spatial.submit.\",\"retry\":\"after_correction\"},\"terminal\":false},\"consumed_ticket_take_ok\":false,\"delivery_update\":2,\"destroyed_index_submit_ok\":false,\"diagnostic_after_success\":{\"actual\":-2,\"api_version\":1,\"code\":\"SPATIAL_INPUT_INVALID\",\"context\":{\"frame\":0,\"index\":1},\"expected\":{\"finite\":true,\"max\":1000000,\"min\":0},\"message\":\"bodies[1].radius must be finite and in 0..=1000000\",\"operation\":\"spatial.update\",\"path\":\"bodies[2].radius\",\"recoverable\":true,\"recovery\":{\"action\":\"Correct the reported input field and call the operation again.\",\"retry\":\"after_correction\"},\"terminal\":false},\"early_diagnostic\":{\"api_version\":1,\"code\":\"SPATIAL_RESULT_NEXT_TICK\",\"context\":{\"frame\":0,\"ticket\":2},\"message\":\"SPATIAL_RESULT_NEXT_TICK\",\"operation\":\"spatial.take\",\"recoverable\":true,\"recovery\":{\"action\":\"Take this ticket in the next update; do not branch gameplay on host readiness.\",\"retry\":\"next_tick\"},\"terminal\":false},\"empty_result\":{\"results\":[],\"version\":2},\"entity_after\":{\"x\":37,\"y\":-11},\"entity_before\":{\"x\":37,\"y\":-11},\"final_info\":{\"api_version\":1,\"backend\":\"cpu\",\"bodies\":0,\"delivery\":\"next_tick\",\"external\":false,\"indices\":0,\"limits\":{\"bodies\":131072,\"bodies_per_index\":65536,\"coordinate_abs\":1000000,\"hits_per_query\":64,\"indices\":8,\"queries_per_batch\":1024,\"safe_integer\":9007199254740991,\"submissions_per_tick\":4,\"tickets\":16},\"operations\":[\"nearest\",\"overlap_sphere\",\"sweep_sphere\"],\"packed_format\":\"USB1\",\"pending\":0,\"tickets\":0},\"final_profile\":{\"api_version\":1,\"backend\":\"cpu\",\"bindings\":{\"calls\":15,\"clock\":\"host_monotonic\",\"failed_calls\":4,\"input_decode_ms\":0.17370000000000002,\"last\":{\"input_decode_ms\":0,\"operation\":\"spatial.take\",\"output_encode_ms\":0,\"success\":false,\"ticket\":2},\"output_encode_ms\":0.07310000000000001,\"scope\":\"Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch.\"},\"clock\":\"host_monotonic\",\"last\":{\"bodies\":3,\"executor\":{\"clock\":\"host_monotonic\",\"gpu_kernel_unavailable_reason\":\"CPU backend does not dispatch GPU work\",\"phases_ms\":{\"cpu_execute\":0.0007999999999999999},\"readback_bytes\":0,\"total_ms\":0.0007999999999999999,\"upload_bytes\":0},\"executor_ms\":0.0007999999999999999,\"manager_ms\":{\"result_apply\":0,\"result_validation\":0.0009,\"snapshot\":0.00009999999999999999,\"validation\":0.0009},\"pair_tests_upper_bound\":0,\"queries\":0,\"returned_hits\":0,\"ticket\":5,\"version\":2},\"limits\":{\"counter_max\":9007199254740991,\"retained_completed_batches\":1},\"scope\":\"Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.\",\"totals\":{\"bodies\":12,\"cancelled_tickets\":0,\"completed_batches\":4,\"executor_ms\":0.0141,\"executor_phases_ms\":{\"cpu_execute\":0.0141},\"executor_samples\":4,\"executor_wall_samples\":4,\"failed_batches\":0,\"input_body_bytes\":512,\"manager_ms\":{\"result_apply\":0.00009999999999999999,\"result_validation\":0.011,\"snapshot\":0.0009,\"validation\":0.0098},\"pair_tests_upper_bound\":36,\"queries\":12,\"readback_bytes\":0,\"returned_hits\":13,\"submitted_batches\":4,\"upload_bytes\":0}},\"initial_info\":{\"api_version\":1,\"backend\":\"cpu\",\"bodies\":3,\"delivery\":\"next_tick\",\"external\":false,\"indices\":1,\"limits\":{\"bodies\":131072,\"bodies_per_index\":65536,\"coordinate_abs\":1000000,\"hits_per_query\":64,\"indices\":8,\"queries_per_batch\":1024,\"safe_integer\":9007199254740991,\"submissions_per_tick\":4,\"tickets\":16},\"operations\":[\"nearest\",\"overlap_sphere\",\"sweep_sphere\"],\"packed_format\":\"USB1\",\"pending\":0,\"tickets\":0},\"invalid_diagnostic\":{\"actual\":-2,\"api_version\":1,\"code\":\"SPATIAL_INPUT_INVALID\",\"context\":{\"frame\":0,\"index\":1},\"expected\":{\"finite\":true,\"max\":1000000,\"min\":0},\"message\":\"bodies[1].radius must be finite and in 0..=1000000\",\"operation\":\"spatial.update\",\"path\":\"bodies[2].radius\",\"recoverable\":true,\"recovery\":{\"action\":\"Correct the reported input field and call the operation again.\",\"retry\":\"after_correction\"},\"terminal\":false},\"invalid_update_ok\":false,\"plain_object\":{},\"repaired_result\":{\"results\":[{\"hits\":[{\"distance\":4,\"fraction\":0,\"id\":90,\"normal\":[1,0,0],\"point\":[-3.5,0,0]}]},{\"hits\":[{\"distance\":8,\"fraction\":0,\"id\":7,\"normal\":[0,-1,0],\"point\":[0,6,0]},{\"distance\":4,\"fraction\":0,\"id\":90,\"normal\":[1,0,0],\"point\":[-3.5,0,0]}]},{\"hits\":[]},{\"hits\":[]}],\"version\":2},\"repaired_version\":2,\"same_tick_take_ok\":false,\"stale_index_diagnostic\":{\"actual\":1,\"api_version\":1,\"code\":\"SPATIAL_INDEX_UNKNOWN\",\"context\":{\"frame\":1,\"index\":1},\"expected\":\"a currently live handle owned by this runtime\",\"message\":\"SPATIAL_INDEX_UNKNOWN\",\"operation\":\"spatial.submit\",\"path\":\"index\",\"recoverable\":true,\"recovery\":{\"action\":\"Use a live index from spatial.create.\",\"retry\":\"after_correction\"},\"terminal\":false},\"structured_repair_authorized\":true,\"submission_update\":1,\"submitted_info\":{\"api_version\":1,\"backend\":\"cpu\",\"bodies\":3,\"delivery\":\"next_tick\",\"external\":false,\"indices\":1,\"limits\":{\"bodies\":131072,\"bodies_per_index\":65536,\"coordinate_abs\":1000000,\"hits_per_query\":64,\"indices\":8,\"queries_per_batch\":1024,\"safe_integer\":9007199254740991,\"submissions_per_tick\":4,\"tickets\":16},\"operations\":[\"nearest\",\"overlap_sphere\",\"sweep_sphere\"],\"packed_format\":\"USB1\",\"pending\":4,\"tickets\":4},\"typed_capacity\":1024,\"typed_empty\":[],\"typed_numbers\":[4,12,16],\"typed_records\":[{\"label\":\"marker\",\"value\":37},{\"label\":\"queries\",\"value\":4}]}},\"stderr\":\"\"}\n{\"event\":\"task_result\",\"complete\":true,\"checked\":{\"input\":\"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-diagnostic-sealed-replay-uxfUun\\\\actual-result.json\",\"scope\":\"Independent external JSON verification: expected coordinates derived analytically, no authored success flags used as geometry evidence.\",\"tolerance\":0.00001,\"passed\":13,\"failed\":0,\"checks\":[{\"name\":\"CLI completed two updates\",\"pass\":true},{\"name\":\"complete baseline geometry and array shape\",\"pass\":true},{\"name\":\"rejected replacement preserved complete geometry and version\",\"pass\":true},{\"name\":\"complete repaired geometry and version\",\"pass\":true},{\"name\":\"empty query batch array shape\",\"pass\":true},{\"name\":\"typed numeric/record/empty arrays and plain object\",\"pass\":true},{\"name\":\"structured invalid-input details and retained diagnostic\",\"pass\":true},{\"name\":\"fixed next-update timing\",\"pass\":true},{\"name\":\"destroyed-index boundary reached rather than tick quota\",\"pass\":true},{\"name\":\"consumed one-shot ticket\",\"pass\":true},{\"name\":\"unchanged unrelated synthetic entity\",\"pass\":true},{\"name\":\"complete initial/submitted/final info records\",\"pass\":true},{\"name\":\"complete totals and binding counters\",\"pass\":true}]},\"temp\":\"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-diagnostic-sealed-replay-uxfUun\",\"scope\":\"Informed replay of sealed SDK-only author input, official strict checking and reviewed independent13-check geometry/JSON/lifecycle/cost oracle. No benchmark, GPU authorship or rendered appearance claim.\"}\n",
+  "stderr": "",
+  "trust": "Local capture of an explicitly selected script. Not signed attestation or proof of semantic claims; probe code is not sandboxed."
+}

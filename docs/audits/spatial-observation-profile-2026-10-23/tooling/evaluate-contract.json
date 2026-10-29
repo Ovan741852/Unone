@@ -1,0 +1,1092 @@
+{
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "plugins/org.unone.ai-native/cli.mjs",
+    "describe",
+    "--operation",
+    "ai_native.evaluate",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "exitCode": 0,
+  "result": {
+    "ok": true,
+    "value": {
+      "id": "ai_native.evaluate",
+      "version": "0.3.0",
+      "versionScope": "Per-operation input/output contract version; independent of the installed plugin/package release version.",
+      "summary": "核對逐題答案及本機證據，產生分數下限、覆蓋率、缺口與修復項目。可直接傳 report JSON，不必先寫評測檔。",
+      "keywords": [
+        "score",
+        "evaluate",
+        "validate",
+        "audit",
+        "ai native",
+        "ai-native",
+        "評分",
+        "評測",
+        "檢查",
+        "除錯",
+        "錯誤",
+        "驗證",
+        "評估自己",
+        "自評"
+      ],
+      "available": {
+        "status": "available",
+        "requirements": [
+          "Node.js >=20"
+        ],
+        "scope": "Local read-only audit; no actual AI or target execution."
+      },
+      "readOnly": true,
+      "permissions": [
+        "project.read"
+      ],
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "report_path": {
+            "type": "string",
+            "description": "Forward-slash project-relative UTF-8 file path. Absolute paths and escaping symlinks are rejected."
+          },
+          "report": {
+            "title": "Unone AI-native audit v1",
+            "description": "Complete report JSON from ai_native.init. Pass this in memory to evaluate without writing an audit file.",
+            "type": "object",
+            "properties": {
+              "schema": {
+                "const": "unone.ai-native.audit.v1"
+              },
+              "rubricVersion": {
+                "const": "1.0.0"
+              },
+              "target": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "surface": {
+                    "enum": [
+                      "plugin",
+                      "http",
+                      "cli",
+                      "mcp",
+                      "ui",
+                      "library",
+                      "mixed"
+                    ]
+                  },
+                  "scope": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "version": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "revision": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "environment": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "surface",
+                  "scope",
+                  "version",
+                  "revision",
+                  "environment"
+                ],
+                "additionalProperties": false
+              },
+              "trial": {
+                "type": "object",
+                "properties": {
+                  "mode": {
+                    "enum": [
+                      "blind",
+                      "informed",
+                      "retest"
+                    ]
+                  },
+                  "entryPoints": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "minItems": 1,
+                    "maxItems": 20
+                  },
+                  "steps": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "firstSuccessStep": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "sourceFallbackStep": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "wrongGuesses": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
+                  },
+                  "limitations": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "minItems": 0,
+                    "maxItems": 40
+                  }
+                },
+                "required": [
+                  "mode",
+                  "entryPoints",
+                  "steps",
+                  "firstSuccessStep",
+                  "sourceFallbackStep",
+                  "wrongGuesses",
+                  "limitations"
+                ],
+                "additionalProperties": false
+              },
+              "subject": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512,
+                      "description": "Normalized project-relative forward-slash path. No drive, absolute path, traversal or escaping symlink."
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "sha256"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 64,
+                "description": "Exact selected source/document paths and hashes; must match execution captures. Do not include the audit itself."
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 100
+                    },
+                    "kind": {
+                      "enum": [
+                        "document",
+                        "source",
+                        "execution",
+                        "observation"
+                      ]
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512,
+                      "description": "Normalized project-relative forward-slash path. No drive, absolute path, traversal or escaping symlink."
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "quote": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1200,
+                      "description": "Short exact excerpt actually present in the artifact, not an interpretation."
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "path",
+                    "sha256",
+                    "quote"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 128
+              },
+              "checks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "enum": [
+                        "purpose",
+                        "capabilities",
+                        "operation",
+                        "context",
+                        "observation",
+                        "diagnostics",
+                        "recovery",
+                        "boundaries",
+                        "performance",
+                        "reproducibility"
+                      ]
+                    },
+                    "status": {
+                      "enum": [
+                        "verified",
+                        "partial",
+                        "failed",
+                        "unverified"
+                      ]
+                    },
+                    "rating": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 4
+                    },
+                    "access": {
+                      "enum": [
+                        "public",
+                        "source-assisted",
+                        "internal",
+                        "none"
+                      ],
+                      "description": "public: documented entry only; source-assisted: source was needed (record sourceFallbackStep); internal: intentionally internal test; none: unverified only."
+                    },
+                    "answer": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "nextAction": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4000
+                      },
+                      "minItems": 0,
+                      "maxItems": 24,
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "status",
+                    "rating",
+                    "access",
+                    "answer",
+                    "reason",
+                    "nextAction",
+                    "evidence"
+                  ],
+                  "additionalProperties": false,
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "status": {
+                            "const": "verified"
+                          }
+                        }
+                      },
+                      "then": {
+                        "properties": {
+                          "rating": {
+                            "enum": [
+                              3,
+                              4
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "status": {
+                            "const": "partial"
+                          }
+                        }
+                      },
+                      "then": {
+                        "properties": {
+                          "rating": {
+                            "enum": [
+                              1,
+                              2
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "status": {
+                            "const": "failed"
+                          }
+                        }
+                      },
+                      "then": {
+                        "properties": {
+                          "rating": {
+                            "const": 0
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "status": {
+                            "const": "unverified"
+                          }
+                        }
+                      },
+                      "then": {
+                        "properties": {
+                          "rating": {
+                            "type": "null"
+                          }
+                        }
+                      },
+                      "else": {
+                        "properties": {
+                          "access": {
+                            "enum": [
+                              "public",
+                              "source-assisted",
+                              "internal"
+                            ]
+                          },
+                          "evidence": {
+                            "minItems": 1
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "minItems": 10,
+                "maxItems": 10
+              },
+              "issues": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "checkId": {
+                      "enum": [
+                        "purpose",
+                        "capabilities",
+                        "operation",
+                        "context",
+                        "observation",
+                        "diagnostics",
+                        "recovery",
+                        "boundaries",
+                        "performance",
+                        "reproducibility"
+                      ]
+                    },
+                    "severity": {
+                      "enum": [
+                        "P0",
+                        "P1",
+                        "P2"
+                      ]
+                    },
+                    "summary": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "cause": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "fix": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "verification": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "evidence": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4000
+                      },
+                      "minItems": 1,
+                      "maxItems": 24,
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "checkId",
+                    "severity",
+                    "summary",
+                    "cause",
+                    "fix",
+                    "verification",
+                    "evidence"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 0,
+                "maxItems": 40
+              }
+            },
+            "required": [
+              "schema",
+              "rubricVersion",
+              "target",
+              "trial",
+              "subject",
+              "evidence",
+              "checks",
+              "issues"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "report_path"
+            ],
+            "not": {
+              "required": [
+                "report"
+              ]
+            }
+          },
+          {
+            "required": [
+              "report"
+            ],
+            "not": {
+              "required": [
+                "report_path"
+              ]
+            }
+          }
+        ],
+        "additionalProperties": false
+      },
+      "output": "Supply exactly one of report_path (an existing project-relative JSON file) or report (the complete JSON value returned/filled from ai_native.init). The plugin remains read-only; evaluation reads referenced evidence from the host-selected project root.",
+      "examples": [
+        {
+          "report_path": "audits/planner/audit.json"
+        }
+      ],
+      "errors": [
+        {
+          "code": "AUDIT_EVIDENCE_STALE",
+          "cause": "The subject or artifact changed since capture.",
+          "fix": "Rerun the original probe and review affected answers; do not just replace hashes."
+        },
+        {
+          "code": "AUDIT_PATH_OUTSIDE_ROOT",
+          "cause": "Absolute, traversal or escaping symlink path.",
+          "fix": "Select the correct project root and use approved relative evidence files."
+        },
+        {
+          "code": "AUDIT_INVALID",
+          "cause": "A required answer, field or evidence reference is missing/invalid.",
+          "fix": "Read diagnostics.facts.field/expected/actual and supply a concrete answer."
+        },
+        {
+          "code": "AUDIT_RUN_TARGET_MISMATCH",
+          "cause": "Probe captured a different source/version.",
+          "fix": "Capture the same subject selection and create a matching report."
+        },
+        {
+          "code": "AUDIT_QUOTE_NOT_FOUND",
+          "cause": "Claimed excerpt is not in the evidence.",
+          "fix": "Reference actual output verbatim; keep interpretation in the answer."
+        }
+      ],
+      "reportSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Unone AI-native audit v1",
+        "description": "Complete shape supplied only after selecting evaluate. The evaluator additionally checks concrete answers, cross-references, exact hashes/excerpts and probe provenance. A syntactically valid report is not proof its semantic claims are true.",
+        "type": "object",
+        "properties": {
+          "schema": {
+            "const": "unone.ai-native.audit.v1"
+          },
+          "rubricVersion": {
+            "const": "1.0.0"
+          },
+          "target": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "surface": {
+                "enum": [
+                  "plugin",
+                  "http",
+                  "cli",
+                  "mcp",
+                  "ui",
+                  "library",
+                  "mixed"
+                ]
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "revision": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "environment": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "surface",
+              "scope",
+              "version",
+              "revision",
+              "environment"
+            ],
+            "additionalProperties": false
+          },
+          "trial": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "enum": [
+                  "blind",
+                  "informed",
+                  "retest"
+                ]
+              },
+              "entryPoints": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "minItems": 1,
+                "maxItems": 20
+              },
+              "steps": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100000
+              },
+              "firstSuccessStep": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 100000
+              },
+              "sourceFallbackStep": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 100000
+              },
+              "wrongGuesses": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100000
+              },
+              "limitations": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "minItems": 0,
+                "maxItems": 40
+              }
+            },
+            "required": [
+              "mode",
+              "entryPoints",
+              "steps",
+              "firstSuccessStep",
+              "sourceFallbackStep",
+              "wrongGuesses",
+              "limitations"
+            ],
+            "additionalProperties": false
+          },
+          "subject": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512,
+                  "description": "Normalized project-relative forward-slash path. No drive, absolute path, traversal or escaping symlink."
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "sha256"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 64,
+            "description": "Exact selected source/document paths and hashes; must match execution captures. Do not include the audit itself."
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "kind": {
+                  "enum": [
+                    "document",
+                    "source",
+                    "execution",
+                    "observation"
+                  ]
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512,
+                  "description": "Normalized project-relative forward-slash path. No drive, absolute path, traversal or escaping symlink."
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1200,
+                  "description": "Short exact excerpt actually present in the artifact, not an interpretation."
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "path",
+                "sha256",
+                "quote"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 128
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "enum": [
+                    "purpose",
+                    "capabilities",
+                    "operation",
+                    "context",
+                    "observation",
+                    "diagnostics",
+                    "recovery",
+                    "boundaries",
+                    "performance",
+                    "reproducibility"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "verified",
+                    "partial",
+                    "failed",
+                    "unverified"
+                  ]
+                },
+                "rating": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 4
+                },
+                "access": {
+                  "enum": [
+                    "public",
+                    "source-assisted",
+                    "internal",
+                    "none"
+                  ],
+                  "description": "public: documented entry only; source-assisted: source was needed (record sourceFallbackStep); internal: intentionally internal test; none: unverified only."
+                },
+                "answer": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "nextAction": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "minItems": 0,
+                  "maxItems": 24,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "id",
+                "status",
+                "rating",
+                "access",
+                "answer",
+                "reason",
+                "nextAction",
+                "evidence"
+              ],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "verified"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "rating": {
+                        "enum": [
+                          3,
+                          4
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "partial"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "rating": {
+                        "enum": [
+                          1,
+                          2
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "failed"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "rating": {
+                        "const": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "unverified"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "rating": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "access": {
+                        "enum": [
+                          "public",
+                          "source-assisted",
+                          "internal"
+                        ]
+                      },
+                      "evidence": {
+                        "minItems": 1
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "minItems": 10,
+            "maxItems": 10
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "checkId": {
+                  "enum": [
+                    "purpose",
+                    "capabilities",
+                    "operation",
+                    "context",
+                    "observation",
+                    "diagnostics",
+                    "recovery",
+                    "boundaries",
+                    "performance",
+                    "reproducibility"
+                  ]
+                },
+                "severity": {
+                  "enum": [
+                    "P0",
+                    "P1",
+                    "P2"
+                  ]
+                },
+                "summary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "cause": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "fix": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "verification": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "minItems": 1,
+                  "maxItems": 24,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "id",
+                "checkId",
+                "severity",
+                "summary",
+                "cause",
+                "fix",
+                "verification",
+                "evidence"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 0,
+            "maxItems": 40
+          }
+        },
+        "required": [
+          "schema",
+          "rubricVersion",
+          "target",
+          "trial",
+          "subject",
+          "evidence",
+          "checks",
+          "issues"
+        ],
+        "additionalProperties": false
+      },
+      "runtimeInvariants": [
+        "checks must contain every catalog criterion ID exactly once (the JSON Schema alone does not enforce ID uniqueness).",
+        "Evidence references must resolve, hashes/quotes must match and execution captures must have the same subject; schema validity is not evidence validity."
+      ],
+      "preparation": [
+        {
+          "operation": "ai_native.init",
+          "purpose": "Get a JSON report skeleton on stdout. This operation does not write a file; the caller may pass the completed report directly to ai_native.evaluate."
+        },
+        {
+          "operation": "ai_native.catalog",
+          "purpose": "Read the ten questions, weights and evidence caps."
+        },
+        {
+          "operation": "ai_native.snapshot",
+          "purpose": "Record real selected source and evidence hashes."
+        },
+        {
+          "entry": "scripts/record-probe.mjs",
+          "purpose": "Explicit, reviewed isolated probe recording; not callable as a plugin operation and not a sandbox."
+        }
+      ],
+      "standaloneCli": "node cli.mjs evaluate --report <relative-report> --root <selected-project>",
+      "standaloneCliAlternatives": [
+        "ai_native.call with arguments.report for a read-only in-memory evaluation.",
+        "node cli.mjs evaluate --report - --root <selected-project>, with the completed report JSON on stdin."
+      ],
+      "contractHash": "43e7a378c1a6fc4b2e161e88ea94ef08936a20e30b3e50a641224467c54eb6dd"
+    },
+    "diagnostics": [],
+    "effects": [],
+    "telemetry": {
+      "elapsed_ms": 0.376,
+      "gpu_ms": null,
+      "note": "Plugin wall time only, not target performance. No target commands or probes executed."
+    }
+  },
+  "stderr": ""
+}

@@ -1,0 +1,50 @@
+{
+    "completedRecordedChildCommandsBeforeFinalSeal":  37,
+    "finalSealingOperation":  38,
+    "nonzeroRecordedChildCommands":  [
+                                         {
+                                             "order":  24,
+                                             "name":  "first-check-types",
+                                             "exitCode":  1
+                                         },
+                                         {
+                                             "order":  30,
+                                             "name":  "python-version",
+                                             "exitCode":  9009
+                                         },
+                                         {
+                                             "order":  32,
+                                             "name":  "replay-independent-probe-first",
+                                             "exitCode":  1
+                                         },
+                                         {
+                                             "order":  33,
+                                             "name":  "replay-independent-probe-policy",
+                                             "exitCode":  1
+                                         }
+                                     ],
+    "preexecutionOrchestrationFailures":  1,
+    "timeouts":  0,
+    "firstStrictSuccessStep":  26,
+    "firstSuccessfulSubmissionStep":  27,
+    "firstDeliveredGeometryStep":  28,
+    "authoredLuauTypeFailures":  0,
+    "deliberateNegativeCases":  3,
+    "firstUseNativeRuns":  2,
+    "independentReplayNativeRuns":  2,
+    "observedBackend":  "cpu",
+    "gpuExecutionClaims":  0,
+    "sourceFallbackStep":  null,
+    "repoSourceReads":  0,
+    "rubricReads":  0,
+    "firstAndFinalLuauIdentical":  true,
+    "independentReplayPassed":  true,
+    "emptyHitsShapeDeviation":  true,
+    "finalExampleFiles":  [
+                              "AGENTS.md",
+                              "player.presentation.json",
+                              "project.unone.json",
+                              "scenes/main.scene.json",
+                              "scripts/main.luau"
+                          ]
+}

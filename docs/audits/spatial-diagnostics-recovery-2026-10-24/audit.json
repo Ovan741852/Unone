@@ -1,0 +1,601 @@
+{
+  "schema": "unone.ai-native.audit.v1",
+  "rubricVersion": "1.0.0",
+  "target": {
+    "id": "unone-spatial-diagnostics-recovery-v1",
+    "name": "Unone generic diagnostics typed API recovery and cost",
+    "surface": "mixed",
+    "scope": "Public SDK generic structured spatial diagnostics, canonical typed records/example, independent geometry authoring/repair and repeated CPU cost measurement. Supplementary informed synthetic fault matrix, actual native GPU and fresh WASM CPU/WebGPU main/Worker regressions. Excludes gameplay, rendered appearance, real driver/device-loss, universal speedup and cross-device certification.",
+    "version": "game0.1.0; spatial/diagnostic/profile api_version1; USB1; official Luau0.734",
+    "revision": "checkout7b9424cf42d0409633c9ce782503075bd09018f9 with preserved concurrent dirty changes; SDK CLI SHA256d59c051d00ad47616978b6c4352a67092555baecfb090fb6b3442ca929c3e028; selected source archive and 62 hashes bound this task.",
+    "environment": "Windows x64; preinstalled toolchains; NVIDIA GeForce RTX5080 native Vulkan and Edge155.0.4283.62 WebGPU; final release SDK-v2 and fresh hash-verified WASM. Completed2026-10-24 Asia/Taipei. No game edit/install/commit/push."
+  },
+  "trial": {
+    "mode": "retest",
+    "entryPoints": [
+      "artifacts/spatial-hardening-sdk-v2/README.md",
+      "artifacts/spatial-hardening-sdk-v2/sdk.json",
+      "artifacts/spatial-hardening-sdk-v2/bin/game.exe --help"
+    ],
+    "steps": 53,
+    "firstSuccessStep": 28,
+    "sourceFallbackStep": null,
+    "wrongGuesses": 0,
+    "limitations": [
+      "Aggregate is informed/retest. Only the separately sealed fresh SDK-only author is blind; source review, owner probes, replay and semantic review are informed. Author did not read example main.luau, repo implementation/tests, rubric or prior audits.",
+      "53 ordered author ledger events plus initial bootstrap; events include reads/writes/copies/identity/seal, not 53 CLI calls. There are27 top-level runner child processes; nested benchmark calls are separately counted, not double-counted. Engine-internal analyzer launches are opaque. No token/time-to-user estimate is inferred.",
+      "First strict check passed at event27. First runtime delivery28 completed but external verifier30 passed12/13: stale-index probe hit per-tick quota first. Author independently moved the probe; strict34, runtime35 and external36 passed13/13. A Windows Node --import invocation error and search miss are retained. No undocumented API/signature guesses.",
+      "Counter gameplay_source_repairs:1 refers only to the synthetic trial Luau probe-placement correction. No actual game content was used or modified.",
+      "Author executed CPU geometry and small16x4/large4096x128 benchmarks with3 warmups+9 retained samples. GPU, Web/Worker and host bridge/setup were not blind-authored; their actual runs here are supplementary informed regressions.",
+      "Fault matrix uses supplied fake executors/hosts/devices and malformed envelopes. Actual GPU normal execution is separately verified. No actual hardware/driver device-loss event was exercised. Reload retains the executor and cannot repair a broken device; terminal recovery may require a new runtime and working executor.",
+      "Native direct executor benchmark is debug; SDK CPU is release. Their timings are not a matched end-to-end speed comparison. Kernel timestamps remain unavailable with explicit reason. Host/setup/bridge/manager/binding phases overlap; no additive kernel, crossover, frame-rate or universal speedup claim.",
+      "Returned records are detached snapshots. Official Luau0.734 still accepts some dynamic string-index/typeof-table alias mutations despite named fields remaining typed. Treat records as read-only; this task does not claim universal alias/type soundness. Empty arrays/plain objects and typed numeric/record arrays are actually checked.",
+      "Structured diagnostics cover input/manager/executor/host failures; VM OOM, buffer allocation and output encoding failures are excluded. Structured paths are one-based, runtime frame is zero-based and legacy error strings retain old wording/indexing. recovery.action is human guidance; branch on code/retry/flags.",
+      "Combined Chinese search 空間查詢 錯誤診斷 returns no matches in the owner public probe; structured full-index fallback recovers. Fresh author also recovered scene entity via entity. Search combinations are not universally recognized.",
+      "All six actual captures share62 selected subjects, including the sealed final project and inspected independent oracle. Selected46 exact source copies are retained, but neither this archive nor pinned local binaries attest a full dependency graph, clean build or authorship. The87-file local blind seal is integrity evidence, not an external signature.",
+      "Previous audits remain unchanged. Different SDK and expanded task scope mean this score is not a formal numeric before/after comparison. The ten questions assess this scope, not the entire engine or any game.",
+      "firstSuccessStep28 denotes the first completed runtime delivery, not complete external acceptance; final independent13/13 acceptance occurs at ledger event36. No authored any/casts refers to the independent trial code, not unrelated pre-existing declarations in the canonical API block."
+    ]
+  },
+  "subject": [
+    {
+      "path": "crates/unone-engine/src/diagnostics.rs",
+      "sha256": "6753bdcc7e62b68f3b899875415114658840934159be8ee9692ee271dc630148"
+    },
+    {
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "89f6377b5cad51a2f2376f0c9dc9d52a156a8c35b933609848f48c9d71442313"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime.rs",
+      "sha256": "c84789162a09a5e56f3298612a0318998c6d59aedf27c97b54dbb553ba4c1f3e"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial.rs",
+      "sha256": "1cfe90d3e848f497862de7fb72ff6c4e274532ba34abe99a1f87695fda0492ab"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial_metrics.rs",
+      "sha256": "179d02e04c7767e07635de430a4d8d7c564b70cf02bbeca39f88f68769df0acc"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/spatial.rs",
+      "sha256": "26df18d2bd77ae42dca2ab0bfd0b6d2eabe92af14631dff1497e64301962a77e"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "sha256": "eafffe3cb765d1941f71cc007e5a46b8e78b8cfbaf125c000b4d49d4298aa362"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "sha256": "cca1be46dd664a7dc87ea11e138c92aa6c925cb42305505a0aba4945ae09ae7e"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "eafffe3cb765d1941f71cc007e5a46b8e78b8cfbaf125c000b4d49d4298aa362"
+    },
+    {
+      "path": "docs/spatial-batches.md",
+      "sha256": "6df7d7da9a40f70af79a39ff449d2f0e16f75f347a5f86055f1d03f8a84fc11c"
+    },
+    {
+      "path": "docs/sdk-readme.md",
+      "sha256": "fc378bb05626a9d685daecb631e633bb9f92edaff700a17acd1d19f168513e87"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "10df10ed625f4759fe0b0fb81b6be862ec35445eb03525c59a624ca3edc54b21"
+    },
+    {
+      "path": "crates/unone-cli/src/export.rs",
+      "sha256": "d963d0628f8f8591cb8f56a6c1c9660e0021384e21100b87b9009c851a9df0c2"
+    },
+    {
+      "path": "crates/unone-web-live-smoke/src/main.rs",
+      "sha256": "f507f6eb24c7a52767e14a219cf69ce96f83184a5ae5c369efd03ec94feac9fa"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_diagnostics.rs",
+      "sha256": "346625bff14c328f84971c8eb092912d17bd726e5efc5fbb9bad5a1567a9d972"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_diagnostic_boundaries.rs",
+      "sha256": "1bd07037c3c8ffbef7c40009293426215cf4e74863fc62f3edb1cdd9deee54d7"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_faults.rs",
+      "sha256": "75f62c4b975724dbb6beb0d8278203e74a7d8919ad4b759e04d9a90b6be32d16"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_metrics.rs",
+      "sha256": "06e2be20225aa67d1c0497beb00468b3a847b5c31d7fbd7310503a6809d020f9"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_runtime.rs",
+      "sha256": "2e5b2144dedf41e7d06d0e66f75eaf2b5716c7bf31467d7402e30e93da6bc962"
+    },
+    {
+      "path": "web/shared/spatial-host.mjs",
+      "sha256": "271bdbc226f65a6d7e114e72af609985ec5b5a24c87085f50513985263155f5c"
+    },
+    {
+      "path": "web/shared/spatial-metrics.mjs",
+      "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+    },
+    {
+      "path": "web/shared/spatial-gpu.mjs",
+      "sha256": "79d630684148b94024cf3424472ac39801ba9cea14039f85183f88df353b760d"
+    },
+    {
+      "path": "web/shared/spatial.wgsl",
+      "sha256": "2de3388bf58f080cc97e5efc60106cc1b2df649f7a5cf0db7d89478d7b4385c7"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "web/shared/spatial-faults.test.mjs",
+      "sha256": "69a63df7e2854ffe7832a46584f2b98c3087729b37114100266b0ef0816838f8"
+    },
+    {
+      "path": "web/shared/spatial-metrics.test.mjs",
+      "sha256": "a21d7f313c89b77fa2a6d4b809bdc8b99f2190a8a99028f52ba02e98e1207343"
+    },
+    {
+      "path": "web/shared/spatial-host.test.mjs",
+      "sha256": "c8eba9af48b570a766580515ce3f2f76800393c583854d74534265f0a1ad71bb"
+    },
+    {
+      "path": "web/shared/spatial-gpu.test.mjs",
+      "sha256": "5898154aed08c6ecc93cc78eb5b5d5e9374c7f2de5846dfe7daeb9192a0840c4"
+    },
+    {
+      "path": "web/shared/runtime-core.test.mjs",
+      "sha256": "8d60792d4bf1f7ce7898a83851d637e9242c4abe3877a671e98dee71a8972435"
+    },
+    {
+      "path": "scripts/verify-spatial-runtime.mjs",
+      "sha256": "cc45495101e35888ec368bab921de478c2bca24db8d8ebe8eda17fe5fc603f3f"
+    },
+    {
+      "path": "scripts/benchmark-spatial.mjs",
+      "sha256": "59e5ec169dcf6ac100c0c24b114be63133c0fd2a3c235557239a6177132ac9b2"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.toml",
+      "sha256": "9d35c773ab4690eae049a73e2bb7e1b0a251c636062311b368ae0e176671e508"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.lock",
+      "sha256": "1e13e3f2ac20ae987ceeb959ee5427b813de0b1e2ab1b0321c4f4e8919edb6af"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/src/lib.rs",
+      "sha256": "e0e9ace2cca371f0f0a1242153245f9b49f94c80fb46e05420687e0925ecd9aa"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/examples/benchmark.rs",
+      "sha256": "81f52cb10e9c0419d70dd1c1168f5a0eae38db1103c95b6b9906c505c7c7e4ce"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/tests/runtime.rs",
+      "sha256": "0ae7938553863c3e315c686d2e4dcab74357531424c7f4f796d2f7cfac79b623"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "307b4996be867fbf0a178db498109768d91de88e81ac2a7208200ed5f9c81bb4"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "a54430ce3f1f0364f19d1596abea02015ae0a48d4af33f00c8b894ada414547e"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/README.md",
+      "sha256": "fc378bb05626a9d685daecb631e633bb9f92edaff700a17acd1d19f168513e87"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/sdk.json",
+      "sha256": "2c1a26633fe324a9442bb00846844dad28dd597f9cbc744a5d3c2badf6cc5db3"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/docs/spatial-batches.md",
+      "sha256": "6df7d7da9a40f70af79a39ff449d2f0e16f75f347a5f86055f1d03f8a84fc11c"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/docs/engine.d.luau",
+      "sha256": "eafffe3cb765d1941f71cc007e5a46b8e78b8cfbaf125c000b4d49d4298aa362"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/main.luau",
+      "sha256": "d17f5aae226838e602ee62945aef61779cff657bc3d2aa30cb759594bc19357e"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/project.unone.json",
+      "sha256": "12111a3fa24d51e5c718f080c63fdc9adeb877f956f35c1573437cd7c860ac61"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/scene.json",
+      "sha256": "a4c70d62ddfce7c478bbba1011eab933aa3d234dbe934cbf9aa93a8968e0915b"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/README.md",
+      "sha256": "5ea042fa4219af2f59ff1eaba83931035c091a88cbf8a5294e25b54d49190009"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/tools/benchmark-spatial.mjs",
+      "sha256": "59e5ec169dcf6ac100c0c24b114be63133c0fd2a3c235557239a6177132ac9b2"
+    },
+    {
+      "path": "artifacts/spatial-hardening-runtime/runtime.json",
+      "sha256": "18d07d7e028398dfb3345c2583865a7f8fee8598d9632e387d7e3d8690a94922"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/rubric.mjs",
+      "sha256": "9d1570cf3c4fe17e0eb7df09f6f5fd275a426a40e4ec36ca1e3fe63238ccfc98"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/audit.mjs",
+      "sha256": "dea4baa567707e4b6008f13af525fdf78015ec2a4ea8d2842c68c6168da905a0"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/environment.json",
+      "sha256": "d59ea466667c51385eae1ad934d60645576cd4e156b9cef4497a1db1182d163f"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/source-snapshot.json",
+      "sha256": "1a4a8315dcd7aad6e422bb0656edbff33f0caaef7a2d7ab1c408326675317144"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/final-project/project.unone.json",
+      "sha256": "073f74e4cb95a0dea2fb769adbc958edd78c6785e34c574138b0e971034f73c8"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/final-project/scripts/main.luau",
+      "sha256": "7d10e7dfaaa33e99707c6098007dc2e79514fd709a98ef8143f3ed7774d8ad15"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/final-project/scenes/main.scene.json",
+      "sha256": "1a780d737fb275940af1e2df9144e5ed40158889837b709aafc6497c4e2191be"
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/verify-json.mjs",
+      "sha256": "2687281527b7d10f638c13703eb9c50d88313a9eff3052f6367336960283438b"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "entry",
+      "kind": "document",
+      "path": "artifacts/spatial-hardening-sdk-v2/README.md",
+      "sha256": "fc378bb05626a9d685daecb631e633bb9f92edaff700a17acd1d19f168513e87",
+      "quote": "For generic batched geometry"
+    },
+    {
+      "id": "guide",
+      "kind": "document",
+      "path": "artifacts/spatial-hardening-sdk-v2/docs/spatial-batches.md",
+      "sha256": "6df7d7da9a40f70af79a39ff449d2f0e16f75f347a5f86055f1d03f8a84fc11c",
+      "quote": "lastDiagnostic()"
+    },
+    {
+      "id": "types",
+      "kind": "document",
+      "path": "artifacts/spatial-hardening-sdk-v2/docs/engine.d.luau",
+      "sha256": "eafffe3cb765d1941f71cc007e5a46b8e78b8cfbaf125c000b4d49d4298aa362",
+      "quote": "export type EngineDiagnostic"
+    },
+    {
+      "id": "example",
+      "kind": "document",
+      "path": "artifacts/spatial-hardening-sdk-v2/examples/spatial-diagnostics/README.md",
+      "sha256": "5ea042fa4219af2f59ff1eaba83931035c091a88cbf8a5294e25b54d49190009",
+      "quote": "spatial"
+    },
+    {
+      "id": "blind",
+      "kind": "observation",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/REPORT.txt",
+      "sha256": "9a6907dde6356d0357516ef1b0fc151950f22fef3e0c0490065b213814bec3f2",
+      "quote": "First authored strict check passed"
+    },
+    {
+      "id": "counters",
+      "kind": "observation",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind/scout-diagnostics-sdk/operation-counters.json",
+      "sha256": "6b4579defbc51d4246bb6f35e7bd6ca9ff04fde8b0bafadce09806a71a9d7acf",
+      "quote": "intended_stale_probe_masked_by_quota"
+    },
+    {
+      "id": "seal",
+      "kind": "observation",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind-verification.json",
+      "sha256": "beba34bfbce99a500aa192fe4ecdfd4be8f325873d764d2fa223b55f2d883fe0",
+      "quote": "\"ok\": true"
+    },
+    {
+      "id": "source-review",
+      "kind": "observation",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/source-review.md",
+      "sha256": "51e68f29276a31189ec0e54702a77f979630d0abe6009d422261a7c97ebd4153",
+      "quote": "Preserve detailed terminal diagnostics"
+    },
+    {
+      "id": "source-archive",
+      "kind": "source",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/source-snapshot.json",
+      "sha256": "1a4a8315dcd7aad6e422bb0656edbff33f0caaef7a2d7ab1c408326675317144",
+      "quote": "\"files\""
+    },
+    {
+      "id": "validation",
+      "kind": "observation",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/validation.json",
+      "sha256": "550b8b3686391a6f3e66a63d41d00ee59b938f9907c51f02e4446cbc4c50bc26",
+      "quote": "\"passed\": true"
+    },
+    {
+      "id": "public",
+      "kind": "execution",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-public.json",
+      "sha256": "ed53b7362b68b2b01474e856cca929c5ee143b34c9b8bfde7e9412686d4a203e",
+      "quote": "task_result"
+    },
+    {
+      "id": "cost",
+      "kind": "execution",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-cost.json",
+      "sha256": "74d5b0364c3a50ea17ceebd9de2a5e664aa2bcde18bafe5d7dcd39343b01e7a7",
+      "quote": "task_result"
+    },
+    {
+      "id": "web",
+      "kind": "execution",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-web.json",
+      "sha256": "b81b3e9ce4ed7643665ea49ef4fa6c065462fe13d88f045184a0fac865a1d8eb",
+      "quote": "task_result"
+    },
+    {
+      "id": "fault",
+      "kind": "execution",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-fault.json",
+      "sha256": "14cb8e0b4c74c5ac92f292410c823caf45cb076a686bdbe5643b739c6afc8aab",
+      "quote": "task_result"
+    },
+    {
+      "id": "native",
+      "kind": "execution",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-native.json",
+      "sha256": "65af86832862f5b891677de9340d1e2ac501d1e021c5e0e3783a7515ad7c5d33",
+      "quote": "task_result"
+    },
+    {
+      "id": "blind-replay",
+      "kind": "execution",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-blind-replay.json",
+      "sha256": "cdcd6090da8907954ada07a72bd43c1b48a1fd18ce02890a8226d6d61517755e",
+      "quote": "task_result"
+    },
+    {
+      "id": "semantic-review",
+      "kind": "observation",
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/semantic-review.md",
+      "sha256": "01cc2ea774a1a6fb42d569b4e249784bb9376607851cb9147d1f8e67c41298b6",
+      "quote": "The proposed ten ratings are semantically supported at 84/100 within the stated scope, with no critical blocker and no rating increase requested."
+    }
+  ],
+  "checks": [
+    {
+      "id": "purpose",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Fresh SDK-only author found the generic sphere-batch API, canonical types, CPU default, fixed-tick delivery and engine/caller ownership boundary.",
+      "reason": "The sealed explanation and independent geometry execution use only public SDK entry points. Movement, targeting policy and hit responses stay outside the engine primitives; one trial is not universal usability.",
+      "nextAction": "Keep SDK entry links and generic ownership explicit.",
+      "evidence": [
+        "entry",
+        "guide",
+        "blind",
+        "blind-replay",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "capabilities",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Public search, descriptors and complete packaged docs expose diagnostic fields, limits, query forms, typed observations and CPU/GPU availability.",
+      "reason": "Independent author needed no implementation source or invented API. Combined Chinese search returns no matches; full-index fallback succeeds. Fresh author also used a narrower entity search after a miss. These observed discovery frictions preclude a4.",
+      "nextAction": "Improve generic multi-term/synonym discovery in a separate bounded change; keep complete-index fallback.",
+      "evidence": [
+        "entry",
+        "guide",
+        "types",
+        "blind",
+        "public",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "operation",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "Fresh author independently implemented nearest/overlap/sweep, no-hit and empty batches, typed publication, invalid replacement/repair and resource delivery through public contracts.",
+      "reason": "First official strict check passed. First external checker exposed quota masking the stale-index probe; author corrected only its timing and reached13/13. Inspected independent oracle and recorded fresh-temp strict/runtime replay pass. No authored any/casts, handwritten stubs, publication adapters or source fallback; unrelated canonical API declarations may contain pre-existing any.",
+      "nextAction": "Retain first failure and final replay; obtain a fresh author again after future contract changes.",
+      "evidence": [
+        "blind",
+        "counters",
+        "public",
+        "blind-replay",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "context",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Frozen batch results retain source version1 after atomic rejection; repaired index is version2, and already submitted work survives index destruction until next-tick take.",
+      "reason": "Independent full-geometry checks distinguish original/rejected/repaired data. Complete initial/submitted/final info records and unrelated entity comparison preserve identities and state. Persistent handles and cross-device restore were not tested.",
+      "nextAction": "Keep version/lifetime/snapshot semantics explicit without implying save persistence.",
+      "evidence": [
+        "guide",
+        "blind",
+        "blind-replay",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "observation",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "Complete canonical info/result/profile/diagnostic records publish directly; no-hit/empty/typed empty arrays remain[], typed numbers/records work and plain{} remains an object.",
+      "reason": "Fresh external checker validates complete nested geometric records, all diagnostics, counters and unrelated entity. Actual fresh WASM repeats CPU/WebGPU main/Worker shapes and scoped binding/host observations. Observer purity and detached reads are independently checked; wall-clock publication is intentionally nondeterministic.",
+      "nextAction": "Preserve array/object, detached-copy and read-only observer regressions.",
+      "evidence": [
+        "types",
+        "blind",
+        "blind-replay",
+        "public",
+        "web",
+        "fault",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "Invalid second body radius=-2 returns SPATIAL_INPUT_INVALID, spatial.update, bodies[2].radius, actual=-2, expected finite0..1000000 and machine retry/terminal flags; correcting radius succeeds.",
+      "reason": "Fresh author branches on structured fields without parsing human errors, and external oracle proves original full geometry/version survived rejection. Same-tick, stale and consumed resources have distinct codes. Supplementary host tests preserve specific terminal result/profile diagnostics after tick failure and distinguish next_tick from after_release. Excluded VM/allocation failures remain documented.",
+      "nextAction": "Retain stable facts/retry policy and host-accessible terminal causes; keep human messages compatible.",
+      "evidence": [
+        "guide",
+        "types",
+        "blind",
+        "blind-replay",
+        "fault",
+        "web",
+        "source-review",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "recovery",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Early take retries next tick, invalid update corrects without partial mutation, destroyed indices and consumed tickets reject reuse safely.",
+      "reason": "Fresh public author/replay exercise bounded recoverable paths. Supplementary fault injection covers atomic multi-batch failure, late replies, epochs, cancellation/reload and no fallback after execution fault. Actual broken-device recovery is untested and reload cannot promise to repair it.",
+      "nextAction": "Preserve recoverable versus terminal distinction; validate real interruption separately when required.",
+      "evidence": [
+        "guide",
+        "blind",
+        "blind-replay",
+        "fault",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "boundaries",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Generic geometry calls affect only their bounded data/resources; same-tick access, destroyed-index submit and consumed-ticket reuse reject, while unrelated synthetic entity remains exactly unchanged.",
+      "reason": "Fresh author uses isolated synthetic data and public lifecycle boundaries. Synthetic host tests supplement invalid/duplicate/stale completions. This is not operating-system isolation or account/security authorization certification. No actual game is modified.",
+      "nextAction": "Keep geometry independent of gameplay movement, targeting and collision responses.",
+      "evidence": [
+        "guide",
+        "blind",
+        "blind-replay",
+        "fault",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "performance",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Public SDK tool performs warmups and repeated samples with p50/p95, separate manager/executor/Lua input/output scopes; official host adds setup and UTF-8 bridge phase/byte counters.",
+      "reason": "Fresh author completed16x4 and4096x128 CPU runs, independently recomputed quantiles and distinguished process_total. Actual recorded native debug and fresh WASM WebGPU normal runs validate their own scopes. GPU kernel timestamps are absent with reason; overlaps and build modes prevent speedup/crossover conclusions.",
+      "nextAction": "Measure representative caller workloads before thresholds; retain warmup/distribution/build/scope metadata and unavailable reasons.",
+      "evidence": [
+        "guide",
+        "blind",
+        "counters",
+        "cost",
+        "native",
+        "web",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "reproducibility",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Six actual recorder captures share62 selected hashes and complete without timeout/truncation/source change;46 exact selected text sources,87 sealed author files and pinned binary/analyzer/runtime identities are retained.",
+      "reason": "Blind authorship, later informed replay and source review stay distinct. All original author and development failures remain visible; semantic review is independent. Selected copies and local seals do not certify full compiler provenance or cross-device determinism.",
+      "nextAction": "Keep this audit immutable; use a new directory and fresh author for future first-use claims.",
+      "evidence": [
+        "seal",
+        "source-archive",
+        "validation",
+        "blind",
+        "public",
+        "cost",
+        "fault",
+        "native",
+        "web",
+        "blind-replay",
+        "semantic-review"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "combined-search-discovery",
+      "checkId": "capabilities",
+      "severity": "P2",
+      "summary": "Some natural-language multi-term search queries return no matches despite a discoverable public API.",
+      "cause": "Observed owner query 空間查詢 錯誤診斷 has matches=[]; actual complete-index fallback finds spatial descriptors. Fresh author scene entity also misses while entity succeeds. These observations bound the search-matching gap; its algorithmic root cause was not established in this task.",
+      "fix": "Follow-up generic API search matching/synonym improvement with these preserved cases, maintaining truthful no-match output and complete-index fallback. No game vocabulary or gameplay behavior is required.",
+      "verification": "Preserve current raw query outputs; after any matching change rerun these exact misses, narrower successful queries and unrelated negative queries, then a fresh discovery trial.",
+      "evidence": [
+        "public",
+        "blind"
+      ]
+    }
+  ]
+}

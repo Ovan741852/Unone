@@ -1,0 +1,64 @@
+{
+  "ledger_events_including_final_sealer": 53,
+  "bootstrap_events": 1,
+  "ledger_by_kind": {
+    "read": 8,
+    "exec": 27,
+    "temp": 1,
+    "copy": 4,
+    "write": 11,
+    "identity": 1,
+    "seal": 1
+  },
+  "top_level_child_processes_through_runner": 27,
+  "top_level_nonzero_status": [
+    {
+      "name": "json-verifier-first",
+      "status": 1
+    },
+    {
+      "name": "benchmark-small",
+      "status": 1
+    }
+  ],
+  "main_public_benchmark_nested_cli_processes": 6,
+  "informed_replay_direct_processes": 5,
+  "informed_replay_benchmark_nested_cli_processes": 6,
+  "spatial_binding_calls": 15,
+  "spatial_binding_failed_calls": 4,
+  "spatial_successful_bindings": 11,
+  "accepted_batches": 4,
+  "completed_batches": 4,
+  "queries": 12,
+  "pair_tests_upper_bound": 36,
+  "returned_hits": 13,
+  "first_authored_strict": {
+    "attempt": 1,
+    "passed": true,
+    "failed_strict_attempts": 0
+  },
+  "first_delivery": {
+    "runtime_completed": true,
+    "external_passed": 12,
+    "external_failed": 1,
+    "intended_stale_probe_masked_by_quota": true
+  },
+  "final_delivery": {
+    "runtime_completed": true,
+    "external_passed": 13,
+    "external_failed": 0
+  },
+  "later_informed_replay": {
+    "external_passed": 13,
+    "external_failed": 0
+  },
+  "guesses_and_repairs": {
+    "undocumented_api_signature_or_name_guesses": 0,
+    "search_query_misses": 1,
+    "semantic_probe_placement_mistakes": 1,
+    "node_loader_path_invocation_mistakes": 1,
+    "gameplay_source_repairs": 1,
+    "tool_invocation_repairs": 1
+  },
+  "bootstrap_and_sealing_process_scope": "bootstrap.json records first public read/CLI --help and audit-runner creation. This final seal process is direct, because running it through audit-runner would write after hashing. Node runner shell launches are wrappers; counts distinguish actual child CLI/tool processes. Engine-internal analyzer process is opaque below public CLI, not separately traced."
+}

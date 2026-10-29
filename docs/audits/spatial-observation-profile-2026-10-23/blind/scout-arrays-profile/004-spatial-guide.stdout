@@ -1,0 +1,295 @@
+# Generic spatial batches v1
+
+Unone provides `api.spatial` for bounded batches of independent sphere geometry.
+It owns data validation, geometry queries, scheduling and executor resources.
+Callers own all selection policy, movement integration, responses and state changes.
+The API neither reads nor changes scene entities or rigid bodies.
+
+V1 supports CPU reference execution, native wgpu compute, and browser WebGPU
+compute through the official host. All three use the same f32 query contract.
+Both CPU and GPU currently scan the complete body batch per query, O(B ? Q).
+This is a correctness baseline, not a grid, BVH, rigid-body solver, navigation
+system, or demonstrated performance improvement. GPU buffers are per dispatch;
+v1 reads results back and does not provide GPU-resident rendering or simulation.
+
+## Luau API
+
+```lua
+local index, pending
+return {
+    start = function(api)
+        index = api.spatial.create({
+            {id=10, position={2,0,0}, radius=0.5, category=1},
+            {id=20, position={8,0,0}, radius=1, category=2},
+        })
+    end,
+    update = function(api, dt)
+        if pending then
+            local result = api.spatial.take(pending)
+            local hits = result.results[1].hits
+            api.observation.set("closest_id", hits[1] and hits[1].id or 0)
+        end
+        pending = api.spatial.submit(index, {
+            {kind="nearest", point={0,0,0}, max_distance=100, mask=3},
+            {kind="overlap_sphere", center={2,0,0}, radius=1},
+            {kind="sweep_sphere", from={0,0,0}, to={12,0,0}, radius=0.25},
+        })
+    end,
+}
+```
+
+| Call | Meaning |
+|---|---|
+| `pack(bodies)` | Validate records and return a copied USB1 buffer. |
+| `create(bodiesOrBuffer)` | Create an opaque numeric index handle, initially version 1. |
+| `update(index,bodiesOrBuffer)` | Atomically replace all records; return the next version. |
+| `destroy(index)` | Release the index; frozen submitted queries remain valid. |
+| `submit(index,queries)` | Copy a versioned snapshot and return a ticket. |
+| `take(ticket)` | Consume `{version,results={{hits={...}},...}}` in query order. |
+| `cancel(ticket)` | Invalidate the ticket and ignore its late executor completion. |
+| `info()` | Report actual backend, API/packed format, limits and usage. |
+| `profile()` | Read bounded spatial work counts, host-wall phase costs and transfer bytes. |
+
+Publish complete info and result records directly, including when using the
+canonical strict Luau types; no conversion, cast or per-project adapter is needed:
+
+```lua
+api.observation.set("spatial_info", api.spatial.info())
+-- In update, at least one tick after submission:
+local result: SpatialBatchResult = api.spatial.take(pending)
+api.observation.set("spatial_result", result)
+local closest: SpatialHit? = result.results[1].hits[1]
+```
+
+Observation numbers remain finite binary64 numbers on native and Web hosts.
+Unsigned IDs and the numeric `limits.safe_integer` value are preserved; native
+integral values beyond signed i32 use the same JSON floating representation as
+Web. This observation-only rule does not widen save/input integer or array-key
+limits. Result, query-result and hit records retain their typed numeric fields.
+
+## Observation JSON arrays
+
+Engine-produced JSON arrays retain their identity in Luau and when republished.
+Directly publishing `spatial.take(ticket)` therefore keeps `results=[]` for an
+empty query batch and `hits=[]` for queries with no contacts. No spatial-specific
+conversion or caller adapter is needed. Clearing and refilling an engine array
+keeps that identity. Plain authored `{}` remains a JSON object.
+
+For an authored array use the generic `api.observation.array(values?)`. It returns
+the same supplied table, or a new empty array when omitted, with its element
+types preserved. It changes neither elements nor the table's metatable:
+
+```lua
+local numbers: {number} = {1,2,3}
+local values = api.observation.array(numbers)
+local first: number = values[1]
+api.observation.setArray("numbers", values)
+api.observation.set("empty", api.observation.array()) -- []
+api.observation.set("object", {}) -- {}
+```
+
+The helper validates serializable contents before marking. It marks only the
+outer table; separately mark authored nested empty arrays. Serialization still
+rejects holes, mixed string/integer keys, functions, buffers, cycles and nonfinite
+numbers after mutation. The runtime keeps array identity with weak keys, so the
+hint does not retain otherwise unreachable tables. Save round trips preserve
+array shape through the same generic boundary without widening save numbers.
+
+Use `api.observation.setArray(key, values?)` to publish a typed number/record array
+directly, or omit values to publish `[]`. It validates and marks the array, then
+stores its JSON snapshot atomically. A failed call preserves the prior observation.
+This generic setter checks serializability at runtime without weakening the
+existing recursive `observation.set` contract or array element read/write types.
+Use ordinary `set` for complete canonical spatial records; no array helper is
+needed for their engine-produced nested arrays.
+
+## Spatial cost diagnostics
+
+`api.spatial.profile()` returns typed `SpatialProfile` diagnostics, independently
+of `info()` and geometry results. It retains one latest completed batch and
+cumulative bounded totals since backend selection or successful reload. It never
+consumes a ticket, selects a backend or changes query scheduling. Invalid API
+attempts are excluded; `submitted_batches` counts accepted submissions,
+`completed_batches` counts applied valid results, `failed_batches` counts pending
+batches retired by a manager fault, and `cancelled_tickets` includes cancellation
+of a completed but unconsumed ticket. A failed reload leaves live diagnostics intact.
+
+```lua
+-- In update, after at least one batch was completed:
+local profile: SpatialProfile = api.spatial.profile()
+local counts = profile.totals
+if profile.last and profile.last.executor then
+    local sample = profile.last.executor
+    api.observation.set("batch_wall_ms", sample.total_ms)
+    api.observation.set("batch_profile", profile)
+end
+```
+
+`last` supplies ticket/version, body/query/hit counts, the body?query upper bound,
+manager timings and optional executor diagnostics. `totals` includes corresponding
+work/byte counters, accumulated manager/executor phase times and sample counts.
+`input_body_bytes` is equivalent USB1 payload size, not a measurement of all
+allocation traffic; GPU upload/readback bytes are actual transport buffer sizes.
+Pair counts are an algorithmic upper bound, not instrumented candidate visits.
+
+All times are milliseconds on the host monotonic clock. Manager phases measure
+snapshot copying, accepted-batch validation, result validation and result storage.
+They exclude Luau argument/result conversion, bridge JSON marshaling and caller
+application work. CPU `cpu_execute` measures the reference executor call.
+Native GPU phases measure packing, buffer upload/allocation, command encode/submit,
+blocking readback wait and decode. Web GPU also exposes public preparation
+(validation/snapshot) and queue wait; its total includes those and cleanup.
+Setup/device/pipeline creation is outside per-batch execution. Subphases can be
+nested or overlapping and must not be summed as independent GPU times.
+
+`gpu_kernel` is absent/nil in Luau (null in raw host profile JSON) when GPU
+timestamp measurements are unavailable, with `gpu_kernel_unavailable_reason`.
+Host encode/submit and readback-wait time are **not** GPU kernel time. Other
+unavailable or inapplicable phases likewise have no numeric value. An older
+custom executor/host may supply no phase diagnostics; `executor_unavailable_reason`
+explains the missing sample. Cumulative zero values with zero sample counts mean
+no measured work, not a measured zero-cost GPU operation.
+
+Timing is deliberately excluded from canonical spatial state, ordinary `info()`
+and geometry results. Merely reading a profile preserves replay digests. Publishing
+wall-clock diagnostics through observation intentionally adds nondeterministic
+data to that observation; keep diagnostic runs separate from deterministic replay
+assertions. Counters saturate at the published safe-integer bound. This API locates
+measured batch costs; it does not choose gameplay policy, claim a universal GPU
+speedup or automatically select a crossover threshold.
+
+Tables are the convenience form; `pack` is optional. Each record contains a
+unique `id` (u32), three-element `position` array, nonnegative `radius`, optional
+u32 `category` (default 1), and optional `previous_position` array. Category and
+query mask bits have no domain meaning. A body matches when their bitwise AND is
+nonzero; `exclude_id` optionally excludes one exact ID, including ID zero.
+Coordinates and radii are finite f32 with magnitude at most 1,000,000.
+Values arriving from Luau are rounded to f32 before validation and execution.
+Unknown fields, duplicate IDs, malformed arrays and invalid numbers fail explicitly.
+
+Create/update/destroy are permitted in start/onReload or update. Submit/take/cancel
+are update-only. No operation chooses or integrates motion. `previous_position`
+is an explicit input to continuous geometric sweep tests.
+
+## Query and result semantics
+
+- `nearest`: inclusive center distance `max_distance`; radius is ignored for
+  selection. Returns zero or one hit; equal distances choose the lowest numeric ID.
+- `overlap_sphere`: touching counts as overlap. Returns all hits sorted by ID.
+  More than 64 contacts faults the batch rather than silently truncating it.
+- `sweep_sphere`: query `from` ??`to` against each body's
+  `previous_position` ??`position` (stationary when omitted). Returns only the
+  earliest contact in normalized time `[0,1]`; ties choose the lowest numeric ID.
+
+Every hit is `{id,distance,fraction,point,normal}`. For nearest/overlap, distance
+is center distance and fraction is zero. For sweep, distance is query travel
+length multiplied by fraction. Point is on the body's surface toward the query;
+normal points from body to query. Coincident centers use +Z. Initially overlapping
+sweeps return fraction zero and +Z. The core and GPU kernels share the same
+closest-approach sweep formulation to avoid large-coordinate discriminant cancellation.
+
+Limits: 8 indices, 65,536 records/index, 131,072 indexed records/runtime,
+1,024 queries/submission, 4 submissions/tick, 16 outstanding tickets, and
+64 overlap contacts/query. Failed replacements preserve the old version.
+Version counters are u32 and refuse overflow. Handles/tickets are runtime-local,
+one-shot where applicable, and must not be stored as persistent save state.
+
+## Fixed tick delivery
+
+Tick N submits a frozen snapshot. Work dispatches only after its script and
+physics phases succeed. Results are usable no earlier than tick N+1, including
+on the inline CPU backend. The official Web host waits for GPU completion before
+advancing that next tick. Native local executors currently wait during dispatch.
+There is no timing-dependent `isReady` branch. Same-tick take is an error.
+
+Device failure, contact overflow and execution failure fault the manager. Invalid
+host completions are rejected; the official Web host treats rejection as a fault.
+They never supply empty/default results. Cancellation and hot reload
+retire old tickets; late replies cannot complete a newer ticket. Successful reload
+preserves indices, versions and executor selection; failed reload preserves the
+live manager. Canonical snapshots include used indices and frozen submitted
+inputs and the future handle sequence, excluding backend identity, timing and
+early completion state. A failed reload leaves that allocator unchanged.
+
+GPU floating-point operations are not promised bit-identical to CPU or other
+devices. Differential tests require the same hit IDs/order on non-ambiguous inputs
+and tolerances for contact values. Near geometric boundaries, f32 differences can
+change contact membership or tie order. Use CPU for exact replay requirements;
+v1 does not provide cross-device deterministic lockstep or persistent spatial saves.
+
+## Host configuration
+
+The default is CPU and allocates no GPU device. The official exported players
+read this host execution policy from `player.presentation.json`:
+
+```json
+{"spatial_backend":"gpu"}
+```
+
+`cpu` always uses the Rust reference; `gpu` requires a working GPU and bridge;
+`auto` attempts GPU initialization and falls back to CPU when unavailable.
+Execution failure after initialization remains an error. Web host reports include
+the initialization fallback reason. Native also accepts
+`--spatial-backend cpu|gpu|auto` as an override.
+
+Embedders can call `EngineRuntime::set_spatial_executor` before the first tick.
+`unone-spatial-gpu::SpatialGpuExecutor::new()` creates a native compute device;
+`from_device(device,queue)` reuses host-owned wgpu resources. The engine core
+contains no GPU device or renderer dependency. Native callers use the separate
+`crates/unone-spatial-gpu` crate (its own Cargo workspace).
+
+Async hosts select an external backend, drain immutable `SpatialTask`s after a
+successful tick, execute them, and complete them before the next tick. The Web
+bridge exports `unone_web_spatial_request`; older WASM must be rebuilt for GPU.
+V1 host packets use bounded JSON; packing and marshaling still copy data. No
+end-to-end zero-copy or throughput claim is made. The official export includes
+`spatial-host.mjs`, `spatial-gpu.mjs` and their shared `spatial.wgsl`.
+
+## USB1 packed bodies
+
+All words are little endian. Header: four bytes `USB1`, then u32 record count.
+Each 40-byte record is: u32 ID, u32 category, xyz f32 position, f32 radius,
+xyz f32 previous position, u32 previous-position-present (0 or 1).
+When the flag is zero, encode the current position in the previous-position slots.
+The exact length and every record are validated before creating/replacing an index.
+
+## Verification
+
+Run engine reference/lifecycle tests:
+
+```text
+cargo test -p unone-engine --test spatial_core --test spatial_runtime
+cargo test -p unone-engine spatial --lib
+node --test web/shared/spatial-host.test.mjs web/shared/spatial-gpu.test.mjs web/shared/runtime-core.test.mjs
+cargo test --manifest-path crates/unone-spatial-gpu/Cargo.toml
+node scripts/verify-spatial-webgpu.mjs
+node scripts/verify-spatial-runtime.mjs artifacts/spatial-v1-runtime
+```
+
+The native GPU differential test requires an adapter and fails when unavailable;
+it never silently skips GPU execution. Browser verification also requires actual
+WebGPU. Mock host tests establish scheduling semantics only. Successful kernel
+checks do not establish a rendered player or a performance improvement.
+
+Local verification on 2026-10-23 used NVIDIA GeForce RTX 5080 (native Vulkan)
+and Edge 155.0.4283.62 (WebGPU, NVIDIA Blackwell). Results:
+
+| Check | Result |
+|---|---|
+| Engine library | 316 passed; 3 existing ignored tests |
+| Geometry / Luau integration | 14 / 8 passed |
+| CLI host policy | 6 passed |
+| JS host / GPU contract / runtime core | 13 passed |
+| Native shader / GPU differential / Luau GPU integration | 3 passed; actual GPU required |
+| Browser GPU differential | 9 fixture cases passed, plus validation/lifecycle checks |
+| Fresh release WASM integration | CPU and WebGPU passed in both main and Worker hosts |
+| Exported player parity | Both five-frame fixtures passed; deliberate audio/physics mutations detected |
+| Native player | Cargo check passed |
+
+The standalone GPU cases include 65,536 records, 1,024 queries, a seeded query
+cloud, ties, masks, moving sphere contacts and explicit overlap overflow. Browser
+reports are written to `.cache/spatial-webgpu-report.json` and
+`.cache/spatial-runtime-report.json`; the fresh release runtime was built under
+`artifacts/spatial-v1-runtime`. These checks establish computation and transport
+behavior, not rendered appearance, benchmark speedups or other-device coverage.
+

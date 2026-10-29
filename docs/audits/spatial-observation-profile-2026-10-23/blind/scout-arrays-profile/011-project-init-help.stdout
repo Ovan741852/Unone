@@ -1,0 +1,10 @@
+Create an official-player starter with declarative particles, authoring instructions and two movement smoke tests in a new or truly empty directory
+
+Usage: game.exe project init [OPTIONS] --name <NAME>
+
+Options:
+      --name <NAME>        Project name written to project.unone.json
+      --sdk <SDK>          Portable SDK root (otherwise environment or executable-relative discovery)
+      --project <PROJECT>  [default: .]
+      --json               
+  -h, --help               Print help

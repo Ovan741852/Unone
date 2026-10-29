@@ -1,0 +1,7 @@
+import fs from 'node:fs';import path from 'node:path';import {audit} from './runner.mjs';
+const marker='-- END UNONE API TYPES';const initial=fs.readFileSync(path.join(audit,'starter-main.original.luau'),'utf8');const final=fs.readFileSync(path.join(audit,'main.final.luau'),'utf8');
+const canonical=source=>source.slice(0,source.indexOf(marker)+marker.length);if(canonical(initial)!==canonical(final))throw Error('canonical block was changed');
+const body=final.slice(final.indexOf(marker)+marker.length);if(/\bany\b|::/.test(body))throw Error('authored any or cast');if(!final.startsWith('--!strict'))throw Error('strict directive missing');
+const {project}=JSON.parse(fs.readFileSync(path.join(audit,'project-location.json'),'utf8'));for(const f of ['bootstrap-idle.test.json','bootstrap-input.test.json'])fs.copyFileSync(path.join(project,'tests',f),path.join(audit,'starter-'+f));
+for(const [file,name]of [['030-first-native-six-ticks.stdout','first-delivered-observations.json'],['033-strict-native-six-ticks.stdout','final-delivered-observations.json']]){const r=JSON.parse(fs.readFileSync(path.join(audit,file),'utf8'));fs.writeFileSync(path.join(audit,name),JSON.stringify(r.value.world.observations,null,2)+'\n');}
+console.log(JSON.stringify({canonicalUnmodified:true,strictDirective:true,authoredAny:false,authoredCasts:false,observationCopies:'complete parsed observation records; original raw CLI outputs retained'}));

@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+const root=path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/,'$1'));
+const ledger=path.join(root,'operations.ndjson');
+const prior=fs.existsSync(ledger)?fs.readFileSync(ledger,'utf8').trim().split('\n').filter(Boolean):[];
+const [label,command,...args]=process.argv.slice(2);
+if(!label||!command) throw new Error('label and command required');
+const startedAt=new Date().toISOString();
+const r=spawnSync(command,args,{cwd:'D:\\Projects\\Unone',encoding:'utf8',input:process.env.SCOUT_STDIN??undefined,maxBuffer:32*1024*1024,timeout:120000,windowsHide:true});
+const record={operation:prior.length+3,label,startedAt,endedAt:new Date().toISOString(),cwd:'D:\\Projects\\Unone',command,args,stdin:process.env.SCOUT_STDIN??null,status:r.status,signal:r.signal,error:r.error?String(r.error):null,stdout:r.stdout??'',stderr:r.stderr??''};
+fs.appendFileSync(ledger,JSON.stringify(record)+'\n',{encoding:'utf8'});
+process.stdout.write(JSON.stringify(record,null,2)+'\n');
+process.exitCode=r.status??1;

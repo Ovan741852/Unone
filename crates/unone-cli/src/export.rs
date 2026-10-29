@@ -2,25 +2,72 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "player/main.js",
         "renderer/three.js",
         "renderer/mesh.js",
+        "renderer/projected.js",
+        "renderer/projected-frame-shaders.js",
+        "renderer/projected-frame-material.js",
+        "renderer/projected-frame-draws.js",
+        "renderer/projected-frame-target-query.js",
+        "renderer/projected-frame-target.js",
+        "renderer/projected-frame-pass.js",
+        "renderer/projected-frame-profile.js",
+        "renderer/projected-frame-gouraud-profile.js",
+        "renderer/projected-frame-validator.js",
+        "renderer/projected-frame-policy.js",
+        "renderer/projected-frame-publication.js",
+        "shared/projected-frame.mjs",
+        "shared/projected-frame-material.mjs",
+        "renderer/projected-raster.js",
+        "renderer/projected-raster-target.js",
+        "renderer/projected-raster-shaders.js",
+        "renderer/projected-raster-policy.js",
+        "renderer/projected-raster-capability.js",
+        "renderer/startup-presentation-state.js",
+        "renderer/projected-raster-validator.js",
+        "renderer/projected-raster-profile.js",
+        "renderer/projected-raster-profile-expected.js",
+        "renderer/renderer-clear-lifecycle.js",
+        "shared/startup-presentation.mjs",
+        "renderer/presentation3d.js",
+        "shared/projected-geometry.js",
+        "shared/projected-base64.js",
         "renderer/instances3d.js",
         "renderer/bloom.js",
+        "renderer/bloom-timer.js",
         "renderer/effekseer.js",
         "renderer/particles.js",
+        "renderer/vfx.js",
+        "renderer/vfx-contract.js",
+        "renderer/vfx-batch.js",
+        "renderer/vfx-player.js",
+        "renderer/vfx-native.js",
         "renderer/shader-materials.js",
+        "renderer/texture-cache-policy.js",
         "shared/ui-tree.js",
         "shared/canvas-ui.mjs",
+        "shared/ui-text-input.mjs",
+        "shared/ui-cursor.mjs",
         "shared/ui-style.mjs",
         "shared/ui-scroll.mjs",
         "shared/ui-contract.mjs",
         "shared/ui-geometry.mjs",
         "shared/host-input.js",
+        "shared/player-input.js",
+        "shared/ordered-physical-events.mjs",
+        "shared/ordered-physical-queue.mjs",
+        "shared/ordered-physical-router.mjs",
+        "shared/physical-input.js",
         "shared/webgpu-snapshot.js",
+        "shared/heightfields.js",
         "shared/audio-playback.js",
         "shared/asset-encoding.js",
         "shared/load-project.js",
         "shared/fixed-step-scheduler.mjs",
         "shared/async-scheduler.mjs",
         "shared/runtime-core.mjs",
+        "shared/spatial-host.mjs",
+        "shared/spatial-metrics.mjs",
+        "shared/spatial-gpu.mjs",
+        "shared/spatial.wgsl",
         "shared/runtime-backend.mjs",
         "shared/runtime-worker.js",
         "shared/job-pool.mjs",
@@ -29,8 +76,11 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/instance-transfer.mjs",
         "shared/presentation-interpolation.mjs",
         "shared/renderer-selection.mjs",
+        "shared/raster-diagnostics.mjs",
         "shared/profile-window.js",
         "vendor/three/three.player.min.js",
+        "vendor/three/three.webgpu.js",
+        "vendor/three/three.core.js",
         "vendor/three/LICENSE",
         "vendor/rapier/LICENSE",
     ];
@@ -175,7 +225,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             || (path == "shared/ui-scroll.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-contract.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-geometry.mjs" && !settings.is_enabled("ui"))
-            || (path == "renderer/particles.js" && !settings.is_enabled("particle"))
+            // VFX presentation statically imports particles even with simulation disabled.
             || (path == "renderer/effekseer.js" && !settings.is_enabled("effekseer"))
             || (path == "vendor/rapier/LICENSE" && !compiled.iter().any(|v| v == "physics3d"))
         {
@@ -216,8 +266,11 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                     "const createCanvasUi = () => ({draw(){},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){}}); const loadPresentationFonts = async () => {};",
                 )?;
                 text = replace_required(text,
+                    "import {createUiTextInputHost} from '../shared/ui-text-input.mjs';",
+                    "const createUiTextInputHost = () => ({draw:s=>s,pointer:()=>false,routeKey:()=>false,setExternalInput(){},suspend(){},dispose(){}});")?;
+                text = replace_required(text,
                     "import {createUiScrollHost} from '../shared/ui-scroll.mjs';",
-                    "const createUiScrollHost = () => ({draw:s=>s,pointer:()=>false,cancel(){},dispose(){}});")?;
+                    "const createUiScrollHost = () => ({draw:s=>s,pointer:()=>false,routeKey:()=>false,routeWheel:()=>false,setExternalInput(){},cancel(){},dispose(){}});")?;
             }
             if !settings.is_enabled("audio") {
                 text = replace_required(
@@ -274,11 +327,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         files.push((format!("web/{path}"), bytes));
     }
     if development {
-        if config.asset_manifest.is_some() {
-            let usage = unone_engine::asset_usages(project, None);
-            ensure!(usage.ok, "ASSET_USAGE_INDEX_FAILED: {:?}", usage.diagnostics);
-            files.push(("content/asset-usages.json".into(), serde_json::to_vec(&usage.value)?));
-        }
+        files.push(("content/asset-usages.json".into(), serde_json::to_vec(&development_asset_usage_index(project, &config)?)?));
         for path in ["main.js", "api.js", "asset-usages.js", "panel.js", "panel.css"] {
             files.push((
                 format!("web/developer/{path}"),
@@ -286,7 +335,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             ));
         }
     }
-    if assets["assets"]
+    if settings.is_enabled("effekseer") || assets["assets"]
         .as_array()
         .unwrap()
         .iter()
@@ -302,6 +351,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     let index = fs::read_to_string(repo.join("web/player/index.html"))?
         .replace("__RUNTIME_JS__", manifest["javascript"].as_str().unwrap());
+    let module_dependencies=crate::web_dependencies::validate(&files)?;
     let (release_root,index)=seal_web_generation(&mut files,&index)?;
     files.push(("index.html".into(), index.into_bytes()));
     files.sort_by(|a, b| a.0.cmp(&b.0));
@@ -313,7 +363,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             "export destination collision: {path}"
         );
     }
-    let report = json!({"version":1,"project":config.name,"release_root":release_root,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"release_root":release_root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {
@@ -333,6 +383,25 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     write?;
     Ok(report)
+}
+
+fn development_asset_usage_index(project: &Path, config: &unone_engine::ProjectConfig) -> Result<unone_engine::AssetUsageIndex> {
+    if config.asset_manifest.is_some() {
+        let usage = unone_engine::asset_usages(project, None);
+        ensure!(usage.ok, "ASSET_USAGE_INDEX_FAILED: {:?}", usage.diagnostics);
+        return usage.value.context("ASSET_USAGE_INDEX_FAILED: successful scan returned no index");
+    }
+    Ok(unone_engine::AssetUsageIndex {
+        version: 1,
+        project_root: fs::canonicalize(project)?.display().to_string(),
+        assets: Default::default(), source_files: Vec::new(), references: Vec::new(), unresolved: Vec::new(),
+        scope: unone_engine::AssetUsageScope {
+            scan_complete: false, runtime_complete: false, excluded_directories: Vec::new(),
+            issues: vec!["ASSET_MANIFEST_NOT_CONFIGURED: no declared asset inventory is available; source scanning was not performed.".into()],
+            limitations: vec!["This is an empty development-tool index for a project without asset_manifest, not a completed source scan or proof that the game uses no assets.".into(),
+                "Published runtime nodes can still provide live asset references. Zero source references never proves safe deletion.".into()],
+        },
+    })
 }
 
 /// Runtime descriptors are compatibility metadata. This gate does not execute
@@ -439,6 +508,73 @@ mod tests {
         let legacy_output = directory.path().join("legacy");
         web_with_templates(directory.path(), &legacy_output, Some(&runtime), false, &repo).unwrap();
         assert!(legacy_output.join("index.html").exists());
+    }
+
+    #[test]
+    fn actual_official_web_exports_have_complete_static_local_dependency_closure() {
+        let dir=tempfile::tempdir().unwrap();let (runtime,repo,descriptor)=package_export_fixture(dir.path());
+        fs::write(runtime.join("runtime.json"),serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        fs::write(dir.path().join("main.luau"),"return {start=function()end,update=function()end}").unwrap();
+        for minimal in [false,true] {
+            let systems=if minimal {json!({"ui":false,"particle":false,"effekseer":false,"audio":false})}else{json!({})};
+            fs::write(dir.path().join("project.unone.json"),serde_json::to_vec(&json!({"name":"dependency closure","entry_script":"main.luau","systems":systems})).unwrap()).unwrap();
+            let output=dir.path().join(if minimal {"minimal"}else{"full"});
+            let report=web_with_templates(dir.path(),&output,Some(&runtime),false,&repo).unwrap();
+            let files=report["files"].as_array().unwrap().iter().map(|f|{let path=f["path"].as_str().unwrap();(path.into(),fs::read(output.join(path)).unwrap())}).collect::<Vec<_>>();
+            crate::web_dependencies::validate(&files).unwrap();
+        }
+    }
+
+    #[test]
+    fn development_asset_usage_export_without_inventory_is_explicit_and_dependency_complete() {
+        let dir = tempfile::tempdir().unwrap();
+        let (runtime, repo, mut descriptor) = package_export_fixture(dir.path());
+        descriptor["preview_tools"] = json!(true);
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        fs::write(dir.path().join("main.luau"), "return {start=function()end,update=function()end}").unwrap();
+        fs::write(dir.path().join("project.unone.json"), br#"{"name":"no inventory","entry_script":"main.luau"}"#).unwrap();
+        let output = dir.path().join("development");
+        let report = web_with_templates(dir.path(), &output, Some(&runtime), true, &repo).unwrap();
+        let index_bytes = fs::read(output.join("content/asset-usages.json")).unwrap();
+        let index: Value = serde_json::from_slice(&index_bytes).unwrap();
+        assert_eq!(index["version"], 1);
+        assert_eq!(index["assets"], json!({}));
+        for field in ["source_files", "references", "unresolved"] { assert_eq!(index[field], json!([])); }
+        assert_eq!(index["scope"]["scan_complete"], false);
+        assert_eq!(index["scope"]["runtime_complete"], false);
+        assert!(index["scope"]["issues"][0].as_str().unwrap().contains("ASSET_MANIFEST_NOT_CONFIGURED"));
+        let release = report["release_root"].as_str().unwrap();
+        assert_eq!(fs::read(output.join(release).join("content/asset-usages.json")).unwrap(), index_bytes);
+        let files = report["files"].as_array().unwrap().iter().map(|f| {
+            let path = f["path"].as_str().unwrap(); (path.into(), fs::read(output.join(path)).unwrap())
+        }).collect::<Vec<_>>();
+        assert!(crate::web_dependencies::validate(&files).unwrap() > 0);
+        descriptor["preview_tools"] = json!(false);
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        let production = dir.path().join("production");
+        web_with_templates(dir.path(), &production, Some(&runtime), false, &repo).unwrap();
+        assert!(!production.join("content/asset-usages.json").exists());
+        assert!(!production.join("web/developer").exists());
+    }
+
+    #[test]
+    fn development_asset_usage_export_with_inventory_preserves_authoritative_scan() {
+        let dir = tempfile::tempdir().unwrap();
+        let (runtime, repo, mut descriptor) = package_export_fixture(dir.path());
+        descriptor["preview_tools"] = json!(true);
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        fs::write(dir.path().join("main.luau"), "return {start=function(api) api.observation.set('art','texture://fixture') end,update=function()end}").unwrap();
+        fs::write(dir.path().join("project.unone.json"), br#"{"name":"has inventory","entry_script":"main.luau","asset_manifest":"assets.json"}"#).unwrap();
+        fs::write(dir.path().join("assets.json"), br#"{"version":1,"assets":[{"id":"texture://fixture","source":"fixture.svg","kind":"texture2d","bundle":"content"}]}"#).unwrap();
+        fs::write(dir.path().join("fixture.svg"), br#"<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>"#).unwrap();
+        let expected = serde_json::to_value(unone_engine::asset_usages(dir.path(), None).value.unwrap()).unwrap();
+        let output = dir.path().join("development");
+        web_with_templates(dir.path(), &output, Some(&runtime), true, &repo).unwrap();
+        let actual: Value = serde_json::from_slice(&fs::read(output.join("content/asset-usages.json")).unwrap()).unwrap();
+        assert_eq!(actual, expected);
+        assert_eq!(actual["scope"]["scan_complete"], true);
+        assert_eq!(actual["assets"]["texture://fixture"], "fixture.svg");
+        assert!(!actual["references"].as_array().unwrap().is_empty());
     }
 
     #[test]

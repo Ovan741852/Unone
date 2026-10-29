@@ -1,0 +1,218 @@
+world keys: [
+  'spatial',
+  'frame',
+  'time_seconds',
+  'camera',
+  'entities',
+  'observations'
+]
+observation path: .value.world.observations
+{
+  "observations": [
+    "after_invalid_result",
+    "after_repair_result",
+    "authored_empty",
+    "authored_empty_setter",
+    "authored_nested",
+    "consumed_take",
+    "empty_batch_result",
+    "executed_ticks",
+    "initial_result",
+    "invalid_update",
+    "large_profile",
+    "large_result",
+    "lifecycle_profile",
+    "plain_empty_object",
+    "repair_version",
+    "same_tick_take",
+    "sentinel_after",
+    "sentinel_before",
+    "small_profile",
+    "small_result",
+    "spatial_info_final",
+    "spatial_info_start",
+    "stale_index_submit",
+    "timeline",
+    "typed_empty_numbers",
+    "typed_empty_records",
+    "typed_numbers",
+    "typed_records"
+  ],
+  "small": {
+    "api_version": 1,
+    "backend": "cpu",
+    "clock": "host_monotonic",
+    "last": {
+      "bodies": 3,
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 0.0029000000000000002
+        },
+        "readback_bytes": 0,
+        "total_ms": 0.0029000000000000002,
+        "upload_bytes": 0
+      },
+      "executor_ms": 0.0029000000000000002,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0.0015,
+        "snapshot": 0.00009999999999999999,
+        "validation": 0.0040999999999999995
+      },
+      "pair_tests_upper_bound": 12,
+      "queries": 4,
+      "returned_hits": 3,
+      "ticket": 7,
+      "version": 2
+    },
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 15,
+      "cancelled_tickets": 0,
+      "completed_batches": 5,
+      "executor_ms": 0.0063,
+      "executor_phases_ms": {
+        "cpu_execute": 0.0063
+      },
+      "executor_samples": 5,
+      "executor_wall_samples": 5,
+      "failed_batches": 0,
+      "input_body_bytes": 640,
+      "manager_ms": {
+        "result_apply": 0.00009999999999999999,
+        "result_validation": 0.0049,
+        "snapshot": 0.0006000000000000001,
+        "validation": 0.0106
+      },
+      "pair_tests_upper_bound": 21,
+      "queries": 7,
+      "readback_bytes": 0,
+      "returned_hits": 6,
+      "submitted_batches": 5,
+      "upload_bytes": 0
+    }
+  },
+  "large": {
+    "api_version": 1,
+    "backend": "cpu",
+    "clock": "host_monotonic",
+    "last": {
+      "bodies": 4096,
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 1.2336999999999998
+        },
+        "readback_bytes": 0,
+        "total_ms": 1.2336999999999998,
+        "upload_bytes": 0
+      },
+      "executor_ms": 1.2336999999999998,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0.3799,
+        "snapshot": 0.031,
+        "validation": 0.3395
+      },
+      "pair_tests_upper_bound": 1048576,
+      "queries": 256,
+      "returned_hits": 256,
+      "ticket": 8,
+      "version": 1
+    },
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 4111,
+      "cancelled_tickets": 0,
+      "completed_batches": 6,
+      "executor_ms": 1.2399999999999998,
+      "executor_phases_ms": {
+        "cpu_execute": 1.2399999999999998
+      },
+      "executor_samples": 6,
+      "executor_wall_samples": 6,
+      "failed_batches": 0,
+      "input_body_bytes": 164488,
+      "manager_ms": {
+        "result_apply": 0.00009999999999999999,
+        "result_validation": 0.38480000000000003,
+        "snapshot": 0.0316,
+        "validation": 0.3501
+      },
+      "pair_tests_upper_bound": 1048597,
+      "queries": 263,
+      "readback_bytes": 0,
+      "returned_hits": 262,
+      "submitted_batches": 6,
+      "upload_bytes": 0
+    }
+  },
+  "initial": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 2,
+            "fraction": 0,
+            "id": 11,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              1.5,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "version": 1
+  },
+  "empty": {
+    "results": [],
+    "version": 1
+  },
+  "invalid": {
+    "message": "runtime error: duplicate body ID 11\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:703: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:703>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:703: in function 'update'\n",
+    "ok": false,
+    "tick": 1
+  },
+  "consumed": {
+    "message": "runtime error: SPATIAL_TICKET_UNKNOWN\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:724: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:724>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:724: in function 'update'\n",
+    "ok": false,
+    "tick": 2
+  },
+  "entity": {
+    "unrelated_synthetic": {
+      "id": "unrelated_synthetic",
+      "name": "",
+      "transform": {
+        "x": 37,
+        "y": -11
+      },
+      "rotation": 0,
+      "scale": {
+        "x": 1,
+        "y": 1
+      },
+      "transform3d": null,
+      "sprite": null,
+      "mesh3d": null,
+      "rigidbody": null
+    }
+  }
+}

@@ -50,6 +50,9 @@
           "default": {},
           "type": "object"
         },
+        "physical": {
+          "$ref": "#/$defs/PhysicalBatch"
+        },
         "pointer": {
           "anyOf": [
             {
@@ -67,8 +70,48 @@
           },
           "description": "Host-projected semantic slider events, consumed once per successful tick.\nValues/ranges remain in the official Luau control, not platform adapters.",
           "type": "object"
+        },
+        "ui_text_inputs": {
+          "additionalProperties": {
+            "$ref": "#/$defs/TextInputInteraction"
+          },
+          "description": "Host-owned UTF-8 editing snapshots, one event per ID per successful tick.",
+          "type": "object"
         }
       },
+      "type": "object"
+    },
+    "Modifiers": {
+      "additionalProperties": false,
+      "properties": {
+        "alt": {
+          "type": "boolean"
+        },
+        "alt_graph": {
+          "type": "boolean"
+        },
+        "caps_lock": {
+          "type": "boolean"
+        },
+        "control": {
+          "type": "boolean"
+        },
+        "meta": {
+          "type": "boolean"
+        },
+        "num_lock": {
+          "type": "boolean"
+        },
+        "shift": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "shift",
+        "control",
+        "alt",
+        "meta"
+      ],
       "type": "object"
     },
     "ObservationAssertion": {
@@ -82,6 +125,311 @@
       "required": [
         "key",
         "equals"
+      ],
+      "type": "object"
+    },
+    "PhysicalBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "after_sequence": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "epoch": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/PhysicalEvent"
+          },
+          "type": "array"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "through_sequence": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "epoch",
+        "after_sequence",
+        "through_sequence",
+        "events"
+      ],
+      "type": "object"
+    },
+    "PhysicalEvent": {
+      "oneOf": [
+        {
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "is_composing": {
+              "type": "boolean"
+            },
+            "kind": {
+              "const": "key",
+              "type": "string"
+            },
+            "location": {
+              "format": "uint8",
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "modifiers": {
+              "$ref": "#/$defs/Modifiers"
+            },
+            "repeat": {
+              "type": "boolean"
+            },
+            "state": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "code",
+            "location",
+            "state",
+            "repeat",
+            "is_composing",
+            "modifiers"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "button": {
+              "format": "int8",
+              "maximum": 127,
+              "minimum": -128,
+              "type": "integer"
+            },
+            "buttons": {
+              "format": "uint8",
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "kind": {
+              "const": "pointer",
+              "type": "string"
+            },
+            "modifiers": {
+              "$ref": "#/$defs/Modifiers"
+            },
+            "phase": {
+              "type": "string"
+            },
+            "point": {
+              "$ref": "#/$defs/Point"
+            },
+            "pointer_id": {
+              "format": "uint64",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "pointer_type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "pointer_id",
+            "pointer_type",
+            "phase",
+            "button",
+            "buttons",
+            "modifiers"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "delta_x": {
+              "format": "double",
+              "type": "number"
+            },
+            "delta_y": {
+              "format": "double",
+              "type": "number"
+            },
+            "delta_z": {
+              "format": "double",
+              "type": "number"
+            },
+            "kind": {
+              "const": "wheel",
+              "type": "string"
+            },
+            "modifiers": {
+              "$ref": "#/$defs/Modifiers"
+            },
+            "point": {
+              "$ref": "#/$defs/Point"
+            },
+            "unit": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "delta_x",
+            "delta_y",
+            "delta_z",
+            "unit",
+            "point",
+            "modifiers"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "captured": {
+              "type": "boolean"
+            },
+            "kind": {
+              "const": "capture",
+              "type": "string"
+            },
+            "pointer_id": {
+              "format": "uint64",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "source": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "pointer_id",
+            "captured",
+            "source"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "focused": {
+              "type": "boolean"
+            },
+            "kind": {
+              "const": "focus",
+              "type": "string"
+            },
+            "scope": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "focused",
+            "scope"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "reset",
+              "type": "string"
+            },
+            "pointer_id": {
+              "format": "uint64",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "scope": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "scope",
+            "reason"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "viewport",
+              "type": "string"
+            },
+            "viewport": {
+              "$ref": "#/$defs/Viewport"
+            }
+          },
+          "required": [
+            "kind",
+            "viewport"
+          ],
+          "type": "object"
+        }
+      ],
+      "properties": {
+        "origin": {
+          "type": "string"
+        },
+        "received_us": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "route": {
+          "type": "string"
+        },
+        "sequence": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sequence",
+        "received_us",
+        "origin",
+        "route"
+      ],
+      "type": "object",
+      "unevaluatedProperties": false
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "inside": {
+          "type": "boolean"
+        },
+        "viewport": {
+          "$ref": "#/$defs/Viewport"
+        },
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "inside",
+        "viewport"
       ],
       "type": "object"
     },
@@ -233,6 +581,36 @@
       },
       "type": "object"
     },
+    "TextInputInteraction": {
+      "additionalProperties": false,
+      "properties": {
+        "composing": {
+          "type": "boolean"
+        },
+        "phase": {
+          "$ref": "#/$defs/TextInputPhase"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "phase",
+        "text",
+        "composing"
+      ],
+      "type": "object"
+    },
+    "TextInputPhase": {
+      "enum": [
+        "change",
+        "submit",
+        "cancel",
+        "focus",
+        "blur"
+      ],
+      "type": "string"
+    },
     "UiAssertion": {
       "additionalProperties": false,
       "properties": {
@@ -258,6 +636,57 @@
       "required": [
         "x",
         "y"
+      ],
+      "type": "object"
+    },
+    "Viewport": {
+      "additionalProperties": false,
+      "properties": {
+        "css_height": {
+          "format": "double",
+          "type": "number"
+        },
+        "css_width": {
+          "format": "double",
+          "type": "number"
+        },
+        "device_pixel_ratio": {
+          "format": "double",
+          "type": "number"
+        },
+        "height": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "rect_left": {
+          "format": "double",
+          "type": "number"
+        },
+        "rect_top": {
+          "format": "double",
+          "type": "number"
+        },
+        "revision": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "width": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "revision",
+        "width",
+        "height",
+        "rect_left",
+        "rect_top",
+        "css_width",
+        "css_height",
+        "device_pixel_ratio"
       ],
       "type": "object"
     }

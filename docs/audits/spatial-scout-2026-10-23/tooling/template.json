@@ -1,0 +1,154 @@
+{
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "cli.mjs",
+    "init",
+    "--id",
+    "unone-spatial-v1",
+    "--name",
+    "Unone spatial batch API",
+    "--surface",
+    "mixed",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "exitCode": 0,
+  "result": {
+    "ok": true,
+    "value": {
+      "schema": "unone.ai-native.audit.v1",
+      "rubricVersion": "1.0.0",
+      "target": {
+        "id": "unone-spatial-v1",
+        "name": "Unone spatial batch API",
+        "surface": "mixed",
+        "scope": "",
+        "version": "unknown",
+        "revision": "unknown",
+        "environment": ""
+      },
+      "trial": {
+        "mode": "blind",
+        "entryPoints": [],
+        "steps": 0,
+        "firstSuccessStep": null,
+        "sourceFallbackStep": null,
+        "wrongGuesses": 0,
+        "limitations": []
+      },
+      "subject": [],
+      "evidence": [],
+      "checks": [
+        {
+          "id": "purpose",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "capabilities",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "operation",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "context",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "observation",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "diagnostics",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "recovery",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "boundaries",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "performance",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        },
+        {
+          "id": "reproducibility",
+          "status": "unverified",
+          "rating": null,
+          "access": "none",
+          "answer": "",
+          "reason": "",
+          "nextAction": "",
+          "evidence": []
+        }
+      ],
+      "issues": []
+    },
+    "diagnostics": [],
+    "effects": [],
+    "telemetry": {
+      "elapsed_ms": 0.239,
+      "gpu_ms": null,
+      "note": "Plugin wall time only, not target performance. No target commands or probes executed."
+    }
+  },
+  "stderr": ""
+}

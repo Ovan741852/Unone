@@ -5,6 +5,18 @@ official player runtimes, host templates, `@unone/ui` source and canonical Luau
 types; ordinary consumer authoring and Web export need no engine checkout or
 Rust build. Available targets and systems depend on the installed runtime packs.
 
+The official Web player negotiates viewport support with the actual runtime.
+Ordinary projects without an explicit physical presentation requirement may use
+an older runtime's aspect-only interface; `backend.viewport.mode` reports this
+limitation. A declared `physical_input`, `projected_raster: upper_left_checked`,
+or projected frame profile still requires the physical-size ABI and rejects an
+older runtime explicitly. New runtimes keep the full physical viewport path.
+
+For a game-owned nonlinear or integer projector, use the reusable
+[preprojected indexed-geometry transport](docs/projected-geometry.md). Native and
+official Three WebGL accept clip-space batches; unsupported WebGPU paths reject
+them explicitly. This capability does not establish a game's original-renderer parity.
+
 ## Select the SDK and discover its contract
 
 PowerShell example: replace the paths with your SDK and game directories. Keep
@@ -46,6 +58,51 @@ package handles explicit breakpoint and row/column/grid arithmetic; the project
 authors semantic groups, thresholds and typed style values. Read
 [the responsive guide](docs/ui-responsive.md) for defaults, coordinates and a
 complete strict example. Components never lay out their children implicitly.
+
+For generic batched geometry, search `spatial` / `batch collision` / `空間查詢`
+and describe `spatial.create`, `spatial.submit` and `spatial.take`. Read the bundled
+[spatial batches guide](docs/spatial-batches.md) for sphere records, nearest/overlap/
+sweep queries, fixed next-tick delivery, capacities and CPU/GPU host selection.
+Use canonical `SpatialBody`, `SpatialQuery`, `SpatialBatchResult`, `SpatialInfo`
+and `SpatialLimits` from `api typings`. Annotate a stored query as
+`SpatialNearestQuery`, `SpatialOverlapQuery` or `SpatialSweepQuery` before inserting
+it into a `{SpatialQuery}` array, preserving Luau's literal `kind` type.
+The engine owns geometry and execution; callers own movement,
+selection policy and responses.
+For rejection and retry handling search `structured spatial error` / `結構化診斷`
+and describe `spatial.lastDiagnostic`. After a failed `pcall`, its optional
+`EngineDiagnostic` supplies a field path, actual/expected values and recovery hints.
+`code` and `recovery.retry` are machine-readable; `recovery.action` is human guidance.
+Success retains the latest failure; read it before another operation can fail.
+The envelope covers input/manager/executor/host failures, rather than all VM or
+allocation errors. Treat all returned records as detached read-only snapshots:
+Luau 0.734 cannot reject every dynamic-key mutation through a table alias.
+Copy the bundled [strict spatial example](examples/spatial-diagnostics/README.md)
+to a new writable directory to run all three query kinds, invalid input repair,
+next-tick results and direct typed observation publication with no API stubs.
+For empty JSON arrays use `observation.array` or `observation.setArray`; engine-produced spatial arrays
+already retain `[]` automatically. For cost attribution search `spatial profile`
+or `效能定位` and describe `spatial.profile`. The same bundled guide documents
+typed work/transfer counters, measured host-wall phases and unavailable GPU timing.
+`profile.bindings` separates Lua conversion from manager/executor time. Official
+JavaScript hosts additionally expose setup and JSON/copy/ABI costs through detached
+`spatialHost.report().metrics`; these phases can overlap and are not kernel timings.
+Embedders can inspect `EngineRuntime::spatial_diagnostic()` after a failed tick.
+The official JavaScript `spatialHost.diagnostic()` uses the new runtime ABI and
+records a bridge request; cloned `report()` reads create none. See the bundled guide
+for terminal recovery limits and repeatable synthetic benchmark tool scopes.
+
+For repeated CPU cost samples, the SDK includes `tools/benchmark-spatial.mjs`.
+It uses this SDK's public CLI and official analyzer in a fresh synthetic OS-temp
+project, with no engine checkout or Rust build. From PowerShell with `$sdk` set:
+
+```powershell
+node (Join-Path $sdk 'tools/benchmark-spatial.mjs') --sdk $sdk --bodies 4096 --queries 128 --warmup 3 --samples 9 --output 'D:/Experiments/new-spatial-report.json' --analyzer $env:UNONE_LUAU_ANALYZER
+```
+
+Choose an unused output path. The report separates warmed per-batch p50/p95 from
+`process_total_ms`, which includes process/project setup and all ticks. This CPU
+tool does not measure GPU kernels or establish a GPU speedup/crossover threshold.
 
 ## Create, check and prepare a project
 
@@ -172,3 +229,31 @@ for this run. Type checking, headless replay and the observer's `--export`
 self-hosted check cannot verify another server's MIME configuration or prove
 that its URL loads and renders. Review the screenshots and exercise real input
 on that URL; use a separate `--export` run for the packaged font cmap audit.
+# Explicit host-time inputs
+
+For demand-sampled elapsed time and bounded deterministic record/replay, read
+[host time](docs/host-time.md). The API is disabled unless the project opts in;
+ordinary long sessions should use live mode, and SDK recordings capture every
+ordered read before replaying it without resampling.
+
+
+Projected material snapshots optionally support `alpha_compare="greater"`;
+omission/"greater_equal" retain legacy cutout equality and serialized payloads.
+Use a synchronized Core/Native/Web SDK for the nondefault field. Official Web
+presentation optionally accepts boolean antialias as a construction request
+(default true); changing it requires relaunch. Native remains single-sample
+(omitted/false accepted, true rejected at preflight). The existing player READY
+console reports requested and effective context antialias separately.
+
+Official WebGL additionally supports the constructor-only
+`projected_raster="upper_left_checked"` profile, with actual bounded GPU validation
+per physical target/context generation. It is restricted to current opaque/cutout
+projected batches, AAfalse, Bloom/AOoff and game-declared hidden normal world.
+Omission retains host raster; unsupported hosts reject explicit declarations.
+Read [projected raster](docs/projected-raster.md) for eligibility, failure and
+current-validation diagnostics. Core/WASM APIs and the 40B format are unchanged.
+
+For opt-in ordered key/pointer/wheel edges, per-edge modifiers and lifecycle
+barriers, read [ordered physical input](docs/ordered-physical-input.md). Official
+Web main/Worker live ingress and normalized Core replay share one schema;
+Native/custom live and text/IME remain unsupported. Omission keeps legacy input.

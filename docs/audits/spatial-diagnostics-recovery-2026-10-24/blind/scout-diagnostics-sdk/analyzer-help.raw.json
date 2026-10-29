@@ -1,0 +1,12 @@
+{
+  "executable": "D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe",
+  "args": [
+    "--help"
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "elapsed_ms": 22.957200000000007,
+  "stdout": "Usage: D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe [--mode] [options] [file list]\r\n\r\nAvailable modes:\r\n  omitted: typecheck and lint input files\r\n  --annotate: typecheck input files and output source with type annotations\r\n\r\nAvailable options:\r\n  --formatter=plain: report analysis errors in Luacheck-compatible format\r\n  --formatter=gnu: report analysis errors in GNU-compatible format\r\n  --mode=strict: default to strict mode when typechecking\r\n  --solver={new|old}: selects which typechecker to use (defaults to the new solver)\r\n  --timetrace: record compiler time tracing information into trace.json\r\n",
+  "stderr": ""
+}

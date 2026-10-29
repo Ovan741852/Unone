@@ -1,0 +1,1 @@
+Recorder can seal after all child raw output and metadata close; original recorder and orchestration failure retained.

@@ -1,0 +1,18 @@
+{
+  "executable": "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/bin/game.exe",
+  "args": [
+    "--sdk",
+    "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2",
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\sdk-scout-OV5pUL",
+    "--json",
+    "check",
+    "--types"
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "elapsed_ms": 171.29670000000002,
+  "stdout": "{\n  \"ok\": true,\n  \"value\": {\n    \"project\": \"Scout axis geometry\",\n    \"script\": \"\\\\\\\\?\\\\C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\sdk-scout-OV5pUL\\\\scripts\\\\main.luau\",\n    \"strict_mode\": true,\n    \"entrypoints\": [\n      \"start\",\n      \"update\"\n    ],\n    \"type_check\": {\n      \"tool\": \"D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe\",\n      \"files\": [\n        \"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\sdk-scout-OV5pUL\\\\scripts\\\\main.luau\"\n      ],\n      \"passed\": true,\n      \"output\": \"\"\n    }\n  },\n  \"diagnostics\": [],\n  \"effects\": []\n}\n",
+  "stderr": ""
+}

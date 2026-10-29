@@ -385,11 +385,13 @@ fn layout_step(
         .and_then(|preview| preview.overlap_policy.as_deref())
         .map(|path| format!(" --overlap-policy {path}"))
         .unwrap_or_default();
+    let save_fixture = preview.and_then(|preview| preview.save_fixture.as_deref());
+    let fixture_arg = save_fixture.map(|path| format!(" --save-fixture {path:?}")).unwrap_or_default();
     let command = match preview.and_then(|preview| preview.input_sequence.as_deref()) {
         Some(sequence) => format!(
-            "game ui preview --strict --frames {frames} --seed {seed} --input-sequence {sequence}{policy_arg}"
+            "game ui preview --strict --frames {frames} --seed {seed} --input-sequence {sequence}{policy_arg}{fixture_arg}"
         ),
-        None => format!("game ui preview --strict --frames {frames} --seed {seed}{policy_arg}"),
+        None => format!("game ui preview --strict --frames {frames} --seed {seed}{policy_arg}{fixture_arg}"),
     };
     let command = command.as_str();
     let mut sequence = Vec::new();
@@ -416,7 +418,7 @@ fn layout_step(
             }
         }
     }
-    let mut runtime = match EngineRuntime::load_with_seed(project_root, seed) {
+    let mut runtime = match EngineRuntime::load_ui_preview(project_root, seed, save_fixture) {
         Ok(runtime) => runtime,
         Err(diagnostic) => {
             return step(

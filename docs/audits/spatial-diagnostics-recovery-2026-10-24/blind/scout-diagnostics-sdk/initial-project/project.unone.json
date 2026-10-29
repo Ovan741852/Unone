@@ -1,0 +1,23 @@
+{
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "name": "Scout axis geometry",
+  "systems": {
+    "audio": false,
+    "camera2d": true,
+    "camera3d": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": true,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "spine": false,
+    "ui": true
+  },
+  "test_files": [
+    "tests/bootstrap-idle.test.json",
+    "tests/bootstrap-input.test.json"
+  ]
+}

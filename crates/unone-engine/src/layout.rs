@@ -130,8 +130,8 @@ pub fn apply_overlap_policy(
             .iter()
             .position(|n| n.id == pair.front)
             .ok_or_else(|| format!("UI_OVERLAP_UNKNOWN_NODE: {}", pair.front))?;
-        if behind >= front || !matches!(report.nodes[behind].kind.as_str(), "image" | "panel") {
-            return Err("UI_OVERLAP_POLICY_UNSAFE: behind must be an earlier image or panel; interactive/text pairs and later occluding backgrounds cannot be exempted".into());
+        if behind >= front || !matches!(report.nodes[behind].kind.as_str(), "image" | "image_batch" | "panel") {
+            return Err("UI_OVERLAP_POLICY_UNSAFE: behind must be an earlier image, image_batch or panel; interactive/text pairs and later occluding backgrounds cannot be exempted".into());
         }
         let ids = vec![pair.behind.clone(), pair.front.clone()];
         let finding = report
@@ -161,6 +161,7 @@ pub fn apply_overlap_policy(
 
 fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option<&str>) {
     match node {
+        UiNode::TextInput { id, rect, text, .. } => ("text_input", id, rect, text, None, None),
         UiNode::Text { id, rect, text, .. } => ("text", id, rect, text, None, None),
         UiNode::Button {
             id,
@@ -180,6 +181,7 @@ fn node_parts(node: &UiNode) -> (&str, &str, &UiRect, &str, Option<&str>, Option
         UiNode::Image {
             id, rect, asset, ..
         } => ("image", id, rect, "", None, Some(asset)),
+        UiNode::ImageBatch { id, rect, .. } => ("image_batch", id, rect, "", None, None),
         UiNode::Panel { id, rect, .. } => ("panel", id, rect, "", None, None),
         UiNode::Component { .. } => {
             unreachable!("component nodes are expanded before layout inspection")
@@ -243,7 +245,7 @@ fn declared_background_reason(
     front: &InspectionLeaf<'_>,
 ) -> Option<String> {
     let background = behind.node.background_for()?;
-    if !matches!(behind.node, UiNode::Image { .. } | UiNode::Panel { .. })
+    if !matches!(behind.node, UiNode::Image { .. } | UiNode::ImageBatch { .. } | UiNode::Panel { .. })
         || !contains_rect(behind.node.rect(), front.node.rect())
     {
         return None;
@@ -427,7 +429,7 @@ pub fn draw(tree: &UiTree, cols: usize, rows: usize) -> String {
         }
         let fill = match kind {
             "button" => '=',
-            "image" => '@',
+            "image" | "image_batch" => '@',
             _ => '-',
         };
         for row in top..bottom {

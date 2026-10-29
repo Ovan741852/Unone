@@ -1,0 +1,10 @@
+import {op,powershell,sdk} from './runner.mjs';
+const game=sdk+'/bin/game.exe';
+await op('spatial-guide',...powershell(`Get-Content -LiteralPath '${sdk}/docs/spatial-batches.md' -Raw`));
+await op('search-spatial',game,['--sdk',sdk,'api','search','spatial']);
+await op('search-observation-array',game,['--sdk',sdk,'api','search','observation array']);
+await op('run-help',game,['--sdk',sdk,'run','--help']);
+await op('session-help',game,['--sdk',sdk,'session','--help']);
+await op('perf-help',game,['--sdk',sdk,'perf','--help']);
+await op('check-help',game,['--sdk',sdk,'check','--help']);
+await op('project-init-help',game,['--sdk',sdk,'project','init','--help']);

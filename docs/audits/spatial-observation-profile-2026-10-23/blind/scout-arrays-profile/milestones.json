@@ -1,0 +1,176 @@
+{
+  "sourceFallbackStep": null,
+  "firstPublicRead": {
+    "id": "001",
+    "label": "public-readme",
+    "plannedAt": "2026-10-23T16:02:16.681Z",
+    "command": "powershell.exe",
+    "argv": [
+      "-NoLogo",
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      "Get-Content -LiteralPath 'D:/Projects/Unone/artifacts/spatial-observation-profile-sdk/README.md' -Raw"
+    ],
+    "cwd": "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile",
+    "timeoutMs": 30000,
+    "nature": "exploration",
+    "sourceFallbackStep": null,
+    "finishedAt": "2026-10-23T16:02:17.007Z",
+    "elapsedMs": 324.18649999999997,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "stdout": "001-public-readme.stdout",
+    "stderr": "001-public-readme.stderr"
+  },
+  "firstStrictAttempt": {
+    "id": "029",
+    "label": "first-strict-check",
+    "plannedAt": "2026-10-23T16:05:57.947Z",
+    "command": "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk/bin/game.exe",
+    "argv": [
+      "--sdk",
+      "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk",
+      "--project",
+      "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN",
+      "--json",
+      "check",
+      "--types"
+    ],
+    "cwd": "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile",
+    "timeoutMs": 60000,
+    "nature": "first-strict-check",
+    "sourceFallbackStep": null,
+    "finishedAt": "2026-10-23T16:05:58.905Z",
+    "elapsedMs": 957.5425000000001,
+    "exitCode": 1,
+    "signal": null,
+    "timedOut": false,
+    "stdout": "029-first-strict-check.stdout",
+    "stderr": "029-first-strict-check.stderr"
+  },
+  "firstStrictSuccess": {
+    "id": "032",
+    "label": "strict-check-after-repair",
+    "plannedAt": "2026-10-23T16:06:29.544Z",
+    "command": "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk/bin/game.exe",
+    "argv": [
+      "--sdk",
+      "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk",
+      "--project",
+      "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN",
+      "--json",
+      "check",
+      "--types"
+    ],
+    "cwd": "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile",
+    "timeoutMs": 60000,
+    "nature": "strict-check",
+    "sourceFallbackStep": null,
+    "finishedAt": "2026-10-23T16:06:29.666Z",
+    "elapsedMs": 122.10640000000001,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "stdout": "032-strict-check-after-repair.stdout",
+    "stderr": "032-strict-check-after-repair.stderr"
+  },
+  "firstNativeRunWithSubmissionAndDeliveredResults": {
+    "id": "030",
+    "label": "first-native-six-ticks",
+    "plannedAt": "2026-10-23T16:05:58.919Z",
+    "command": "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk/bin/game.exe",
+    "argv": [
+      "--sdk",
+      "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk",
+      "--project",
+      "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN",
+      "--json",
+      "run",
+      "--frames",
+      "6"
+    ],
+    "cwd": "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile",
+    "timeoutMs": 60000,
+    "nature": "first-submission-and-delivery",
+    "sourceFallbackStep": null,
+    "finishedAt": "2026-10-23T16:05:59.091Z",
+    "elapsedMs": 172.10299999999984,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "stdout": "030-first-native-six-ticks.stdout",
+    "stderr": "030-first-native-six-ticks.stderr"
+  },
+  "firstSubmission": {
+    "operation": "030",
+    "scriptTick": 1,
+    "ticket": 3,
+    "version": 1
+  },
+  "firstDeliveredResult": {
+    "operation": "030",
+    "scriptTick": 2,
+    "ticket": 3,
+    "version": 1,
+    "result": {
+      "results": [
+        {
+          "hits": [
+            {
+              "distance": 2,
+              "fraction": 0,
+              "id": 11,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                1.5,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "version": 1
+    }
+  },
+  "postStrictNativeRun": {
+    "id": "033",
+    "label": "strict-native-six-ticks",
+    "plannedAt": "2026-10-23T16:06:56.057Z",
+    "command": "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk/bin/game.exe",
+    "argv": [
+      "--sdk",
+      "D:/Projects/Unone/artifacts/spatial-observation-profile-sdk",
+      "--project",
+      "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN",
+      "--json",
+      "run",
+      "--frames",
+      "6"
+    ],
+    "cwd": "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile",
+    "timeoutMs": 60000,
+    "nature": "post-strict-delivery",
+    "sourceFallbackStep": null,
+    "finishedAt": "2026-10-23T16:06:56.256Z",
+    "elapsedMs": 197.2107,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "stdout": "033-strict-native-six-ticks.stdout",
+    "stderr": "033-strict-native-six-ticks.stderr"
+  },
+  "independentVerificationOperations": [
+    "035",
+    "036"
+  ],
+  "freshTempReplayOperation": "038",
+  "firstUseTaskFinishedAt": "2026-10-23T16:10:23.070Z",
+  "rubricRead": false
+}

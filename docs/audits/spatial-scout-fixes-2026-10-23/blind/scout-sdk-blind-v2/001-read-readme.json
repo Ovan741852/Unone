@@ -1,0 +1,19 @@
+{
+  "order": 1,
+  "name": "read-readme",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "Get-Content -LiteralPath README.md -Raw"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:05.9701304Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 439,
+  "endedUtc": "2026-10-23T14:15:06.4713614Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\001-read-readme.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\001-read-readme.stderr"
+}

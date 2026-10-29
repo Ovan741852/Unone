@@ -1,0 +1,17 @@
+{
+  "order": 3,
+  "name": "cli-help",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--help"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:07.8952904Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 1005,
+  "endedUtc": "2026-10-23T14:15:08.9304283Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\003-cli-help.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\003-cli-help.stderr"
+}

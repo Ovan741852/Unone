@@ -1,0 +1,481 @@
+{
+  "schema": "unone.ai-native.audit.v1",
+  "rubricVersion": "1.0.0",
+  "target": {
+    "id": "unone-spatial-v1",
+    "name": "Unone spatial batch API",
+    "surface": "mixed",
+    "scope": "Repository public CLI/docs/canonical types and headless CPU spatial authoring, supplemented by independent bounded source/design review. Excludes fresh SDK-only authoring, GPU runtime execution, rendering, performance speedup, device-loss and cross-platform certification.",
+    "version": "spatial api_version 1 / USB1; game 0.1.0",
+    "revision": "Existing debug executable SHA256 a5da57e920476a7665aab1905f3e48f8c78f1693dbe6f3ac349fba1ad15c587f; checkout 7b9424cf42d0409633c9ce782503075bd09018f9 with preserved uncommitted changes; selected hashes identify the reviewed source.",
+    "environment": "Windows x64, existing game.exe and Node v24.19.0; synthetic local CPU projects only; no build/install/network/accounts or product/game changes."
+  },
+  "trial": {
+    "mode": "informed",
+    "entryPoints": [
+      "README.md",
+      "target/debug/game.exe --help",
+      "README link -> docs/spatial-batches.md",
+      "game api search / describe / typings and public check --types / run"
+    ],
+    "steps": 27,
+    "firstSuccessStep": 17,
+    "sourceFallbackStep": null,
+    "wrongGuesses": 2,
+    "limitations": [
+      "Aggregate assessment is informed: the root implemented the feature and read source. Only blind/ is a fresh-context public-interface subtrial; independent source findings are separately labelled.",
+      "Trial counters refer only to the preserved blind lane; parallel informed recorder commands are not added to that exploration sequence. The two wrong guesses are natural cross-API assumptions, not deliberate negatives or the later shell-quoting failure.",
+      "Blind first geometry succeeded at operation 17; final strictly typed example at 23–24. Initial bootstrap stdout was durably recaptured later and is not mislabelled original recorder output.",
+      "The initial informed capture genuinely failed. Its generic 65-case failure is not overflow evidence because observation serialization failed first. The corrected capture explicitly projects one info field and verifies overflow-specific diagnostics.",
+      "No engine/source fixes were applied. Workaround success is not a repaired product or a fresh blind retest.",
+      "No actual GPU execution or new SDK pack in this audit. Previous implementation validation is not substituted for this public-interface trial. SDK guide omission is based on complete source inventory tracing.",
+      "One fresh AI author is a single trial, not a statistical usability result. Evidence coverage refers to the ten scoped rubric questions, not all engine features.",
+      "After the original three captures, unrelated native-player source changed. All three cases were actually rerun as capture-initial-current.json, capture-workaround-current.json and capture-current.json against matching selected hashes. The original captures are retained as historical/stale evidence, not silently refreshed.",
+      "The 33 source subjects are fingerprinted, not retained as immutable source copies. Only the 26-file blind directory has a separately verified seal. The fresh semantic reviewer independently checked that seal.",
+      "A top-level --help subprocess timed out in the current informed captures. Narrower discovery and successful geometry scenarios completed; not every subprocess passed. This isolated timeout is not classified as a spatial-contract failure.",
+      "The final assessment incorporates an independent semantic review. Performance 2 and 70.75 are retained for incomplete spatial-cost attribution; generic CPU observability could reasonably be calibrated as 3. The needs_work gate is unchanged."
+    ]
+  },
+  "subject": [
+    {
+      "path": "README.md",
+      "sha256": "0746d45cde678daa0b7a6a1d10138baaf1fc04cc9205608555f29cb181c376e5"
+    },
+    {
+      "path": "docs/spatial-batches.md",
+      "sha256": "abc13f80ea9397049082ee946fb991a99b34ce1d4b941844272c086d18c32613"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "128d5d15f9734102626237e23711c6594117276b99ff5bcdd6786190953896e9"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "sha256": "128d5d15f9734102626237e23711c6594117276b99ff5bcdd6786190953896e9"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "sha256": "7a100d61a1a01d79c5234dfc737a7b33a62d7d34f5b57b9ff0af68a8561ea90b"
+    },
+    {
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "22bd26959d3b37395d7b92fb9995d81b7fa505ec8d55dfd9c22df7afa1d0fbea"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime.rs",
+      "sha256": "f94623c549bb4efd0dbb8c147ad36fa6316ee4aa23370999bf3c0c3414c2774f"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial.rs",
+      "sha256": "f7cfe571cbc55625fc4ae3dce79b8758b9948147644daeff79a4d609a9a8bf99"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/spatial.rs",
+      "sha256": "8f6d83db668c7efc7009bc270c0b07dd87dce31a949f907e735707d09fc2513b"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/value.rs",
+      "sha256": "ee9e4792f72abeaaffe5d707aeff79c3a710f8f6cd7f388bb38fb397e713b546"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime_packages.rs",
+      "sha256": "5ac10ee5c9b5095605014848c51bd19968f760d3be06f6fc20643c8e78c1212b"
+    },
+    {
+      "path": "crates/unone-engine/src/world.rs",
+      "sha256": "ea304571f9695b7013b7cd57d2944e53eae1da7f9569828d8d54079e6387c675"
+    },
+    {
+      "path": "crates/unone-cli/src/hosts.rs",
+      "sha256": "fb4b54cab129c059fe91f2ad8914ed58c45f6e2a11ab6c2c6cc4c6eff0a5ed93"
+    },
+    {
+      "path": "crates/unone-cli/src/export.rs",
+      "sha256": "f02428a0eb1521655929a331992edbb40e790236ab6d23d06862448a005320db"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "7b693a1ad8ccc2eae083a727b9f16796ceb512ffb3f1b51b15bebfcd2898efb7"
+    },
+    {
+      "path": "crates/unone-native-player/src/lib.rs",
+      "sha256": "ed46d66e25abbd88a06a64e970c302d5e795d17e404cb7d59eae62a84efaec44"
+    },
+    {
+      "path": "crates/unone-native-player/Cargo.toml",
+      "sha256": "93a1ff45b57ff8ab0a927e7498d3206bdb0f4170e8cffee608bf3fb9f878ea67"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.toml",
+      "sha256": "9d35c773ab4690eae049a73e2bb7e1b0a251c636062311b368ae0e176671e508"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/src/lib.rs",
+      "sha256": "b2ffc418e1b6967f1792685a843a7b8909cd80126450cc9a30d074d48cfcd98e"
+    },
+    {
+      "path": "web/shared/spatial-gpu.mjs",
+      "sha256": "b80a4a5216948a9387a27519ff7f84da9251e52226ccb8452e94c86582738a39"
+    },
+    {
+      "path": "web/shared/spatial.wgsl",
+      "sha256": "3de85085607e9db1463bd21672e3fb9bcb0bb88439641a2eeda91a3c84e57497"
+    },
+    {
+      "path": "web/shared/spatial-host.mjs",
+      "sha256": "8d900d64d2a7f01fc7926e568f604e370547ca2706a9f73c46e475451ad81aa9"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "web/player/main.js",
+      "sha256": "8d3c221323f9419ff8357dd24f0ca4a1d1702bc9cc618817d84dc173155601f1"
+    },
+    {
+      "path": "crates/unone-web-live-smoke/src/main.rs",
+      "sha256": "d9849f73495ec9aaa259e6a05d9e8548b5f7df462ab7810b2482d1c60e42fb66"
+    },
+    {
+      "path": "scripts/build-web-live.ps1",
+      "sha256": "f9461cfb8264ad785ed647f39ca5b50667beb43172902c70fa4663a8b702eeca"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/rubric.mjs",
+      "sha256": "9d1570cf3c4fe17e0eb7df09f6f5fd275a426a40e4ec36ca1e3fe63238ccfc98"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/audit.mjs",
+      "sha256": "dea4baa567707e4b6008f13af525fdf78015ec2a4ea8d2842c68c6168da905a0"
+    },
+    {
+      "path": "docs/audits/spatial-scout-2026-10-23/informed/binary.json",
+      "sha256": "934c3f9ffc240cc60b2796a35ff99bf7e42137685b3af44ea60d612e0d7736d1"
+    },
+    {
+      "path": "docs/audits/spatial-scout-2026-10-23/design/tiny-normal/project.unone.json",
+      "sha256": "654d0f20054612491d8f991fa9f9c80a293f883ec755ce2ac24a43ac30999841"
+    },
+    {
+      "path": "docs/audits/spatial-scout-2026-10-23/design/tiny-normal/main.luau",
+      "sha256": "e75fdc6ad3402f7dc97dd88b8cf41728a8ee7d5b0b710d2a68ca3ccc24269b47"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "guide",
+      "kind": "document",
+      "path": "docs/spatial-batches.md",
+      "sha256": "abc13f80ea9397049082ee946fb991a99b34ce1d4b941844272c086d18c32613",
+      "quote": "The API neither reads nor changes scene entities or rigid bodies."
+    },
+    {
+      "id": "types",
+      "kind": "document",
+      "path": "docs/engine.d.luau",
+      "sha256": "128d5d15f9734102626237e23711c6594117276b99ff5bcdd6786190953896e9",
+      "quote": "info: () -> {[string]: ObservationValue},"
+    },
+    {
+      "id": "blind",
+      "kind": "observation",
+      "path": "docs/audits/spatial-scout-2026-10-23/blind/report.json",
+      "sha256": "a05f1923e22f705965a3bdb232e9caf29fa155964bd486f2019ab2c11ad4a81a",
+      "quote": "\"sourceFallbackStep\": null"
+    },
+    {
+      "id": "blind-types",
+      "kind": "observation",
+      "path": "docs/audits/spatial-scout-2026-10-23/blind/report.json",
+      "sha256": "a05f1923e22f705965a3bdb232e9caf29fa155964bd486f2019ab2c11ad4a81a",
+      "quote": "SpatialBatchResult is not assignable to ObservationValue; direct result publication fails official typecheck."
+    },
+    {
+      "id": "blind-detail",
+      "kind": "observation",
+      "path": "docs/audits/spatial-scout-2026-10-23/blind/report.md",
+      "sha256": "370fc43fc751ca2821857561d1f7228b9c776af7bda68b99a6048f166fe8e556",
+      "quote": "The final example passes the official strict Luau typecheck (operation 23)"
+    },
+    {
+      "id": "seal",
+      "kind": "observation",
+      "path": "docs/audits/spatial-scout-2026-10-23/blind-verification.json",
+      "sha256": "e77409c0a7214899e4b7e8600fd358684659850bc76baf0838a1bfb93b2090ab",
+      "quote": "\"ok\": true"
+    },
+    {
+      "id": "initial",
+      "kind": "execution",
+      "path": "docs/audits/spatial-scout-2026-10-23/informed/capture-initial-current.json",
+      "sha256": "e79b8fb04604690aece739fce461644f4a76830e57a4efe43f5af30c984849fb",
+      "quote": "observation integer is outside the portable Luau integer range"
+    },
+    {
+      "id": "public",
+      "kind": "execution",
+      "path": "docs/audits/spatial-scout-2026-10-23/informed/capture-workaround-current.json",
+      "sha256": "7d3cd67baa3dd5982fb497b3e3185a9fa0755cac2560abde880ee42522c87d04",
+      "quote": "representative completed"
+    },
+    {
+      "id": "public-workaround",
+      "kind": "execution",
+      "path": "docs/audits/spatial-scout-2026-10-23/informed/capture-workaround-current.json",
+      "sha256": "7d3cd67baa3dd5982fb497b3e3185a9fa0755cac2560abde880ee42522c87d04",
+      "quote": "Only info.limits.safe_integer is converted with tostring before observation publication."
+    },
+    {
+      "id": "edge",
+      "kind": "execution",
+      "path": "docs/audits/spatial-scout-2026-10-23/design/capture-current.json",
+      "sha256": "8b6ce555ac880ce4515ddad0acf0e11e67d27896e6dc26cc7fd364e3cdb0bbd9",
+      "quote": "spatial result[0] contains invalid contact geometry"
+    },
+    {
+      "id": "design",
+      "kind": "observation",
+      "path": "docs/audits/spatial-scout-2026-10-23/design/source-review.md",
+      "sha256": "a436a67ad613f3f0bdaffc8d06d097027267e592ec48b1b2d9cdbfa4a66ced6b",
+      "quote": "Static source tracing confirms SDK packing takes compiled"
+    },
+    {
+      "id": "sdk-source",
+      "kind": "source",
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "7b693a1ad8ccc2eae083a727b9f16796ceb512ffb3f1b51b15bebfcd2898efb7",
+      "quote": "fn authoring_files() -> [(&'static str, &'static str); 4]"
+    },
+    {
+      "id": "normal-source",
+      "kind": "source",
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "22bd26959d3b37395d7b92fb9995d81b7fa505ec8d55dfd9c22df7afa1d0fbea",
+      "quote": "fn normal_or_z"
+    },
+    {
+      "id": "semantic-review",
+      "kind": "observation",
+      "path": "docs/audits/spatial-scout-2026-10-23/semantic-review.md",
+      "sha256": "29cac7372849e0144461398a5fae7a699226680aa83e9f0aedcd9ddab0ae1f7a",
+      "quote": "No mandatory rating change is required."
+    }
+  ],
+  "checks": [
+    {
+      "id": "purpose",
+      "rating": 3,
+      "answer": "A fresh AI followed README to the spatial guide and correctly explained generic geometry, CPU default, fixed delivery, and the absence of movement policy or speedup claims.",
+      "reason": "The first-use report used public docs without a method-name or geometry-field guess. Cross-API publication friction prevents calling the whole onboarding path effortless.",
+      "nextAction": "Retain the explicit ownership and v1 limits; add a minimal typed observation example that works without adapters.",
+      "evidence": [
+        "guide",
+        "blind",
+        "public"
+      ],
+      "status": "verified",
+      "access": "public"
+    },
+    {
+      "id": "capabilities",
+      "rating": 3,
+      "answer": "The spatial namespace, eight operations, canonical types, backend names and limits are publicly discoverable from repository entrypoints. Ordinary collision and Chinese query phrases return no matches.",
+      "reason": "Repository discovery succeeds; the informed probe preserves exact query text/UTF-8 and returned candidates. This does not demonstrate SDK-only discovery; the static SDK omission is a separate finding.",
+      "nextAction": "Add scoped collision/CCD and bilingual discovery terms, link the complete guide from descriptors, and include the guide in SDK inventory.",
+      "evidence": [
+        "guide",
+        "blind-detail",
+        "public",
+        "design"
+      ],
+      "status": "verified",
+      "access": "public"
+    },
+    {
+      "id": "operation",
+      "rating": 3,
+      "answer": "The independent AI completed masked nearest, ordered overlap and moving-target sweep at operation 17, and a strictly typed final example at operations 23–24. The informed packed/table scenario also completes.",
+      "reason": "Geometry, next-tick delivery and frozen versions work through public APIs, but direct typed result publication required a manual serialization adapter. Successful scoped cases do not validate every accepted numeric input.",
+      "nextAction": "Make result publication compose with the official ObservationValue contract, then rerun a new independent first-use trial.",
+      "evidence": [
+        "blind",
+        "blind-types",
+        "blind-detail",
+        "public"
+      ],
+      "status": "verified",
+      "access": "public"
+    },
+    {
+      "id": "context",
+      "rating": 3,
+      "answer": "Versioned query results retain their submitted geometry after replacement and index destruction. The corrected public probe verifies version 2 results after a version 3 replacement and checks stable same-seed digests.",
+      "reason": "IDs, query order, immutable snapshots and versions are observable. Handles are explicitly ephemeral; persistent saves, checkpoints and GPU state restoration were not tested.",
+      "nextAction": "Keep snapshot/version contracts explicit and add public context for faulted tickets without implying durable handle restoration.",
+      "evidence": [
+        "guide",
+        "public",
+        "blind"
+      ],
+      "status": "verified",
+      "access": "public"
+    },
+    {
+      "id": "observation",
+      "rating": 2,
+      "answer": "Selected results and portable scalar info fields publish correctly, but two natural observation paths fail: SpatialBatchResult fails official typecheck, and info() is typed as publishable but its safe_integer field fails native observation serialization.",
+      "reason": "The initial recorder probe failed before intended geometry/overflow verification. A separate successful probe changes only info.safe_integer publication to a string. That is a fixture workaround, not a product fix.",
+      "nextAction": "Align spatial return types and numeric domains with the observation boundary; require unadapted info/result publication to pass both check --types and native/Web runtime tests.",
+      "evidence": [
+        "types",
+        "blind-types",
+        "blind",
+        "initial",
+        "public-workaround"
+      ],
+      "status": "partial",
+      "access": "public"
+    },
+    {
+      "id": "diagnostics",
+      "rating": 3,
+      "answer": "Duplicate IDs, negative radius, same-tick take, consumed/cancelled tickets and stale destruction produce usable failures; valid repairs succeed. Direct info publication gives a generic portable-integer error requiring field isolation.",
+      "reason": "Public-only repairs were possible and preserved state. Error strings do not consistently expose structured field/actual/expected/recovery information; array locations also use zero-based body indexes.",
+      "nextAction": "Add field-level diagnostics for publication failures and consistent documented array indexing; preserve stable existing error codes.",
+      "evidence": [
+        "blind",
+        "blind-detail",
+        "initial",
+        "public"
+      ],
+      "status": "verified",
+      "access": "public"
+    },
+    {
+      "id": "recovery",
+      "rating": 3,
+      "answer": "Caught early-take errors do not consume tickets; later take succeeds, consumed tickets reject retries, and cancelled work is absent. After the declared terminal 65-contact overflow, a fresh corrected 64-contact run succeeds.",
+      "reason": "The successful probe asserts the overflow-specific cause, unlike the initial failed probe whose generic false result was caused by observation serialization. Device loss, stalled GPU jobs and dropped host replies are outside this trial.",
+      "nextAction": "Keep per-call validation versus terminal executor faults distinct in discovery; add a small public recovery example and separately test GPU interruption.",
+      "evidence": [
+        "guide",
+        "public",
+        "blind",
+        "initial"
+      ],
+      "status": "verified",
+      "access": "public"
+    },
+    {
+      "id": "boundaries",
+      "rating": 3,
+      "answer": "The isolated probe uses only new synthetic projects, rejects invalid/stale operations and verifies an unrelated scene entity remains unchanged after batch queries.",
+      "reason": "This supports the geometry-versus-gameplay boundary and runtime handle lifecycle, not OS sandboxing, external account permissions or cross-project security.",
+      "nextAction": "Retain synthetic boundary tests and opaque handles; do not add domain-specific selection or response rules to these primitives.",
+      "evidence": [
+        "guide",
+        "public",
+        "blind"
+      ],
+      "status": "verified",
+      "access": "public"
+    },
+    {
+      "id": "performance",
+      "rating": 2,
+      "answer": "Public runs expose actual CPU script/physics/observe timings, frame statistics, counts and Luau memory, as well as capacity and selected backend. The successful two-frame sample reports total 1.006 ms and phase totals 0.767/0.027/0.130 ms. These target measurements are distinct from command wall times.",
+      "reason": "Rating 2 reflects incomplete attribution of spatial execution/transfer/application work and the absence of a meaningful bounded spatial profiling workload. CPU telemetry exists with explicit debug-build caveats. Missing GPU metrics alone is not grounds for this rating; neither GPU runtime nor acceleration thresholds were evaluated.",
+      "nextAction": "Expose spatial work costs or explicit unavailability, then profile a bounded end-to-end batch workload before choosing automatic execution thresholds.",
+      "evidence": [
+        "guide",
+        "public",
+        "semantic-review"
+      ],
+      "status": "partial",
+      "access": "public"
+    },
+    {
+      "id": "reproducibility",
+      "rating": 3,
+      "answer": "The audit pins the existing executable by SHA-256, fingerprints 33 selected subject files, retains failed and workaround captures, verifies the 26-file blind evidence seal, and repeats the same-seed scenario with equal digests.",
+      "reason": "These are local CPU/public-interface and bounded source-review results. Source fingerprints are not immutable source copies. The existing binary is identified independently of source HEAD. Three cases were actually rerun after a concurrent source change; old captures remain historical. No clean SDK build or cross-device reproduction is claimed.",
+      "nextAction": "After fixes, preserve these failed cases and run a new captured retest plus a new SDK-only blind author; do not relabel an informed retest as blind.",
+      "evidence": [
+        "seal",
+        "blind",
+        "public",
+        "edge",
+        "semantic-review"
+      ],
+      "status": "verified",
+      "access": "public"
+    }
+  ],
+  "issues": [
+    {
+      "id": "SPATIAL-SCOUT-001",
+      "checkId": "observation",
+      "severity": "P2",
+      "summary": "Officially typed spatial.info() cannot be directly published through observation.set on the native CLI.",
+      "cause": "limits.safe_integer is 2^53-1; the observation integer branch permits only signed 32-bit values. The declared ObservationValue dictionary and runtime numeric behavior disagree.",
+      "fix": "Align the diagnostic value representation or shared serialization contract; retain numeric bounds explicitly without a caller-only undocumented workaround.",
+      "verification": "The unadapted info() value must pass official typecheck and direct observation publication on native and Web hosts; retain the failing blind/info-probe.",
+      "evidence": [
+        "types",
+        "blind",
+        "initial",
+        "public-workaround"
+      ]
+    },
+    {
+      "id": "SPATIAL-SCOUT-002",
+      "checkId": "operation",
+      "severity": "P2",
+      "summary": "A SpatialBatchResult cannot be passed directly to typed observation.set.",
+      "cause": "Canonical result records do not compose with the recursive ObservationValue type accepted by the observation API; the fresh author had to write an explicit typed adapter.",
+      "fix": "Provide compatible canonical types or a generic supported serialization path and a working typed result-observation example.",
+      "verification": "The preserved first example should pass check --types and publish without local casts, any stubs or a bespoke spatial adapter.",
+      "evidence": [
+        "blind-types",
+        "blind-detail",
+        "types"
+      ]
+    },
+    {
+      "id": "SPATIAL-SCOUT-003",
+      "checkId": "operation",
+      "severity": "P2",
+      "summary": "A valid tiny coordinate faults the CPU manager with an invalid result produced by its own executor.",
+      "cause": "normal_or_z squares a 3e-23 displacement; f32 subnormal rounding produces a normal with length squared about 0.642, which validate_result rejects.",
+      "fix": "Use scale-safe normalization across CPU/WGSL or reject a clearly documented unsupported minimum scale before accepting the batch.",
+      "verification": "A body at {3e-23,0,0}, radius0, queried from origin must complete with finite validated contact geometry; add nearby tiny/zero/scaled cases.",
+      "evidence": [
+        "edge",
+        "normal-source",
+        "design"
+      ]
+    },
+    {
+      "id": "SPATIAL-SCOUT-004",
+      "checkId": "capabilities",
+      "severity": "P2",
+      "summary": "The complete spatial guide is omitted by portable SDK packing.",
+      "cause": "The SDK authoring/runtime-package inventory has no spatial-batches.md entry, and spatial descriptors do not link to the full guide. Repository README discovery is not SDK-only validation.",
+      "fix": "Bundle the canonical guide, link selected contracts to it, and add an inventory test before fresh SDK authoring.",
+      "verification": "Inspect a newly packed SDK, then let a fresh agent discover host policy and moving-sphere semantics without repository source.",
+      "evidence": [
+        "sdk-source",
+        "design"
+      ]
+    }
+  ]
+}

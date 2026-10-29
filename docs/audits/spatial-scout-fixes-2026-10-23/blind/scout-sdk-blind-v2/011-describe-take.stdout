@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "value": {
+    "name": "spatial.take",
+    "category": "spatial",
+    "purpose": "Consume a completed batch at a fixed later simulation tick.",
+    "when_to_use": "Reusable batch collision and spatial queries (空間查詢、批次碰撞查詢) on CPU or host-owned GPU compute; gameplay policy remains in Luau. Read docs/spatial-batches.md (bundled in the portable SDK) for the complete query, result, lifecycle, limits and host contracts; game api typings provides canonical SpatialBody, SpatialQuery and SpatialBatchResult types.",
+    "when_not_to_use": "No AI, movement integration, damage, scene mutation or renderer replacement. V1 uses bounded complete scans, not an accelerated grid.",
+    "parameters": [
+      {
+        "name": "ticket",
+        "type_name": "number",
+        "meaning": "Unconsumed ticket from an earlier successful update"
+      }
+    ],
+    "returns": "SpatialBatchResult",
+    "side_effects": [
+      "Updates bounded spatial handles and frozen batch snapshots"
+    ],
+    "frame_semantics": "Submit/take/cancel only in update; results become visible starting the next tick. Equal-distance/time ties use ascending numeric ID. Overlap returns at most 64 contacts and explicitly errors on overflow. GPU f32 results have a documented tolerance; no bitwise cross-device promise.",
+    "common_errors": [
+      "Invalid/non-finite records, duplicate IDs, stale handles, early take, pending host completion, capacity and contact overflow fail explicitly."
+    ],
+    "example": "local result = api.spatial.take(ticket)",
+    "related_apis": [
+      "spatial.create",
+      "spatial.pack",
+      "spatial.submit",
+      "spatial.take",
+      "spatial.info"
+    ]
+  },
+  "diagnostics": [],
+  "effects": []
+}

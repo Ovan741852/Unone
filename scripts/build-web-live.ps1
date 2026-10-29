@@ -56,7 +56,10 @@ $env:CC_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'emcc.bat'
 $env:CXX_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'em++.bat'
 $env:AR_wasm32_unknown_emscripten = Join-Path $emscriptenRoot 'emar.bat'
 $env:CXXFLAGS_wasm32_unknown_emscripten = '-fwasm-exceptions'
-$env:RUSTFLAGS = '-C link-arg=--export=unone_web_init -C link-arg=--export=unone_web_alloc -C link-arg=--export=unone_web_bundle_begin -C link-arg=--export=unone_web_bundle_write -C link-arg=--export=unone_web_bundle_finish -C link-arg=--export=unone_web_load_project -C link-arg=--export=unone_web_set_save_payload -C link-arg=--export=unone_web_reload_script -C link-arg=--export=unone_web_set_pointer -C link-arg=--export=unone_web_set_input_frame -C link-arg=--export=unone_web_set_viewport_aspect -C link-arg=--export=unone_web_set_screen_pointer -C link-arg=--export=unone_web_tick -C link-arg=--export=unone_web_ui_request -C link-arg=--export=unone_web_observation_ptr -C link-arg=--export=unone_web_observation_len -C link-arg=--export=unone_web_developer_request'
+$env:RUSTFLAGS = '-C link-arg=--export=unone_web_init -C link-arg=--export=unone_web_alloc -C link-arg=--export=unone_web_bundle_begin -C link-arg=--export=unone_web_bundle_write -C link-arg=--export=unone_web_bundle_finish -C link-arg=--export=unone_web_load_project -C link-arg=--export=unone_web_set_save_payload -C link-arg=--export=unone_web_reload_script -C link-arg=--export=unone_web_set_pointer -C link-arg=--export=unone_web_set_input_frame -C link-arg=--export=unone_web_set_viewport_aspect -C link-arg=--export=unone_web_set_viewport_size -C link-arg=--export=unone_web_set_screen_pointer -C link-arg=--export=unone_web_tick -C link-arg=--export=unone_web_ui_request -C link-arg=--export=unone_web_observation_ptr -C link-arg=--export=unone_web_observation_len -C link-arg=--export=unone_web_developer_request'
+
+$env:RUSTFLAGS += ' -C link-arg=--export=unone_web_spatial_request'
+$env:RUSTFLAGS += ' -C link-arg=--export=unone_web_host_time_request'
 
 if ($Player) {
     $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -65,7 +68,7 @@ if ($Player) {
         if (Test-Path (Join-Path $candidate 'bin/wasm-opt.exe')) { $BinaryenRoot = $candidate }
     }
     if ($BinaryenRoot) { $env:EM_BINARYEN_ROOT = [IO.Path]::GetFullPath($BinaryenRoot) }
-    $exports = @('init','alloc','load_project','set_save_payload','set_input_frame','set_viewport_aspect','set_instance_transport','tick','ui_request','jobs_request','jobs_binary','observation_ptr','observation_len')
+    $exports = @('init','alloc','load_project','set_save_payload','set_input_frame','set_viewport_aspect','set_viewport_size','set_instance_transport','tick','ui_request','jobs_request','jobs_binary','spatial_request','host_time_request','observation_ptr','observation_len')
     if ($Development) { $exports += 'developer_request' }
     $cli = Join-Path $repoRoot 'target/debug/game.exe'
     if (-not (Test-Path -LiteralPath $cli)) { throw 'Build the current CLI first: cargo build -p unone-cli' }
@@ -76,6 +79,9 @@ if ($Player) {
     if (-not $systemReport.ok) { throw "Cannot resolve project systems: $systemJson" }
     $selected = @($systemReport.value.systems | Where-Object { (-not $Project) -or $_.enabled })
     $compiledSystems = @($selected | ForEach-Object { $_.id } | Sort-Object)
+    if ($compiledSystems -contains 'particle') {
+        $exports += @('particle_alloc', 'particle_sample', 'particle_output_ptr', 'particle_output_len')
+    }
     $runtimePackages = @{}
     if ($compiledSystems -contains 'ui') {
         $uiPackage = Get-Content -LiteralPath (Join-Path $repoRoot 'packages/unone-ui/package.unone.json') -Raw | ConvertFrom-Json

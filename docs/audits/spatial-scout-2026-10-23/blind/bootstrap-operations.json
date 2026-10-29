@@ -1,0 +1,23 @@
+[
+  {
+    "status": 0,
+    "stdout_recapture": "bootstrap-entrypoints-recapture.txt",
+    "operation": 1,
+    "result": "Read only Unone AGENTS (other two absent), README, CLI help. Audit directory absent, so inventory emitted nothing.",
+    "command": "$auditPath = 'D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind'\nif (Test-Path -LiteralPath $auditPath) { Get-ChildItem -LiteralPath $auditPath -Force | Select-Object Name,Length }\nforeach ($instructionPath in @('D:\\AGENTS.md','D:\\Projects\\AGENTS.md','D:\\Projects\\Unone\\AGENTS.md')) { if (Test-Path -LiteralPath $instructionPath) { Write-Output \"INSTRUCTIONS: $instructionPath\"; Get-Content -LiteralPath $instructionPath } }\nGet-Content -LiteralPath 'D:\\Projects\\Unone\\README.md'\n& 'D:\\Projects\\Unone\\target\\debug\\game.exe' --help",
+    "workdir": "D:\\Projects\\Unone",
+    "stdout_provenance": "Full stdout visible in original tool response. A later public-entrypoint recapture is preserved separately; not represented as original capture.",
+    "shell": "powershell",
+    "stderr": ""
+  },
+  {
+    "operation": 2,
+    "shell": "powershell",
+    "workdir": "D:\\Projects\\Unone",
+    "status": 0,
+    "command": "$auditPath = 'D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind'\nNew-Item -ItemType Directory -Path $auditPath -ErrorAction Stop | Out-Null\n$runnerPath = Join-Path $auditPath 'run-command.mjs'\n$runnerSource = @'\nimport fs from 'node:fs';\nimport path from 'node:path';\nimport {spawnSync} from 'node:child_process';\nconst root=path.dirname(new URL(import.meta.url).pathname.replace(/^\\/([A-Za-z]:)/,'$1'));\nconst ledger=path.join(root,'operations.ndjson');\nconst prior=fs.existsSync(ledger)?fs.readFileSync(ledger,'utf8').trim().split('\\n').filter(Boolean):[];\nconst [label,command,...args]=process.argv.slice(2);\nif(!label||!command) throw new Error('label and command required');\nconst startedAt=new Date().toISOString();\nconst r=spawnSync(command,args,{cwd:'D:\\\\Projects\\\\Unone',encoding:'utf8',input:process.env.SCOUT_STDIN??undefined,maxBuffer:32*1024*1024,timeout:120000,windowsHide:true});\nconst record={operation:prior.length+3,label,startedAt,endedAt:new Date().toISOString(),cwd:'D:\\\\Projects\\\\Unone',command,args,stdin:process.env.SCOUT_STDIN??null,status:r.status,signal:r.signal,error:r.error?String(r.error):null,stdout:r.stdout??'',stderr:r.stderr??''};\nfs.appendFileSync(ledger,JSON.stringify(record)+'\\n',{encoding:'utf8'});\nprocess.stdout.write(JSON.stringify(record,null,2)+'\\n');\nprocess.exitCode=r.status??1;\n'@\n[System.IO.File]::WriteAllText($runnerPath,$runnerSource,[System.Text.UTF8Encoding]::new($false))",
+    "result": "Created new blind directory and owned subprocess recorder.",
+    "stderr": "",
+    "stdout": ""
+  }
+]

@@ -20,6 +20,9 @@ export function createAssetUsageReader(host){
       if(!node)return;
       const ancestors=[...parents,node],owner=ancestors.findLast(value=>value.kind==='component');
       if(typeof node.asset==='string'&&(!ids||ids.has(node.asset)))references.push({asset:node.asset,node_id:node.id,kind:node.kind,ui_path:path,node_path:ancestors.map(value=>value.id),component_id:owner?.id??null,component:owner?.component??null});
+      if(node.kind==='image_batch')for(const [i,quad] of (node.quads??[]).entries()){
+        if(typeof quad.asset==='string'&&(!ids||ids.has(quad.asset)))references.push({asset:quad.asset,node_id:node.id,kind:node.kind,quad_index:i,ui_path:`${path}.quads[${i}]`,node_path:ancestors.map(value=>value.id),component_id:owner?.id??null,component:owner?.component??null});
+      }
       for(const [i,child] of (node.children??[]).entries())walk(child,`${path}.children[${i}]`,ancestors);
     }
     walk(snapshot?.world?.ui);

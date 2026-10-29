@@ -1,0 +1,12 @@
+[eval]:1
+const fs=require('fs');const p="C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN";console.log(fs.readFileSync(p+'/project.unone.json','utf8'));const t=fs.readFileSync(p+'/scripts/main.luau','utf8');for(const n of ['EntityApi','ObservationApi','SpatialBody']){const i=t.indexOf('export type '+n); console.log(t.slice(i,t.indexOf('
+                                                                                                                                                                                                                                                                                                                                                           ^
+Expected ',', got '}'
+
+SyntaxError: Invalid or unexpected token
+    at makeContextifyScript (node:internal/vm:194:14)
+    at compileScript (node:internal/process/execution:388:10)
+    at evalTypeScript (node:internal/process/execution:260:22)
+    at node:internal/main/eval_string:71:3
+
+Node.js v24.19.0

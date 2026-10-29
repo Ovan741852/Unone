@@ -1,0 +1,25 @@
+{
+  "order": 15,
+  "name": "project-init",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+    "--json",
+    "project",
+    "init",
+    "--name",
+    "Independent geometry batch"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:45.8811494Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 159,
+  "endedUtc": "2026-10-23T14:15:46.0980233Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\015-project-init.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\015-project-init.stderr"
+}

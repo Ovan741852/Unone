@@ -4,6 +4,22 @@ use std::rc::Rc;
 pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let input = Rc::clone(&state.input);
     let input_api = lua.create_table()?;
+    let physical_input=Rc::clone(&input);
+    input_api.set("getPhysicalBatch",lua.create_function(move |lua,():()| {
+        match &physical_input.borrow().physical.active {
+            // Physical v1 validates metadata as safe binary64 integers, including
+            // monotonic microseconds past i32::MAX. Keep saves on their own boundary.
+            Some(batch)=>super::value::observation_json_to_lua(lua,serde_json::to_value(batch).map_err(mlua::Error::external)?),
+            None=>Ok(mlua::Value::Nil),
+        }
+    })?)?;
+    let text_input=Rc::clone(&input);
+    input_api.set("getTextInputInteraction",lua.create_function(move |lua,id:String| {
+        match text_input.borrow().ui_text_inputs.get(&id) {
+            Some(event)=>super::value::observation_json_to_lua(lua,serde_json::to_value(event).map_err(mlua::Error::external)?),
+            None=>Ok(mlua::Value::Nil),
+        }
+    })?)?;
     let slider_input = Rc::clone(&input);
     input_api.set("getSliderInteraction", lua.create_function(move |lua, id: String| {
         let state = slider_input.borrow();

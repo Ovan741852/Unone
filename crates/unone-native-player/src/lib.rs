@@ -1,8 +1,14 @@
 #![recursion_limit = "256"]
 mod lod;
+mod application;
+mod keyboard;
+mod mouse;
+mod replay;
 mod audio;
 mod particles;
 mod render;
+mod projected;
+mod presentation_raster;
 mod sprites;
 mod ui;
 use serde::{Deserialize, Serialize};
@@ -27,6 +33,7 @@ use winit::{
 };
 type R<T> = Result<T, String>;
 pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
+    if snapshot.projected_frame.is_some(){return Err("HOST_PROJECTED_FRAME_UNSUPPORTED: encoded reference Frame requires official WebGL2 profile".into());}
     if !snapshot.shader_materials.is_empty() {
         return Err("SHADER_BACKEND_UNSUPPORTED: GLSL sprite shader materials require the official WebGL player; native wgpu does not implement this contract".into());
     }
@@ -34,6 +41,41 @@ pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
 }
 const NATIVE_RENDERER: &str = "wgpu-native-instanced";
 const READY_CONTRACT: &str = "unone.native-ready.v1";
+
+// Physical host keys are neutral action names; games map them to controls.
+fn key_action(key: PhysicalKey) -> Option<&'static str> {
+    match key {
+        PhysicalKey::Code(code) => match code {
+            KeyCode::ArrowLeft => Some("Left"), KeyCode::ArrowRight => Some("Right"),
+            KeyCode::ArrowUp => Some("Up"), KeyCode::ArrowDown => Some("Down"),
+            KeyCode::Delete => Some("Delete"), KeyCode::PageDown => Some("PageDown"),
+            KeyCode::ShiftLeft => Some("ShiftLeft"), KeyCode::ShiftRight => Some("ShiftRight"),
+            KeyCode::ControlLeft => Some("ControlLeft"), KeyCode::ControlRight => Some("ControlRight"),
+            KeyCode::AltLeft => Some("AltLeft"), KeyCode::AltRight => Some("AltRight"),
+            KeyCode::Numpad8 => Some("Numpad8"), KeyCode::Numpad2 => Some("Numpad2"),
+            KeyCode::Numpad4 => Some("Numpad4"), KeyCode::Numpad6 => Some("Numpad6"),
+            KeyCode::Numpad7 => Some("Numpad7"), KeyCode::Numpad9 => Some("Numpad9"),
+            KeyCode::Minus => Some("Minus"), KeyCode::Equal => Some("Equal"),
+            KeyCode::KeyA => Some("A"), KeyCode::KeyB => Some("B"), KeyCode::KeyC => Some("C"),
+            KeyCode::KeyD => Some("D"), KeyCode::KeyE => Some("E"), KeyCode::KeyF => Some("F"),
+            KeyCode::KeyG => Some("G"), KeyCode::KeyH => Some("H"), KeyCode::KeyI => Some("I"),
+            KeyCode::KeyJ => Some("J"), KeyCode::KeyK => Some("K"), KeyCode::KeyL => Some("L"),
+            KeyCode::KeyM => Some("M"), KeyCode::KeyN => Some("N"), KeyCode::KeyO => Some("O"),
+            KeyCode::KeyP => Some("P"), KeyCode::KeyQ => Some("Q"), KeyCode::KeyR => Some("R"),
+            KeyCode::KeyS => Some("S"), KeyCode::KeyT => Some("T"), KeyCode::KeyU => Some("U"),
+            KeyCode::KeyV => Some("V"), KeyCode::KeyW => Some("W"), KeyCode::KeyX => Some("X"),
+            KeyCode::KeyY => Some("Y"), KeyCode::KeyZ => Some("Z"),
+            KeyCode::Digit0 => Some("0"), KeyCode::Digit1 => Some("1"), KeyCode::Digit2 => Some("2"),
+            KeyCode::Digit3 => Some("3"), KeyCode::Digit4 => Some("4"), KeyCode::Digit5 => Some("5"),
+            KeyCode::Digit6 => Some("6"), KeyCode::Digit7 => Some("7"), KeyCode::Digit8 => Some("8"),
+            KeyCode::Digit9 => Some("9"), KeyCode::Space => Some("Space"), KeyCode::Enter => Some("Enter"),
+            KeyCode::Escape => Some("Escape"), KeyCode::Insert => Some("Insert"),
+            KeyCode::Home => Some("Home"), KeyCode::PageUp => Some("PageUp"),
+            _ => None,
+        },
+        _ => None,
+    }
+}
 
 fn hash(b: &[u8]) -> String {
     format!("{:x}", Sha256::digest(b))
@@ -92,6 +134,7 @@ impl Package {
                 return Err("NATIVE_DUPLICATE_PATH".into());
             }
         }
+        presentation_raster::validate(files.get("content/presentation.json").map(Vec::as_slice))?;
         Ok(Self {
             files,
             digest: hash(&manifest),
@@ -103,10 +146,14 @@ impl Package {
             .map(|v| v.as_slice())
             .ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}"))
     }
+    #[cfg(test)]
     fn runtime(&self, seed: u64) -> R<EngineRuntime> {
-        let runtime = HostProject::parse(self.get("content/project.json")?)
-            .map_err(|e| e.explanation)?
-            .into_runtime(seed)
+        self.runtime_with_viewport(seed,None)
+    }
+    fn runtime_with_viewport(&self, seed:u64, viewport:Option<[u32;2]>)->R<EngineRuntime> {
+        let mut project=HostProject::parse(self.get("content/project.json")?).map_err(|e|e.explanation)?;
+        if let Some(size)=viewport {project.viewport_size=Some(size);}
+        let runtime=project.into_runtime(seed)
             .map_err(|e| e.explanation)?;
         ensure_shader_backend(&runtime.observe())?;
         Ok(runtime)
@@ -115,6 +162,10 @@ impl Package {
 #[derive(Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct Settings {
+    spatial_backend: Option<String>,
+    input_sequence: Option<PathBuf>,
+    width: Option<u32>,
+    height: Option<u32>,
     frames: u64,
     warmup: u64,
     seed: u64,
@@ -220,7 +271,12 @@ fn emit_ready(package_sha256: &str, renderer: &render::Renderer) {
 }
 
 struct App {
+    input_replay: Option<replay::InputSequence>,
+    replay_pending_presentation: bool,
     host_input: unone_engine::InputFrame,
+    keyboard_input: keyboard::ActionQueue,
+    mouse_right_input: mouse::ScreenButtonQueue,
+    mouse_middle_input: mouse::ScreenButtonQueue,
     pointer_edges: std::collections::VecDeque<unone_engine::PointerInput>,
     world_pointer_owner: Option<u64>,
     ui_input: ui::PointerRouter,
@@ -248,20 +304,59 @@ struct App {
     measured_initial_frame: Option<u64>,
     captures: Vec<(String, f64)>,
     presentation_warnings: std::collections::BTreeSet<String>,
+    quit_request_presented: bool,
 }
 impl App {
+    /// Both GUI and headless replay use the kernel's normalized input entry point.
+    fn advance_tick(&mut self) -> R<()> {
+        let input = if let Some(replay) = &self.input_replay {
+            replay.frame()
+        } else {
+            self.ui_input.reconcile(self.snapshot.ui.as_ref());
+            if let Some(error) = self.ui_input.take_error() { return Err(error); }
+            if let Some((action, down)) = self.ui_input.next_edge() {
+                self.host_input.actions.insert(action, down);
+            }
+            let mut input = self.host_input.clone();
+            // Independent held sources with the same action name combine by OR.
+            for action in self.keyboard_input.tick_actions() {
+                input.actions.insert(action.into(), true);
+            }
+            input.ui_sliders = self.ui_input.drain_sliders();
+            let primary_edge = self.pointer_edges.pop_front();
+            let (right_down,middle_down,secondary_screen)=mouse::tick_secondary(primary_edge.is_some(),&mut self.mouse_right_input,&mut self.mouse_middle_input);
+            if right_down { input.actions.insert("MouseRight".into(), true); }
+            if middle_down {input.actions.insert("MouseMiddle".into(),true);}
+            if let Some(pointer) = primary_edge {
+                input.pointer = Some(pointer);
+            } else if let Some([x, y]) = secondary_screen {
+                // Secondary buttons expose coordinates without changing the
+                // primary (left mouse/touch) pointer's down/pressed semantics.
+                let down = input.pointer.as_ref().is_some_and(|pointer| pointer.down);
+                input.pointer = Some(self.pointer_at(x, y, down));
+            }
+            input
+        };
+        self.snapshot = self.runtime.tick_with_input(&input).map_err(|error| error.explanation)?;
+        if let Some(replay) = &mut self.input_replay { replay.applied(); }
+        Ok(())
+    }
+
     fn reset_input(&mut self) {
         self.ui_input.reset();
+        self.keyboard_input.reset();
+        self.mouse_right_input.reset();
+        self.mouse_middle_input.reset();
         self.host_input = Default::default();
         self.pointer_edges.clear();
         self.world_pointer_owner = None;
     }
     // Same Camera2D mapping as the Web host; gameplay owns any 3D raycast policy.
-    fn world_pointer(&mut self, x: f64, y: f64, down: bool, edge: bool) {
+    fn pointer_at(&self, x: f64, y: f64, down: bool) -> unone_engine::PointerInput {
         let c = &self.snapshot.camera;
         let size = self.window.as_ref().unwrap().inner_size();
         let h = c.view_height / c.zoom;
-        let p = unone_engine::PointerInput {
+        unone_engine::PointerInput {
             position: unone_engine::Vec2 {
                 x: c.position.x
                     + (x - 50.) / 100. * h * size.width as f64 / size.height.max(1) as f64,
@@ -269,7 +364,10 @@ impl App {
             },
             down,
             screen_position: Some(unone_engine::Vec2 { x, y }),
-        };
+        }
+    }
+    fn world_pointer(&mut self, x: f64, y: f64, down: bool, edge: bool) {
+        let p = self.pointer_at(x, y, down);
         self.host_input.pointer = Some(p.clone());
         if edge {
             self.pointer_edges.push_back(p);
@@ -284,17 +382,43 @@ impl App {
         if !settings.measure_seconds.is_finite() || settings.measure_seconds < 0. {
             return Err("INVALID_MEASUREMENT_DURATION".into());
         }
-        let mut runtime = package.runtime(settings.seed)?;
-        for _ in 0..settings.prewarm_ticks {
-            runtime.tick().map_err(|e| e.explanation)?;
+        let input_replay = if let Some(path) = &settings.input_sequence {
+            replay::validate_options(settings.fixed_tick, settings.warmup, settings.prewarm_ticks,
+                settings.freeze_simulation, settings.frames, settings.measure_seconds)?;
+            Some(replay::InputSequence::load(path)?)
+        } else { None };
+        let mut runtime = package.runtime_with_viewport(settings.seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]))?;
+        let presentation: Value = package.files.get("content/presentation.json")
+            .map(|bytes| serde_json::from_slice(bytes)).transpose()
+            .map_err(|e| e.to_string())?.unwrap_or_else(|| json!({}));
+        let spatial_backend = settings.spatial_backend.as_deref()
+            .or_else(|| presentation.get("spatial_backend").and_then(Value::as_str)).unwrap_or("cpu");
+        match spatial_backend {
+            "cpu" => {},
+            "gpu" => runtime.set_spatial_executor(Box::new(unone_spatial_gpu::SpatialGpuExecutor::new()?))?,
+            "auto" => {
+                if let Ok(executor) = unone_spatial_gpu::SpatialGpuExecutor::new() {
+                    runtime.set_spatial_executor(Box::new(executor))?;
+                }
+            },
+            _ => return Err("SPATIAL_BACKEND_INVALID: expected cpu, gpu or auto".into()),
         }
-        let snapshot = runtime.observe();
+        let mut snapshot = runtime.observe();
+        for _ in 0..settings.prewarm_ticks {
+            if snapshot.application.quit_requested { break; }
+            snapshot = runtime.tick().map_err(|e| e.explanation)?;
+        }
         let audio = audio::NativeAudio::new(&package);
         Ok(Self {
+            input_replay,
+            replay_pending_presentation: false,
             package,
             ui_input: Default::default(),
             cursor: [0., 0.],
             host_input: Default::default(),
+            keyboard_input: Default::default(),
+            mouse_right_input: Default::default(),
+            mouse_middle_input:Default::default(),
             pointer_edges: Default::default(),
             world_pointer_owner: None,
             runtime,
@@ -319,6 +443,7 @@ impl App {
             measured_initial_frame: None,
             captures: Vec::new(),
             presentation_warnings: Default::default(),
+            quit_request_presented: false,
         })
     }
     fn capture_frame(&mut self) -> R<()> {
@@ -361,8 +486,16 @@ impl App {
             }
         }
         let r = self.renderer.as_ref();
-        let mut value = json!({"host":std::env::consts::OS,"renderer":if self.settings.headless{"none"}else{"wgpu-native-instanced"},"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"},"adapter":r.map(|r|&r.adapter),"resolution":r.map(|r|r.resolution()),"bloom_enabled":r.map(|r|r.bloom_enabled()),"simulation_hz_measured":self.measured_initial_frame.map(|f|(self.snapshot.frame-f) as f64*1000./self.measured_ms.max(0.001)),"measured_seconds":self.measured_ms/1000.,"package_sha256":self.package.digest,"boot_ms":self.boot_ms,"frame":self.snapshot.frame,"observation_digest":unone_engine::observation_digest(&self.snapshot).ok(),"battle":self.snapshot.observations.get("battle"),"fx":self.snapshot.observations.get("fx"),"particle_count":self.snapshot.particles.len(),"camera3d":self.snapshot.camera3d,"drawn":self.drawn,"dropped_ticks":self.dropped,"submitted_instances_last_frame":r.map(|r|r.submitted),"draw_calls_last_frame":r.map(|r|r.draws),"upload_bytes_last_frame":r.map(|r|r.uploaded),"mesh_triangles_last_frame":r.map(|r|r.triangles),"lod_instances_last_frame":r.map(|r|r.lod_counts),"presentation_batches":r.map(|r|&r.presentation_batches),"instance_prepare_ms_last_frame":r.map(|r|r.lod_ms),"presentation_warnings":self.presentation_warnings,"interval":stats(&self.samples.interval_ms),"tick":stats(&self.samples.tick_ms),"render_submit":stats(&self.samples.render_submit_ms),"renderer_cpu_phases":self.samples.renderer_phases.iter().map(|(k,v)|(*k,stats(v))).collect::<BTreeMap<_,_>>(),"fps":if self.samples.interval_ms.is_empty(){0.}else{1000.*self.samples.interval_ms.len() as f64/self.samples.interval_ms.iter().sum::<f64>()},"error":self.error,"measurement":{"timing_window_capacity":16384,"seed":self.settings.seed,"warmup_presentations":self.settings.warmup,"prewarm_ticks":self.settings.prewarm_ticks,"fixed_tick":self.settings.fixed_tick,"gpu_time_available":false,"submitted_is_not_visible_count":true,"render_submit_includes_driver_wait":true,"digest_outside_timing":true,"capture_enabled":self.settings.capture_dir.is_some(),"freeze_simulation":self.settings.freeze_simulation,"lod_enabled":!self.settings.disable_lod}});
+        let mut value = json!({"host":std::env::consts::OS,"renderer":if self.settings.headless{"none"}else{"wgpu-native-instanced"},"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"},"adapter":r.map(|r|&r.adapter),"resolution":r.map(|r|r.resolution()),"bloom_enabled":r.map(|r|r.bloom_enabled()),"simulation_hz_measured":self.measured_initial_frame.map(|f|(self.snapshot.frame-f) as f64*1000./self.measured_ms.max(0.001)),"measured_seconds":self.measured_ms/1000.,"package_sha256":self.package.digest,"boot_ms":self.boot_ms,"frame":self.snapshot.frame,"observation_digest":unone_engine::observation_digest(&self.snapshot).ok(),"battle":self.snapshot.observations.get("battle"),"fx":self.snapshot.observations.get("fx"),"particle_count":self.snapshot.particles.len(),"camera3d":self.snapshot.camera3d,"observations":self.snapshot.observations,"heightfield_revisions":self.snapshot.heightfields.iter().map(|(id,field)|(id,field.revision())).collect::<BTreeMap<_,_>>(),"drawn":self.drawn,"dropped_ticks":self.dropped,"submitted_instances_last_frame":r.map(|r|r.submitted),"draw_calls_last_frame":r.map(|r|r.draws),"upload_bytes_last_frame":r.map(|r|r.uploaded),"mesh_triangles_last_frame":r.map(|r|r.triangles),"lod_instances_last_frame":r.map(|r|r.lod_counts),"presentation_batches":r.map(|r|&r.presentation_batches),"instance_prepare_ms_last_frame":r.map(|r|r.lod_ms),"presentation_warnings":self.presentation_warnings,"interval":stats(&self.samples.interval_ms),"tick":stats(&self.samples.tick_ms),"render_submit":stats(&self.samples.render_submit_ms),"renderer_cpu_phases":self.samples.renderer_phases.iter().map(|(k,v)|(*k,stats(v))).collect::<BTreeMap<_,_>>(),"fps":if self.samples.interval_ms.is_empty(){0.}else{1000.*self.samples.interval_ms.len() as f64/self.samples.interval_ms.iter().sum::<f64>()},"error":self.error,"measurement":{"timing_window_capacity":16384,"seed":self.settings.seed,"warmup_presentations":self.settings.warmup,"prewarm_ticks":self.settings.prewarm_ticks,"fixed_tick":self.settings.fixed_tick,"gpu_time_available":false,"submitted_is_not_visible_count":true,"render_submit_includes_driver_wait":true,"digest_outside_timing":true,"capture_enabled":self.settings.capture_dir.is_some(),"freeze_simulation":self.settings.freeze_simulation,"lod_enabled":!self.settings.disable_lod}});
         value["audio"] = self.audio.report();
+        value["application"] = json!(self.snapshot.application);
+        value["quit_request_presented"] = json!(self.quit_request_presented);
+        value["spatial"] = self.runtime.spatial_report();
+        if let Some(replay) = &self.input_replay {
+            value["input_replay"] = replay.report();
+            value["input_replay"]["successful_presentations"] = json!(self.drawn);
+            value["input_replay"]["gpu_readiness_emitted"] = json!(self.ready_emitted);
+        }
         if let Some(path) = &self.report {
             if let Err(e) = std::fs::write(path, serde_json::to_vec_pretty(&value).unwrap()) {
                 self.error = Some(format!("NATIVE_REPORT_WRITE_FAILED: {e}"));
@@ -387,12 +520,16 @@ impl ApplicationHandler for App {
         let result = (|| -> R<_> {
             let mut attributes = Window::default_attributes()
                 .with_title("Unone Native Player")
-                .with_inner_size(winit::dpi::LogicalSize::new(1280, 720));
+                .with_inner_size(winit::dpi::PhysicalSize::new(
+                    self.settings.width.unwrap_or(1280), self.settings.height.unwrap_or(720)));
             // The native player has no file-import contract. Keep Windows OLE
             // drag/drop registration disabled; this does not affect rendering.
             #[cfg(target_os = "windows")]
             {
                 attributes = attributes.with_drag_and_drop(false);
+                if self.input_replay.is_some() {
+                    attributes = attributes.with_active(false);
+                }
             }
             let window = Arc::new(
                 event_loop
@@ -409,7 +546,7 @@ impl ApplicationHandler for App {
                 let size = w.inner_size();
                 if let Err(e) = self
                     .runtime
-                    .set_viewport_aspect(size.width as f64 / size.height.max(1) as f64)
+                    .set_viewport_size(size.width.max(1),size.height.max(1))
                 {
                     self.fail(e.explanation, event_loop);
                     return;
@@ -445,7 +582,7 @@ impl ApplicationHandler for App {
                 if s.height > 0 {
                     if let Err(e) = self
                         .runtime
-                        .set_viewport_aspect(s.width as f64 / s.height as f64)
+                        .set_viewport_size(s.width.max(1),s.height)
                     {
                         self.fail(e.explanation, event_loop);
                         return;
@@ -455,26 +592,23 @@ impl ApplicationHandler for App {
                     r.resize(s.width, s.height);
                 }
             }
-            WindowEvent::KeyboardInput { event, .. } => {
-                let action = match event.physical_key {
-                    PhysicalKey::Code(KeyCode::Escape) => {
-                        if event.state == ElementState::Pressed {
-                            self.finish();
-                            event_loop.exit();
-                        }
-                        None
-                    }
-                    PhysicalKey::Code(KeyCode::ArrowLeft) => Some("Left"),
-                    PhysicalKey::Code(KeyCode::ArrowRight) => Some("Right"),
-                    _ => None,
-                };
+            WindowEvent::KeyboardInput { event, .. } if self.input_replay.is_none() => {
+                let pressed = event.state == ElementState::Pressed;
+                if application::escape_quits(&self.snapshot.application, event.physical_key, pressed) {
+                    self.finish();
+                    event_loop.exit();
+                    return;
+                }
+                let action = key_action(event.physical_key);
                 if let Some(a) = action {
-                    self.host_input
-                        .actions
-                        .insert(a.into(), event.state == ElementState::Pressed);
+                    // Always accept a release, including an Escape held while
+                    // the game switches back to the legacy quit policy.
+                    if a != "Escape" || self.snapshot.application.escape_behavior == unone_engine::EscapeBehavior::Action || !pressed {
+                        self.keyboard_input.event(a, pressed);
+                    }
                 }
             }
-            WindowEvent::CursorMoved { position, .. } => {
+            WindowEvent::CursorMoved { position, .. } if self.input_replay.is_none() => {
                 let size = self.window.as_ref().unwrap().inner_size();
                 self.cursor = [
                     position.x / size.width.max(1) as f64 * 100.,
@@ -494,7 +628,7 @@ impl ApplicationHandler for App {
                 state,
                 button: winit::event::MouseButton::Left,
                 ..
-            } => {
+            } if self.input_replay.is_none() => {
                 if state == ElementState::Pressed {
                     if !self.ui_input.down(
                         self.snapshot.ui.as_ref(),
@@ -511,7 +645,18 @@ impl ApplicationHandler for App {
                     self.world_pointer(self.cursor[0], self.cursor[1], false, true);
                 }
             }
-            WindowEvent::Touch(touch) => {
+            WindowEvent::MouseInput {
+                state,
+                button: winit::event::MouseButton::Right,
+                ..
+            } if self.input_replay.is_none() => {
+                // Do not send secondary clicks through the primary UI router.
+                self.mouse_right_input.event(state == ElementState::Pressed, self.cursor);
+            }
+            WindowEvent::MouseInput {state,button:winit::event::MouseButton::Middle,..} if self.input_replay.is_none()=>{
+                self.mouse_middle_input.event(state==ElementState::Pressed,self.cursor);
+            }
+            WindowEvent::Touch(touch) if self.input_replay.is_none() => {
                 let size = self.window.as_ref().unwrap().inner_size();
                 let x = touch.location.x / size.width.max(1) as f64 * 100.;
                 let y = 100. - touch.location.y / size.height.max(1) as f64 * 100.;
@@ -551,7 +696,10 @@ impl ApplicationHandler for App {
                 self.units += elapsed.as_nanos() * 60;
                 let due = self.units / 1_000_000_000;
                 self.units %= 1_000_000_000;
-                let steps = if self.settings.freeze_simulation {
+                let steps = if self.settings.freeze_simulation || self.snapshot.application.quit_requested {
+                    0
+                } else if self.input_replay.is_some() && self.replay_pending_presentation {
+                    // Retry a lost/timeout surface without consuming another input.
                     0
                 } else if self.settings.fixed_tick {
                     1
@@ -565,30 +713,16 @@ impl ApplicationHandler for App {
                         .get_or_insert(self.snapshot.frame);
                 }
                 for _ in 0..steps {
-                    self.ui_input.reconcile(self.snapshot.ui.as_ref());
-                    if let Some(error) = self.ui_input.take_error() {
+                    let t = Instant::now();
+                    if let Err(error) = self.advance_tick() {
                         self.fail(error, event_loop);
                         return;
                     }
-                    if let Some((action, down)) = self.ui_input.next_edge() {
-                        self.host_input.actions.insert(action, down);
-                    }
-                    let mut input = self.host_input.clone();
-                    input.ui_sliders = self.ui_input.drain_sliders();
-                    if let Some(p) = self.pointer_edges.pop_front() {
-                        input.pointer = Some(p);
-                    }
-                    let t = Instant::now();
-                    match self.runtime.tick_with_input(&input) {
-                        Ok(s) => self.snapshot = s,
-                        Err(e) => {
-                            self.fail(e.explanation, event_loop);
-                            return;
-                        }
-                    }
+                    self.replay_pending_presentation = self.input_replay.is_some();
                     if measuring {
                         self.samples.tick_ms.push(t.elapsed().as_secs_f64() * 1000.);
                     }
+                    if self.snapshot.application.quit_requested { break; }
                 }
                 self.audio.sync(&self.snapshot);
                 for effect in &self.snapshot.effects {
@@ -609,6 +743,7 @@ impl ApplicationHandler for App {
                 let rendered = self.renderer.as_mut().unwrap().render(&self.snapshot);
                 match rendered {
                     Ok(true) => {
+                        self.replay_pending_presentation = false;
                         if !self.ready_emitted {
                             emit_ready(&self.package.digest, self.renderer.as_ref().unwrap());
                             self.ready_emitted = true;
@@ -631,6 +766,12 @@ impl ApplicationHandler for App {
                             self.samples
                                 .render_submit_ms
                                 .push(start.elapsed().as_secs_f64() * 1000.);
+                        }
+                        if application::finish_requested(&self.snapshot.application, true, self.settings.headless) {
+                            self.quit_request_presented = true;
+                            self.finish();
+                            event_loop.exit();
+                            return;
                         }
                     }
                     Ok(false) => {}
@@ -661,10 +802,20 @@ impl ApplicationHandler for App {
 }
 pub fn desktop() -> R<()> {
     if std::env::args().nth(1).as_deref() == Some("--describe") {
-        println!(
-            "{}",
-            json!({"compiled_systems":unone_engine::compiled_systems(),"runtime_packages":unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default()),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","nodes":["text","button","image","panel","slider","combobox","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported","styles":"typed leaf typography and box styles; vertical design units; explicit font size never shrinks","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
-        );
+        let mut descriptor =
+            json!({"compiled_systems":unone_engine::compiled_systems(),"runtime_packages":unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default()),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","heightfield","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","nodes":["text","button","image","panel","slider","combobox","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported","styles":"typed leaf typography and box styles; vertical design units; explicit font size never shrinks","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
+        ;
+        descriptor["input_replay"] = replay::declaration();
+        descriptor["input_replay"]["ordered_physical"]=json!({"live":"unsupported","normalized_core_replay":true,"text_ime":false});
+        descriptor["projected_geometry"]=json!({"format":unone_engine::PROJECTED_FORMAT,"vertex_stride":40,"depth":"0..W","uv":"official mesh,bottom-left","color_mode":["linear","encoded"],"filter":["nearest","linear"],"sampling_space":["linear","encoded"],"address_mode":["clamp","repeat"],"alpha_cutoff":"0..1(default0.05);strict less-than discards","material_defaults":{"color_mode":"linear","filter":"nearest","sampling_space":"linear","address_mode":"clamp","alpha_cutoff":0.05},"blend":"opaque/cutout only; no blendlist","projection":"clip-space passthrough;no camera,culling,lighting or fog","world3d_visibility":true,"viewport":"physical pixels with revision"});
+        descriptor["presentation"].as_array_mut().unwrap().push(json!("projected_geometry"));
+        descriptor["projected_geometry"]["alpha_compare"]=json!(["greater_equal","greater"]);
+        descriptor["projected_geometry"]["material_defaults"]["alpha_compare"]=json!("greater_equal");
+        descriptor["raster"]=json!({"sample_count":1,"antialias":{"omitted":"fixed_single_sample","false":"accepted_single_sample","true":"unsupported_preflight"},"static_until_relaunch":true});
+        descriptor["raster"]["projected_raster"]=json!({"omitted":"native_host_raster","explicit":"unsupported_package_admission","before_runtime_or_gpu":true});
+        descriptor["raster"]["projected_material_profile"]=json!({"omitted":"legacy_unchanged","explicit":"unsupported_package_admission","snapshot":"unsupported_before_GPU_prepare"});
+        descriptor["spatial"] = json!({"api_version":1,"backends":["cpu","wgpu"],"default":"cpu","configured_by":"player.presentation.json:spatial_backend or --spatial-backend cpu|gpu|auto"});
+        println!("{descriptor}");
         return Ok(());
     }
     let boot = Instant::now();
@@ -688,13 +839,21 @@ pub fn desktop() -> R<()> {
             "--headless" => settings.headless = true,
             "--fixed-tick" => settings.fixed_tick = true,
             "--seconds" | "--capture-dir" | "--root" | "--frames" | "--warmup" | "--seed"
-            | "--report" | "--prewarm-ticks" => {
+            | "--report" | "--prewarm-ticks" | "--width" | "--height" | "--input-sequence" | "--spatial-backend" => {
                 let key = &args[i];
                 i += 1;
                 let v = args.get(i).ok_or("NATIVE_ARGUMENT_VALUE_REQUIRED")?;
                 match key.as_str() {
+                    "--spatial-backend" => settings.spatial_backend = Some(v.clone()),
                     "--root" => root = v.into(),
                     "--report" => report = Some(PathBuf::from(v)),
+                    "--input-sequence" => settings.input_sequence = Some(PathBuf::from(v)),
+                    "--width" | "--height" => {
+                        let pixels: u32 = v.parse().map_err(|_| "INVALID_WINDOW_SIZE")?;
+                        if !(180..=7680).contains(&pixels) { return Err("INVALID_WINDOW_SIZE: use 180..7680 pixels".into()); }
+                        if key == "--width" { settings.width = Some(pixels); }
+                        else { settings.height = Some(pixels); }
+                    }
                     "--seconds" => {
                         settings.measure_seconds =
                             v.parse().map_err(|_| "INVALID_MEASUREMENT_DURATION")?
@@ -731,7 +890,7 @@ pub fn desktop() -> R<()> {
         app.boot_ms = boot.elapsed().as_secs_f64() * 1000.;
         for i in 0..app.settings.frames + app.settings.warmup {
             let t = Instant::now();
-            app.snapshot = app.runtime.tick().map_err(|e| e.explanation)?;
+            app.advance_tick()?;
             if i >= app.settings.warmup {
                 app.samples.tick_ms.push(t.elapsed().as_secs_f64() * 1000.);
             }
@@ -789,6 +948,19 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
 
 #[cfg(test)]
 mod telemetry_tests {
+    #[test]
+    fn physical_keys_have_game_neutral_names() {
+        use winit::keyboard::{KeyCode, PhysicalKey};
+        for (key, name) in [(KeyCode::KeyW,"W"), (KeyCode::KeyQ,"Q"),
+            (KeyCode::KeyT,"T"), (KeyCode::KeyG,"G"), (KeyCode::ArrowUp,"Up"),
+            (KeyCode::ArrowDown,"Down"), (KeyCode::ArrowLeft,"Left"),
+            (KeyCode::Space,"Space"), (KeyCode::Digit1,"1"), (KeyCode::Escape,"Escape"),
+            (KeyCode::Insert,"Insert"), (KeyCode::Home,"Home"), (KeyCode::PageUp,"PageUp")] {
+            assert_eq!(super::key_action(PhysicalKey::Code(key)), Some(name));
+        }
+        assert_eq!(super::key_action(PhysicalKey::Code(KeyCode::F12)), None);
+    }
+
     #[test]
     fn gui_executable_path_limit_counts_utf16_code_units() {
         let path = std::path::PathBuf::from(format!("C:/{}", "😀".repeat(130)));

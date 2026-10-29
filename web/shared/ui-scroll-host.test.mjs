@@ -35,6 +35,17 @@ function harness(t,snapshot,options={}){
  return {host,stage,canvas,win,state,draw};
 }
 const wheel=(canvas,x,y,deltaY)=>canvas.dispatch('wheel',{clientX:x*10,clientY:(100-y)*10,deltaX:0,deltaY,deltaMode:0});
+test('external ordered router obtains real UI receipts exactly once and omission keeps legacy listeners',t=>{
+ const {host,canvas,win}=harness(t,screen([view('scroll',[button('tail',110)])]));
+ assert.equal(typeof host.setExternalInput,'function');host.setExternalInput(true);
+ assert(!wheel(canvas,15,70,100).prevented);assert.equal(host.report()[0].offset.y,0);
+ const e={clientX:150,clientY:300,deltaX:0,deltaY:100,deltaMode:0,preventDefault(){this.prevented=true;}};
+ assert.equal(host.routeWheel(e),true);assert.equal(host.report()[0].offset.y,10);
+ assert.equal(host.routeWheel({...e,clientX:900}),false);assert(!win.dispatch('keydown',{code:'End'}).prevented);
+ assert.equal(host.routeKey({target:canvas,code:'End',preventDefault(){},stopPropagation(){}}),true);
+ assert.equal(host.report()[0].offset.y,host.report()[0].max.y);host.setExternalInput(false);
+ assert(win.dispatch('keydown',{code:'Home'}).prevented);assert.equal(host.report()[0].offset.y,0);
+});
 
 test('nested wheel chaining, ancestor-clipped rails and control-owned keys',t=>{
  const inner=view('inner',[button('deep',90)]);inner.rect={x:2,y:25,width:20,height:30};

@@ -11,6 +11,7 @@ path = "src/main.rs"
 native-codegen = ["unone-engine/native-codegen"]
 [dependencies]
 unone-engine = { path = "../unone-engine", default-features = false, features = ["all-systems"] }
+unone-spatial-gpu = { path = "../unone-spatial-gpu" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"

@@ -1,0 +1,19 @@
+{
+  "order": 37,
+  "name": "prepare-final-sealing",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "\n$ErrorActionPreference='Stop'\n$path='D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\Invoke-Recorded.ps1'\nCopy-Item -LiteralPath $path -Destination 'D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\Invoke-Recorded-original.ps1'\n$text=Get-Content -LiteralPath $path -Raw\n$text=$text.Replace('[int]$TimeoutMs=120000','[int]$TimeoutMs=120000,'+[Environment]::NewLine+' [switch]$SealAfter')\n$text=$text.Replace('timeoutMs=$TimeoutMs;startedUtc=', 'timeoutMs=$TimeoutMs;sealAfter=[bool]$SealAfter;startedUtc=')\n$text+=@'\n\nif($SealAfter){\n $manifestPath=Join-Path $root 'SHA256SUMS.json'\n $sealPath=Join-Path $root 'SEAL.txt'\n if((Test-Path -LiteralPath $manifestPath) -or (Test-Path -LiteralPath $sealPath)){throw 'Evidence already sealed'}\n $files=@(Get-ChildItem -LiteralPath $root -File -Recurse | Sort-Object FullName | ForEach-Object {\n  [ordered]@{path=$_.FullName.Substring($root.Length+1).Replace('\\','/');bytes=$_.Length;sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}\n })\n $manifest=[ordered]@{algorithm='SHA256';excluded=@('SHA256SUMS.json','SEAL.txt');files=$files}\n [IO.File]::WriteAllText($manifestPath,($manifest | ConvertTo-Json -Depth 20))\n $detached=(Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash.ToLowerInvariant()\n [IO.File]::WriteAllText($sealPath,('SHA256SUMS.json '+$detached+[Environment]::NewLine))\n}\n\n'@\n[IO.File]::WriteAllText($path,$text)\n[IO.File]::WriteAllText('D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\orchestration-failure-001.txt',\"functions.exec pre-execution JavaScript parse failure while composing seal recorder extension. Raw result: Script error: SyntaxError: Unexpected identifier 'r'. No shell or SDK command executed, and no artifact changed by the failed invocation. Cause: unescaped PowerShell backtick inside a JavaScript template literal. Repaired by using [Environment]::NewLine.\")\n$first=Get-Content -LiteralPath 'D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\FIRST-USE.json' -Raw | ConvertFrom-Json\n$first.laterToolingFailures+= [pscustomobject]@{step='between 036 and 037';kind='orchestration-preexecution-syntax';outcome=\"functions.exec JavaScript SyntaxError: Unexpected identifier 'r'; no shell/SDK command ran; raw error retained in orchestration-failure-001.txt\"}\n[IO.File]::WriteAllText('D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\FIRST-USE.json',($first | ConvertTo-Json -Depth 20))\nWrite-Output 'Recorder can seal after all child raw output and metadata close; original recorder and orchestration failure retained.'\n"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:27:43.6940941Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 2035,
+  "endedUtc": "2026-10-23T14:27:45.7782465Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\037-prepare-final-sealing.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\037-prepare-final-sealing.stderr"
+}

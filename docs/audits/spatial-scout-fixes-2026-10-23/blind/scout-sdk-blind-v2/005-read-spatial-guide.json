@@ -1,0 +1,19 @@
+{
+  "order": 5,
+  "name": "read-spatial-guide",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "Get-Content -LiteralPath docs/spatial-batches.md -Raw"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:23.8303737Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 466,
+  "endedUtc": "2026-10-23T14:15:24.3710776Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\005-read-spatial-guide.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\005-read-spatial-guide.stderr"
+}

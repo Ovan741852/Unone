@@ -1,7 +1,24 @@
+mod application;
+pub use application::{ApplicationState, EscapeBehavior};
 mod shader;
+/// Backend-independent packed geometry batches and reference query semantics.
+pub mod spatial;
 pub use shader::{ShaderMaterialDefinition, ShaderUniform};
 mod mesh;
 pub use mesh::{MeshAsset, MeshLod, validate_mesh_geometry};
+mod heightfield;
+pub use heightfield::{Heightfield, HeightfieldDefinition, HeightfieldPatch};
+mod projected;
+pub use projected::{ProjectedBatch,ProjectedViewport,ProjectedScissor,ProjectedColorMode,ProjectedFilter,ProjectedSamplingSpace,ProjectedAddressMode,ProjectedAlphaCompare,PROJECTED_FORMAT};
+mod projected_frame;
+mod physical_input;
+mod physical_input_validation;
+mod physical_input_session;
+pub use physical_input::{PhysicalBatch,PhysicalEvent,PhysicalReceipt};
+pub use projected_frame::{ProjectedFrame,ProjectedFrameDraw,PROJECTED_FRAME_PROFILE,PROJECTED_FRAME_GOURAUD_PROFILE};
+mod projected_frame_material;
+pub use projected_frame_material::*;
+mod projected_frame_validation;
 #[cfg(feature = "dev-tools")]
 mod api;
 #[cfg(feature = "dev-tools")]
@@ -46,6 +63,8 @@ mod scene;
 mod schema;
 mod systems;
 mod ui;
+mod ui_cursor;
+pub use ui_cursor::{UiCursor,CursorFilter};
 #[cfg(feature = "dev-tools")]
 mod verify;
 mod world;
@@ -90,6 +109,7 @@ pub use developer::{
 };
 pub use diagnostics::{
     ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult, SourceLocation,
+    EngineDiagnostic, EngineDiagnosticContext, EngineDiagnosticRecovery,
 };
 #[cfg(feature = "dev-tools")]
 pub use diff::{
@@ -109,12 +129,12 @@ pub use performance::{
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
     AnimationAssertion, AudioAssertion, EffectsAssertion, InputFrame, ObservationAssertion,
-    PointerInput, SliderInteraction, SliderPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
+    PointerInput, SliderInteraction, SliderPhase, TextInputInteraction, TextInputPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
     ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
     UiPreviewSpec,
 };
 pub use runtime::{
-    CheckReport, EngineRuntime, RunReport, SourceProject, TestCaseReport, TestSuiteReport,
+    CheckReport, EngineRuntime, RunReport, SourceProject, SpatialTask, TestCaseReport, TestSuiteReport,
     TypeCheckReport, encode_observation, observation_digest,
 };
 pub use scene::parse_scene_fragment;
@@ -125,7 +145,7 @@ pub use systems::{
     SystemState, SystemStatus, compiled_systems, describe as describe_system,
     search as search_systems,
 };
-pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiBackgroundScope, UiImageFit, UiNode, UiRect, UiTree, UiSlice, UiBudget, UiUsage, UiStyle, UiInsets, UiTextAlign, UiVerticalAlign, UiTextWrap, UiTextOverflow, UiSliderAxis, UiSliderDrag, ui_contract};
+pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiBackgroundScope, UiImageFit, UiImageQuad, UiNode, UiRect, UiTree, UiSlice, UiBudget, UiUsage, UiStyle, UiInsets, UiTextAlign, UiVerticalAlign, UiTextWrap, UiTextOverflow, UiSliderAxis, UiSliderDrag, ui_contract};
 #[cfg(feature = "dev-tools")]
 pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use world::{
@@ -150,3 +170,5 @@ pub use particle::{
 
 mod canonical_hash;
 pub use canonical_hash::{CanonicalHashWork, CanonicalHasher};
+mod host_time;
+pub use host_time::{HostTimeConfig, HostTimeSample, HostTimeTape, HostTimeTransaction};

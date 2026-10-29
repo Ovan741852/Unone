@@ -2,17 +2,24 @@
 use super::ApiState;
 use crate::systems::SystemSettings;
 use mlua::{Lua, Table, Value};
+mod application;
 mod audio;
 mod camera;
 mod debug;
 mod entity;
 mod input;
+mod heightfield;
+mod host_time;
+mod projected;
+mod projected_frame;
 #[cfg(feature = "jobs")]
 mod jobs;
 mod physics;
 mod presentation;
 mod state;
+mod ui_cursor;
 mod shader;
+mod spatial;
 pub(super) mod value;
 
 pub(super) fn build_api(
@@ -21,7 +28,12 @@ pub(super) fn build_api(
     systems: &SystemSettings,
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
+    api.set("hostTime", host_time::bind(lua, state)?)?;
+    api.set("application", application::bind(lua, state)?)?;
+    api.set("heightfield", heightfield::bind(lua, state)?)?;
+    api.set("projected", projected::bind(lua, state)?)?;
     api.set("shader", shader::bind(lua, state)?)?;
+    api.set("spatial", spatial::bind(lua, state)?)?;
     #[cfg(feature = "jobs")]
     api.set("jobs",disable_if_off(lua,systems,"jobs",jobs::bind(lua,state)?)?)?;
     #[cfg(not(feature = "jobs"))]

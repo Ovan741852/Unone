@@ -1,0 +1,11 @@
+Print canonical Luau types, write a contract file, or refresh an explicitly marked script block
+
+Usage: game.exe api typings [OPTIONS]
+
+Options:
+      --output <OUTPUT>                Write the type contract to this path instead of stdout
+      --sdk <SDK>                      Portable SDK root (otherwise environment or executable-relative discovery)
+      --project <PROJECT>              [default: .]
+      --update-script <UPDATE_SCRIPT>  Refresh exactly one marked API type block in this existing project-relative script
+      --json                           
+  -h, --help                           Print help

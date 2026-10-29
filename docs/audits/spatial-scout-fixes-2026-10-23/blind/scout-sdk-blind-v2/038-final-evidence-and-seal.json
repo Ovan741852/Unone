@@ -1,0 +1,20 @@
+{
+  "order": 38,
+  "name": "final-evidence-and-seal",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "\n$ErrorActionPreference='Stop'\n$audit='D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2'\n$records=@(Get-ChildItem -LiteralPath $audit -File -Filter '*.json' | Where-Object {$_.Name -match '^\\d{3}-'} | ForEach-Object {Get-Content -LiteralPath $_.FullName -Raw | ConvertFrom-Json})\n$completed=@($records | Where-Object {$null -ne $_.exitCode})\n$nonzero=@($completed | Where-Object {$_.exitCode -ne 0} | ForEach-Object {[ordered]@{order=$_.order;name=$_.name;exitCode=$_.exitCode}})\n$replay=Get-Content -LiteralPath (Join-Path $audit 'replay-run/verification.json') -Raw | ConvertFrom-Json\nif(-not $replay.passed -or $replay.backendObserved -ne 'cpu'){throw 'Independent replay evidence did not pass'}\nforeach($record in $completed){\n if(-not (Test-Path -LiteralPath $record.stdoutPath) -or -not (Test-Path -LiteralPath $record.stderrPath)){throw 'Missing raw child output'}\n if($record.timedOut){throw 'Unexpected recorded timeout'}\n}\n$main=Get-Content -LiteralPath (Join-Path $audit 'final-project/scripts/main.luau') -Raw\n$first=Get-Content -LiteralPath (Join-Path $audit 'first-authored-project/scripts/main.luau') -Raw\nif($main -cne $first){throw 'First/final Luau differ unexpectedly'}\n$files=@(Get-ChildItem -LiteralPath (Join-Path $audit 'final-project') -Recurse -File | ForEach-Object {$_.FullName.Substring((Join-Path $audit 'final-project').Length+1).Replace('\\','/')} | Sort-Object)\n$counters=[ordered]@{\n completedRecordedChildCommandsBeforeFinalSeal=$completed.Count\n finalSealingOperation=38\n nonzeroRecordedChildCommands=$nonzero\n preexecutionOrchestrationFailures=1\n timeouts=0\n firstStrictSuccessStep=26\n firstSuccessfulSubmissionStep=27\n firstDeliveredGeometryStep=28\n authoredLuauTypeFailures=0\n deliberateNegativeCases=3\n firstUseNativeRuns=2\n independentReplayNativeRuns=2\n observedBackend='cpu'\n gpuExecutionClaims=0\n sourceFallbackStep=$null\n repoSourceReads=0\n rubricReads=0\n firstAndFinalLuauIdentical=$true\n independentReplayPassed=$replay.passed\n emptyHitsShapeDeviation=$replay.emptyHitsShapeDeviation\n finalExampleFiles=$files\n}\n[IO.File]::WriteAllText((Join-Path $audit 'COUNTERS.json'),($counters | ConvertTo-Json -Depth 20))\n$counters | ConvertTo-Json -Depth 20\n"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "sealAfter": true,
+  "startedUtc": "2026-10-23T14:28:32.7544452Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 478,
+  "endedUtc": "2026-10-23T14:28:33.2741966Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\038-final-evidence-and-seal.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\038-final-evidence-and-seal.stderr"
+}

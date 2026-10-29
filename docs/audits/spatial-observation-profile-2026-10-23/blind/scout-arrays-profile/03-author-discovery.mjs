@@ -1,0 +1,10 @@
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
+import {op,powershell,sdk,audit} from './runner.mjs';
+const game=sdk+'/bin/game.exe';
+for(const name of ['spatial.create','spatial.update','spatial.submit','spatial.take','spatial.profile','observation.array','observation.setArray']) await op('describe-'+name,game,['--sdk',sdk,'api','describe',name]);
+await op('search-entity',game,['--sdk',sdk,'api','search','entity create transform']);
+await op('typings',game,['--sdk',sdk,'api','typings']);
+const project=fs.mkdtempSync(path.join(os.tmpdir(),'unone-spatial-author-'));
+fs.writeFileSync(path.join(audit,'project-location.json'),JSON.stringify({project,createdAt:new Date().toISOString(),purpose:'Fresh isolated generic geometry SDK trial'},null,2)+'\n');
+await op('project-init',game,['--sdk',sdk,'--project',project,'--json','project','init','--name','Generic spatial author trial'],{nature:'project-creation'});
+await op('starter-inspection',...powershell(`Get-Content -LiteralPath '${project}/project.unone.json' -Raw; Get-Content -LiteralPath '${project}/scripts/main.luau' -Raw`));

@@ -1,0 +1,505 @@
+{
+  "schema": "unone.ai-native.audit.v1",
+  "rubricVersion": "1.0.0",
+  "target": {
+    "id": "unone-spatial-observation-profile-v1",
+    "name": "Unone spatial arrays and cost diagnostics",
+    "surface": "mixed",
+    "scope": "Public SDK generic typed JSON-array publication and spatial CPU authoring/cost diagnostics; supplementary informed actual native GPU and fresh WASM CPU/WebGPU main/Worker regression. Excludes gameplay, renderer appearance, speedup/threshold benchmark, device-loss and cross-device certification.",
+    "version": "spatial/profile api_version1 / USB1; game0.1.0; Luau0.734",
+    "revision": "checkout7b9424cf42d0409633c9ce782503075bd09018f9 with preserved concurrent dirty changes; SDK CLI SHA2564fedf99a941c82009272f2ef4315fe809648e4a216d0043408f4331c7a55f180; selected hashes identify bounded inputs.",
+    "environment": "Windows x64; preinstalled toolchains; NVIDIA GeForce RTX5080 native Vulkan, Edge155.0.4283.62 WebGPU; new release SDK and hash-verified WASM. Audit started2026-10-23 and completed2026-10-24 Asia/Taipei; no game edits/install/commit/push."
+  },
+  "trial": {
+    "mode": "retest",
+    "entryPoints": [
+      "artifacts/spatial-observation-profile-sdk/README.md",
+      "artifacts/spatial-observation-profile-sdk/sdk.json",
+      "artifacts/spatial-observation-profile-sdk/bin/game.exe --help"
+    ],
+    "steps": 39,
+    "firstSuccessStep": 30,
+    "sourceFallbackStep": null,
+    "wrongGuesses": 0,
+    "limitations": [
+      "Aggregate is informed/retest; only the separately sealed SDK author is fresh-context/blind. Owner source review, regression tests and replay are not blind authorship.",
+      "Trial steps are39 recorded author subprocess operations,24 public CLI plus2 nested replay CLI. Zero unsupported API/flag guesses; one natural-language search miss, one Node inspection helper syntax failure and one Luau query-literal widening error are retained. Four deliberate API negatives are separate.",
+      "First strict attempt029 failed. Native delivery030 occurred before repair and is not represented as strict-checked. Typed local repair031, strict success032, final run033, independent JSON verification035/036 and fresh-temp replay038 are retained in order.",
+      "Owner capture-blind-replay.json failed a CRLF-versus-LF canonical-block assertion. The byte-normalized content was independently verified equal; only the wrapper was repaired and actually rerun as capture-blind-replay-v2.json with the same subject set. Failed capture and original probe remain unchanged.",
+      "The author used only public SDK/docs/CLI, actual CPU and the external official analyzer. GPU is explicitly untested by that author; actual native/WebGPU checks here are separate informed regressions.",
+      "Native GPU integration is a cold2body4query case;4096x128 is the informed SDK/WASM case;4096x256 is the blind CPU case. They are not a backend speed comparison.",
+      "Unmeasured GPU kernel time is nil in Luau/null in host JSON with an explicit reason. Host phases may overlap/nest; do not sum them or relabel readback wait as kernel duration. Timings exclude Luau/bridge/caller application/setup.",
+      "Publishing wall-clock profile values intentionally makes those observations nondeterministic. Digest equality is asserted only for control versus profile-read-only runs with no diagnostic publication.",
+      "All files read by each small probe wrapper are selected in the same44-subject set, including sealed final fixture inputs and oracle. Executable/analyzer/WASM files are pinned by explicit binary/manifest hashes rather than exceeding the recorder2MiB subject limit.",
+      "Selected source fingerprints are not immutable source copies or a full compiler dependency graph; only blind evidence has a detached manifest seal. Local hashes do not certify authorship or a clean source-to-binary build.",
+      "The10 questions cover this declared scope, not the whole engine. The changed SDK/task scope is not a formal numeric before/after comparison with previous audits, and no renderer, universal speedup or cross-device safety certification is claimed."
+    ]
+  },
+  "subject": [
+    {
+      "path": "docs/spatial-batches.md",
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc"
+    },
+    {
+      "path": "docs/sdk-readme.md",
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "14f1062b32412c9b833cf9caf055c504099fb6e3320d6222890549d2f54e4154"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial.rs",
+      "sha256": "0a9522e7f0a4acf6f5bb24d2ac20f680784bc065742fc8f14aca985378f47214"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime.rs",
+      "sha256": "4dd8769f1eeae80f4560825d6838aa0899e6f297d4b39cb8be828f3a8ed6e2b2"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/value.rs",
+      "sha256": "198b44b25d4229c0a1baebd45a71ebbba93ad1b336206d20182aa44afdb95842"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/state.rs",
+      "sha256": "d5874673d4fb185c8315c3903c895f66952237f8bebe3951c5a6b5f8f3a1fc6b"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/spatial.rs",
+      "sha256": "43497248d9f218b95d104437d3f5599ae318fd7a7dc4f2393a5b1fda25ccf876"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "sha256": "94ae69649dbea852826a490590e3162e609bf1ba25ba57788e96b8c1a3c35d41"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "07efdc483737cbb07ef31b72a60e0f67ae4cf4b47dd8bd83efed8d5e1e4ec3da"
+    },
+    {
+      "path": "crates/unone-web-live-smoke/src/main.rs",
+      "sha256": "6b6ccae0a23b7f8375b5f0fda942d95b818ac8ea258e793f06aa81a5c46f7df9"
+    },
+    {
+      "path": "crates/unone-engine/tests/observation_arrays.rs",
+      "sha256": "34d9bda8e69ecd0a64654f3b6323f18bc180f123cd862d8b0b91add5f5bd3e97"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_runtime.rs",
+      "sha256": "2e5b2144dedf41e7d06d0e66f75eaf2b5716c7bf31467d7402e30e93da6bc962"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/src/lib.rs",
+      "sha256": "e0e9ace2cca371f0f0a1242153245f9b49f94c80fb46e05420687e0925ecd9aa"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/tests/runtime.rs",
+      "sha256": "0ae7938553863c3e315c686d2e4dcab74357531424c7f4f796d2f7cfac79b623"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.toml",
+      "sha256": "9d35c773ab4690eae049a73e2bb7e1b0a251c636062311b368ae0e176671e508"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.lock",
+      "sha256": "1e13e3f2ac20ae987ceeb959ee5427b813de0b1e2ab1b0321c4f4e8919edb6af"
+    },
+    {
+      "path": "web/shared/spatial-gpu.mjs",
+      "sha256": "79d630684148b94024cf3424472ac39801ba9cea14039f85183f88df353b760d"
+    },
+    {
+      "path": "web/shared/spatial-host.mjs",
+      "sha256": "aab13ee77cb1dac3a3fe7e0be64b5eb562d183d5061665271d9f206d2c71fc77"
+    },
+    {
+      "path": "web/shared/spatial.wgsl",
+      "sha256": "2de3388bf58f080cc97e5efc60106cc1b2df649f7a5cf0db7d89478d7b4385c7"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "scripts/verify-spatial-runtime.mjs",
+      "sha256": "f8279b2db99d855a5e42fc82a78d55373e3a4a5b07e92c85110dcbe73f3b6610"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/rubric.mjs",
+      "sha256": "9d1570cf3c4fe17e0eb7df09f6f5fd275a426a40e4ec36ca1e3fe63238ccfc98"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/audit.mjs",
+      "sha256": "dea4baa567707e4b6008f13af525fdf78015ec2a4ea8d2842c68c6168da905a0"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/README.md",
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/sdk.json",
+      "sha256": "d193fefe32795ac399ce0be2f7220b58f3dd9a95deb9a3f9901a82c89137197c"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/docs/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/docs/spatial-batches.md",
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-runtime/runtime.json",
+      "sha256": "4a038e59308bc674d8560a1387de8c64018edd1dfdb4dc04a637947de62ebc66"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/environment.json",
+      "sha256": "48b3317107b628f68758a79d7f09c35f6ac8d113493dc891ddd8cb60c2af4ff7"
+    },
+    {
+      "path": "scripts/verify-spatial-webgpu.mjs",
+      "sha256": "75a87fa041aee2ece963f9af5f9d8c62a29b3db41b220ffb454e7083500b0d12"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/examples/browser_fixtures.rs",
+      "sha256": "9afc362d6d0f5ed6d374ef449f9a8e2f135fb0d5baed554544089c0acbb16059"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/main.final.luau",
+      "sha256": "d71e0029ec0c1af210b05970f691afcf0fd7fe553efadeaf58b1007ccdf37564"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/project.final.json",
+      "sha256": "bda9fb882f03faa678465fe1d9ee33a4ca7ceb59230cfaabd91c5e74d5d29924"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/scene.final.json",
+      "sha256": "c6579579bdf86efb817428f84931d93741f889e06b973bbf9b707889224d685e"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/verify-report.mjs",
+      "sha256": "893c1d5f46766763af1712a3891c9c7f2e807b81bc38861416e800a7815c340b"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "entry",
+      "kind": "document",
+      "path": "artifacts/spatial-observation-profile-sdk/README.md",
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625",
+      "quote": "For generic batched geometry"
+    },
+    {
+      "id": "guide",
+      "kind": "document",
+      "path": "artifacts/spatial-observation-profile-sdk/docs/spatial-batches.md",
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc",
+      "quote": "gpu_kernel_unavailable_reason"
+    },
+    {
+      "id": "types",
+      "kind": "document",
+      "path": "artifacts/spatial-observation-profile-sdk/docs/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec",
+      "quote": "export type SpatialProfile"
+    },
+    {
+      "id": "blind",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/REPORT.txt",
+      "sha256": "5fcdb6b275011f1687a733060cffc7c6566b2aec363e15daf8cacdeac542c4e2",
+      "quote": "sourceFallbackStep is null"
+    },
+    {
+      "id": "milestones",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/milestones.json",
+      "sha256": "d7f1718ca306fcd4571119824c9210247cd87ba4d27e5fa13a87ced4e252e460",
+      "quote": "firstStrictSuccess"
+    },
+    {
+      "id": "author-failure",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/029-first-strict-check.stdout",
+      "sha256": "05c3030115efcb3c99209dda5bf69da8cfc7bd3eacea4c5a59c2ce01706fa46f",
+      "quote": "LUAU_TYPECHECK_FAILED"
+    },
+    {
+      "id": "author-summary",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/measured-summary.json",
+      "sha256": "30840711e1f0dcd5f8e797a624a8b47352b1bc950081a2fd6659ad05192374c7",
+      "quote": "pair_tests_upper_bound"
+    },
+    {
+      "id": "seal",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind-verification.json",
+      "sha256": "c2f3936ba574c52a61d2670fc30c0fbc33fe140bc162d0c37e4ac5013093c209",
+      "quote": "\"ok\": true"
+    },
+    {
+      "id": "validation",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/validation.json",
+      "sha256": "5992f7bd4213b13027254f788701a4030af3fe7e5b0ead238217e87a0966ca18",
+      "quote": "\"passed\": true"
+    },
+    {
+      "id": "source-review",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/source-review.md",
+      "sha256": "93214b6b971dafbc75c9ecbb1ffc86ada85d7a0bb4dbfba0068e79118ae9ba8c",
+      "quote": "No remaining blocking runtime/serialization"
+    },
+    {
+      "id": "public",
+      "kind": "execution",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-public.json",
+      "sha256": "bb816d1563c6c999ce5629ea020c7991b70a99a41e045265a08336214182d92f",
+      "quote": "task_result"
+    },
+    {
+      "id": "web",
+      "kind": "execution",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-web.json",
+      "sha256": "b26b19de1d6c2aab4a9013a5260411a28881306ccb981e6a01fe363be2c78f71",
+      "quote": "task_result"
+    },
+    {
+      "id": "native",
+      "kind": "execution",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-native.json",
+      "sha256": "c6648424052cb596f04bd949e554ea74297716b0a165122079eca73dd3040863",
+      "quote": "task_result"
+    },
+    {
+      "id": "kernel",
+      "kind": "execution",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-kernel.json",
+      "sha256": "05122ef95869bb29972cf55d29028aeba0c34a0170af97178712bbb6934bef3d",
+      "quote": "task_result"
+    },
+    {
+      "id": "blind-replay",
+      "kind": "execution",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/capture-blind-replay-v2.json",
+      "sha256": "d5571f3e99b6f28be47700973f8d2536bdd804f4d6f22ba300252e6aa568e3b9",
+      "quote": "task_result"
+    },
+    {
+      "id": "semantic-review",
+      "kind": "observation",
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/semantic-review.md",
+      "sha256": "fe48eb8ed6a251b16e1ab544addee7105e6a7cc6b1c0d6e97000bcbc7c8072a6",
+      "quote": "I accept the proposed **80.5/100, supported_within_scope**, with all ten dimensions assessed. No rating or blocking factual correction is required. This is a judgment about the declared SDK array publication and spatial diagnostics task, with supplementary informed native/Web regressions. It is not certification of the whole engine, renderer, security isolation, speedup or cross-device determinism."
+    }
+  ],
+  "checks": [
+    {
+      "id": "purpose",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "A fresh SDK-only author found the linked generic geometry guide, used canonical types and preserved caller-owned movement/application policy.",
+      "reason": "The sealed explanation distinguishes CPU default, fixed-tick delivery, host selection and unavailable GPU measurements without source fallback. One representative author does not establish universal first-use behavior.",
+      "nextAction": "Retain the SDK guide links and engine/caller ownership boundary.",
+      "evidence": [
+        "entry",
+        "guide",
+        "blind",
+        "blind-replay",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "capabilities",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Public search/descriptors expose array/setArray, spatial query limits and profile semantics, with the complete guide/types inside the actual new SDK.",
+      "reason": "The fresh author discovered these surfaces and actual CPU execution. One broad entity search returned no matches and a narrower public search recovered; native/browser GPU use is supplementary informed regression.",
+      "nextAction": "Keep public descriptors, complete packaged docs and canonical types synchronized.",
+      "evidence": [
+        "entry",
+        "guide",
+        "types",
+        "blind",
+        "public",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "operation",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "The fresh author independently implemented typed numeric/record publication, nearest/overlap/sweep, invalid replacement and repair, next-tick delivery and ticket/index boundaries through public APIs.",
+      "reason": "First runtime delivery occurred at030 before strict repair; canonical SpatialNearestQuery annotation repaired literal widening, strict check passed032 and final native run033. Reviewed independent geometric/JSON oracle and recorded fresh-temp replay pass, with no casts, publication adapters or source fallback. This rating allows ordinary public-contract authoring repair; it does not claim first-attempt strict success.",
+      "nextAction": "Retain failed029, original/final scripts and replay; use another fresh author after future contract changes.",
+      "evidence": [
+        "blind",
+        "milestones",
+        "author-failure",
+        "blind-replay",
+        "public",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "context",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Ticket/version records distinguish frozen version1 work from repaired version2 work; rejected replacement preserves the original body geometry and unrelated entity.",
+      "reason": "The sealed author and actual replay verify ordered tick1/tick2 delivery, unchanged version after invalid update, version increment after repair and zero remaining tickets. Persistent handles and cross-device restore are outside this case.",
+      "nextAction": "Keep snapshot/version/lifetime contracts explicit without implying save persistence.",
+      "evidence": [
+        "guide",
+        "blind",
+        "blind-replay",
+        "public",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "observation",
+      "status": "verified",
+      "rating": 4,
+      "access": "public",
+      "answer": "Canonical complete results/info/profile publish directly. Empty query results and no-contact hits remain JSON[], authored typed numeric/record/empty/nested arrays work, and plain{} stays an object.",
+      "reason": "Fresh author JSON assertions check every nested hit vector; owner recorder also verifies clearing a marked typed array and failed publication preserving state. Fresh hash-verified WASM repeats empty/nonempty shapes on CPU/WebGPU main and Worker. Read-only profile does not consume work or change canonical replay digest.",
+      "nextAction": "Preserve generic marker validation, array/object distinction and read-only digest regressions.",
+      "evidence": [
+        "types",
+        "blind",
+        "blind-replay",
+        "public",
+        "web",
+        "native",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Duplicate bodyID11 identifies the invalid replacement; same-tick, consumed-ticket and destroyed-index calls expose stable spatial error codes. The corrected replacement and later delivery succeed.",
+      "reason": "The blind run retains actual errors and confirms geometry/version survived rejection. Official type diagnostics identify widened kind:string and the canonical typed local repairs it. Some spatial errors remain strings rather than uniform field/actual/expected records.",
+      "nextAction": "Retain actionable codes and repair examples; consider structured field diagnostics only as a separate generic extension.",
+      "evidence": [
+        "blind",
+        "author-failure",
+        "blind-replay",
+        "public",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "recovery",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Caught early take leaves the ticket usable next tick; rejected replacement preserves version1, repair produces version2, and consumed or destroyed resources reject reuse safely.",
+      "reason": "Public author and replay establish these bounded per-call/lifecycle recovery paths. Fresh author did not exercise device loss, terminal executor recovery or interrupted host completion.",
+      "nextAction": "Keep validation rejection distinct from terminal execution faults; add device interruption tests when that scope is requested.",
+      "evidence": [
+        "guide",
+        "blind",
+        "blind-replay",
+        "public",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "boundaries",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Only local synthetic fixtures and reusable engine APIs are used. Same-tick access, consumed-ticket reuse and destroyed-index submission are rejected; the unrelated scene entity remains unchanged.",
+      "reason": "This demonstrates the geometry/scene and resource lifetime boundaries. It is not an operating-system sandbox or account/security isolation audit; gameplay policy stays in caller Luau.",
+      "nextAction": "Keep geometry queries independent of game movement, targeting policy and hit responses.",
+      "evidence": [
+        "guide",
+        "blind",
+        "blind-replay",
+        "public",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "performance",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "Public spatial.profile exposes bounded work counts, equivalent input bytes, transfer bytes, manager timings and executor host phases. Missing GPU kernel time has an explicit reason, not a fabricated zero.",
+      "reason": "Fresh CPU author compares3x4 and4096x256 using per-batch and cumulative deltas; formal WASM runs4096x128 on CPU/WebGPU main/Worker with preparation/queue/packing/upload/encode/readback/decode. Native GPU cold2x4 separately confirms actual adapter, bytes and absent kernel timing. These locate measured costs but omit Luau/bridge/application/setup and do not establish speedup or a crossover point.",
+      "nextAction": "Use representative application measurements before selecting thresholds; retain exclusions, overlap semantics and unavailability reasons.",
+      "evidence": [
+        "guide",
+        "author-summary",
+        "blind",
+        "blind-replay",
+        "public",
+        "web",
+        "native",
+        "kernel",
+        "semantic-review"
+      ]
+    },
+    {
+      "id": "reproducibility",
+      "status": "verified",
+      "rating": 3,
+      "access": "public",
+      "answer": "All five actual recorder executions share44 selected input hashes, verify current probe hashes and complete without source changes/truncation/timeouts. The126-file blind seal and pinned SDK/analyzer/runtime identities are retained.",
+      "reason": "A fresh author and later informed replay remain distinct, failures are preserved, and read-only profile/control runs have equal nonempty digests. Selected hashes are not immutable snapshots, full source-to-binary attestation, proof of authorship or cross-device determinism.",
+      "nextAction": "Retain this evidence unchanged; create a new audit directory and fresh author for future first-use claims.",
+      "evidence": [
+        "seal",
+        "validation",
+        "milestones",
+        "blind-replay",
+        "public",
+        "web",
+        "native",
+        "kernel",
+        "semantic-review"
+      ]
+    }
+  ],
+  "issues": []
+}

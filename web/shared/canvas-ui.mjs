@@ -2,10 +2,10 @@
 // game controls, hit testing and visual layering are not DOM elements.
 import {uiUsage} from './ui-geometry.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
-import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces} from './ui-style.mjs';
+import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces,layoutUiText,measureUiText} from './ui-style.mjs';
 const actionNode=n=>n.kind==='button'||n.kind==='combobox';
 const dragNode=n=>n.kind==='slider'&&n.drag;
-const inputNode=n=>actionNode(n)||dragNode(n);
+const inputNode=n=>actionNode(n)||dragNode(n)||n.kind==='text_input';
 const inside=(r,x,y)=>x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
 const hit=(n,x,y)=>inside(dragNode(n)?n.drag.hit_rect:n.rect,x,y)&&(!n.clip||inside(n.clip,x,y));
 const dragSignature=n=>JSON.stringify([n.rect,n.drag,n.clip,n.action]);
@@ -19,7 +19,10 @@ export function flattenUi(tree){
   function walk(nodes,depth){
     for(const n of nodes??[]){
       if(n.kind==='component'){walk(n.children,depth+1);continue;}
-      if(!['text','button','image','slider','combobox','panel'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
+      if(!['text','button','image','image_batch','slider','combobox','panel','text_input'].includes(n.kind))throw Error(`UI_NODE_UNSUPPORTED: ${n.kind}`);
+      if(n.kind==='text_input'&&(typeof n.text!=='string'||(n.placeholder!==undefined&&typeof n.placeholder!=='string')
+        ||(n.max_length!==undefined&&(!Number.isInteger(n.max_length)||n.max_length<1||n.max_length>16384))
+        ||['focused','enabled'].some(k=>n[k]!==undefined&&typeof n[k]!=='boolean')))throw Error(`UI_TEXT_INPUT_INVALID: ${n.id}`);
       if(!n.rect||!['x','y','width','height'].every(k=>Number.isFinite(n.rect[k]))||n.rect.width<=0||n.rect.height<=0)throw Error(`UI_RECT_INVALID: ${n.id}`);
       if(n.clip&&(!['x','y','width','height'].every(k=>Number.isFinite(n.clip[k]))||n.clip.width<=0||n.clip.height<=0))throw Error(`UI_CLIP_INVALID: ${n.id}`);
       if(n.drag&&(n.kind!=='slider'||!['horizontal','vertical'].includes(n.drag.axis??'horizontal')||typeof(n.drag.reverse??false)!=='boolean'||typeof(n.drag.enabled??true)!=='boolean'||['track_rect','hit_rect'].some(key=>{const r=n.drag[key];return !r||!['x','y','width','height'].every(k=>Number.isFinite(r[k]))||r.width<=0||r.height<=0;})))throw Error(`UI_SLIDER_DRAG_INVALID: ${n.id}`);
@@ -60,7 +63,7 @@ export function createUiPointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
       return true;
     },
     releaseAll(){for(const id of [...captured.keys()]){release(id,'cancel');released.add(id);}},
-    hitTest(x,y){const reversed=[...nodes].reverse(),n=reversed.find(n=>inputNode(n)&&hit(n,x,y))??reversed.find(n=>n.kind!=='panel'&&hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null,...(dragNode(n)?{kind:'slider',sliderDrag:true}:{})}:null;},
+    hitTest(x,y){const reversed=[...nodes].reverse(),n=reversed.find(n=>inputNode(n)&&hit(n,x,y))??reversed.find(n=>!['panel','image_batch'].includes(n.kind)&&hit(n,x,y));return n?{nodeId:n.id,action:actionNode(n)?n.action:null,...(dragNode(n)?{kind:'slider',sliderDrag:true}:n.kind==='text_input'?{kind:'text_input'}:{})}:null;},
     get capturedPointers(){return [...captured.keys()];},
   };
 }
@@ -78,7 +81,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
   const router=createUiPointerRouter({onAction,onSlider}),assets=new Map();let previous=null,dirty=true,disposed=false,nodes=[],generation=0;
-  const diagnostics=new Map();let usage=null,renderMs=null,renderRegions=0;
+  const diagnostics=new Map(),quadDiagnosticKeys=new Map();let usage=null,renderMs=null,renderRegions=0;
   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
   function ensureAsset(id){if(assets.has(id))return assets.get(id);
     const entry={image:null,state:'loading'};assets.set(id,entry);const ticket=generation;
@@ -87,11 +90,22 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){entry.state='failed';reportError(id,error);dirty=true;requestRender();}});
     return entry;
   }
-  function image(node,x,y,w,h,target=ctx){const e=ensureAsset(node.asset);if(!e.image)return;
+  function image(node,x,y,w,h,target=ctx,quadIndex=null){const e=ensureAsset(node.asset);if(!e.image)return;
+    let key=quadIndex===null?node.id:quadDiagnosticKeys.get(node.id)?.get(quadIndex);
     try {
       renderRegions+=paintUiImage(target,node,e.image,{x,y,width:w,height:h,viewportHeight:canvas.height});
-      diagnostics.delete(node.id);
-    }catch(error){const value={code:String(error.message).split(':')[0],node:node.id,asset:node.asset,message:error.message};diagnostics.set(node.id,value);onDiagnostic(value);}
+      if(key!==undefined)diagnostics.delete(key);
+    }catch(error){const original=String(error.message).split(':')[0],code=quadIndex!==null&&original==='UI_SLICE_BOUNDS'?'UI_IMAGE_BATCH_SOURCE_BOUNDS':original;
+      if(key===undefined){let keys=quadDiagnosticKeys.get(node.id);if(!keys){keys=new Map();quadDiagnosticKeys.set(node.id,keys);}key=Symbol();keys.set(quadIndex,key);}
+      const value={code,node:node.id,asset:node.asset,message:error.message,...(quadIndex!==null?{quad:quadIndex}:{})};diagnostics.set(key,value);onDiagnostic(value);}
+  }
+  function imageBatch(node){
+    for(const [index,q]of node.quads.entries()){
+      const r=q.rect,leaf={id:node.id,asset:q.asset,fit:'stretch',...(q.source?{slice:{left:0,top:0,right:0,bottom:0,pixels_per_unit:1,source:q.source}}:{})};
+      ctx.save();
+      try{ctx.globalAlpha=(ctx.globalAlpha??1)*(q.opacity??1);image(leaf,r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100,ctx,index);}
+      finally{ctx.restore();}
+    }
   }
   function text(node,x,y,w,h,scale=1){if(!node.text)return;const lines=String(node.text).split('\n');
     const lh=Number.isFinite(node.lineHeight)&&node.lineHeight>0?node.lineHeight:1.2;
@@ -104,6 +118,27 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
     const anchorX=align==='start'?x+pad:align==='end'?x+w-pad:x+w/2;
     lines.forEach((line,i)=>ctx.fillText(line,anchorX,y+h/2+(i-(lines.length-1)/2)*size*lh));ctx.restore();
   }
+  function textInput(target,node,bounds){
+    const empty=node.text.length===0,style={text_align:'start',vertical_align:'middle',wrap:'none',...(node.style??{})};
+    const value={...node,text:empty?(node.placeholder??''):node.text,style};
+    const layout=layoutUiText(target,value,{...bounds,fontFamily,textColor}),c=layout.content,line=layout.lines[0];
+    const editing=node.text_edit,focus=editing?.focused===true;
+    const start=Math.max(0,Math.min(node.text.length,editing?.selection_start??node.text.length));
+    const end=Math.max(start,Math.min(node.text.length,editing?.selection_end??start));
+    target.save();
+    try{
+      target.beginPath();target.rect(c.x,c.y,c.width,c.height);target.clip();target.font=layout.font;
+      const left=measureUiText(target,node.text.slice(0,start),layout.spacing),right=measureUiText(target,node.text.slice(0,end),layout.spacing);
+      const scroll=focus?Math.max(0,right-c.width+2):0,x=(line?.x??c.x)-scroll,y=line?.y??c.y+c.height/2;
+      if(focus&&end>start){target.fillStyle='rgba(70,119,160,.3)';target.fillRect(x+left,y-layout.size*.6,Math.max(1,right-left),layout.size*1.2);}
+      const opacity=target.globalAlpha??1;
+      target.fillStyle=layout.color;target.globalAlpha=opacity*(empty?.5:1);target.textAlign='left';target.textBaseline='middle';
+      if('letterSpacing'in target)target.letterSpacing=`${layout.spacing}px`;
+      target.fillText(value.text,x,y);target.globalAlpha=opacity;
+      if(focus&&start===end){target.fillStyle=layout.color;target.fillRect(x+left,y-layout.size*.55,Math.max(1,bounds.viewportHeight/1000),layout.size*1.1);}
+      if(focus&&editing.composing){target.fillStyle=layout.color;target.fillRect(x,y+layout.size*.6,Math.max(1,measureUiText(target,node.text,layout.spacing)),1);}
+    }finally{target.restore();}
+  }
   return {
     draw(snapshot,{width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}={}){
       if(disposed)throw Error('UI_DISPOSED');if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return;
@@ -111,23 +146,25 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
       const tree=(snapshot?.world??snapshot)?.ui??null,key=JSON.stringify(tree);
       if(key!==previous){usage=uiUsage(tree);nodes=flattenUi(tree);router.setTree(tree);previous=key;dirty=true;
-        const used=new Set(nodes.filter(n=>n.kind==='image').map(n=>n.asset));for(const [id,e]of assets)if(!used.has(id)){e.image?.close?.();assets.delete(id);diagnostics.delete(id);}
-        for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);}
+        const used=new Set(nodes.flatMap(n=>n.kind==='image_batch'?n.quads.map(q=>q.asset):n.kind==='image'?[n.asset]:[]));for(const [id,e]of assets)if(!used.has(id)){e.image?.close?.();assets.delete(id);diagnostics.delete(id);}
+        for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
       if(!dirty)return;dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
       for(const node of nodes){const r=node.rect,x=r.x*bw/100,y=(100-r.y-r.height)*bh/100,w=r.width*bw/100,h=r.height*bh/100;
         const c=node.clip;
         if(c){if(r.x>=c.x+c.width||r.x+r.width<=c.x||r.y>=c.y+c.height||r.y+r.height<=c.y)continue;ctx.save();ctx.beginPath();ctx.rect(c.x*bw/100,(100-c.y-c.height)*bh/100,c.width*bw/100,c.height*bh/100);ctx.clip();}
         try{
-          if(node.style){opacityPainter.paint(ctx,node.style.opacity??1,{x,y,width:w,height:h},target=>{
+          if(node.kind==='image_batch')imageBatch(node);
+          else if(node.style){opacityPainter.paint(ctx,node.style.opacity??1,{x,y,width:w,height:h},target=>{
             target.save();
             try{
               clipUiBox(target,node.style,x,y,w,h,bh/100);paintUiBox(target,node.style,x,y,w,h,bh/100,'background');
               if(node.kind==='image')image(node,x,y,w,h,target);
-              else {if(node.kind!=='panel')paintUiText(target,node,{x,y,width:w,height:h,viewportHeight:bh,fontFamily,textColor});renderRegions++;}
+              else {if(node.kind==='text_input')textInput(target,node,{x,y,width:w,height:h,viewportHeight:bh});else if(node.kind!=='panel')paintUiText(target,node,{x,y,width:w,height:h,viewportHeight:bh,fontFamily,textColor});renderRegions++;}
               paintUiBox(target,node.style,x,y,w,h,bh/100,'border');
             }finally{target.restore();}
           });}
           else if(node.kind==='image')image(node,x,y,w,h);
+          else if(node.kind==='text_input'){textInput(ctx,node,{x,y,width:w,height:h,viewportHeight:bh});renderRegions++;}
           else if(['panel','slider','combobox'].includes(node.kind)){renderRegions++;}
           else {text(node,x,y,w,h,bw/width);renderRegions++;}
         }finally{if(c)ctx.restore();}}
@@ -135,8 +172,8 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,
     setFont(family){fontFamily=family;dirty=true;},
-    invalidateAssets(){generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();dirty=true;},
-    report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Editable input/shaping parity with native is not guaranteed.']};},
-    dispose(){router.releaseAll();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();opacityPainter.dispose();},
+    invalidateAssets(){generation++;for(const e of assets.values())e.image?.close?.();assets.clear();diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;},
+    report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
+    dispose(){router.releaseAll();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();quadDiagnosticKeys.clear();opacityPainter.dispose();},
   };
 }

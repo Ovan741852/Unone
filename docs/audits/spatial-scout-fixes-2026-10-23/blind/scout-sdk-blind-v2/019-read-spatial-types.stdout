@@ -1,0 +1,69 @@
+-- Generic geometry only. Coordinates are packed f32 xyz triples, independent of entities.
+export type SpatialBody = {
+    id: number, position: {number}, radius: number,
+    category: number?, previous_position: {number}?,
+}
+export type SpatialNearestQuery = {
+    kind: "nearest", point: {number}, max_distance: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialOverlapQuery = {
+    kind: "overlap_sphere", center: {number}, radius: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialSweepQuery = {
+    kind: "sweep_sphere", from: {number}, to: {number}, radius: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialQuery = SpatialNearestQuery | SpatialOverlapQuery | SpatialSweepQuery
+export type SpatialHit = {
+    id: number, distance: number, fraction: number,
+    point: {number}, normal: {number},
+    [string]: ObservationValue,
+}
+export type SpatialQueryResult = {hits: {SpatialHit}, [string]: ObservationValue}
+export type SpatialBatchResult = {
+    version: number, results: {SpatialQueryResult}, [string]: ObservationValue,
+}
+export type SpatialApi = {
+    pack: (bodies: {SpatialBody}) -> buffer,
+    create: (bodies: {SpatialBody} | buffer) -> number,
+    update: (index: number, bodies: {SpatialBody} | buffer) -> number,
+    destroy: (index: number) -> (),
+    -- Submit/take/cancel during update; take is legal starting the next tick.
+    submit: (index: number, queries: {SpatialQuery}) -> number,
+    take: (ticket: number) -> SpatialBatchResult,
+    cancel: (ticket: number) -> (),
+    info: () -> {[string]: ObservationValue},
+}
+
+export type EngineApi = {
+    spatial: SpatialApi,
+    shader: ShaderApi,
+    jobs: JobsApi,
+    instances3d: Instances3DApi,
+    heightfield: HeightfieldApi,
+    debug: DebugApi,
+    particle: ParticleApi,
+    entity: EntityApi,
+    input: InputApi,
+    random: RandomApi,
+    physics: PhysicsApi,
+    physics3d: Physics3DApi,
+    camera: CameraApi,
+    -- Deprecated compatibility namespace; new code uses camera.*.
+    camera3d: Camera3DApi,
+    observation: ObservationApi,
+    ui: UiApi,
+    save: SaveApi,
+    animation: AnimationApi,
+    effect: EffectApi,
+    audio: AudioApi,
+    log: (message: string) -> (),
+}
+
+export type Game = {
+    start: (api: EngineApi) -> (),
+    update: (api: EngineApi, dt: number) -> (),
+}
+

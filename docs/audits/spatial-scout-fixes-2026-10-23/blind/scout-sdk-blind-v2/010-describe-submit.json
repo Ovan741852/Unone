@@ -1,0 +1,22 @@
+{
+  "order": 10,
+  "name": "describe-submit",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "--json",
+    "api",
+    "describe",
+    "spatial.submit"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:41.5564857Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 141,
+  "endedUtc": "2026-10-23T14:15:41.7290565Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\010-describe-submit.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\010-describe-submit.stderr"
+}

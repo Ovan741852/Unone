@@ -1,0 +1,19 @@
+{
+  "order": 24,
+  "name": "first-check-types",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "$env:UNONE_LUAU_ANALYZER='D:\\Projects\\Unone\\.toolcache\\luau-0.734\\luau-analyze.exe'; & 'D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk\\bin\\game.exe' --sdk 'D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk' --project 'C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2' --json check --types; exit $LASTEXITCODE"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:18:36.6937695Z",
+  "timedOut": false,
+  "exitCode": 1,
+  "elapsedMs": 486,
+  "endedUtc": "2026-10-23T14:18:37.2241016Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\024-first-check-types.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\024-first-check-types.stderr"
+}

@@ -7,6 +7,12 @@ export function createUiTree(layer, { resolveAsset = null } = {}) {
   let previous = null;
   let renderGeneration = 0;
   let sliceCleanups=[];
+  function requireLegacySupport(nodes){
+    for(const node of nodes??[]){
+      if(node.kind==='image_batch')throw Error('UI_HOST_CAPABILITY_UNSUPPORTED: image_batch requires the official Canvas UI host, not the legacy DOM renderer');
+      if(node.kind==='component')requireLegacySupport(node.children);
+    }
+  }
 
   // Styled leaves share the official measured Canvas text implementation. DOM
   // remains the semantic/accessibility wrapper in this legacy host.
@@ -128,6 +134,7 @@ export function createUiTree(layer, { resolveAsset = null } = {}) {
     const serialized = JSON.stringify(ui);
     if (serialized === previous) return;
     uiUsage(ui);
+    requireLegacySupport(ui?.children);
     previous = serialized;for(const cleanup of sliceCleanups)cleanup();sliceCleanups=[];layer.replaceChildren();
     const generation = ++renderGeneration;
     for (const node of ui?.children ?? []) appendNode(node, layer, generation);

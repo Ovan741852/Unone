@@ -436,6 +436,33 @@ still fail inspection. See [explicit background scopes](ui-styling.md#explicit-b
 The helper does not move, resize, clip, auto-layout or weaken overlap checks.
 Canonical styles, bounds, image slicing and node budgets remain authoritative.
 
+### Ordered image artwork
+
+`ui.imageBatch({id,rect,quads,background_for?})` constructs an explicit drawing
+layer of stretch images. Each quad has `asset`, `rect`, optional `source` pixel
+crop and optional `opacity` in 0..1. Quad rectangles use the same coordinate
+space as the batch and must fit its rectangle. Array order is paint order.
+
+```lua
+local scenery = ui.imageBatch({id="scenery",rect={x=0,y=0,width=100,height=100},
+    background_for={screen=true},quads={
+        {asset="texture://grass",rect={x=10,y=20,width=8,height=4}},
+        {asset="texture://cloud",rect={x=12,y=21,width=8,height=5},opacity=.8},
+    }})
+```
+
+This is noninteractive artwork, not a container for text, controls, actions,
+callbacks or arbitrary node payloads. Every quad is validated and consumes the
+ordinary UI node budget. Strict layout inspects the composite's relationships
+with other UI leaves; the explicitly ordered image array is a drawing surface,
+so its internal artwork is not treated as a set of independently laid out
+controls. No overlap evidence limit is raised. Keep text and controls as normal
+nodes so their layout and hit testing remain inspectable.
+
+This new node requires matching native and Web runtimes with image-batch
+support; updating JavaScript alone is insufficient. The official renderers
+include every quad asset in their normal image lifetime management.
+
 ## Verify the actual player and fonts
 
 Keep `renderer_mode: "official"` and inspect the exported player, including

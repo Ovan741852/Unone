@@ -460,7 +460,8 @@ fn tool_definitions() -> Vec<Value> {
                     "seed": {"type": "integer", "minimum": 0, "default": 42},
                     "cols": {"type": "integer", "minimum": 16, "maximum": 400, "description": "Grid columns; defaults to 96."},
                     "rows": {"type": "integer", "minimum": 8, "maximum": 200, "description": "Grid rows; defaults to 48."},
-                    "strict": {"type": "boolean", "default": false, "description": "Turn layout findings into ok=false."}
+                    "strict": {"type": "boolean", "default": false, "description": "Turn layout findings into ok=false."},
+                    "save_fixture": {"type":"string","description":"Tool-only project-relative JSON save restored before Game.start; never exported."}
                     ,"overlap_policy":{"type":"object","description":"version:1, screens:{screen:[{behind,front,reason}]}; only earlier background images or panels may be exempted."}
                 }
             })),
@@ -846,7 +847,12 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                 Ok(strict) => strict,
                 Err(diagnostic) => return argument_error(*diagnostic),
             };
-            tool_result(ui_preview(project, frames, seed, cols, rows, strict, arguments.get("overlap_policy")))
+            let save_fixture = match optional_string(arguments, "save_fixture") {
+                Ok(path) => path,
+                Err(diagnostic) => return argument_error(*diagnostic),
+            };
+            tool_result(ui_preview(project, frames, seed, cols, rows, strict,
+                UiPreviewInputs {overlap_policy:arguments.get("overlap_policy"),save_fixture:save_fixture.as_deref()}))
         }
         "unone_systems_list" => tool_result(inspect_systems(project)),
         "unone_systems_search" => match required_string(arguments, "meaning") {
@@ -1069,6 +1075,11 @@ fn optional_bool(arguments: &Value, name: &str, default: bool) -> Result<bool, B
     }
 }
 
+struct UiPreviewInputs<'a> {
+    overlap_policy: Option<&'a serde_json::Value>,
+    save_fixture: Option<&'a str>,
+}
+
 /// Run the project and report its UI layout, so a caller can read the screen.
 fn ui_preview(
     project: &Path,
@@ -1077,9 +1088,9 @@ fn ui_preview(
     cols: usize,
     rows: usize,
     strict: bool,
-    overlap_policy: Option<&serde_json::Value>,
+    inputs: UiPreviewInputs<'_>,
 ) -> EngineResult<unone_engine::LayoutReport> {
-    let mut runtime = match EngineRuntime::load_with_seed(project, seed) {
+    let mut runtime = match EngineRuntime::load_ui_preview(project, seed, inputs.save_fixture) {
         Ok(runtime) => runtime,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
@@ -1101,7 +1112,7 @@ fn ui_preview(
         ));
     };
     let mut report = unone_engine::inspect_layout(&tree, cols, rows);
-    if let Some(policy)=overlap_policy
+    if let Some(policy)=inputs.overlap_policy
         && let Err(error)=unone_engine::apply_overlap_policy(&mut report,policy) {
             return EngineResult::failure(Diagnostic::error("UI_OVERLAP_POLICY_INVALID","Unsafe or stale overlap policy",error));
         }
@@ -1226,6 +1237,25 @@ mod tests {
     use serde_json::json;
     use std::{fs, path::Path};
     use tempfile::tempdir;
+
+    #[test]
+    fn ui_preview_fixture_mcp_uses_the_same_save_restore_and_path_contract() {
+        let dir=tempdir().unwrap();
+        fs::write(dir.path().join("project.unone.json"),r#"{"name":"MCP fixture","entry_script":"main.luau"}"#).unwrap();
+        fs::write(dir.path().join("save.json"),r#"{"screen":"saved"}"#).unwrap();
+        fs::write(dir.path().join("main.luau"),r#"return {start=function(api)
+            local saved=api.save.get();local name=if saved then saved.screen else "fresh"
+            api.ui.setRoot({kind="screen",id=name,node="fixture",children={{kind="text",id=name,text=name,rect={x=10,y=70,width=60,height=10}}}})
+            end,update=function()end}"#).unwrap();
+        let result=call_tool(dir.path(),"unone_ui_preview",&json!({"save_fixture":"save.json","strict":true}));
+        let body:serde_json::Value=serde_json::from_str(result["content"][0]["text"].as_str().unwrap()).unwrap();
+        assert_eq!(result["isError"],false,"{body}");assert_eq!(body["value"]["screen"],"saved");
+        let result=call_tool(dir.path(),"unone_ui_preview",&json!({"save_fixture":"../save.json"}));
+        let body:serde_json::Value=serde_json::from_str(result["content"][0]["text"].as_str().unwrap()).unwrap();
+        assert_eq!(body["diagnostics"][0]["code"],"UI_SAVE_FIXTURE_PATH_INVALID");
+        let result=call_tool(dir.path(),"unone_ui_preview",&json!({"save_fixture":false}));
+        assert_eq!(result["isError"],true);
+    }
 
     #[test]
     fn advertised_argument_contract_rejects_typos_including_no_argument_tools() {

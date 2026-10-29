@@ -82,6 +82,6 @@ if($Target -ne 'windows'){
  Copy-Item -LiteralPath $cpp -Destination (Join-Path $output 'libc++_shared.so')
  $files+=@{path='libc++_shared.so';sha256=(Get-FileHash -LiteralPath $cpp -Algorithm SHA256).Hash.ToLowerInvariant()}
 }
-$report=@{version=1;target=$Target;profile='release';dev_tools=$false;preview_tools=$false;renderer=$descriptor.renderer;readiness=$descriptor.readiness;compiled_systems=$descriptor.compiled_systems;runtime_packages=$descriptor.runtime_packages;decoders=$descriptor.decoders;presentation=$descriptor.presentation;ui=$descriptor.ui;files=$files;source_commit=(git -C $repo rev-parse HEAD);native_codegen_compiled=[bool]$LuauCodegen;source_dirty=[bool](git -C $repo status --porcelain)}
+$report=@{version=1;target=$Target;profile='release';dev_tools=$false;preview_tools=$false;renderer=$descriptor.renderer;readiness=$descriptor.readiness;compiled_systems=$descriptor.compiled_systems;runtime_packages=$descriptor.runtime_packages;decoders=$descriptor.decoders;presentation=$descriptor.presentation;ui=$descriptor.ui;input_replay=$descriptor.input_replay;files=$files;source_commit=(git -C $repo rev-parse HEAD);native_codegen_compiled=[bool]$LuauCodegen;source_dirty=[bool](git -C $repo status --porcelain)}
 [IO.File]::WriteAllText((Join-Path $output 'runtime.json'),($report|ConvertTo-Json -Depth 6),[Text.UTF8Encoding]::new($false))
 $report|ConvertTo-Json -Depth 6

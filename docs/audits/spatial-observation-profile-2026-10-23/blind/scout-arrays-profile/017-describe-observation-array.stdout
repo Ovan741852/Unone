@@ -1,0 +1,28 @@
+{
+  "name": "observation.array",
+  "category": "observation",
+  "purpose": "Preserve a generic JSON array, including an empty array, in published observations.",
+  "when_to_use": "For empty arrays, typed numeric arrays and engine JSON round trips. Engine-produced spatial results already preserve array identity automatically. Read docs/spatial-batches.md#observation-json-arrays, bundled with the SDK.",
+  "when_not_to_use": "Plain {} remains a JSON object. This is a serialization hint, not gameplay state or a collection framework.",
+  "parameters": [
+    {
+      "name": "values",
+      "type_name": "{T}?",
+      "meaning": "Optional contiguous serializable array table; omitted creates an empty array. Returns the same supplied table and retains its element types."
+    }
+  ],
+  "returns": "{T}; no-argument call returns {ObservationValue}",
+  "side_effects": [
+    "Mark only this table's JSON array identity; no element copy or metatable changes"
+  ],
+  "frame_semantics": "The mark survives clearing and refilling this table. Serialization revalidates shape; nested plain empty tables remain objects unless separately marked. Invalid input fails before marking.",
+  "common_errors": [
+    "Mixed or sparse keys, callbacks, nonfinite values, buffers and cyclic values fail explicitly; marking does not bypass observation validation."
+  ],
+  "example": "api.observation.set(\"empty\", api.observation.array()); local numbers: {number} = {1,2}; api.observation.setArray(\"numbers\", api.observation.array(numbers))",
+  "related_apis": [
+    "observation.set",
+    "observation.setArray",
+    "spatial.take"
+  ]
+}

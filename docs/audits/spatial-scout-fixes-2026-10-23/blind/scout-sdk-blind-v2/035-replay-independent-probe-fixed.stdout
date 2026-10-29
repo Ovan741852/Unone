@@ -1,0 +1,16 @@
+{
+    "passed":  true,
+    "backendObserved":  "cpu",
+    "gpuExecuted":  false,
+    "strictPassed":  true,
+    "independentOracle":  "double precision generic quadratic sweep plus Euclidean nearest/overlap",
+    "tolerance":  0.00002,
+    "emptyHitsShapes":  [
+                            "{}",
+                            "{}",
+                            "{}",
+                            "{}"
+                        ],
+    "emptyHitsShapeDeviation":  true,
+    "output":  "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second"
+}

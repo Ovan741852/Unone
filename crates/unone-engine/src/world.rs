@@ -806,6 +806,21 @@ pub struct RigidBodySnapshot {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct WorldSnapshot {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub physical_input_receipt: Option<crate::PhysicalReceipt>,
+    pub application: crate::ApplicationState,
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub projected_geometry: BTreeMap<String,crate::ProjectedBatch>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_frame: Option<crate::ProjectedFrame>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub projected_viewport: Option<crate::ProjectedViewport>,
+    #[serde(skip_serializing_if = "crate::projected::is_visible")]
+    pub projected_world_visible: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub spatial: Option<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub heightfields: BTreeMap<String, crate::Heightfield>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -827,6 +842,8 @@ pub struct WorldSnapshot {
     pub observations: BTreeMap<String, serde_json::Value>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ui: Option<crate::ui::UiTree>,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub ui_cursor: Option<crate::UiCursor>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub effects: Vec<EffectInstance>,
     /// Bodies that touched each other this frame.
@@ -882,6 +899,16 @@ pub(crate) struct RigidBodyState {
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct World {
+    pub ui_cursor: Option<crate::UiCursor>,
+    pub application: crate::ApplicationState,
+    pub projected_geometry: BTreeMap<String,crate::ProjectedBatch>,
+    pub projected_frame: Option<crate::ProjectedFrame>,
+    pub projected_revision: u64,
+    pub projected_viewport: crate::ProjectedViewport,
+    pub projected_world_hidden: bool,
+    pub heightfields: BTreeMap<String, crate::Heightfield>,
+    /// Monotonic per runtime, including remove/recreate and scene transitions.
+    pub heightfield_revision: u64,
     pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
     #[cfg(feature = "physics3d")]
@@ -919,6 +946,11 @@ impl World {
     }
 
     fn apply_scene(&mut self, scene: SceneFile) {
+        self.ui_cursor=None;
+        self.projected_geometry.clear();
+        self.projected_frame=None;
+        self.projected_world_hidden=false;
+        self.heightfields.clear();
         self.instances3d.clear();
         #[cfg(feature = "physics3d")]
         let physics3d = scene.physics3d;
@@ -1082,8 +1114,16 @@ impl World {
             }
         });
         WorldSnapshot {
+            physical_input_receipt:None,
+            projected_geometry:self.projected_geometry.clone(),
+            projected_frame:self.projected_frame.clone(),
+            projected_viewport:if self.projected_geometry.is_empty()&&self.projected_frame.is_none() {None} else {Some(self.projected_viewport.clone())},
+            projected_world_visible:!self.projected_world_hidden,
+            application: self.application.clone(),
+            heightfields: self.heightfields.clone(),
             shader_materials: self.shader_materials.clone(),
             jobs: None,
+            spatial: None,
             instances3d: self.instances3d.clone(),
             #[cfg(feature = "physics3d")]
             physics3d: self.physics3d.as_ref().map(|p| p.snapshot()),
@@ -1096,6 +1136,7 @@ impl World {
             entities,
             observations: BTreeMap::new(),
             ui: None,
+            ui_cursor:self.ui_cursor.clone(),
             particle_effects: self.particles.definitions.clone(),
             #[cfg(feature = "particle")]
             particles: self.particles.snapshot(self.frame),
@@ -1916,6 +1957,11 @@ mod tests {
 
     fn world_with(entities: BTreeMap<String, EntityState>) -> World {
         World {
+            ui_cursor:None,projected_geometry:BTreeMap::new(),projected_frame:None,projected_revision:0,
+            projected_viewport:Default::default(),projected_world_hidden:false,
+            application: Default::default(),
+            heightfields: BTreeMap::new(),
+            heightfield_revision: 0,
             shader_materials: BTreeMap::new(),
             instances3d: BTreeMap::new(),
             physics3d: None,

@@ -1,0 +1,19 @@
+Measure where a frame's time goes
+
+Usage: game.exe perf [OPTIONS]
+
+Options:
+      --frames <FRAMES>
+          [default: 600]
+      --sdk <SDK>
+          Portable SDK root (otherwise environment or executable-relative discovery)
+      --project <PROJECT>
+          [default: .]
+      --seed <SEED>
+          [default: 42]
+      --input-sequence <INPUT_SEQUENCE>
+          
+      --json
+          
+  -h, --help
+          Print help

@@ -222,6 +222,134 @@
       },
       "type": "object"
     },
+    "HostTimeConfig": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "const": "live",
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "max_samples": {
+              "default": 1000000,
+              "format": "uint",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "max_transactions": {
+              "default": 1000000,
+              "format": "uint",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "mode": {
+              "const": "record",
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "const": "replay",
+              "type": "string"
+            },
+            "tape": {
+              "$ref": "#/$defs/HostTimeTape"
+            }
+          },
+          "required": [
+            "mode",
+            "tape"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "HostTimeSample": {
+      "additionalProperties": false,
+      "properties": {
+        "milliseconds": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tag",
+        "milliseconds"
+      ],
+      "type": "object"
+    },
+    "HostTimeTape": {
+      "additionalProperties": false,
+      "description": "Schema 1 is runtime-creation-origin, floor elapsed milliseconds, safe integer.\nEpoch labels are identities supplied by the recording host, never OS uptime.",
+      "properties": {
+        "schema_version": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "source_epoch": {
+          "default": "runtime-creation",
+          "type": "string"
+        },
+        "transactions": {
+          "items": {
+            "$ref": "#/$defs/HostTimeTransaction"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "transactions"
+      ],
+      "type": "object"
+    },
+    "HostTimeTransaction": {
+      "additionalProperties": false,
+      "properties": {
+        "frame": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "phase": {
+          "type": "string"
+        },
+        "samples": {
+          "items": {
+            "$ref": "#/$defs/HostTimeSample"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "phase",
+        "frame",
+        "samples"
+      ],
+      "type": "object"
+    },
     "Mesh3DData": {
       "additionalProperties": false,
       "properties": {
@@ -551,6 +679,17 @@
         "entry_script": {
           "default": "scripts/main.luau",
           "type": "string"
+        },
+        "host_time": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HostTimeConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Explicit opt-in demand-sampled host time; absent keeps deterministic legacy behavior."
         },
         "job_scripts": {
           "additionalProperties": {
@@ -1157,6 +1296,14 @@
             "null"
           ]
         },
+        "save_fixture": {
+          "description": "Tool-only project-relative JSON save restored before Game.start.\nOmitted from serialized/exported project payloads and production files.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "writeOnly": true
+        },
         "seed": {
           "default": 42,
           "format": "uint64",
@@ -1295,6 +1442,21 @@
       "format": "double",
       "type": [
         "number",
+        "null"
+      ]
+    },
+    "viewport_size": {
+      "default": null,
+      "description": "Physical render-target pixels, supplied before Game.start when known.",
+      "items": {
+        "format": "uint32",
+        "minimum": 0,
+        "type": "integer"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "type": [
+        "array",
         "null"
       ]
     }

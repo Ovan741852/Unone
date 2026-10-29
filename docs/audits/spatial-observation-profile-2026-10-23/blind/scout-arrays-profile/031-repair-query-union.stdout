@@ -1,0 +1,1 @@
+Repaired query union literal inference using canonical SpatialNearestQuery local; no any/cast/stub.

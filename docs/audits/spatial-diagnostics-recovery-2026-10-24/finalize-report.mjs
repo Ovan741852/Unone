@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {spawn} from 'node:child_process';
+import {dirname,resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+
+const here=dirname(fileURLToPath(import.meta.url)),root=resolve(here,'../../..');
+const base='docs/audits/spatial-diagnostics-recovery-2026-10-24';
+const sha=b=>createHash('sha256').update(b).digest('hex');
+const read=p=>readFile(resolve(root,p));
+const reviewPath=base+'/semantic-review.md',review=await read(reviewPath);
+const quote=process.argv[2];assert.ok(quote&&review.toString().includes(quote),'Supply exact independent acceptance quote after reading completed review');
+const proposed=JSON.parse(await read(base+'/audit.proposed.json'));
+for(const f of proposed.subject)assert.equal(sha(await read(f.path)),f.sha256,f.path);
+for(const f of proposed.evidence){const b=await read(f.path);assert.equal(sha(b),f.sha256,f.path);assert.ok(b.toString().includes(f.quote),f.id);}
+const report=structuredClone(proposed);
+report.trial.limitations.push('firstSuccessStep28 denotes the first completed runtime delivery, not complete external acceptance; final independent13/13 acceptance occurs at ledger event36. No authored any/casts refers to the independent trial code, not unrelated pre-existing declarations in the canonical API block.');
+const operation=report.checks.find(c=>c.id==='operation');
+operation.reason=operation.reason.replace('No casts, any, handwritten stubs, publication adapters or source fallback.','No authored any/casts, handwritten stubs, publication adapters or source fallback; unrelated canonical API declarations may contain pre-existing any.');
+report.evidence.push({id:'semantic-review',kind:'observation',path:reviewPath,sha256:sha(review),quote});
+for(const c of report.checks)c.evidence.push('semantic-review');
+await writeFile(resolve(here,'audit.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
+const args=['plugins/org.unone.ai-native/cli.mjs','evaluate','--root',root,'--report',base+'/audit.json'];
+const child=spawn(process.execPath,args,{cwd:root,windowsHide:true,shell:false,stdio:['ignore','pipe','pipe']});
+let stdout='',stderr='';child.stdout.on('data',b=>stdout+=b);child.stderr.on('data',b=>stderr+=b);
+const code=await new Promise((res,rej)=>{child.once('error',rej);child.once('close',res);});
+await writeFile(resolve(here,'evaluation.json'),stdout,{flag:'wx'});
+await writeFile(resolve(here,'evaluation-command.json'),JSON.stringify({command:[process.execPath,...args],exitCode:code,stderr},null,2)+'\n',{flag:'wx'});
+assert.equal(code,0);const evaluated=JSON.parse(stdout);assert.equal(evaluated.ok,true);
+assert.equal(evaluated.value.gate,'supported_within_scope');assert.equal(evaluated.value.blockers.length,0);
+assert.equal(evaluated.value.dimensions.length,10);for(const d of evaluated.value.dimensions.filter(d=>d.critical))assert.ok(d.accepted>=3);
+assert.equal(sha(await read(reviewPath)),sha(review));
+for(const f of report.subject)assert.equal(sha(await read(f.path)),f.sha256);
+const manifestBytes=await read(base+'/blind/scout-diagnostics-sdk/SHA256SUMS.json');
+assert.equal(sha(manifestBytes),'07772eefb848d205b064dbf7fc2bdc7af0e683601148b85337705f778f62cb16');
+for(const f of JSON.parse(manifestBytes).files)assert.equal(sha(await read(base+'/blind/scout-diagnostics-sdk/'+f.path)),f.sha256);
+console.log(JSON.stringify({ok:true,index:evaluated.value.index,gate:evaluated.value.gate,allCriticalAtLeast3:true,subjects:report.subject.length,unchangedBlindFiles:87,reviewSha256:sha(review)}));

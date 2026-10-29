@@ -1,0 +1,5375 @@
+{
+  "after_invalid_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 2,
+            "fraction": 0,
+            "id": 11,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              1.5,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "version": 1
+  },
+  "after_repair_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 11,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "version": 2
+  },
+  "authored_empty": [],
+  "authored_empty_setter": [],
+  "authored_nested": {
+    "children": []
+  },
+  "consumed_take": {
+    "message": "runtime error: SPATIAL_TICKET_UNKNOWN\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:724: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:724>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:724: in function 'update'\n",
+    "ok": false,
+    "tick": 2
+  },
+  "empty_batch_result": {
+    "results": [],
+    "version": 1
+  },
+  "executed_ticks": 6,
+  "initial_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 2,
+            "fraction": 0,
+            "id": 11,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              1.5,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    ],
+    "version": 1
+  },
+  "invalid_update": {
+    "message": "runtime error: duplicate body ID 11\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:703: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:703>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:703: in function 'update'\n",
+    "ok": false,
+    "tick": 1
+  },
+  "large_profile": {
+    "api_version": 1,
+    "backend": "cpu",
+    "clock": "host_monotonic",
+    "last": {
+      "bodies": 4096,
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 1.2336999999999998
+        },
+        "readback_bytes": 0,
+        "total_ms": 1.2336999999999998,
+        "upload_bytes": 0
+      },
+      "executor_ms": 1.2336999999999998,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0.3799,
+        "snapshot": 0.031,
+        "validation": 0.3395
+      },
+      "pair_tests_upper_bound": 1048576,
+      "queries": 256,
+      "returned_hits": 256,
+      "ticket": 8,
+      "version": 1
+    },
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 4111,
+      "cancelled_tickets": 0,
+      "completed_batches": 6,
+      "executor_ms": 1.2399999999999998,
+      "executor_phases_ms": {
+        "cpu_execute": 1.2399999999999998
+      },
+      "executor_samples": 6,
+      "executor_wall_samples": 6,
+      "failed_batches": 0,
+      "input_body_bytes": 164488,
+      "manager_ms": {
+        "result_apply": 0.00009999999999999999,
+        "result_validation": 0.38480000000000003,
+        "snapshot": 0.0316,
+        "validation": 0.3501
+      },
+      "pair_tests_upper_bound": 1048597,
+      "queries": 263,
+      "readback_bytes": 0,
+      "returned_hits": 262,
+      "submitted_batches": 6,
+      "upload_bytes": 0
+    }
+  },
+  "large_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 1,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              0,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 2,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              3,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 3,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              6,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 4,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              9,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 5,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              12,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 6,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              15,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 7,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              18,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 8,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              21,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 9,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              24,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 10,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              27,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 11,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              30,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 12,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              33,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 13,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              36,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 14,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              39,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 15,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              42,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 16,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              45,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 17,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              48,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 18,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              51,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 19,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              54,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 20,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              57,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 21,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              60,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 22,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              63,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 23,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              66,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 24,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              69,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 25,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              72,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 26,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              75,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 27,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              78,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 28,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              81,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 29,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              84,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 30,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              87,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 31,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              90,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 32,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              93,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 33,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              96,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 34,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              99,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 35,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              102,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 36,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              105,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 37,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              108,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 38,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              111,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 39,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              114,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 40,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              117,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 41,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              120,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 42,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              123,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 43,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              126,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 44,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              129,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 45,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              132,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 46,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              135,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 47,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              138,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 48,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              141,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 49,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              144,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 50,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              147,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 51,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              150,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 52,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              153,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 53,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              156,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 54,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              159,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 55,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              162,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 56,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              165,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 57,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              168,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 58,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              171,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 59,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              174,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 60,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              177,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 61,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              180,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 62,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              183,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 63,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              186,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 64,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              189,
+              0,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 65,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              0,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 66,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              3,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 67,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              6,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 68,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              9,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 69,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              12,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 70,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              15,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 71,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              18,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 72,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              21,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 73,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              24,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 74,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              27,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 75,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              30,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 76,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              33,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 77,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              36,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 78,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              39,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 79,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              42,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 80,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              45,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 81,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              48,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 82,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              51,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 83,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              54,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 84,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              57,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 85,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              60,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 86,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              63,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 87,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              66,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 88,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              69,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 89,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              72,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 90,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              75,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 91,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              78,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 92,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              81,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 93,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              84,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 94,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              87,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 95,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              90,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 96,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              93,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 97,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              96,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 98,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              99,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 99,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              102,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 100,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              105,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 101,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              108,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 102,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              111,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 103,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              114,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 104,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              117,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 105,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              120,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 106,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              123,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 107,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              126,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 108,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              129,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 109,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              132,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 110,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              135,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 111,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              138,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 112,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              141,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 113,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              144,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 114,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              147,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 115,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              150,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 116,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              153,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 117,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              156,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 118,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              159,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 119,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              162,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 120,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              165,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 121,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              168,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 122,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              171,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 123,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              174,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 124,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              177,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 125,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              180,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 126,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              183,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 127,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              186,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 128,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              189,
+              3,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 129,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              0,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 130,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              3,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 131,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              6,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 132,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              9,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 133,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              12,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 134,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              15,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 135,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              18,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 136,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              21,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 137,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              24,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 138,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              27,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 139,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              30,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 140,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              33,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 141,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              36,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 142,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              39,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 143,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              42,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 144,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              45,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 145,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              48,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 146,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              51,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 147,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              54,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 148,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              57,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 149,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              60,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 150,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              63,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 151,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              66,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 152,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              69,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 153,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              72,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 154,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              75,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 155,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              78,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 156,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              81,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 157,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              84,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 158,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              87,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 159,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              90,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 160,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              93,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 161,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              96,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 162,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              99,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 163,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              102,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 164,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              105,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 165,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              108,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 166,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              111,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 167,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              114,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 168,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              117,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 169,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              120,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 170,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              123,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 171,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              126,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 172,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              129,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 173,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              132,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 174,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              135,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 175,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              138,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 176,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              141,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 177,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              144,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 178,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              147,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 179,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              150,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 180,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              153,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 181,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              156,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 182,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              159,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 183,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              162,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 184,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              165,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 185,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              168,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 186,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              171,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 187,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              174,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 188,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              177,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 189,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              180,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 190,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              183,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 191,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              186,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 192,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              189,
+              6,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 193,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              0,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 194,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              3,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 195,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              6,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 196,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              9,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 197,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              12,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 198,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              15,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 199,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              18,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 200,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              21,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 201,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              24,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 202,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              27,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 203,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              30,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 204,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              33,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 205,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              36,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 206,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              39,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 207,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              42,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 208,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              45,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 209,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              48,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 210,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              51,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 211,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              54,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 212,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              57,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 213,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              60,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 214,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              63,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 215,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              66,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 216,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              69,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 217,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              72,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 218,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              75,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 219,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              78,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 220,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              81,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 221,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              84,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 222,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              87,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 223,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              90,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 224,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              93,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 225,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              96,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 226,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              99,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 227,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              102,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 228,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              105,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 229,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              108,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 230,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              111,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 231,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              114,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 232,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              117,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 233,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              120,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 234,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              123,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 235,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              126,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 236,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              129,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 237,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              132,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 238,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              135,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 239,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              138,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 240,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              141,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 241,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              144,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 242,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              147,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 243,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              150,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 244,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              153,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 245,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              156,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 246,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              159,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 247,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              162,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 248,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              165,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 249,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              168,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 250,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              171,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 251,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              174,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 252,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              177,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 253,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              180,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 254,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              183,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 255,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              186,
+              9,
+              10.5
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 256,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              189,
+              9,
+              10.5
+            ]
+          }
+        ]
+      }
+    ],
+    "version": 1
+  },
+  "lifecycle_profile": {
+    "api_version": 1,
+    "backend": "cpu",
+    "clock": "host_monotonic",
+    "last": {
+      "bodies": 3,
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 0.0003
+        },
+        "readback_bytes": 0,
+        "total_ms": 0.0003,
+        "upload_bytes": 0
+      },
+      "executor_ms": 0.0003,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0.0005,
+        "snapshot": 0.00009999999999999999,
+        "validation": 0.0005
+      },
+      "pair_tests_upper_bound": 3,
+      "queries": 1,
+      "returned_hits": 1,
+      "ticket": 6,
+      "version": 2
+    },
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 12,
+      "cancelled_tickets": 0,
+      "completed_batches": 4,
+      "executor_ms": 0.0034000000000000002,
+      "executor_phases_ms": {
+        "cpu_execute": 0.0034000000000000002
+      },
+      "executor_samples": 4,
+      "executor_wall_samples": 4,
+      "failed_batches": 0,
+      "input_body_bytes": 512,
+      "manager_ms": {
+        "result_apply": 0.00009999999999999999,
+        "result_validation": 0.0034,
+        "snapshot": 0.0005,
+        "validation": 0.006500000000000001
+      },
+      "pair_tests_upper_bound": 9,
+      "queries": 3,
+      "readback_bytes": 0,
+      "returned_hits": 3,
+      "submitted_batches": 4,
+      "upload_bytes": 0
+    }
+  },
+  "plain_empty_object": {},
+  "repair_version": 2,
+  "same_tick_take": {
+    "message": "runtime error: SPATIAL_RESULT_NEXT_TICK\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:694: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:694>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:694: in function 'update'\n",
+    "ok": false,
+    "tick": 1
+  },
+  "sentinel_after": {
+    "id": "unrelated_synthetic",
+    "x": 37,
+    "y": -11
+  },
+  "sentinel_before": {
+    "id": "unrelated_synthetic",
+    "x": 37,
+    "y": -11
+  },
+  "small_profile": {
+    "api_version": 1,
+    "backend": "cpu",
+    "clock": "host_monotonic",
+    "last": {
+      "bodies": 3,
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 0.0029000000000000002
+        },
+        "readback_bytes": 0,
+        "total_ms": 0.0029000000000000002,
+        "upload_bytes": 0
+      },
+      "executor_ms": 0.0029000000000000002,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0.0015,
+        "snapshot": 0.00009999999999999999,
+        "validation": 0.0040999999999999995
+      },
+      "pair_tests_upper_bound": 12,
+      "queries": 4,
+      "returned_hits": 3,
+      "ticket": 7,
+      "version": 2
+    },
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 15,
+      "cancelled_tickets": 0,
+      "completed_batches": 5,
+      "executor_ms": 0.0063,
+      "executor_phases_ms": {
+        "cpu_execute": 0.0063
+      },
+      "executor_samples": 5,
+      "executor_wall_samples": 5,
+      "failed_batches": 0,
+      "input_body_bytes": 640,
+      "manager_ms": {
+        "result_apply": 0.00009999999999999999,
+        "result_validation": 0.0049,
+        "snapshot": 0.0006000000000000001,
+        "validation": 0.0106
+      },
+      "pair_tests_upper_bound": 21,
+      "queries": 7,
+      "readback_bytes": 0,
+      "returned_hits": 6,
+      "submitted_batches": 5,
+      "upload_bytes": 0
+    }
+  },
+  "small_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 11,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 0,
+            "fraction": 0,
+            "id": 22,
+            "normal": [
+              0,
+              0,
+              1
+            ],
+            "point": [
+              8,
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 3.25,
+            "fraction": 0.5416666865348816,
+            "id": 11,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": []
+      }
+    ],
+    "version": 2
+  },
+  "spatial_info_final": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bodies": 4096,
+    "delivery": "next_tick",
+    "external": false,
+    "indices": 1,
+    "limits": {
+      "bodies": 131072,
+      "bodies_per_index": 65536,
+      "coordinate_abs": 1000000,
+      "hits_per_query": 64,
+      "indices": 8,
+      "queries_per_batch": 1024,
+      "safe_integer": 9007199254740991,
+      "submissions_per_tick": 4,
+      "tickets": 16
+    },
+    "operations": [
+      "nearest",
+      "overlap_sphere",
+      "sweep_sphere"
+    ],
+    "packed_format": "USB1",
+    "pending": 0,
+    "tickets": 0
+  },
+  "spatial_info_start": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bodies": 4099,
+    "delivery": "next_tick",
+    "external": false,
+    "indices": 2,
+    "limits": {
+      "bodies": 131072,
+      "bodies_per_index": 65536,
+      "coordinate_abs": 1000000,
+      "hits_per_query": 64,
+      "indices": 8,
+      "queries_per_batch": 1024,
+      "safe_integer": 9007199254740991,
+      "submissions_per_tick": 4,
+      "tickets": 16
+    },
+    "operations": [
+      "nearest",
+      "overlap_sphere",
+      "sweep_sphere"
+    ],
+    "packed_format": "USB1",
+    "pending": 0,
+    "tickets": 0
+  },
+  "stale_index_submit": {
+    "message": "runtime error: SPATIAL_INDEX_UNKNOWN\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:738: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:738>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-author-wKNiQN\\scripts\\main.luau\"]:738: in function 'update'\n",
+    "ok": false,
+    "tick": 4
+  },
+  "timeline": [
+    {
+      "event": "submit_initial",
+      "tick": 1,
+      "ticket": 3,
+      "version": 1
+    },
+    {
+      "event": "submit_empty",
+      "tick": 1,
+      "ticket": 4,
+      "version": 1
+    },
+    {
+      "event": "submit_after_invalid",
+      "tick": 1,
+      "ticket": 5,
+      "version": 1
+    },
+    {
+      "event": "submit_repaired",
+      "tick": 1,
+      "ticket": 6,
+      "version": 2
+    },
+    {
+      "event": "delivered_initial",
+      "tick": 2,
+      "ticket": 3,
+      "version": 1
+    },
+    {
+      "event": "delivered_empty",
+      "tick": 2,
+      "ticket": 4,
+      "version": 1
+    },
+    {
+      "event": "delivered_after_invalid",
+      "tick": 2,
+      "ticket": 5,
+      "version": 1
+    },
+    {
+      "event": "delivered_repaired",
+      "tick": 2,
+      "ticket": 6,
+      "version": 2
+    },
+    {
+      "event": "submit_small_case",
+      "tick": 3,
+      "ticket": 7,
+      "version": 2
+    },
+    {
+      "event": "delivered_small_case",
+      "tick": 4,
+      "ticket": 7,
+      "version": 2
+    },
+    {
+      "event": "submit_large_case",
+      "tick": 5,
+      "ticket": 8,
+      "version": 1
+    },
+    {
+      "event": "delivered_large_case",
+      "tick": 6,
+      "ticket": 8,
+      "version": 1
+    }
+  ],
+  "typed_empty_numbers": [],
+  "typed_empty_records": [],
+  "typed_numbers": [
+    1.5,
+    2147483648,
+    4294967295
+  ],
+  "typed_records": [
+    {
+      "code": 7,
+      "label": "seven"
+    },
+    {
+      "code": 8,
+      "label": "eight"
+    }
+  ]
+}

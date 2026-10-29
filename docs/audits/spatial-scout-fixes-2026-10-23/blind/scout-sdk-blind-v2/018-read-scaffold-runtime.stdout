@@ -1,0 +1,25 @@
+-- END UNONE API TYPES
+
+-- Game code starts here. Rules, numbers, ViewModels and save schemas are
+-- game-owned; the engine only provides the API declared above.
+-- Presentation defaults to the official player. Author scene particle_effects
+-- and use api.particle for VFX; use api.shader for custom materials.
+-- Discover contracts with `game api search particle` / `game api search shader`.
+-- For UI, search `game api search "UI package"` / `game api search "button click"`.
+-- Use api.input.wasPressed(action) for one activation; isDown(action) is held state.
+local Game = {}
+
+function Game.start(api: EngineApi)
+    api.particle.play("starter_sparks", {x = 0, y = 0, z = 0}, 42)
+end
+
+function Game.update(api: EngineApi, dt: number)
+    if api.input.isDown("Right") then
+        local position = api.entity.getPosition("example")
+        position.x += dt
+        api.entity.setPosition("example", position)
+    end
+end
+
+return Game
+

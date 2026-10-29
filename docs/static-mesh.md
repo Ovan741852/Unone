@@ -1,6 +1,6 @@
 # Textured static meshes
 
-The Web player and offline Android WebView player accept `mesh3d` assets whose
+The Web player, offline Android WebView player and Windows native wgpu player accept `mesh3d` assets whose
 source ends in `.mesh.json`. Scene entities reference their asset ID in `mesh3d`
 and use the existing `transform3d` component. The development Three renderer uses
 the same decoder. This does not add decoding to the native Canvas host.
@@ -14,7 +14,12 @@ image convention; the Creator adapter flips V during conversion.
 
 An explicit asset encoding uses `format: unone-mesh-json`, `mime: application/json`,
 `decoder: mesh`, and `companions: []`; the texture is a separate manifest asset.
-The current material is unlit, double-sided with alpha test 0.05. Normals are
+The current material is unlit, double-sided with alpha test 0.05. The native
+wgpu path discards cutout texels before depth writes, so transparent image
+rectangles do not hide terrain or other meshes. Surviving texels are opaque;
+this does not add blended translucent 3D materials. Meshes that reference the
+same texture asset share one native GPU texture and bind group, including
+separate frame meshes that use a common atlas. Normals are
 computed from triangles. There is no imported lighting, normal map, skinning,
 animation clip, material graph or automatic Creator prefab reconstruction.
 

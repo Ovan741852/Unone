@@ -1,5 +1,5 @@
 use super::super::TraceEvent;
-use super::value::{json_to_lua, lua_value_to_json};
+use super::value::{json_to_lua, lua_value_to_json, observation_value_to_json, observation_array, portable_value_to_json};
 use super::{ApiState, Lua, Table, Value};
 use crate::ui::UiTree;
 use std::rc::Rc;
@@ -7,16 +7,33 @@ use std::rc::Rc;
 pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let observations = Rc::clone(&state.observations);
     let observation_api = lua.create_table()?;
-    let observation_state = Rc::clone(&observations);
+    observation_api.set("array", lua.create_function(observation_array)?)?;
+    let array_observations = Rc::clone(&observations);
     observation_api.set(
-        "set",
-        lua.create_function(move |_, (key, value): (String, Value)| {
+        "setArray",
+        lua.create_function(move |lua, (key, values): (String, Option<Table>)| {
             if key.trim().is_empty() {
                 return Err(mlua::Error::RuntimeError(
                     "observation key must not be empty".to_string(),
                 ));
             }
-            let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+            let values = observation_array(lua, values)?;
+            let value = observation_value_to_json(lua, Value::Table(values))
+                .map_err(mlua::Error::RuntimeError)?;
+            array_observations.borrow_mut().insert(key, value);
+            Ok(())
+        })?,
+    )?;
+    let observation_state = Rc::clone(&observations);
+    observation_api.set(
+        "set",
+        lua.create_function(move |lua, (key, value): (String, Value)| {
+            if key.trim().is_empty() {
+                return Err(mlua::Error::RuntimeError(
+                    "observation key must not be empty".to_string(),
+                ));
+            }
+            let value = observation_value_to_json(lua, value).map_err(mlua::Error::RuntimeError)?;
             observation_state.borrow_mut().insert(key, value);
             Ok(())
         })?,
@@ -29,6 +46,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let ui = Rc::clone(&state.ui);
     let viewport_aspect = Rc::clone(&state.viewport_aspect);
     let ui_api = lua.create_table()?;
+    super::ui_cursor::install(lua,state,&ui_api)?;
     let viewport_state = Rc::clone(&viewport_aspect);
     ui_api.set("getViewport", lua.create_function(move |lua, ()| {
         json_to_lua(lua, serde_json::json!({"aspect": *viewport_state.borrow()}))
@@ -83,8 +101,8 @@ pub(super) fn save(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let save_state = Rc::clone(&save_payload);
     save_api.set(
         "set",
-        lua.create_function(move |_, value: Value| {
-            let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+        lua.create_function(move |lua, value: Value| {
+            let value = portable_value_to_json(lua, value).map_err(mlua::Error::RuntimeError)?;
             *save_state.borrow_mut() = Some(value);
             Ok(())
         })?,

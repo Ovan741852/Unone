@@ -1,0 +1,26 @@
+{
+  "name": "entity.getPosition",
+  "category": "world",
+  "purpose": "Read an Entity's current 2D Transform position.",
+  "when_to_use": "When game rules need to use the current position.",
+  "when_not_to_use": "Do not use it in place of scene or prefab source data.",
+  "parameters": [
+    {
+      "name": "id",
+      "type_name": "string",
+      "meaning": "An existing Entity id."
+    }
+  ],
+  "returns": "Vec2: x and y values of type number.",
+  "side_effects": [
+    "Read Rust-owned world state"
+  ],
+  "frame_semantics": "Returns the current value from the start of this update; a read after setPosition reflects the new value on the next read.",
+  "common_errors": [
+    "A missing Entity id returns LUAU_RUNTIME_ERROR"
+  ],
+  "example": "local position = api.entity.getPosition(\"player\")",
+  "related_apis": [
+    "entity.setPosition"
+  ]
+}

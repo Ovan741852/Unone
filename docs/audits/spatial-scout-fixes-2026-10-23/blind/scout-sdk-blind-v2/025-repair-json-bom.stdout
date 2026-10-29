@@ -1,0 +1,1 @@
+Rewrote generated synthetic JSON as UTF-8 without BOM; retained first-authored bytes in audit.

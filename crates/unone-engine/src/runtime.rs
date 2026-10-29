@@ -19,6 +19,10 @@ use crate::{
 
 const FIXED_DT: f64 = 1.0 / 60.0;
 mod bindings;
+mod host_time;
+mod spatial;
+mod spatial_metrics;
+pub use spatial::SpatialTask;
 mod determinism;
 #[cfg(feature = "jobs")]
 mod jobs;
@@ -68,6 +72,7 @@ pub struct SourceProject {
     pub seed: u64,
     pub restored_save: Option<serde_json::Value>,
     pub viewport_aspect: Option<f64>,
+    pub viewport_size: Option<[u32;2]>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -129,6 +134,7 @@ pub struct TraceEvent {
 
 #[derive(Debug, Clone, Default)]
 struct InputState {
+    physical: crate::physical_input_session::PhysicalSession,
     down: BTreeMap<String, bool>,
     previous_down: BTreeMap<String, bool>,
     pressed: BTreeSet<String>,
@@ -136,6 +142,8 @@ struct InputState {
     pointer: PointerState,
     ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     pending_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
+    ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
+    pending_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
 }
 
 // Host writes may arrive several times between ticks. Publish one read-only
@@ -147,21 +155,25 @@ struct InputTick {
     previous_pressed: BTreeSet<String>,
     previous_released: BTreeSet<String>,
     previous_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
+    previous_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
     committed: bool,
 }
 
 impl InputTick {
     fn begin(input: &Rc<RefCell<InputState>>) -> Self {
         let mut state = input.borrow_mut();
+        state.physical.begin();
         let pressed = state.down.iter().filter(|(action, down)| **down && !state.previous_down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
         let released = state.previous_down.iter().filter(|(action, down)| **down && !state.down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
         let sliders = state.pending_ui_sliders.clone();
+        let text_inputs=state.pending_ui_text_inputs.clone();
         Self {
             input: Rc::clone(input),
             down: state.down.clone(),
             previous_pressed: std::mem::replace(&mut state.pressed, pressed),
             previous_released: std::mem::replace(&mut state.released, released),
             previous_ui_sliders: std::mem::replace(&mut state.ui_sliders, sliders),
+            previous_ui_text_inputs: std::mem::replace(&mut state.ui_text_inputs,text_inputs),
             committed: false,
         }
     }
@@ -170,6 +182,8 @@ impl InputTick {
         let mut input = self.input.borrow_mut();
         input.previous_down = std::mem::take(&mut self.down);
         input.pending_ui_sliders.clear();
+        input.pending_ui_text_inputs.clear();
+        input.physical.commit();
         self.committed = true;
     }
 }
@@ -178,9 +192,11 @@ impl Drop for InputTick {
     fn drop(&mut self) {
         if !self.committed {
             let mut input = self.input.borrow_mut();
+            input.physical.fail();
             input.pressed = std::mem::take(&mut self.previous_pressed);
             input.released = std::mem::take(&mut self.previous_released);
             input.ui_sliders = std::mem::take(&mut self.previous_ui_sliders);
+            input.ui_text_inputs = std::mem::take(&mut self.previous_ui_text_inputs);
         }
     }
 }
@@ -194,6 +210,8 @@ struct PointerState {
 
 #[derive(Clone)]
 struct ApiState {
+    host_time: Rc<RefCell<crate::host_time::HostTime>>,
+    spatial: Rc<RefCell<spatial::SpatialJobs>>,
     #[cfg(feature = "ui")]
     runtime_packages: BTreeMap<String, String>,
     #[cfg(feature = "jobs")]
@@ -274,6 +292,8 @@ struct ReloadRollbackState {
 }
 
 pub struct EngineRuntime {
+    host_time: Rc<RefCell<crate::host_time::HostTime>>,
+    spatial: Rc<RefCell<spatial::SpatialJobs>>,
     #[cfg(feature = "jobs")]
     jobs: Rc<RefCell<jobs::Jobs>>,
     #[cfg(feature = "preview-tools")]
@@ -556,6 +576,7 @@ impl EngineRuntime {
             seed,
             restored_save,
             viewport_aspect,
+            viewport_size,
         } = project;
         let script_name = if config.entry_script.is_empty() {
             "main.luau".to_string()
@@ -576,6 +597,10 @@ impl EngineRuntime {
         if let Some(scene) = scene {
             world.borrow_mut().load_scene_data(scene)?;
         }
+        let viewport_aspect=if let Some([width,height])=viewport_size {
+            world.borrow_mut().set_projected_viewport(width,height).map_err(|e|Box::new(Diagnostic::error("PROJECTED_VIEWPORT_INVALID","Invalid physical viewport",e)))?;
+            Some(width as f64/height as f64)
+        } else {viewport_aspect};
         Self::with_world(
             config,
             paths,
@@ -599,6 +624,8 @@ impl EngineRuntime {
         initial_viewport_aspect: Option<f64>,
         job_sources: Option<BTreeMap<String, String>>,
     ) -> Result<Self, Box<Diagnostic>> {
+        let host_time = Rc::new(RefCell::new(crate::host_time::HostTime::new(config.host_time.clone())
+            .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
         let input = Rc::new(RefCell::new(InputState::default()));
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
         let trace = Rc::new(RefCell::new(Vec::new()));
@@ -613,6 +640,8 @@ impl EngineRuntime {
         #[cfg(feature = "preview-tools")]
         let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
         let api_state = ApiState {
+            host_time: Rc::clone(&host_time),
+            spatial: Rc::new(RefCell::new(spatial::SpatialJobs::new())),
             #[cfg(feature = "ui")]
             runtime_packages: config.runtime_packages.clone(),
             #[cfg(feature = "jobs")]
@@ -668,6 +697,8 @@ impl EngineRuntime {
             ))
         })?;
         let mut runtime = Self {
+            host_time,
+            spatial: Rc::clone(&api_state.spatial),
             #[cfg(feature = "jobs")]
             jobs: Rc::clone(&api_state.jobs),
             #[cfg(feature = "preview-tools")]
@@ -753,7 +784,12 @@ impl EngineRuntime {
                 .register_file(id.clone(), source, path.clone())
                 .map_err(|e| Box::new(script_diagnostic(&runtime.paths, e)))?;
         }
+        runtime.host_time.borrow_mut().begin("start", 0)
+            .map_err(|e| Box::new(script_diagnostic(&runtime.paths, e)))?;
         runtime.load_script(false, None)?;
+        runtime.host_time.borrow_mut().finish()
+            .map_err(|e| Box::new(script_diagnostic(&runtime.paths, e)))?;
+        runtime.spatial.borrow_mut().loaded();
         #[cfg(feature = "jobs")]
         runtime.jobs.borrow_mut().loaded();
         runtime.cache_performance_counts(&runtime.observe());
@@ -783,6 +819,12 @@ impl EngineRuntime {
 
     pub fn viewport_aspect(&self) -> f64 {
         *self.viewport_aspect.borrow()
+    }
+
+    /// Physical render-target pixels. Hosts report this before each resized frame.
+    pub fn set_viewport_size(&mut self,width:u32,height:u32)->Result<(),Box<Diagnostic>> {
+        self.world.borrow_mut().set_projected_viewport(width,height).map_err(|e|Box::new(Diagnostic::error("PROJECTED_VIEWPORT_INVALID","Invalid physical viewport",e)))?;
+        self.set_viewport_aspect(width as f64/height as f64)
     }
 
     pub fn set_input(&mut self, action: impl Into<String>, is_down: bool) {
@@ -871,8 +913,10 @@ impl EngineRuntime {
         frame: &InputFrame,
     ) -> Result<WorldSnapshot, Box<Diagnostic>> {
         frame.validate()?;
+        self.input.borrow_mut().physical.stage(frame.physical.clone()).map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_INVALID","Physical input admission rejected",e)))?;
         self.input.borrow_mut().down = frame.actions.clone();
         self.input.borrow_mut().pending_ui_sliders = frame.ui_sliders.clone();
+        self.input.borrow_mut().pending_ui_text_inputs = frame.ui_text_inputs.clone();
         if let Some(pointer) = &frame.pointer {
             let mut input = self.input.borrow_mut();
             input.pointer.position = pointer.position;
@@ -881,7 +925,10 @@ impl EngineRuntime {
         } else {
             self.input.borrow_mut().pointer.down = false;
         }
-        self.tick()
+        self.tick().map_err(|mut diagnostic|{
+            if frame.physical.is_some(){diagnostic.facts["physical_input"]=self.physical_input_report();}
+            diagnostic
+        })
     }
 
     fn run_internal(
@@ -945,15 +992,27 @@ impl EngineRuntime {
     }
 
     pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
+        self.input.borrow().physical.healthy().map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_TERMINAL","Physical input session faulted",e)))?;
+        self.host_time.borrow().healthy().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         let started = std::time::Instant::now();
         let input_tick = InputTick::begin(&self.input);
+        // External jobs may still be pending. Keep that preflight retryable
+        // before activating the spatial update phase.
         #[cfg(feature = "jobs")]
         if self.systems.is_enabled("jobs") {
-            self.jobs
-                .borrow_mut()
-                .begin(self.world.borrow().frame)
+            self.jobs.borrow_mut().begin(self.world.borrow().frame)
                 .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         }
+        self.spatial.borrow_mut().begin(self.world.borrow().frame)
+            .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
+        let host_time_tick = host_time::TimeScope::begin(&self.host_time, "tick", self.world.borrow().frame)
+            .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
+        let spatial_fault = Rc::clone(&self.spatial);
+        let spatial_paths = self.paths.clone();
+        let fail_spatial = |message: String| {
+            spatial_fault.borrow_mut().fail(message.clone());
+            Box::new(script_diagnostic(&spatial_paths, message))
+        };
         let allocated_before = self.lua.used_memory();
         {
             let mut world = self.world.borrow_mut();
@@ -969,7 +1028,7 @@ impl EngineRuntime {
                 // SAFETY: this scope ends immediately after update.call, before
                 // removing/changing sampler callbacks, including on Lua errors.
                 unsafe { vm_metrics::Probe::begin(&self.lua) }
-                    .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?,
+                    .map_err(|err| fail_spatial(err.to_string()))?,
             )
         } else {
             None
@@ -997,6 +1056,9 @@ impl EngineRuntime {
         #[cfg(feature = "jobs")]
         if let Err(error) = &script {
             self.jobs.borrow_mut().fail(error.explanation.clone());
+        }
+        if let Err(error) = &script {
+            self.spatial.borrow_mut().fail(error.explanation.clone());
         }
         script?;
         let (physics_result, physics_time) = timed(|| -> Result<(), Box<Diagnostic>> {
@@ -1026,13 +1088,24 @@ impl EngineRuntime {
         if let Err(error) = &physics_result {
             self.jobs.borrow_mut().fail(error.explanation.clone());
         }
+        if let Err(error) = &physics_result {
+            self.spatial.borrow_mut().fail(error.explanation.clone());
+        }
         physics_result?;
         #[cfg(feature = "jobs")]
         if self.systems.is_enabled("jobs") {
             self.jobs
                 .borrow_mut()
                 .finish()
-                .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
+                .map_err(&fail_spatial)?;
+        }
+        let spatial_result = self.spatial.borrow_mut().finish();
+        if let Err(error) = spatial_result {
+            #[cfg(feature = "jobs")]
+            self.jobs.borrow_mut().fail(error.clone());
+            // finish already retired work and retained its detailed terminal
+            // diagnostic. Do not overwrite it with a generic host failure.
+            return Err(Box::new(script_diagnostic(&self.paths, error)));
         }
         {
             let mut world = self.world.borrow_mut();
@@ -1057,7 +1130,7 @@ impl EngineRuntime {
                 world.particles.advance(frame);
             }
         }
-        let (snapshot, observe_time) = timed(|| self.observe());
+        let (mut snapshot, observe_time) = timed(|| self.observe());
         self.cache_performance_counts(&snapshot);
         #[cfg(feature = "preview-tools")]
         let record = {
@@ -1093,7 +1166,9 @@ impl EngineRuntime {
                 },
             );
         }
+        host_time_tick.commit().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         input_tick.commit();
+        snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
         Ok(snapshot)
     }
 
@@ -1225,6 +1300,8 @@ impl EngineRuntime {
 
     pub fn observe(&self) -> WorldSnapshot {
         let mut snapshot = self.world.borrow().snapshot();
+        snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
+        snapshot.spatial = self.spatial.borrow().snapshot();
         #[cfg(feature = "jobs")]
         if self.systems.is_enabled("jobs") {
             snapshot.jobs = Some(self.jobs.borrow().snapshot());
@@ -1233,6 +1310,8 @@ impl EngineRuntime {
         snapshot.ui = self.ui.borrow().clone();
         snapshot
     }
+
+    pub fn physical_input_report(&self)->serde_json::Value {self.input.borrow().physical.report()}
 
     /// Return only the semantic observations used by host-side agents.
     ///
@@ -1245,6 +1324,47 @@ impl EngineRuntime {
     /// Current simulation frame without constructing a world snapshot.
     pub fn current_frame(&self) -> u64 {
         self.world.borrow().frame
+    }
+
+    /// Host-owned executor selection. Configure before the first simulation tick.
+    pub fn set_spatial_executor(&mut self, executor: Box<dyn crate::spatial::SpatialExecutor>) -> Result<(), String> {
+        self.spatial.borrow_mut().set_executor(executor)
+    }
+
+    /// The asynchronous host executes drained tasks before the following tick.
+    pub fn set_spatial_external_backend(&mut self, name: String) -> Result<(), String> {
+        self.spatial.borrow_mut().set_external_backend(name)
+    }
+
+    pub fn drain_spatial_tasks(&mut self) -> Vec<SpatialTask> {
+        self.spatial.borrow_mut().drain_tasks()
+    }
+
+    pub fn complete_spatial_task(&mut self, id: u64, result: crate::spatial::SpatialBatchResult) -> Result<(), String> {
+        self.spatial.borrow_mut().complete(id, result)
+    }
+
+    /// Optional host diagnostics accompany completion without changing the
+    /// result, ticket lifecycle, or canonical state. Older hosts may omit them.
+    pub fn complete_spatial_task_with_profile(&mut self, id: u64, result: crate::spatial::SpatialBatchResult, profile: Option<crate::spatial::SpatialExecutionProfile>) -> Result<(), String> {
+        self.spatial.borrow_mut().complete_with_profile(id, result, profile)
+    }
+
+    pub fn spatial_profile(&self) -> serde_json::Value {
+        self.spatial.borrow().profile()
+    }
+
+    /// The latest detached diagnostic remains readable after a failed tick.
+    pub fn spatial_diagnostic(&self) -> Option<crate::diagnostics::EngineDiagnostic> {
+        self.spatial.borrow().last_diagnostic()
+    }
+
+    pub fn spatial_report(&self) -> serde_json::Value {
+        self.spatial.borrow().info()
+    }
+
+    pub fn fail_spatial(&mut self, message: String) {
+        self.spatial.borrow_mut().fail(message);
     }
 
     /// UJB1 host transport; opaque payloads never pass through JSON values.
@@ -1412,6 +1532,8 @@ impl EngineRuntime {
 
         // A candidate gets its own Lua state so top-level evaluation cannot
         // mutate the live script state before the candidate is accepted.
+        self.host_time.borrow().healthy().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
+        self.input.borrow().physical.healthy().map_err(|e|Box::new(script_diagnostic(&self.paths,e)))?;
         let candidate_lua = determinism::new_vm()?;
         let table = evaluate_script(&candidate_lua, &self.paths, &source)?;
         // The adapter belongs to the candidate VM just like its update
@@ -1435,6 +1557,8 @@ impl EngineRuntime {
             Rc::clone(&self.world)
         };
         let candidate_api_state = ApiState {
+            host_time: Rc::new(RefCell::new(self.host_time.borrow().clone())),
+            spatial: Rc::new(RefCell::new(self.spatial.borrow().reload_candidate())),
             #[cfg(feature = "ui")]
             runtime_packages: self.config.runtime_packages.clone(),
             #[cfg(feature = "jobs")]
@@ -1462,6 +1586,8 @@ impl EngineRuntime {
                 )));
             }
         };
+        let candidate_time = host_time::TimeScope::begin(&candidate_api_state.host_time, "reload", self.world.borrow().frame)
+            .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         if let Some(on_reload) = on_reload
             && let Err(err) = on_reload.call::<()>(candidate_api.clone())
         {
@@ -1469,9 +1595,17 @@ impl EngineRuntime {
             return Err(Box::new(script_diagnostic(&self.paths, err.to_string())));
         }
 
+        if let Err(error) = candidate_time.commit() {
+            self.restore_failed_reload(rollback);
+            return Err(Box::new(script_diagnostic(&self.paths, error)));
+        }
+
         if has_on_reload {
             self.world = candidate_world;
         }
+        self.spatial = Rc::clone(&candidate_api_state.spatial);
+        self.host_time = Rc::clone(&candidate_api_state.host_time);
+        self.spatial.borrow_mut().loaded();
         #[cfg(feature = "jobs")]
         {
             candidate_api_state.jobs.borrow_mut().loaded();
@@ -2941,23 +3075,33 @@ return Game
     }
 
     #[test]
-    fn observation_rejects_integers_outside_portable_range() {
+    fn observation_preserves_wide_binary64_numbers_without_widening_save_inputs() {
         let source = r#"
 local Game = {}
 function Game.start(_api) end
 function Game.update(api, _dt)
-    api.observation.set("invalid", 2147483648)
+    api.observation.set("wide", {
+        unsigned = 4294967295,
+        safe = 9007199254740991,
+        negative = -9007199254740991,
+        binary64 = 1e20,
+    })
+    local saved, message = pcall(api.save.set, {value = 2147483648})
+    assert(not saved and string.find(tostring(message), "portable"))
 end
 return Game
 "#;
         let mut runtime =
-            EngineRuntime::load_source("PortableIntegerError", "main.luau", source, None).unwrap();
+            EngineRuntime::load_source("ObservationBinary64", "main.luau", source, None).unwrap();
 
         let result = runtime.run(1, 42);
 
-        assert!(!result.ok);
-        assert_eq!(result.diagnostics[0].code, "LUAU_RUNTIME_ERROR");
-        assert!(result.diagnostics[0].explanation.contains("portable"));
+        assert!(result.ok, "{:?}", result.diagnostics);
+        let values = &runtime.observe().observations["wide"];
+        assert_eq!(values["unsigned"].as_f64(), Some(4_294_967_295.0));
+        assert_eq!(values["safe"].as_f64(), Some(9_007_199_254_740_991.0));
+        assert_eq!(values["negative"].as_f64(), Some(-9_007_199_254_740_991.0));
+        assert_eq!(values["binary64"].as_f64(), Some(1e20));
     }
 
     #[test]
@@ -3289,5 +3433,23 @@ return Game
             assert!((-2..=2).contains(&value));
         }
         assert!(rng.next_int(2, -2).is_err());
+    }
+}
+
+#[cfg(test)]
+mod text_input_tick_tests {
+    use super::*;
+    #[test]
+    fn unsuccessful_input_tick_restores_snapshot_and_keeps_pending_edit() {
+        let state=Rc::new(RefCell::new(InputState::default()));
+        let edit=crate::project::TextInputInteraction{phase:crate::project::TextInputPhase::Change,text:"王重陽".into(),composing:false};
+        state.borrow_mut().pending_ui_text_inputs.insert("name".into(),edit.clone());
+        {let _tick=InputTick::begin(&state);assert_eq!(state.borrow().ui_text_inputs["name"],edit);}
+        assert!(state.borrow().ui_text_inputs.is_empty());
+        assert_eq!(state.borrow().pending_ui_text_inputs["name"],edit);
+        InputTick::begin(&state).commit();
+        assert!(state.borrow().pending_ui_text_inputs.is_empty());
+        InputTick::begin(&state).commit();
+        assert!(state.borrow().ui_text_inputs.is_empty());
     }
 }

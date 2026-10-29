@@ -1,0 +1,141 @@
+{
+  "algorithm": "sha256",
+  "sealedAt": "2026-10-23T13:45:24.372Z",
+  "root": "D:/Projects/Unone/docs/audits/spatial-scout-2026-10-23/blind",
+  "exclusions": [
+    "SHA256SUMS.json",
+    "SEAL.txt"
+  ],
+  "files": [
+    {
+      "path": "bootstrap-entrypoints-recapture.txt",
+      "bytes": 33291,
+      "sha256": "a9b1bf73eaf7d6c7a59f6f54b16fb6d0a18a0ff4916e40c7b77957cceb9346dc"
+    },
+    {
+      "path": "bootstrap-operations.json",
+      "bytes": 2823,
+      "sha256": "9af8765824372e973ec19df1683e9ded5cd025411d73763c330fb97e8812c26b"
+    },
+    {
+      "path": "capture-bootstrap.mjs",
+      "bytes": 1368,
+      "sha256": "a4be158be7496cb42747cf5fad1c99a8ac5d232cb8273721b339989e40efc760"
+    },
+    {
+      "path": "command-transcript.md",
+      "bytes": 171572,
+      "sha256": "5edc79eb68f482942c43b9925c2c4e2a247027ddb016049a5b04f1d68c4201c5"
+    },
+    {
+      "path": "create-example.mjs",
+      "bytes": 4582,
+      "sha256": "82d54403488260030f435eb0ee766858a08d642f5a3bd32a9512932df280606f"
+    },
+    {
+      "path": "create-final-example.mjs",
+      "bytes": 1440,
+      "sha256": "75d88f42a8147dc932cdccbed897d2304f5059ec8a4fb26a31baf85e4a177223"
+    },
+    {
+      "path": "create-info-probe.mjs",
+      "bytes": 1555,
+      "sha256": "f7dfa4e59382e6e944e0457283cdd874c9fb84957b36230ad6a48a34fab27e4f"
+    },
+    {
+      "path": "create-portable-example.mjs",
+      "bytes": 1365,
+      "sha256": "284c3fa1c21cab8d58ef497a5ea79ecca05dc8087bbcd508c7324e8f9626e948"
+    },
+    {
+      "path": "create-typed-example.mjs",
+      "bytes": 1882,
+      "sha256": "038788b8eee8ac8a293dfb6ce6b54d3747c889a2e2880e060b9ea5b785698a32"
+    },
+    {
+      "path": "engine-api.luau",
+      "bytes": 26386,
+      "sha256": "128d5d15f9734102626237e23711c6594117276b99ff5bcdd6786190953896e9"
+    },
+    {
+      "path": "example/main.luau",
+      "bytes": 29691,
+      "sha256": "1a16b970727a25b8b65cd3e2c6fff646b26aac2eae3717f6aa96af4f466c920a"
+    },
+    {
+      "path": "example/project.unone.json",
+      "bytes": 67,
+      "sha256": "184cfa3c0e324c62fafbd65c939dadd22746bc67b52ea9d62bd8de938363ee54"
+    },
+    {
+      "path": "final-example/main.luau",
+      "bytes": 30917,
+      "sha256": "dc8c294d31c1e83713299d75a133cded5a77b9f2e223328529a4368df917a2e2"
+    },
+    {
+      "path": "final-example/project.unone.json",
+      "bytes": 72,
+      "sha256": "579783b47f514eaa325b1793bd48a89665a8fe57036a53df6fd1ae80fc25ceaa"
+    },
+    {
+      "path": "info-probe/main.luau",
+      "bytes": 27239,
+      "sha256": "2a6b838bc033c7fc2009d78593b53b36d0fb4f06244d65421e4b5e40654cde3c"
+    },
+    {
+      "path": "info-probe/project.unone.json",
+      "bytes": 71,
+      "sha256": "8decae9f6e8907ad5620c7054f2031e679391615b9a605584e8e1bd8deb87cf3"
+    },
+    {
+      "path": "operations.ndjson",
+      "bytes": 182621,
+      "sha256": "12bc2d3f6b902ef44485aa69ed367ac7ff891707e0ea3acae4ed7da5622c2029"
+    },
+    {
+      "path": "portable-example/main.luau",
+      "bytes": 30801,
+      "sha256": "a873718bb1961926140f20356a38dca0aeacbf1660c3c739a88dd001b8e3f655"
+    },
+    {
+      "path": "portable-example/project.unone.json",
+      "bytes": 75,
+      "sha256": "c51377e3f0030937579c459cdaebfb06ff988e23aa28269f419f4ce4e15dc00b"
+    },
+    {
+      "path": "report.json",
+      "bytes": 10188,
+      "sha256": "a05f1923e22f705965a3bdb232e9caf29fa155964bd486f2019ab2c11ad4a81a"
+    },
+    {
+      "path": "report.md",
+      "bytes": 10092,
+      "sha256": "370fc43fc751ca2821857561d1f7228b9c776af7bda68b99a6048f166fe8e556"
+    },
+    {
+      "path": "run-command.mjs",
+      "bytes": 1115,
+      "sha256": "152c4e95619f541d3a99239598672fb8019cedcb0508be3ea18196eee0f0edcc"
+    },
+    {
+      "path": "seal.mjs",
+      "bytes": 1847,
+      "sha256": "ef73cab54f1aca96804dedd62e3cc5a98c530186754c721196e6871614809d64"
+    },
+    {
+      "path": "typed-example/main.luau",
+      "bytes": 30519,
+      "sha256": "ed7d3a7a8f82e79d936e25767ea22e47205b765f9315b54f61e12d52aef6c10d"
+    },
+    {
+      "path": "typed-example/project.unone.json",
+      "bytes": 72,
+      "sha256": "96ff360f66de1208f65c74c3a9e83cb9c7a21afb57f1199fa293ea00b98ca368"
+    },
+    {
+      "path": "verify-and-report.mjs",
+      "bytes": 15378,
+      "sha256": "484f788d91a741e8225ade989c4c7336357cbd4b0ff16f752f59931dd3a41f84"
+    }
+  ]
+}

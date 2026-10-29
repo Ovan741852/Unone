@@ -10,6 +10,11 @@ implicitly.
 The [full component guide](../../docs/ui-components.md), style contract and
 canonical strict types accompany the portable SDK's verified package inventory.
 
+`imageBatch` builds a noninteractive, ordered image layer for terrain, fog or
+decorative art. Its typed quads preserve source crops and opacity; every quad
+still counts against the normal UI budget. Use a matching runtime supporting
+the `image_batch` node, and keep text and controls as ordinary UI nodes.
+
 Declare the exact installed version in `project.unone.json`:
 
 ```json

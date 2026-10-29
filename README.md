@@ -268,6 +268,9 @@ Reference-game capability probe: [_Games/dragon-tycoon3](_Games/dragon-tycoon3/R
 
 AI-directed optimization: [measured results](docs/legion-fall-optimization.md), [profiling API](docs/profiling.md), [instance memory transport](docs/instance-memory-transport.md), [optional Luau jobs](docs/jobs.md).
 
+Generic packed geometry, fixed-tick query APIs and CPU/native wgpu/WebGPU backends:
+[spatial batches v1](docs/spatial-batches.md).
+
 [Actual Web Worker / BlueStacks comparison](docs/legion-fall-worker.md) · [20-second emulator recording](docs/media/legion-fall-worker-bluestacks.mp4). Earlier experimental measurement. The exported player now supports [optional simulation/compute Workers](docs/player-workers.md); main-thread simulation remains the default.
 Game-owned WASM extensions: [proposed ABI and AI implementation contract](docs/proposals/wasm-compute-v1.md) (design only; no module loader yet).
 

@@ -488,6 +488,7 @@ fn template_files() -> Vec<&'static str> {
         "player/index.html",
         "developer/main.js",
         "developer/api.js",
+        "developer/asset-usages.js",
         "developer/panel.js",
         "developer/panel.css",
         "vendor/effekseer/effekseer.js",
@@ -650,7 +651,17 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
         files.push((path.to_string(), source.as_bytes().to_vec()));
     }
     for (path, source) in authoring_files() {
-        files.push((path.to_string(), source.as_bytes().to_vec()));
+        // The example source owns only markers and fixture code. Ship the exact
+        // canonical types compiled into this CLI without a hand-maintained copy.
+        let bytes = if path == "examples/spatial-diagnostics/main.luau" {
+            let begin = source.find("-- BEGIN UNONE API TYPES").unwrap();
+            let end = source.find("-- END UNONE API TYPES").unwrap()
+                + "-- END UNONE API TYPES".len();
+            format!("{}{}{}", &source[..begin], unone_engine::api_typings_block(), &source[end..]).into_bytes()
+        } else {
+            source.as_bytes().to_vec()
+        };
+        files.push((path.to_string(), bytes));
     }
     for name in template_files() {
         files.push((
@@ -741,12 +752,27 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 4] {
+fn authoring_files() -> [(&'static str, &'static str); 19] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
+        ("docs/spatial-batches.md", include_str!("../../../docs/spatial-batches.md")),
+        ("docs/projected-geometry.md", include_str!("../../../docs/projected-geometry.md")),
+        ("docs/projected-raster.md", include_str!("../../../docs/projected-raster.md")),
+        ("docs/projected-frame.md", include_str!("../../../docs/projected-frame.md")),
+        ("docs/host-time.md", include_str!("../../../docs/host-time.md")),
+        ("docs/texture-cache.md", include_str!("../../../docs/texture-cache.md")),
+        ("docs/ui-preview-fixtures.md", include_str!("../../../docs/ui-preview-fixtures.md")),
+        ("docs/ui-cursor.md", include_str!("../../../docs/ui-cursor.md")),
+        ("docs/ui-text-input.md", include_str!("../../../docs/ui-text-input.md")),
+        ("docs/ordered-physical-input.md", include_str!("../../../docs/ordered-physical-input.md")),
         ("scripts/serve-player.py", include_str!("../../../scripts/serve-player.py")),
         ("scripts/verify-ui-example-browser.mjs", include_str!("../../../scripts/verify-ui-example-browser.mjs")),
         ("scripts/audit-ui-fonts.py", include_str!("../../../scripts/audit-ui-fonts.py")),
+        ("examples/spatial-diagnostics/README.md", include_str!("../../../examples/spatial-diagnostics/README.md")),
+        ("examples/spatial-diagnostics/project.unone.json", include_str!("../../../examples/spatial-diagnostics/project.unone.json")),
+        ("examples/spatial-diagnostics/scene.json", include_str!("../../../examples/spatial-diagnostics/scene.json")),
+        ("examples/spatial-diagnostics/main.luau", include_str!("../../../examples/spatial-diagnostics/main.luau")),
+        ("tools/benchmark-spatial.mjs", include_str!("../../../scripts/benchmark-spatial.mjs")),
     ]
 }
 
@@ -1019,7 +1045,7 @@ mod tests {
     }
     #[test]
     #[cfg(not(debug_assertions))]
-    fn packed_sdk_contains_documented_ui_tools_without_requiring_them_in_older_sdks() {
+    fn packed_sdk_contains_documented_authoring_guides_and_tools_without_requiring_them_in_older_sdks() {
         let temp = tempfile::tempdir().unwrap();
         let source = temp.path().join("templates");
         // These bytes only exercise packaging/inventory, never player execution.
@@ -1045,10 +1071,23 @@ mod tests {
         let output = temp.path().join("sdk");
         pack(&source, &[runtime], &output).unwrap();
         let mut manifest = load(&output).unwrap();
-        let added = ["README.md", "scripts/serve-player.py", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py"];
+        let added = ["README.md", "docs/spatial-batches.md", "docs/projected-geometry.md", "scripts/serve-player.py", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py",
+            "examples/spatial-diagnostics/README.md", "examples/spatial-diagnostics/project.unone.json", "examples/spatial-diagnostics/scene.json", "examples/spatial-diagnostics/main.luau", "tools/benchmark-spatial.mjs"];
         for name in added {
             assert!(manifest.files.iter().any(|file| file.path == name), "missing documented SDK entry: {name}");
             assert!(output.join(name).is_file());
+        }
+        let guide = "docs/spatial-batches.md";
+        assert_eq!(fs::read_to_string(output.join(guide)).unwrap(), include_str!("../../../docs/spatial-batches.md"));
+        assert!(fs::read_to_string(output.join("README.md")).unwrap().contains("](docs/spatial-batches.md)"));
+        let example = fs::read_to_string(output.join("examples/spatial-diagnostics/main.luau")).unwrap();
+        assert!(example.contains(&unone_engine::api_typings_block()));
+        assert!(example.contains("local diagnostic: EngineDiagnostic? = api.spatial.lastDiagnostic()"));
+        assert_eq!(example.matches("-- BEGIN UNONE API TYPES").count(), 1);
+        assert_eq!(example.matches("-- END UNONE API TYPES").count(), 1);
+        assert_eq!(fs::read_to_string(output.join("tools/benchmark-spatial.mjs")).unwrap(), include_str!("../../../scripts/benchmark-spatial.mjs"));
+        for name in ["spatial.create", "spatial.submit", "spatial.take", "spatial.info"] {
+            assert!(unone_engine::api_describe(name).unwrap().when_to_use.contains(guide));
         }
         // Newly shipped tools receive the same integrity checks as every SDK file.
         let tool = output.join("scripts/serve-player.py");

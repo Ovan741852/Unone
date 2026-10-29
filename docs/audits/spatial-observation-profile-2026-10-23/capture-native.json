@@ -1,0 +1,209 @@
+{
+  "schema": "unone.ai-native.probe.v1",
+  "startedAt": "2026-10-23T16:13:52.002Z",
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\native-probe.mjs",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "node": "v24.19.0",
+  "platform": "win32/x64",
+  "mode": "fixture",
+  "limitations": [
+    "Selected inputs, pinned local binaries and synthetic fixtures; not full source-to-binary provenance, cross-device certification, GPU speedup, kernel timestamps or rendered presentation."
+  ],
+  "subject": [
+    {
+      "path": "docs/spatial-batches.md",
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc"
+    },
+    {
+      "path": "docs/sdk-readme.md",
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "14f1062b32412c9b833cf9caf055c504099fb6e3320d6222890549d2f54e4154"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial.rs",
+      "sha256": "0a9522e7f0a4acf6f5bb24d2ac20f680784bc065742fc8f14aca985378f47214"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime.rs",
+      "sha256": "4dd8769f1eeae80f4560825d6838aa0899e6f297d4b39cb8be828f3a8ed6e2b2"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/value.rs",
+      "sha256": "198b44b25d4229c0a1baebd45a71ebbba93ad1b336206d20182aa44afdb95842"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/state.rs",
+      "sha256": "d5874673d4fb185c8315c3903c895f66952237f8bebe3951c5a6b5f8f3a1fc6b"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/spatial.rs",
+      "sha256": "43497248d9f218b95d104437d3f5599ae318fd7a7dc4f2393a5b1fda25ccf876"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "sha256": "94ae69649dbea852826a490590e3162e609bf1ba25ba57788e96b8c1a3c35d41"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "07efdc483737cbb07ef31b72a60e0f67ae4cf4b47dd8bd83efed8d5e1e4ec3da"
+    },
+    {
+      "path": "crates/unone-web-live-smoke/src/main.rs",
+      "sha256": "6b6ccae0a23b7f8375b5f0fda942d95b818ac8ea258e793f06aa81a5c46f7df9"
+    },
+    {
+      "path": "crates/unone-engine/tests/observation_arrays.rs",
+      "sha256": "34d9bda8e69ecd0a64654f3b6323f18bc180f123cd862d8b0b91add5f5bd3e97"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_runtime.rs",
+      "sha256": "2e5b2144dedf41e7d06d0e66f75eaf2b5716c7bf31467d7402e30e93da6bc962"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/src/lib.rs",
+      "sha256": "e0e9ace2cca371f0f0a1242153245f9b49f94c80fb46e05420687e0925ecd9aa"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/tests/runtime.rs",
+      "sha256": "0ae7938553863c3e315c686d2e4dcab74357531424c7f4f796d2f7cfac79b623"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.toml",
+      "sha256": "9d35c773ab4690eae049a73e2bb7e1b0a251c636062311b368ae0e176671e508"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.lock",
+      "sha256": "1e13e3f2ac20ae987ceeb959ee5427b813de0b1e2ab1b0321c4f4e8919edb6af"
+    },
+    {
+      "path": "web/shared/spatial-gpu.mjs",
+      "sha256": "79d630684148b94024cf3424472ac39801ba9cea14039f85183f88df353b760d"
+    },
+    {
+      "path": "web/shared/spatial-host.mjs",
+      "sha256": "aab13ee77cb1dac3a3fe7e0be64b5eb562d183d5061665271d9f206d2c71fc77"
+    },
+    {
+      "path": "web/shared/spatial.wgsl",
+      "sha256": "2de3388bf58f080cc97e5efc60106cc1b2df649f7a5cf0db7d89478d7b4385c7"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "scripts/verify-spatial-runtime.mjs",
+      "sha256": "f8279b2db99d855a5e42fc82a78d55373e3a4a5b07e92c85110dcbe73f3b6610"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/rubric.mjs",
+      "sha256": "9d1570cf3c4fe17e0eb7df09f6f5fd275a426a40e4ec36ca1e3fe63238ccfc98"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/audit.mjs",
+      "sha256": "dea4baa567707e4b6008f13af525fdf78015ec2a4ea8d2842c68c6168da905a0"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/README.md",
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/sdk.json",
+      "sha256": "d193fefe32795ac399ce0be2f7220b58f3dd9a95deb9a3f9901a82c89137197c"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/docs/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/docs/spatial-batches.md",
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-runtime/runtime.json",
+      "sha256": "4a038e59308bc674d8560a1387de8c64018edd1dfdb4dc04a637947de62ebc66"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/environment.json",
+      "sha256": "48b3317107b628f68758a79d7f09c35f6ac8d113493dc891ddd8cb60c2af4ff7"
+    },
+    {
+      "path": "scripts/verify-spatial-webgpu.mjs",
+      "sha256": "75a87fa041aee2ece963f9af5f9d8c62a29b3db41b220ffb454e7083500b0d12"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/examples/browser_fixtures.rs",
+      "sha256": "9afc362d6d0f5ed6d374ef449f9a8e2f135fb0d5baed554544089c0acbb16059"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/main.final.luau",
+      "sha256": "d71e0029ec0c1af210b05970f691afcf0fd7fe553efadeaf58b1007ccdf37564"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/project.final.json",
+      "sha256": "bda9fb882f03faa678465fe1d9ee33a4ca7ceb59230cfaabd91c5e74d5d29924"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/scene.final.json",
+      "sha256": "c6579579bdf86efb817428f84931d93741f889e06b973bbf9b707889224d685e"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/verify-report.mjs",
+      "sha256": "893c1d5f46766763af1712a3891c9c7f2e807b81bc38861416e800a7815c340b"
+    }
+  ],
+  "probe": {
+    "path": "docs/audits/spatial-observation-profile-2026-10-23/native-probe.mjs",
+    "sha256": "caac29713b64f31bce26ba2868f7683cb08f5facb26713e312edf2100cea52d6"
+  },
+  "durationMs": 33419.326,
+  "exitCode": 0,
+  "signal": null,
+  "spawnError": null,
+  "timedOut": false,
+  "outputTruncated": false,
+  "sourceChanged": false,
+  "sourceCheckError": null,
+  "stdout": "{\"event\":\"native\",\"argv\":[\"D:\\\\Projects\\\\Unone\\\\.toolcache\\\\cargo\\\\bin\\\\cargo.exe\",\"test\",\"--manifest-path\",\"crates/unone-spatial-gpu/Cargo.toml\",\"--offline\",\"--test\",\"runtime\",\"--\",\"--nocapture\"],\"status\":0,\"stdout\":\"\\nrunning 1 test\\ntest required_gpu_luau_batches_match_cpu_through_fixed_tick_delivery ... ok\\n\\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.04s\\n\\n\",\"stderr\":\"   Compiling unone-engine v0.1.0 (D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine)\\nwarning: unused imports: `ApiState` and `Lua`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\audio.rs:1:13\\n  |\\n1 | use super::{ApiState, Lua, Table};\\n  |             ^^^^^^^^  ^^^\\n  |\\n  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: unused import: `std::rc::Rc`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\audio.rs:3:5\\n  |\\n3 | use std::rc::Rc;\\n  |     ^^^^^^^^^^^\\n\\nwarning: unused import: `ApiState`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\physics.rs:2:13\\n  |\\n2 | use super::{ApiState, Lua, Table, Value};\\n  |             ^^^^^^^^\\n\\nwarning: unused import: `crate::world::Vec2`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\physics.rs:3:5\\n  |\\n3 | use crate::world::Vec2;\\n  |     ^^^^^^^^^^^^^^^^^^\\n\\nwarning: unused import: `std::rc::Rc`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\physics.rs:4:5\\n  |\\n4 | use std::rc::Rc;\\n  |     ^^^^^^^^^^^\\n\\nwarning: unused imports: `ApiState`, `Lua`, and `Table`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\presentation.rs:1:13\\n  |\\n1 | use super::{ApiState, Lua, Table};\\n  |             ^^^^^^^^  ^^^  ^^^^^\\n\\nwarning: unused imports: `Vec2` and `Vec3`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\presentation.rs:2:20\\n  |\\n2 | use crate::world::{Vec2, Vec3};\\n  |                    ^^^^  ^^^^\\n\\nwarning: unused import: `std::rc::Rc`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\presentation.rs:3:5\\n  |\\n3 | use std::rc::Rc;\\n  |     ^^^^^^^^^^^\\n\\nwarning: unused imports: `json_to_lua`, `lua_value_to_json`, and `portable_value_to_json`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\state.rs:2:20\\n  |\\n2 | use super::value::{json_to_lua, lua_value_to_json, observation_value_to_json, observation_array, portable_value_to_json};\\n  |                    ^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^                                                ^^^^^^^^^^^^^^^^^^^^^^\\n\\nwarning: unused import: `crate::ui::UiTree`\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\state.rs:4:5\\n  |\\n4 | use crate::ui::UiTree;\\n  |     ^^^^^^^^^^^^^^^^^\\n\\nwarning: unused variable: `systems`\\n  --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\mod.rs:23:5\\n   |\\n23 |     systems: &SystemSettings,\\n   |     ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_systems`\\n   |\\n   = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: variable does not need to be mutable\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime.rs:974:17\\n    |\\n974 |             let mut world = self.world.borrow_mut();\\n    |                 ----^^^^^\\n    |                 |\\n    |                 help: remove this `mut`\\n    |\\n    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: variable does not need to be mutable\\n    --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime.rs:1076:17\\n     |\\n1076 |             let mut world = self.world.borrow_mut();\\n     |                 ----^^^^^\\n     |                 |\\n     |                 help: remove this `mut`\\n\\nwarning: unused variable: `frame`\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime.rs:975:17\\n    |\\n975 |             let frame = world.frame;\\n    |                 ^^^^^ help: if this is intentional, prefix it with an underscore: `_frame`\\n\\nwarning: unused variable: `frame`\\n    --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime.rs:1077:17\\n     |\\n1077 |             let frame = world.frame;\\n     |                 ^^^^^ help: if this is intentional, prefix it with an underscore: `_frame`\\n\\nwarning: struct `Pose3D` is never constructed\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\rigid3d.rs:243:12\\n    |\\n243 | pub struct Pose3D {\\n    |            ^^^^^^\\n    |\\n    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\\n\\nwarning: struct `Query3DFilter` is never constructed\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\rigid3d.rs:803:12\\n    |\\n803 | pub struct Query3DFilter {\\n    |            ^^^^^^^^^^^^^\\n\\nwarning: struct `Ray3D` is never constructed\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\rigid3d.rs:844:12\\n    |\\n844 | pub struct Ray3D {\\n    |            ^^^^^\\n\\nwarning: struct `Cast3D` is never constructed\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\rigid3d.rs:853:12\\n    |\\n853 | pub struct Cast3D {\\n    |            ^^^^^^\\n\\nwarning: struct `Overlap3D` is never constructed\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\rigid3d.rs:863:12\\n    |\\n863 | pub struct Overlap3D {\\n    |            ^^^^^^^^^\\n\\nwarning: struct `QueryHit3D` is never constructed\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\rigid3d.rs:870:12\\n    |\\n870 | pub struct QueryHit3D {\\n    |            ^^^^^^^^^^\\n\\nwarning: fields `random`, `ui`, `viewport_aspect`, and `save_payload` are never read\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime.rs:208:5\\n    |\\n198 | struct ApiState {\\n    |        -------- fields in this struct\\n...\\n208 |     random: Rc<RefCell<DeterministicRng>>,\\n    |     ^^^^^^\\n...\\n211 |     ui: Rc<RefCell<Option<UiTree>>>,\\n    |     ^^\\n212 |     viewport_aspect: Rc<RefCell<f64>>,\\n    |     ^^^^^^^^^^^^^^^\\n213 |     save_payload: Rc<RefCell<Option<serde_json::Value>>>,\\n    |     ^^^^^^^^^^^^\\n    |\\n    = note: `ApiState` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\\n\\nwarning: field `state` is never read\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime.rs:218:5\\n    |\\n217 | struct DeterministicRng {\\n    |        ---------------- field in this struct\\n218 |     state: u64,\\n    |     ^^^^^\\n    |\\n    = note: `DeterministicRng` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\\n\\nwarning: methods `next_u64`, `next_float`, and `next_int` are never used\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime.rs:226:8\\n    |\\n221 | impl DeterministicRng {\\n    | --------------------- methods in this implementation\\n...\\n226 |     fn next_u64(&mut self) -> u64 {\\n    |        ^^^^^^^^\\n...\\n234 |     fn next_float(&mut self) -> f64 {\\n    |        ^^^^^^^^^^\\n...\\n239 |     fn next_int(&mut self, min: i64, max: i64) -> Result<i64, String> {\\n    |        ^^^^^^^^\\n\\nwarning: function `disable_if_off` is never used\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\mod.rs:128:4\\n    |\\n128 | fn disable_if_off(\\n    |    ^^^^^^^^^^^^^^\\n\\nwarning: function `audio_options` is never used\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\audio.rs:135:4\\n    |\\n135 | fn audio_options(options: Option<Table>) -> mlua::Result<AudioOptions> {\\n    |    ^^^^^^^^^^^^^\\n\\nwarning: function `camera` is never used\\n --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\camera.rs:6:15\\n  |\\n6 | pub(super) fn camera(\\n  |               ^^^^^^\\n\\nwarning: function `decode` is never used\\n  --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\physics.rs:54:4\\n   |\\n54 | fn decode<T: serde::de::DeserializeOwned>(value: Table) -> mlua::Result<T> {\\n   |    ^^^^^^\\n\\nwarning: function `encode` is never used\\n  --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\physics.rs:60:4\\n   |\\n60 | fn encode<T: serde::Serialize>(lua: &Lua, value: T) -> mlua::Result<Value> {\\n   |    ^^^^^^\\n\\nwarning: function `portable_value_to_json` is never used\\n  --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\runtime\\\\bindings\\\\value.rs:69:15\\n   |\\n69 | pub(super) fn portable_value_to_json(lua: &Lua, value: Value) -> Result<serde_json::Value, String> {\\n   |               ^^^^^^^^^^^^^^^^^^^^^^\\n\\nwarning: method `projection_name` is never used\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\world.rs:322:19\\n    |\\n298 | impl CameraState {\\n    | ---------------- method in this implementation\\n...\\n322 |     pub(crate) fn projection_name(&self) -> &'static str {\\n    |                   ^^^^^^^^^^^^^^^\\n\\nwarning: constant `MAX_LIVE_EFFECTS` is never used\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\world.rs:715:7\\n    |\\n715 | const MAX_LIVE_EFFECTS: usize = 256;\\n    |       ^^^^^^^^^^^^^^^^\\n\\nwarning: field `next_effect_handle` is never read\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\world.rs:905:5\\n    |\\n888 | pub(crate) struct World {\\n    |                   ----- field in this struct\\n...\\n905 |     next_effect_handle: u64,\\n    |     ^^^^^^^^^^^^^^^^^^\\n    |\\n    = note: `World` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\\n\\nwarning: multiple methods are never used\\n    --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\world.rs:1185:19\\n     |\\n 912 | impl World {\\n     | ---------- methods in this implementation\\n...\\n1185 |     pub(crate) fn follow_audio_entities(&mut self) {\\n     |                   ^^^^^^^^^^^^^^^^^^^^^\\n...\\n1235 |     pub(crate) fn play_animation(\\n     |                   ^^^^^^^^^^^^^^\\n...\\n1288 |     pub(crate) fn stop_animation(&mut self, id: &str) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^\\n...\\n1299 |     pub(crate) fn spawn_effect(\\n     |                   ^^^^^^^^^^^^\\n...\\n1338 |     pub(crate) fn stop_effect(&mut self, handle: &str) -> Result<bool, String> {\\n     |                   ^^^^^^^^^^^\\n...\\n1344 |     pub(crate) fn get_camera_position(&self) -> Vec2 {\\n     |                   ^^^^^^^^^^^^^^^^^^^\\n...\\n1351 |     pub(crate) fn set_camera_position(&mut self, position: Vec2) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^^^^^^\\n...\\n1359 |     pub(crate) fn get_camera_zoom(&self) -> f64 {\\n     |                   ^^^^^^^^^^^^^^^\\n...\\n1363 |     pub(crate) fn set_camera_zoom(&mut self, zoom: f64) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^^\\n...\\n1458 |     pub(crate) fn get_camera3d(&self) -> Result<Camera3DData, String> {\\n     |                   ^^^^^^^^^^^^\\n...\\n1469 |     pub(crate) fn camera_projection(&self) -> &'static str {\\n     |                   ^^^^^^^^^^^^^^^^^\\n...\\n1473 |     pub(crate) fn set_camera_projection(&mut self, projection: &str) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^^^^^^^^\\n...\\n1500 |     pub(crate) fn camera_orthographic_size(&self) -> f64 {\\n     |                   ^^^^^^^^^^^^^^^^^^^^^^^^\\n...\\n1504 |     pub(crate) fn set_camera_orthographic_size(&mut self, size: f64) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n...\\n1536 |     pub(crate) fn set_camera_perspective(&mut self, camera: Camera3DData) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^^^^^^^^^\\n...\\n1555 |     pub(crate) fn set_camera3d_position(&mut self, position: Vec3) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^^^^^^^^\\n...\\n1565 |     pub(crate) fn set_camera3d_target(&mut self, target: Vec3) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^^^^^^^\\n...\\n1602 |     pub(crate) fn apply_impulse(&mut self, id: &str, impulse: Vec2) -> Result<(), String> {\\n     |                   ^^^^^^^^^^^^^\\n\\nwarning: function `resolve_circle_pair` is never used\\n    --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\world.rs:1707:4\\n     |\\n1707 | fn resolve_circle_pair(\\n     |    ^^^^^^^^^^^^^^^^^^^\\n\\nwarning: multiple fields are never read\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\particle.rs:146:5\\n    |\\n145 | struct Instance {\\n    |        -------- fields in this struct\\n146 |     definition: ParticleDefinition,\\n    |     ^^^^^^^^^^\\n147 |     position: Vec3,\\n    |     ^^^^^^^^\\n148 |     origins: Option<Vec<Vec3>>,\\n    |     ^^^^^^^\\n...\\n151 |     path: Vec<(u64, Vec3)>,\\n    |     ^^^^\\n152 |     /// `finish` truncates future births but lets all already-born particles fade.\\n153 |     emission_frames: Option<u32>,\\n    |     ^^^^^^^^^^^^^^^\\n154 |     seed: u64,\\n    |     ^^^^\\n155 |     started: u64,\\n    |     ^^^^^^^\\n    |\\n    = note: `Instance` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\\n\\nwarning: methods `emission_frames`, `reserved_particles`, `max_lifetime`, and `position_at` are never used\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\particle.rs:158:8\\n    |\\n157 | impl Instance {\\n    | ------------- methods in this implementation\\n158 |     fn emission_frames(&self) -> u32 {\\n    |        ^^^^^^^^^^^^^^^\\n...\\n163 |     fn reserved_particles(&self) -> u64 {\\n    |        ^^^^^^^^^^^^^^^^^^\\n...\\n167 |     fn max_lifetime(&self) -> u64 {\\n    |        ^^^^^^^^^^^^\\n...\\n175 |     fn position_at(&self, frame: u64) -> Vec3 {\\n    |        ^^^^^^^^^^^\\n\\nwarning: fields `live` and `next` are never read\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\particle.rs:187:5\\n    |\\n185 | pub(crate) struct ParticleWorld {\\n    |                   ------------- fields in this struct\\n186 |     pub definitions: BTreeMap<String, ParticleDefinition>,\\n187 |     live: BTreeMap<String, Instance>,\\n    |     ^^^^\\n188 |     next: u64,\\n    |     ^^^^\\n    |\\n    = note: `ParticleWorld` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis\\n\\nwarning: multiple methods are never used\\n   --> D:\\\\Projects\\\\Unone\\\\crates\\\\unone-engine\\\\src\\\\particle.rs:309:8\\n    |\\n308 | impl ParticleWorld {\\n    | ------------------ methods in this implementation\\n309 |     fn reserved_particles(&self) -> u64 {\\n    |        ^^^^^^^^^^^^^^^^^^\\n...\\n312 |     fn insert(\\n    |        ^^^^^^\\n...\\n341 |     pub fn play(\\n    |            ^^^^\\n...\\n360 |     pub fn play_batch(\\n    |            ^^^^^^^^^^\\n...\\n387 |     pub fn move_to(&mut self, handle: &str, position: Vec3, frame: u64) -> Result<bool, String> {\\n    |            ^^^^^^^\\n...\\n413 |     pub fn finish(&mut self, handle: &str, frame: u64) -> bool {\\n    |            ^^^^^^\\n...\\n422 |     pub fn stats(&self, frame: u64) -> serde_json::Value {\\n    |            ^^^^^\\n...\\n425 |     pub fn stop(&mut self, handle: &str) -> bool {\\n    |            ^^^^\\n...\\n428 |     pub fn advance(&mut self, frame: u64) {\\n    |            ^^^^^^^\\n...\\n434 |     pub fn snapshot(&self, frame: u64) -> Vec<ParticleSnapshot> {\\n    |            ^^^^^^^^\\n\\n   Compiling unone-spatial-gpu v0.1.0 (D:\\\\Projects\\\\Unone\\\\crates\\\\unone-spatial-gpu)\\nwarning: `unone-engine` (lib) generated 39 warnings (run `cargo fix --lib -p unone-engine` to apply 15 suggestions)\\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.89s\\n     Running tests\\\\runtime.rs (crates\\\\unone-spatial-gpu\\\\target\\\\debug\\\\deps\\\\runtime-46079aaffbfe3ed1.exe)\\nLuau spatial GPU adapter: NVIDIA GeForce RTX 5080 (Vulkan, DiscreteGpu)\\nSpatial host phase measurements (one cold batch, not a speed comparison): {\\\"cpu\\\":{\\\"api_version\\\":1,\\\"backend\\\":\\\"cpu\\\",\\\"clock\\\":\\\"host_monotonic\\\",\\\"last\\\":{\\\"bodies\\\":2,\\\"executor\\\":{\\\"clock\\\":\\\"host_monotonic\\\",\\\"gpu_kernel_unavailable_reason\\\":\\\"CPU backend does not dispatch GPU work\\\",\\\"phases_ms\\\":{\\\"cpu_execute\\\":0.035800000000000005,\\\"decode\\\":null,\\\"encode_submit\\\":null,\\\"gpu_kernel\\\":null,\\\"packing\\\":null,\\\"preparation\\\":null,\\\"queue_wait\\\":null,\\\"readback_wait\\\":null,\\\"upload\\\":null,\\\"validation\\\":null},\\\"readback_bytes\\\":0,\\\"total_ms\\\":0.035800000000000005,\\\"upload_bytes\\\":0},\\\"executor_ms\\\":0.035800000000000005,\\\"executor_unavailable_reason\\\":null,\\\"manager_ms\\\":{\\\"result_apply\\\":0.0018,\\\"result_validation\\\":0.034100000000000005,\\\"snapshot\\\":0.0025,\\\"validation\\\":0.0231},\\\"pair_tests_upper_bound\\\":8,\\\"queries\\\":4,\\\"returned_hits\\\":4,\\\"ticket\\\":2,\\\"version\\\":1},\\\"limits\\\":{\\\"counter_max\\\":9007199254740991,\\\"retained_completed_batches\\\":1},\\\"scope\\\":\\\"Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.\\\",\\\"totals\\\":{\\\"bodies\\\":2,\\\"cancelled_tickets\\\":0,\\\"completed_batches\\\":1,\\\"executor_ms\\\":0.035800000000000005,\\\"executor_phases_ms\\\":{\\\"cpu_execute\\\":0.035800000000000005,\\\"decode\\\":null,\\\"encode_submit\\\":null,\\\"gpu_kernel\\\":null,\\\"packing\\\":null,\\\"preparation\\\":null,\\\"queue_wait\\\":null,\\\"readback_wait\\\":null,\\\"upload\\\":null,\\\"validation\\\":null},\\\"executor_samples\\\":1,\\\"executor_wall_samples\\\":1,\\\"failed_batches\\\":0,\\\"input_body_bytes\\\":88,\\\"manager_ms\\\":{\\\"result_apply\\\":0.0018,\\\"result_validation\\\":0.034100000000000005,\\\"snapshot\\\":0.0025,\\\"validation\\\":0.0231},\\\"pair_tests_upper_bound\\\":8,\\\"queries\\\":4,\\\"readback_bytes\\\":0,\\\"returned_hits\\\":4,\\\"submitted_batches\\\":1,\\\"upload_bytes\\\":0}},\\\"gpu\\\":{\\\"api_version\\\":1,\\\"backend\\\":\\\"wgpu\\\",\\\"clock\\\":\\\"host_monotonic\\\",\\\"last\\\":{\\\"bodies\\\":2,\\\"executor\\\":{\\\"clock\\\":\\\"host_monotonic\\\",\\\"gpu_kernel_unavailable_reason\\\":\\\"GPU timestamp queries are not enabled; host timings do not measure kernel duration\\\",\\\"phases_ms\\\":{\\\"cpu_execute\\\":null,\\\"decode\\\":0.033,\\\"encode_submit\\\":1.107,\\\"gpu_kernel\\\":null,\\\"packing\\\":0.09050000000000001,\\\"preparation\\\":null,\\\"queue_wait\\\":null,\\\"readback_wait\\\":36.5263,\\\"upload\\\":2.6271,\\\"validation\\\":0.007},\\\"readback_bytes\\\":12352,\\\"total_ms\\\":40.55050000000001,\\\"upload_bytes\\\":368},\\\"executor_ms\\\":40.5516,\\\"executor_unavailable_reason\\\":null,\\\"manager_ms\\\":{\\\"result_apply\\\":0.0027,\\\"result_validation\\\":0.0559,\\\"snapshot\\\":0.0031999999999999997,\\\"validation\\\":0.0291},\\\"pair_tests_upper_bound\\\":8,\\\"queries\\\":4,\\\"returned_hits\\\":4,\\\"ticket\\\":2,\\\"version\\\":1},\\\"limits\\\":{\\\"counter_max\\\":9007199254740991,\\\"retained_completed_batches\\\":1},\\\"scope\\\":\\\"Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.\\\",\\\"totals\\\":{\\\"bodies\\\":2,\\\"cancelled_tickets\\\":0,\\\"completed_batches\\\":1,\\\"executor_ms\\\":40.5516,\\\"executor_phases_ms\\\":{\\\"cpu_execute\\\":null,\\\"decode\\\":0.033,\\\"encode_submit\\\":1.107,\\\"gpu_kernel\\\":null,\\\"packing\\\":0.09050000000000001,\\\"preparation\\\":null,\\\"queue_wait\\\":null,\\\"readback_wait\\\":36.5263,\\\"upload\\\":2.6271,\\\"validation\\\":0.007},\\\"executor_samples\\\":1,\\\"executor_wall_samples\\\":1,\\\"failed_batches\\\":0,\\\"input_body_bytes\\\":88,\\\"manager_ms\\\":{\\\"result_apply\\\":0.0027,\\\"result_validation\\\":0.0559,\\\"snapshot\\\":0.0031999999999999997,\\\"validation\\\":0.0291},\\\"pair_tests_upper_bound\\\":8,\\\"queries\\\":4,\\\"readback_bytes\\\":12352,\\\"returned_hits\\\":4,\\\"submitted_batches\\\":1,\\\"upload_bytes\\\":368}}}\\n\"}\n{\"event\":\"task_result\",\"complete\":true,\"scope\":\"required actual native GPU; measured host phases/bytes and canonical profile-read purity; cold2body4query correctness case, no speedup or rendering claim; selected source fingerprints are not a full compiler dependency graph\"}\n",
+  "stderr": "",
+  "trust": "Local capture of an explicitly selected script. Not signed attestation or proof of semantic claims; probe code is not sandboxed."
+}

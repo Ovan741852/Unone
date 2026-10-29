@@ -3148,8 +3148,19 @@ dependencies = [
  "unicode-script",
  "unicode-segmentation",
  "unone-engine",
+ "unone-spatial-gpu",
  "wgpu",
  "winit",
+]
+
+[[package]]
+name = "unone-spatial-gpu"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "pollster",
+ "unone-engine",
+ "wgpu",
 ]
 
 [[package]]

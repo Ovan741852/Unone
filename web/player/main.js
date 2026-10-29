@@ -1,14 +1,21 @@
 import {createThreeRenderer} from '../renderer/three.js';
 import {createPlayerRenderer,createRendererDisposer} from '../shared/renderer-selection.mjs';
 import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';
+import {createUiTextInputHost} from '../shared/ui-text-input.mjs';
+import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';
 import {createUiScrollHost} from '../shared/ui-scroll.mjs';
 import {createHostInput} from '../shared/host-input.js';
+import {routeBrowserKey,routeBrowserPointer} from '../shared/player-input.js';
+import {createOrderedPhysicalQueue} from '../shared/ordered-physical-queue.mjs';
+import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
 import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
-import {requireAssetEncoding} from '../shared/asset-encoding.js';
+import {requireAssetEncoding,createAssetCatalog} from '../shared/asset-encoding.js';
 import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.js';
+import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileOptions} from '../shared/raster-diagnostics.mjs';
+import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from '../shared/startup-presentation.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
@@ -22,72 +29,156 @@ const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{onAction:({act
 }});
 const uiScroll=createUiScrollHost({canvas,stage:document.querySelector('#ui-layer'),onAction:action=>input.queueAction(action),
  requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));draw();},requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
-const renderUi=snapshot=>uiRenderer.draw(uiScroll.draw(snapshot));
+const textInputs=createUiTextInputHost({canvas,onInteraction:event=>input.queueTextInputInteraction(event),
+ releaseKeyboard:()=>input.releaseKeyboard(),requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
+const renderUi=snapshot=>uiRenderer.draw(textInputs.draw(uiScroll.draw(snapshot)));
+const cursorCanvas=document.createElement('canvas');document.querySelector('#ui-layer').append(cursorCanvas);
+const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fail,loadImage:assetId=>{
+ const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
+ if(!asset)throw Error(`UI_CURSOR_ASSET_MISSING: ${assetId}`);requireAssetEncoding(asset,'image');
+ return loadCursorImage(new URL(`content/${asset.source}`,document.baseURI).href);
+}});
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null;
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
+let orderedQueue=null,orderedRouter=null,orderedEpoch=0,physicalProfile;
+// Explicit opt-in host profiling (?unone_profile=1). Null when disabled: each site is one branch.
+let profiler=null,profileFlight=null,profileLastSource=null;
 /* PROFILE_INIT */
 const metrics={};
+const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){scheduler?.stop();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+function fail(error){profiler?.publish();startupAbort.abort();cursorHost.dispose();textInputs.dispose();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
+function configurePhysical(){
+ textInputs.setExternalInput(Boolean(physicalProfile));
+ if(!physicalProfile)return;orderedRouter?.dispose();orderedQueue=createOrderedPhysicalQueue({epoch:++orderedEpoch});
+ textInputs.suspend();input.releaseAll();uiRenderer.releaseAll();uiScroll.cancel();
+ orderedRouter=createOrderedPhysicalRouter({canvas,queue:orderedQueue,onError:fail,
+  routePointer:(e,kind,owner)=>{if(owner==='engine_ui'){routeBrowserPointer(e,kind,{...browserPointer,ui:routeUi,primary(){},secondary(){},middle(){},cancel(){}});return owner;}if(owner==='host_ui')return owner;
+   let owned=false;routeBrowserPointer(e,kind,{...browserPointer,ui:owner==='game'?()=>false:(event,phase)=>{owned=routeUi(event,phase);return owned;}});return owned?'engine_ui':'game';},
+  routeKey:(e,state,owner)=>{if(owner==='host_ui')return owner;if(owner==='engine_ui'){if(!textInputs.routeKey(e,state==='down')&&state==='down')uiScroll.routeKey(e);return owner;}if(e.target?.dataset?.unoneTextInput===undefined&&e.target?.closest?.('input,textarea,select,[contenteditable=true],#unone-developer'))return 'host_ui';
+   if(textInputs.routeKey(e,state==='down'))return 'engine_ui';if(state==='down'&&uiScroll.routeKey(e))return 'engine_ui';routeBrowserKey(input,e,state==='down');return 'game';},
+  routeWheel:e=>uiScroll.routeWheel(e)?'engine_ui':'game',routeCapture:e=>routeUi(e,'cancel')});
+ uiScroll.setExternalInput(true);publishPhysical();
+}
 async function json(path){const r=await fetch(new URL(path,document.baseURI),{cache:'no-store'});if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
+function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
 function acceptSnapshot(value,{reset=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 function draw(){
+ if(!profiler)return drawFrame(null);
+ const source=profiler.sourceOf(snapshot),pd=profiler.begin('draw',{source_command:source,snapshot_frame:snapshot?.world?.frame??null,redraw:source!==null&&source===profileLastSource,paused:frozen});
+ profileLastSource=source;
+ try{drawFrame(pd);}catch(error){profiler.end(pd,'error',{error});throw error;}
+ profiler.end(pd,profiler.outcomeOf(pd)??'returned');
+}
+function drawFrame(pd){
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
- renderer.draw(display.snapshot);renderUi(snapshot);renderMs=performance.now()-began;
- if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report()};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
+ if(pd)profiler.mark(pd,'interpolation_sample');
+ if(pd)profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot));else renderer.draw(display.snapshot);
+ renderUi(snapshot);if(pd)profiler.mark(pd,'ui_draw');renderMs=performance.now()-began;
+ cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
+ if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report()};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
  document.body.dataset.playerFrame=String(snapshot.world.frame);
+ publishPhysical();
+ if(pd)profiler.mark(pd,'host_publish');
  /* PROFILE_FRAME */
 }
 async function advance(){
+ if(!profiler)return advanceFrame(null);
+ const pu=profiler.begin('update');profileFlight=pu.id;
+ try{await advanceFrame(pu);}catch(error){profiler.end(pu,'error',{error});throw error;}
+ profiler.end(pu,'ok');
+}
+async function advanceFrame(pu){
  const began=performance.now(),browserInput=manualInput==null,frame=manualInput??input.consumeFrame();manualInput=null;
  // The camera may follow a moving entity while the physical mouse stays still.
  // Reproject the consumed screen sample, preserving queued down/up edges and
  // leaving developer-supplied world coordinates untouched.
  if(browserInput&&hasWorldPointer)frame.pointer={...frame.pointer,position:projectScreenPointer(canvas,frame.pointer.screen_position,snapshot)};
+ if(orderedQueue){if(!browserInput)throw Error('INPUT_PHYSICAL_MANUAL_UNSUPPORTED: ordered ingress owns the tick batch');frame.physical=orderedQueue.lease();}
+ if(pu)profiler.mark(pu,'input_consume');
  /* PROFILE_INPUT */
- const nextSnapshot=await backend.request({kind:'tick',input:frame});
+ let nextSnapshot;
+ try{nextSnapshot=await backend.request({kind:'tick',input:frame},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);}
+ catch(error){if(orderedQueue)try{orderedQueue.terminate(String(error.message??error));}catch{}publishPhysical();throw error;}
+ if(pu){profiler.mark(pu,'backend_request');profiler.set(pu,{command:profiler.sourceOf(nextSnapshot),snapshot_frame:nextSnapshot?.world?.frame??null});}
  /* PROFILE_TICK_END */
  acceptSnapshot(nextSnapshot);const decodeEnd=performance.now();bridgeMs=decodeEnd-began;
+ if(pu)profiler.mark(pu,'accept_snapshot');
  /* PROFILE_TICK */
  audio?.sync(snapshot.world);
+ if(pu)profiler.mark(pu,'audio_sync');
  const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}
+ if(pu)profiler.mark(pu,'save_persist');
  /* PROFILE_POST_TICK */
 }
-function tickOnce(){if(tickFlight)return tickFlight;tickFlight=advance().finally(()=>{tickFlight=null;});return tickFlight;}
-async function setPaused(value){frozen=value;manualInput=null;uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
+// A tick request while one is in flight shares it; profiling records that request as coalesced.
+function tickOnce(){if(tickFlight){if(profiler)profiler.record('update_request','coalesced',{joined:profileFlight});return tickFlight;}tickFlight=advance().finally(()=>{tickFlight=null;});return tickFlight;}
+async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:'42'}),{reset:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();await setPaused(wasPaused);}
+async function finishStartup(presentation,kind){
+ if(startupAbort.signal.aborted)throw startupCancelled();
+ const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
+ const commit=()=>{
+ metrics.raster=renderer.metrics().raster;
+ if(startupAbort.signal.aborted)throw startupCancelled();
+ if(checked&&renderer.startupPresentation.sample().state!=='presented')return false;
+ assertRasterReady(metrics.raster,renderCount);orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
+ scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
+ /* DEVELOPER_CONNECT */
+ scheduler.start();
+ window.addEventListener('resize',()=>{const [width,height]=physicalViewport();backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
+ };
+ if(checked){
+  const gate=renderer.startupPresentation;if(!gate)throw Error('PLAYER_STARTUP_PRESENTATION_CONTRACT_MISSING');
+  await completeStartupPresentation({draw,waitForAssets:()=>renderer.ready(),sample:gate.sample,subscribe:gate.subscribe,
+   commit,signal:startupAbort.signal,onState:state=>{metrics.startup_presentation=state;metrics.raster=renderer.metrics().raster;
+    document.body.dataset.playerMetrics=JSON.stringify(metrics);document.body.dataset.playerStartupPresentation=JSON.stringify(state);}});
+ }else{draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);if(startupAbort.signal.aborted)throw startupCancelled();commit();}
+}
 async function start(){
+ const profileOptions=playerProfileOptions(location.search);
+ if(profileOptions){profiler=createPlayerProfiler({limit:profileOptions.limit,publishTarget:document.body});document.body.dataset.playerProfileEnabled='1';
+  window.unonePlayerProfile=Object.freeze({report:()=>profiler.report(),clear:()=>profiler.clear(),publish:()=>profiler.publish()});}
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;uiAssetManifest=assets;
+ // One immutable presentation index per fetched manifest. The player owns this JSON and adopts it,
+ // so the renderer never rebuilds the asset index per draw and in-place edits fail instead of drifting.
+ const assetCatalog=createAssetCatalog(assets,{adopt:true});
+ physicalProfile=presentation.physical_input;
+ if(physicalProfile!==undefined&&(physicalProfile!=='ordered_physical_v1'||(presentation.renderer_mode??'official')!=='official'))throw Error('INPUT_PHYSICAL_PROFILE_UNSUPPORTED: official Web ordered_physical_v1 only');
+ configurePhysical();
  await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI));
  if(presentation.ui?.font_family??presentation.ui?.fonts?.[0]?.family)uiRenderer.setFont(presentation.ui.font_family??presentation.ui.fonts[0].family);
  const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,document.baseURI).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
- backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy});metrics.runtime_ready_ms=performance.now()-window.playerBoot;
+ const requirePhysicalViewport=presentation.physical_input!==undefined||presentation.projected_raster==='upper_left_checked'||presentation.projected_material_profile!==undefined;
+ backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,...(profiler?{profiler}:{})});metrics.runtime_ready_ms=performance.now()-window.playerBoot;
  document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
  try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
+ project.viewport_size=physicalViewport();
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:'42'}),{reset:true});
- renderer=await createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer});
+ renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
- draw();await renderer.ready();draw();await new Promise(requestAnimationFrame);
- metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';saved=JSON.stringify(snapshot.save_payload);
- scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,onVisibilityChange:({visible})=>{uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
- /* DEVELOPER_CONNECT */
- scheduler.start();
- window.addEventListener('resize',()=>{backend.request({kind:'aspect',value:canvas.clientWidth/canvas.clientHeight}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
+ await finishStartup(presentation,kind);
 }
-function pointer(event,down,kind){if(!snapshot)return;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;const normalized={position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};input.updatePointer(normalized,kind);hasWorldPointer=true;}
-function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100;return uiScroll.pointer(e,kind,uiRenderer.hitTest(x,y))||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
-canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);audio?.unlock();if(!routeUi(e,'down'))pointer(e,true,'edge');});
-canvas.addEventListener('pointermove',e=>{if(!routeUi(e,'move'))pointer(e,Boolean(e.buttons),'move');});canvas.addEventListener('pointerup',e=>{if(!routeUi(e,'up'))pointer(e,false,'edge');});canvas.addEventListener('pointercancel',e=>{if(!routeUi(e,'cancel'))input.releasePointer();});
-window.addEventListener('keydown',e=>input.setHeld(e.code,true));window.addEventListener('keyup',e=>input.setHeld(e.code,false));window.addEventListener('blur',()=>{uiRenderer.releaseAll();input.releaseAll();});
-window.addEventListener('unone-host-pause',()=>{uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
+function pointer(event,down,kind){const sample=pointerSample(event,down);if(!sample)return;input.updatePointer(sample,kind);hasWorldPointer=true;}
+function pointerSample(event,down){if(!snapshot)return null;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;return {position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};}
+function secondaryPointer(event,down){const sample=pointerSample(event,input.pointer.down);if(!sample)return;input.queueScreenAction('MouseRight',down,sample);hasWorldPointer=true;}
+function middlePointer(event,down){const sample=pointerSample(event,input.pointer.down);if(!sample)return;input.queueScreenAction('MouseMiddle',down,sample);input.updatePointer(sample,'move');hasWorldPointer=true;}
+function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100,hit=uiRenderer.hitTest(x,y);return textInputs.pointer(e,kind,hit)||uiScroll.pointer(e,kind,hit)||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
+const browserPointer={capture:id=>canvas.setPointerCapture(id),unlock:()=>audio?.unlock(),ui:routeUi,primary:pointer,secondary:secondaryPointer,middle:middlePointer,cancel(){input.releasePointer();input.releaseScreenActions();}};
+canvas.addEventListener('pointerdown',e=>{if(!orderedRouter)routeBrowserPointer(e,'down',browserPointer);});
+canvas.addEventListener('pointermove',e=>{if(!orderedRouter)routeBrowserPointer(e,'move',browserPointer);});canvas.addEventListener('pointerup',e=>{if(!orderedRouter)routeBrowserPointer(e,'up',browserPointer);});canvas.addEventListener('pointercancel',e=>{if(!orderedRouter)routeBrowserPointer(e,'cancel',browserPointer);});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();});
+window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
-canvas.addEventListener('lostpointercapture',e=>routeUi(e,'cancel'));
-start().catch(fail);
+window.addEventListener('pagehide',()=>{startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
+canvas.addEventListener('lostpointercapture',e=>{if(!orderedRouter)routeUi(e,'cancel');});
+start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

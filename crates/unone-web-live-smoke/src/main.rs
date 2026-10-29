@@ -611,8 +611,9 @@ pub unsafe extern "C" fn unone_web_set_input_frame(pointer: *const u8, length: u
             return -1;
         }
     };
-    INPUT.with(|input| input.borrow_mut().queue_frame(frame));
-    0
+    match INPUT.with(|input| input.borrow_mut().try_queue_frame(frame)) {
+        Ok(())=>0,Err(error)=>{write_error(&error);-1}
+    }
 }
 
 /// Tell the engine the shape of the canvas it is drawing into.
@@ -633,6 +634,18 @@ pub extern "C" fn unone_web_set_viewport_aspect(aspect: f64) -> i32 {
             write_error("no project is loaded");
             -1
         }
+    })
+}
+
+/// Physical drawing-buffer dimensions; available before the following simulation tick.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_set_viewport_size(width:u32,height:u32)->i32 {
+    RUNTIME.with(|cell|match cell.borrow_mut().as_mut() {
+        Some(runtime)=>match runtime.set_viewport_size(width,height) {
+            Ok(())=>write_runtime_snapshot(runtime),
+            Err(diagnostic)=>{write_diagnostic(&diagnostic);-1}
+        },
+        None=>{write_error("no project is loaded");-1}
     })
 }
 
@@ -681,6 +694,97 @@ pub unsafe extern "C" fn unone_web_jobs_request(pointer: *const u8, length: usiz
     match result {
         Ok(value)=>{OUTPUT.with(|o|*o.borrow_mut()=serde_json::to_vec(&value).unwrap());0},
         Err(e)=>{write_error(e);-1}
+    }
+}
+
+/// Detached host-time report/tape transport. It never samples or advances World.
+/// # Safety
+/// `pointer` must be the current allocation returned by unone_web_alloc.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_host_time_request(pointer: *const u8, length: usize) -> i32 {
+    #[derive(serde::Deserialize)]
+    #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+    enum Request { Report, Tape, Complete }
+    let result = (|| -> Result<serde_json::Value, String> {
+        let request = INPUT_BUFFER.with(|input| {
+            let input = input.borrow();
+            if pointer.is_null() || pointer != input.as_ptr() || length != input.len() || length == 0 || length > 1024 {
+                return Err("HOST_TIME_REQUEST_INVALID: use current owned allocation, 1..1024 bytes".to_string());
+            }
+            serde_json::from_slice::<Request>(&input).map_err(|e| format!("HOST_TIME_REQUEST_INVALID: {e}"))
+        })?;
+        RUNTIME.with(|runtime| {
+            let runtime = runtime.borrow();
+            let runtime = runtime.as_ref().ok_or("RUNTIME_NOT_LOADED")?;
+            match request {
+                Request::Report => Ok(runtime.host_time_report()),
+                Request::Tape => serde_json::to_value(runtime.host_time_tape()).map_err(|e| e.to_string()),
+                Request::Complete => { runtime.host_time_replay_complete()?; Ok(serde_json::json!({"complete":true})) },
+            }
+        })
+    })();
+    match result {
+        Ok(value) => { OUTPUT.with(|o| *o.borrow_mut() = serde_json::to_vec(&value).expect("plain host-time report")); 0 },
+        Err(error) => { write_error(error); -1 },
+    }
+}
+
+/// Official host spatial transport. GPU work is completed between fixed ticks.
+/// # Safety
+/// `pointer` must be the current allocation returned by unone_web_alloc.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_spatial_request(pointer: *const u8, length: usize) -> i32 {
+    #[derive(serde::Deserialize)]
+    #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+    enum Request {
+        Configure { backend: String },
+        Drain,
+        Complete { id: u64, result: unone_engine::spatial::SpatialBatchResult,
+            #[serde(default)] profile: Option<unone_engine::spatial::SpatialExecutionProfile> },
+        Report,
+        Profile,
+        Diagnostic,
+        Fault { message: String },
+    }
+    let result = (|| -> Result<serde_json::Value, String> {
+        let request = INPUT_BUFFER.with(|input| {
+            let input = input.borrow();
+            if pointer.is_null() || pointer != input.as_ptr() || length != input.len()
+                || length == 0 || length > 16 * 1024 * 1024 {
+                return Err("SPATIAL_HOST_PAYLOAD_INVALID".to_string());
+            }
+            serde_json::from_slice::<Request>(&input).map_err(|e| e.to_string())
+        })?;
+        RUNTIME.with(|runtime| {
+            let mut runtime = runtime.borrow_mut();
+            let runtime = runtime.as_mut().ok_or("RUNTIME_NOT_LOADED")?;
+            match request {
+                Request::Configure { backend } => {
+                    if backend != "webgpu" { return Err("SPATIAL_BACKEND_INVALID".into()); }
+                    runtime.set_spatial_external_backend(backend)?;
+                    Ok(runtime.spatial_report())
+                },
+                Request::Drain => serde_json::to_value(runtime.drain_spatial_tasks()).map_err(|e| e.to_string()),
+                Request::Complete { id, result, profile } => {
+                    runtime.complete_spatial_task_with_profile(id, result, profile)?;
+                    Ok(serde_json::Value::Null)
+                },
+                Request::Report => Ok(runtime.spatial_report()),
+                Request::Profile => Ok(runtime.spatial_profile()),
+                Request::Diagnostic => serde_json::to_value(runtime.spatial_diagnostic()).map_err(|e| e.to_string()),
+                Request::Fault { message } => {
+                    runtime.fail_spatial(message);
+                    Ok(serde_json::Value::Null)
+                },
+            }
+        })
+    })();
+    match result {
+        Ok(value) => {
+            OUTPUT.with(|output| *output.borrow_mut() = serde_json::to_vec(&value).unwrap());
+            0
+        },
+        Err(error) => { write_error(error); -1 },
     }
 }
 
@@ -748,6 +852,20 @@ mod tests {
     };
     use serde_json::json;
     use unone_engine::InputFrame;
+
+    #[test]
+    fn ordered_physical_direct_abi_rejects_overwrite_and_commits_only_the_first_batch(){
+        let payload=serde_json::to_vec(&json!({"config":{"name":"physical-abi","entry_script":"main.luau"},
+            "script":"return {start=function()end,update=function(api) local b=api.input.getPhysicalBatch(); api.observation.set('epoch',b and b.epoch or -1) end}"})).unwrap();
+        assert_eq!(unsafe{unone_web_load_project(payload.as_ptr(),payload.len(),42)},0);
+        let batch=|epoch|serde_json::to_vec(&json!({"physical":{"profile":"ordered_physical_v1","epoch":epoch,"after_sequence":0,"through_sequence":1,"events":[{"sequence":1,"received_us":10,"origin":"fixture","route":"control","kind":"reset","scope":"all","reason":"load"}]}})).unwrap();
+        let first=batch(2);let second=batch(3);
+        assert_eq!(unsafe{unone_web_set_input_frame(first.as_ptr(),first.len())},0);
+        assert_eq!(unsafe{unone_web_set_input_frame(second.as_ptr(),second.len())},-1);
+        assert!(output()["error"].as_str().unwrap().contains("ALREADY_QUEUED"));
+        assert_eq!(unone_web_tick(),0);assert_eq!(output()["world"]["observations"]["epoch"],2);
+        assert_eq!(output()["world"]["physical_input_receipt"],json!({"profile":"ordered_physical_v1","epoch":2,"through_sequence":1}));
+    }
 
     #[test]
     fn web_publication_preserves_binary64_through_instance_envelope() {
@@ -1304,4 +1422,23 @@ fn publication_profile_is_bounded_and_frozen_outside_window() {
     let stopped = p.report();
     p.record([99.; 4], unone_engine::CanonicalHashWork::default());
     assert_eq!(p.report(), stopped);
+}
+
+#[cfg(test)]
+#[test]
+fn host_time_abi_is_readonly_owned_bounded_and_never_ticks() {
+    let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"clock","host_time":{"mode":"record"}},
+        "script":"return {start=function(api) api.hostTime.sample('start') end,update=function()end}"})).unwrap();
+    assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(),payload.len(),42) },0);
+    let request=br#"{"kind":"report"}"#;
+    let pointer=unone_web_alloc(request.len());
+    unsafe { std::ptr::copy_nonoverlapping(request.as_ptr(),pointer,request.len()); }
+    assert_eq!(unsafe { unone_web_host_time_request(pointer,request.len()) },0);
+    let report:serde_json::Value=OUTPUT.with(|o|serde_json::from_slice(&o.borrow()).unwrap());
+    assert_eq!(report["physical_source_calls"],1);
+    assert_eq!(report["committed_transactions"],1);
+    assert_eq!(unsafe { unone_web_host_time_request(request.as_ptr(),request.len()) },-1);
+    assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().current_frame()),0);
+    assert_eq!(unsafe { unone_web_host_time_request(pointer,request.len()) },0);
+    assert_eq!(OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap()),report);
 }

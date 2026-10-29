@@ -1,0 +1,12 @@
+{
+  "name": "Spatial diagnostics example",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "systems": {
+    "physics2d": false, "physics3d": false,
+    "camera2d": false, "camera3d": false,
+    "random": false, "ui": false, "save": false,
+    "audio": false, "spine": false, "particle": false,
+    "effekseer": false, "jobs": false
+  }
+}

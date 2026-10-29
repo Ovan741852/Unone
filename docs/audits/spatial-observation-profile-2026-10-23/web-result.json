@@ -1,0 +1,940 @@
+{
+  "ok": true,
+  "browser": "155.0.4283.62",
+  "runtime": "artifacts\\spatial-observation-profile-runtime",
+  "runs": {
+    "cpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "cpu",
+        "custom_empty": [],
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "cpu",
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+              "phases_ms": {
+                "cpu_execute": 2.1000010000000002
+              },
+              "readback_bytes": 0,
+              "total_ms": 2.1000010000000002,
+              "upload_bytes": 0
+            },
+            "executor_ms": 2.1000010000000002,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.7,
+              "snapshot": 0,
+              "validation": 0.700001
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 2.2000010000000003,
+            "executor_phases_ms": {
+              "cpu_execute": 2.2000010000000003
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.999999,
+              "snapshot": 0,
+              "validation": 0.800002
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 0,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 0
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 3.743392066509216e-23,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "cpu",
+        "backend": "cpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": null
+      }
+    },
+    "gpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "webgpu",
+        "custom_empty": [],
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": true,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+              "phases_ms": {
+                "decode": 0.4000000059604645,
+                "encode_submit": 0.20000000298023224,
+                "packing": 1.9000000059604645,
+                "preparation": 9.599999994039536,
+                "queue_wait": 0,
+                "readback_wait": 4.299999997019768,
+                "upload": 1.2999999970197678,
+                "validation": 4.299999997019768
+              },
+              "readback_bytes": 395264,
+              "total_ms": 18.599999994039536,
+              "upload_bytes": 204816
+            },
+            "executor_ms": 18.599999994039536,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.7,
+              "snapshot": 0.1,
+              "validation": 0.5
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 40.099999994039536,
+            "executor_phases_ms": {
+              "decode": 1.1000000089406967,
+              "encode_submit": 0.4000000059604645,
+              "packing": 2.300000011920929,
+              "preparation": 10.999999985098839,
+              "queue_wait": 0.3999999910593033,
+              "readback_wait": 18.799999997019768,
+              "upload": 2.5999999940395355,
+              "validation": 5.699999988079071
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.7999999999999999,
+              "snapshot": 0.1,
+              "validation": 0.5
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 413792,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 205472
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "gpu",
+        "backend": "webgpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": {
+          "clock": "host_monotonic",
+          "total_ms": 18.599999994039536,
+          "phases_ms": {
+            "preparation": 9.599999994039536,
+            "queue_wait": 0,
+            "validation": 4.299999997019768,
+            "packing": 1.9000000059604645,
+            "upload": 1.2999999970197678,
+            "encode_submit": 0.20000000298023224,
+            "readback_wait": 4.299999997019768,
+            "decode": 0.4000000059604645,
+            "cpu_execute": null,
+            "gpu_kernel": null
+          },
+          "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+          "upload_bytes": 204816,
+          "readback_bytes": 395264
+        }
+      }
+    },
+    "worker_cpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "cpu",
+        "custom_empty": [],
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "cpu",
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+              "phases_ms": {
+                "cpu_execute": 1.399999
+              },
+              "readback_bytes": 0,
+              "total_ms": 1.399999,
+              "upload_bytes": 0
+            },
+            "executor_ms": 1.399999,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.600001,
+              "snapshot": 0,
+              "validation": 0.6
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 1.399999,
+            "executor_phases_ms": {
+              "cpu_execute": 1.399999
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.600001,
+              "snapshot": 0,
+              "validation": 0.6
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 0,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 0
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 3.743392066509216e-23,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "cpu",
+        "backend": "cpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": null
+      }
+    },
+    "worker_gpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "webgpu",
+        "custom_empty": [],
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": true,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+              "phases_ms": {
+                "decode": 0.29999999701976776,
+                "encode_submit": 0,
+                "packing": 1.9000000059604645,
+                "preparation": 12.299999997019768,
+                "queue_wait": 0.09999999403953552,
+                "readback_wait": 4.799999997019768,
+                "upload": 2.2999999970197678,
+                "validation": 4.700000002980232
+              },
+              "readback_bytes": 395264,
+              "total_ms": 22.69999998807907,
+              "upload_bytes": 204816
+            },
+            "executor_ms": 22.69999998807907,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.6,
+              "snapshot": 0.1,
+              "validation": 0.9
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 44.79999999701977,
+            "executor_phases_ms": {
+              "decode": 0.7000000029802322,
+              "encode_submit": 0.29999999701976776,
+              "packing": 2.1000000089406967,
+              "preparation": 13.400000005960464,
+              "queue_wait": 5.700000002980232,
+              "readback_wait": 16.5,
+              "upload": 3.5999999791383743,
+              "validation": 5.4000000059604645
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 0.7,
+              "snapshot": 0.1,
+              "validation": 0.9
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 413792,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 205472
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "gpu",
+        "backend": "webgpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": {
+          "clock": "host_monotonic",
+          "total_ms": 22.69999998807907,
+          "phases_ms": {
+            "preparation": 12.299999997019768,
+            "queue_wait": 0.09999999403953552,
+            "validation": 4.700000002980232,
+            "packing": 1.9000000059604645,
+            "upload": 2.2999999970197678,
+            "encode_submit": 0,
+            "readback_wait": 4.799999997019768,
+            "decode": 0.29999999701976776,
+            "cpu_execute": null,
+            "gpu_kernel": null
+          },
+          "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+          "upload_bytes": 204816,
+          "readback_bytes": 395264
+        }
+      }
+    }
+  },
+  "errors": []
+}

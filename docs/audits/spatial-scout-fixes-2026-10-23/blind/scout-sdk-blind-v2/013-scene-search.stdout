@@ -1,0 +1,67 @@
+{
+  "ok": true,
+  "value": {
+    "query": "scene entity",
+    "matches": [],
+    "suggested_next_actions": [
+      {
+        "action": "search_api_index",
+        "ready": true,
+        "executable": "game",
+        "argv": [
+          "api",
+          "search",
+          "",
+          "--json"
+        ],
+        "reason": "Query the complete public Engine API index; this query does not need project context.",
+        "diagnostic": null
+      },
+      {
+        "action": "list_systems",
+        "ready": false,
+        "executable": null,
+        "argv": null,
+        "reason": "Could not read \\\\?\\D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk\\project.unone.json: 系統找不到指定的檔案。 (os error 2)",
+        "diagnostic": {
+          "code": "PROJECT_CONFIG_NOT_FOUND",
+          "severity": "ERROR",
+          "summary": "Unone project configuration was not found",
+          "explanation": "Could not read \\\\?\\D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk\\project.unone.json: 系統找不到指定的檔案。 (os error 2)",
+          "facts": {},
+          "likely_causes": [],
+          "suggested_actions": [],
+          "source": null
+        }
+      }
+    ]
+  },
+  "diagnostics": [
+    {
+      "code": "API_SEARCH_EMPTY",
+      "severity": "WARNING",
+      "summary": "No matching Engine API found",
+      "explanation": "This search did not match a public Engine API; the gameplay verb may be game-owned composition, so no match does not prove the engine lacks the capability. Inspect the complete API index and systems first, then decide whether a new engine capability is actually needed.",
+      "facts": {
+        "match_count": 0,
+        "query": "scene entity",
+        "search_scope": "public_engine_api"
+      },
+      "likely_causes": [],
+      "suggested_actions": [
+        {
+          "action": "search_api_index",
+          "description": "Use the structured executable/argv for action=search_api_index in value.suggested_next_actions to list the complete Engine API index.",
+          "command": null
+        },
+        {
+          "action": "list_systems",
+          "description": "Use the structured executable/argv for action=list_systems in value.suggested_next_actions; it is bound to this caller project and remains not ready if the project is unavailable.",
+          "command": null
+        }
+      ],
+      "source": null
+    }
+  ],
+  "effects": []
+}

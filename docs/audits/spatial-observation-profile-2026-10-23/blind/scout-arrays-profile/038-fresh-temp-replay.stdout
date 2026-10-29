@@ -1,0 +1,77 @@
+{"plannedAt":"2026-10-23T16:09:19.111Z","label":"strict-check","command":"D:\\Projects\\Unone\\artifacts\\spatial-observation-profile-sdk\\bin\\game.exe","argv":["--sdk","D:/Projects/Unone/artifacts/spatial-observation-profile-sdk","--project","C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG","--json","check","--types"],"cwd":"C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG","timeoutMs":60000,"envOverrides":{"UNONE_LUAU_ANALYZER":"D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe"},"sourceFallbackStep":null}
+{"label":"strict-check","elapsedMs":125.1061,"exitCode":0,"signal":null,"error":null,"stdout":"C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG\\strict-check.stdout","stderr":"C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG\\strict-check.stderr","stdoutSha256":"6be797c0d1aa561e1aa272b11cc924ac4e640bf61971757eef5d1f0cac96adff"}
+{"plannedAt":"2026-10-23T16:09:19.238Z","label":"native-six-ticks","command":"D:\\Projects\\Unone\\artifacts\\spatial-observation-profile-sdk\\bin\\game.exe","argv":["--sdk","D:/Projects/Unone/artifacts/spatial-observation-profile-sdk","--project","C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG","--json","run","--frames","6"],"cwd":"C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG","timeoutMs":60000,"envOverrides":{},"sourceFallbackStep":null}
+{"label":"native-six-ticks","elapsedMs":170.74689999999998,"exitCode":0,"signal":null,"error":null,"stdout":"C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG\\native-six-ticks.stdout","stderr":"C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG\\native-six-ticks.stderr","stdoutSha256":"11922c1d36e2bbfbce5a74f695df58fdd9374016323742a00046b1227f2207b1"}
+{
+  "project": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-replay-FSZYRG",
+  "strictPassed": true,
+  "verification": {
+    "passed": true,
+    "backend": "cpu",
+    "shapeChecks": "native nested results/hits/point/normal arrays, authored empty/numeric/record/nested arrays, plain object",
+    "lifecycle": {
+      "initialVersion": 1,
+      "afterInvalidVersion": 1,
+      "repairedVersion": 2,
+      "firstSubmitTick": 1,
+      "firstDeliveryTick": 2,
+      "consumedAndStaleRejected": true,
+      "unrelatedEntityUnchanged": true
+    },
+    "small": {
+      "submitted_batches": 1,
+      "completed_batches": 1,
+      "bodies": 3,
+      "queries": 4,
+      "pair_tests_upper_bound": 12,
+      "returned_hits": 3,
+      "input_body_bytes": 128,
+      "upload_bytes": 0,
+      "readback_bytes": 0,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0.0015,
+        "snapshot": 0.00019999999999999998,
+        "validation": 0.0039
+      },
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 0.0023
+        },
+        "readback_bytes": 0,
+        "total_ms": 0.0023,
+        "upload_bytes": 0
+      }
+    },
+    "large": {
+      "submitted_batches": 1,
+      "completed_batches": 1,
+      "bodies": 4096,
+      "queries": 256,
+      "pair_tests_upper_bound": 1048576,
+      "returned_hits": 256,
+      "input_body_bytes": 163848,
+      "upload_bytes": 0,
+      "readback_bytes": 0,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0.3592,
+        "snapshot": 0.0349,
+        "validation": 0.3514
+      },
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 2.1941
+        },
+        "readback_bytes": 0,
+        "total_ms": 2.1941,
+        "upload_bytes": 0
+      }
+    },
+    "completedBatches": 6
+  }
+}

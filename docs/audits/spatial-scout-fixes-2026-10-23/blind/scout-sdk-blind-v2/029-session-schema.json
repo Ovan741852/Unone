@@ -1,0 +1,22 @@
+{
+  "order": 29,
+  "name": "session-schema",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+    "session",
+    "--schema"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:19:50.5689725Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 124,
+  "endedUtc": "2026-10-23T14:19:50.7289856Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\029-session-schema.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\029-session-schema.stderr"
+}

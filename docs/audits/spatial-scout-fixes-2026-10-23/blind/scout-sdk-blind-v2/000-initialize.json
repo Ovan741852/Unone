@@ -1,0 +1,11 @@
+{
+  "order": 0,
+  "operation": "Initialize audit directory and command recorder",
+  "argv": [
+    "powershell",
+    "-Command",
+    "Create new audit directory; write Invoke-Recorded.ps1 and initial operation record"
+  ],
+  "startedUtc": "2026-10-23T14:14:50.3674573Z",
+  "sourceFallbackStep": null
+}

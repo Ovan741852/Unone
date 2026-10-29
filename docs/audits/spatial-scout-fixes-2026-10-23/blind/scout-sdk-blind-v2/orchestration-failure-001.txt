@@ -1,0 +1,1 @@
+functions.exec pre-execution JavaScript parse failure while composing seal recorder extension. Raw result: Script error: SyntaxError: Unexpected identifier 'r'. No shell or SDK command executed, and no artifact changed by the failed invocation. Cause: unescaped PowerShell backtick inside a JavaScript template literal. Repaired by using [Environment]::NewLine.

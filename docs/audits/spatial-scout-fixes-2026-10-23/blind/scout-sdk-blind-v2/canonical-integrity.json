@@ -1,0 +1,13 @@
+{
+    "canonicalUnchanged":  true,
+    "authoredAny":  false,
+    "authoredCasts":  false,
+    "sourceFallbackStep":  null,
+    "finalExampleFiles":  [
+                              "AGENTS.md",
+                              "player.presentation.json",
+                              "project.unone.json",
+                              "scenes/main.scene.json",
+                              "scripts/main.luau"
+                          ]
+}

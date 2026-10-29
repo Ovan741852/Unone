@@ -26,6 +26,7 @@ mod assets;
 mod capabilities;
 mod diagnostics_replay;
 mod export;
+mod web_dependencies;
 mod hosts;
 mod sdk;
 mod mcp;
@@ -36,6 +37,8 @@ mod plugins;
 mod prepare;
 mod session;
 mod sync;
+#[cfg(test)]
+mod ui_preview_tests;
 
 #[derive(Debug, Subcommand)]
 enum ExportCommand {
@@ -314,6 +317,8 @@ enum UiCommand {
         seed: u64,
         #[arg(long)]
         input_sequence: Option<PathBuf>,
+        #[arg(long, help = "Tool-only project-relative JSON save restored before Game.start; never exported")]
+        save_fixture: Option<String>,
         #[arg(long, default_value_t = unone_engine::DEFAULT_LAYOUT_COLS)]
         cols: usize,
         #[arg(long, default_value_t = unone_engine::DEFAULT_LAYOUT_ROWS)]
@@ -782,12 +787,13 @@ fn run() -> Result<ExitCode> {
                 frames,
                 seed,
                 input_sequence,
+                save_fixture,
                 cols,
                 rows,
                 strict,
                 overlap_policy,
             } => {
-                let mut runtime = match EngineRuntime::load_with_seed(&cli.project, seed) {
+                let mut runtime = match EngineRuntime::load_ui_preview(&cli.project, seed, save_fixture.as_deref()) {
                     Ok(runtime) => runtime,
                     Err(diagnostic) => {
                         return print_result(
@@ -1643,6 +1649,9 @@ impl Renderer {
     }
 
     fn render(&mut self, snapshot: &WorldSnapshot) -> Result<(), String> {
+        if !snapshot.heightfields.is_empty() {
+            return Err("HEIGHTFIELD_BACKEND_UNSUPPORTED: diagnostic CLI preview does not render heightfields; prepare the official Windows native player".into());
+        }
         let vertices = self.vertices(snapshot);
         self.ensure_vertex_buffer(vertices.len());
         if !vertices.is_empty() {

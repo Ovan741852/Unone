@@ -1,0 +1,13 @@
+{
+  "sdk": "D:\\Projects\\Unone\\artifacts\\spatial-observation-profile-sdk",
+  "binary": {
+    "path": "D:\\Projects\\Unone\\artifacts\\spatial-observation-profile-sdk\\bin\\game.exe",
+    "bytes": 45548928,
+    "sha256": "4fedf99a941c82009272f2ef4315fe809648e4a216d0043408f4331c7a55f180"
+  },
+  "analyzer": {
+    "path": "D:\\Projects\\Unone\\.toolcache\\luau-0.734\\luau-analyze.exe",
+    "bytes": 3569152,
+    "sha256": "fc28e3a85eccdbdca4974784ffb96134cf2166d5fbd149078cb28cffde88bfee"
+  }
+}

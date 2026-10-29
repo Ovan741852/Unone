@@ -1,0 +1,209 @@
+{
+  "schema": "unone.ai-native.probe.v1",
+  "startedAt": "2026-10-23T16:14:41.524Z",
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind-replay.mjs",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "node": "v24.19.0",
+  "platform": "win32/x64",
+  "mode": "fixture",
+  "limitations": [
+    "Selected inputs, pinned local binaries and synthetic fixtures; not full source-to-binary provenance, cross-device certification, GPU speedup, kernel timestamps or rendered presentation."
+  ],
+  "subject": [
+    {
+      "path": "docs/spatial-batches.md",
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc"
+    },
+    {
+      "path": "docs/sdk-readme.md",
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "14f1062b32412c9b833cf9caf055c504099fb6e3320d6222890549d2f54e4154"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial.rs",
+      "sha256": "0a9522e7f0a4acf6f5bb24d2ac20f680784bc065742fc8f14aca985378f47214"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime.rs",
+      "sha256": "4dd8769f1eeae80f4560825d6838aa0899e6f297d4b39cb8be828f3a8ed6e2b2"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/value.rs",
+      "sha256": "198b44b25d4229c0a1baebd45a71ebbba93ad1b336206d20182aa44afdb95842"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/state.rs",
+      "sha256": "d5874673d4fb185c8315c3903c895f66952237f8bebe3951c5a6b5f8f3a1fc6b"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/spatial.rs",
+      "sha256": "43497248d9f218b95d104437d3f5599ae318fd7a7dc4f2393a5b1fda25ccf876"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "sha256": "94ae69649dbea852826a490590e3162e609bf1ba25ba57788e96b8c1a3c35d41"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "07efdc483737cbb07ef31b72a60e0f67ae4cf4b47dd8bd83efed8d5e1e4ec3da"
+    },
+    {
+      "path": "crates/unone-web-live-smoke/src/main.rs",
+      "sha256": "6b6ccae0a23b7f8375b5f0fda942d95b818ac8ea258e793f06aa81a5c46f7df9"
+    },
+    {
+      "path": "crates/unone-engine/tests/observation_arrays.rs",
+      "sha256": "34d9bda8e69ecd0a64654f3b6323f18bc180f123cd862d8b0b91add5f5bd3e97"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_runtime.rs",
+      "sha256": "2e5b2144dedf41e7d06d0e66f75eaf2b5716c7bf31467d7402e30e93da6bc962"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/src/lib.rs",
+      "sha256": "e0e9ace2cca371f0f0a1242153245f9b49f94c80fb46e05420687e0925ecd9aa"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/tests/runtime.rs",
+      "sha256": "0ae7938553863c3e315c686d2e4dcab74357531424c7f4f796d2f7cfac79b623"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.toml",
+      "sha256": "9d35c773ab4690eae049a73e2bb7e1b0a251c636062311b368ae0e176671e508"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/Cargo.lock",
+      "sha256": "1e13e3f2ac20ae987ceeb959ee5427b813de0b1e2ab1b0321c4f4e8919edb6af"
+    },
+    {
+      "path": "web/shared/spatial-gpu.mjs",
+      "sha256": "79d630684148b94024cf3424472ac39801ba9cea14039f85183f88df353b760d"
+    },
+    {
+      "path": "web/shared/spatial-host.mjs",
+      "sha256": "aab13ee77cb1dac3a3fe7e0be64b5eb562d183d5061665271d9f206d2c71fc77"
+    },
+    {
+      "path": "web/shared/spatial.wgsl",
+      "sha256": "2de3388bf58f080cc97e5efc60106cc1b2df649f7a5cf0db7d89478d7b4385c7"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "web/shared/load-project.js",
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "web/shared/job-binary.mjs",
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "web/shared/job-pool.mjs",
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "web/shared/instance-transfer.mjs",
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "scripts/verify-spatial-runtime.mjs",
+      "sha256": "f8279b2db99d855a5e42fc82a78d55373e3a4a5b07e92c85110dcbe73f3b6610"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/rubric.mjs",
+      "sha256": "9d1570cf3c4fe17e0eb7df09f6f5fd275a426a40e4ec36ca1e3fe63238ccfc98"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/audit.mjs",
+      "sha256": "dea4baa567707e4b6008f13af525fdf78015ec2a4ea8d2842c68c6168da905a0"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/README.md",
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/sdk.json",
+      "sha256": "d193fefe32795ac399ce0be2f7220b58f3dd9a95deb9a3f9901a82c89137197c"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/docs/engine.d.luau",
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-sdk/docs/spatial-batches.md",
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc"
+    },
+    {
+      "path": "artifacts/spatial-observation-profile-runtime/runtime.json",
+      "sha256": "4a038e59308bc674d8560a1387de8c64018edd1dfdb4dc04a637947de62ebc66"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/environment.json",
+      "sha256": "48b3317107b628f68758a79d7f09c35f6ac8d113493dc891ddd8cb60c2af4ff7"
+    },
+    {
+      "path": "scripts/verify-spatial-webgpu.mjs",
+      "sha256": "75a87fa041aee2ece963f9af5f9d8c62a29b3db41b220ffb454e7083500b0d12"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/examples/browser_fixtures.rs",
+      "sha256": "9afc362d6d0f5ed6d374ef449f9a8e2f135fb0d5baed554544089c0acbb16059"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/main.final.luau",
+      "sha256": "d71e0029ec0c1af210b05970f691afcf0fd7fe553efadeaf58b1007ccdf37564"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/project.final.json",
+      "sha256": "bda9fb882f03faa678465fe1d9ee33a4ca7ceb59230cfaabd91c5e74d5d29924"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/scene.final.json",
+      "sha256": "c6579579bdf86efb817428f84931d93741f889e06b973bbf9b707889224d685e"
+    },
+    {
+      "path": "docs/audits/spatial-observation-profile-2026-10-23/blind/scout-arrays-profile/verify-report.mjs",
+      "sha256": "893c1d5f46766763af1712a3891c9c7f2e807b81bc38861416e800a7815c340b"
+    }
+  ],
+  "probe": {
+    "path": "docs/audits/spatial-observation-profile-2026-10-23/blind-replay.mjs",
+    "sha256": "10b5acc4b19c2c34024a8ccb4b7be60267c15c545685a644222853a5a7bedc96"
+  },
+  "durationMs": 371.143,
+  "exitCode": 1,
+  "signal": null,
+  "spawnError": null,
+  "timedOut": false,
+  "outputTruncated": false,
+  "sourceChanged": false,
+  "sourceCheckError": null,
+  "stdout": "{\"event\":\"command\",\"label\":\"canonical types\",\"argv\":[\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-observation-profile-sdk\\\\bin\\\\game.exe\",\"--sdk\",\"D:\\\\Projects\\\\Unone\\\\artifacts\\\\spatial-observation-profile-sdk\",\"--project\",\"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\unone-sealed-author-replay-e3lTxD\",\"api\",\"typings\",\"--json\"],\"status\":0,\"rawStdoutBytes\":30156,\"observed\":{\"canonicalTypeBytes\":28667},\"stderr\":\"\"}\n",
+  "stderr": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\r\n\r\n  assert.ok(source.includes('-- BEGIN UNONE API TYPES\\n'+canonical.trimEnd()+'\\n-- END UNONE API TYPES'))\r\n\r\n    at file:///D:/Projects/Unone/docs/audits/spatial-observation-profile-2026-10-23/blind-replay.mjs:40:8 {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: false,\r\n  expected: true,\r\n  operator: '==',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.19.0\r\n",
+  "trust": "Local capture of an explicitly selected script. Not signed attestation or proof of semantic claims; probe code is not sandboxed."
+}

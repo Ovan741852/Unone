@@ -1,0 +1,34 @@
+{
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "plugins/org.unone.ai-native/cli.mjs",
+    "test",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "exitCode": 0,
+  "result": {
+    "ok": true,
+    "value": {
+      "plugin": "org.unone.ai-native",
+      "selfTest": "passed",
+      "checks": [
+        "weights_total_100",
+        "read_only_assessment_scaffold",
+        "in_memory_report_evaluation",
+        "bounded_recommendation_without_eager_schema",
+        "selected_contract_hash",
+        "stale_contract_rejected"
+      ],
+      "scope": "Dependency-free invariant smoke only. Run npm test for file, scoring and protocol regressions."
+    },
+    "diagnostics": [],
+    "effects": [],
+    "telemetry": {
+      "elapsed_ms": 9.234,
+      "gpu_ms": null,
+      "note": "Plugin wall time only, not target performance. No target commands or probes executed."
+    }
+  },
+  "stderr": ""
+}

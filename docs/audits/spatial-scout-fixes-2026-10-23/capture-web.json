@@ -1,0 +1,153 @@
+{
+  "schema": "unone.ai-native.probe.v1",
+  "startedAt": "2026-10-23T14:16:38.303Z",
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\web-probe.mjs",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "node": "v24.19.0",
+  "platform": "win32/x64",
+  "mode": "fixture",
+  "limitations": [
+    "Informed synthetic execution; independent blind author evidence is separate. No gameplay, renderer or performance-speedup claim."
+  ],
+  "subject": [
+    {
+      "path": "docs/spatial-batches.md",
+      "sha256": "00d94e82f7398fc44ede4784a93dbabb019c8591897d8f16709352a9b53fc595"
+    },
+    {
+      "path": "docs/sdk-readme.md",
+      "sha256": "ed228d60e2fedf9855b4bb381bdb97fbc2890e9f75b08d02a6add70e9310ef1d"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "sha256": "79be2af294720c8a7094ea0350f74c98fc84174bd2c912baea4bfe9c54214145"
+    },
+    {
+      "path": "crates/unone-engine/src/engine.d.luau",
+      "sha256": "79be2af294720c8a7094ea0350f74c98fc84174bd2c912baea4bfe9c54214145"
+    },
+    {
+      "path": "crates/unone-engine/src/spatial.rs",
+      "sha256": "7764009d35d06343b64fb8a939bfe4a783934638ac3722f405037dcdb62b72b6"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/spatial.rs",
+      "sha256": "f7cfe571cbc55625fc4ae3dce79b8758b9948147644daeff79a4d609a9a8bf99"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/spatial.rs",
+      "sha256": "9b12fcf348def63b966bb7a9fb9f598eafa7a1bc2497064fb1a56931d1001561"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/value.rs",
+      "sha256": "fe510dbc69940d8be4138210a3f39f86f0e74a5a973af00bb3cd39b4e9c4f8ec"
+    },
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/state.rs",
+      "sha256": "87c9fd71b7f421e2bad74a048865c8b10e4c0c0204d88ec9c1c0737cc2fcedb7"
+    },
+    {
+      "path": "crates/unone-engine/src/api.rs",
+      "sha256": "77dbeee3c83d119587c78e4eab0cc12ee18cfd79b168c4cbe69879da53968161"
+    },
+    {
+      "path": "crates/unone-cli/src/sdk.rs",
+      "sha256": "07efdc483737cbb07ef31b72a60e0f67ae4cf4b47dd8bd83efed8d5e1e4ec3da"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_core.rs",
+      "sha256": "45a1fce6f8b60fb20efa028af4b8f728be823ce31c7a602294598c3be2945500"
+    },
+    {
+      "path": "crates/unone-engine/tests/spatial_runtime.rs",
+      "sha256": "da8f258b67aa794f0200cc4ef4cfb07f9d4e5cae9da07ca06c3091e7807255af"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/src/lib.rs",
+      "sha256": "b2ffc418e1b6967f1792685a843a7b8909cd80126450cc9a30d074d48cfcd98e"
+    },
+    {
+      "path": "crates/unone-spatial-gpu/tests/differential.rs",
+      "sha256": "3e8e57fde87b257edc3183b14794f5d96f117f6b0bd3c1e4f13642094950b97b"
+    },
+    {
+      "path": "web/shared/spatial.wgsl",
+      "sha256": "2de3388bf58f080cc97e5efc60106cc1b2df649f7a5cf0db7d89478d7b4385c7"
+    },
+    {
+      "path": "web/shared/spatial-gpu.mjs",
+      "sha256": "b80a4a5216948a9387a27519ff7f84da9251e52226ccb8452e94c86582738a39"
+    },
+    {
+      "path": "web/shared/spatial-host.mjs",
+      "sha256": "8d900d64d2a7f01fc7926e568f604e370547ca2706a9f73c46e475451ad81aa9"
+    },
+    {
+      "path": "web/shared/runtime-core.mjs",
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "web/shared/runtime-backend.mjs",
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "web/shared/runtime-worker.js",
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "scripts/verify-spatial-runtime.mjs",
+      "sha256": "fb01157e43dbc82c5edb0bcad66dff5aa4c884b5230aec9cabe7010b243b7b31"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/rubric.mjs",
+      "sha256": "9d1570cf3c4fe17e0eb7df09f6f5fd275a426a40e4ec36ca1e3fe63238ccfc98"
+    },
+    {
+      "path": "plugins/org.unone.ai-native/src/audit.mjs",
+      "sha256": "dea4baa567707e4b6008f13af525fdf78015ec2a4ea8d2842c68c6168da905a0"
+    },
+    {
+      "path": "artifacts/spatial-p2-sdk/README.md",
+      "sha256": "ed228d60e2fedf9855b4bb381bdb97fbc2890e9f75b08d02a6add70e9310ef1d"
+    },
+    {
+      "path": "artifacts/spatial-p2-sdk/sdk.json",
+      "sha256": "47fa0c81778debbb46ef5764021d57c352915cca97a7895a7669c82e6637ccb4"
+    },
+    {
+      "path": "artifacts/spatial-p2-sdk/docs/spatial-batches.md",
+      "sha256": "00d94e82f7398fc44ede4784a93dbabb019c8591897d8f16709352a9b53fc595"
+    },
+    {
+      "path": "artifacts/spatial-p2-sdk/docs/engine.d.luau",
+      "sha256": "79be2af294720c8a7094ea0350f74c98fc84174bd2c912baea4bfe9c54214145"
+    },
+    {
+      "path": "artifacts/spatial-p2-runtime/runtime.json",
+      "sha256": "bfacf19b5224edd14c5004761879f8fc868c10053121ae8b77faf8e8c9c83b57"
+    },
+    {
+      "path": "docs/audits/spatial-scout-fixes-2026-10-23/environment.json",
+      "sha256": "49b08bfccf5dfc87addce772c907c15d9a729b409400ac1b7f0b6460ac62afb0"
+    }
+  ],
+  "probe": {
+    "path": "docs/audits/spatial-scout-fixes-2026-10-23/web-probe.mjs",
+    "sha256": "a221480c5f242631a06b32651cbbe673c67f1826b34aaea5c03bc17eeb181397"
+  },
+  "durationMs": 5577.384,
+  "exitCode": 0,
+  "signal": null,
+  "spawnError": null,
+  "timedOut": false,
+  "outputTruncated": false,
+  "sourceChanged": false,
+  "sourceCheckError": null,
+  "stdout": "{\"event\":\"browser\",\"argv\":[\"C:\\\\Users\\\\liNao\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\node\\\\bin\\\\node.exe\",\"scripts/verify-spatial-runtime.mjs\",\"artifacts/spatial-p2-runtime\",\"docs/audits/spatial-scout-fixes-2026-10-23/web-runtime-result.json\"],\"status\":0,\"stdout\":\"{\\\"ok\\\":true,\\\"browser\\\":\\\"155.0.4283.62\\\",\\\"runtime\\\":\\\"artifacts\\\\\\\\spatial-p2-runtime\\\",\\\"runs\\\":{\\\"cpu\\\":{\\\"frame\\\":2,\\\"observations\\\":{\\\"backend\\\":\\\"cpu\\\",\\\"info\\\":{\\\"api_version\\\":1,\\\"backend\\\":\\\"cpu\\\",\\\"bodies\\\":4,\\\"delivery\\\":\\\"next_tick\\\",\\\"external\\\":false,\\\"indices\\\":1,\\\"limits\\\":{\\\"bodies\\\":131072,\\\"bodies_per_index\\\":65536,\\\"coordinate_abs\\\":1000000,\\\"hits_per_query\\\":64,\\\"indices\\\":8,\\\"queries_per_batch\\\":1024,\\\"safe_integer\\\":9007199254740991,\\\"submissions_per_tick\\\":4,\\\"tickets\\\":16},\\\"operations\\\":[\\\"nearest\\\",\\\"overlap_sphere\\\",\\\"sweep_sphere\\\"],\\\"packed_format\\\":\\\"USB1\\\",\\\"pending\\\":0,\\\"tickets\\\":0},\\\"nearest\\\":10,\\\"overlap\\\":20,\\\"result\\\":{\\\"results\\\":[{\\\"hits\\\":[{\\\"distance\\\":2,\\\"fraction\\\":0,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":0,\\\"fraction\\\":0,\\\"id\\\":20,\\\"normal\\\":[0,0,1],\\\"point\\\":[8,0,1]}]},{\\\"hits\\\":[{\\\"distance\\\":1,\\\"fraction\\\":0.25,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":6,\\\"fraction\\\":0,\\\"id\\\":4294967295,\\\"normal\\\":[-1,0,0],\\\"point\\\":[6,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":3.743392066509216e-23,\\\"fraction\\\":0,\\\"id\\\":4294967294,\\\"normal\\\":[-1,0,0],\\\"point\\\":[3.000000157232057e-23,0,0]}]}],\\\"version\\\":1},\\\"sweep\\\":0.25},\\\"report\\\":{\\\"requested\\\":\\\"cpu\\\",\\\"backend\\\":\\\"cpu\\\",\\\"fallback_reason\\\":null,\\\"fault\\\":null}},\\\"gpu\\\":{\\\"frame\\\":2,\\\"observations\\\":{\\\"backend\\\":\\\"webgpu\\\",\\\"info\\\":{\\\"api_version\\\":1,\\\"backend\\\":\\\"cpu\\\",\\\"bodies\\\":4,\\\"delivery\\\":\\\"next_tick\\\",\\\"external\\\":false,\\\"indices\\\":1,\\\"limits\\\":{\\\"bodies\\\":131072,\\\"bodies_per_index\\\":65536,\\\"coordinate_abs\\\":1000000,\\\"hits_per_query\\\":64,\\\"indices\\\":8,\\\"queries_per_batch\\\":1024,\\\"safe_integer\\\":9007199254740991,\\\"submissions_per_tick\\\":4,\\\"tickets\\\":16},\\\"operations\\\":[\\\"nearest\\\",\\\"overlap_sphere\\\",\\\"sweep_sphere\\\"],\\\"packed_format\\\":\\\"USB1\\\",\\\"pending\\\":0,\\\"tickets\\\":0},\\\"nearest\\\":10,\\\"overlap\\\":20,\\\"result\\\":{\\\"results\\\":[{\\\"hits\\\":[{\\\"distance\\\":2,\\\"fraction\\\":0,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":0,\\\"fraction\\\":0,\\\"id\\\":20,\\\"normal\\\":[0,0,1],\\\"point\\\":[8,0,1]}]},{\\\"hits\\\":[{\\\"distance\\\":1,\\\"fraction\\\":0.25,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":6,\\\"fraction\\\":0,\\\"id\\\":4294967295,\\\"normal\\\":[-1,0,0],\\\"point\\\":[6,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":0,\\\"fraction\\\":0,\\\"id\\\":4294967294,\\\"normal\\\":[-1,0,0],\\\"point\\\":[3.000000157232057e-23,0,0]}]}],\\\"version\\\":1},\\\"sweep\\\":0.25},\\\"report\\\":{\\\"requested\\\":\\\"gpu\\\",\\\"backend\\\":\\\"webgpu\\\",\\\"fallback_reason\\\":null,\\\"fault\\\":null}},\\\"worker_cpu\\\":{\\\"frame\\\":2,\\\"observations\\\":{\\\"backend\\\":\\\"cpu\\\",\\\"info\\\":{\\\"api_version\\\":1,\\\"backend\\\":\\\"cpu\\\",\\\"bodies\\\":4,\\\"delivery\\\":\\\"next_tick\\\",\\\"external\\\":false,\\\"indices\\\":1,\\\"limits\\\":{\\\"bodies\\\":131072,\\\"bodies_per_index\\\":65536,\\\"coordinate_abs\\\":1000000,\\\"hits_per_query\\\":64,\\\"indices\\\":8,\\\"queries_per_batch\\\":1024,\\\"safe_integer\\\":9007199254740991,\\\"submissions_per_tick\\\":4,\\\"tickets\\\":16},\\\"operations\\\":[\\\"nearest\\\",\\\"overlap_sphere\\\",\\\"sweep_sphere\\\"],\\\"packed_format\\\":\\\"USB1\\\",\\\"pending\\\":0,\\\"tickets\\\":0},\\\"nearest\\\":10,\\\"overlap\\\":20,\\\"result\\\":{\\\"results\\\":[{\\\"hits\\\":[{\\\"distance\\\":2,\\\"fraction\\\":0,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":0,\\\"fraction\\\":0,\\\"id\\\":20,\\\"normal\\\":[0,0,1],\\\"point\\\":[8,0,1]}]},{\\\"hits\\\":[{\\\"distance\\\":1,\\\"fraction\\\":0.25,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":6,\\\"fraction\\\":0,\\\"id\\\":4294967295,\\\"normal\\\":[-1,0,0],\\\"point\\\":[6,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":3.743392066509216e-23,\\\"fraction\\\":0,\\\"id\\\":4294967294,\\\"normal\\\":[-1,0,0],\\\"point\\\":[3.000000157232057e-23,0,0]}]}],\\\"version\\\":1},\\\"sweep\\\":0.25},\\\"report\\\":{\\\"requested\\\":\\\"cpu\\\",\\\"backend\\\":\\\"cpu\\\",\\\"fallback_reason\\\":null,\\\"fault\\\":null}},\\\"worker_gpu\\\":{\\\"frame\\\":2,\\\"observations\\\":{\\\"backend\\\":\\\"webgpu\\\",\\\"info\\\":{\\\"api_version\\\":1,\\\"backend\\\":\\\"cpu\\\",\\\"bodies\\\":4,\\\"delivery\\\":\\\"next_tick\\\",\\\"external\\\":false,\\\"indices\\\":1,\\\"limits\\\":{\\\"bodies\\\":131072,\\\"bodies_per_index\\\":65536,\\\"coordinate_abs\\\":1000000,\\\"hits_per_query\\\":64,\\\"indices\\\":8,\\\"queries_per_batch\\\":1024,\\\"safe_integer\\\":9007199254740991,\\\"submissions_per_tick\\\":4,\\\"tickets\\\":16},\\\"operations\\\":[\\\"nearest\\\",\\\"overlap_sphere\\\",\\\"sweep_sphere\\\"],\\\"packed_format\\\":\\\"USB1\\\",\\\"pending\\\":0,\\\"tickets\\\":0},\\\"nearest\\\":10,\\\"overlap\\\":20,\\\"result\\\":{\\\"results\\\":[{\\\"hits\\\":[{\\\"distance\\\":2,\\\"fraction\\\":0,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":0,\\\"fraction\\\":0,\\\"id\\\":20,\\\"normal\\\":[0,0,1],\\\"point\\\":[8,0,1]}]},{\\\"hits\\\":[{\\\"distance\\\":1,\\\"fraction\\\":0.25,\\\"id\\\":10,\\\"normal\\\":[-1,0,0],\\\"point\\\":[1.5,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":6,\\\"fraction\\\":0,\\\"id\\\":4294967295,\\\"normal\\\":[-1,0,0],\\\"point\\\":[6,0,0]}]},{\\\"hits\\\":[{\\\"distance\\\":0,\\\"fraction\\\":0,\\\"id\\\":4294967294,\\\"normal\\\":[-1,0,0],\\\"point\\\":[3.000000157232057e-23,0,0]}]}],\\\"version\\\":1},\\\"sweep\\\":0.25},\\\"report\\\":{\\\"requested\\\":\\\"gpu\\\",\\\"backend\\\":\\\"webgpu\\\",\\\"fallback_reason\\\":null,\\\"fault\\\":null}}},\\\"errors\\\":[]}\\n\",\"stderr\":\"\"}\n{\"event\":\"task_result\",\"complete\":true,\"browser\":\"155.0.4283.62\",\"scope\":\"fresh WASM CPU/WebGPU, main and Worker; synthetic complete info/result u32/tiny-coordinate regression; no renderer or speedup claim\"}\n",
+  "stderr": "",
+  "trust": "Local capture of an explicitly selected script. Not signed attestation or proof of semantic claims; probe code is not sandboxed."
+}

@@ -1,0 +1,19 @@
+{
+  "order": 18,
+  "name": "read-scaffold-runtime",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "$text=Get-Content -LiteralPath 'C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau' -Raw; $text.Substring($text.IndexOf('-- END UNONE API TYPES'))"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:17:01.0616461Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 380,
+  "endedUtc": "2026-10-23T14:17:01.4944031Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\018-read-scaffold-runtime.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\018-read-scaffold-runtime.stderr"
+}

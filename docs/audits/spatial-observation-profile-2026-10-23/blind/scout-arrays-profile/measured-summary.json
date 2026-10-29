@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "backend": "cpu",
+  "shapeChecks": "native nested results/hits/point/normal arrays, authored empty/numeric/record/nested arrays, plain object",
+  "lifecycle": {
+    "initialVersion": 1,
+    "afterInvalidVersion": 1,
+    "repairedVersion": 2,
+    "firstSubmitTick": 1,
+    "firstDeliveryTick": 2,
+    "consumedAndStaleRejected": true,
+    "unrelatedEntityUnchanged": true
+  },
+  "small": {
+    "submitted_batches": 1,
+    "completed_batches": 1,
+    "bodies": 3,
+    "queries": 4,
+    "pair_tests_upper_bound": 12,
+    "returned_hits": 3,
+    "input_body_bytes": 128,
+    "upload_bytes": 0,
+    "readback_bytes": 0,
+    "manager_ms": {
+      "result_apply": 0.00009999999999999999,
+      "result_validation": 0.002,
+      "snapshot": 0.001,
+      "validation": 0.0040999999999999995
+    },
+    "executor": {
+      "clock": "host_monotonic",
+      "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+      "phases_ms": {
+        "cpu_execute": 0.0024
+      },
+      "readback_bytes": 0,
+      "total_ms": 0.0024,
+      "upload_bytes": 0
+    }
+  },
+  "large": {
+    "submitted_batches": 1,
+    "completed_batches": 1,
+    "bodies": 4096,
+    "queries": 256,
+    "pair_tests_upper_bound": 1048576,
+    "returned_hits": 256,
+    "input_body_bytes": 163848,
+    "upload_bytes": 0,
+    "readback_bytes": 0,
+    "manager_ms": {
+      "result_apply": 0,
+      "result_validation": 0.5916,
+      "snapshot": 0.0339,
+      "validation": 0.3564
+    },
+    "executor": {
+      "clock": "host_monotonic",
+      "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+      "phases_ms": {
+        "cpu_execute": 1.3055
+      },
+      "readback_bytes": 0,
+      "total_ms": 1.3055,
+      "upload_bytes": 0
+    }
+  },
+  "completedBatches": 6,
+  "serializationVolumes": {
+    "rawNativeStdoutBytes": 1301709,
+    "rawNativeStderrBytes": 0,
+    "formattedCompleteObservationBytes": 97017,
+    "compactObservationJsonBytes": 31138,
+    "description": "Actual bytes of the recorded native CLI JSON/stdout and authored observation JSON. These are diagnostic serialization volumes, not measured Web bridge publication or GPU transport."
+  },
+  "sourceFallbackStep": null
+}

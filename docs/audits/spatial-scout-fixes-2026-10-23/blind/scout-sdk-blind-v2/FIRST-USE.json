@@ -1,0 +1,84 @@
+{
+    "trial":  "SDK public-interface author trial v2",
+    "rootEntryPoints":  [
+                            "README.md",
+                            "sdk.json",
+                            "bin/game.exe --help"
+                        ],
+    "sourceFallbackStep":  null,
+    "rubricRead":  false,
+    "repoSourceRead":  false,
+    "otherAuditRead":  false,
+    "firstStrictSuccessStep":  26,
+    "firstSuccessfulSubmissionStep":  27,
+    "firstDeliveredGeometryStep":  28,
+    "firstUseCompletedStep":  28,
+    "canonicalStrictTypeAttempts":  2,
+    "analyzerInvocationsBeforeFirstGeometry":  1,
+    "luauTypeFailures":  0,
+    "nativeRunAttemptsBeforeFirstGeometry":  2,
+    "nativeRunFailuresBeforeFirstGeometry":  0,
+    "naturalWrongGuesses":  [
+                                {
+                                    "step":  13,
+                                    "kind":  "search-no-match",
+                                    "guess":  "scene entity",
+                                    "outcome":  "API_SEARCH_EMPTY; recovered via canonical EntityApi and entity.getPosition search"
+                                },
+                                {
+                                    "step":  24,
+                                    "kind":  "tooling-file-encoding",
+                                    "guess":  "Windows PowerShell Set-Content -Encoding utf8 would produce accepted JSON",
+                                    "outcome":  "PROJECT_CONFIG_INVALID at byte 1 due BOM; retained original config; rewrote UTF-8 without BOM"
+                                }
+                            ],
+    "deliberateNegatives":  [
+                                {
+                                    "input":  "replacement with duplicate numeric ID 9",
+                                    "observed":  "duplicate body ID 9",
+                                    "recovery":  "old index remained version 1; packed unique replacement returned version 2"
+                                },
+                                {
+                                    "input":  "take immediately after submit within same update",
+                                    "observed":  "SPATIAL_RESULT_NEXT_TICK",
+                                    "recovery":  "same ticket consumed successfully on next update"
+                                },
+                                {
+                                    "input":  "take already consumed ticket",
+                                    "observed":  "SPATIAL_TICKET_UNKNOWN",
+                                    "recovery":  "manager usable and no live resources at completion"
+                                }
+                            ],
+    "laterToolingFailures":  [
+                                 {
+                                     "step":  30,
+                                     "kind":  "environment-probe",
+                                     "outcome":  "python command unavailable (Microsoft Store alias), exit 9009; no install; used PowerShell"
+                                 },
+                                 {
+                                     "step":  32,
+                                     "kind":  "execution-environment",
+                                     "outcome":  "new powershell -File blocked by execution policy; retried with process-local -ExecutionPolicy Bypass"
+                                 },
+                                 {
+                                     "step":  33,
+                                     "kind":  "independent-probe-syntax",
+                                     "outcome":  "PowerShell comma expression caused Object[] op_Subtraction; original probe retained; parenthesized vector arithmetic"
+                                 },
+                                 {
+                                     "step":  "between 036 and 037",
+                                     "kind":  "orchestration-preexecution-syntax",
+                                     "outcome":  "functions.exec JavaScript SyntaxError: Unexpected identifier \u0027r\u0027; no shell/SDK command ran; raw error retained in orchestration-failure-001.txt"
+                                 }
+                             ],
+    "observedBackend":  "cpu",
+    "gpuExecuted":  false,
+    "observationFinding":  "direct canonical result publication succeeds; empty hits serialize as {} in native JSON, retained and explicitly reported",
+    "documentationOnlyClaims":  [
+                                    "GPU/auto selection and failure policy",
+                                    "GPU host completion ordering",
+                                    "device failure and rejected completion fault semantics",
+                                    "hot reload cancellation/preservation semantics",
+                                    "cross-device f32 determinism limits"
+                                ]
+}

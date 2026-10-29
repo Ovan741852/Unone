@@ -1,0 +1,19 @@
+{
+  "order": 25,
+  "name": "repair-json-bom",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "$path='C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\project.unone.json'; $text=Get-Content -LiteralPath $path -Raw; [IO.File]::WriteAllText($path,$text); Write-Output 'Rewrote generated synthetic JSON as UTF-8 without BOM; retained first-authored bytes in audit.'"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:18:52.0593407Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 418,
+  "endedUtc": "2026-10-23T14:18:52.5304603Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\025-repair-json-bom.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\025-repair-json-bom.stderr"
+}

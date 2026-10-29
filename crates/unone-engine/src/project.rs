@@ -9,6 +9,9 @@ use crate::world::Vec2;
 #[serde(deny_unknown_fields)]
 pub struct ProjectConfig {
     pub name: String,
+    /// Explicit opt-in demand-sampled host time; absent keeps deterministic legacy behavior.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub host_time: Option<crate::HostTimeConfig>,
     #[serde(default = "default_entry_script")]
     pub entry_script: String,
     /// Isolated Luau job modules, keyed by operation name.
@@ -118,6 +121,9 @@ mod authoring;
 pub(crate) use authoring::resolve_project_path;
 #[cfg(feature = "dev-tools")]
 pub use authoring::{init, inspect};
+#[cfg(feature = "dev-tools")]
+#[path = "ui_preview_fixture.rs"]
+mod ui_preview_fixture;
 
 /// The gates this project wants `verify` to run.
 ///
@@ -209,6 +215,9 @@ pub struct TestSpec {
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct InputFrame {
+    #[cfg_attr(feature="dev-tools",schemars(with="crate::PhysicalBatch"))]
+    #[serde(default, skip_serializing_if = "Option::is_none",deserialize_with="crate::physical_input::present")]
+    pub physical: Option<crate::PhysicalBatch>,
     #[serde(default)]
     pub actions: BTreeMap<String, bool>,
     #[serde(default)]
@@ -217,6 +226,9 @@ pub struct InputFrame {
     /// Values/ranges remain in the official Luau control, not platform adapters.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub ui_sliders: BTreeMap<String, SliderInteraction>,
+    /// Host-owned UTF-8 editing snapshots, one event per ID per successful tick.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub ui_text_inputs: BTreeMap<String, TextInputInteraction>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
@@ -230,6 +242,18 @@ pub enum SliderPhase { Start, Drag, End, Cancel }
 pub struct SliderInteraction {
     pub phase: SliderPhase,
     pub ratio: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum TextInputPhase { Change, Submit, Cancel, Focus, Blur }
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct TextInputInteraction {
+    pub phase: TextInputPhase, pub text: String, pub composing: bool,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -248,6 +272,7 @@ pub struct PointerInput {
 impl InputFrame {
     /// Validate before mutating input or ticking, across every host path.
     pub fn validate(&self) -> Result<(), Box<crate::Diagnostic>> {
+        if let Some(b)=&self.physical {b.validate().map_err(|e|Box::new(crate::Diagnostic::error("INPUT_PHYSICAL_INVALID","Invalid physical batch",e)))?;}
         if self.ui_sliders.len() > 256 || self.ui_sliders.iter().any(|(id, event)| {
             id.trim().is_empty() || id.len() > 1024 || !event.ratio.is_finite()
                 || !(0.0..=1.0).contains(&event.ratio)
@@ -257,6 +282,11 @@ impl InputFrame {
                 "ui_sliders accepts at most 256 stable nonblank IDs (up to 1024 bytes), each with a phase and finite ratio in 0..1",
             )));
         }
+        if self.ui_text_inputs.len()>64 || self.ui_text_inputs.iter().any(|(id,event)| {
+            id.trim().is_empty() || id.len()>1024 || event.text.len()>65536 || event.text.contains(['\n','\r'])
+                || event.composing && matches!(event.phase,TextInputPhase::Submit)
+        }) {return Err(Box::new(crate::Diagnostic::error("INPUT_FRAME_INVALID","Invalid semantic text input",
+            "ui_text_inputs accepts at most 64 stable IDs, single-line UTF-8 text <=65536 bytes, no submit during composition")));}
         if self.actions.keys().any(|action| action.trim().is_empty()) {
             return Err(Box::new(crate::Diagnostic::error(
                 "INPUT_FRAME_INVALID",
@@ -448,6 +478,10 @@ pub struct UiPreviewSpec {
     /// Project-relative per-frame input replay that reaches this screen.
     #[serde(default)]
     pub input_sequence: Option<String>,
+    /// Tool-only project-relative JSON save restored before Game.start.
+    /// Omitted from serialized/exported project payloads and production files.
+    #[serde(default, skip_serializing)]
+    pub save_fixture: Option<String>,
     /// Project-relative exact image-behind-control overlap policy for this preview.
     #[serde(default)]
     pub overlap_policy: Option<String>,

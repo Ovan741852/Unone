@@ -1,0 +1,494 @@
+{
+  "query": "entity",
+  "matches": [
+    {
+      "name": "entity.spawn",
+      "category": "world",
+      "purpose": "Create a new Entity without a Sprite.",
+      "when_to_use": "When a game object must be created dynamically at runtime.",
+      "when_not_to_use": "For objects that always exist in the scene, prefer putting them in the scene source.",
+      "parameters": [
+        {
+          "name": "name",
+          "type_name": "string",
+          "meaning": "The Entity display name and base name for its id."
+        }
+      ],
+      "returns": "string: the unique Entity id that was created.",
+      "side_effects": [
+        "Modify Rust-owned world state"
+      ],
+      "frame_semantics": "The Entity can be used immediately in the same script update; its id remains valid until the world is rebuilt.",
+      "common_errors": [
+        "An empty name uses entity",
+        "A duplicate name receives a suffix such as _2 or _3"
+      ],
+      "example": "local id = api.entity.spawn(\"enemy\")",
+      "related_apis": [
+        "entity.getPosition",
+        "entity.setPosition"
+      ]
+    },
+    {
+      "name": "entity.despawn",
+      "category": "world",
+      "purpose": "Remove an Entity and all of its components.",
+      "when_to_use": "When an object is defeated, destroyed, or leaves the level.",
+      "when_not_to_use": "Do not replace removal with moving the object off-screen: its rigid body still participates in collisions and still consumes a physics integration.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "The Entity id to remove."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned world state"
+      ],
+      "frame_semantics": "Takes effect immediately in the same update; contacts for that Entity in the current frame are removed as well.",
+      "common_errors": [
+        "The Entity does not exist"
+      ],
+      "example": "api.entity.despawn(\"pig_a\")",
+      "related_apis": [
+        "entity.spawn",
+        "entity.setSpriteVisible"
+      ]
+    },
+    {
+      "name": "entity.setSpriteVisible",
+      "category": "world",
+      "purpose": "Show or hide an Entity's Sprite while retaining the Entity itself.",
+      "when_to_use": "When an object must be temporarily hidden while retaining its position, rigid body, or state.",
+      "when_not_to_use": "This does not affect collisions: an invisible rigid body still collides. Use entity.despawn for complete removal.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "The target Entity id."
+        },
+        {
+          "name": "visible",
+          "type_name": "boolean",
+          "meaning": "true to show, false to hide."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned world state"
+      ],
+      "frame_semantics": "The next observation reflects the new value in sprite.visible.",
+      "common_errors": [
+        "The Entity does not exist",
+        "The Entity has no Sprite"
+      ],
+      "example": "api.entity.setSpriteVisible(\"pig_a\", false)",
+      "related_apis": [
+        "entity.despawn"
+      ]
+    },
+    {
+      "name": "entity.getPosition",
+      "category": "world",
+      "purpose": "Read an Entity's current 2D Transform position.",
+      "when_to_use": "When game rules need to use the current position.",
+      "when_not_to_use": "Do not use it in place of scene or prefab source data.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An existing Entity id."
+        }
+      ],
+      "returns": "Vec2: x and y values of type number.",
+      "side_effects": [
+        "Read Rust-owned world state"
+      ],
+      "frame_semantics": "Returns the current value from the start of this update; a read after setPosition reflects the new value on the next read.",
+      "common_errors": [
+        "A missing Entity id returns LUAU_RUNTIME_ERROR"
+      ],
+      "example": "local position = api.entity.getPosition(\"player\")",
+      "related_apis": [
+        "entity.setPosition"
+      ]
+    },
+    {
+      "name": "entity.setPosition",
+      "category": "world",
+      "purpose": "Update an Entity's 2D Transform position.",
+      "when_to_use": "When Luau game rules need to move an object.",
+      "when_not_to_use": "Do not maintain a second Transform in each game; that makes observations and rendering disagree.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An existing Entity id."
+        },
+        {
+          "name": "position",
+          "type_name": "Vec2",
+          "meaning": "The new x and y coordinates."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned world state"
+      ],
+      "frame_semantics": "The update takes effect immediately during the current script call; the world frame increments only after the update completes.",
+      "common_errors": [
+        "A missing Entity id returns LUAU_RUNTIME_ERROR",
+        "x/y must be numbers"
+      ],
+      "example": "api.entity.setPosition(\"player\", { x = 1, y = 0 })",
+      "related_apis": [
+        "entity.getPosition",
+        "entity.spawn"
+      ]
+    },
+    {
+      "name": "entity.getTransform2D",
+      "category": "world",
+      "purpose": "Read an Entity's complete 2D Transform, including position, radian rotation, and visual scale.",
+      "when_to_use": "When a 2D Entity's position, facing, and size are needed together.",
+      "when_not_to_use": "Do not treat visual scale as the RigidBody2D size; the rigid body declares its own collider.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An existing Entity id."
+        }
+      ],
+      "returns": "Transform2D: position is a Vec2, rotation is in radians, and scale is a positive Vec2.",
+      "side_effects": [
+        "Read Rust-owned 2D world state"
+      ],
+      "frame_semantics": "Returns the 2D transform at call time; it does not create a second transform owned by the game.",
+      "common_errors": [
+        "A missing Entity id returns LUAU_RUNTIME_ERROR"
+      ],
+      "example": "local transform = api.entity.getTransform2D(\"bird\")",
+      "related_apis": [
+        "entity.setTransform2D",
+        "entity.getPosition"
+      ]
+    },
+    {
+      "name": "entity.setTransform2D",
+      "category": "world",
+      "purpose": "Update an Entity's complete 2D Transform; rotation and scale affect visuals only.",
+      "when_to_use": "When Luau needs to update a 2D Entity's position, radian rotation, or visual scale together.",
+      "when_not_to_use": "Do not use visual scale to change the collider; RigidBody2D radius, mass, velocity, and contact logic remain independent.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An existing Entity id."
+        },
+        {
+          "name": "transform",
+          "type_name": "Transform2D",
+          "meaning": "A complete position and rotation with scale x/y greater than 0."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned 2D visual/world state"
+      ],
+      "frame_semantics": "The update takes effect immediately during the current script update; the renderer reads the new visual state from the snapshot, while physics does not read rotation or scale.",
+      "common_errors": [
+        "A missing Entity id returns LUAU_RUNTIME_ERROR",
+        "position/rotation must be finite numbers",
+        "scale x/y must be greater than 0"
+      ],
+      "example": "api.entity.setTransform2D(\"bird\", { position = { x = 1, y = 2 }, rotation = 0.5, scale = { x = 1.2, y = 0.8 } })",
+      "related_apis": [
+        "entity.getTransform2D",
+        "entity.setPosition"
+      ]
+    },
+    {
+      "name": "entity.getVelocity",
+      "category": "physics",
+      "purpose": "Read an Entity's current RigidBody2D velocity.",
+      "when_to_use": "When game rules need to display, test, or use physical velocity.",
+      "when_not_to_use": "For an Entity without a RigidBody2D, declare a physics body in the scene first.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An Entity id with a RigidBody2D."
+        }
+      ],
+      "returns": "Vec2: the current x and y velocity.",
+      "side_effects": [
+        "Read Rust-owned physics state"
+      ],
+      "frame_semantics": "Returns the velocity after the current physics step; changes made during script update are integrated on the next physics step.",
+      "common_errors": [
+        "A missing Entity id returns LUAU_RUNTIME_ERROR",
+        "An Entity without a RigidBody2D returns LUAU_RUNTIME_ERROR"
+      ],
+      "example": "local velocity = api.entity.getVelocity(\"bird\")",
+      "related_apis": [
+        "entity.setVelocity",
+        "physics.applyImpulse"
+      ]
+    },
+    {
+      "name": "entity.getTransform3D",
+      "category": "world",
+      "purpose": "Read an Entity's 3D Transform, including position, radian Euler rotation, and scale.",
+      "when_to_use": "When 3D game rules need to use the current object position or orientation.",
+      "when_not_to_use": "For a 2D Entity without a Transform3D, declare a 3D transform in the scene. Do not use it in place of game-owned vehicle, character, or combat state.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An Entity id with a Transform3D."
+        }
+      ],
+      "returns": "Transform3D: position, rotation, and scale are all Vec3 values.",
+      "side_effects": [
+        "Read Rust-owned 3D world state"
+      ],
+      "frame_semantics": "Returns the 3D transform from the start of this update; it does not create or copy a game-owned transform.",
+      "common_errors": [
+        "A missing Entity id returns LUAU_RUNTIME_ERROR",
+        "An Entity without a Transform3D returns LUAU_RUNTIME_ERROR"
+      ],
+      "example": "local transform = api.entity.getTransform3D(\"car\")",
+      "related_apis": [
+        "entity.setTransform3D",
+        "camera3d.getTransform"
+      ]
+    },
+    {
+      "name": "entity.setTransform3D",
+      "category": "world",
+      "purpose": "Update an Entity's 3D Transform.",
+      "when_to_use": "When Luau game rules need to update a 3D object's position, rotation, or scale.",
+      "when_not_to_use": "Do not use it as a substitute for 3D physics; the engine currently provides only a transform primitive, while vehicle dynamics and collision rules remain game-owned until multiple games prove that lower-level capability is needed.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An Entity id with a Transform3D."
+        },
+        {
+          "name": "transform",
+          "type_name": "Transform3D",
+          "meaning": "A complete position and rotation with a positive scale."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned 3D world state"
+      ],
+      "frame_semantics": "The update takes effect immediately during the current script update; the renderer reads it after this frame's simulation snapshot.",
+      "common_errors": [
+        "The Entity id is missing or has no Transform3D",
+        "position/rotation must be finite Vec3 values",
+        "scale x/y/z must be greater than 0"
+      ],
+      "example": "api.entity.setTransform3D(\"car\", { position = { x = 0, y = 0, z = 2 }, rotation = { x = 0, y = 0.2, z = 0 }, scale = { x = 1, y = 1, z = 2 } })",
+      "related_apis": [
+        "entity.getTransform3D",
+        "camera3d.setPosition"
+      ]
+    },
+    {
+      "name": "entity.setVelocity",
+      "category": "physics",
+      "purpose": "Set an Entity's RigidBody2D velocity directly.",
+      "when_to_use": "When a physical velocity must be reset, constrained, or set for a test.",
+      "when_not_to_use": "When continuous force is needed; use applyImpulse or a future force API instead.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "An Entity id with a RigidBody2D."
+        },
+        {
+          "name": "velocity",
+          "type_name": "Vec2",
+          "meaning": "The new x and y velocity."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned physics state"
+      ],
+      "frame_semantics": "The setting takes effect immediately during the current script update; the following fixed physics step continues updating it using gravity and collisions.",
+      "common_errors": [
+        "The Entity id is missing or has no RigidBody2D",
+        "A static body should not be controlled as a dynamic object"
+      ],
+      "example": "api.entity.setVelocity(\"bird\", { x = 8, y = 5 })",
+      "related_apis": [
+        "entity.getVelocity",
+        "physics.applyImpulse"
+      ]
+    },
+    {
+      "name": "animation.play",
+      "category": "presentation",
+      "purpose": "Select the skeletal animation clip to play for an Entity.",
+      "when_to_use": "When a character or object needs skeletal animation; the engine stores only semantic state and the host's Spine runtime performs playback.",
+      "when_not_to_use": "Do not use it for game-rule timing; the engine does not evaluate bones, meshes, or blending, and does not report whether playback has finished.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "The target Entity id."
+        },
+        {
+          "name": "name",
+          "type_name": "string",
+          "meaning": "The animation clip name defined by the Spine asset."
+        },
+        {
+          "name": "options",
+          "type_name": "table?",
+          "meaning": "Optional asset, loop, and speed; if asset is omitted, use the animation asset declared by the scene."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned Entity animation state"
+      ],
+      "frame_semantics": "Repeating the same asset/name/loop/speed does not restart playback; started_frame changes only when the clip changes.",
+      "common_errors": [
+        "The Entity does not exist",
+        "The animation name is empty",
+        "speed is not a finite number greater than 0",
+        "No scene-declared asset exists and the call did not provide an asset",
+        "system 'spine' is not enabled"
+      ],
+      "example": "api.animation.play(\"reel-1\", \"spin\", {loop = true, speed = 1.5})",
+      "related_apis": [
+        "animation.stop",
+        "effect.spawn"
+      ]
+    },
+    {
+      "name": "animation.stop",
+      "category": "presentation",
+      "purpose": "Clear an Entity's skeletal animation state.",
+      "when_to_use": "When the host should stop playback and remove the Entity's animation.",
+      "when_not_to_use": "It does not delete the Entity or restore the default animation declared by the scene.",
+      "parameters": [
+        {
+          "name": "id",
+          "type_name": "string",
+          "meaning": "The target Entity id."
+        }
+      ],
+      "returns": "(): no additional data on success.",
+      "side_effects": [
+        "Modify Rust-owned Entity animation state"
+      ],
+      "frame_semantics": "The Entity's animation field is absent from the next observation.",
+      "common_errors": [
+        "The Entity does not exist",
+        "system 'spine' is not enabled"
+      ],
+      "example": "api.animation.stop(\"reel-1\")",
+      "related_apis": [
+        "animation.play"
+      ]
+    },
+    {
+      "name": "physics3d.removeBody",
+      "category": "physics3d",
+      "purpose": "Remove a body, its collider and attached joints; leave the entity at its current pose.",
+      "when_to_use": "For opt-in 3D rigid-body games and AI physics inspection.",
+      "when_not_to_use": "Enable systems.physics3d. Gameplay rules, damage and effect selection remain in Lua. Physics owns registered transforms; use teleport/moveKinematic instead of setTransform3D.",
+      "parameters": [
+        {
+          "name": "arguments",
+          "type_name": "typed",
+          "meaning": "id:string"
+        }
+      ],
+      "returns": "nil",
+      "side_effects": [
+        "Change solver configuration/state; no implicit step"
+      ],
+      "frame_semantics": "Fixed 60 Hz, single-threaded Rapier enhanced-determinism. Snapshot is an observation, not a complete resumable solver save. Contacts are read on the following Game.update.",
+      "common_errors": [
+        "SYSTEM_DISABLED",
+        "PHYSICS3D_BODY_MISSING",
+        "invalid/unknown fields",
+        "PHYSICS3D_OWNERSHIP"
+      ],
+      "example": "local state = api.physics3d.snapshot()",
+      "related_apis": [
+        "physics3d.snapshot",
+        "physics3d.contacts",
+        "physics3d.raycast"
+      ]
+    },
+    {
+      "name": "physics3d.overlap",
+      "category": "physics3d",
+      "purpose": "Return sorted collider entity IDs intersecting a convex shape. Sensors excluded unless requested.",
+      "when_to_use": "For opt-in 3D rigid-body games and AI physics inspection.",
+      "when_not_to_use": "Enable systems.physics3d. Gameplay rules, damage and effect selection remain in Lua. Physics owns registered transforms; use teleport/moveKinematic instead of setTransform3D.",
+      "parameters": [
+        {
+          "name": "arguments",
+          "type_name": "typed",
+          "meaning": "request:Overlap3D (game schema overlap3d)"
+        }
+      ],
+      "returns": "string[]",
+      "side_effects": [
+        "Read physics state; no implicit step"
+      ],
+      "frame_semantics": "Fixed 60 Hz, single-threaded Rapier enhanced-determinism. Snapshot is an observation, not a complete resumable solver save. Contacts are read on the following Game.update.",
+      "common_errors": [
+        "SYSTEM_DISABLED",
+        "PHYSICS3D_BODY_MISSING",
+        "invalid/unknown fields",
+        "PHYSICS3D_OWNERSHIP"
+      ],
+      "example": "local state = api.physics3d.snapshot()",
+      "related_apis": [
+        "physics3d.snapshot",
+        "physics3d.contacts",
+        "physics3d.raycast"
+      ]
+    },
+    {
+      "name": "observation.array",
+      "category": "observation",
+      "purpose": "Preserve a generic JSON array, including an empty array, in published observations.",
+      "when_to_use": "For empty arrays, typed numeric arrays and engine JSON round trips. Engine-produced spatial results already preserve array identity automatically. Read docs/spatial-batches.md#observation-json-arrays, bundled with the SDK.",
+      "when_not_to_use": "Plain {} remains a JSON object. This is a serialization hint, not gameplay state or a collection framework.",
+      "parameters": [
+        {
+          "name": "values",
+          "type_name": "{T}?",
+          "meaning": "Optional contiguous serializable array table; omitted creates an empty array. Returns the same supplied table and retains its element types."
+        }
+      ],
+      "returns": "{T}; no-argument call returns {ObservationValue}",
+      "side_effects": [
+        "Mark only this table's JSON array identity; no element copy or metatable changes"
+      ],
+      "frame_semantics": "The mark survives clearing and refilling this table. Serialization revalidates shape; nested plain empty tables remain objects unless separately marked. Invalid input fails before marking.",
+      "common_errors": [
+        "Mixed or sparse keys, callbacks, nonfinite values, buffers and cyclic values fail explicitly; marking does not bypass observation validation."
+      ],
+      "example": "api.observation.set(\"empty\", api.observation.array()); local numbers: {number} = {1,2}; api.observation.setArray(\"numbers\", api.observation.array(numbers))",
+      "related_apis": [
+        "observation.set",
+        "observation.setArray",
+        "spatial.take"
+      ]
+    }
+  ],
+  "suggested_next_actions": []
+}

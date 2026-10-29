@@ -42,6 +42,19 @@ export type EntityApi = {
     setTransform3D: (id: string, transform: Transform3D) -> (),
 }
 
+export type HeightfieldDefinition = {
+    width: number, depth: number, heights: {number}, cell_size: number,
+    origin: Vec3, texture: string,
+}
+export type HeightfieldPatch = {x: number, z: number, width: number, depth: number, heights: {number}}
+export type HeightfieldApi = {
+    -- Native presentation geometry; no collision or game-owned editing rules.
+    -- Row-major X-fast samples; update rectangles use zero-based sample indices.
+    set: (id: string, definition: HeightfieldDefinition) -> (),
+    update: (id: string, patch: HeightfieldPatch) -> (),
+    remove: (id: string) -> (),
+}
+
 export type Instances3DApi = {
     -- Packed little-endian f32 records: position.xyz, quaternion.xyzw, scale.xyz (40 bytes).
     -- Replaces a complete batch atomically; max 262144 instances / 256 batches per world.
@@ -49,7 +62,69 @@ export type Instances3DApi = {
     remove: (id: string) -> (),
 }
 
+export type ProjectedGeometry = {
+    --40B f32LE vertex: clip.xyzw (0..w depth), uv, RGBA; u32LE triangle indices.
+    --Official mesh UV convention(v0 bottom); engine owns transport and GPU resources.
+    texture: string, vertices: buffer, indices: buffer,
+    order: number?, depth_test: boolean?, depth_write: boolean?,
+    scissor: {x: number,y: number,width: number,height: number}?,
+    color_mode: ("linear" | "encoded")?, filter: ("nearest" | "linear")?,
+    sampling_space: ("linear" | "encoded")?, address_mode: ("clamp" | "repeat")?, alpha_cutoff: number?, alpha_compare: ("greater_equal" | "greater")?,
+}
+export type ProjectedCompare = "never" | "less" | "equal" | "less_equal" | "greater" | "not_equal" | "greater_equal" | "always"
+export type ProjectedFrameMaterial = {
+    rgb: "texture_times_vertex", texture_alpha: "sampled" | "one",
+    alpha: "texture" | "vertex" | "texture_times_vertex",
+    alpha_test: {enabled: boolean, compare: ProjectedCompare, reference: number},
+    blend: {enabled: boolean, operation: "add", source: "source_alpha", destination: "one" | "one_minus_source_alpha"},
+    depth: {test: boolean, write: boolean, compare: ProjectedCompare},
+    sampler: {min: "nearest" | "linear", mag: "nearest" | "linear", address_u: "clamp" | "repeat", address_v: "clamp" | "repeat"},
+}
+export type ProjectedFrameDraw = {
+    id: string, texture: string, vertices: buffer, indices: buffer,
+    clip_policy: "clip" | "inside", material: ProjectedFrameMaterial,
+    scissor: {x: number,y: number,width: number,height: number}?,
+}
+export type ProjectedFrame = {
+    profile: "rgb8_encoded_rebuild_v1" | "rgb8_encoded_gouraud_v1", initial: {rgb8: {number},depth: number}, draws: {ProjectedFrameDraw},
+}
+export type ProjectedApi = {
+    -- Atomic ordered encoded-RGB reference frame. Requires explicit official Web profile.
+    -- Caller supplies known initial RGB/depth and every predecessor draw; no previous-RAF accumulation.
+    setFrame: (frame: ProjectedFrame) -> (),
+    set: (id: string, geometry: ProjectedGeometry) -> (),
+    remove: (id: string) -> (),
+    setWorldVisible: (visible: boolean) -> (),
+    getViewport: () -> {width: number, height: number, aspect: number, revision: number},
+}
+
+export type EscapeBehavior = "action" | "quit"
+export type ApplicationApi = {
+    -- Defaults to quit. Action mode publishes neutral Escape input for game policy.
+    setEscapeBehavior: (behavior: EscapeBehavior) -> (),
+    -- Monotonic host intent; native exits after successfully presenting this state.
+    -- The game owns confirmation. Headless records the latch without GPU evidence.
+    requestQuit: () -> (),
+}
+
+export type PhysicalModifiers = {shift:boolean,control:boolean,alt:boolean,meta:boolean,alt_graph:boolean?,caps_lock:boolean?,num_lock:boolean?}
+export type PhysicalViewport = {revision:number,width:number,height:number,rect_left:number,rect_top:number,css_width:number,css_height:number,device_pixel_ratio:number}
+export type PhysicalPoint = {x:number,y:number,inside:boolean,viewport:PhysicalViewport}
+export type PhysicalCommon = {sequence:number,received_us:number,origin:"browser"|"host_synthetic"|"fixture",route:"control"|"game"|"engine_ui"|"host_ui"}
+export type PhysicalInputEvent = PhysicalCommon & (
+    {kind:"key",code:string,location:number,state:"down"|"up",["repeat"]:boolean,is_composing:boolean,modifiers:PhysicalModifiers}
+    | {kind:"pointer",pointer_id:number,pointer_type:"mouse"|"pen"|"touch",phase:"down"|"up"|"move"|"cancel",button:number,buttons:number,point:PhysicalPoint?,modifiers:PhysicalModifiers}
+    | {kind:"wheel",delta_x:number,delta_y:number,delta_z:number,unit:"pixel"|"line"|"page",point:PhysicalPoint,modifiers:PhysicalModifiers}
+    | {kind:"capture",pointer_id:number,captured:boolean,source:"got"|"lost"}
+    | {kind:"focus",focused:boolean,scope:"game"|"window"}
+    | {kind:"reset",scope:"all"|"pointer",pointer_id:number?,reason:string}
+    | {kind:"viewport",viewport:PhysicalViewport})
+export type PhysicalInputBatch = {profile:"ordered_physical_v1",epoch:number,after_sequence:number,through_sequence:number,events:{PhysicalInputEvent}}
 export type InputApi = {
+    -- Current successful-tick text editing event; nil when no event for this ID.
+    getTextInputInteraction: (id: string) -> UiTextInputInteraction?,
+    -- Tick-scope detached ordered ingress; nil outside update or for legacy input.
+    getPhysicalBatch: () -> PhysicalInputBatch?,
     -- Current-tick host-projected UI event. Prefer createSlider().update(input).
     getSliderInteraction: (id: string) -> UiSliderInteraction?,
     isDown: (action: string) -> boolean,
@@ -140,6 +215,8 @@ export type Camera3DApi = {
 
 export type ObservationApi = {
     set: (key: string, value: ObservationValue) -> (),
+    array: ((values: nil) -> {ObservationValue}) & (<T>(values: {T}) -> {T}),
+    setArray: <T>(key: string, values: {T}?) -> (),
 }
 
 -- The UI design space is 0..100 on both axes and **y points UP**: y = 0 is the
@@ -161,7 +238,10 @@ export type UiAnchor =
     | "left" | "center" | "right"
     | "bottom_left" | "bottom" | "bottom_right"
 
+export type UiCursor = {kind:"default"}|{kind:"hidden"}|{kind:"image",asset:string,width:number,height:number,hotspot_x:number,hotspot_y:number,filter:"nearest"|"linear"}
 export type UiApi = {
+    -- Official Web cursor overlay; pixels/hotspot use drawing-buffer units, y-down.
+    setCursor: (cursor:UiCursor) -> (),
     components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     -- Current host width/height ratio, also used by anchored placement.
@@ -199,6 +279,13 @@ export type UiTextNode = UiPlacement & {
 }
 export type UiButtonNode = UiPlacement & {
     kind: "button", id: string, text: string?, action: string, style: UiStyle?,
+}
+export type UiTextInputNode = UiPlacement & {
+    kind: "text_input", id: string, text: string?, placeholder: string?, max_length: number?,
+    focused: boolean?, enabled: boolean?, style: UiStyle?,
+}
+export type UiTextInputInteraction = {
+    phase: "change" | "submit" | "cancel" | "focus" | "blur", text: string, composing: boolean,
 }
 export type UiSliderNode = UiPlacement & {
     kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
@@ -244,6 +331,16 @@ export type UiImageNode = UiPlacement & {
     kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
     alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
 }
+-- Ordered, noninteractive artwork. Quads use the batch's coordinate space;
+-- source is an optional pixel crop, while rect is an absolute design rectangle.
+export type UiImageQuad = {
+    asset: string, rect: UiRect,
+    source: {x:number,y:number,width:number,height:number}?, opacity: number?,
+}
+export type UiImageBatchNode = UiPlacement & {
+    kind: "image_batch", id: string, quads: {UiImageQuad},
+    background_for: UiBackgroundScope?,
+}
 export type UiPanelNode = UiPlacement & {
     kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
 }
@@ -257,17 +354,22 @@ export type UiScrollNode = UiPlacement & {
     scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
     children: {UiNode}?,
 }
-export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
-    | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
+export type UiNode = UiTextInputNode | UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
+    | UiImageNode | UiImageBatchNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
 -- @unone/ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
+    text_input: UiStyle?,
     text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
     slider: UiStyle?, combobox: UiStyle?,
 }
 export type UiComponentTextProps = UiPlacement & {
     id: string, text: string?, style: UiStyle?,
+}
+export type UiComponentTextInputProps = UiPlacement & {
+    id: string, text: string?, placeholder: string?, max_length: number?,
+    focused: boolean?, enabled: boolean?, style: UiStyle?,
 }
 export type UiComponentButtonProps = UiPlacement & {
     id: string, text: string?, action: string, style: UiStyle?,
@@ -288,6 +390,9 @@ export type UiComponentPanelProps = UiPlacement & {
 export type UiComponentImageProps = UiPlacement & {
     id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
     alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+}
+export type UiComponentImageBatchProps = UiPlacement & {
+    id: string, quads: {UiImageQuad}, background_for: UiBackgroundScope?,
 }
 export type UiComponentSurface = {
     kind: "panel", style: UiStyle?,
@@ -332,6 +437,7 @@ export type UiResponsiveLayout<T> = {
     resolve: (viewport: {aspect: number}, bounds: UiViewport?) -> UiResponsiveLayoutResult<T>,
 }
 export type UiComponentKit = {
+    textInput: (props: UiComponentTextInputProps) -> UiTextInputNode,
     -- Create once with authored groups/thresholds; resolve each View for reflow.
     createResponsiveLayout: <T>(options: UiResponsiveLayoutOptions<T>) -> UiResponsiveLayout<T>,
     -- Preferred complete numeric slider: reusable state plus semantic host capture.
@@ -342,6 +448,7 @@ export type UiComponentKit = {
     combobox: (props: UiComponentComboBoxProps) -> UiComboBoxNode,
     panel: (props: UiComponentPanelProps) -> UiPanelNode,
     image: (props: UiComponentImageProps) -> UiImageNode,
+    imageBatch: (props: UiComponentImageBatchProps) -> UiImageBatchNode,
     component: (props: UiComponentProps) -> UiComponentNode,
     screen: (props: UiComponentScreenProps) -> UiScreen,
     -- Same engine-owned live helpers as UiApi. Scroll content is local
@@ -493,10 +600,137 @@ export type ShaderApi = {
     setUniform: (materialId: string, name: string, value: ShaderUniform) -> (),
 }
 
+-- Generic geometry only. Coordinates are packed f32 xyz triples, independent of entities.
+export type EngineDiagnosticRecovery = {
+    action: string,
+    retry: "after_correction" | "next_tick" | "after_release" | "new_session" | "none",
+    [string]: ObservationValue,
+}
+export type EngineDiagnosticContext = {
+    frame: number, index: number?, ticket: number?,
+    [string]: ObservationValue,
+}
+export type EngineDiagnostic = {
+    api_version: number, code: string, operation: string, message: string,
+    path: string?, actual: ObservationValue?, expected: ObservationValue?,
+    recovery: EngineDiagnosticRecovery, recoverable: boolean, terminal: boolean,
+    context: EngineDiagnosticContext,
+    [string]: ObservationValue,
+}
+export type SpatialLimits = {
+    indices: number, bodies: number, bodies_per_index: number,
+    queries_per_batch: number, hits_per_query: number, coordinate_abs: number,
+    submissions_per_tick: number, tickets: number, safe_integer: number,
+    [string]: ObservationValue,
+}
+export type SpatialInfo = {
+    api_version: number, backend: string, external: boolean,
+    delivery: "next_tick", packed_format: "USB1", operations: {string},
+    indices: number, bodies: number, tickets: number, pending: number, fault: string?,
+    limits: SpatialLimits,
+    [string]: ObservationValue,
+}
+export type SpatialBody = {
+    id: number, position: {number}, radius: number,
+    category: number?, previous_position: {number}?,
+}
+export type SpatialNearestQuery = {
+    kind: "nearest", point: {number}, max_distance: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialOverlapQuery = {
+    kind: "overlap_sphere", center: {number}, radius: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialSweepQuery = {
+    kind: "sweep_sphere", from: {number}, to: {number}, radius: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialQuery = SpatialNearestQuery | SpatialOverlapQuery | SpatialSweepQuery
+export type SpatialHit = {
+    id: number, distance: number, fraction: number,
+    point: {number}, normal: {number},
+    [string]: ObservationValue,
+}
+export type SpatialQueryResult = {hits: {SpatialHit}, [string]: ObservationValue}
+export type SpatialBatchResult = {
+    version: number, results: {SpatialQueryResult}, [string]: ObservationValue,
+}
+export type SpatialExecutionPhases = {
+    preparation: number?, queue_wait: number?,
+    validation: number?, packing: number?, upload: number?, encode_submit: number?,
+    readback_wait: number?, decode: number?, cpu_execute: number?, gpu_kernel: number?,
+    [string]: ObservationValue,
+}
+export type SpatialExecutionProfile = {
+    clock: string, total_ms: number, phases_ms: SpatialExecutionPhases,
+    gpu_kernel_unavailable_reason: string?, upload_bytes: number, readback_bytes: number,
+    [string]: ObservationValue,
+}
+export type SpatialManagerTimings = {
+    snapshot: number, validation: number, result_validation: number, result_apply: number,
+    [string]: ObservationValue,
+}
+export type SpatialProfileTotals = {
+    submitted_batches: number, completed_batches: number, cancelled_tickets: number, failed_batches: number,
+    bodies: number, queries: number, pair_tests_upper_bound: number, returned_hits: number,
+    input_body_bytes: number, upload_bytes: number, readback_bytes: number,
+    manager_ms: SpatialManagerTimings, executor_ms: number, executor_phases_ms: SpatialExecutionPhases,
+    executor_samples: number, executor_wall_samples: number,
+    [string]: ObservationValue,
+}
+export type SpatialProfileBatch = {
+    ticket: number, version: number, bodies: number, queries: number,
+    pair_tests_upper_bound: number, returned_hits: number, manager_ms: SpatialManagerTimings,
+    executor_ms: number?, executor: SpatialExecutionProfile?, executor_unavailable_reason: string?,
+    [string]: ObservationValue,
+}
+export type SpatialBindingSample = {
+    operation: string, success: boolean, input_decode_ms: number, output_encode_ms: number,
+    index: number?, ticket: number?,
+    [string]: ObservationValue,
+}
+export type SpatialBindingProfile = {
+    clock: string, scope: string, calls: number, failed_calls: number,
+    input_decode_ms: number, output_encode_ms: number, last: SpatialBindingSample?,
+    [string]: ObservationValue,
+}
+export type SpatialProfile = {
+    api_version: number, backend: string, clock: string, scope: string,
+    limits: {retained_completed_batches: number, counter_max: number, [string]: ObservationValue},
+    totals: SpatialProfileTotals, last: SpatialProfileBatch?, bindings: SpatialBindingProfile,
+    [string]: ObservationValue,
+}
+export type SpatialApi = {
+    pack: (bodies: {SpatialBody}) -> buffer,
+    create: (bodies: {SpatialBody} | buffer) -> number,
+    update: (index: number, bodies: {SpatialBody} | buffer) -> number,
+    destroy: (index: number) -> (),
+    -- Submit/take/cancel during update; take is legal starting the next tick.
+    submit: (index: number, queries: {SpatialQuery}) -> number,
+    take: (ticket: number) -> SpatialBatchResult,
+    cancel: (ticket: number) -> (),
+    info: () -> SpatialInfo,
+    -- Latest structured failure; retained across successful calls, reset on successful reload.
+    lastDiagnostic: () -> EngineDiagnostic?,
+    -- Detached wall-clock diagnostics; excluded from replay unless explicitly published.
+    profile: () -> SpatialProfile,
+}
+
+-- Opt-in, demand-sampled runtime-origin elapsed milliseconds; never a fixed-dt alias.
+export type HostTimeApi = {
+    sample: (tag: string) -> number,
+}
+
 export type EngineApi = {
+    hostTime: HostTimeApi,
+    application: ApplicationApi,
+    spatial: SpatialApi,
     shader: ShaderApi,
     jobs: JobsApi,
     instances3d: Instances3DApi,
+    projected: ProjectedApi,
+    heightfield: HeightfieldApi,
     debug: DebugApi,
     particle: ParticleApi,
     entity: EntityApi,
@@ -515,6 +749,7 @@ export type EngineApi = {
     audio: AudioApi,
     log: (message: string) -> (),
 }
+
 
 export type Game = {
     start: (api: EngineApi) -> (),

@@ -1,9 +1,29 @@
 use crate::Package;
-use std::{collections::BTreeMap, sync::Arc};
+use std::{collections::{BTreeMap, HashMap}, sync::Arc};
 use unone_engine::WorldSnapshot;
 use wgpu::util::DeviceExt;
 use winit::window::Window;
 type R<T> = Result<T, String>;
+
+// Index once without changing manifest iteration/upload order. The SDK rejects
+// duplicate IDs; enforce the same contract here instead of choosing one entry.
+fn index_assets(assets: &[serde_json::Value]) -> R<HashMap<&str, &serde_json::Value>> {
+    let mut index = HashMap::with_capacity(assets.len());
+    for asset in assets {
+        let id = asset["id"].as_str().ok_or("ASSET_ID_MISSING")?;
+        if index.insert(id, asset).is_some() {
+            return Err(format!("ASSET_MANIFEST_DUPLICATE_ID: {id}"));
+        }
+    }
+    Ok(index)
+}
+
+fn indexed_texture<'a>(index: &HashMap<&str, &'a serde_json::Value>, id: &str) -> R<&'a serde_json::Value> {
+    index.get(id).copied()
+        .filter(|asset| asset["kind"].as_str() == Some("texture2d"))
+        .ok_or_else(|| "MESH_TEXTURE_MISSING".to_owned())
+}
+
 struct Mesh {
     vertices: wgpu::Buffer,
     indices: wgpu::Buffer,
@@ -505,6 +525,8 @@ impl Bloom {
     }
 }
 pub struct Renderer {
+    projected:crate::projected::Projected,
+    world_visible:bool,
     ui:crate::ui::Surface,
     particles: crate::particles::Particles,
     surface: wgpu::Surface<'static>,
@@ -522,6 +544,7 @@ pub struct Renderer {
     depth: wgpu::TextureView,
     bloom: Option<Bloom>,
     meshes: BTreeMap<String, Mesh>,
+    heightfield_revisions: BTreeMap<String, u64>,
     textures: BTreeMap<String, Arc<wgpu::BindGroup>>,
     batches: BTreeMap<String, Batch>,
     sprites: crate::sprites::Frame,
@@ -555,7 +578,91 @@ pub struct Renderer {
 
 #[cfg(test)]
 mod tests {
-    use super::decode_texture;
+    use super::{decode_texture, index_assets, indexed_texture};
+
+    #[test]
+    fn asset_index_matches_linear_texture_lookup_without_reordering() {
+        let assets = serde_json::json!([
+            {"id":"mesh://quad","kind":"mesh3d","source":"quad.mesh.json"},
+            {"id":"texture://atlas-b","kind":"texture2d","source":"b.png"},
+            {"id":"audio://click","kind":"audio","source":"click.wav"},
+            {"id":"texture://atlas-a","kind":"texture2d","source":"a.png"}
+        ]);
+        let assets = assets.as_array().unwrap();
+        let before = assets.clone();
+        let index = index_assets(assets).unwrap();
+        for id in ["texture://atlas-a", "texture://atlas-b", "texture://atlas-a"] {
+            let old = assets.iter().find(|asset| asset["id"] == id).unwrap();
+            let new = indexed_texture(&index, id).unwrap();
+            assert!(std::ptr::eq(old, new), "the exact descriptor is reused");
+            assert_eq!(old["source"], new["source"]);
+        }
+        assert_eq!(*assets, before);
+        assert_eq!(indexed_texture(&index, "texture://missing").unwrap_err(), "MESH_TEXTURE_MISSING");
+        assert_eq!(indexed_texture(&index, "mesh://quad").unwrap_err(), "MESH_TEXTURE_MISSING");
+    }
+
+    #[test]
+    fn asset_index_rejects_duplicate_ids_including_identical_and_cross_kind_entries() {
+        for second in [
+            serde_json::json!({"id":"texture://same","kind":"texture2d","source":"a.png"}),
+            serde_json::json!({"id":"texture://same","kind":"texture2d","source":"b.png"}),
+            serde_json::json!({"id":"texture://same","kind":"mesh3d","source":"b.mesh.json"}),
+        ] {
+            let assets = [serde_json::json!({"id":"texture://same","kind":"texture2d","source":"a.png"}), second];
+            assert_eq!(index_assets(&assets).unwrap_err(), "ASSET_MANIFEST_DUPLICATE_ID: texture://same");
+        }
+        assert_eq!(index_assets(&[serde_json::json!({"kind":"texture2d","source":"a.png"})]).unwrap_err(), "ASSET_ID_MISSING");
+    }
+
+    /// CPU-only differential against an external verified export. The legacy
+    /// linear reference is memoized per distinct texture ID; every mesh still
+    /// compares its exact descriptor/source against the new registry result.
+    #[test]
+    fn external_asset_index_differential() {
+        let Some(root) = std::env::var_os("UNONE_NATIVE_ASSET_LOOKUP_FIXTURE") else {
+            eprintln!("UNONE_NATIVE_ASSET_LOOKUP_FIXTURE unset; external manifest not exercised");
+            return;
+        };
+        let root = std::path::PathBuf::from(root);
+        let manifest: serde_json::Value = serde_json::from_slice(
+            &std::fs::read(root.join("content/assets.json")).expect("read external asset manifest")
+        ).expect("external asset manifest JSON");
+        let assets = manifest["assets"].as_array().expect("external asset array");
+        assert!(!assets.is_empty());
+        let index = index_assets(assets).expect("external IDs must follow SDK uniqueness");
+        let mut old_textures = std::collections::HashMap::new();
+        let mut meshes = 0usize;
+        let mut old_comparisons = 0u64;
+        let mut comparisons_on_misses = 0u64;
+        for asset in assets {
+            if asset["kind"] != "mesh3d" { continue; }
+            let path = asset["source"].as_str().expect("mesh source");
+            assert!(crate::safe(path), "external fixture mesh source must stay within content");
+            let mesh: serde_json::Value = serde_json::from_slice(
+                &std::fs::read(root.join("content").join(path)).expect("read external mesh")
+            ).expect("external mesh JSON");
+            let id = mesh["texture"].as_str().expect("mesh texture ID");
+            let (old, position) = *old_textures.entry(id.to_owned()).or_insert_with(|| {
+                let (position, old) = assets.iter().enumerate()
+                    .find(|(_, candidate)| candidate["id"] == mesh["texture"])
+                    .expect("legacy linear texture lookup");
+                comparisons_on_misses += position as u64 + 1;
+                (old, position as u64 + 1)
+            });
+            let new = indexed_texture(&index, id).expect("indexed texture lookup");
+            assert!(std::ptr::eq(old, new), "mesh {} changed descriptor", asset["id"]);
+            assert_eq!(old["source"], new["source"], "mesh {} changed source", asset["id"]);
+            old_comparisons += position;
+            meshes += 1;
+        }
+        assert!(meshes > 0);
+        eprintln!("NATIVE_ASSET_INDEX_DIFFERENTIAL {}", serde_json::json!({
+            "assets":assets.len(), "mesh_source_matches":meshes, "distinct_mesh_textures":old_textures.len(),
+            "old_linear_comparisons":old_comparisons, "legacy_reference_comparisons":comparisons_on_misses,
+            "geometry_or_source_modified":false, "gpu_exercised":false
+        }));
+    }
 
     #[test]
     fn bloom_shader_parses_and_validates() {
@@ -1073,6 +1180,7 @@ impl Renderer {
         let assets = assets["assets"]
             .as_array()
             .ok_or("ASSET_MANIFEST_INVALID")?;
+        let assets_by_id = index_assets(assets)?;
         let mut meshes = BTreeMap::new();
         let mut textures: BTreeMap<String, Arc<wgpu::BindGroup>> = BTreeMap::new();
         let mut lods = BTreeMap::new();
@@ -1115,11 +1223,14 @@ impl Renderer {
                 vertices.extend_from_slice(p);
                 vertices.extend_from_slice(&[uvs[i * 2], 1. - uvs[i * 2 + 1]]);
             }
-            let texture = assets
-                .iter()
-                .find(|a| a["id"] == value["texture"])
-                .ok_or("MESH_TEXTURE_MISSING")?;
-            let texture_id = texture["id"].as_str().ok_or("TEXTURE_ID_MISSING")?.to_string();
+            let texture_id = value["texture"].as_str().ok_or("TEXTURE_ID_MISSING")?;
+            // Many frame meshes may reference one atlas. Keep a single GPU
+            // texture/bind group per declared texture rather than uploading an
+            // atlas again for every frame's quad.
+            let texture = if let Some(shared) = textures.get(texture_id) {
+                shared.clone()
+            } else {
+            let texture = indexed_texture(&assets_by_id, texture_id)?;
             let bytes = package.get(&format!(
                 "content/{}",
                 texture["source"].as_str().ok_or("TEXTURE_SOURCE_MISSING")?
@@ -1171,7 +1282,9 @@ impl Renderer {
                     },
                 ],
             }));
-            textures.insert(texture_id, texture.clone());
+            textures.insert(texture_id.to_owned(), texture.clone());
+            texture
+            };
             meshes.insert(
                 asset["id"].as_str().ok_or("ASSET_ID_MISSING")?.into(),
                 Mesh {
@@ -1261,7 +1374,10 @@ impl Renderer {
             Bloom::new(&device, format, config.width, config.height)
         });
         let particles = crate::particles::Particles::new(&device, format, &camera_layout);
+        let projected=crate::projected::Projected::new(&device,format,&texture_layout);
         Ok(Self {
+            projected,
+            world_visible:true,
             ui:crate::ui::Surface::new(&device,format,package)?,
             particles,
             presentation_batches: serde_json::json!([]),
@@ -1296,6 +1412,7 @@ impl Renderer {
             depth,
             bloom,
             meshes,
+            heightfield_revisions: BTreeMap::new(),
             textures,
             batches: BTreeMap::new(),
             sprites: Default::default(),
@@ -1371,6 +1488,19 @@ impl Renderer {
         Ok(())
     }
     fn prepare(&mut self, s: &WorldSnapshot) -> R<()> {
+        self.world_visible=s.projected_world_visible;
+        if !self.world_visible {
+            self.is_2d=false;self.submitted=0;self.draws=0;self.triangles=0;self.uploaded=0;
+            self.lod_counts=[0;4];self.lod_ms=0.;self.classify_ms=0.;self.upload_ms=0.;
+            for b in self.batches.values_mut() {b.count=0;}
+            self.presentation_batches=serde_json::json!([]);return self.prepare_sprites(s);
+        }
+        let removed: Vec<_> = self.heightfield_revisions.keys()
+            .filter(|id| !s.heightfields.contains_key(*id)).cloned().collect();
+        for id in removed {
+            self.heightfield_revisions.remove(&id);
+            self.meshes.remove(&format!("@heightfield:{id}"));
+        }
         if s.camera3d.is_none() {
             return self.prepare_2d(s);
         }
@@ -1390,6 +1520,7 @@ impl Renderer {
         let view = crate::lod::View::new(c, self.config.width as f32 / self.config.height as f32);
         let lod_start = std::time::Instant::now();
         let mut rows = Vec::new();
+        self.prepare_heightfields(s, &mut rows)?;
         for (id, b) in &s.instances3d {
             let chain = self
                 .lods
@@ -1509,6 +1640,9 @@ impl Renderer {
     }
 
     fn prepare_2d(&mut self, s: &WorldSnapshot) -> R<()> {
+        if !s.heightfields.is_empty() {
+            return Err("NATIVE_HEIGHTFIELD_CAMERA3D_REQUIRED: heightfields require a perspective camera".into());
+        }
         self.is_2d = true;
         self.submitted = 0;
         self.draws = 0;
@@ -1520,6 +1654,47 @@ impl Renderer {
         self.lod_ms = 0.;
         self.presentation_batches = serde_json::json!([]);
         self.prepare_sprites(s)
+    }
+
+    fn prepare_heightfields(&mut self, s: &WorldSnapshot, rows: &mut Vec<serde_json::Value>) -> R<()> {
+        for (id, field) in &s.heightfields {
+            let asset = format!("@heightfield:{id}");
+            let definition = field.definition();
+            if self.heightfield_revisions.get(id) != Some(&field.revision()) {
+                let texture = self.textures.get(&definition.texture).cloned()
+                    .ok_or_else(|| format!("NATIVE_HEIGHTFIELD_TEXTURE_MISSING: {}", definition.texture))?;
+                let mesh = field.mesh();
+                let mut vertices = Vec::with_capacity(mesh.positions.len() / 3 * 5);
+                for (n, position) in mesh.positions.chunks_exact(3).enumerate() {
+                    vertices.extend_from_slice(position);
+                    // Heightfield UVs use image-row coordinates: v=0 is PNG top.
+                    vertices.extend_from_slice(&mesh.uvs[n * 2..n * 2 + 2]);
+                }
+                self.uploaded += (vertices.len() * 4 + mesh.indices.len() * 4) as u64;
+                self.meshes.insert(asset.clone(), Mesh {
+                    vertices: self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                        label: Some("heightfield-vertices"), contents: bytemuck::cast_slice(&vertices),
+                        usage: wgpu::BufferUsages::VERTEX,
+                    }),
+                    indices: self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                        label: Some("heightfield-indices"), contents: bytemuck::cast_slice(&mesh.indices),
+                        usage: wgpu::BufferUsages::INDEX,
+                    }),
+                    count: mesh.indices.len() as u32,
+                    radius: mesh.positions.chunks_exact(3)
+                        .map(|p| p.iter().map(|v| v * v).sum::<f32>().sqrt()).fold(0., f32::max),
+                    texture,
+                });
+                self.heightfield_revisions.insert(id.clone(), field.revision());
+            }
+            let origin = definition.origin;
+            let instance = [origin.x as f32, origin.y as f32, origin.z as f32,
+                0., 0., 0., 1., 1., 1., 1.];
+            self.batch(&format!("heightfield:{id}"), &asset, bytemuck::cast_slice(&instance), field.revision())?;
+            rows.push(serde_json::json!({"id":id,"kind":"heightfield","revision":field.revision(),
+                "samples":definition.heights.len(),"submitted_triangles":self.meshes[&asset].count / 3}));
+        }
+        Ok(())
     }
 
     fn prepare_sprites(&mut self, s: &WorldSnapshot) -> R<()> {
@@ -1601,6 +1776,7 @@ impl Renderer {
         });
         pass.set_pipeline(&self.pipeline);
         pass.set_bind_group(0, &self.camera_group, &[]);
+        if self.world_visible {
         for b in self.batches.values() {
             let m = &self.meshes[&b.asset];
             pass.set_bind_group(1, &*m.texture, &[]);
@@ -1615,6 +1791,7 @@ impl Renderer {
         }
         self.particles.draw(&mut pass);
         self.draws += self.particles.draw_calls();
+        }
         drop(pass);
     }
     fn draw_world_2d(&mut self, encoder: &mut wgpu::CommandEncoder, view: &wgpu::TextureView) {
@@ -1680,12 +1857,18 @@ impl Renderer {
                 self.draw_sprites_2d(encoder, view, false);
             }
         }
+        self.projected.draw(encoder,view,&self.depth,self.is_2d,self.config.width,self.config.height);
+        self.draws+=self.projected.draws;self.triangles+=self.projected.triangles;
+        self.submitted+=self.projected.draws;
         if self.ui.draw(encoder,view){self.draws+=1;}
     }
     pub fn render(&mut self, s: &WorldSnapshot) -> R<bool> {
         crate::ensure_shader_backend(s)?;
         let started = std::time::Instant::now();
         self.prepare(s)?;
+        self.projected.prepare(&self.device,&self.queue,&self.textures,&s.projected_geometry)?;
+        self.uploaded+=self.projected.uploaded;
+        if let Some(rows)=self.presentation_batches.as_array_mut() {rows.extend(crate::projected::rows(&s.projected_geometry));}
         self.ui.prepare(&self.device,&self.queue,s.ui.as_ref(),self.config.width,self.config.height)?;
         self.uploaded+=self.ui.upload_bytes;
         self.prepare_ms = started.elapsed().as_secs_f64() * 1000.;

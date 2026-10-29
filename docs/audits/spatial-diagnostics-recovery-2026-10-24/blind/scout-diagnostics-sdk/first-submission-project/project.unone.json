@@ -1,0 +1,20 @@
+{
+  "name": "Scout axis geometry",
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "systems": {
+    "audio": false,
+    "camera2d": false,
+    "camera3d": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": false,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "spine": false,
+    "ui": false
+  },
+  "test_files": []
+}

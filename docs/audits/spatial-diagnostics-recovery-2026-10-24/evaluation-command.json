@@ -1,0 +1,13 @@
+{
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "plugins/org.unone.ai-native/cli.mjs",
+    "evaluate",
+    "--root",
+    "D:\\Projects\\Unone",
+    "--report",
+    "docs/audits/spatial-diagnostics-recovery-2026-10-24/audit.json"
+  ],
+  "exitCode": 0,
+  "stderr": ""
+}

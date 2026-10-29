@@ -1,0 +1,458 @@
+{
+  "ok": true,
+  "value": {
+    "project": "Synthetic spatial batch author trial",
+    "seed": 42,
+    "status": "completed",
+    "frames": 2,
+    "observation_digest": "sha256:0a172330cf8078d75ee82b64e43541d38869d91ccfcd73687fd0e37b3c378183",
+    "world": {
+      "spatial": {
+        "indices": [],
+        "sequence": 3,
+        "tickets": []
+      },
+      "frame": 2,
+      "time_seconds": 0.03333333333333333,
+      "camera": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "zoom": 1.0,
+        "view_height": 10.0
+      },
+      "entities": {
+        "unrelated": {
+          "id": "unrelated",
+          "name": "",
+          "transform": {
+            "x": -23.0,
+            "y": 47.0
+          },
+          "rotation": 0.0,
+          "scale": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "transform3d": null,
+          "sprite": null,
+          "mesh3d": null,
+          "rigidbody": null
+        }
+      },
+      "observations": {
+        "consumption_boundary": {
+          "error": "runtime error: SPATIAL_TICKET_UNKNOWN\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:686: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:685>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:685: in function 'update'\n",
+          "rejected": true
+        },
+        "first_submission": {
+          "expected_version": 1,
+          "tick": 1,
+          "ticket": 2
+        },
+        "frozen_batch": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 3,
+                  "fraction": 0,
+                  "id": 41,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    2.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 3,
+                  "fraction": 0,
+                  "id": 17,
+                  "normal": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    -2.5,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "distance": 3,
+                  "fraction": 0,
+                  "id": 41,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    2.5,
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "distance": 3,
+                  "fraction": 0,
+                  "id": 4294967295.0,
+                  "normal": [
+                    0,
+                    -1,
+                    0
+                  ],
+                  "point": [
+                    0,
+                    2.5,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 7.857142448425293,
+                  "fraction": 0.7857142686843872,
+                  "id": 73,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    8.35714340209961,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0.25,
+                  "fraction": 0,
+                  "id": 0,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    0.125,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "invalid_replacement": {
+          "error": "runtime error: duplicate body ID 9\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:632: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:631>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:631: in function 'update'\n",
+          "rejected": true
+        },
+        "masked_nearest": {
+          "hits": [
+            {
+              "distance": 3,
+              "fraction": 0,
+              "id": 41,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                2.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "moving_target_sweep": {
+          "hits": [
+            {
+              "distance": 7.857142448425293,
+              "fraction": 0.7857142686843872,
+              "id": 73,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                8.35714340209961,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "next_tick_boundary": {
+          "error": "runtime error: SPATIAL_RESULT_NEXT_TICK\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:639: in function <[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:638>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-generic-probe-blind-v2-second\\project\\scripts\\main.luau\"]:638: in function 'update'\n",
+          "rejected_same_tick": true
+        },
+        "ordered_overlap": {
+          "hits": [
+            {
+              "distance": 3,
+              "fraction": 0,
+              "id": 17,
+              "normal": [
+                1,
+                0,
+                0
+              ],
+              "point": [
+                -2.5,
+                0,
+                0
+              ]
+            },
+            {
+              "distance": 3,
+              "fraction": 0,
+              "id": 41,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                2.5,
+                0,
+                0
+              ]
+            },
+            {
+              "distance": 3,
+              "fraction": 0,
+              "id": 4294967295.0,
+              "normal": [
+                0,
+                -1,
+                0
+              ],
+              "point": [
+                0,
+                2.5,
+                0
+              ]
+            }
+          ]
+        },
+        "repair": {
+          "packed_bytes": 48,
+          "version": 2
+        },
+        "replacement_batch": {
+          "results": [
+            {
+              "hits": {}
+            },
+            {
+              "hits": {}
+            },
+            {
+              "hits": {}
+            },
+            {
+              "hits": {}
+            }
+          ],
+          "version": 2
+        },
+        "spatial_info_after_destroy": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 0,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 0,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991.0,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 2,
+          "tickets": 2
+        },
+        "spatial_info_complete": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 0,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 0,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991.0,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "spatial_info_start": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 5,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 1,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991.0,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "unrelated_before": {
+          "x": -23,
+          "y": 47
+        },
+        "unrelated_current": {
+          "x": -23,
+          "y": 47
+        },
+        "verification": {
+          "delivery_tick": 2,
+          "frozen_version": 1,
+          "passed": true,
+          "repaired_version": 2
+        },
+        "zero_id_nearest": {
+          "hits": [
+            {
+              "distance": 0.25,
+              "fraction": 0,
+              "id": 0,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                0.125,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "save_payload": null,
+    "trace": [],
+    "performance": {
+      "frames": 2,
+      "total_ms": 0.376,
+      "mean_frame_ms": 0.188,
+      "median_frame_ms": 0.252,
+      "p95_frame_ms": 0.252,
+      "slowest_frame": {
+        "frame": 1,
+        "total_ms": 0.252,
+        "script_ms": 0.181,
+        "physics_ms": 0.0,
+        "observe_ms": 0.043
+      },
+      "sustained_fps": 5319.1,
+      "frame_budget_ms": 16.667,
+      "frames_over_budget": 0,
+      "phases": [
+        {
+          "name": "script",
+          "total_ms": 0.281,
+          "mean_ms": 0.141,
+          "share": 0.814
+        },
+        {
+          "name": "physics",
+          "total_ms": 0.001,
+          "mean_ms": 0.0,
+          "share": 0.001
+        },
+        {
+          "name": "observe",
+          "total_ms": 0.064,
+          "mean_ms": 0.032,
+          "share": 0.185
+        }
+      ],
+      "counts": {
+        "entities": 1,
+        "instances": 0,
+        "instance_bytes": 0,
+        "rigidbodies": 0,
+        "ui_nodes": 0,
+        "effects": 0,
+        "particles": 0,
+        "observations": 17
+      },
+      "luau_memory_bytes": 1068384,
+      "luau_positive_heap_delta_bytes_per_frame": 32732,
+      "profile": "release",
+      "notes": [
+        "wall clock timings, excluded from the observation digest",
+        "serialize is an optional canonical-JSON probe, not actual Web publication or decode time; measure those separately",
+        "luau_positive_heap_delta_bytes_per_frame is positive net heap growth, not total allocated bytes or GC pause attribution",
+        "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+      ]
+    }
+  },
+  "diagnostics": [],
+  "effects": []
+}

@@ -1,0 +1,138 @@
+{
+  "ok": true,
+  "value": {
+    "project": "Independent geometry batch",
+    "root": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "role": "authoring_instructions"
+      },
+      {
+        "path": "player.presentation.json",
+        "role": "player_presentation"
+      },
+      {
+        "path": "project.unone.json",
+        "role": "project_config"
+      },
+      {
+        "path": "scenes/main.scene.json",
+        "role": "main_scene"
+      },
+      {
+        "path": "scripts/main.luau",
+        "role": "entry_script"
+      },
+      {
+        "path": "tests/bootstrap-idle.test.json",
+        "role": "bootstrap_idle_test"
+      },
+      {
+        "path": "tests/bootstrap-input.test.json",
+        "role": "bootstrap_input_test"
+      }
+    ],
+    "workflow_scope": "new_unmodified_scaffold",
+    "suggested_next_actions": [
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+          "--json",
+          "verify"
+        ],
+        "reason": "Verify the unmodified official-player starter; these movement smoke tests are not game acceptance or renderer evidence.",
+        "prerequisites": []
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+          "--json",
+          "api",
+          "search",
+          "particle"
+        ],
+        "reason": "Discover declarative particle APIs before implementing explosions, thrusters, sparks, smoke or trails.",
+        "prerequisites": []
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+          "--json",
+          "api",
+          "search",
+          "shader"
+        ],
+        "reason": "Discover the engine-owned shader API; custom materials do not require replacing the renderer.",
+        "prerequisites": []
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+          "--json",
+          "systems",
+          "list"
+        ],
+        "reason": "Inspect available engine systems; this starter explicitly enables camera2d, ui and particle. Enable additional systems for actual game needs.",
+        "prerequisites": []
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+          "--json",
+          "project",
+          "preflight",
+          "--target",
+          "web"
+        ],
+        "reason": "Read-only discovery of a compatible official player runtime; inspect the SDK if no installed runtime is available.",
+        "prerequisites": [
+          0
+        ]
+      },
+      {
+        "executable": "game",
+        "argv": [
+          "--project",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+          "--json",
+          "project",
+          "prepare",
+          "--target",
+          "web",
+          "--output",
+          "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\dist\\player"
+        ],
+        "reason": "Verify, synchronize declared assets and export the official player with a trusted launch descriptor. Use a fresh output directory on later prepares; renderer replacement must be an explicitly selected extension for a stated project requirement.",
+        "prerequisites": [
+          0,
+          4
+        ]
+      }
+    ]
+  },
+  "diagnostics": [],
+  "effects": [
+    "created_directory:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\AGENTS.md",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\player.presentation.json",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\project.unone.json",
+    "created_directory:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scenes",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scenes\\main.scene.json",
+    "created_directory:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau",
+    "created_directory:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\tests",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\tests\\bootstrap-idle.test.json",
+    "created_file:\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\tests\\bootstrap-input.test.json"
+  ]
+}

@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import test from 'node:test';
 import {createHostInput} from './host-input.js';
+import * as inputRouting from './player-input.js';
 import {createUiPointerRouter} from './canvas-ui.mjs';
 import {projectScreenPointer,worldFromPointer} from './webgpu-snapshot.js';
 
@@ -22,7 +23,7 @@ const plain=value=>JSON.parse(JSON.stringify(value));
 function harness({world=snapshot(),hasWorldPointer=true}={}){
  const frames=[];
  const context=vm.createContext({
-  canvas,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,
+  canvas,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,profiler:null,orderedQueue:null,
   performance:{now:()=>0},projectScreenPointer,worldFromPointer,
   backend:{request:async request=>{frames.push(plain(request.input));return context.snapshot;}},
   acceptSnapshot:value=>{context.snapshot=value;},audio:null,saved:'null',key:'pointer-test',
@@ -107,9 +108,9 @@ test('developer manual world input bypasses projection and does not drain browse
 test('official player routes complete slider streams into semantic frames without world pointer edges',()=>{
  const listeners=new Map(),input=createHostInput(),router=createUiPointerRouter({onSlider:event=>input.queueSliderInteraction(event)});
  router.setTree({children:[{kind:'slider',id:'volume',action:'Volume',rect:{x:20,y:40,width:60,height:20},drag:{axis:'horizontal',reverse:false,enabled:true,track_rect:{x:25,y:45,width:50,height:2},hit_rect:{x:20,y:40,width:60,height:20}}}]});
- const context=vm.createContext({input,snapshot:snapshot(),hasWorldPointer:false,worldFromPointer,audio:null,
+ const context=vm.createContext({...inputRouting,input,snapshot:snapshot(),hasWorldPointer:false,worldFromPointer,audio:null,
   canvas:{...canvas,addEventListener:(kind,fn)=>listeners.set(kind,fn),setPointerCapture:()=>{}},
-  uiRenderer:router,uiScroll:{pointer:()=>false}});
+  uiRenderer:router,uiScroll:{pointer:()=>false},orderedRouter:null,textInputs:{pointer:()=>false}});
  const routeSource=source.slice(source.indexOf('function routeUi('),source.indexOf("window.addEventListener('keydown'"));
  const lostSource=source.split('\n').find(line=>line.startsWith("canvas.addEventListener('lostpointercapture'"));
  vm.runInContext(pointerSource+'\n'+routeSource+'\n'+lostSource,context);

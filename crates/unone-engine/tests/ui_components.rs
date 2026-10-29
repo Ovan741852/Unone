@@ -116,7 +116,7 @@ assert(info.name=='@unone/ui' and info.version=='0.4.0' and info.declared==false
 info.version='changed'
 assert(c.info().version=='0.4.0')
 local calls={function()c.create()end,function()c.id('a','b')end,function()c.composeStyle()end}
-for _,name in ipairs({'text','button','slider','combobox','panel','image','component','screen','scrollView','virtualList','virtualGrid'}) do
+for _,name in ipairs({'text','button','slider','combobox','panel','image','imageBatch','component','screen','scrollView','virtualList','virtualGrid'}) do
     table.insert(calls,function()c[name]({})end)
 end
 for _,call in ipairs(calls) do
@@ -374,6 +374,57 @@ end
 api.observation.set('checks',#calls)
 "#);
     assert_eq!(values["checks"], 10);
+}
+
+#[test]
+fn portable_copy_keeps_mutable_unaliased_data_without_metatables() {
+    let values = observed(r#"
+local c=api.ui.components
+local shared=table.freeze({0.1,0.2,0.3,1})
+local source=table.freeze({color=shared,background=shared})
+local copied=c.composeStyle(source)
+assert(copied~=source and copied.color~=shared and copied.background~=shared)
+assert(copied.color~=copied.background)
+assert(not table.isfrozen(copied) and not table.isfrozen(copied.color))
+copied.color[1]=0.9;assert(copied.background[1]==0.1 and shared[1]==0.1)
+local protected=setmetatable({1,2,3},{__metatable='protected',__index={inherited=4}})
+local plain=c.composeStyle({color=protected})
+assert(getmetatable(plain.color)==nil and plain.color.inherited==nil and plain.color[2]==2)
+plain.color[2]=8;assert(protected[2]==2)
+local cases={
+ {function()c.composeStyle({color={function()end}})end,'only portable'},
+ {function()c.composeStyle({color={coroutine.create(function()end)}})end,'only portable'},
+ {function()c.composeStyle({color={[true]=1}})end,'invalid table key'},
+}
+for _,case in ipairs(cases) do
+ local ok,message=pcall(case[1])
+ assert(not ok and string.find(tostring(message),case[2],1,true),tostring(message))
+end
+api.observation.set('copy_contract',true)
+"#);
+    assert_eq!(values["copy_contract"], true);
+}
+
+#[test]
+fn portable_copy_preserves_exact_work_and_depth_bounds() {
+    let values = observed(r#"
+local c=api.ui.components
+-- The style root and color table consume two of the 131072 visits.
+local wide=table.create(131070,true)
+assert(#c.composeStyle({color=wide}).color==131070)
+wide[131071]=true
+local ok,message=pcall(function()c.composeStyle({color=wide})end)
+assert(not ok and string.find(tostring(message),'data exceeds copy limits',1,true),tostring(message))
+-- An empty table at depth 64 is valid; its scalar child at depth 65 is not.
+local deep={};local current=deep
+for _=1,63 do current[1]={};current=current[1] end
+assert(type(c.composeStyle({color=deep}).color)=='table')
+current[1]=true
+ok,message=pcall(function()c.composeStyle({color=deep})end)
+assert(not ok and string.find(tostring(message),'data exceeds copy limits',1,true),tostring(message))
+api.observation.set('copy_bounds',true)
+"#);
+    assert_eq!(values["copy_bounds"], true);
 }
 
 #[test]

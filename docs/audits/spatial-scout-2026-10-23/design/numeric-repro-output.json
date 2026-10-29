@@ -1,0 +1,83 @@
+{
+  "scope": "independent source/design review; existing CLI execution, no rebuild",
+  "fixture": {
+    "position": [
+      3e-23,
+      0,
+      0
+    ],
+    "radius": 0,
+    "query": {
+      "kind": "nearest",
+      "point": [
+        0,
+        0,
+        0
+      ],
+      "max_distance": 1
+    }
+  },
+  "calculation": {
+    "x": 3.000000157232057e-23,
+    "square": 1.401298464324817e-45,
+    "length": 3.743392066509216e-23,
+    "normal": 0.8014122247695923,
+    "normalSquared": 0.6422615647315979
+  },
+  "sparseVector": {
+    "accepted": true,
+    "packedPosition": [
+      "NaN",
+      "NaN",
+      "NaN"
+    ],
+    "scope": "direct public JavaScript executor input only; canonical Rust host tasks have dense arrays"
+  },
+  "discovery": {
+    "args": [
+      "api",
+      "search",
+      "batch collision",
+      "--json"
+    ],
+    "status": 0,
+    "stdout": "{\n  \"ok\": true,\n  \"value\": {\n    \"query\": \"batch collision\",\n    \"matches\": [],\n    \"suggested_next_actions\": [\n      {\n        \"action\": \"search_api_index\",\n        \"ready\": true,\n        \"executable\": \"game\",\n        \"argv\": [\n          \"api\",\n          \"search\",\n          \"\",\n          \"--json\"\n        ],\n        \"reason\": \"Query the complete public Engine API index; this query does not need project context.\",\n        \"diagnostic\": null\n      },\n      {\n        \"action\": \"list_systems\",\n        \"ready\": false,\n        \"executable\": null,\n        \"argv\": null,\n        \"reason\": \"Could not read \\\\\\\\?\\\\D:\\\\Projects\\\\Unone\\\\project.unone.json: 系統找不到指定的檔案。 (os error 2)\",\n        \"diagnostic\": {\n          \"code\": \"PROJECT_CONFIG_NOT_FOUND\",\n          \"severity\": \"ERROR\",\n          \"summary\": \"Unone project configuration was not found\",\n          \"explanation\": \"Could not read \\\\\\\\?\\\\D:\\\\Projects\\\\Unone\\\\project.unone.json: 系統找不到指定的檔案。 (os error 2)\",\n          \"facts\": {},\n          \"likely_causes\": [],\n          \"suggested_actions\": [],\n          \"source\": null\n        }\n      }\n    ]\n  },\n  \"diagnostics\": [\n    {\n      \"code\": \"API_SEARCH_EMPTY\",\n      \"severity\": \"WARNING\",\n      \"summary\": \"No matching Engine API found\",\n      \"explanation\": \"This search did not match a public Engine API; the gameplay verb may be game-owned composition, so no match does not prove the engine lacks the capability. Inspect the complete API index and systems first, then decide whether a new engine capability is actually needed.\",\n      \"facts\": {\n        \"match_count\": 0,\n        \"query\": \"batch collision\",\n        \"search_scope\": \"public_engine_api\"\n      },\n      \"likely_causes\": [],\n      \"suggested_actions\": [\n        {\n          \"action\": \"search_api_index\",\n          \"description\": \"Use the structured executable/argv for action=search_api_index in value.suggested_next_actions to list the complete Engine API index.\",\n          \"command\": null\n        },\n        {\n          \"action\": \"list_systems\",\n          \"description\": \"Use the structured executable/argv for action=list_systems in value.suggested_next_actions; it is bound to this caller project and remains not ready if the project is unavailable.\",\n          \"command\": null\n        }\n      ],\n      \"source\": null\n    }\n  ],\n  \"effects\": []\n}\n",
+    "stderr": ""
+  },
+  "runs": [
+    {
+      "profile": "debug",
+      "executable": "D:\\Projects\\Unone\\target\\debug\\game.exe",
+      "sha256": "a5da57e920476a7665aab1905f3e48f8c78f1693dbe6f3ac349fba1ad15c587f",
+      "args": [
+        "--project",
+        "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\design\\tiny-normal",
+        "run",
+        "--frames",
+        "2",
+        "--json"
+      ],
+      "status": 1,
+      "signal": null,
+      "stdout": "{\n  \"ok\": false,\n  \"value\": null,\n  \"diagnostics\": [\n    {\n      \"code\": \"LUAU_RUNTIME_ERROR\",\n      \"severity\": \"ERROR\",\n      \"summary\": \"Luau script could not be loaded or executed\",\n      \"explanation\": \"spatial result[0] contains invalid contact geometry\",\n      \"facts\": {\n        \"message\": \"spatial result[0] contains invalid contact geometry\",\n        \"runtime\": \"Luau\",\n        \"script\": \"\\\\\\\\?\\\\D:\\\\Projects\\\\Unone\\\\docs\\\\audits\\\\spatial-scout-2026-10-23\\\\design\\\\tiny-normal\\\\main.luau\"\n      },\n      \"likely_causes\": [\n        \"The entry script syntax or Engine API calls do not satisfy the current contract\",\n        \"The script uses a missing Entity or field at runtime\"\n      ],\n      \"suggested_actions\": [\n        {\n          \"action\": \"check_script\",\n          \"description\": \"Check the entry script contract first.\",\n          \"command\": \"game check --json\"\n        },\n        {\n          \"action\": \"inspect_project\",\n          \"description\": \"Confirm the scene and Entity ids.\",\n          \"command\": \"game project inspect --json\"\n        }\n      ],\n      \"source\": {\n        \"file\": \"\\\\\\\\?\\\\D:\\\\Projects\\\\Unone\\\\docs\\\\audits\\\\spatial-scout-2026-10-23\\\\design\\\\tiny-normal\\\\main.luau\",\n        \"line\": null,\n        \"column\": null\n      }\n    }\n  ],\n  \"effects\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "profile": "release",
+      "executable": "D:\\Projects\\Unone\\target\\release\\game.exe",
+      "sha256": "10ae89896f65eb7ba9fae235d69930c212e5e700d7156a4f77a0e1e13a96632b",
+      "args": [
+        "--project",
+        "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\design\\tiny-normal",
+        "run",
+        "--frames",
+        "2",
+        "--json"
+      ],
+      "status": 1,
+      "signal": null,
+      "stdout": "{\n  \"ok\": false,\n  \"value\": null,\n  \"diagnostics\": [\n    {\n      \"code\": \"LUAU_RUNTIME_ERROR\",\n      \"severity\": \"ERROR\",\n      \"summary\": \"Luau script could not be loaded or executed\",\n      \"explanation\": \"spatial result[0] contains invalid contact geometry\",\n      \"facts\": {\n        \"message\": \"spatial result[0] contains invalid contact geometry\",\n        \"runtime\": \"Luau\",\n        \"script\": \"\\\\\\\\?\\\\D:\\\\Projects\\\\Unone\\\\docs\\\\audits\\\\spatial-scout-2026-10-23\\\\design\\\\tiny-normal\\\\main.luau\"\n      },\n      \"likely_causes\": [\n        \"The entry script syntax or Engine API calls do not satisfy the current contract\",\n        \"The script uses a missing Entity or field at runtime\"\n      ],\n      \"suggested_actions\": [\n        {\n          \"action\": \"check_script\",\n          \"description\": \"Check the entry script contract first.\",\n          \"command\": \"game check --json\"\n        },\n        {\n          \"action\": \"inspect_project\",\n          \"description\": \"Confirm the scene and Entity ids.\",\n          \"command\": \"game project inspect --json\"\n        }\n      ],\n      \"source\": {\n        \"file\": \"\\\\\\\\?\\\\D:\\\\Projects\\\\Unone\\\\docs\\\\audits\\\\spatial-scout-2026-10-23\\\\design\\\\tiny-normal\\\\main.luau\",\n        \"line\": null,\n        \"column\": null\n      }\n    }\n  ],\n  \"effects\": []\n}\n",
+      "stderr": ""
+    }
+  ]
+}

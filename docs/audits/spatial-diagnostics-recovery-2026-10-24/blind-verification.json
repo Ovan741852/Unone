@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "files": 87,
+  "manifestSha256": "07772eefb848d205b064dbf7fc2bdc7af0e683601148b85337705f778f62cb16",
+  "scope": "Read-only exact file-set, size and hash verification; local seal is not certified authorship or full build provenance."
+}

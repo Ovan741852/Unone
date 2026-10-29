@@ -492,9 +492,67 @@ fn background_screen_schema(_: &mut schemars::SchemaGenerator) -> schemars::Sche
     schemars::json_schema!({"type": "boolean", "const": true})
 }
 
+/// One stretch-painted image in an ordered stage-space artwork composite.
+/// Source uses top-left pixel coordinates; destination uses stage y-up units.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct UiImageQuad {
+    pub asset: String,
+    pub rect: UiRect,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<UiRect>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opacity: Option<f64>,
+}
+
+impl UiImageQuad {
+    fn validate(&self, bounds: UiRect) -> Result<(), String> {
+        ensure_asset_id(&self.asset)?;
+        validate_rect(self.rect)?;
+        let r = self.rect;
+        if r.x < bounds.x - 1e-8 || r.y < bounds.y - 1e-8
+            || r.x + r.width > bounds.x + bounds.width + 1e-8
+            || r.y + r.height > bounds.y + bounds.height + 1e-8 {
+            return Err("UI_IMAGE_BATCH_BOUNDS: every quad must fit inside its batch rectangle".into());
+        }
+        if self.opacity.is_some_and(|v| !v.is_finite() || !(0.0..=1.0).contains(&v)) {
+            return Err("UI_IMAGE_BATCH_OPACITY: opacity must be finite and between 0 and 1".into());
+        }
+        if let Some(s) = self.source
+            && ([s.x, s.y, s.width, s.height, s.x+s.width, s.y+s.height].iter().any(|v| !v.is_finite())
+                || s.x < 0.0 || s.y < 0.0 || s.width <= 0.0 || s.height <= 0.0) {
+            return Err("UI_IMAGE_BATCH_SOURCE: source must have finite non-negative x/y and positive pixel dimensions".into());
+        }
+        Ok(())
+    }
+
+    /// Hosts call this after decoding image dimensions. A bad crop must not
+    /// silently paint the entire source image or sample outside its pixels.
+    pub fn source_for_size(&self, width: f64, height: f64) -> Result<UiRect, String> {
+        if !width.is_finite() || !height.is_finite() || width <= 0.0 || height <= 0.0 {
+            return Err("UI_IMAGE_BATCH_SOURCE_BOUNDS: decoded image dimensions must be positive and finite".into());
+        }
+        let s = self.source.unwrap_or(UiRect { x: 0.0, y: 0.0, width, height });
+        if [s.x, s.y, s.width, s.height].iter().any(|v| !v.is_finite())
+            || s.x < 0.0 || s.y < 0.0 || s.width <= 0.0 || s.height <= 0.0
+            || s.x + s.width > width || s.y + s.height > height {
+            return Err(format!("UI_IMAGE_BATCH_SOURCE_BOUNDS: crop exceeds decoded image {width}x{height}"));
+        }
+        Ok(s)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "kind")]
 pub enum UiNode {
+    #[serde(rename = "text_input")]
+    TextInput {
+        id: String, rect: UiRect, text: String,
+        placeholder: String, max_length: u32, focused: bool, enabled: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        style: Option<UiStyle>,
+    },
     #[serde(rename = "text")]
     Text {
         id: String,
@@ -530,6 +588,16 @@ pub enum UiNode {
         alt: Option<String>,
         #[serde(skip_serializing_if = "Option::is_none")]
         style: Option<UiStyle>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        background_for: Option<UiBackgroundScope>,
+    },
+    /// Ordered, non-interactive artwork in stage coordinates. Quads are budgeted
+    /// individually, while layout inspects this explicit composite's bounds.
+    #[serde(rename = "image_batch")]
+    ImageBatch {
+        id: String,
+        rect: UiRect,
+        quads: Vec<UiImageQuad>,
         #[serde(skip_serializing_if = "Option::is_none")]
         background_for: Option<UiBackgroundScope>,
     },
@@ -604,9 +672,10 @@ pub enum UiImageFit {
 impl UiNode {
     pub fn id(&self) -> &str {
         match self {
-            Self::Text { id, .. }
+            Self::TextInput { id, .. } | Self::Text { id, .. }
             | Self::Button { id, .. }
             | Self::Image { id, .. }
+            | Self::ImageBatch { id, .. }
             | Self::Slider { id, .. }
             | Self::ComboBox { id, .. }
             | Self::Panel { id, .. }
@@ -617,9 +686,10 @@ impl UiNode {
 
     pub fn rect(&self) -> &UiRect {
         match self {
-            Self::Text { rect, .. }
+            Self::TextInput { rect, .. } | Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
+            | Self::ImageBatch { rect, .. }
             | Self::Slider { rect, .. }
             | Self::ComboBox { rect, .. }
             | Self::Panel { rect, .. }
@@ -630,9 +700,10 @@ impl UiNode {
 
     pub fn rect_mut(&mut self) -> &mut UiRect {
         match self {
-            Self::Text { rect, .. }
+            Self::TextInput { rect, .. } | Self::Text { rect, .. }
             | Self::Button { rect, .. }
             | Self::Image { rect, .. }
+            | Self::ImageBatch { rect, .. }
             | Self::Slider { rect, .. }
             | Self::ComboBox { rect, .. }
             | Self::Panel { rect, .. }
@@ -643,25 +714,25 @@ impl UiNode {
 
     pub fn text_mut(&mut self) -> Option<&mut String> {
         match self {
-            Self::Text { text, .. }
+            Self::TextInput { text, .. } | Self::Text { text, .. }
             | Self::Button { text, .. }
             | Self::Slider { text, .. }
             | Self::ComboBox { text, .. } => Some(text),
-            Self::Image { .. } | Self::Panel { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
+            Self::Image { .. } | Self::ImageBatch { .. } | Self::Panel { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
         }
     }
 
     pub fn style(&self) -> Option<&UiStyle> {
         match self {
-            Self::Text { style, .. } | Self::Button { style, .. } | Self::Image { style, .. }
+            Self::TextInput { style, .. } | Self::Text { style, .. } | Self::Button { style, .. } | Self::Image { style, .. }
             | Self::Slider { style, .. } | Self::ComboBox { style, .. } | Self::Panel { style, .. } => style.as_ref(),
-            Self::Component { .. } | Self::ScrollView { .. } => None,
+            Self::ImageBatch { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
         }
     }
 
     pub fn background_for(&self) -> Option<&UiBackgroundScope> {
         match self {
-            Self::Image { background_for, .. } | Self::Panel { background_for, .. } => {
+            Self::Image { background_for, .. } | Self::ImageBatch { background_for, .. } | Self::Panel { background_for, .. } => {
                 background_for.as_ref()
             }
             _ => None,
@@ -751,9 +822,19 @@ struct RawUiNode {
     #[serde(default)]
     text: Option<String>,
     #[serde(default)]
+    placeholder: Option<String>,
+    #[serde(default)]
+    max_length: Option<u32>,
+    #[serde(default)]
+    focused: Option<bool>,
+    #[serde(default)]
+    enabled: Option<bool>,
+    #[serde(default)]
     action: Option<String>,
     #[serde(default)]
     asset: Option<String>,
+    #[serde(default)]
+    quads: Option<Vec<UiImageQuad>>,
     #[serde(default)]
     fit: Option<UiImageFit>,
     #[serde(default)]
@@ -803,6 +884,8 @@ pub struct UiUsage {
     pub logical_nodes: usize,
     pub leaf_nodes: usize,
     pub render_regions_upper_bound: usize,
+    pub image_batches: usize,
+    pub image_quads: usize,
     pub max_nodes: usize,
     pub host_max_nodes: usize,
     pub limit_source: &'static str,
@@ -884,6 +967,14 @@ impl UiTree {
                 UiNode::Component { children, .. } | UiNode::ScrollView { children, .. } => {
                     1 + children.iter().map(|n| count(n, out)).sum::<usize>()
                 }
+                UiNode::ImageBatch { quads, .. } => {
+                    out.logical_nodes += quads.len();
+                    out.leaf_nodes += 1;
+                    out.render_regions_upper_bound += quads.len();
+                    out.image_batches += 1;
+                    out.image_quads += quads.len();
+                    1 + quads.len()
+                }
                 _ => {
                     out.leaf_nodes += 1;
                     out.render_regions_upper_bound +=
@@ -905,6 +996,8 @@ impl UiTree {
             logical_nodes: 0,
             leaf_nodes: 0,
             render_regions_upper_bound: 0,
+            image_batches: 0,
+            image_quads: 0,
             max_nodes: self
                 .budget
                 .map_or(ui_contract().default_max_nodes, |b| b.max_nodes),
@@ -965,11 +1058,17 @@ impl UiTree {
             ));
         }
         let mut stack = vec![(&value, String::from("root"), 0usize)];
-        let mut count = 0;
-        let mut bytes = 0;
+        let mut count: usize = 0;
+        let mut bytes: usize = 0;
         while let Some((n, path, depth)) = stack.pop() {
             if depth > 0 {
                 count += 1;
+                if n["kind"] == "image_batch" {
+                    if let Some(quads) = n["quads"].as_array() {
+                        count = count.saturating_add(quads.len());
+                        bytes = bytes.saturating_add(quads.iter().filter_map(|q| q["asset"].as_str()).map(str::len).sum::<usize>());
+                    }
+                }
             }
             if count > limit {
                 return Err(format!(
@@ -1066,6 +1165,9 @@ fn parse_node(
         ));
     }
     *node_count += 1;
+    if raw_node.quads.is_some() && raw_node.kind != "image_batch" {
+        return Err(format!("UI_IMAGE_BATCH_KIND: '{}' only accepts quads on image_batch", raw_node.id));
+    }
     if raw_node.expanded.is_some() && raw_node.kind != "combobox" {
         return Err(format!("ui.setRoot node '{}' only supports expanded on combobox", raw_node.id));
     }
@@ -1081,9 +1183,9 @@ fn parse_node(
             raw_node.id
         ));
     }
-    if raw_node.background_for.is_some() && !matches!(raw_node.kind.as_str(), "image" | "panel") {
+    if raw_node.background_for.is_some() && !matches!(raw_node.kind.as_str(), "image" | "image_batch" | "panel") {
         return Err(format!(
-            "UI_BACKGROUND_KIND: node '{}' only supports background_for on image or panel",
+            "UI_BACKGROUND_KIND: node '{}' only supports background_for on image, image_batch or panel",
             raw_node.id
         ));
     }
@@ -1113,8 +1215,33 @@ fn parse_node(
             return Err(format!("UI_STYLE_INVALID: '{}' has no text; typography fields require text, button, slider or combobox", raw_node.id));
         }
     }
+    if raw_node.kind != "text_input" && (raw_node.placeholder.is_some() || raw_node.max_length.is_some() || raw_node.focused.is_some() || raw_node.enabled.is_some()) {
+        return Err(format!("UI_TEXT_INPUT_KIND: '{}' accepts editing fields only on text_input",raw_node.id));
+    }
+    if raw_node.kind == "image_batch" {
+        let batch = parse_image_batch(raw_node, rect, local)?;
+        if let UiNode::ImageBatch { quads, .. } = &batch { *node_count += quads.len(); }
+        return Ok(batch);
+    }
     let id = raw_node.id;
     match raw_node.kind.as_str() {
+        "text_input" => {
+            if raw_node.action.is_some() || raw_node.asset.is_some() || raw_node.fit.is_some()
+                || raw_node.alt.is_some() || raw_node.component.is_some() || raw_node.children.is_some()
+                || raw_node.expanded.is_some() || raw_node.drag.is_some() || raw_node.slice.is_some()
+                || raw_node.background_for.is_some() || raw_node.quads.is_some() {
+                return Err(format!("UI_TEXT_INPUT_FIELDS: '{id}' accepts text, placeholder, max_length, focused, enabled, style and placement"));
+            }
+            let text=raw_node.text.unwrap_or_default();
+            let placeholder=raw_node.placeholder.unwrap_or_default();
+            let max_length=raw_node.max_length.unwrap_or(1024);
+            if id.len()>1024 || max_length==0 || max_length>16384 || text.len()>65536
+                || placeholder.len()>65536 || text.contains(['\n','\r']) || placeholder.contains(['\n','\r']) {
+                return Err(format!("UI_TEXT_INPUT_VALUE: '{id}' requires single-line text, max_length 1..16384 Unicode scalars and ID <=1024 UTF-8 bytes"));
+            }
+            Ok(UiNode::TextInput {id,rect,text,placeholder,max_length,
+                focused:raw_node.focused.unwrap_or(false),enabled:raw_node.enabled.unwrap_or(true),style:raw_node.style})
+        }
         "text" => {
             if raw_node.action.is_some()
                 || raw_node.asset.is_some()
@@ -1309,9 +1436,29 @@ fn parse_node(
             Ok(UiNode::ScrollView { id, rect, scroll, children })
         }
         kind => Err(format!(
-            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, slider, combobox, image, panel, component or scroll_view"
+            "ui.setRoot node '{id}' has unsupported kind '{kind}'; use text, button, slider, combobox, image, image_batch, panel, component or scroll_view"
         )),
     }
+}
+
+fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool) -> Result<UiNode, String> {
+    if local {
+        return Err(format!("UI_IMAGE_BATCH_SPACE: '{}' requires stage coordinates; scroll content is not supported", raw.id));
+    }
+    if raw.text.is_some() || raw.action.is_some() || raw.asset.is_some() || raw.fit.is_some()
+        || raw.slice.is_some() || raw.alt.is_some() || raw.style.is_some()
+        || raw.component.is_some() || raw.children.is_some() || raw.scroll.is_some()
+        || raw.expanded.is_some() || raw.drag.is_some() {
+        return Err(format!("UI_IMAGE_BATCH_FIELDS: '{}' accepts placement, quads and optional background_for only", raw.id));
+    }
+    let quads = raw.quads.ok_or_else(|| format!("UI_IMAGE_BATCH_QUADS: '{}' requires quads", raw.id))?;
+    if quads.is_empty() {
+        return Err(format!("UI_IMAGE_BATCH_EMPTY: '{}' requires at least one image quad", raw.id));
+    }
+    for (index, quad) in quads.iter().enumerate() {
+        quad.validate(rect).map_err(|e| format!("{e}; batch={}; quad={index}", raw.id))?;
+    }
+    Ok(UiNode::ImageBatch { id: raw.id, rect, quads, background_for: raw.background_for })
 }
 
 fn validate_background_scopes<'a>(
@@ -1422,6 +1569,10 @@ fn validate_rect(rect: UiRect) -> Result<(), String> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "ui_image_batch_tests.rs"]
+mod image_batch_tests;
 
 #[cfg(test)]
 mod tests {

@@ -1,0 +1,19 @@
+{
+  "order": 16,
+  "name": "read-scaffold",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "Get-Content -LiteralPath 'C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\AGENTS.md' -Raw; Get-Content -LiteralPath 'C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\project.unone.json' -Raw; Get-Content -LiteralPath 'C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scenes\\main.scene.json' -Raw; Get-Content -LiteralPath 'C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau' -Raw"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:55.0284398Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 354,
+  "endedUtc": "2026-10-23T14:15:55.4313831Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\016-read-scaffold.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\016-read-scaffold.stderr"
+}

@@ -1,0 +1,18 @@
+{
+  "sdk": "D:\\Projects\\Unone\\artifacts\\spatial-hardening-sdk-v2",
+  "binary": {
+    "path": "D:\\Projects\\Unone\\artifacts\\spatial-hardening-sdk-v2\\bin\\game.exe",
+    "bytes": 45717870,
+    "sha256": "d59c051d00ad47616978b6c4352a67092555baecfb090fb6b3442ca929c3e028"
+  },
+  "analyzer": {
+    "path": "D:\\Projects\\Unone\\.toolcache\\luau-0.734\\luau-analyze.exe",
+    "bytes": 3569152,
+    "sha256": "fc28e3a85eccdbdca4974784ffb96134cf2166d5fbd149078cb28cffde88bfee"
+  },
+  "runtime": "artifacts/spatial-hardening-runtime",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "architecture": "x64",
+  "scope": "Pinned preinstalled SDK/analyzer and fresh release WASM; no installation, accounts, game content, commit or push."
+}

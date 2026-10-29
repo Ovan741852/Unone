@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><title>Unone engine raster A/B/C feasibility</title>
+<style>
+body{margin:12px;background:#19202b;color:#eee;font:14px monospace}select,button,input{font:inherit;margin:4px}a{color:#8df}
+#status{white-space:pre-wrap}#screen{display:block;border:1px solid #7b8}#zoom{image-rendering:pixelated;border:2px solid white}
+table{border-collapse:collapse}td,th{padding:2px 8px;border:1px solid #657}th{text-align:left}.pass{color:#7f8}.fail{color:#f99}
+</style>
+<h1>Engine raster A/B/C feasibility — GPU validation pending</h1>
+<p>Official engine-owned WebGL2 entry. AA false / Bloom-AO off / world hidden / isolated projected depth. No formal API or SDK change.</p>
+<label>Strategy <select id="strategy"><option>A</option><option>B</option><option>C</option></select></label>
+<label>Case <select id="case"></select></label>
+<label>DPR <select id="dpr"><option>1</option><option>2</option></select></label>
+<button id="resize">Toggle physical 1280×720 / 800×600</button><button id="empty">Remove batches</button><button id="readd">Re-add current case</button>
+<button id="loss">Lose context</button><button id="restore">Restore context</button>
+<button id="ordinary-material">Next ordinary material11</button><button id="ordinary-depth">Next ordinary depth</button><button id="ordinary-scissor">Next ordinary scissor</button>
+<p><a href="expected.json">Fixed independent expected registry</a> · <a href="manifest.json">Immutable source manifest</a></p>
+<pre id="status">Loading</pre><canvas id="zoom"></canvas><div id="summary"></div>
+<canvas id="screen"></canvas><table><thead><tr><th>Point / zoom</th><th>Expected RGB</th><th>Actual canvas RGB</th><th>±1</th></tr></thead><tbody id="pixels"></tbody></table>
+<script type="module" src="./entry.mjs"></script>

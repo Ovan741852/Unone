@@ -1,0 +1,229 @@
+{
+  "passed": true,
+  "completedDate": "2026-10-24 Asia/Taipei",
+  "scope": "Generic engine only; no game content, install, commit or push. Actual execution evidence is the six recorder JSON files, not this validation summary.",
+  "captures": [
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-public.json",
+      "bytes": 70636,
+      "sha256": "ed53b7362b68b2b01474e856cca929c5ee143b34c9b8bfde7e9412686d4a203e",
+      "exitCode": 0,
+      "durationMs": 1284.919,
+      "subjectCount": 62,
+      "probe": {
+        "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/public-probe-v3.mjs",
+        "sha256": "173345fc19e79f73aa36702a272c82dd57b63f9c8ee6929ea4691411e57fefc6"
+      }
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-cost.json",
+      "bytes": 23299,
+      "sha256": "74d5b0364c3a50ea17ceebd9de2a5e664aa2bcde18bafe5d7dcd39343b01e7a7",
+      "exitCode": 0,
+      "durationMs": 1090.881,
+      "subjectCount": 62,
+      "probe": {
+        "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/cost-probe.mjs",
+        "sha256": "2195b3a003b879f12d982502ce979983054bfd991538372367f2b67d50f5a1cf"
+      }
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-web.json",
+      "bytes": 36485,
+      "sha256": "b81b3e9ce4ed7643665ea49ef4fa6c065462fe13d88f045184a0fac865a1d8eb",
+      "exitCode": 0,
+      "durationMs": 2217.815,
+      "subjectCount": 62,
+      "probe": {
+        "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/web-probe.mjs",
+        "sha256": "72e3aaf027e71c1247ec22917db4559e20d237fbce4d2c9997de2029006d9577"
+      }
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-fault.json",
+      "bytes": 17113,
+      "sha256": "14cb8e0b4c74c5ac92f292410c823caf45cb076a686bdbe5643b739c6afc8aab",
+      "exitCode": 0,
+      "durationMs": 2533.158,
+      "subjectCount": 62,
+      "probe": {
+        "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/fault-probe.mjs",
+        "sha256": "a0e4d4ab9d8cea28133ba0b96fa199cccd929ea2a6d96169634056fa3c951df8"
+      }
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-native.json",
+      "bytes": 57453,
+      "sha256": "65af86832862f5b891677de9340d1e2ac501d1e021c5e0e3783a7515ad7c5d33",
+      "exitCode": 0,
+      "durationMs": 2574.601,
+      "subjectCount": 62,
+      "probe": {
+        "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/native-probe.mjs",
+        "sha256": "e2f2c3785e515dc6ffbf0da4716a5f687b54ccf56be8d765d95ca38bc71ce2ec"
+      }
+    },
+    {
+      "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/capture-blind-replay.json",
+      "bytes": 24232,
+      "sha256": "cdcd6090da8907954ada07a72bd43c1b48a1fd18ce02890a8226d6d61517755e",
+      "exitCode": 0,
+      "durationMs": 590.39,
+      "subjectCount": 62,
+      "probe": {
+        "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/blind-replay.mjs",
+        "sha256": "4b910e4b18d605861a7409d7d352f3f8b0e1183c47a0978bf653542a12f63e9a"
+      }
+    }
+  ],
+  "selectedSubjects": {
+    "count": 62,
+    "allCurrent": true
+  },
+  "selectedSourceArchive": {
+    "path": "docs/audits/spatial-diagnostics-recovery-2026-10-24/source-snapshot.json",
+    "bytes": 1078754,
+    "sha256": "1a4a8315dcd7aad6e422bb0656edbff33f0caaef7a2d7ab1c408326675317144",
+    "files": 46,
+    "allArchivedBytesAndCurrentHashesMatch": true,
+    "limitation": "Selected exact text copies only; not a full dependency graph, source-to-binary attestation or external signature."
+  },
+  "blindSeal": {
+    "ok": true,
+    "files": 87,
+    "manifestSha256": "07772eefb848d205b064dbf7fc2bdc7af0e683601148b85337705f778f62cb16",
+    "scope": "Read-only exact file-set, size and hash verification; local seal is not certified authorship or full build provenance.",
+    "exactFileSetVerified": true
+  },
+  "binaryIdentities": [
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/bin/game.exe",
+      "bytes": 45717870,
+      "sha256": "d59c051d00ad47616978b6c4352a67092555baecfb090fb6b3442ca929c3e028"
+    },
+    {
+      "path": "artifacts/spatial-hardening-sdk-v2/tools/benchmark-spatial.mjs",
+      "bytes": 6410,
+      "sha256": "59e5ec169dcf6ac100c0c24b114be63133c0fd2a3c235557239a6177132ac9b2"
+    },
+    {
+      "path": "artifacts/spatial-hardening-runtime/unone_player.wasm",
+      "bytes": 3166497,
+      "sha256": "08a96a852c7080d19eaf32981ec68edd1f82b39f149d2e7ac394c169bd32a817"
+    }
+  ],
+  "successfulDevelopment": [
+    {
+      "path": ".cache/spatial-hardening-engine-first.log",
+      "bytes": 35039,
+      "sha256": "3312689a21861cf875a4f970ca0afa8717262bd2312dd6fb3cb5a6f0007723af",
+      "result": "369 passed across library/array/core/runtime/diagnostic/fault/metrics suites; 4 existing ignored"
+    },
+    {
+      "path": ".cache/spatial-hardening-types.log",
+      "bytes": 383,
+      "sha256": "9a36229d8935d4fcb00bfb44168e343ca222737ab77773829f002d48b8c84a93",
+      "result": "Explicit official Luau 0.734 strict positive/negative regression passed"
+    },
+    {
+      "path": ".cache/spatial-hardening-bridge-v2.log",
+      "bytes": 1307,
+      "sha256": "7b3682eae909e593b031894bf9e7c256ca5dd11e523216f60680acf5a1764803",
+      "result": "11 Web ABI tests passed"
+    },
+    {
+      "path": ".cache/spatial-hardening-sdk-tests-v2.log",
+      "bytes": 454,
+      "sha256": "8588adbcc4804be7247da69a8b29351143eb38b4917530ae631ed3b5a7bcc98f",
+      "result": "Final release SDK packaging regression passed"
+    },
+    {
+      "path": ".cache/spatial-hardening-js-final.log",
+      "bytes": 2843,
+      "sha256": "603f09ba4bb3315de1a98d98ba672656482548f80b0e0d2e83ca7e0557e1da75",
+      "result": "29 host/executor/core JavaScript tests passed"
+    },
+    {
+      "path": ".cache/spatial-hardening-release-v2.log",
+      "bytes": 132,
+      "sha256": "2daf65c79e5c98054b9c66ffe99799caac428fcdd51e47705ad894f3c8a261f7",
+      "result": "Final release CLI build passed"
+    },
+    {
+      "path": ".cache/spatial-hardening-debug.log",
+      "bytes": 216,
+      "sha256": "466d749b1937ad56b08b64a654fa0d9ce82581134fb90c20e11e4521cc67fdf4",
+      "result": "Debug CLI build passed for export parity"
+    },
+    {
+      "path": ".cache/spatial-hardening-web-build-v3.log",
+      "bytes": 2266,
+      "sha256": "b8f095838443f9dab4cfdea20b1b2409683a20b5233470c48593863e49661d12",
+      "result": "Fresh release WASM and official computation parity checks passed"
+    },
+    {
+      "path": ".cache/spatial-hardening-example-types.json",
+      "bytes": 601,
+      "sha256": "f9b71e7d8c79758b6a3c3ceaff5623beef777ef1d83ec10cbe675233d7a77199",
+      "result": "Packaged example strict analysis passed"
+    },
+    {
+      "path": ".cache/spatial-hardening-example-run.json",
+      "bytes": 8749,
+      "sha256": "7dae1688c66f74c1283324220877921ba1b85fa7ad6eb7c3694602e21a421436",
+      "result": "Packaged example completed 3 frames"
+    }
+  ],
+  "preservedDevelopmentAttempts": [
+    {
+      "path": ".cache/spatial-hardening-bridge.log",
+      "bytes": 67,
+      "sha256": "1efe50aacf68db35c417f09ddecd0f61bb88973151eff2c9c93e208a754d9cd1"
+    },
+    {
+      "path": ".cache/spatial-hardening-cpu-first.stderr",
+      "bytes": 2180,
+      "sha256": "25533871d1abb2964836d64bbbb1c481edf0f7b77d1d9930e1a4ebdef3f04d5f"
+    },
+    {
+      "path": ".cache/spatial-hardening-public-first.stderr",
+      "bytes": 451,
+      "sha256": "5fdd8d918672c2c5e2d5452cee74709613510dcffef2396e0c0185c2f4bb1d11"
+    },
+    {
+      "path": ".cache/spatial-hardening-public-v2.stdout",
+      "bytes": 282438,
+      "sha256": "56867eefdbf1c51b945b50959d7f42b334fe387bb8085985c5f9b1198a276a5f"
+    },
+    {
+      "path": ".cache/spatial-hardening-web-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".cache/spatial-hardening-web-build-v2.log",
+      "bytes": 1482,
+      "sha256": "315b36adfcee025de7aec93962be4d7909aebedd352e9c1e92a1ff878ed5c79c"
+    },
+    {
+      "path": ".cache/spatial-faults-rust-first.log",
+      "bytes": 2307,
+      "sha256": "10be46980945ba0542ec0ad2ad6e106a804773beb24d959f8b373d8cbe730a7c"
+    },
+    {
+      "path": ".cache/spatial-faults-rust-final.log",
+      "bytes": 8433,
+      "sha256": "45b4e5c77a90b47a496ee5ef3ac2d7bcf8fbcf37a01ddb9cb19c6b5a6b3d898e"
+    }
+  ],
+  "developmentFailures": [
+    "Transient compile failure from accidentally removed four pre-existing geometry helpers was repaired with exact earlier bytes; final geometry suite passed. No changed geometry behavior is retained.",
+    "Initial fixtures expected one-based runtime frame and omitted Game.start; fixed test fixtures, not runtime contract. A 2 versus 2.0 JSON assertion was replaced by canonical typed result comparison.",
+    "Draft PowerShell wrapper was execution-policy blocked; no policy change. Final commands were explicit installed PowerShell 7 commands. First bridge command used unsupported --lib for a binary target; corrected command passed.",
+    "First Web build lacked Cargo PATH; next build had stale debug CLI parity. Debug CLI rebuild followed by actual v3 export/parity passed.",
+    "Initial embedded benchmark used an unannotated inserted record and failed official strict analysis. Final Sample annotation, new SDK-v2, actual strict/benchmark and release packaging regression passed. Provisional artifacts/spatial-hardening-sdk is retained but is not the handoff SDK.",
+    "Owner public probe v1 assumed every natural-language search matched. Combined Chinese search returned no matches; v2 followed full-index fallback but wrapper output was 282438 bytes, above recorder cap. v3 inspects the full index and logs bounded selected evidence; actual formal capture is complete, not truncated. No failed recorder capture was replaced.",
+    "Fresh author first strict pass succeeded; first runtime completed but external checker passed 12/13 because stale-index probe was masked by per-tick quota. Author independently moved it to update2 and reached 13/13. Separate Node --import Windows path error was repaired to a file URL. All sealed attempts remain."
+  ],
+  "sourceReviewCutoffResolution": "source-review.md correctly states its native metadata-bearing rerun was pending at cutoff; final capture-native.json subsequently executes and validates debug/windows/x86_64 metadata, real NVIDIA GPU and 3+9 CPU/GPU samples."
+}

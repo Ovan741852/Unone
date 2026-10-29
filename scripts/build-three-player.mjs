@@ -12,9 +12,11 @@ for(const file of readdirSync(resolve(root,'web/renderer')).filter(file=>file.en
 }
 // WebGL player exports only the renderer's referenced public Three API.
 const input=`export {${[...names].sort().join(',')}} from './three.module.js';`;
-const result=spawnSync(process.platform==='win32'?'npx.cmd':'npx',[
-  '--yes','esbuild@0.25.12','--bundle','--minify','--format=esm','--legal-comments=eof',
+const direct=process.env.UNONE_ESBUILD_BINARY;
+if(direct){const version=spawnSync(direct,['--version'],{encoding:'utf8'});if(version.status!==0||version.stdout.trim()!=='0.25.12')throw Error('Expected pinned esbuild0.25.12');}
+const result=spawnSync(direct??(process.platform==='win32'?'npx.cmd':'npx'),[
+  ...(direct?[]:['--yes','esbuild@0.25.12']),'--bundle','--minify','--format=esm','--legal-comments=eof',
   '--sourcefile=three.player.js','--outfile=three.player.min.js'
-],{cwd:resolve(root,'web/vendor/three'),input,encoding:'utf8',shell:process.platform==='win32'});
+],{cwd:resolve(root,'web/vendor/three'),input,encoding:'utf8',shell:!direct&&process.platform==='win32'});
 if(result.status!==0)throw new Error(result.stderr??'Three player build failed');
 console.log(result.stderr.trim());

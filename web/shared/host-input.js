@@ -37,6 +37,9 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   const pointerFrames = [];
   const semanticHeld = new Set(), semanticEdges = [];
   const sliderEvents = [], sliderActive = new Map(), sliderConsumedActive = new Map();
+  const textEvents = [], textActive = new Map();
+  const textPhases = new Set(['change', 'submit', 'cancel', 'focus', 'blur']);
+  const physicalActions=createActionQueue(),screenButtons=new Map();
   const sliderPhases = new Set(['start', 'drag', 'end', 'cancel']);
   function cancelSliders() {
     const active = new Map([...sliderConsumedActive, ...sliderActive]);
@@ -66,6 +69,24 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     if(semanticEdges.length>=256){semanticEdges.length=0;semanticHeld.clear();throw new Error('UI_ACTION_QUEUE_FULL: release pointers and retry');}
     semanticEdges.push({action,down});
   }
+  function queueTextInputInteraction({id, phase, text, composing} = {}) {
+    if (!validAction(id) || new TextEncoder().encode(id).length > 1024 || !textPhases.has(phase)
+      || typeof text !== 'string' || new TextEncoder().encode(text).length > 65536 || typeof composing !== 'boolean'
+      || (phase === 'submit' && composing)) {
+      throw new TypeError('UI_TEXT_INPUT_INVALID: stable id, phase, bounded UTF-8 text and composing flag are required');
+    }
+    const event = {id, phase, text, composing}, last = textEvents.at(-1);
+    if (phase === 'change' && last?.id === id && last.phase === 'change' && last.composing === composing) textEvents[textEvents.length - 1] = event;
+    else {
+      if (textEvents.length >= 256 || new Set([...textEvents.map(e=>e.id), id]).size > 64) throw new Error('UI_TEXT_INPUT_QUEUE_FULL: stop text admission and retry');
+      textEvents.push(event);
+    }
+    if (phase === 'blur' || phase === 'cancel') textActive.delete(id);
+    else textActive.set(id, text);
+  }
+  function releaseKeyboard() {
+    held.clear();pressed.clear();physicalActions.reset();
+  }
 
   function queueAction(action) {
     if (validAction(action)) pressed.add(action);
@@ -76,6 +97,19 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     if (isDown) held.add(action);
     else held.delete(action);
   }
+
+  function queuePhysicalAction(action,down) {
+    if(!validAction(action)||typeof down!=='boolean')throw new TypeError('PHYSICAL_ACTION_INVALID');
+    physicalActions.event(action,down);
+  }
+
+  function queueScreenAction(action,down,sample) {
+    if(!validAction(action)||typeof down!=='boolean')throw new TypeError('SCREEN_ACTION_INVALID');
+    if(!screenButtons.has(action))screenButtons.set(action,createScreenButtonQueue());
+    screenButtons.get(action).event(down,copyPointer(sample));
+  }
+
+  function releaseScreenActions(){for(const queue of screenButtons.values())queue.reset();}
 
   function updatePointer(nextPointer, kind = "edge") {
     pointer = copyPointer(nextPointer);
@@ -91,9 +125,15 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   function consumeFrame() {
     const semantic=semanticEdges.shift();if(semantic){if(semantic.down)semanticHeld.add(semantic.action);else semanticHeld.delete(semantic.action);}
     const edge = pointerFrames.shift();
-    const framePointer = edge?.pointer ?? copyPointer(pointer);
+    let framePointer = edge?.pointer ?? copyPointer(pointer),advanceSecondary=edge?.kind!=='edge';
+    const physical=physicalActions.tick();
+    for(const [action,queue] of screenButtons) {
+      const secondary=queue.tick(advanceSecondary);
+      if(secondary.down)physical.push(action);
+      if(secondary.pointer){framePointer={...secondary.pointer,down:framePointer.down};advanceSecondary=false;}
+    }
     const actions = Object.fromEntries(
-      [...new Set([...held, ...pressed, ...semanticHeld])].sort().map((action) => [action, true])
+      [...new Set([...held, ...pressed, ...semanticHeld,...physical])].sort().map((action) => [action, true])
     );
     pressed.clear();
     // A quick tap must reach the model as start, then end on separate ticks.
@@ -107,7 +147,15 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
       else sliderConsumedActive.delete(event.id);
     }
     sliderEvents.splice(0, sliderEvents.length, ...remaining);
-    return { actions, pointer: framePointer, ...(consumed.size ? {ui_sliders:Object.fromEntries(sliders)} : {}) };
+    const texts = [], textConsumed = new Set(), textRemaining = [];
+    for (const event of textEvents) {
+      if (textConsumed.has(event.id)) { textRemaining.push(event); continue; }
+      textConsumed.add(event.id);
+      texts.push([event.id, {phase:event.phase, text:event.text, composing:event.composing}]);
+    }
+    textEvents.splice(0, textEvents.length, ...textRemaining);
+    return { actions, pointer: framePointer, ...(consumed.size ? {ui_sliders:Object.fromEntries(sliders)} : {}),
+      ...(textConsumed.size ? {ui_text_inputs:Object.fromEntries(texts)} : {}) };
   }
 
   function releasePointer() {
@@ -116,21 +164,29 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   }
 
   function releaseAll() {
-    held.clear();
-    pressed.clear();
+    releaseKeyboard();releaseScreenActions();
     releasePointer();
     semanticHeld.clear();semanticEdges.length=0;
     cancelSliders();
+    // Preserve admitted text and submit order across focus/lifecycle barriers.
+    // Append a cancellation rather than dropping a just-committed IME value.
+    for (const [id,text] of textActive) queueTextInputInteraction({id,phase:'cancel',text,composing:false});
+    textActive.clear();
   }
 
   return {
     queueAction,
     queueActionTransition,
     queueSliderInteraction,
+    queueTextInputInteraction,
     setHeld,
+    queuePhysicalAction,
+    queueScreenAction,
     updatePointer,
     consumeFrame,
     releasePointer,
+    releaseKeyboard,
+    releaseScreenActions,
     releaseAll,
     get pointer() {
       return copyPointer(pointer);
@@ -151,3 +207,4 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
 }
 
 export { DEFAULT_POINTER };
+import {createActionQueue,createScreenButtonQueue} from './physical-input.js';

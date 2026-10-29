@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "files": 126,
+  "manifestSha256": "2581bcce3814a84ee4dba263a6d32bd85158ae1fa9514efa73201d3ab20797ec",
+  "scope": "Read-only hash/length consistency of sealed blind evidence; not independent authorship certification."
+}

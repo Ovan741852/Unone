@@ -1,0 +1,864 @@
+{
+  "backend_exercised": "cpu, inline headless public SDK CLI only",
+  "first_strict_success": true,
+  "first_runtime_completed": true,
+  "first_external_verification": {
+    "passed": 12,
+    "failed": 1
+  },
+  "repaired_external_verification": {
+    "passed": 13,
+    "failed": 0
+  },
+  "geometry": {
+    "after_rejection_result": {
+      "results": [
+        {
+          "hits": [
+            {
+              "distance": 4,
+              "fraction": 0,
+              "id": 90,
+              "normal": [
+                1,
+                0,
+                0
+              ],
+              "point": [
+                -3.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 8,
+              "fraction": 0,
+              "id": 7,
+              "normal": [
+                0,
+                -1,
+                0
+              ],
+              "point": [
+                0,
+                6,
+                0
+              ]
+            },
+            {
+              "distance": 6,
+              "fraction": 0,
+              "id": 41,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "distance": 4,
+              "fraction": 0,
+              "id": 90,
+              "normal": [
+                1,
+                0,
+                0
+              ],
+              "point": [
+                -3.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 4.000000476837158,
+              "fraction": 0.40000003576278687,
+              "id": 41,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": []
+        }
+      ],
+      "version": 1
+    },
+    "after_submission_profile": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bindings": {
+        "calls": 9,
+        "clock": "host_monotonic",
+        "failed_calls": 2,
+        "input_decode_ms": 0.5216999999999999,
+        "last": {
+          "index": 1,
+          "input_decode_ms": 0.00009999999999999999,
+          "operation": "spatial.destroy",
+          "output_encode_ms": 0,
+          "success": true
+        },
+        "output_encode_ms": 0,
+        "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+      },
+      "clock": "host_monotonic",
+      "limits": {
+        "counter_max": 9007199254740991,
+        "retained_completed_batches": 1
+      },
+      "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+      "totals": {
+        "bodies": 12,
+        "cancelled_tickets": 0,
+        "completed_batches": 0,
+        "executor_ms": 0,
+        "executor_phases_ms": {},
+        "executor_samples": 0,
+        "executor_wall_samples": 0,
+        "failed_batches": 0,
+        "input_body_bytes": 512,
+        "manager_ms": {
+          "result_apply": 0,
+          "result_validation": 0,
+          "snapshot": 0.0011,
+          "validation": 0.0138
+        },
+        "pair_tests_upper_bound": 36,
+        "queries": 12,
+        "readback_bytes": 0,
+        "returned_hits": 0,
+        "submitted_batches": 4,
+        "upload_bytes": 0
+      }
+    },
+    "baseline_result": {
+      "results": [
+        {
+          "hits": [
+            {
+              "distance": 4,
+              "fraction": 0,
+              "id": 90,
+              "normal": [
+                1,
+                0,
+                0
+              ],
+              "point": [
+                -3.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 8,
+              "fraction": 0,
+              "id": 7,
+              "normal": [
+                0,
+                -1,
+                0
+              ],
+              "point": [
+                0,
+                6,
+                0
+              ]
+            },
+            {
+              "distance": 6,
+              "fraction": 0,
+              "id": 41,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "distance": 4,
+              "fraction": 0,
+              "id": 90,
+              "normal": [
+                1,
+                0,
+                0
+              ],
+              "point": [
+                -3.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 4.000000476837158,
+              "fraction": 0.40000003576278687,
+              "id": 41,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": []
+        }
+      ],
+      "version": 1
+    },
+    "complete": true,
+    "consumed_diagnostic": {
+      "actual": 2,
+      "api_version": 1,
+      "code": "SPATIAL_TICKET_UNKNOWN",
+      "context": {
+        "frame": 1,
+        "ticket": 2
+      },
+      "expected": "a currently live handle owned by this runtime",
+      "message": "SPATIAL_TICKET_UNKNOWN",
+      "operation": "spatial.take",
+      "path": "ticket",
+      "recoverable": true,
+      "recovery": {
+        "action": "Use an unconsumed live ticket from spatial.submit.",
+        "retry": "after_correction"
+      },
+      "terminal": false
+    },
+    "consumed_ticket_take_ok": false,
+    "delivery_update": 2,
+    "destroyed_index_submit_ok": false,
+    "diagnostic_after_success": {
+      "actual": -2,
+      "api_version": 1,
+      "code": "SPATIAL_INPUT_INVALID",
+      "context": {
+        "frame": 0,
+        "index": 1
+      },
+      "expected": {
+        "finite": true,
+        "max": 1000000,
+        "min": 0
+      },
+      "message": "bodies[1].radius must be finite and in 0..=1000000",
+      "operation": "spatial.update",
+      "path": "bodies[2].radius",
+      "recoverable": true,
+      "recovery": {
+        "action": "Correct the reported input field and call the operation again.",
+        "retry": "after_correction"
+      },
+      "terminal": false
+    },
+    "early_diagnostic": {
+      "api_version": 1,
+      "code": "SPATIAL_RESULT_NEXT_TICK",
+      "context": {
+        "frame": 0,
+        "ticket": 2
+      },
+      "message": "SPATIAL_RESULT_NEXT_TICK",
+      "operation": "spatial.take",
+      "recoverable": true,
+      "recovery": {
+        "action": "Take this ticket in the next update; do not branch gameplay on host readiness.",
+        "retry": "next_tick"
+      },
+      "terminal": false
+    },
+    "empty_result": {
+      "results": [],
+      "version": 2
+    },
+    "entity_after": {
+      "x": 37,
+      "y": -11
+    },
+    "entity_before": {
+      "x": 37,
+      "y": -11
+    },
+    "final_info": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bodies": 0,
+      "delivery": "next_tick",
+      "external": false,
+      "indices": 0,
+      "limits": {
+        "bodies": 131072,
+        "bodies_per_index": 65536,
+        "coordinate_abs": 1000000,
+        "hits_per_query": 64,
+        "indices": 8,
+        "queries_per_batch": 1024,
+        "safe_integer": 9007199254740991,
+        "submissions_per_tick": 4,
+        "tickets": 16
+      },
+      "operations": [
+        "nearest",
+        "overlap_sphere",
+        "sweep_sphere"
+      ],
+      "packed_format": "USB1",
+      "pending": 0,
+      "tickets": 0
+    },
+    "final_profile": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bindings": {
+        "calls": 15,
+        "clock": "host_monotonic",
+        "failed_calls": 4,
+        "input_decode_ms": 0.5243999999999999,
+        "last": {
+          "input_decode_ms": 0,
+          "operation": "spatial.take",
+          "output_encode_ms": 0,
+          "success": false,
+          "ticket": 2
+        },
+        "output_encode_ms": 0.08739999999999999,
+        "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+      },
+      "clock": "host_monotonic",
+      "last": {
+        "bodies": 3,
+        "executor": {
+          "clock": "host_monotonic",
+          "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+          "phases_ms": {
+            "cpu_execute": 0.0011
+          },
+          "readback_bytes": 0,
+          "total_ms": 0.0011,
+          "upload_bytes": 0
+        },
+        "executor_ms": 0.0011,
+        "manager_ms": {
+          "result_apply": 0.00009999999999999999,
+          "result_validation": 0.0023,
+          "snapshot": 0.00009999999999999999,
+          "validation": 0.0009
+        },
+        "pair_tests_upper_bound": 0,
+        "queries": 0,
+        "returned_hits": 0,
+        "ticket": 5,
+        "version": 2
+      },
+      "limits": {
+        "counter_max": 9007199254740991,
+        "retained_completed_batches": 1
+      },
+      "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+      "totals": {
+        "bodies": 12,
+        "cancelled_tickets": 0,
+        "completed_batches": 4,
+        "executor_ms": 0.0181,
+        "executor_phases_ms": {
+          "cpu_execute": 0.0181
+        },
+        "executor_samples": 4,
+        "executor_wall_samples": 4,
+        "failed_batches": 0,
+        "input_body_bytes": 512,
+        "manager_ms": {
+          "result_apply": 0.00039999999999999996,
+          "result_validation": 0.0188,
+          "snapshot": 0.0011,
+          "validation": 0.0138
+        },
+        "pair_tests_upper_bound": 36,
+        "queries": 12,
+        "readback_bytes": 0,
+        "returned_hits": 13,
+        "submitted_batches": 4,
+        "upload_bytes": 0
+      }
+    },
+    "initial_info": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bodies": 3,
+      "delivery": "next_tick",
+      "external": false,
+      "indices": 1,
+      "limits": {
+        "bodies": 131072,
+        "bodies_per_index": 65536,
+        "coordinate_abs": 1000000,
+        "hits_per_query": 64,
+        "indices": 8,
+        "queries_per_batch": 1024,
+        "safe_integer": 9007199254740991,
+        "submissions_per_tick": 4,
+        "tickets": 16
+      },
+      "operations": [
+        "nearest",
+        "overlap_sphere",
+        "sweep_sphere"
+      ],
+      "packed_format": "USB1",
+      "pending": 0,
+      "tickets": 0
+    },
+    "invalid_diagnostic": {
+      "actual": -2,
+      "api_version": 1,
+      "code": "SPATIAL_INPUT_INVALID",
+      "context": {
+        "frame": 0,
+        "index": 1
+      },
+      "expected": {
+        "finite": true,
+        "max": 1000000,
+        "min": 0
+      },
+      "message": "bodies[1].radius must be finite and in 0..=1000000",
+      "operation": "spatial.update",
+      "path": "bodies[2].radius",
+      "recoverable": true,
+      "recovery": {
+        "action": "Correct the reported input field and call the operation again.",
+        "retry": "after_correction"
+      },
+      "terminal": false
+    },
+    "invalid_update_ok": false,
+    "plain_object": {},
+    "repaired_result": {
+      "results": [
+        {
+          "hits": [
+            {
+              "distance": 4,
+              "fraction": 0,
+              "id": 90,
+              "normal": [
+                1,
+                0,
+                0
+              ],
+              "point": [
+                -3.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 8,
+              "fraction": 0,
+              "id": 7,
+              "normal": [
+                0,
+                -1,
+                0
+              ],
+              "point": [
+                0,
+                6,
+                0
+              ]
+            },
+            {
+              "distance": 4,
+              "fraction": 0,
+              "id": 90,
+              "normal": [
+                1,
+                0,
+                0
+              ],
+              "point": [
+                -3.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": []
+        },
+        {
+          "hits": []
+        }
+      ],
+      "version": 2
+    },
+    "repaired_version": 2,
+    "same_tick_take_ok": false,
+    "stale_index_diagnostic": {
+      "actual": 1,
+      "api_version": 1,
+      "code": "SPATIAL_INDEX_UNKNOWN",
+      "context": {
+        "frame": 1,
+        "index": 1
+      },
+      "expected": "a currently live handle owned by this runtime",
+      "message": "SPATIAL_INDEX_UNKNOWN",
+      "operation": "spatial.submit",
+      "path": "index",
+      "recoverable": true,
+      "recovery": {
+        "action": "Use a live index from spatial.create.",
+        "retry": "after_correction"
+      },
+      "terminal": false
+    },
+    "structured_repair_authorized": true,
+    "submission_update": 1,
+    "submitted_info": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bodies": 3,
+      "delivery": "next_tick",
+      "external": false,
+      "indices": 1,
+      "limits": {
+        "bodies": 131072,
+        "bodies_per_index": 65536,
+        "coordinate_abs": 1000000,
+        "hits_per_query": 64,
+        "indices": 8,
+        "queries_per_batch": 1024,
+        "safe_integer": 9007199254740991,
+        "submissions_per_tick": 4,
+        "tickets": 16
+      },
+      "operations": [
+        "nearest",
+        "overlap_sphere",
+        "sweep_sphere"
+      ],
+      "packed_format": "USB1",
+      "pending": 4,
+      "tickets": 4
+    },
+    "typed_capacity": 1024,
+    "typed_empty": [],
+    "typed_numbers": [
+      4,
+      12,
+      16
+    ],
+    "typed_records": [
+      {
+        "label": "marker",
+        "value": 37
+      },
+      {
+        "label": "queries",
+        "value": 4
+      }
+    ]
+  },
+  "measurements": {
+    "small": {
+      "configuration": {
+        "bodies": 16,
+        "queries": 4,
+        "warmup": 3,
+        "samples": 9
+      },
+      "summary": {
+        "executor_ms": {
+          "samples": 9,
+          "min": 0.0045000000000000005,
+          "p50": 0.0046,
+          "p95": 0.0076,
+          "max": 0.0076,
+          "mean": 0.005422222222222223
+        },
+        "input_decode_ms": {
+          "samples": 9,
+          "min": 0.0087,
+          "p50": 0.0092,
+          "p95": 0.016499999999999997,
+          "max": 0.016499999999999997,
+          "mean": 0.0115
+        },
+        "output_encode_ms": {
+          "samples": 9,
+          "min": 0.0101,
+          "p50": 0.0138,
+          "p95": 0.058,
+          "max": 0.058,
+          "mean": 0.01928888888888889
+        },
+        "manager_ms": {
+          "snapshot": {
+            "samples": 9,
+            "min": 0,
+            "p50": 0.00009999999999999999,
+            "p95": 0.00019999999999999998,
+            "max": 0.00019999999999999998,
+            "mean": 0.00011111111111111112
+          },
+          "validation": {
+            "samples": 9,
+            "min": 0.0044,
+            "p50": 0.0046,
+            "p95": 0.0085,
+            "max": 0.0085,
+            "mean": 0.00558888888888889
+          },
+          "result_validation": {
+            "samples": 9,
+            "min": 0.0052,
+            "p50": 0.005699999999999999,
+            "p95": 0.0094,
+            "max": 0.0094,
+            "mean": 0.006588888888888888
+          },
+          "result_apply": {
+            "samples": 9,
+            "min": 0,
+            "p50": 0,
+            "p95": 0.00009999999999999999,
+            "max": 0.00009999999999999999,
+            "mean": 0.00004444444444444444
+          }
+        }
+      },
+      "process_total_ms": 123.67430000000002,
+      "counters": {
+        "bodies": 192,
+        "cancelled_tickets": 0,
+        "completed_batches": 12,
+        "executor_ms": 0.07720000000000002,
+        "executor_phases_ms": {
+          "cpu_execute": 0.07720000000000002
+        },
+        "executor_samples": 12,
+        "executor_wall_samples": 12,
+        "failed_batches": 0,
+        "input_body_bytes": 7776,
+        "manager_ms": {
+          "result_apply": 0.0006000000000000001,
+          "result_validation": 0.0941,
+          "snapshot": 0.0018000000000000004,
+          "validation": 0.08940000000000001
+        },
+        "pair_tests_upper_bound": 768,
+        "queries": 48,
+        "readback_bytes": 0,
+        "returned_hits": 48,
+        "submitted_batches": 12,
+        "upload_bytes": 0
+      },
+      "bindings": {
+        "calls": 26,
+        "clock": "host_monotonic",
+        "failed_calls": 0,
+        "input_decode_ms": 0.5147999999999999,
+        "last": {
+          "index": 1,
+          "input_decode_ms": 0.00009999999999999999,
+          "operation": "spatial.destroy",
+          "output_encode_ms": 0,
+          "success": true
+        },
+        "output_encode_ms": 0.26649999999999996,
+        "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+      },
+      "independent_counter_and_distribution_check": "passed",
+      "source_project": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-benchmark-BCt4H8",
+      "subprocess_trace": "benchmark-small.json.subprocesses.jsonl"
+    },
+    "large": {
+      "configuration": {
+        "bodies": 4096,
+        "queries": 128,
+        "warmup": 3,
+        "samples": 9
+      },
+      "summary": {
+        "executor_ms": {
+          "samples": 9,
+          "min": 1.4137,
+          "p50": 2.7916,
+          "p95": 5.1461,
+          "max": 5.1461,
+          "mean": 2.820688888888889
+        },
+        "input_decode_ms": {
+          "samples": 9,
+          "min": 0.4146,
+          "p50": 0.5796999999999999,
+          "p95": 1.2596,
+          "max": 1.2596,
+          "mean": 0.7213222222222222
+        },
+        "output_encode_ms": {
+          "samples": 9,
+          "min": 0.5571,
+          "p50": 1.3455,
+          "p95": 2.4187000000000003,
+          "max": 2.4187000000000003,
+          "mean": 1.340177777777778
+        },
+        "manager_ms": {
+          "snapshot": {
+            "samples": 9,
+            "min": 0.0342,
+            "p50": 0.0596,
+            "p95": 0.121,
+            "max": 0.121,
+            "mean": 0.06504444444444445
+          },
+          "validation": {
+            "samples": 9,
+            "min": 0.9959000000000001,
+            "p50": 1.7684,
+            "p95": 2.341,
+            "max": 2.341,
+            "mean": 1.7014777777777779
+          },
+          "result_validation": {
+            "samples": 9,
+            "min": 1.4493,
+            "p50": 1.8517,
+            "p95": 2.9383,
+            "max": 2.9383,
+            "mean": 1.9948777777777775
+          },
+          "result_apply": {
+            "samples": 9,
+            "min": 0.00009999999999999999,
+            "p50": 0.00039999999999999996,
+            "p95": 0.0024,
+            "max": 0.0024,
+            "mean": 0.0006111111111111111
+          }
+        }
+      },
+      "process_total_ms": 872.0754000000001,
+      "counters": {
+        "bodies": 49152,
+        "cancelled_tickets": 0,
+        "completed_batches": 12,
+        "executor_ms": 32.1494,
+        "executor_phases_ms": {
+          "cpu_execute": 32.1494
+        },
+        "executor_samples": 12,
+        "executor_wall_samples": 12,
+        "failed_batches": 0,
+        "input_body_bytes": 1966176,
+        "manager_ms": {
+          "result_apply": 0.0061,
+          "result_validation": 23.189799999999995,
+          "snapshot": 0.8407999999999999,
+          "validation": 19.851100000000002
+        },
+        "pair_tests_upper_bound": 6291456,
+        "queries": 1536,
+        "readback_bytes": 0,
+        "returned_hits": 1536,
+        "submitted_batches": 12,
+        "upload_bytes": 0
+      },
+      "bindings": {
+        "calls": 26,
+        "clock": "host_monotonic",
+        "failed_calls": 0,
+        "input_decode_ms": 39.19780000000001,
+        "last": {
+          "index": 1,
+          "input_decode_ms": 0.0006,
+          "operation": "spatial.destroy",
+          "output_encode_ms": 0,
+          "success": true
+        },
+        "output_encode_ms": 14.1978,
+        "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+      },
+      "independent_counter_and_distribution_check": "passed",
+      "source_project": "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-benchmark-1BLzIg",
+      "subprocess_trace": "benchmark-large.json.subprocesses.jsonl"
+    }
+  },
+  "identity": {
+    "node": "v24.19.0",
+    "nodeExecutable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "platform": "win32",
+    "arch": "x64",
+    "osRelease": "10.0.26200",
+    "files": [
+      {
+        "path": "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/bin/game.exe",
+        "bytes": 45717870,
+        "sha256": "d59c051d00ad47616978b6c4352a67092555baecfb090fb6b3442ca929c3e028"
+      },
+      {
+        "path": "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/sdk.json",
+        "bytes": 15151,
+        "sha256": "2c1a26633fe324a9442bb00846844dad28dd597f9cbc744a5d3c2badf6cc5db3"
+      },
+      {
+        "path": "D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe",
+        "bytes": 3569152,
+        "sha256": "fc28e3a85eccdbdca4974784ffb96134cf2166d5fbd149078cb28cffde88bfee"
+      }
+    ]
+  },
+  "ledger_count_before_this_summarizer": 45,
+  "scope": "Only allowed public SDK and own synthetic/audit artifacts. No repository implementation, tests, prior audit, other agent evidence, network, installation, account, game edit, commit or push."
+}

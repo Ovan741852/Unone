@@ -380,7 +380,8 @@ pub unsafe extern "C" fn unone_mobile_set_input_frame(
         Ok(frame) => frame,
         Err(diagnostic) => return session.write_diagnostic(*diagnostic),
     };
-    session.pending_input.queue_frame(frame);
+    if frame.physical.is_some() {return session.write_error("INPUT_PHYSICAL_UNSUPPORTED: mobile live ordered ingress is not implemented");}
+    if let Err(error)=session.pending_input.queue_frame(frame){return session.write_error(error);}
     session.write_observation("input_frame_set", None);
     0
 }
@@ -975,6 +976,21 @@ return Game
                 < 0.000_001
         );
         unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn ordered_physical_rejection_preserves_accepted_legacy_input_and_session(){
+        let session=unone_mobile_init();let project=payload();
+        assert_eq!(unsafe{unone_mobile_load_project(session,project.as_ptr(),project.len(),42)},0);
+        let legacy=br#"{"actions":{"Right":true}}"#;
+        assert_eq!(unsafe{unone_mobile_set_input_frame(session,legacy.as_ptr(),legacy.len())},0);
+        let physical=br#"{"physical":{"profile":"ordered_physical_v1","epoch":1,"after_sequence":0,"through_sequence":0,"events":[]}}"#;
+        assert_eq!(unsafe{unone_mobile_set_input_frame(session,physical.as_ptr(),physical.len())},-1);
+        assert!(output(session)["error"].as_str().unwrap().contains("PHYSICAL_UNSUPPORTED"));
+        assert_eq!(unsafe{unone_mobile_tick(session)},0);let snapshot=output(session);
+        assert_eq!(snapshot["world"]["frame"],1);assert!(snapshot["world"].get("physical_input_receipt").is_none());
+        assert!((snapshot["world"]["entities"]["player"]["transform"]["x"].as_f64().unwrap()-1.0/60.0).abs()<1e-6);
+        unsafe{unone_mobile_shutdown(session)};
     }
 
     #[test]

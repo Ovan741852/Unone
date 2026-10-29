@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-23",
+  "kind": "implementation-verification-record",
+  "note": "Observed test/build results, distinct from Scout recorder execution artifacts and the fresh author's first-use ledger.",
+  "checks": [
+    {"command": "cargo test -p unone-engine --lib --test spatial_core --test spatial_runtime --offline", "result": "pass", "library": {"passed": 318, "ignored": 3}, "spatial_core": {"passed": 15}, "spatial_runtime": {"passed": 9, "ignored": 1}},
+    {"command": "cargo test -p unone-engine --test spatial_runtime spatial_observation_records_pass_strict_types_without_casts_and_reject_bad_fields --offline -- --ignored", "result": "pass", "passed": 1, "analyzer": "official Luau 0.734; UNONE_LUAU_ANALYZER points at existing toolcache", "scope": "unadapted info/batch/query/hit publication passes; string version, function-valued field and string coordinate remain rejected"},
+    {"command": "cargo test --release -p unone-cli packed_sdk_contains_documented_authoring_guides_and_tools_without_requiring_them_in_older_sdks --offline", "result": "pass", "passed": 1, "log": ".cache/spatial-p2-sdk-tests.log", "scope": "actual release pack, exact guide bytes and links, backward compatibility"},
+    {"command": "cargo test --manifest-path crates/unone-spatial-gpu/Cargo.toml --offline -- --nocapture", "result": "pass", "reporter": "fix_spatial_numeric implementation agent", "shader_validation": 1, "gpu_differential": 2, "luau_gpu_integration": 1, "adapter": "NVIDIA GeForce RTX 5080, Vulkan, DiscreteGpu", "scope": "real GPU, tiny/zero/subnormal/large normal regression and existing geometry/lifecycle"},
+    {"command": "node --test web/shared/spatial-host.test.mjs web/shared/spatial-gpu.test.mjs web/shared/runtime-core.test.mjs", "result": "pass", "passed": 13},
+    {"command": "cargo build --release -p unone-cli --offline", "result": "pass", "log": ".cache/spatial-p2-cli-build.log"},
+    {"command": "cargo build -p unone-cli --offline", "result": "pass", "log": ".cache/spatial-p2-cli-debug-build.log"},
+    {"command": "scripts/build-web-live.ps1 -Player -EmsdkRoot D:/Projects/Unone/.toolcache/emsdk/unone-layout -BinaryenRoot D:/Projects/Unone/.toolcache/emsdk/binaryen-version_131 -OutputRoot D:/Projects/Unone/artifacts/spatial-p2-runtime", "result": "pass", "log": ".cache/spatial-p2-web-build-local-toolchain.log", "scope": "fresh release WASM and build script's official parity gate; no rendered presentation claim"},
+    {"command": "target/release/game.exe --json sdk pack --source-root D:/Projects/Unone --runtime D:/Projects/Unone/artifacts/spatial-p2-runtime --output D:/Projects/Unone/artifacts/spatial-p2-sdk", "result": "pass", "log": ".cache/spatial-p2-sdk-pack.json", "scope": "actual new SDK, freshly built CLI and WASM; guide/types bytes checked against canonical source"},
+    {"command": "Scout recorder -> probe-v3.mjs", "result": "pass", "artifact": "capture-public-v3.json", "scope": "official strict check, full info/result/query/hit records, u32, 3e-23 normal, invalid repair, frozen version/destruction, timing/consumption boundary, scene boundary, nonempty equal digests, collision/Chinese discovery"},
+    {"command": "Scout recorder -> web-probe.mjs -> scripts/verify-spatial-runtime.mjs", "result": "pass", "artifact": "capture-web.json", "browser": "Edge 155.0.4283.62", "scope": "fresh hash-verified WASM; CPU/WebGPU in main/Worker; full info/results, u32, tiny normal; no rendering/speedup claim"}
+  ],
+  "preserved_failures": [
+    {"artifact": ".cache/spatial-p2-web-build.log", "cause": "initial build omitted the existing local Emscripten path; rerun selected the preinstalled toolchain, no installation"},
+    {"artifact": "capture-public.json", "cause": "informed fixture's pcall body literal lacked an explicit SpatialBody array annotation, plus a shadowed local; fixed only in new probe-v2.mjs"},
+    {"artifact": "capture-public-v2.json", "cause": "Node assertion assumed snapshot entities was an array; it is a keyed object. Product runtime/type checks had passed; fixed only in new probe-v3.mjs"}
+  ],
+  "limits": [
+    "Normal repair does not promise exact CPU/GPU tiny distances, contact membership or cross-device determinism; original f32 query arithmetic and documented boundary tolerances remain.",
+    "Sparse direct-JavaScript vectors remain the prior lower-priority out-of-scope finding; the canonical Luau-to-Web path supplies dense arrays.",
+    "All fixtures are synthetic; no game content, saved state, deployment, tool installation, commit or push was performed.",
+    "Source review and reported test records are labelled separately from raw recorder captures; no new GPU timing or performance-speedup benchmark was performed."
+  ]
+}

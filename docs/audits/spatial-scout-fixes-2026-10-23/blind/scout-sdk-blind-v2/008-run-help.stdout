@@ -1,0 +1,19 @@
+Usage: game.exe run [OPTIONS]
+
+Options:
+      --frames <FRAMES>
+          [default: 60]
+      --sdk <SDK>
+          Portable SDK root (otherwise environment or executable-relative discovery)
+      --project <PROJECT>
+          [default: .]
+      --seed <SEED>
+          [default: 42]
+      --action <ACTION>
+          
+      --json
+          
+      --input-sequence <INPUT_SEQUENCE>
+          
+  -h, --help
+          Print help

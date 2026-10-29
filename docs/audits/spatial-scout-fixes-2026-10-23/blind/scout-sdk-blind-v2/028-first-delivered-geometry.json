@@ -1,0 +1,24 @@
+{
+  "order": 28,
+  "name": "first-delivered-geometry",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2",
+    "--json",
+    "run",
+    "--frames",
+    "2"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:19:11.5710329Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 131,
+  "endedUtc": "2026-10-23T14:19:11.7320170Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\028-first-delivered-geometry.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\028-first-delivered-geometry.stderr"
+}

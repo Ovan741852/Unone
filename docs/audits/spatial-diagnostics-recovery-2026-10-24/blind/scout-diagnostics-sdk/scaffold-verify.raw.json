@@ -1,0 +1,17 @@
+{
+  "executable": "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/bin/game.exe",
+  "args": [
+    "--sdk",
+    "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2",
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\sdk-scout-OV5pUL",
+    "--json",
+    "verify"
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "elapsed_ms": 187.79160000000002,
+  "stdout": "{\n  \"ok\": true,\n  \"value\": {\n    \"project\": \"Scout axis geometry\",\n    \"steps\": [\n      {\n        \"name\": \"types\",\n        \"status\": \"passed\",\n        \"summary\": \"entrypoints [\\\"start\\\", \\\"update\\\"], strict_mode true\",\n        \"command\": \"game check --types\",\n        \"diagnostics\": []\n      },\n      {\n        \"name\": \"assets\",\n        \"status\": \"passed\",\n        \"summary\": \"0 declared, 0 scene references, ready_for_packaging true\",\n        \"command\": \"game asset inspect --strict\",\n        \"diagnostics\": []\n      },\n      {\n        \"name\": \"layout\",\n        \"status\": \"not_applicable\",\n        \"summary\": \"the game publishes no UI tree\",\n        \"command\": \"game ui preview --strict --frames 1 --seed 42\",\n        \"diagnostics\": []\n      },\n      {\n        \"name\": \"tests\",\n        \"status\": \"passed\",\n        \"summary\": \"2/2 deterministic cases passed\",\n        \"command\": \"game test\",\n        \"diagnostics\": []\n      }\n    ],\n    \"passed\": 3,\n    \"failed\": 0,\n    \"not_applicable\": 1,\n    \"step_source\": \"default\"\n  },\n  \"diagnostics\": [],\n  \"effects\": [\n    \"verify ran 4 gates in the default order: 3 passed, 0 failed, 1 not applicable\"\n  ]\n}\n",
+  "stderr": ""
+}

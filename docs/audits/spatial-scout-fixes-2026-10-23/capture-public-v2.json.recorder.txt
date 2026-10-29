@@ -1,0 +1,2 @@
+{"artifact":"docs/audits/spatial-scout-fixes-2026-10-23/capture-public-v2.json","exitCode":1,"durationMs":1158.03,"timedOut":false,"outputTruncated":false,"sourceChanged":false}
+

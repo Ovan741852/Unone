@@ -1,0 +1,45 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$id": "https://unone.dev/schema/heightfield-patch.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "depth": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "heights": {
+      "items": {
+        "format": "float",
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "width": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "x": {
+      "description": "Zero-based sample coordinates, not cell coordinates.",
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "z": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "x",
+    "z",
+    "width",
+    "depth",
+    "heights"
+  ],
+  "title": "HeightfieldPatch",
+  "type": "object"
+}

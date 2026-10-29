@@ -1,0 +1,599 @@
+{
+  "after_rejection_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 90,
+            "normal": [
+              1,
+              0,
+              0
+            ],
+            "point": [
+              -3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 8,
+            "fraction": 0,
+            "id": 7,
+            "normal": [
+              0,
+              -1,
+              0
+            ],
+            "point": [
+              0,
+              6,
+              0
+            ]
+          },
+          {
+            "distance": 6,
+            "fraction": 0,
+            "id": 41,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              5,
+              0,
+              0
+            ]
+          },
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 90,
+            "normal": [
+              1,
+              0,
+              0
+            ],
+            "point": [
+              -3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 4.000000476837158,
+            "fraction": 0.40000003576278687,
+            "id": 41,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": []
+      }
+    ],
+    "version": 1
+  },
+  "after_submission_profile": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bindings": {
+      "calls": 9,
+      "clock": "host_monotonic",
+      "failed_calls": 2,
+      "input_decode_ms": 0.5216999999999999,
+      "last": {
+        "index": 1,
+        "input_decode_ms": 0.00009999999999999999,
+        "operation": "spatial.destroy",
+        "output_encode_ms": 0,
+        "success": true
+      },
+      "output_encode_ms": 0,
+      "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+    },
+    "clock": "host_monotonic",
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 12,
+      "cancelled_tickets": 0,
+      "completed_batches": 0,
+      "executor_ms": 0,
+      "executor_phases_ms": {},
+      "executor_samples": 0,
+      "executor_wall_samples": 0,
+      "failed_batches": 0,
+      "input_body_bytes": 512,
+      "manager_ms": {
+        "result_apply": 0,
+        "result_validation": 0,
+        "snapshot": 0.0011,
+        "validation": 0.0138
+      },
+      "pair_tests_upper_bound": 36,
+      "queries": 12,
+      "readback_bytes": 0,
+      "returned_hits": 0,
+      "submitted_batches": 4,
+      "upload_bytes": 0
+    }
+  },
+  "baseline_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 90,
+            "normal": [
+              1,
+              0,
+              0
+            ],
+            "point": [
+              -3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 8,
+            "fraction": 0,
+            "id": 7,
+            "normal": [
+              0,
+              -1,
+              0
+            ],
+            "point": [
+              0,
+              6,
+              0
+            ]
+          },
+          {
+            "distance": 6,
+            "fraction": 0,
+            "id": 41,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              5,
+              0,
+              0
+            ]
+          },
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 90,
+            "normal": [
+              1,
+              0,
+              0
+            ],
+            "point": [
+              -3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 4.000000476837158,
+            "fraction": 0.40000003576278687,
+            "id": 41,
+            "normal": [
+              -1,
+              0,
+              0
+            ],
+            "point": [
+              5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": []
+      }
+    ],
+    "version": 1
+  },
+  "complete": true,
+  "consumed_diagnostic": {
+    "actual": 2,
+    "api_version": 1,
+    "code": "SPATIAL_TICKET_UNKNOWN",
+    "context": {
+      "frame": 1,
+      "ticket": 2
+    },
+    "expected": "a currently live handle owned by this runtime",
+    "message": "SPATIAL_TICKET_UNKNOWN",
+    "operation": "spatial.take",
+    "path": "ticket",
+    "recoverable": true,
+    "recovery": {
+      "action": "Use an unconsumed live ticket from spatial.submit.",
+      "retry": "after_correction"
+    },
+    "terminal": false
+  },
+  "consumed_ticket_take_ok": false,
+  "delivery_update": 2,
+  "destroyed_index_submit_ok": false,
+  "diagnostic_after_success": {
+    "actual": -2,
+    "api_version": 1,
+    "code": "SPATIAL_INPUT_INVALID",
+    "context": {
+      "frame": 0,
+      "index": 1
+    },
+    "expected": {
+      "finite": true,
+      "max": 1000000,
+      "min": 0
+    },
+    "message": "bodies[1].radius must be finite and in 0..=1000000",
+    "operation": "spatial.update",
+    "path": "bodies[2].radius",
+    "recoverable": true,
+    "recovery": {
+      "action": "Correct the reported input field and call the operation again.",
+      "retry": "after_correction"
+    },
+    "terminal": false
+  },
+  "early_diagnostic": {
+    "api_version": 1,
+    "code": "SPATIAL_RESULT_NEXT_TICK",
+    "context": {
+      "frame": 0,
+      "ticket": 2
+    },
+    "message": "SPATIAL_RESULT_NEXT_TICK",
+    "operation": "spatial.take",
+    "recoverable": true,
+    "recovery": {
+      "action": "Take this ticket in the next update; do not branch gameplay on host readiness.",
+      "retry": "next_tick"
+    },
+    "terminal": false
+  },
+  "empty_result": {
+    "results": [],
+    "version": 2
+  },
+  "entity_after": {
+    "x": 37,
+    "y": -11
+  },
+  "entity_before": {
+    "x": 37,
+    "y": -11
+  },
+  "final_info": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bodies": 0,
+    "delivery": "next_tick",
+    "external": false,
+    "indices": 0,
+    "limits": {
+      "bodies": 131072,
+      "bodies_per_index": 65536,
+      "coordinate_abs": 1000000,
+      "hits_per_query": 64,
+      "indices": 8,
+      "queries_per_batch": 1024,
+      "safe_integer": 9007199254740991,
+      "submissions_per_tick": 4,
+      "tickets": 16
+    },
+    "operations": [
+      "nearest",
+      "overlap_sphere",
+      "sweep_sphere"
+    ],
+    "packed_format": "USB1",
+    "pending": 0,
+    "tickets": 0
+  },
+  "final_profile": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bindings": {
+      "calls": 15,
+      "clock": "host_monotonic",
+      "failed_calls": 4,
+      "input_decode_ms": 0.5243999999999999,
+      "last": {
+        "input_decode_ms": 0,
+        "operation": "spatial.take",
+        "output_encode_ms": 0,
+        "success": false,
+        "ticket": 2
+      },
+      "output_encode_ms": 0.08739999999999999,
+      "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+    },
+    "clock": "host_monotonic",
+    "last": {
+      "bodies": 3,
+      "executor": {
+        "clock": "host_monotonic",
+        "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+        "phases_ms": {
+          "cpu_execute": 0.0011
+        },
+        "readback_bytes": 0,
+        "total_ms": 0.0011,
+        "upload_bytes": 0
+      },
+      "executor_ms": 0.0011,
+      "manager_ms": {
+        "result_apply": 0.00009999999999999999,
+        "result_validation": 0.0023,
+        "snapshot": 0.00009999999999999999,
+        "validation": 0.0009
+      },
+      "pair_tests_upper_bound": 0,
+      "queries": 0,
+      "returned_hits": 0,
+      "ticket": 5,
+      "version": 2
+    },
+    "limits": {
+      "counter_max": 9007199254740991,
+      "retained_completed_batches": 1
+    },
+    "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+    "totals": {
+      "bodies": 12,
+      "cancelled_tickets": 0,
+      "completed_batches": 4,
+      "executor_ms": 0.0181,
+      "executor_phases_ms": {
+        "cpu_execute": 0.0181
+      },
+      "executor_samples": 4,
+      "executor_wall_samples": 4,
+      "failed_batches": 0,
+      "input_body_bytes": 512,
+      "manager_ms": {
+        "result_apply": 0.00039999999999999996,
+        "result_validation": 0.0188,
+        "snapshot": 0.0011,
+        "validation": 0.0138
+      },
+      "pair_tests_upper_bound": 36,
+      "queries": 12,
+      "readback_bytes": 0,
+      "returned_hits": 13,
+      "submitted_batches": 4,
+      "upload_bytes": 0
+    }
+  },
+  "initial_info": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bodies": 3,
+    "delivery": "next_tick",
+    "external": false,
+    "indices": 1,
+    "limits": {
+      "bodies": 131072,
+      "bodies_per_index": 65536,
+      "coordinate_abs": 1000000,
+      "hits_per_query": 64,
+      "indices": 8,
+      "queries_per_batch": 1024,
+      "safe_integer": 9007199254740991,
+      "submissions_per_tick": 4,
+      "tickets": 16
+    },
+    "operations": [
+      "nearest",
+      "overlap_sphere",
+      "sweep_sphere"
+    ],
+    "packed_format": "USB1",
+    "pending": 0,
+    "tickets": 0
+  },
+  "invalid_diagnostic": {
+    "actual": -2,
+    "api_version": 1,
+    "code": "SPATIAL_INPUT_INVALID",
+    "context": {
+      "frame": 0,
+      "index": 1
+    },
+    "expected": {
+      "finite": true,
+      "max": 1000000,
+      "min": 0
+    },
+    "message": "bodies[1].radius must be finite and in 0..=1000000",
+    "operation": "spatial.update",
+    "path": "bodies[2].radius",
+    "recoverable": true,
+    "recovery": {
+      "action": "Correct the reported input field and call the operation again.",
+      "retry": "after_correction"
+    },
+    "terminal": false
+  },
+  "invalid_update_ok": false,
+  "plain_object": {},
+  "repaired_result": {
+    "results": [
+      {
+        "hits": [
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 90,
+            "normal": [
+              1,
+              0,
+              0
+            ],
+            "point": [
+              -3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": [
+          {
+            "distance": 8,
+            "fraction": 0,
+            "id": 7,
+            "normal": [
+              0,
+              -1,
+              0
+            ],
+            "point": [
+              0,
+              6,
+              0
+            ]
+          },
+          {
+            "distance": 4,
+            "fraction": 0,
+            "id": 90,
+            "normal": [
+              1,
+              0,
+              0
+            ],
+            "point": [
+              -3.5,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "hits": []
+      },
+      {
+        "hits": []
+      }
+    ],
+    "version": 2
+  },
+  "repaired_version": 2,
+  "same_tick_take_ok": false,
+  "stale_index_diagnostic": {
+    "actual": 1,
+    "api_version": 1,
+    "code": "SPATIAL_INDEX_UNKNOWN",
+    "context": {
+      "frame": 1,
+      "index": 1
+    },
+    "expected": "a currently live handle owned by this runtime",
+    "message": "SPATIAL_INDEX_UNKNOWN",
+    "operation": "spatial.submit",
+    "path": "index",
+    "recoverable": true,
+    "recovery": {
+      "action": "Use a live index from spatial.create.",
+      "retry": "after_correction"
+    },
+    "terminal": false
+  },
+  "structured_repair_authorized": true,
+  "submission_update": 1,
+  "submitted_info": {
+    "api_version": 1,
+    "backend": "cpu",
+    "bodies": 3,
+    "delivery": "next_tick",
+    "external": false,
+    "indices": 1,
+    "limits": {
+      "bodies": 131072,
+      "bodies_per_index": 65536,
+      "coordinate_abs": 1000000,
+      "hits_per_query": 64,
+      "indices": 8,
+      "queries_per_batch": 1024,
+      "safe_integer": 9007199254740991,
+      "submissions_per_tick": 4,
+      "tickets": 16
+    },
+    "operations": [
+      "nearest",
+      "overlap_sphere",
+      "sweep_sphere"
+    ],
+    "packed_format": "USB1",
+    "pending": 4,
+    "tickets": 4
+  },
+  "typed_capacity": 1024,
+  "typed_empty": [],
+  "typed_numbers": [
+    4,
+    12,
+    16
+  ],
+  "typed_records": [
+    {
+      "label": "marker",
+      "value": 37
+    },
+    {
+      "label": "queries",
+      "value": 4
+    }
+  ]
+}

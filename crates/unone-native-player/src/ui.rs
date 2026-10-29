@@ -5,7 +5,7 @@ use std::collections::{BTreeMap, VecDeque};
 use unicode_script::{Script, UnicodeScript};
 use unicode_segmentation::UnicodeSegmentation;
 use unone_engine::{
-    SliderInteraction, SliderPhase, UiNode, UiRect, UiSliderAxis, UiSliderDrag, UiStyle,
+    SliderInteraction, SliderPhase, UiImageQuad, UiNode, UiRect, UiSliderAxis, UiSliderDrag, UiStyle,
     UiTextAlign, UiTextOverflow, UiTextWrap, UiTree, UiVerticalAlign,
 };
 
@@ -581,6 +581,30 @@ impl Rasterizer {
         Ok(())
     }
 
+    fn draw_image_batch(&self, svg: &mut String, quads: &[UiImageQuad], width: u32, height: u32,
+        defined_images: &mut BTreeMap<String, usize>) -> R<()> {
+        for (index, quad) in quads.iter().enumerate() {
+            let asset = &quad.asset;
+            let uri = self.images.get(asset).ok_or_else(|| format!("UI_IMAGE_UNAVAILABLE: {asset}; image_batch quad={index}; native UI accepts PNG or self-contained static SVG"))?;
+            let (iw, ih) = self.image_sizes[asset];
+            let source = quad.source_for_size(iw, ih)
+                .map_err(|e| format!("{e}; asset={asset}; quad={index}"))?;
+            let image_id = if let Some(id) = defined_images.get(asset) { *id } else {
+                let id = defined_images.len();
+                defined_images.insert(asset.clone(), id);
+                *svg += &format!("<defs><image id='slice{id}' width='{iw}' height='{ih}' xlink:href='{uri}'/></defs>");
+                id
+            };
+            let r = quad.rect;
+            *svg += &format!(
+                "<svg x='{}' y='{}' width='{}' height='{}' viewBox='{} {} {} {}' preserveAspectRatio='none' overflow='hidden' opacity='{}'><use xlink:href='#slice{image_id}'/></svg>",
+                r.x*width as f64/100., (100.-r.y-r.height)*height as f64/100.,
+                r.width*width as f64/100., r.height*height as f64/100.,
+                source.x, source.y, source.width, source.height, quad.opacity.unwrap_or(1.));
+        }
+        Ok(())
+    }
+
     fn draw(&self, tree: &UiTree, width: u32, height: u32) -> R<Vec<u8>> {
         let mut svg = format!(
             "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='{width}' height='{height}'>"
@@ -617,6 +641,10 @@ impl Rasterizer {
                 "<defs><clipPath id='t{index}'><rect x='{cx}' y='{cy}' width='{cw}' height='{ch}'/></clipPath></defs><g clip-path='url(#t{index})'>"
             );
             match node {
+                UiNode::ImageBatch { id, quads, .. } => {
+                    self.draw_image_batch(&mut svg, quads, width, height, &mut defined_images)
+                        .map_err(|e| format!("{e}; batch={id}"))?;
+                }
                 UiNode::Image {
                     asset,
                     fit,
@@ -640,7 +668,7 @@ impl Rasterizer {
                             *index
                         } else {
                             let index = defined_images.len();
-                            defined_images.insert(asset, index);
+                            defined_images.insert(asset.clone(), index);
                             svg += &format!(
                                 "<defs><image id='slice{index}' width='{iw}' height='{ih}' xlink:href='{uri}'/></defs>"
                             );
@@ -670,7 +698,7 @@ impl Rasterizer {
                         );
                     }
                 }
-                UiNode::Text { text, .. } | UiNode::Button { text, .. } => {
+                UiNode::TextInput { text, .. } | UiNode::Text { text, .. } | UiNode::Button { text, .. } => {
                     if let Some(style) = style {
                         self.styled_text(&mut svg, text, style, [cx, cy, cw, ch], unit)?;
                     } else if !text.is_empty() {
@@ -948,8 +976,75 @@ impl Surface {
 }
 
 #[cfg(test)]
+#[path = "ui_image_batch_tests.rs"]
+mod image_batch_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Opt-in application snapshots supplied by an integration runner. The
+    /// expected point/action pairs are independent of this host's hit testing.
+    /// Coordinates use the serialized UiTree's normalized UI coordinate space.
+    #[test]
+    fn external_pointer_route_fixture() {
+        #[derive(serde::Deserialize)]
+        struct Fixture {
+            tree: serde_json::Value,
+            points: Vec<Point>,
+        }
+        #[derive(serde::Deserialize)]
+        struct Point {
+            x: f64,
+            y: f64,
+            action: Option<String>,
+        }
+
+        let Some(path) = std::env::var_os("UNONE_UI_ROUTE_FIXTURE") else {
+            eprintln!("UNONE_UI_ROUTE_FIXTURE unset; external application snapshots not exercised");
+            return;
+        };
+        let bytes = std::fs::read(&path).expect("read UNONE_UI_ROUTE_FIXTURE");
+        let fixtures: Vec<Fixture> = serde_json::from_slice(&bytes)
+            .expect("UI route fixture must be [{tree: UiTree, points: [{x, y, action}]}]");
+        assert!(!fixtures.is_empty(), "UI route fixture must contain snapshots");
+        let mut checked = 0;
+        for (snapshot, fixture) in fixtures.into_iter().enumerate() {
+            let tree = UiTree::from_json(fixture.tree)
+                .unwrap_or_else(|error| panic!("snapshot {snapshot}: invalid UiTree: {error}"));
+            assert!(!fixture.points.is_empty(), "snapshot {snapshot}: no expected points");
+            for (point, expected) in fixture.points.into_iter().enumerate() {
+                assert!(expected.x.is_finite() && expected.y.is_finite(),
+                    "snapshot {snapshot} point {point}: non-finite position");
+                let mut router = PointerRouter::default();
+                let consumed = router.down(Some(&tree), 1, expected.x, expected.y);
+                if expected.action.is_some() {
+                    assert!(consumed, "snapshot {snapshot} point {point}: expected a captured action");
+                }
+                assert_eq!(router.next_edge(), expected.action.clone().map(|action| (action, true)),
+                    "snapshot {snapshot} point {point}: press at ({}, {})", expected.x, expected.y);
+                assert!(router.next_edge().is_none(), "snapshot {snapshot} point {point}: duplicate press");
+                // Match the actual host's held pointer/capture/reconcile path;
+                // repeated down and movement must not synthesize more presses.
+                for _ in 0..8 {
+                    assert_eq!(router.down(Some(&tree), 1, expected.x, expected.y), consumed);
+                    assert_eq!(router.move_pointer(1, expected.x, expected.y), consumed);
+                    router.reconcile(Some(&tree));
+                    assert!(router.next_edge().is_none(),
+                        "snapshot {snapshot} point {point}: held pointer repeated its action");
+                }
+                assert_eq!(router.up(1), consumed);
+                assert_eq!(router.next_edge(), expected.action.map(|action| (action, false)),
+                    "snapshot {snapshot} point {point}: release edge");
+                assert!(!router.captured(1));
+                assert!(!router.up(1), "snapshot {snapshot} point {point}: repeated release");
+                assert!(router.next_edge().is_none(), "snapshot {snapshot} point {point}: duplicate release");
+                assert!(router.take_error().is_none());
+                checked += 1;
+            }
+        }
+        eprintln!("UNONE_UI_ROUTE_FIXTURE verified {checked} point/action pairs");
+    }
 
     fn empty_package(presentation: serde_json::Value) -> Package {
         Package {

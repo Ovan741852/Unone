@@ -10,18 +10,20 @@ local styleFields: Fields = {
     background=true,border_color=true,border_width=true,border_radius=true,opacity=true,
 }
 local insetFields: Fields = {left=true,top=true,right=true,bottom=true}
-local themeFields: Fields = {text=true,button=true,slider=true,combobox=true,panel=true,image=true}
+local themeFields: Fields = {text_input=true,text=true,button=true,slider=true,combobox=true,panel=true,image=true}
 local surfaceFields: {[string]: Fields} = {
     panel={kind=true,style=true},
     image={kind=true,asset=true,fit=true,slice=true,alt=true,style=true},
 }
 local leafFields: {[string]: Fields} = {
+    text_input={id=true,text=true,placeholder=true,max_length=true,focused=true,enabled=true,style=true},
     text={id=true,text=true,style=true},
     button={id=true,text=true,action=true,style=true},
     slider={id=true,text=true,action=true,style=true},
     combobox={id=true,text=true,action=true,expanded=true,style=true},
     panel={id=true,style=true,background_for=true},
     image={id=true,asset=true,fit=true,slice=true,alt=true,style=true,background_for=true},
+    image_batch={id=true,quads=true,background_for=true},
 }
 local componentFields: Fields = {id=true,component=true,children=true,surface=true}
 local screenFields: Fields = {id=true,node=true,children=true,budget=true}
@@ -103,11 +105,25 @@ local function copy(value: any): any
         if isManagedNode(item) then return item end
         assert(not active[item], "UI_COMPONENT_COPY: cyclic UI data")
         active[item] = true
-        local result: any = {}
+        -- Native cloning avoids reinserting every scalar in large UI records.
+        -- Metatables never belong to portable output; preserve support for
+        -- protected metatables without asking table.clone to copy them.
+        local hasMetatable = getmetatable(item)~=nil
+        local result: any = if hasMetatable then {} else table.clone(item)
+        local childDepth = depth+1
         for key, child in pairs(item) do
             assert(type(key)=="string" or type(key)=="number", "UI_COMPONENT_COPY: invalid table key")
             if key=="children" then dense(child,"children") end
-            result[key] = visit(child,depth+1)
+            local childKind = type(child)
+            if childKind=="table" then
+                result[key] = visit(child,childDepth)
+            else
+                remaining -= 1
+                assert(remaining>=0 and childDepth<=64, "UI_COMPONENT_COPY: data exceeds copy limits")
+                assert(childKind=="nil" or childKind=="string" or childKind=="number" or childKind=="boolean",
+                    "UI_COMPONENT_COPY: only portable UI data can be copied")
+                if hasMetatable then result[key] = child end
+            end
         end
         active[item] = nil
         return result
@@ -467,6 +483,7 @@ local function makeKit(theme: any?): any
         end
         return node
     end
+    kit.textInput = function(props: any): any return leaf("text_input",props) end
     kit.text = function(props: any): any return leaf("text",props) end
     kit.button = function(props: any): any return leaf("button",props) end
     kit.slider = function(props: any): any return leaf("slider",props) end
@@ -574,6 +591,17 @@ local function makeKit(theme: any?): any
     kit.combobox = function(props: any): any return leaf("combobox",props) end
     kit.panel = function(props: any): any return leaf("panel",props) end
     kit.image = function(props: any): any return leaf("image",props) end
+    kit.imageBatch = function(props: any): any
+        available()
+        fields(props,leafFields.image_batch,"imageBatch")
+        dense(props.quads,"imageBatch.quads")
+        for _,quad in ipairs(props.quads) do
+            fields(quad,{asset=true,rect=true,source=true,opacity=true},"imageBatch.quad")
+            fields(quad.rect,rectFields,"imageBatch.quad.rect")
+            if quad.source~=nil then fields(quad.source,rectFields,"imageBatch.quad.source") end
+        end
+        return leaf("image_batch",props)
+    end
     kit.component = function(props: any): any
         available()
         fields(props,componentFields,"component")

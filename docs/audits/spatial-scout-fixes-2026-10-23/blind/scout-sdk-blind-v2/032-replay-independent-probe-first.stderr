@@ -1,0 +1,5 @@
+File D:\Projects\Unone\docs\audits\spatial-scout-fixes-2026-10-23\blind\scout-sdk-blind-v2\Verify-Probe.ps1 cannot be l
+oaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https:/
+go.microsoft.com/fwlink/?LinkID=135170.
+    + CategoryInfo          : SecurityError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnauthorizedAccess

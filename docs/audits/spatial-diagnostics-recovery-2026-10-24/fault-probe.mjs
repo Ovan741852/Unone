@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {resolve} from 'node:path';
+const root=resolve(process.argv[process.argv.indexOf('--root')+1]);
+const env={...process.env,CARGO_HOME:resolve(root,'.toolcache/cargo'),RUSTUP_HOME:resolve(root,'.toolcache/rustup'),LIBRARY_PATH:resolve(root,'.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/self-contained')};
+for(const key of Object.keys(env))if(key.toUpperCase()==='PATH')delete env[key];env.PATH=resolve(root,'.toolcache/cargo/bin')+';'+resolve(root,'.toolcache/w64devkit/bin')+';'+process.env.PATH;
+const commands=[[resolve(root,'.toolcache/cargo/bin/cargo.exe'),['test','--offline','-p','unone-engine','--test','spatial_diagnostics','--test','spatial_diagnostic_boundaries','--test','spatial_faults','--test','spatial_metrics']],[process.execPath,['--test',...['spatial-faults.test.mjs','spatial-metrics.test.mjs','spatial-host.test.mjs','spatial-gpu.test.mjs','runtime-core.test.mjs'].map(p=>'web/shared/'+p)]]];
+for(const [binary,argv]of commands){const r=spawnSync(binary,argv,{cwd:root,env,encoding:'utf8',windowsHide:true,timeout:50000,maxBuffer:120*1024});console.log(JSON.stringify({event:'command',argv:[binary,...argv],status:r.status,error:r.error?.message,stdout:r.stdout,stderr:r.stderr}));assert.ok(!r.error);assert.equal(r.status,0);}
+console.log(JSON.stringify({event:'task_result',complete:true,scope:'Public Rust host/runtime and official JavaScript host/executor synthetic fault injection: atomicity, late replies, invalid envelopes, close/reload epochs, sticky failure, no execution fallback, detailed terminal diagnostics, limit retry policies and observer purity. Not actual driver/device-loss validation, fresh authorship or full compiler dependency provenance.'}));

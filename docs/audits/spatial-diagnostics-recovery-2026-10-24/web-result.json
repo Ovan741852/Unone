@@ -1,0 +1,1318 @@
+{
+  "ok": true,
+  "browser": "155.0.4283.62",
+  "runtime": "artifacts\\spatial-hardening-runtime",
+  "runs": {
+    "cpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "cpu",
+        "custom_empty": [],
+        "early_take": {
+          "api_version": 1,
+          "code": "SPATIAL_RESULT_NEXT_TICK",
+          "context": {
+            "frame": 0,
+            "ticket": 6
+          },
+          "message": "SPATIAL_RESULT_NEXT_TICK",
+          "operation": "spatial.take",
+          "recoverable": true,
+          "recovery": {
+            "action": "Take this ticket in the next update; do not branch gameplay on host readiness.",
+            "retry": "next_tick"
+          },
+          "terminal": false
+        },
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "invalid_update": {
+          "actual": -1,
+          "api_version": 1,
+          "code": "SPATIAL_INPUT_INVALID",
+          "context": {
+            "frame": 0,
+            "index": 3
+          },
+          "expected": {
+            "finite": true,
+            "max": 1000000,
+            "min": 0
+          },
+          "message": "bodies[0].radius must be finite and in 0..=1000000",
+          "operation": "spatial.update",
+          "path": "bodies[1].radius",
+          "recoverable": true,
+          "recovery": {
+            "action": "Correct the reported input field and call the operation again.",
+            "retry": "after_correction"
+          },
+          "terminal": false
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bindings": {
+            "calls": 14,
+            "clock": "host_monotonic",
+            "failed_calls": 2,
+            "input_decode_ms": 28.099998999999997,
+            "last": {
+              "input_decode_ms": 0,
+              "operation": "spatial.take",
+              "output_encode_ms": 1.7,
+              "success": true,
+              "ticket": 7
+            },
+            "output_encode_ms": 1.899999,
+            "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+          },
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+              "phases_ms": {
+                "cpu_execute": 2.8
+              },
+              "readback_bytes": 0,
+              "total_ms": 2.8,
+              "upload_bytes": 0
+            },
+            "executor_ms": 2.8,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.4000009999999998,
+              "snapshot": 0,
+              "validation": 1.4000009999999998
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 3.099999,
+            "executor_phases_ms": {
+              "cpu_execute": 3.099999
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.7000009999999999,
+              "snapshot": 0,
+              "validation": 1.4999999999999998
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 0,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 0
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 3.743392066509216e-23,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "cpu",
+        "backend": "cpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": null,
+        "metrics": {
+          "api_version": 1,
+          "clock": "host_monotonic",
+          "scope": "Since latest host load. JSON encode includes stringify/TextEncoder; copy_in covers WASM allocation/copy; abi includes the synchronous WASM request and its internal serialization, not GPU execution; response_decode covers readObservation copy/TextDecoder/JSON parse. Setup includes executor creation/configuration; configure_ms overlaps bridge configure timings. Excludes project load, Worker messaging, caller application and report cloning. Failed request metrics include only phases reached.",
+          "setup": {
+            "success": true,
+            "total_ms": 0,
+            "executor_create_ms": 0,
+            "configure_ms": 0,
+            "gpu_initialized": false
+          },
+          "bridge": {
+            "totals": {
+              "requests": 0,
+              "failed_requests": 0,
+              "request_bytes": 0,
+              "response_bytes": 0,
+              "json_encode_ms": 0,
+              "copy_in_ms": 0,
+              "abi_ms": 0,
+              "response_decode_ms": 0
+            },
+            "by_kind": {}
+          }
+        }
+      }
+    },
+    "gpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "webgpu",
+        "custom_empty": [],
+        "early_take": {
+          "api_version": 1,
+          "code": "SPATIAL_RESULT_NEXT_TICK",
+          "context": {
+            "frame": 0,
+            "ticket": 6
+          },
+          "message": "SPATIAL_RESULT_NEXT_TICK",
+          "operation": "spatial.take",
+          "recoverable": true,
+          "recovery": {
+            "action": "Take this ticket in the next update; do not branch gameplay on host readiness.",
+            "retry": "next_tick"
+          },
+          "terminal": false
+        },
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": true,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "invalid_update": {
+          "actual": -1,
+          "api_version": 1,
+          "code": "SPATIAL_INPUT_INVALID",
+          "context": {
+            "frame": 0,
+            "index": 3
+          },
+          "expected": {
+            "finite": true,
+            "max": 1000000,
+            "min": 0
+          },
+          "message": "bodies[0].radius must be finite and in 0..=1000000",
+          "operation": "spatial.update",
+          "path": "bodies[1].radius",
+          "recoverable": true,
+          "recovery": {
+            "action": "Correct the reported input field and call the operation again.",
+            "retry": "after_correction"
+          },
+          "terminal": false
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "bindings": {
+            "calls": 10,
+            "clock": "host_monotonic",
+            "failed_calls": 2,
+            "input_decode_ms": 0.699998,
+            "last": {
+              "input_decode_ms": 0,
+              "operation": "spatial.take",
+              "output_encode_ms": 0.5,
+              "success": true,
+              "ticket": 7
+            },
+            "output_encode_ms": 0.5,
+            "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+          },
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+              "phases_ms": {
+                "decode": 0.20000000298023224,
+                "encode_submit": 0.09999999403953552,
+                "packing": 1.5,
+                "preparation": 7.9000000059604645,
+                "queue_wait": 0,
+                "readback_wait": 4.0999999940395355,
+                "upload": 0.4000000059604645,
+                "validation": 4.200000002980232
+              },
+              "readback_bytes": 395264,
+              "total_ms": 14.700000002980232,
+              "upload_bytes": 204816
+            },
+            "executor_ms": 14.700000002980232,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.100001,
+              "snapshot": 0.1,
+              "validation": 1.100001
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 27.100000023841858,
+            "executor_phases_ms": {
+              "decode": 0.5,
+              "encode_submit": 0.3999999910593033,
+              "packing": 1.5999999940395355,
+              "preparation": 8.30000002682209,
+              "queue_wait": 0.29999999701976776,
+              "readback_wait": 13.899999991059303,
+              "upload": 0.9000000059604645,
+              "validation": 4.600000023841858
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.100001,
+              "snapshot": 0.1,
+              "validation": 1.100001
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 413792,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 205472
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "gpu",
+        "backend": "webgpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": {
+          "clock": "host_monotonic",
+          "total_ms": 14.700000002980232,
+          "phases_ms": {
+            "preparation": 7.9000000059604645,
+            "queue_wait": 0,
+            "validation": 4.200000002980232,
+            "packing": 1.5,
+            "upload": 0.4000000059604645,
+            "encode_submit": 0.09999999403953552,
+            "readback_wait": 4.0999999940395355,
+            "decode": 0.20000000298023224,
+            "cpu_execute": null,
+            "gpu_kernel": null
+          },
+          "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+          "upload_bytes": 204816,
+          "readback_bytes": 395264
+        },
+        "metrics": {
+          "api_version": 1,
+          "clock": "host_monotonic",
+          "scope": "Since latest host load. JSON encode includes stringify/TextEncoder; copy_in covers WASM allocation/copy; abi includes the synchronous WASM request and its internal serialization, not GPU execution; response_decode covers readObservation copy/TextDecoder/JSON parse. Setup includes executor creation/configuration; configure_ms overlaps bridge configure timings. Excludes project load, Worker messaging, caller application and report cloning. Failed request metrics include only phases reached.",
+          "setup": {
+            "success": true,
+            "total_ms": 248,
+            "executor_create_ms": 242,
+            "configure_ms": 1.7000000029802322,
+            "gpu_initialized": true
+          },
+          "bridge": {
+            "totals": {
+              "requests": 7,
+              "failed_requests": 0,
+              "request_bytes": 13054,
+              "response_bytes": 380243,
+              "json_encode_ms": 0.4000000059604645,
+              "copy_in_ms": 0,
+              "abi_ms": 6.799999997019768,
+              "response_decode_ms": 1.2999999970197678
+            },
+            "by_kind": {
+              "configure": {
+                "requests": 1,
+                "failed_requests": 0,
+                "request_bytes": 39,
+                "response_bytes": 424,
+                "json_encode_ms": 0.09999999403953552,
+                "copy_in_ms": 0,
+                "abi_ms": 1.2000000029802322,
+                "response_decode_ms": 0.10000000894069672
+              },
+              "drain": {
+                "requests": 2,
+                "failed_requests": 0,
+                "request_bytes": 32,
+                "response_bytes": 379803,
+                "json_encode_ms": 0.10000000894069672,
+                "copy_in_ms": 0,
+                "abi_ms": 3.0999999940395355,
+                "response_decode_ms": 0.9000000059604645
+              },
+              "complete": {
+                "requests": 4,
+                "failed_requests": 0,
+                "request_bytes": 12983,
+                "response_bytes": 16,
+                "json_encode_ms": 0.20000000298023224,
+                "copy_in_ms": 0,
+                "abi_ms": 2.5,
+                "response_decode_ms": 0.29999998211860657
+              }
+            }
+          }
+        }
+      }
+    },
+    "worker_cpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "cpu",
+        "custom_empty": [],
+        "early_take": {
+          "api_version": 1,
+          "code": "SPATIAL_RESULT_NEXT_TICK",
+          "context": {
+            "frame": 0,
+            "ticket": 6
+          },
+          "message": "SPATIAL_RESULT_NEXT_TICK",
+          "operation": "spatial.take",
+          "recoverable": true,
+          "recovery": {
+            "action": "Take this ticket in the next update; do not branch gameplay on host readiness.",
+            "retry": "next_tick"
+          },
+          "terminal": false
+        },
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": false,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "invalid_update": {
+          "actual": -1,
+          "api_version": 1,
+          "code": "SPATIAL_INPUT_INVALID",
+          "context": {
+            "frame": 0,
+            "index": 3
+          },
+          "expected": {
+            "finite": true,
+            "max": 1000000,
+            "min": 0
+          },
+          "message": "bodies[0].radius must be finite and in 0..=1000000",
+          "operation": "spatial.update",
+          "path": "bodies[1].radius",
+          "recoverable": true,
+          "recovery": {
+            "action": "Correct the reported input field and call the operation again.",
+            "retry": "after_correction"
+          },
+          "terminal": false
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "cpu",
+          "bindings": {
+            "calls": 14,
+            "clock": "host_monotonic",
+            "failed_calls": 2,
+            "input_decode_ms": 16.899999,
+            "last": {
+              "input_decode_ms": 0,
+              "operation": "spatial.take",
+              "output_encode_ms": 0.9,
+              "success": true,
+              "ticket": 7
+            },
+            "output_encode_ms": 1.099999,
+            "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+          },
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "CPU backend does not dispatch GPU work",
+              "phases_ms": {
+                "cpu_execute": 1.7
+              },
+              "readback_bytes": 0,
+              "total_ms": 1.7,
+              "upload_bytes": 0
+            },
+            "executor_ms": 1.7,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.199999,
+              "snapshot": 0.1,
+              "validation": 1.2
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 1.7,
+            "executor_phases_ms": {
+              "cpu_execute": 1.7
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.3,
+              "snapshot": 0.1,
+              "validation": 1.2
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 0,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 0
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 3.743392066509216e-23,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "cpu",
+        "backend": "cpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": null,
+        "metrics": {
+          "api_version": 1,
+          "clock": "host_monotonic",
+          "scope": "Since latest host load. JSON encode includes stringify/TextEncoder; copy_in covers WASM allocation/copy; abi includes the synchronous WASM request and its internal serialization, not GPU execution; response_decode covers readObservation copy/TextDecoder/JSON parse. Setup includes executor creation/configuration; configure_ms overlaps bridge configure timings. Excludes project load, Worker messaging, caller application and report cloning. Failed request metrics include only phases reached.",
+          "setup": {
+            "success": true,
+            "total_ms": 0,
+            "executor_create_ms": 0,
+            "configure_ms": 0,
+            "gpu_initialized": false
+          },
+          "bridge": {
+            "totals": {
+              "requests": 0,
+              "failed_requests": 0,
+              "request_bytes": 0,
+              "response_bytes": 0,
+              "json_encode_ms": 0,
+              "copy_in_ms": 0,
+              "abi_ms": 0,
+              "response_decode_ms": 0
+            },
+            "by_kind": {}
+          }
+        }
+      }
+    },
+    "worker_gpu": {
+      "frame": 2,
+      "observations": {
+        "backend": "webgpu",
+        "custom_empty": [],
+        "early_take": {
+          "api_version": 1,
+          "code": "SPATIAL_RESULT_NEXT_TICK",
+          "context": {
+            "frame": 0,
+            "ticket": 6
+          },
+          "message": "SPATIAL_RESULT_NEXT_TICK",
+          "operation": "spatial.take",
+          "recoverable": true,
+          "recovery": {
+            "action": "Take this ticket in the next update; do not branch gameplay on host readiness.",
+            "retry": "next_tick"
+          },
+          "terminal": false
+        },
+        "empty_batch": {
+          "results": [],
+          "version": 1
+        },
+        "info": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "bodies": 4100,
+          "delivery": "next_tick",
+          "external": true,
+          "indices": 3,
+          "limits": {
+            "bodies": 131072,
+            "bodies_per_index": 65536,
+            "coordinate_abs": 1000000,
+            "hits_per_query": 64,
+            "indices": 8,
+            "queries_per_batch": 1024,
+            "safe_integer": 9007199254740991,
+            "submissions_per_tick": 4,
+            "tickets": 16
+          },
+          "operations": [
+            "nearest",
+            "overlap_sphere",
+            "sweep_sphere"
+          ],
+          "packed_format": "USB1",
+          "pending": 0,
+          "tickets": 0
+        },
+        "invalid_update": {
+          "actual": -1,
+          "api_version": 1,
+          "code": "SPATIAL_INPUT_INVALID",
+          "context": {
+            "frame": 0,
+            "index": 3
+          },
+          "expected": {
+            "finite": true,
+            "max": 1000000,
+            "min": 0
+          },
+          "message": "bodies[0].radius must be finite and in 0..=1000000",
+          "operation": "spatial.update",
+          "path": "bodies[1].radius",
+          "recoverable": true,
+          "recovery": {
+            "action": "Correct the reported input field and call the operation again.",
+            "retry": "after_correction"
+          },
+          "terminal": false
+        },
+        "nearest": 10,
+        "no_hits": {
+          "results": [
+            {
+              "hits": []
+            }
+          ],
+          "version": 1
+        },
+        "overlap": 20,
+        "plain_object": {},
+        "profile": {
+          "api_version": 1,
+          "backend": "webgpu",
+          "bindings": {
+            "calls": 10,
+            "clock": "host_monotonic",
+            "failed_calls": 2,
+            "input_decode_ms": 0.699999,
+            "last": {
+              "input_decode_ms": 0,
+              "operation": "spatial.take",
+              "output_encode_ms": 0.5,
+              "success": true,
+              "ticket": 7
+            },
+            "output_encode_ms": 0.699999,
+            "scope": "Since backend selection or successful reload. pack/create/update/destroy/submit/take/cancel attempts only. Input conversion includes schema checks and failed-input diagnostic construction; output conversion includes packed buffer creation or result JSON-to-Lua conversion. Excludes manager/executor, observation publication and lastDiagnostic/info/profile serialization. Latest operation is independent of latest completed batch."
+          },
+          "clock": "host_monotonic",
+          "last": {
+            "bodies": 4096,
+            "executor": {
+              "clock": "host_monotonic",
+              "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+              "phases_ms": {
+                "decode": 0.29999999701976776,
+                "encode_submit": 0,
+                "packing": 1.5999999940395355,
+                "preparation": 6.200000002980232,
+                "queue_wait": 0,
+                "readback_wait": 3.1000000089406967,
+                "upload": 0.29999999701976776,
+                "validation": 3
+              },
+              "readback_bytes": 395264,
+              "total_ms": 11.900000005960464,
+              "upload_bytes": 204816
+            },
+            "executor_ms": 11.900000005960464,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.2999990000000001,
+              "snapshot": 0,
+              "validation": 1.2
+            },
+            "pair_tests_upper_bound": 524288,
+            "queries": 128,
+            "returned_hits": 128,
+            "ticket": 7,
+            "version": 1
+          },
+          "limits": {
+            "counter_max": 9007199254740991,
+            "retained_completed_batches": 1
+          },
+          "scope": "Successful submissions and completed batches since backend selection or successful reload; invalid API attempts excluded. Manager timings exclude Luau conversion. Executor phases are host wall time, may overlap, and are not GPU kernel time. Pair tests are an upper bound, not measured visits. input_body_bytes is equivalent USB1 payload size, not allocation traffic.",
+          "totals": {
+            "bodies": 4100,
+            "cancelled_tickets": 0,
+            "completed_batches": 4,
+            "executor_ms": 24.700000017881393,
+            "executor_phases_ms": {
+              "decode": 0.5,
+              "encode_submit": 0,
+              "packing": 1.699999988079071,
+              "preparation": 6.5,
+              "queue_wait": 2.000000014901161,
+              "readback_wait": 12.299999997019768,
+              "upload": 0.5999999940395355,
+              "validation": 3.2999999970197678
+            },
+            "executor_samples": 4,
+            "executor_wall_samples": 4,
+            "failed_batches": 0,
+            "input_body_bytes": 164032,
+            "manager_ms": {
+              "result_apply": 0,
+              "result_validation": 1.2999990000000001,
+              "snapshot": 0,
+              "validation": 1.2
+            },
+            "pair_tests_upper_bound": 524308,
+            "queries": 134,
+            "readback_bytes": 413792,
+            "returned_hits": 133,
+            "submitted_batches": 4,
+            "upload_bytes": 205472
+          }
+        },
+        "result": {
+          "results": [
+            {
+              "hits": [
+                {
+                  "distance": 2,
+                  "fraction": 0,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 20,
+                  "normal": [
+                    0,
+                    0,
+                    1
+                  ],
+                  "point": [
+                    8,
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 1,
+                  "fraction": 0.25,
+                  "id": 10,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    1.5,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 6,
+                  "fraction": 0,
+                  "id": 4294967295,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    6,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "hits": [
+                {
+                  "distance": 0,
+                  "fraction": 0,
+                  "id": 4294967294,
+                  "normal": [
+                    -1,
+                    0,
+                    0
+                  ],
+                  "point": [
+                    3.000000157232057e-23,
+                    0,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "version": 1
+        },
+        "sweep": 0.25
+      },
+      "report": {
+        "requested": "gpu",
+        "backend": "webgpu",
+        "fallback_reason": null,
+        "fault": null,
+        "profile": {
+          "clock": "host_monotonic",
+          "total_ms": 11.900000005960464,
+          "phases_ms": {
+            "preparation": 6.200000002980232,
+            "queue_wait": 0,
+            "validation": 3,
+            "packing": 1.5999999940395355,
+            "upload": 0.29999999701976776,
+            "encode_submit": 0,
+            "readback_wait": 3.1000000089406967,
+            "decode": 0.29999999701976776,
+            "cpu_execute": null,
+            "gpu_kernel": null
+          },
+          "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+          "upload_bytes": 204816,
+          "readback_bytes": 395264
+        },
+        "metrics": {
+          "api_version": 1,
+          "clock": "host_monotonic",
+          "scope": "Since latest host load. JSON encode includes stringify/TextEncoder; copy_in covers WASM allocation/copy; abi includes the synchronous WASM request and its internal serialization, not GPU execution; response_decode covers readObservation copy/TextDecoder/JSON parse. Setup includes executor creation/configuration; configure_ms overlaps bridge configure timings. Excludes project load, Worker messaging, caller application and report cloning. Failed request metrics include only phases reached.",
+          "setup": {
+            "success": true,
+            "total_ms": 149.20000000298023,
+            "executor_create_ms": 145.5,
+            "configure_ms": 0.5,
+            "gpu_initialized": true
+          },
+          "bridge": {
+            "totals": {
+              "requests": 7,
+              "failed_requests": 0,
+              "request_bytes": 12933,
+              "response_bytes": 380243,
+              "json_encode_ms": 0.5000000149011612,
+              "copy_in_ms": 0.10000000894069672,
+              "abi_ms": 4.5999999940395355,
+              "response_decode_ms": 1
+            },
+            "by_kind": {
+              "configure": {
+                "requests": 1,
+                "failed_requests": 0,
+                "request_bytes": 39,
+                "response_bytes": 424,
+                "json_encode_ms": 0.10000000894069672,
+                "copy_in_ms": 0,
+                "abi_ms": 0.09999999403953552,
+                "response_decode_ms": 0
+              },
+              "drain": {
+                "requests": 2,
+                "failed_requests": 0,
+                "request_bytes": 32,
+                "response_bytes": 379803,
+                "json_encode_ms": 0.20000000298023224,
+                "copy_in_ms": 0,
+                "abi_ms": 2.8999999910593033,
+                "response_decode_ms": 0.9000000059604645
+              },
+              "complete": {
+                "requests": 4,
+                "failed_requests": 0,
+                "request_bytes": 12862,
+                "response_bytes": 16,
+                "json_encode_ms": 0.20000000298023224,
+                "copy_in_ms": 0.10000000894069672,
+                "abi_ms": 1.6000000089406967,
+                "response_decode_ms": 0.09999999403953552
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "errors": []
+}

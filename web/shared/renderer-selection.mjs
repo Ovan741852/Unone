@@ -1,6 +1,14 @@
 // The official player owns the runtime, input, persistence and scheduling.
 // Custom renderers are a deliberately selected Web host extension. A module
 // executes as ordinary trusted JS; this selection contract is not a sandbox.
+import {parseProjectedRaster} from '../renderer/projected-raster-policy.js';
+import {parseFrameProfile} from '../renderer/projected-frame-policy.js';
+import {parseTextureCache} from '../renderer/texture-cache-policy.js';
+export function normalizeAntialias(value) {
+  if (value === undefined) return true;
+  if (typeof value !== 'boolean') throw Error('ANTIALIAS_INVALID: expected an optional boolean');
+  return value;
+}
 export async function createPlayerRenderer(canvas, options, presentation = {}, {
   createOfficial,
   loadModule = url => import(url),
@@ -12,9 +20,20 @@ export async function createPlayerRenderer(canvas, options, presentation = {}, {
   if (!Array.isArray(files)) throw Error('RENDERER_FILES_INVALID: expected an array of project-relative paths');
   if (mode === 'official') {
     if (modulePath != null || files.length) throw Error('RENDERER_REPLACEMENT_NOT_DECLARED: select renderer_mode custom explicitly');
-    return createOfficial(canvas, options);
+    const antialias = normalizeAntialias(presentation.antialias === undefined ? options.antialias : presentation.antialias);
+    const value=presentation.projected_raster===undefined?options.projectedRaster:presentation.projected_raster;
+    parseProjectedRaster(value);
+    const frame=presentation.projected_material_profile===undefined?options.projectedMaterialProfile:presentation.projected_material_profile;
+    parseFrameProfile(frame);
+    const textureCache=presentation.texture_cache===undefined?options.textureCache:presentation.texture_cache;
+    parseTextureCache(textureCache);
+    return createOfficial(canvas, {...options, antialias,...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
   }
   if (mode !== 'custom') throw Error(`RENDERER_MODE_INVALID: ${mode}`);
+  if(presentation.texture_cache!==undefined||options.textureCache!==undefined)throw Error('TEXTURE_CACHE_OFFICIAL_ONLY');
+  if(presentation.projected_material_profile!==undefined||options.projectedMaterialProfile!==undefined)throw Error('PROJECTED_FRAME_OFFICIAL_WEBGL_ONLY');
+  if(presentation.projected_raster!==undefined||options.projectedRaster!==undefined)throw Error('PROJECTED_RASTER_OFFICIAL_WEBGL_ONLY: omit projected_raster for a custom renderer');
+  if (presentation.antialias !== undefined) throw Error('ANTIALIAS_OFFICIAL_ONLY: omit antialias for a custom renderer');
   if (typeof modulePath !== 'string' || !/\.(mjs|js)$/.test(modulePath) || !files.includes(modulePath)) {
     throw Error('RENDERER_MODULE_REQUIRED: custom mode requires renderer_module in renderer_files');
   }

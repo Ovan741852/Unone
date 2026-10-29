@@ -1,0 +1,7 @@
+Method invocation failed because [System.Object[]] does not contain a method named 'op_Subtraction'.
+At D:\Projects\Unone\docs\audits\spatial-scout-fixes-2026-10-23\blind\scout-sdk-blind-v2\Verify-Probe.ps1:49 char:28
++ ... ,$b){return ,@([double]$a[0]-$b[0],[double]$a[1]-$b[1],[double]$a[2]- ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (op_Subtraction:String) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : MethodNotFound
+ 

@@ -1,0 +1,36 @@
+{
+  "query": "entity create transform",
+  "matches": [],
+  "suggested_next_actions": [
+    {
+      "action": "search_api_index",
+      "ready": true,
+      "executable": "game",
+      "argv": [
+        "api",
+        "search",
+        "",
+        "--json"
+      ],
+      "reason": "Query the complete public Engine API index; this query does not need project context.",
+      "diagnostic": null
+    },
+    {
+      "action": "list_systems",
+      "ready": false,
+      "executable": null,
+      "argv": null,
+      "reason": "Could not read \\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile\\project.unone.json: 系統找不到指定的檔案。 (os error 2)",
+      "diagnostic": {
+        "code": "PROJECT_CONFIG_NOT_FOUND",
+        "severity": "ERROR",
+        "summary": "Unone project configuration was not found",
+        "explanation": "Could not read \\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-observation-profile-2026-10-23\\blind\\scout-arrays-profile\\project.unone.json: 系統找不到指定的檔案。 (os error 2)",
+        "facts": {},
+        "likely_causes": [],
+        "suggested_actions": [],
+        "source": null
+      }
+    }
+  ]
+}

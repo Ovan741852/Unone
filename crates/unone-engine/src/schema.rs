@@ -12,6 +12,8 @@ pub const SCHEMA_NAMES: &[&str] = &[
     "particle",
     "shader",
     "mesh",
+    "heightfield",
+    "heightfield-patch",
     "input",
     "host-project",
     "developer",
@@ -32,6 +34,8 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         "scene" => schemars::schema_for!(crate::SceneFile),
         "test" => schemars::schema_for!(crate::TestSpec),
         "mesh" => schemars::schema_for!(crate::MeshAsset),
+        "heightfield" => schemars::schema_for!(crate::HeightfieldDefinition),
+        "heightfield-patch" => schemars::schema_for!(crate::HeightfieldPatch),
         "particle" => schemars::schema_for!(crate::ParticleDefinition),
         "shader" => schemars::schema_for!(crate::ShaderMaterialDefinition),
         "bundle" => schemars::schema_for!(crate::BundleManifest),
@@ -60,6 +64,11 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         value["$defs"]["UiBudget"]["properties"]["max_nodes"]["maximum"] =
             serde_json::json!(contract.host_max_nodes);
         value["properties"]["children"]["maxItems"] = serde_json::json!(contract.host_max_nodes);
+        value["$defs"]["RawUiNode"]["properties"]["quads"]["minItems"] = serde_json::json!(1);
+        value["$defs"]["RawUiNode"]["properties"]["quads"]["maxItems"] = serde_json::json!(contract.host_max_nodes - 1);
+        value["$defs"]["UiImageQuad"]["properties"]["asset"]["minLength"] = serde_json::json!(1);
+        value["$defs"]["UiImageQuad"]["properties"]["opacity"]["minimum"] = serde_json::json!(0);
+        value["$defs"]["UiImageQuad"]["properties"]["opacity"]["maximum"] = serde_json::json!(1);
         for field in ["font_size", "border_width", "border_radius"] {
             value["$defs"]["UiStyle"]["properties"][field]["maximum"] = serde_json::json!(100);
             let bound = if field == "font_size" { "exclusiveMinimum" } else { "minimum" };

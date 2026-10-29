@@ -22,6 +22,9 @@ pub struct HostProject {
     /// UI viewport aspect, supplied before Game.start; defaults to 16:9.
     #[serde(default)]
     pub viewport_aspect: Option<f64>,
+    /// Physical render-target pixels, supplied before Game.start when known.
+    #[serde(default)]
+    pub viewport_size: Option<[u32;2]>,
 }
 
 impl HostProject {
@@ -49,6 +52,7 @@ impl HostProject {
             seed,
             restored_save: self.restored_save,
             viewport_aspect: self.viewport_aspect,
+            viewport_size: self.viewport_size,
         })
     }
 }
@@ -82,9 +86,14 @@ pub struct HostInputState {
 }
 
 impl HostInputState {
-    pub fn queue_frame(&mut self, frame: InputFrame) {
-        self.queued = Some(frame);
+    pub fn try_queue_frame(&mut self,frame:InputFrame)->Result<(),String>{
+        frame.validate().map_err(|e|e.explanation.clone())?;
+        if self.queued.as_ref().is_some_and(|old|old.physical.is_some()) {
+            return Err("INPUT_PHYSICAL_ALREADY_QUEUED: tick the accepted batch before another input frame".into());
+        }
+        self.queued=Some(frame);Ok(())
     }
+    pub fn queue_frame(&mut self, frame: InputFrame)->Result<(),String> {self.try_queue_frame(frame)}
 
     pub fn set_pointer(
         &mut self,
@@ -172,7 +181,7 @@ mod tests {
         input.set_action("old".into(), true);
         input.queue_frame(
             parse_input_frame(br#"{"pointer":{"position":{"x":1,"y":2},"down":true}}"#).unwrap(),
-        );
+        ).unwrap();
         assert!(input.consume_frame().pointer.unwrap().down);
         let next = input.consume_frame();
         assert!(next.actions.is_empty());

@@ -1,0 +1,19 @@
+{
+  "executable": "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/bin/game.exe",
+  "args": [
+    "--sdk",
+    "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2",
+    "--project",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\sdk-scout-OV5pUL",
+    "api",
+    "typings",
+    "--update-script",
+    "scripts/main.luau"
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "elapsed_ms": 104.26319999999998,
+  "stdout": "{\n  \"script\": \"scripts/main.luau\",\n  \"path\": \"\\\\\\\\?\\\\C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\sdk-scout-OV5pUL\\\\scripts\\\\main.luau\",\n  \"changed\": true,\n  \"bytes_before\": 6782,\n  \"bytes_after\": 37103,\n  \"begin_marker\": \"-- BEGIN UNONE API TYPES\",\n  \"end_marker\": \"-- END UNONE API TYPES\"\n}\n",
+  "stderr": ""
+}

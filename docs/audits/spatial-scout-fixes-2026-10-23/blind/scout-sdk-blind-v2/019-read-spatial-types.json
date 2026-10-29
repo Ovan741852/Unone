@@ -1,0 +1,19 @@
+{
+  "order": 19,
+  "name": "read-spatial-types",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "$text=Get-Content -LiteralPath 'D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\canonical-types.luau' -Raw; $text.Substring($text.IndexOf('-- Generic geometry only.'))"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:17:02.2792486Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 322,
+  "endedUtc": "2026-10-23T14:17:02.6392139Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\019-read-spatial-types.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\019-read-spatial-types.stderr"
+}

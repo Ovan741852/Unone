@@ -87,3 +87,30 @@ See the [probe report](../_Games/dragon-tycoon3/README.md) for actual measured
 download/startup results and their limits. The local measurement server sends
 correct WASM/MJS MIME types, no-store responses and optional gzip. It is a local
 test utility, not a production server.
+
+
+## Raster construction request
+
+Official Web presentation accepts optional `"antialias": false|true`. Omission
+retains the existing true request. This is a renderer/context construction
+option: re-export and relaunch with a new page/canvas to change it. A game
+runtime restart does not rebuild the context. Native currently uses one sample:
+omission and false retain that path, while true fails preflight/export with
+`HOST_ANTIALIAS_UNSUPPORTED`. Explicit antialias on a custom renderer is rejected
+with `ANTIALIAS_OFFICIAL_ONLY`; omit it for that extension contract. Null and
+non-booleans are invalid.
+
+The existing visible `UNONE_PLAYER_READY` console info includes `raster` with
+`antialias_requested` and `context_antialias` (null when unavailable). This is
+default framebuffer/context evidence, not a claim that every pass has MSAA;
+Bloom/AO offscreen targets, texture filtering and UI/font rasterization keep
+their own policies. The ordinary renderer metrics repeat this diagnostic.
+
+Optional `projected_raster="host"|"upper_left_checked"` is an official WebGL
+constructor policy. Checked mode requires requested/effective AAfalse,
+Bloom/AOoff, a game-declared hidden normal world (including empty snapshots),
+isolated projected depth, and an actual per-target/context conformance gate.
+Omission retains host raster. Explicit declarations on Native/WebGPU/custom
+are unsupported. See [the full profile and lifecycle contract](projected-raster.md).
+Export/preflight eligibility is not target GPU validation; current epoch/status
+metrics must be checked, rather than reusing a historical READY after restore.

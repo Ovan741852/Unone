@@ -3,6 +3,10 @@
 use anyhow::{Context, Result, bail, ensure};
 use serde_json::{Value, json};
 use std::path::Path;
+mod projected_raster;
+mod projected_frame;
+mod physical_input;
+mod texture_cache;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Host {
@@ -30,6 +34,7 @@ pub struct Host {
 const NATIVE_PRESENTATION: &[&str] = &[
     "mesh3d",
     "instances3d",
+    "heightfield",
     "sprite2d",
     "particle",
     "ui",
@@ -47,14 +52,20 @@ const NATIVE_DECODERS: &[&str] = &[
 const NATIVE_EXPORT_BLOCKED: &[&str] = &["spine", "effekseer"];
 const NATIVE_RUNTIME_BLOCKED: &[&str] = &["spine", "effekseer"];
 const WEB_PRESENTATION_KEYS: &[&str] = &[
+    "texture_cache",
     "renderer_mode",
     "renderer_module",
     "renderer_files",
     "ui",
     "bloom",
     "show_performance",
+    "antialias",
+    "projected_raster",
+    "projected_material_profile",
+    "physical_input",
     "runtime_backend",
     "job_policy",
+    "spatial_backend",
     "interpolation",
     "interpolate_instances",
 ];
@@ -224,6 +235,9 @@ pub enum JobMode {
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct PresentationSettings {
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="texture_cache::declared")]
+    pub texture_cache: Option<texture_cache::TextureCachePolicy>,
+    pub spatial_backend: SpatialBackend,
     /// Official player is the default. Replacing its renderer is an explicit
     /// Web-host extension, never an implicit consequence of a shader/effect.
     pub renderer_mode: RendererMode,
@@ -231,11 +245,27 @@ pub struct PresentationSettings {
     pub renderer_files: Vec<String>,
     pub ui: PresentationUi,
     pub bloom: bool,
+    #[serde(default, skip_serializing_if="Option::is_none", deserialize_with="declared_antialias")]
+    pub antialias: Option<bool>,
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_raster::declared")]
+    pub projected_raster: Option<projected_raster::ProjectedRasterPolicy>,
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_frame::declared")]
+    pub projected_material_profile: Option<projected_frame::ProjectedMaterialProfile>,
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="physical_input::declared")]
+    pub physical_input: Option<physical_input::PhysicalInputProfile>,
     pub show_performance: bool,
     pub runtime_backend: RuntimeBackend,
     pub job_policy: JobPolicy,
     pub interpolation: bool,
     pub interpolate_instances: Vec<String>,
+}
+#[derive(Debug, Default, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum SpatialBackend {
+    #[default]
+    Cpu,
+    Gpu,
+    Auto,
 }
 #[derive(Debug, Default, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -245,14 +275,26 @@ pub enum RendererMode {
     Custom,
 }
 
+fn declared_antialias<'de,D:serde::Deserializer<'de>>(deserializer:D)->Result<Option<bool>,D::Error> {
+    <bool as serde::Deserialize>::deserialize(deserializer).map(Some)
+}
+
 impl PresentationSettings {
     pub fn validate_renderer(&self) -> Result<()> {
+        if let Some(policy)=self.texture_cache {
+            ensure!(self.renderer_mode==RendererMode::Official,"TEXTURE_CACHE_OFFICIAL_ONLY");
+            policy.validate()?;
+        }
+        physical_input::validate(self.physical_input,self.renderer_mode==RendererMode::Official)?;
+        projected_frame::validate(self.projected_material_profile,self.projected_raster,self.antialias,self.bloom,self.renderer_mode==RendererMode::Official)?;
+        projected_raster::validate(self.projected_raster,self.antialias,self.bloom,self.renderer_mode==RendererMode::Official)?;
         match self.renderer_mode {
             RendererMode::Official => ensure!(
                 self.renderer_module.is_none() && self.renderer_files.is_empty(),
                 "RENDERER_REPLACEMENT_NOT_DECLARED: renderer_module/renderer_files require explicit renderer_mode: custom; use engine particle and shader APIs with the official renderer by default"
             ),
             RendererMode::Custom => {
+                ensure!(self.antialias.is_none(), "ANTIALIAS_OFFICIAL_ONLY: antialias is an official renderer construction option; omit it for a custom renderer");
                 let module = self.renderer_module.as_deref().filter(|v| !v.trim().is_empty())
                     .context("RENDERER_MODULE_REQUIRED: renderer_mode custom requires a project-relative .js/.mjs renderer_module")?;
                 ensure!(module.ends_with(".js") || module.ends_with(".mjs"),
@@ -357,6 +399,9 @@ pub fn inspect_targets() -> Vec<Value> {
                 "export_blocked_systems": host.export_blocked_systems,
                 "runtime_blocked_systems": host.runtime_blocked_systems,
                 "presentation_overlay_keys": host.presentation_overlay_keys,
+                "projected_raster": projected_raster::capability(matches!(host.family,"web-wasm"|"webview-wraps-web")),
+                "physical_input": physical_input::capability(matches!(host.family,"web-wasm"|"webview-wraps-web")),
+                "projected_material_profile": projected_frame::capability(matches!(host.family,"web-wasm"|"webview-wraps-web")),
                 "toolchain": host.toolchain,
                 "requires": host.requires,
                 "device_evidence": host.device_evidence,
@@ -397,7 +442,15 @@ pub fn native_wgpu_export_gate(
     presentation.validate_renderer()?;
     ensure!(presentation.renderer_mode == RendererMode::Official,
         "HOST_RENDERER_UNSUPPORTED: renderer_mode custom is a Web-only extension; native wgpu requires the official renderer");
+    projected_frame::native_gate(presentation.projected_material_profile)?;
+    physical_input::native_gate(presentation.physical_input)?;
+    projected_raster::native_gate(presentation.projected_raster)?;
+    ensure!(presentation.antialias != Some(true),
+        "HOST_ANTIALIAS_UNSUPPORTED: native wgpu is fixed single-sample; omit antialias or use false, or export official Web for an antialias request");
     let mut keys = Vec::new();
+    if presentation.texture_cache.is_some() {
+        keys.push("texture_cache");
+    }
     if presentation.show_performance {
         keys.push("show_performance");
     }
@@ -424,6 +477,87 @@ pub fn native_wgpu_export_gate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ordered_physical_input_is_optional_strict_and_official_web_only(){
+        assert!(serde_json::to_value(PresentationSettings::default()).unwrap().get("physical_input").is_none());
+        let settings:PresentationSettings=serde_json::from_value(json!({"physical_input":"ordered_physical_v1"})).unwrap();
+        settings.validate_renderer().unwrap();
+        assert_eq!(serde_json::to_value(&settings).unwrap()["physical_input"],"ordered_physical_v1");
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        assert!(native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string().contains("HOST_PHYSICAL_INPUT_UNSUPPORTED"));
+        for value in [json!(null),json!(false),json!("snapshot")] {assert!(serde_json::from_value::<PresentationSettings>(json!({"physical_input":value})).is_err());}
+        let custom:PresentationSettings=serde_json::from_value(json!({"physical_input":"ordered_physical_v1","renderer_mode":"custom","renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
+        assert!(custom.validate_renderer().unwrap_err().to_string().contains("INPUT_PHYSICAL_OFFICIAL_ONLY"));
+    }
+
+    #[test]
+    fn projected_raster_declaration_is_strict_optional_and_webgl_only() {
+        let omitted=serde_json::to_value(PresentationSettings::default()).unwrap();
+        assert!(omitted.get("projected_raster").is_none());
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([
+            ("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        for value in ["host","upper_left_checked"] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"projected_raster":value,"antialias":false})).unwrap();
+            settings.validate_renderer().unwrap();
+            assert_eq!(serde_json::to_value(&settings).unwrap()["projected_raster"],value);
+            assert!(native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string().contains("HOST_PROJECTED_RASTER_UNSUPPORTED"));
+            let custom:PresentationSettings=serde_json::from_value(json!({"projected_raster":value,"renderer_mode":"custom",
+                "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
+            assert!(custom.validate_renderer().unwrap_err().to_string().contains("PROJECTED_RASTER_OFFICIAL_WEBGL_ONLY"));
+        }
+        for value in [json!(null),json!(true),json!(7),json!("upper_left"),json!({})] {
+            assert!(serde_json::from_value::<PresentationSettings>(json!({"projected_raster":value})).is_err());
+        }
+    }
+
+    #[test]
+    fn checked_raster_requires_explicit_no_aa_and_no_bloom() {
+        for json in [json!({"projected_raster":"upper_left_checked"}),
+            json!({"projected_raster":"upper_left_checked","antialias":true}),
+            json!({"projected_raster":"upper_left_checked","antialias":false,"bloom":true})] {
+            let settings:PresentationSettings=serde_json::from_value(json).unwrap();
+            assert!(settings.validate_renderer().unwrap_err().to_string().contains("PROJECTED_RASTER_PROFILE_UNSUPPORTED"));
+        }
+    }
+
+    #[test]
+    fn antialias_is_explicit_strict_official_and_host_bounded() {
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([
+            ("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        let omitted=PresentationSettings::default();
+        assert!(omitted.antialias.is_none());
+        assert!(serde_json::to_value(&omitted).unwrap().get("antialias").is_none());
+        native_wgpu_export_gate(&quiet,Some(&omitted)).unwrap();
+        for value in [false,true] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"antialias":value})).unwrap();
+            assert_eq!(settings.antialias,Some(value));settings.validate_renderer().unwrap();
+            let native=native_wgpu_export_gate(&quiet,Some(&settings));
+            if value {assert!(native.unwrap_err().to_string().contains("HOST_ANTIALIAS_UNSUPPORTED"));}
+            else {native.unwrap();}
+        }
+        for value in [json!(null),json!(0),json!("false"),json!({})] {
+            assert!(serde_json::from_value::<PresentationSettings>(json!({"antialias":value})).is_err());
+        }
+        let custom:PresentationSettings=serde_json::from_value(json!({"antialias":false,"renderer_mode":"custom",
+            "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
+        assert!(custom.validate_renderer().unwrap_err().to_string().contains("ANTIALIAS_OFFICIAL_ONLY"));
+    }
+
+    #[test]
+    fn spatial_execution_policy_is_strict_shared_and_defaults_to_cpu() {
+        let defaults: PresentationSettings = serde_json::from_value(json!({})).unwrap();
+        assert_eq!(defaults.spatial_backend, SpatialBackend::Cpu);
+        let settings = unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([
+            ("spine".into(),false), ("effekseer".into(),false),
+        ])).unwrap();
+        for policy in ["cpu","gpu","auto"] {
+            let presentation: PresentationSettings=serde_json::from_value(json!({"spatial_backend":policy})).unwrap();
+            assert_eq!(serde_json::to_value(&presentation).unwrap()["spatial_backend"],policy);
+            native_wgpu_export_gate(&settings,Some(&presentation)).unwrap();
+        }
+        assert!(serde_json::from_value::<PresentationSettings>(json!({"spatial_backend":"vulkan"})).is_err());
+    }
 
     #[test]
     fn renderer_defaults_official_and_replacement_requires_explicit_declaration() {

@@ -110,6 +110,13 @@
           ],
           "default": null
         },
+        "enabled": {
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "expanded": {
           "default": null,
           "type": [
@@ -128,11 +135,27 @@
           ],
           "default": null
         },
+        "focused": {
+          "default": null,
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "id": {
           "type": "string"
         },
         "kind": {
           "type": "string"
+        },
+        "max_length": {
+          "default": null,
+          "format": "uint32",
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "offset": {
           "anyOf": [
@@ -154,6 +177,25 @@
             }
           ],
           "default": null
+        },
+        "placeholder": {
+          "default": null,
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "quads": {
+          "default": null,
+          "items": {
+            "$ref": "#/$defs/UiImageQuad"
+          },
+          "maxItems": 16383,
+          "minItems": 1,
+          "type": [
+            "array",
+            "null"
+          ]
         },
         "rect": {
           "anyOf": [
@@ -301,6 +343,43 @@
         "stretch"
       ],
       "type": "string"
+    },
+    "UiImageQuad": {
+      "additionalProperties": false,
+      "description": "One stretch-painted image in an ordered stage-space artwork composite.\nSource uses top-left pixel coordinates; destination uses stage y-up units.",
+      "properties": {
+        "asset": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "opacity": {
+          "format": "double",
+          "maximum": 1,
+          "minimum": 0,
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "rect": {
+          "$ref": "#/$defs/UiRect"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UiRect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "asset",
+        "rect"
+      ],
+      "type": "object"
     },
     "UiInsets": {
       "additionalProperties": false,

@@ -1,0 +1,20 @@
+{
+  "order": 20,
+  "name": "check-help",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "check",
+    "--help"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:17:03.3279636Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 138,
+  "endedUtc": "2026-10-23T14:17:03.4982593Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\020-check-help.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\020-check-help.stderr"
+}

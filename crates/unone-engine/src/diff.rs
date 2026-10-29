@@ -40,6 +40,11 @@ pub struct Recording {
     pub input_sequence: Vec<InputFrame>,
     pub observation_digest: String,
     pub recorded: Vec<RecordedFrame>,
+    /// Explicit sampled gameplay inputs, distinct from detached performance timings.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub host_time: Option<crate::HostTimeTape>,
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="crate::physical_input::present")]
+    pub physical_input_profile: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -71,7 +76,8 @@ pub fn record(
     seed: u64,
     input_sequence: &[InputFrame],
 ) -> EngineResult<Recording> {
-    let mut runtime = match EngineRuntime::load_with_seed(project_root, seed) {
+    let physical_input_profile=match physical_profile(input_sequence){Ok(profile)=>profile,Err(error)=>return EngineResult::failure(error)};
+    let mut runtime = match load_record_runtime(project_root.as_ref(), seed) {
         Ok(runtime) => runtime,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
@@ -99,6 +105,8 @@ pub fn record(
         input_sequence: input_sequence.to_vec(),
         observation_digest: digest,
         recorded,
+        host_time: runtime.host_time_recorded_prefix(),
+        physical_input_profile,
     });
     result
         .effects
@@ -116,8 +124,40 @@ fn recorded_frame(index: u64, snapshot: &WorldSnapshot) -> RecordedFrame {
     }
 }
 
+fn load_record_runtime(root: &Path, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
+    let (config, _) = crate::ProjectPaths::discover(root)?;
+    let policy = match config.host_time {
+        Some(crate::HostTimeConfig::Live) => Some(crate::HostTimeConfig::Record {
+            max_samples: 1_000_000, max_transactions: 1_000_000 }),
+        Some(policy @ crate::HostTimeConfig::Record { .. }) => Some(policy),
+        _ => None,
+    };
+    match policy {
+        Some(policy) => EngineRuntime::load_with_host_time(root, seed, policy),
+        None => EngineRuntime::load_with_seed(root, seed),
+    }
+}
+
+fn load_replay_runtime(root: &Path, baseline: &Recording) -> Result<EngineRuntime, Box<Diagnostic>> {
+    if let Some(tape) = &baseline.host_time {
+        return EngineRuntime::load_with_host_time(root, baseline.seed,
+            crate::HostTimeConfig::Replay { tape: tape.clone() });
+    }
+    let (config, _) = crate::ProjectPaths::discover(root)?;
+    if config.host_time.is_some() {
+        return Err(Box::new(Diagnostic::error("HOST_TIME_REPLAY_TAPE_MISSING",
+            "Recording has no host-time inputs", "An enabled clock must replay a recorded tape; live resampling is forbidden.")));
+    }
+    EngineRuntime::load_with_seed(root, baseline.seed)
+}
+
 /// Replay a recording against the project as it is now.
 pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResult<DiffReport> {
+    match physical_profile(&baseline.input_sequence) {
+        Ok(profile) if profile==baseline.physical_input_profile=>{},
+        Ok(_)=>return EngineResult::failure(Diagnostic::error("INPUT_PHYSICAL_RECORDING_PROFILE","Recording profile mismatch","Ordered physical replay requires explicit matching profile; live capture is never sampled.")),
+        Err(error)=>return EngineResult::failure(error),
+    }
     if baseline.schema_version != 1 {
         return EngineResult::failure(Diagnostic::error(
             "RECORDING_VERSION_UNSUPPORTED",
@@ -128,7 +168,7 @@ pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResul
             ),
         ));
     }
-    let mut runtime = match EngineRuntime::load_with_seed(project_root, baseline.seed) {
+    let mut runtime = match load_replay_runtime(project_root.as_ref(), baseline) {
         Ok(runtime) => runtime,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
@@ -165,6 +205,10 @@ pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResul
                 &mut omitted,
             );
         }
+    }
+
+    if let Err(error) = runtime.host_time_replay_complete() {
+        return EngineResult::failure(Diagnostic::error("HOST_TIME_REPLAY_MISMATCH", "Clock tape did not replay completely", error));
     }
 
     let identical = first_divergent.is_none() && baseline.observation_digest == current_digest;
@@ -208,6 +252,16 @@ pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResul
     result.ok = false;
     result.diagnostics.push(diagnostic);
     result
+}
+
+fn physical_profile(frames:&[InputFrame])->Result<Option<String>,Diagnostic>{
+    let mut events=0usize;let mut bytes=0usize;let mut enabled=false;
+    for batch in frames.iter().filter_map(|frame|frame.physical.as_ref()){
+        batch.validate().map_err(|message|Diagnostic::error("INPUT_PHYSICAL_RECORDING_INVALID","Invalid physical recording",message))?;
+        enabled=true;events=events.saturating_add(batch.events.len());bytes=bytes.saturating_add(serde_json::to_vec(batch).expect("typed batch serializes").len());
+        if events>1_000_000||bytes>64*1024*1024{return Err(Diagnostic::error("INPUT_PHYSICAL_RECORDING_FULL","Physical recording exceeds bounds","At most 1,000,000 events and 64 MiB of normalized batches; no events were dropped."));}
+    }
+    Ok(enabled.then(||crate::physical_input::PROFILE.into()))
 }
 
 /// Walk two JSON values together and record every leaf that differs.

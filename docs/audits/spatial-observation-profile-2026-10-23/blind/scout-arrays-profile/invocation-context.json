@@ -1,0 +1,17 @@
+{
+  "nodeVersion": "v24.19.0",
+  "nodeExecutable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "platform": "win32",
+  "architecture": "x64",
+  "strictCheckEnvironment": {
+    "UNONE_LUAU_ANALYZER": "D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe"
+  },
+  "strictEnvironmentAppliesToOperations": [
+    "029",
+    "032",
+    "038 nested strict-check"
+  ],
+  "sdkManifestCli": "bin/game.exe",
+  "sdkManifestCliSha256": "4fedf99a941c82009272f2ef4315fe809648e4a216d0043408f4331c7a55f180",
+  "sourceFallbackStep": null
+}

@@ -1,0 +1,263 @@
+{
+  "ok": true,
+  "cases": [
+    {
+      "name": "filter-tie-contact",
+      "queries": 6,
+      "bodies": 4,
+      "duration_ms": 18.19999998807907,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 17.700000002980232,
+        "phases_ms": {
+          "preparation": 0.5,
+          "queue_wait": 0.5,
+          "validation": 0.5,
+          "packing": 0.30000001192092896,
+          "upload": 0.9000000059604645,
+          "encode_submit": 0.19999998807907104,
+          "readback_wait": 14.600000008940697,
+          "decode": 0.29999999701976776,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+        "upload_bytes": 592,
+        "readback_bytes": 18528
+      }
+    },
+    {
+      "name": "empty-bodies",
+      "queries": 3,
+      "bodies": 0,
+      "duration_ms": 1.6000000089406967,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 1.6000000089406967,
+        "phases_ms": {
+          "preparation": 0.10000000894069672,
+          "queue_wait": 0,
+          "validation": 0.10000000894069672,
+          "packing": 0,
+          "upload": 0.09999999403953552,
+          "encode_submit": 0,
+          "readback_wait": 1.2000000029802322,
+          "decode": 0.09999999403953552,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+        "upload_bytes": 256,
+        "readback_bytes": 9264
+      }
+    },
+    {
+      "name": "empty-queries",
+      "queries": 0,
+      "bodies": 1,
+      "duration_ms": 0.20000000298023224,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 0.09999999403953552,
+        "phases_ms": {
+          "preparation": 0.09999999403953552,
+          "queue_wait": 0,
+          "validation": 0,
+          "packing": 0,
+          "upload": 0,
+          "encode_submit": 0,
+          "readback_wait": 0,
+          "decode": 0,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "No GPU dispatch for empty query batch",
+        "upload_bytes": 0,
+        "readback_bytes": 0
+      }
+    },
+    {
+      "name": "sweep-boundaries",
+      "queries": 5,
+      "bodies": 1,
+      "duration_ms": 4.299999997019768,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 4.199999988079071,
+        "phases_ms": {
+          "preparation": 0,
+          "queue_wait": 0,
+          "validation": 0,
+          "packing": 0,
+          "upload": 0.19999998807907104,
+          "encode_submit": 0,
+          "readback_wait": 3.7000000029802322,
+          "decode": 0.10000000894069672,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+        "upload_bytes": 384,
+        "readback_bytes": 15440
+      }
+    },
+    {
+      "name": "overlap-64-sorted",
+      "queries": 1,
+      "bodies": 64,
+      "duration_ms": 6.0999999940395355,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 5.799999997019768,
+        "phases_ms": {
+          "preparation": 0.20000000298023224,
+          "queue_wait": 0,
+          "validation": 0.20000000298023224,
+          "packing": 0.09999999403953552,
+          "upload": 0.09999999403953552,
+          "encode_submit": 0,
+          "readback_wait": 4.4000000059604645,
+          "decode": 0.20000000298023224,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+        "upload_bytes": 3152,
+        "readback_bytes": 3088
+      }
+    },
+    {
+      "name": "overlap-overflow",
+      "queries": 1,
+      "bodies": 65,
+      "duration_ms": 2.1000000089406967,
+      "expected_error": true,
+      "profile": null
+    },
+    {
+      "name": "max-bodies",
+      "queries": 1,
+      "bodies": 65536,
+      "duration_ms": 147.59999999403954,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 147.5,
+        "phases_ms": {
+          "preparation": 107.59999999403954,
+          "queue_wait": 0,
+          "validation": 29,
+          "packing": 15.900000005960464,
+          "upload": 3,
+          "encode_submit": 0,
+          "readback_wait": 20.400000005960464,
+          "decode": 0.09999999403953552,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+        "upload_bytes": 3145808,
+        "readback_bytes": 3088
+      }
+    },
+    {
+      "name": "max-queries",
+      "queries": 1024,
+      "bodies": 1,
+      "duration_ms": 15.900000005960464,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 11.299999997019768,
+        "phases_ms": {
+          "preparation": 2,
+          "queue_wait": 0.09999999403953552,
+          "validation": 0.5,
+          "packing": 0.4000000059604645,
+          "upload": 0.29999999701976776,
+          "encode_submit": 0,
+          "readback_wait": 5.700000002980232,
+          "decode": 2.2000000029802322,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+        "upload_bytes": 65600,
+        "readback_bytes": 3162112
+      }
+    },
+    {
+      "name": "seeded-geometry",
+      "queries": 288,
+      "bodies": 512,
+      "duration_ms": 8.799999997019768,
+      "expected_error": false,
+      "profile": {
+        "clock": "host_monotonic",
+        "total_ms": 8,
+        "phases_ms": {
+          "preparation": 1.699999988079071,
+          "queue_wait": 0,
+          "validation": 0.699999988079071,
+          "packing": 0.4000000059604645,
+          "upload": 0.09999999403953552,
+          "encode_submit": 0.10000000894069672,
+          "readback_wait": 4.5,
+          "decode": 0.29999999701976776,
+          "cpu_execute": null,
+          "gpu_kernel": null
+        },
+        "gpu_kernel_unavailable_reason": "GPU timestamp queries are not enabled; host timings do not measure kernel duration",
+        "upload_bytes": 43024,
+        "readback_bytes": 889344
+      }
+    }
+  ],
+  "adapter": {
+    "vendor": "nvidia",
+    "architecture": "blackwell",
+    "device": "",
+    "description": ""
+  },
+  "executor": {
+    "backend": "webgpu",
+    "algorithm": "linear_scan",
+    "adapter": null,
+    "max_bodies": 65536,
+    "max_queries": 1024,
+    "max_overlap_hits": 64,
+    "pending": 0,
+    "closed": true,
+    "device_loss": {
+      "reason": "destroyed",
+      "message": "Device was destroyed."
+    }
+  },
+  "owned_executor": {
+    "backend": "webgpu",
+    "algorithm": "linear_scan",
+    "adapter": {
+      "vendor": "nvidia",
+      "architecture": "blackwell",
+      "device": "",
+      "description": ""
+    },
+    "max_bodies": 65536,
+    "max_queries": 1024,
+    "max_overlap_hits": 64,
+    "pending": 0,
+    "closed": true,
+    "device_loss": {
+      "reason": "destroyed",
+      "message": "Device was destroyed."
+    }
+  },
+  "gpu_errors": [],
+  "browserErrors": [],
+  "browser": "155.0.4283.62"
+}

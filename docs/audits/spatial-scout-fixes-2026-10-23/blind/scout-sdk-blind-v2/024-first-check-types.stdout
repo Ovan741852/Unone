@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "value": null,
+  "diagnostics": [
+    {
+      "code": "PROJECT_CONFIG_INVALID",
+      "severity": "ERROR",
+      "summary": "Unone project configuration is not valid JSON",
+      "explanation": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\project.unone.json: expected value at line 1 column 1",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}

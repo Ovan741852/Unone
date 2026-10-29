@@ -1,0 +1,9 @@
+{
+  "kind": "preexisting-local-executable-identity",
+  "path": "D:\\Projects\\Unone\\target\\debug\\game.exe",
+  "sha256": "a5da57e920476a7665aab1905f3e48f8c78f1693dbe6f3ac349fba1ad15c587f",
+  "bytes": 427938437,
+  "version": "game 0.1.0",
+  "last_write_time_utc": "2026-10-23T13:31:17.9740691Z",
+  "scope": "Public CLI only, preexisting binary; no build, network, renderer or GPU claim. Identity is checked before and after probe execution."
+}

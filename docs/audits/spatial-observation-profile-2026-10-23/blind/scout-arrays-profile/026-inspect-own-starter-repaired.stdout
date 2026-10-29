@@ -1,0 +1,54 @@
+{
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "name": "Generic spatial author trial",
+  "systems": {
+    "audio": false,
+    "camera2d": true,
+    "camera3d": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": true,
+    "physics2d": false,
+    "physics3d": false,
+    "random": false,
+    "save": false,
+    "spine": false,
+    "ui": true
+  },
+  "test_files": [
+    "tests/bootstrap-idle.test.json",
+    "tests/bootstrap-input.test.json"
+  ]
+}
+
+export type EntityApi = {
+    spawn: (name: string) -> string,
+    despawn: (id: string) -> (),
+    setSpriteVisible: (id: string, visible: boolean) -> (),
+    getPosition: (id: string) -> Vec2,
+    setPosition: (id: string, position: Vec2) -> (),
+    getVelocity: (id: string) -> Vec2,
+    setVelocity: (id: string, velocity: Vec2) -> (),
+    getTransform2D: (id: string) -> Transform2D,
+    setTransform2D: (id: string, transform: Transform2D) -> (),
+    getTransform3D: (id: string) -> Transform3D,
+    setTransform3D: (id: string, transform: Transform3D) -> (),
+}
+
+export type ObservationApi = {
+    set: (key: string, value: ObservationValue) -> (),
+    array: ((values: nil) -> {ObservationValue}) & (<T>(values: {T}) -> {T}),
+    setArray: <T>(key: string, values: {T}?) -> (),
+}
+
+AGENTS.md
+player.presentation.json
+project.unone.json
+scenes
+scenes\main.scene.json
+scripts
+scripts\main.luau
+tests
+tests\bootstrap-idle.test.json
+tests\bootstrap-input.test.json

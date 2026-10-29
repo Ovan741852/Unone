@@ -1,0 +1,433 @@
+{
+  "version": 1,
+  "engine_version": "0.1.0",
+  "host": "windows-x86_64",
+  "cli": "bin/game.exe",
+  "templates": "templates",
+  "runtimes": [
+    {
+      "id": "web-production-0",
+      "target": "web",
+      "variant": "production",
+      "path": "runtimes/web-production-0",
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "effekseer",
+        "input",
+        "jobs",
+        "observation",
+        "particle",
+        "physics2d",
+        "physics3d",
+        "random",
+        "save",
+        "spine",
+        "ui",
+        "world"
+      ],
+      "runtime_packages": {
+        "@unone/ui": "0.4.0"
+      },
+      "bytes": 3206446
+    }
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 10725,
+      "sha256": "f22ccf1d5fef1b77fde6c67b2d8b9f50eebb9a2f7576c88f6273651a134b7625"
+    },
+    {
+      "path": "bin/game.exe",
+      "bytes": 45548928,
+      "sha256": "4fedf99a941c82009272f2ef4315fe809648e4a216d0043408f4331c7a55f180"
+    },
+    {
+      "path": "docs/decisions/0038-shared-ui-styling.md",
+      "bytes": 2860,
+      "sha256": "e17ef227c436209cb063a4a49e6089cf21e76c5d4040c18e4923309af6647cb6"
+    },
+    {
+      "path": "docs/decisions/0039-component-background-intent.md",
+      "bytes": 2975,
+      "sha256": "1ec789d47e3f4cef71827955fea1ae551d88751875b1ea307de712534086d518"
+    },
+    {
+      "path": "docs/decisions/0040-official-ui-package.md",
+      "bytes": 3649,
+      "sha256": "c071c4e99f408a32ccddc4973497217b23ec967893c83ba6f3cb9ea99d47796b"
+    },
+    {
+      "path": "docs/decisions/0042-official-slider-input-and-scroll-inertia.md",
+      "bytes": 4199,
+      "sha256": "d24840c5c182d6cbd169de48cd26280fe432e0c047c7633de46e9f5bfb577352"
+    },
+    {
+      "path": "docs/decisions/0043-explicit-responsive-ui-layout.md",
+      "bytes": 3404,
+      "sha256": "74e7a47c611df6aeb98524b238cd5f0db866fbc033469c89b496d232e717e199"
+    },
+    {
+      "path": "docs/engine.d.luau",
+      "bytes": 28667,
+      "sha256": "8271e3d1c68b2b982095b153ff348ebce0c2019a6a3194ebd08b48d05108d1ec"
+    },
+    {
+      "path": "docs/formal-ui-host.md",
+      "bytes": 9570,
+      "sha256": "d145f460a708152b665adaac95bb11220c064ce1c9a414b22ae65fdad9cd40e9"
+    },
+    {
+      "path": "docs/project.schema.json",
+      "bytes": 7881,
+      "sha256": "3854687a074e38b7a44f5501c57e6b77720a7463367bca88c431e3f29fe29f32"
+    },
+    {
+      "path": "docs/spatial-batches.md",
+      "bytes": 15975,
+      "sha256": "1fe8ca7b5aef4b0137a2d6dc4277ea420df4e23bf1b9dc9244e7e0042200a0fc"
+    },
+    {
+      "path": "docs/ui-components.md",
+      "bytes": 30142,
+      "sha256": "69a3a73813646d2a41f0344665217cbc1c2f420dd413bcb1c805faf6aa65ef32"
+    },
+    {
+      "path": "docs/ui-responsive.md",
+      "bytes": 12615,
+      "sha256": "04518f6bb7a5705958a8c22c031b521cf2579b8acc5c95cbf887e84b721de19a"
+    },
+    {
+      "path": "docs/ui-scroll.md",
+      "bytes": 17660,
+      "sha256": "8500cc159a39f677321ec6b7ef77f16645cf17d1e27e8af611f2b430d6aebf4b"
+    },
+    {
+      "path": "docs/ui-slice-and-budget.md",
+      "bytes": 5727,
+      "sha256": "64f7a4fd66f5603765f030aad2d4a0f7c09be6668c40aea5ea8da3b91d0bfa55"
+    },
+    {
+      "path": "docs/ui-styling.md",
+      "bytes": 18292,
+      "sha256": "8c44d2590af44232638b03c1d9a00602c48dcee7efa07fa6c52cb1094bb81880"
+    },
+    {
+      "path": "docs/ui.schema.json",
+      "bytes": 20519,
+      "sha256": "6f352323bf40f697f572baaf70268badaae99ee0c4e3c62ad92ccb22f3cad190"
+    },
+    {
+      "path": "packages/unone-ui/README.md",
+      "bytes": 10057,
+      "sha256": "962e2ee28b548c261f2e04252f08714482a9c06ca906e5ea5e8644dc3804a9f0"
+    },
+    {
+      "path": "packages/unone-ui/package.unone.json",
+      "bytes": 186,
+      "sha256": "de5bb92db2f2f84333b1e6f4cefcdae353b87fe8113c87e6c59345faec1ecefd"
+    },
+    {
+      "path": "packages/unone-ui/src/components.luau",
+      "bytes": 36644,
+      "sha256": "6a9bed35baf222a39f88efd9dccc2ee843d55f96247d8a40152a0db2adfb21aa"
+    },
+    {
+      "path": "runtimes/web-production-0/runtime.json",
+      "bytes": 1397,
+      "sha256": "4a038e59308bc674d8560a1387de8c64018edd1dfdb4dc04a637947de62ebc66"
+    },
+    {
+      "path": "runtimes/web-production-0/unone-player.js",
+      "bytes": 101715,
+      "sha256": "5b877c4a78c779b55ff98cc091e451b619dd4852dd9b63d248299496da3a2f77"
+    },
+    {
+      "path": "runtimes/web-production-0/unone_player.wasm",
+      "bytes": 3104731,
+      "sha256": "163ded20f12ff8555c2b298da1c1d2fb9dbaa7f02c8ad7d83fefcfe75d9b5cfd"
+    },
+    {
+      "path": "scripts/audit-ui-fonts.py",
+      "bytes": 4667,
+      "sha256": "6391c0ff3d3b33bf555fcf28468595e53da278e23d5ecc95c3b6d1246b4e2481"
+    },
+    {
+      "path": "scripts/pack-native-android.ps1",
+      "bytes": 5270,
+      "sha256": "87d05d09703efeeaf05bd3b91b358d5781ae0d1176498f1acc15c7af385ff6d4"
+    },
+    {
+      "path": "scripts/serve-player.py",
+      "bytes": 4335,
+      "sha256": "6737274491c32a9386794339a53f40e1ef7ee9a95bf84f73ced089c0327172ba"
+    },
+    {
+      "path": "scripts/verify-ui-example-browser.mjs",
+      "bytes": 16634,
+      "sha256": "02a0c00787fecb79caa10e606c8c58781d388c09e8d0fbf2b76e53fa475ea4fd"
+    },
+    {
+      "path": "templates/web/developer/api.js",
+      "bytes": 11816,
+      "sha256": "b2cf35e109daad233870e5b15cdcc0614f98eb96e9b4e1d90ccab6842ffcc236"
+    },
+    {
+      "path": "templates/web/developer/asset-usages.js",
+      "bytes": 3901,
+      "sha256": "e0dd5579b1321e02ddb8c4f40bf0c1b5e1d518a66be13faf2753096497218cca"
+    },
+    {
+      "path": "templates/web/developer/main.js",
+      "bytes": 3479,
+      "sha256": "af5fd4b1e7b43bd557ffb381ba9fa33725d5a0338deca9ad17425836aa347aa3"
+    },
+    {
+      "path": "templates/web/developer/panel.css",
+      "bytes": 9580,
+      "sha256": "21d3cb0544dc27a2b4bc96405cac4cef6427b484e89aa39bf74b06639d3b29aa"
+    },
+    {
+      "path": "templates/web/developer/panel.js",
+      "bytes": 36761,
+      "sha256": "e81dd68f4f852a328f03ed752e0760f5aae1abdf67c5db55fa7d22256109b117"
+    },
+    {
+      "path": "templates/web/player/index.html",
+      "bytes": 1083,
+      "sha256": "1b836256177d6cd8495c839dbcf251585a71bee5082d023a59f89a235cf681a3"
+    },
+    {
+      "path": "templates/web/player/main.js",
+      "bytes": 10992,
+      "sha256": "8d3c221323f9419ff8357dd24f0ca4a1d1702bc9cc618817d84dc173155601f1"
+    },
+    {
+      "path": "templates/web/renderer/bloom.js",
+      "bytes": 9877,
+      "sha256": "194965dde6a3f253a6af006f8a7927ec7b1172836f5d9f078e2cab21dacd8b0d"
+    },
+    {
+      "path": "templates/web/renderer/effekseer.js",
+      "bytes": 2546,
+      "sha256": "a9129aabc2794e0c15c580ddfde7dd2b90fea95c712e827e33de1e32af6afe4c"
+    },
+    {
+      "path": "templates/web/renderer/instances3d.js",
+      "bytes": 5464,
+      "sha256": "8980b1ecd60c4d300dc2d66dccaa5fbadfc312d4642f41f9f6851c16823d0879"
+    },
+    {
+      "path": "templates/web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "templates/web/renderer/particles.js",
+      "bytes": 6207,
+      "sha256": "57e65b72ef948dd32072d73c68fa7194226dc64493bae1fd9319388851da17f2"
+    },
+    {
+      "path": "templates/web/renderer/shader-materials.js",
+      "bytes": 4798,
+      "sha256": "4b2582685ff8ba891ff7d3827c9f55ce4bb40e767f8285ac4ea561c267d3fa74"
+    },
+    {
+      "path": "templates/web/renderer/three.js",
+      "bytes": 15445,
+      "sha256": "e3d8ddfb6ae94cd6baeadeb2302bd0f42753e36b128ba3f1cefe99f1d2dd4786"
+    },
+    {
+      "path": "templates/web/renderer/vfx-batch.js",
+      "bytes": 12250,
+      "sha256": "0784fefae276ce4cf16188c2828873add3646e41cb853cb0765c64b35324020d"
+    },
+    {
+      "path": "templates/web/renderer/vfx-contract.js",
+      "bytes": 10230,
+      "sha256": "cba98d0fa03f6b5a64ae9f09969e687854c0608af18264a5413dd79bc7004719"
+    },
+    {
+      "path": "templates/web/renderer/vfx-native.js",
+      "bytes": 6299,
+      "sha256": "55c6ff9bb589b0d404ee90aae997eb49c03a5cd51a6effa7fe84a7111c15c33b"
+    },
+    {
+      "path": "templates/web/renderer/vfx-player.js",
+      "bytes": 4195,
+      "sha256": "345189b2a8214d2cb3582fd89f731d575242c1de3a5ce6a9ce302c79bd25eb0f"
+    },
+    {
+      "path": "templates/web/renderer/vfx.js",
+      "bytes": 1347,
+      "sha256": "3f2085052182804cbffb90425a0bb4430f1b2df4da06834305fc564b10fbd931"
+    },
+    {
+      "path": "templates/web/shared/asset-encoding.js",
+      "bytes": 1029,
+      "sha256": "ae0816a2d1f6efcef68ad0a2772cc65cf420b22187c424a1a73fe4ebb8b9e8aa"
+    },
+    {
+      "path": "templates/web/shared/async-scheduler.mjs",
+      "bytes": 1902,
+      "sha256": "4b0b76b63ae3a971c77c5b1af2ef667c47764f132cdbb03c9c67e05b9a7eed6b"
+    },
+    {
+      "path": "templates/web/shared/audio-playback.js",
+      "bytes": 9726,
+      "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618"
+    },
+    {
+      "path": "templates/web/shared/canvas-ui.mjs",
+      "bytes": 12653,
+      "sha256": "52ea4a34e6b05c2d63dd5f1b6dcb214a952c4debf49cb55c2126aac818ea4778"
+    },
+    {
+      "path": "templates/web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "templates/web/shared/heightfields.js",
+      "bytes": 873,
+      "sha256": "6634acc59b60493ee9cf7e14a35f47d588cdba7e556ca7ce3340c4ff5889e1df"
+    },
+    {
+      "path": "templates/web/shared/host-input.js",
+      "bytes": 5857,
+      "sha256": "4b18a1b35cc059db228fd18feb3688d3c464f209abf177cc644eeb01a5f9bc0b"
+    },
+    {
+      "path": "templates/web/shared/instance-transfer.mjs",
+      "bytes": 3147,
+      "sha256": "9fb2113012dc70944af58882190ef6998301bd8dd9d780f4e252ae491f7fbde8"
+    },
+    {
+      "path": "templates/web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "templates/web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "templates/web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "templates/web/shared/load-project.js",
+      "bytes": 1220,
+      "sha256": "66c47a7daf75564a22a8dbecd1c7e8f6398cceefd87d249a22fd42fc83764ef1"
+    },
+    {
+      "path": "templates/web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "templates/web/shared/profile-window.js",
+      "bytes": 3162,
+      "sha256": "0c014e50f1450e63fe6a237e32eac0bcf95721d22b21c1415fa217100093c21e"
+    },
+    {
+      "path": "templates/web/shared/renderer-selection.mjs",
+      "bytes": 2687,
+      "sha256": "c19c9ae1264461c2d973d5d52a512ff95333ffab9229dd43d59ca80fdf770b0c"
+    },
+    {
+      "path": "templates/web/shared/runtime-backend.mjs",
+      "bytes": 2557,
+      "sha256": "a58b39e160120534861930da72b4f1e9f9b1cc115226d24c0c0e83d7b963bd20"
+    },
+    {
+      "path": "templates/web/shared/runtime-core.mjs",
+      "bytes": 5182,
+      "sha256": "545ce306a4108cd0a15565b2417b28a47b30f11f75284de988f8356c6be3f756"
+    },
+    {
+      "path": "templates/web/shared/runtime-worker.js",
+      "bytes": 1562,
+      "sha256": "decbff2f5abf8f1037ff30d1d4d4d39964b3a7f442f750fed68033fe68b5407c"
+    },
+    {
+      "path": "templates/web/shared/spatial-gpu.mjs",
+      "bytes": 11537,
+      "sha256": "79d630684148b94024cf3424472ac39801ba9cea14039f85183f88df353b760d"
+    },
+    {
+      "path": "templates/web/shared/spatial-host.mjs",
+      "bytes": 2975,
+      "sha256": "aab13ee77cb1dac3a3fe7e0be64b5eb562d183d5061665271d9f206d2c71fc77"
+    },
+    {
+      "path": "templates/web/shared/spatial.wgsl",
+      "bytes": 7499,
+      "sha256": "2de3388bf58f080cc97e5efc60106cc1b2df649f7a5cf0db7d89478d7b4385c7"
+    },
+    {
+      "path": "templates/web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "templates/web/shared/ui-geometry.mjs",
+      "bytes": 4403,
+      "sha256": "b3b481d67bd6110606761a971104ceb9237711b4b5dcbb540416fc6d14ff993a"
+    },
+    {
+      "path": "templates/web/shared/ui-scroll.mjs",
+      "bytes": 18106,
+      "sha256": "11ecfd3320b8e571f5aefffae5e1d1eec6078436db0254a53a539d94a6f6cc71"
+    },
+    {
+      "path": "templates/web/shared/ui-style.mjs",
+      "bytes": 10068,
+      "sha256": "ebb3ef9ac940e547d1f16c6225cf0912c609ce12c4f472cd65f54cec85bec2cf"
+    },
+    {
+      "path": "templates/web/shared/ui-tree.js",
+      "bytes": 7868,
+      "sha256": "bd3ba8232b6d08ed98570611e4778e2c648381794b516d3a76589a3ed9908ce4"
+    },
+    {
+      "path": "templates/web/shared/webgpu-snapshot.js",
+      "bytes": 20202,
+      "sha256": "addde64320dcd36390e8311e81cdf0ca5216d40f7378e15e46ac249c24b0f139"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/LICENSE",
+      "bytes": 1104,
+      "sha256": "3bb9a8e1207233813ef7727bb39e4142494cb62e852d73e43390cbe81c45c149"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/effekseer.js",
+      "bytes": 199689,
+      "sha256": "592327d692ea681a731efc7ddc874a3e86aaf0f4b719a0f66767d233c2fd867b"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/effekseer.wasm",
+      "bytes": 1089618,
+      "sha256": "f9689b3721fc815e2d4b0fbcd6daedf9e0b307038d40a6c5b17c0037508ad686"
+    },
+    {
+      "path": "templates/web/vendor/rapier/LICENSE",
+      "bytes": 11548,
+      "sha256": "86ae51c591e742d80ce56823d35e2e176b53e38a99bd8499c85dae31ef4fe1f7"
+    },
+    {
+      "path": "templates/web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "templates/web/vendor/three/three.player.min.js",
+      "bytes": 492237,
+      "sha256": "c8b80d9e640b1f3ba2b2b3040020be14c9ada7db740dbbb371558fb6e9a919d5"
+    }
+  ]
+}

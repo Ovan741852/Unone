@@ -33,6 +33,12 @@ mod tests {
     #[test]
     fn fade_gain_is_frame_deterministic() {
         let snapshot = unone_engine::WorldSnapshot {
+            projected_frame:None,
+            physical_input_receipt:None,
+            projected_geometry:Default::default(),projected_viewport:None,projected_world_visible:true,
+            application: Default::default(),
+            spatial: Default::default(),
+            heightfields: Default::default(),
             shader_materials: Default::default(),
             jobs: None,
             instances3d: Default::default(),

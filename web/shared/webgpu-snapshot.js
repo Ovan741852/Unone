@@ -1,3 +1,6 @@
+import {rejectUnsupportedHeightfields} from './heightfields.js';
+import {assertProjectedBackend} from './projected-geometry.js';
+
 export function worldOf(snapshot) {
   return snapshot.world ?? snapshot;
 }
@@ -152,6 +155,7 @@ function worldSpriteCorners(entity) {
 }
 
 export function verticesFor(snapshot, aspect, options = {}) {
+  assertProjectedBackend(snapshot,'webgpu-raw');
   const world = worldOf(snapshot);
   if (world.camera3d) return verticesFor3d(world);
   const vertices = [];
@@ -452,6 +456,8 @@ export async function createWebGpuRenderer(canvas, options = {}) {
   let vertexCapacity = 0;
   const spriteBuffers = new Map();
   const draw = (snapshot) => {
+    rejectUnsupportedHeightfields(snapshot, 'webgpu-raw');
+    assertProjectedBackend(snapshot, 'webgpu-raw');
     resize();
     const aspect = aspectOf(canvas);
     const manifest = assetManifestOf();

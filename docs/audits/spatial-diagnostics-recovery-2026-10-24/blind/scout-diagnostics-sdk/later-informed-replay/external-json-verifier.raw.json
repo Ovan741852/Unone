@@ -1,0 +1,13 @@
+{
+  "sequence": 3,
+  "exe": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "args": [
+    "D:\\Projects\\Unone\\docs\\audits\\spatial-diagnostics-recovery-2026-10-24\\blind\\scout-diagnostics-sdk\\verify-json.mjs",
+    "C:\\Users\\liNao\\AppData\\Local\\Temp\\scout-diagnostics-replay-U7tu5U\\geometry.raw.json"
+  ],
+  "elapsed_ms": 116.67409999999995,
+  "status": 0,
+  "error": null,
+  "stdout": "{\n  \"input\": \"C:\\\\Users\\\\liNao\\\\AppData\\\\Local\\\\Temp\\\\scout-diagnostics-replay-U7tu5U\\\\geometry.raw.json\",\n  \"scope\": \"Independent external JSON verification: expected coordinates derived analytically, no authored success flags used as geometry evidence.\",\n  \"tolerance\": 0.00001,\n  \"passed\": 13,\n  \"failed\": 0,\n  \"checks\": [\n    {\n      \"name\": \"CLI completed two updates\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"complete baseline geometry and array shape\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"rejected replacement preserved complete geometry and version\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"complete repaired geometry and version\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"empty query batch array shape\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"typed numeric/record/empty arrays and plain object\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"structured invalid-input details and retained diagnostic\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"fixed next-update timing\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"destroyed-index boundary reached rather than tick quota\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"consumed one-shot ticket\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"unchanged unrelated synthetic entity\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"complete initial/submitted/final info records\",\n      \"pass\": true\n    },\n    {\n      \"name\": \"complete totals and binding counters\",\n      \"pass\": true\n    }\n  ]\n}\n",
+  "stderr": ""
+}

@@ -1,0 +1,3 @@
+import cp from 'node:child_process';import fs from 'node:fs';import {syncBuiltinESMExports} from 'node:module';
+const i=process.argv.indexOf('--output');if(i<0)throw Error('trace requires --output');const trace=process.argv[i+1]+'.subprocesses.jsonl';const original=cp.spawnSync;let seq=0;
+cp.spawnSync=function(executable,args,options){const start=performance.now();const r=original.call(this,executable,args,options);fs.appendFileSync(trace,JSON.stringify({sequence:++seq,executable,args,cwd:options?.cwd,analyzer:options?.env?.UNONE_LUAU_ANALYZER,timeout:options?.timeout,maxBuffer:options?.maxBuffer,elapsed_ms:performance.now()-start,status:r.status,error:r.error?String(r.error):null,stdout:r.stdout,stderr:r.stderr})+'\n');return r;};syncBuiltinESMExports();

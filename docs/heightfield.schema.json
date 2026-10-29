@@ -1,0 +1,71 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "Vec3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        },
+        "z": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/heightfield.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cell_size": {
+      "format": "float",
+      "type": "number"
+    },
+    "depth": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "heights": {
+      "description": "Row-major samples, X increasing fastest. Values are local Y coordinates.",
+      "items": {
+        "format": "float",
+        "type": "number"
+      },
+      "type": "array"
+    },
+    "origin": {
+      "$ref": "#/$defs/Vec3"
+    },
+    "texture": {
+      "type": "string"
+    },
+    "width": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "width",
+    "depth",
+    "heights",
+    "cell_size",
+    "origin",
+    "texture"
+  ],
+  "title": "HeightfieldDefinition",
+  "type": "object"
+}

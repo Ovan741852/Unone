@@ -691,6 +691,10 @@ impl DeveloperSession {
                         "frames must be 1..600; input repeats each tick, use separate steps for press/release",
                     ));
                 }
+                if input.physical.is_some(){
+                    if frames!=1{return Err(error("INPUT_PHYSICAL_STEP_SINGLE_TICK","One ordered physical batch belongs to exactly one tick; submit distinct batches in separate steps"));}
+                    input.validate()?;
+                }
                 self.reserve_recording(&input, frames)?;
                 if let Some(pointer) = &input.pointer {
                     crate::world::validate_vec2(pointer.position, "Pointer position")?;
@@ -814,10 +818,14 @@ impl DeveloperSession {
                 Ok(report)
             }
             DeveloperRequest::Recording { .. } => {
-                Ok(json!({"schema_version": 1, "seed": self.seed,
+                let mut value=json!({"schema_version": 1, "seed": self.seed,
                 "initial_digest": self.initial_digest, "commands": self.recording,
                 "script_digest": self.runtime.developer_script_digest(), "engine_version": env!("CARGO_PKG_VERSION"),
-                "scope": "runtime commands; replay against the same project sources and engine version"}))
+                "scope": "runtime commands; replay against the same project sources and engine version"});
+                if self.recording.iter().any(|command|command["input"].get("physical").is_some()){
+                    value["physical_input_profile"]=json!(crate::physical_input::PROFILE);
+                }
+                Ok(value)
             }
             DeveloperRequest::Close { .. } => Ok(json!({"session": self.id, "closed": true})),
             DeveloperRequest::Open { .. } | DeveloperRequest::Replay { .. } => unreachable!(),
@@ -893,6 +901,8 @@ struct Recording {
     scope: String,
     script_digest: String,
     engine_version: String,
+    #[serde(default,deserialize_with="crate::physical_input::present")]
+    physical_input_profile:Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -924,6 +934,10 @@ fn replay(project: &Path, value: Value) -> Result<Value, Box<Diagnostic>> {
     }
     let recording: Recording = serde_json::from_value(value)
         .map_err(|detail| error("RECORDING_INVALID", detail.to_string()))?;
+    let physical=recording.commands.iter().any(|command|matches!(command,RecordedCommand::Step{input,..} if input.physical.is_some()));
+    if physical.then_some(crate::physical_input::PROFILE)!=recording.physical_input_profile.as_deref(){
+        return Err(error("INPUT_PHYSICAL_RECORDING_PROFILE","Physical replay requires matching explicit profile"));
+    }
     if recording.schema_version != 1
         || recording.commands.len() > RECORDING_CAPACITY
         || recording.scope.is_empty()
@@ -940,8 +954,10 @@ fn replay(project: &Path, value: Value) -> Result<Value, Box<Diagnostic>> {
                 frames,
                 digests,
                 failure,
+                input,
                 ..
             } => {
+                if input.physical.is_some(){input.validate()?;if *frames!=1{return Err(error("INPUT_PHYSICAL_STEP_SINGLE_TICK","Physical batch cannot repeat across ticks"));}}
                 if !(1..=600).contains(frames)
                     || digests.is_empty()
                     || digests.len() as u64 > *frames

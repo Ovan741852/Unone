@@ -1,0 +1,22 @@
+{
+  "order": 11,
+  "name": "describe-take",
+  "argv": [
+    ".\\bin\\game.exe",
+    "--sdk",
+    "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+    "--json",
+    "api",
+    "describe",
+    "spatial.take"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:42.3922009Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 147,
+  "endedUtc": "2026-10-23T14:15:42.5846084Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\011-describe-take.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\011-describe-take.stderr"
+}

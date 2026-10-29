@@ -1,0 +1,352 @@
+{
+  "audit": "UNONE blind public spatial interface scout",
+  "date": "2026-10-23",
+  "scope": "Isolated generic CPU geometry, read-only engine/product assessment",
+  "sourceFallbackStep": null,
+  "firstSuccessfulSubmissionOperation": 16,
+  "firstSuccessfulComputationResultOperation": 17,
+  "firstSuccessfulComputationTick": 2,
+  "finalTypecheckOperation": 23,
+  "finalResultOperation": 24,
+  "backend": "cpu",
+  "checks": [
+    {
+      "name": "official final typecheck passed",
+      "passed": true
+    },
+    {
+      "name": "one tick submits without publishing a geometry result",
+      "passed": true
+    },
+    {
+      "name": "deliberate invalid radius rejected and repair version is exactly 2",
+      "passed": true
+    },
+    {
+      "name": "same tick is rejected without consuming ticket; next tick take succeeds",
+      "passed": true
+    },
+    {
+      "name": "consumed ticket is stale",
+      "passed": true
+    },
+    {
+      "name": "masked nearest ignores closer category2 body and returns surface point",
+      "passed": true
+    },
+    {
+      "name": "sphere overlap returns ordered IDs and coincident +Z normal",
+      "passed": true
+    },
+    {
+      "name": "moving sphere continuous query agrees with independent relative-motion equation",
+      "passed": true
+    },
+    {
+      "name": "frozen version survives repair; subsequent query sees repaired state",
+      "passed": true
+    },
+    {
+      "name": "actual CPU backend and no remaining tickets",
+      "passed": true
+    },
+    {
+      "name": "public info failure isolated to safe_integer limit",
+      "passed": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "kind": "type ergonomics",
+      "natural": true,
+      "operation": 8,
+      "summary": "SpatialBatchResult is not assignable to ObservationValue; direct result publication fails official typecheck.",
+      "repair": "New typed-example uses an explicit typed serialization adapter."
+    },
+    {
+      "id": "F2",
+      "kind": "runtime contract incompatibility",
+      "natural": true,
+      "operations": [
+        11,
+        12,
+        13,
+        21
+      ],
+      "summary": "spatial.info is typed as ObservationValue dictionary, yet direct observation publication fails at runtime. Public-only isolation finds limits.safe_integer=9007199254740991 is rejected.",
+      "repair": "Final example publishes discovered scalar info fields and excludes the incompatible nested limit."
+    }
+  ],
+  "deliberateNegativeCases": [
+    "negative sphere radius in spatial.update",
+    "same-tick take",
+    "take consumed ticket"
+  ],
+  "naturalGuesses": [
+    "A serializable SpatialBatchResult can be passed directly to observation.set (typechecker rejected).",
+    "spatial.info official ObservationValue dictionary can be passed directly to observation.set (runtime rejected).",
+    "Luau pcall allows observation and continuation after a rejected validation/timing operation (confirmed)."
+  ],
+  "analytic": {
+    "movingSweepFraction": 0.40715233091147407,
+    "movingSweepDistance": 4.071523309114741
+  },
+  "actual": {
+    "after_submit_info": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bodies": 4,
+      "delivery": "next_tick",
+      "external": false,
+      "indices": 1,
+      "packed_format": "USB1",
+      "pending": 1,
+      "tickets": 1
+    },
+    "consumed_ticket_take": {
+      "accepted": false,
+      "error": "runtime error: SPATIAL_TICKET_UNKNOWN\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:657: in function <[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:657>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:657: in function 'update'\n"
+    },
+    "final_info": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bodies": 4,
+      "delivery": "next_tick",
+      "external": false,
+      "indices": 1,
+      "packed_format": "USB1",
+      "pending": 0,
+      "tickets": 0
+    },
+    "frozen_v1_result": {
+      "results": [
+        {
+          "hits": [
+            {
+              "distance": 2,
+              "fraction": 0,
+              "id": 10,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                1.5,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 0,
+              "fraction": 0,
+              "id": 10,
+              "normal": [
+                0,
+                0,
+                1
+              ],
+              "point": [
+                2,
+                0,
+                0.5
+              ]
+            },
+            {
+              "distance": 0.5,
+              "fraction": 0,
+              "id": 40,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                2,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 4.071523189544678,
+              "fraction": 0.40715232491493225,
+              "id": 30,
+              "normal": [
+                -0.9284766912460327,
+                -0.3713906705379486,
+                0
+              ],
+              "point": [
+                4.535761833190918,
+                0.1856953650712967,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "version": 1
+    },
+    "initial_info": {
+      "api_version": 1,
+      "backend": "cpu",
+      "bodies": 4,
+      "delivery": "next_tick",
+      "external": false,
+      "indices": 1,
+      "packed_format": "USB1",
+      "pending": 0,
+      "tickets": 0
+    },
+    "invalid_replacement": {
+      "accepted": false,
+      "error": "runtime error: bodies[0].radius must be finite and in 0..=1000000\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:641: in function <[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:640>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:640: in function 'update'\n"
+    },
+    "phase": "v2_delivered",
+    "repair_version": 2,
+    "repaired_v2_result": {
+      "results": [
+        {
+          "hits": [
+            {
+              "distance": 2.5,
+              "fraction": 0,
+              "id": 40,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                2,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 0.5,
+              "fraction": 0,
+              "id": 40,
+              "normal": [
+                -1,
+                0,
+                0
+              ],
+              "point": [
+                2,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "hits": [
+            {
+              "distance": 4.071523189544678,
+              "fraction": 0.40715232491493225,
+              "id": 30,
+              "normal": [
+                -0.9284766912460327,
+                -0.3713906705379486,
+                0
+              ],
+              "point": [
+                4.535761833190918,
+                0.1856953650712967,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "version": 2
+    },
+    "same_tick_take": {
+      "accepted": false,
+      "error": "runtime error: SPATIAL_RESULT_NEXT_TICK\nstack traceback:\n\t[C]: in ?\n\t[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:646: in function <[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:646>\n\t[C]: in function 'pcall'\n\t[string \"\\\\?\\D:\\Projects\\Unone\\docs\\audits\\spatial-scout-2026-10-23\\blind\\final-example\\main.luau\"]:646: in function 'update'\n"
+    },
+    "tick": 3
+  },
+  "finalWorldSpatial": {
+    "indices": [
+      {
+        "bodies": [
+          {
+            "category": 1,
+            "id": 10,
+            "position": [
+              9,
+              0,
+              0
+            ],
+            "previous_position": null,
+            "radius": 0.5
+          },
+          {
+            "category": 2,
+            "id": 20,
+            "position": [
+              0.5,
+              0,
+              0
+            ],
+            "previous_position": null,
+            "radius": 0.10000000149011612
+          },
+          {
+            "category": 4,
+            "id": 30,
+            "position": [
+              5,
+              -2,
+              0
+            ],
+            "previous_position": [
+              5,
+              2,
+              0
+            ],
+            "radius": 0.5
+          },
+          {
+            "category": 1,
+            "id": 40,
+            "position": [
+              2.5,
+              0,
+              0
+            ],
+            "previous_position": null,
+            "radius": 0.5
+          }
+        ],
+        "id": 1,
+        "version": 2
+      }
+    ],
+    "sequence": 3,
+    "tickets": []
+  },
+  "limitations": [
+    "No GPU/device/backend parity claim",
+    "No rendering or official player validation requested or performed",
+    "No performance conclusion from debug timings",
+    "No existing test, source, previous audit, or implementation JS read",
+    "Bootstrap full stdout was initially visible in tool output but durably recaptured later; see report.md",
+    "Intermediate portable-example info workaround stringified table addresses; its observation digests are not deterministic evidence. Final-example omits addresses."
+  ]
+}

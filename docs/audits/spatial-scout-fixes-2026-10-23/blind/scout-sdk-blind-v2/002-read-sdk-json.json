@@ -1,0 +1,19 @@
+{
+  "order": 2,
+  "name": "read-sdk-json",
+  "argv": [
+    "powershell.exe",
+    "-NoProfile",
+    "-Command",
+    "Get-Content -LiteralPath sdk.json -Raw"
+  ],
+  "workingDirectory": "D:\\Projects\\Unone\\artifacts\\spatial-p2-sdk",
+  "timeoutMs": 120000,
+  "startedUtc": "2026-10-23T14:15:07.0128827Z",
+  "timedOut": false,
+  "exitCode": 0,
+  "elapsedMs": 299,
+  "endedUtc": "2026-10-23T14:15:07.3459811Z",
+  "stdoutPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\002-read-sdk-json.stdout",
+  "stderrPath": "D:\\Projects\\Unone\\docs\\audits\\spatial-scout-fixes-2026-10-23\\blind\\scout-sdk-blind-v2\\002-read-sdk-json.stderr"
+}

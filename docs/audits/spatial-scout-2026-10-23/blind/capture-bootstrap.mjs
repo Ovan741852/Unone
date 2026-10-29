@@ -1,0 +1,11 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import {spawnSync} from 'node:child_process';
+const root=path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/,'$1'));
+let output='';
+for(const file of ['D:\\AGENTS.md','D:\\Projects\\AGENTS.md','D:\\Projects\\Unone\\AGENTS.md']) if(fs.existsSync(file)) output+='INSTRUCTIONS: '+file+'\r\n'+fs.readFileSync(file,'utf8').replace(/\r?\n/g,'\r\n');
+output+=fs.readFileSync('D:\\Projects\\Unone\\README.md','utf8').replace(/\r?\n/g,'\r\n');
+const command='D:\\Projects\\Unone\\target\\debug\\game.exe';
+const help=spawnSync(command,['--help'],{encoding:'utf8',windowsHide:true});
+output+=help.stdout;
+fs.writeFileSync(path.join(root,'bootstrap-entrypoints-recapture.txt'),output,{flag:'wx'});
+const version=spawnSync(command,['--version'],{encoding:'utf8',windowsHide:true});
+console.log(JSON.stringify({recaptured:'bootstrap-entrypoints-recapture.txt',helpStatus:help.status,helpStderr:help.stderr,versionStatus:version.status,versionStdout:version.stdout,versionStderr:version.stderr,executableSha256:crypto.createHash('sha256').update(fs.readFileSync(command)).digest('hex'),note:'Bootstrap original was visible in tool result; this later public-file/help recapture supplies a durable full text. It is not represented as a timestamped original stdout capture.'}));

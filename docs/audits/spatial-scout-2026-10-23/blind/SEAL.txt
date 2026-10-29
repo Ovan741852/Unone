@@ -1,0 +1,7 @@
+UNONE blind spatial scout immutable evidence seal
+Manifest: SHA256SUMS.json
+Manifest SHA256: 17f65c726903c1c4011b69c7f261c18675806463c186022083d6d9103f9ede73
+Covered files: 26
+Every covered file verified immediately after manifest creation.
+SHA256SUMS.json is anchored by the hash above; SEAL.txt is the detached seal.
+No report, source, log or covered artifact is to be rewritten after this point.

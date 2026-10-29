@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "files": 26,
+  "manifestSha256": "17f65c726903c1c4011b69c7f261c18675806463c186022083d6d9103f9ede73",
+  "scope": "Hash consistency, not independent execution or semantic certification"
+}

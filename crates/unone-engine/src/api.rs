@@ -794,6 +794,48 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 fn descriptors() -> Vec<ApiDescriptor> {
     let mut result = vec![
         descriptor(
+            "input.getTextInputInteraction", "input",
+            "Read the current non-consuming text input and IME event for an official text_input control.",
+            "Editable single-line plain text with Chinese IME, paste and keyboard isolation; see docs/ui-text-input.md.",
+            "Applications own naming rules, persistence and submit meaning. No callbacks or project DOM.",
+            vec![parameter("id","string","Stable published text_input ID")],
+            "UiTextInputInteraction?",vec!["Read-only tick snapshot"],
+            "Host queues per-ID events in order. Successful tick consumes; failed tick preserves for retry. IME candidate Enter is not submit.",
+            vec!["Use matching text-input SDK and official Web host. Native desktop IME is not implemented in this version."],
+            "local edit=api.input.getTextInputInteraction(\"nickname\")",vec!["ui.components.textInput"],
+        ),
+        descriptor(
+            "hostTime.sample", "host time",
+            "Demand-sample opt-in runtime-origin elapsed host milliseconds, or consume its exact replay sample.",
+            "Port rules that explicitly read elapsed host time at individual callsites; tag each read for strict replay.",
+            "Not fixed update dt, OS uptime, a media device clock or a background-job clock. Keep game clock domains and u32 policy in Luau.",
+            vec![parameter("tag", "string", "1..128 nonblank UTF-8 bytes; exact ordered replay label")],
+            "number", vec!["Live reads a monotonic source per call; record also appends bounded tape; replay advances only the matching recorded sample"],
+            "Only start/update/onReload. Absent project.host_time is disabled. Timestamps are floor elapsed milliseconds in 0..2^53-1, no wrap; floor is not a resolution guarantee. Faults require full runtime load.",
+            vec!["HOST_TIME_DISABLED", "HOST_TIME_REPLAY_MISMATCH", "HOST_TIME_TERMINAL", "HOST_TIME_LIMIT", "HOST_TIME_PHASE"],
+            "local now = api.hostTime.sample('scheduler/entry')", vec!["observation.set"],
+        ),
+        descriptor(
+            "application.setEscapeBehavior", "application",
+            "Choose whether native Escape quits or publishes a neutral input action.",
+            "Let the game handle pause menus and confirmation in Luau.",
+            "Does not implement pause, menus, saving or confirmation. Other host close controls keep their host policy.",
+            vec![parameter("behavior", "EscapeBehavior", "Exactly 'action' or 'quit'; default 'quit'")],
+            "nil", vec!["Change application escape_behavior in the canonical snapshot"],
+            "Available from start/update; persists across scene transitions. Action mode routes Escape through the normal key transition queue, including release and focus reset.",
+            vec!["APPLICATION_ESCAPE_BEHAVIOR_INVALID"],
+            "api.application.setEscapeBehavior('action')", vec!["application.requestQuit", "input.wasPressed"],
+        ),
+        descriptor(
+            "application.requestQuit", "application",
+            "Latch a host-neutral application quit request after game-owned confirmation.",
+            "Confirm an explicit exit action in game Luau, then let the native host finish presentation and reporting.",
+            "Does not ask for confirmation, save game data or claim a headless GPU frame. Browser hosts retain their own close policy.",
+            vec![], "nil", vec!["Set canonical application.quit_requested to true; cannot be reset"],
+            "Idempotent latch. Native stops further ticks, retries unsuccessful surface presentation, and exits only after the requested snapshot is successfully presented and captured. Headless only records the state.",
+            vec![], "api.application.requestQuit()", vec!["application.setEscapeBehavior"],
+        ),
+        descriptor(
             "instances3d.set",
             "presentation",
             "Replace a packed batch of 3D mesh instances.",
@@ -1794,6 +1836,17 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["audio.setCategoryVolume"],
         ),
         descriptor(
+            "input.getPhysicalBatch","input",
+            "Read detached ordered physical events for this tick without consuming them.",
+            "Physical keyboard pointer wheel modifiers ordered queue focus capture blur pixel coordinates.",
+            "Requires explicit host ordered_physical_v1; game owns scan codes, UI/context and command policy.",
+            vec![],"PhysicalInputBatch?",vec!["Read-only tick-scope value; nil outside tick and for omitted legacy input"],
+            "Repeated reads are equal detached values. Successful tick commits receipt/epoch/cursor/time; accepted execution fault is terminal, not a World rollback.",
+            vec!["Official Web main/worker live only; Native/custom live unsupported; no typed text, IME, presented-view or activegesture restore guarantee"],
+            "local batch=api.input.getPhysicalBatch() if batch then for _,event in ipairs(batch.events) do handlePhysical(event) end end",
+            vec!["input.wasPressed","input.getScreenPointerPosition"],
+        ),
+        descriptor(
             "input.isDown",
             "input",
             "Query whether an action is down in the current frame.",
@@ -1955,6 +2008,43 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["log", "input.isDown"],
         ),
         descriptor(
+            "observation.array", "observation",
+            "Preserve a generic JSON array, including an empty array, in published observations.",
+            "For empty arrays, typed numeric arrays and engine JSON round trips. Engine-produced spatial results already preserve array identity automatically. Read docs/spatial-batches.md#observation-json-arrays, bundled with the SDK.",
+            "Plain {} remains a JSON object. This is a serialization hint, not gameplay state or a collection framework.",
+            vec![parameter("values", "{T}?", "Optional contiguous serializable array table; omitted creates an empty array. Returns the same supplied table and retains its element types.")],
+            "{T}; no-argument call returns {ObservationValue}",
+            vec!["Mark only this table's JSON array identity; no element copy or metatable changes"],
+            "The mark survives clearing and refilling this table. Serialization revalidates shape; nested plain empty tables remain objects unless separately marked. Invalid input fails before marking.",
+            vec!["Mixed or sparse keys, callbacks, nonfinite values, buffers and cyclic values fail explicitly; marking does not bypass observation validation."],
+            "api.observation.set(\"empty\", api.observation.array()); local numbers: {number} = {1,2}; api.observation.setArray(\"numbers\", api.observation.array(numbers))",
+            vec!["observation.set", "observation.setArray", "spatial.take"],
+        ),
+        descriptor(
+            "observation.setArray", "observation",
+            "Publish a typed generic array as JSON, including an empty array, with runtime serialization validation.",
+            "For direct publication of typed number/record arrays without casts or element adapters. Read docs/spatial-batches.md#observation-json-arrays in the SDK.",
+            "Does not weaken observation.set's recursive value type. Serializability and contiguous keys are runtime constraints on the generic element type.",
+            vec![parameter("key", "string", "Nonempty observation key"), parameter("values", "{T}?", "Contiguous serializable array; omitted publishes []")],
+            "nil", vec!["Validate, mark array identity and replace only the named observation after success"],
+            "The supplied table is not copied by the marker; publication stores a JSON snapshot. Invalid input preserves the previous observation. Numeric element typing remains intact.",
+            vec!["Invalid key, holes/mixed keys, functions, nonfinite values, buffers or cycles fail explicitly without publishing a replacement."],
+            "local points: {number} = {1,2,3}; api.observation.setArray(\"points\", points); api.observation.setArray(\"empty\")",
+            vec!["observation.set", "observation.array", "spatial.take"],
+        ),
+        descriptor(
+            "ui.setCursor", "ui",
+            "Declare a default, hidden or asset-image cursor for the official Web host.",
+            "Luau chooses the sprite and timing; the generic host positions it at the current real mouse/pen and paints after UI. Read docs/ui-cursor.md.",
+            "Drawing-buffer pixel units, y-down hotspot. No pointer lock, world picking, source-game cursor policy or native-player implementation is implied.",
+            vec![parameter("cursor","UiCursor","{kind=default|hidden} or image asset,width,height,hotspot_x,hotspot_y,filter nearest|linear")],
+            "nil",vec!["Validate the full declaration, then atomically replace cursor state"],
+            "Absent/default preserves the legacy snapshot shape and native browser cursor. Image assets load through the declared manifest; no input events or hit regions are created.",
+            vec!["UI_CURSOR_INVALID rejects unknown fields, missing values, dimensions outside integer1..512, or an out-of-image hotspot before replacing the previous state.","Web only host presentation in this version; native presentation remains unavailable."],
+            "api.ui.setCursor({kind=\"image\",asset=\"texture://pointer\",width=17,height=17,hotspot_x=0,hotspot_y=0,filter=\"nearest\"})",
+            vec!["ui.setRoot","input.getScreenPointerPosition"],
+        ),
+        descriptor(
             "ui.setRoot",
             "ui",
             "Publish a declarative UI tree with reusable typography/box styles and explicit scoped card backgrounds. Image/panel background_for metadata declares screen or ancestor-component background intent for overlap diagnostics. Stage rect axes are 0..100 and y points up: y=0 is the bottom. Scroll helpers use local top-left/y-down content; see docs/ui-scroll.md.",
@@ -2033,14 +2123,14 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui.components.create",
             "ui",
             "Create the official @unone/ui shared component kit for every canonical UI control, screen/component composition and existing scroll helpers with project-owned theme styles.",
-            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.4.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createResponsiveLayout/createSlider/text/button/slider/combobox/panel/image/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control and createResponsiveLayout for opt-in responsive geometry. Direct module constructors use no theme defaults.",
+            "For UI package, shared components, card component, 官方UI套件, 共用元件 and 主題樣式 authoring. Declare \"runtime_packages\":{\"@unone/ui\":\"0.4.0\"} in project.unone.json. See docs/ui-components.md and docs/ui-styling.md. Use canonical EngineApi, UiApi and UiComponentKit types from game api typings; do not replace them with ui:any. The returned themed kit and api.ui.components both expose createResponsiveLayout/createSlider/text/button/slider/combobox/panel/image/imageBatch/component/screen/scrollView/virtualList/virtualGrid, id and composeStyle. Prefer createSlider for a complete numeric drag control and createResponsiveLayout for opt-in responsive geometry. Direct module constructors use no theme defaults.",
             "No hardcoded theme, implicit layout, binding, screen manager or business behavior. Themes, content, state, actions and geometry belong to project Luau; opt-in createResponsiveLayout handles shared breakpoint selection and row/column/grid arithmetic from authored definitions. Custom factories remain valid. Constructors return the existing UI tree for ui.setRoot.",
             vec![parameter(
                 "theme",
                 "UiComponentsTheme?",
                 "Optional per-kind UiStyle defaults: text, button, panel, image, slider, combobox only. All leaf props use flattened UiPlacement: explicit rect OR anchor+size, plus canonical leaf fields except kind. component takes id, component name, explicit placement, optional children and surface. surface={kind='panel'|'image', asset?,fit?,slice?,alt?,style?} prepends id..'/surface' with background_for={component=id} and the component's unchanged placement. Children retain their authored coordinates and order. screen takes id/node/children and optional budget; scroll helpers retain their existing options and local top-left/y-down content contract.",
             )],
-            "UiComponentKit; createResponsiveLayout<T> -> UiResponsiveLayout<T> (create once, resolve in View); createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
+            "UiComponentKit; createResponsiveLayout<T> -> UiResponsiveLayout<T> (create once, resolve in View); createSlider -> UiSliderControl (create once, update in Game.update, publish view); text -> UiTextNode, button -> UiButtonNode, slider -> UiSliderNode, combobox -> UiComboBoxNode, panel -> UiPanelNode, image -> UiImageNode, imageBatch -> UiImageBatchNode, component -> UiComponentNode, screen -> UiScreen; scrollView/virtualList/virtualGrid -> UiNode; id -> string; composeStyle -> UiStyle.",
             vec!["Construct pure Luau tables; does not publish UI or mutate props/theme"],
             "No simulation step. Styles are copied; per-leaf overrides win, padding merges by edge and RGBA arrays replace. Generated backgrounds still use the canonical strict scope/overlap validation at setRoot.",
             vec![
@@ -2302,6 +2392,9 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
     ];
     result.extend(ui_component_descriptors());
+    result.extend(heightfield_descriptors());
+    result.extend(projected_descriptors());
+    result.extend(spatial_descriptors());
     result.extend(physics3d_descriptors());
     for (name, purpose, parameters, returns, example) in [
         (
@@ -2404,6 +2497,29 @@ fn descriptors() -> Vec<ApiDescriptor> {
     result
 }
 
+fn spatial_descriptors() -> Vec<ApiDescriptor> {
+    [
+        ("pack", "Encode generic sphere records into a validated USB1 Luau buffer.", vec![parameter("bodies", "SpatialBody[]", "Unique numeric IDs, xyz f32 positions, radius, opaque category bits and optional previous_position")], "buffer", "local packed = api.spatial.pack({{id=1,position={0,0,0},radius=1}})"),
+        ("create", "Create a generic spatial batch independent of scene entities.", vec![parameter("bodies", "SpatialBody[] | buffer", "Table convenience form or USB1 packed buffer; at most 65536 records")], "number", "local index = api.spatial.create({{id=1,position={0,0,0},radius=1}})"),
+        ("update", "Atomically replace a spatial batch and advance its snapshot version.", vec![parameter("index", "number", "Live index handle"), parameter("bodies", "SpatialBody[] | buffer", "Validated replacement records")], "number: version", "local version = api.spatial.update(index, packed)"),
+        ("destroy", "Release a spatial index; already submitted queries retain their frozen snapshot.", vec![parameter("index", "number", "Live index handle")], "nil", "api.spatial.destroy(index)"),
+        ("submit", "Submit batched nearest, sphere overlap or continuous moving-sphere sweep queries.", vec![parameter("index", "number", "Live index handle"), parameter("queries", "SpatialQuery[]", "0..1024 queries; mask and exclude_id are generic geometric filters. Annotate a stored query as SpatialNearestQuery, SpatialOverlapQuery or SpatialSweepQuery before table.insert to preserve its literal kind")], "number: ticket", "local query: SpatialNearestQuery = {kind=\"nearest\",point={0,0,0},max_distance=10}; local queries: {SpatialQuery} = {}; table.insert(queries, query); ticket = api.spatial.submit(index, queries)"),
+        ("take", "Consume a completed batch at a fixed later simulation tick.", vec![parameter("ticket", "number", "Unconsumed ticket from an earlier successful update")], "SpatialBatchResult", "local result = api.spatial.take(ticket)"),
+        ("cancel", "Cancel a batch ticket and ignore its late host completion.", vec![parameter("ticket", "number", "Live ticket")], "nil", "api.spatial.cancel(ticket)"),
+        ("info", "Report the selected spatial executor, typed capacities and current usage.", vec![], "SpatialInfo", "local info: SpatialInfo = api.spatial.info(); local capacity: number = info.limits.queries_per_batch; api.observation.set(\"spatial_info\", info)"),
+        ("lastDiagnostic", "Read the latest structured spatial error with field path, actual/expected values, machine-readable code/recovery.retry and human-readable recovery.action guidance (結構化診斷、錯誤修復).", vec![], "EngineDiagnostic?", "local ok = pcall(function() api.spatial.take(ticket) end); if not ok then local diagnostic = api.spatial.lastDiagnostic(); if diagnostic then api.observation.set(\"spatial_error\", diagnostic) end end"),
+        ("profile", "Locate spatial batch cost with measured CPU/GPU host-wall phase timings, work counts and transfer bytes (效能定位、批次查詢耗時).", vec![], "SpatialProfile", "local profile = api.spatial.profile(); api.observation.set(\"spatial_profile\", profile)"),
+    ].into_iter().map(|(name, purpose, parameters, returns, example)| descriptor(
+        &format!("spatial.{name}"), "spatial", purpose,
+        "Reusable batch collision and spatial queries (空間查詢、批次碰撞查詢) on CPU or host-owned GPU compute; gameplay policy remains in Luau. Read docs/spatial-batches.md and examples/spatial-diagnostics/README.md (bundled in the portable SDK) for the complete query, result, diagnostic, lifecycle, limits and host contracts; game api typings provides canonical SpatialBody, SpatialQuery, SpatialBatchResult, SpatialInfo and EngineDiagnostic types.",
+        "No AI, movement integration, damage, scene mutation or renderer replacement. V1 uses bounded complete scans, not an accelerated grid.",
+        parameters, returns, if name == "profile" || name == "info" || name == "lastDiagnostic" { vec!["Read-only detached diagnostics; no handle, ticket, geometry or execution-policy mutation. Successful calls and diagnostic reads retain the latest failure; successful reload resets it"] } else { vec!["Updates bounded spatial handles and frozen batch snapshots; rejection records a structured diagnostic without changing the original thrown error text"] },
+        "Submit/take/cancel only in update; results become visible starting the next tick. Equal-distance/time ties use ascending numeric ID. Overlap returns at most 64 contacts and explicitly errors on overflow. GPU f32 results have a documented tolerance; no bitwise cross-device promise.",
+        vec!["Invalid/non-finite records, duplicate IDs, stale handles, early take, pending host completion, capacity and contact overflow fail explicitly."], example,
+        vec!["spatial.create", "spatial.pack", "spatial.submit", "spatial.take", "spatial.info", "spatial.lastDiagnostic", "spatial.profile"]
+    )).collect()
+}
+
 fn parameter(name: &str, type_name: &str, meaning: &str) -> ApiParameter {
     ApiParameter {
         name: name.to_string(),
@@ -2415,12 +2531,14 @@ fn parameter(name: &str, type_name: &str, meaning: &str) -> ApiParameter {
 fn ui_component_descriptors() -> Vec<ApiDescriptor> {
     let mut result = Vec::new();
     for (method, props, returns, purpose, example) in [
+        ("textInput", "UiComponentTextInputProps", "UiTextInputNode", "Construct a reusable single-line plain text editing control with official host IME and paste handling.", "local field=api.ui.components.textInput({id=\"nickname\",text=\"\",focused=true,max_length=12,rect={x=30,y=45,width=40,height=8}})"),
         ("text", "UiComponentTextProps", "UiTextNode", "Construct a typed text leaf; project text, explicit placement and optional typography style.", "local title = api.ui.components.text({id=\"title\",text=\"Settings\",rect={x=10,y=75,width=80,height=12},style={font_size=4}})"),
         ("button", "UiComponentButtonProps", "UiButtonNode", "Create a typed semantic action button; use input.wasPressed(action) for one activation per press.", "local button = api.ui.components.button({id=\"apply\",text=\"Apply\",action=\"ApplySettings\",rect={x=60,y=10,width=30,height=8}})"),
         ("slider", "UiComponentSliderProps", "UiSliderNode", "Construct a low-level semantic slider leaf. For a complete numeric/drag control, prefer ui.components.createSlider; this compatibility leaf alone does not own value or capture.", "local slider = api.ui.components.slider({id=\"volume\",text=\"Volume\",action=\"AdjustVolume\",rect={x=10,y=30,width=80,height=8}})"),
         ("combobox", "UiComponentComboBoxProps", "UiComboBoxNode", "Create a typed combobox/dropdown control with a semantic action and project-owned expanded state.", "local choice = api.ui.components.combobox({id=\"quality\",text=\"High\",action=\"ChooseQuality\",expanded=false,rect={x=10,y=45,width=40,height=8}})"),
         ("panel", "UiComponentPanelProps", "UiPanelNode", "Construct a decorative panel leaf with box styles and optional explicit background scope.", "local panel = api.ui.components.panel({id=\"paper\",rect={x=10,y=10,width=80,height=80},background_for={screen=true},style={background={0.03,0.05,0.08,1}}})"),
         ("image", "UiComponentImageProps", "UiImageNode", "Construct a typed image leaf with optional fit, nine-slice, box style and background scope.", "local image = api.ui.components.image({id=\"portrait\",asset=\"portrait\",rect={x=10,y=20,width=25,height=30},fit=\"contain\"})"),
+        ("imageBatch", "UiComponentImageBatchProps", "UiImageBatchNode", "Construct an ordered, noninteractive artwork batch for tilemap terrain, fog or decorative image layers. Every quad counts toward the normal UI node budget; text and controls remain separate nodes.", "local art = api.ui.components.imageBatch({id=\"terrain\",rect={x=0,y=0,width=100,height=100},quads={{asset=\"tiles\",rect={x=10,y=20,width=5,height=5},source={x=0,y=0,width=32,height=32},opacity=1}}})"),
         ("component", "UiComponentProps", "UiComponentNode", "Compose a reusable component wrapper and optional scoped surface without changing child coordinates.", "local card = api.ui.components.component({id=\"card\",component=\"project.card\",rect={x=10,y=10,width=80,height=80},surface={kind=\"panel\"},children={}})"),
         ("screen", "UiComponentScreenProps", "UiScreen", "Construct a typed screen root; publish it explicitly with ui.setRoot.", "api.ui.setRoot(api.ui.components.screen({id=\"settings\",node=\"settings\",children={}}))"),
     ] {
@@ -2454,6 +2572,64 @@ fn ui_component_descriptors() -> Vec<ApiDescriptor> {
         ));
     }
     result
+}
+
+fn projected_descriptors() -> Vec<ApiDescriptor> {
+    [
+        ("setFrame", "Atomically publish a complete ordered encoded-RGB reference Frame.",
+         vec![parameter("frame","ProjectedFrame","Explicit rgb8_encoded_rebuild_v1 retains constant triangle RGBA; rgb8_encoded_gouraud_v1 allows affine per-vertex RGB/alpha interpolation. Initial encoded rgb8/depth; ordered draws with independent alpha source/test, RGB ADD blend, depth compare/write, min/mag/U/V. 40B/u32 transport; W1,normalizedZ/RGBA. Matching official WebGL2 checked AAfalse worldhidden profile required; Native/WebGPU/custom unsupported. Original GPU precision/backdrop not implied.")],
+         "nil", "api.projected.setFrame({profile='rgb8_encoded_rebuild_v1',initial={rgb8={0,0,0},depth=1},draws={}})"),
+        ("set", "Atomically publish preprojected indexed geometry.",
+         vec![parameter("id","string","1..128 UTF8 bytes"),parameter("geometry","ProjectedGeometry","texture;40B f32LE clip4/uv2/RGBA4 vertices;u32LE triangle indices;optional signed integer order,depth_test=true,depth_write=true,scissor={x,y,width,height} physical top-left pixels; color_mode=linear|encoded(defaultlinear),filter=nearest|linear(defaultnearest),sampling_space=linear|encoded(defaultlinear),address_mode=clamp|repeat(defaultclamp),alpha_cutoff=0..1(default0.05),alpha_compare=greater_equal(default)|greater; compares sampled alpha times vertex alpha without quantization;opaque/cutout only")],
+         "nil", "api.projected.set('batch',{texture='texture://atlas',vertices=v,indices=i})"),
+        ("remove", "Remove one existing projected batch.",vec![parameter("id","string","Existing batch ID")],"nil","api.projected.remove('batch')"),
+        ("setWorldVisible", "Show or suppress normal world3D presentation without changing simulation or UI.",vec![parameter("visible","boolean","Default true; scene load resets true")],"nil","api.projected.setWorldVisible(false)"),
+        ("getViewport", "Read physical render-target pixel dimensions and revision.",vec![],"{width:number,height:number,aspect:number,revision:number}","local view=api.projected.getViewport()"),
+    ].into_iter().map(|(name,summary,args,result,example)|descriptor(
+        &format!("projected.{name}"),"presentation",summary,
+        "Transport a game-owned projector's output through official renderers; read docs/projected-geometry.md.",
+        "No camera/world transform, culling, lighting, fog, picking or projection formula is inferred. Legacy set supports native/Three WebGL. setFrame requires the explicit official WebGL2 reference profile; Native/WebGPU/custom reject it.",
+        args,result,vec!["Bounded presentation state only"],
+        "Same canonical payload preserves revision; updates validate before mutation. Scene load clears presentation. Legacy set retains opaque/cutout defaults. setFrame atomically replaces ordered draws and rebuilds caller-known encoded RGB/depth each redraw, with explicit alpha/test/RGB blend/depth/sampler. New Frame indexed W1/Z0..1 and constant triangle RGBA; no original GPU equivalence. Viewport defaults1280x720 headless and hosts report physical size.",
+        vec!["PROJECTED_INVALID","PROJECTED_LIMIT","PROJECTED_MISSING","PROJECTED_BACKEND_UNSUPPORTED"],example,vec!["camera.setTransform"])).collect()
+}
+
+fn heightfield_descriptors() -> Vec<ApiDescriptor> {
+    vec![
+        descriptor(
+            "heightfield.set", "presentation",
+            "Create or atomically replace a regular updateable heightfield mesh.",
+            "Present game-owned height samples as terrain or another regular surface.",
+            "The game owns editing/spell rules and sample values. No collision, navigation, wrapping or water is created. Requires a host implementing heightfields; initially native presentation.",
+            vec![parameter("id", "string", "1..128 UTF-8 bytes"), parameter("definition", "HeightfieldDefinition", "Exactly {width,depth,heights,cell_size,origin:Vec3,texture}; row-major X-fast local heights, dimensions 2..512")],
+            "nil", vec!["Replace validated presentation geometry"],
+            "Identical content preserves revision. Effective edits allocate a deterministic world-monotonic revision. Full samples and revision participate in canonical observations. Empty worlds retain their previous JSON shape.",
+            vec!["HEIGHTFIELD_INVALID", "HEIGHTFIELD_LIMIT: 16 fields / 1048576 samples per world; 262144 samples per field", "Unsupported render hosts must reject heightfields explicitly"],
+            "api.heightfield.set('ground',{width=2,depth=2,heights={0,0,1,1},cell_size=1,origin={x=0,y=0,z=0},texture='texture://ground'})",
+            vec!["heightfield.update", "heightfield.remove"],
+        ),
+        descriptor(
+            "heightfield.update", "presentation",
+            "Atomically replace a rectangular region of existing height samples.",
+            "Publish samples after the game computes a terrain brush or simulation edit.",
+            "Coordinates are zero-based sample indices. The engine does not choose edit strength, radius, topology or gameplay effects.",
+            vec![parameter("id", "string", "Existing field ID"), parameter("patch", "HeightfieldPatch", "Exactly {x,z,width,depth,heights}; nonempty in-bounds rectangle with width*depth row-major samples")],
+            "nil", vec!["Replace sample rectangle"],
+            "All fields and samples validate before mutation. No-op patches preserve revision; hosts cache geometry by ID/revision. Dimensions/origin/cell_size/texture change only through set.",
+            vec!["HEIGHTFIELD_MISSING", "HEIGHTFIELD_PATCH_INVALID", "HEIGHTFIELD_INVALID"],
+            "api.heightfield.update('ground',{x=0,z=0,width=1,depth=1,heights={2}})",
+            vec!["heightfield.set", "heightfield.remove"],
+        ),
+        descriptor(
+            "heightfield.remove", "presentation",
+            "Remove an existing heightfield presentation surface.",
+            "Release a game-owned terrain surface at a lifecycle boundary.",
+            "Does not remove entities, colliders or game-owned sample arrays.",
+            vec![parameter("id", "string", "Existing field ID")], "nil", vec!["Remove presentation surface"],
+            "Missing IDs fail. Recreating a removed ID receives a fresh revision. Applying a new scene clears runtime-created heightfields.",
+            vec!["HEIGHTFIELD_MISSING"], "api.heightfield.remove('ground')", vec!["heightfield.set"],
+        ),
+    ]
 }
 
 fn physics3d_descriptors() -> Vec<ApiDescriptor> {
@@ -2528,6 +2704,18 @@ mod tests {
     use std::path::Path;
 
     use super::{api_search_result, describe, descriptors, search, typings};
+
+    #[test]
+    fn generic_batch_collision_search_discovers_spatial_contract_and_bundled_guide() {
+        for query in ["batch collision", "GPU collision", "空間查詢", "批次碰撞查詢"] {
+            let found = search(query);
+            assert!(!found.is_empty(), "{query}");
+            assert!(found.iter().all(|api| api.name.starts_with("spatial.")), "{query}");
+            assert!(found.iter().all(|api| api.when_to_use.contains("docs/spatial-batches.md")), "{query}");
+            assert!(search(&format!("{query} unfindable")).is_empty(), "{query}");
+        }
+        assert_eq!(search("spatial.take")[0].name, "spatial.take");
+    }
 
     #[test]
     fn typography_and_box_intents_discover_official_ui_authoring() {

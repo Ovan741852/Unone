@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "value": {
+    "project": "Synthetic spatial batch author trial",
+    "script": "\\\\?\\C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau",
+    "strict_mode": true,
+    "entrypoints": [
+      "start",
+      "update"
+    ],
+    "type_check": {
+      "tool": "D:\\Projects\\Unone\\.toolcache\\luau-0.734\\luau-analyze.exe",
+      "files": [
+        "C:\\Users\\liNao\\AppData\\Local\\Temp\\unone-spatial-scout-blind-v2\\scripts\\main.luau"
+      ],
+      "passed": true,
+      "output": ""
+    }
+  },
+  "diagnostics": [],
+  "effects": []
+}

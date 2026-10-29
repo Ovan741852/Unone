@@ -1,0 +1,86 @@
+{
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "cli.mjs",
+    "recommend",
+    "--query",
+    "AI native 評測",
+    "--root",
+    "D:\\Projects\\Unone"
+  ],
+  "exitCode": 0,
+  "result": {
+    "ok": true,
+    "value": {
+      "schema": "unone.discovery.recommendation.v1",
+      "strategy": "deterministic-keyword-v1",
+      "query": "AI native 評測",
+      "candidates": [
+        {
+          "operation": "ai_native.evaluate",
+          "summary": "核對逐題答案及本機證據，產生分數下限、覆蓋率、缺口與修復項目。可直接傳 report JSON，不必先寫評測檔。",
+          "available": {
+            "status": "available",
+            "requirements": [
+              "Node.js >=20"
+            ],
+            "scope": "Local read-only audit; no actual AI or target execution."
+          },
+          "readOnly": true,
+          "reason": {
+            "matchedKeywords": [
+              "ai native",
+              "評測"
+            ],
+            "note": "Metadata match, not a guarantee this operation satisfies the whole task."
+          },
+          "next": {
+            "tool": "ai_native.describe",
+            "input": {
+              "operation": "ai_native.evaluate"
+            }
+          }
+        },
+        {
+          "operation": "ai_native.init",
+          "summary": "回傳未填的逐題評測 JSON 範本；唯讀，不寫檔、不評分。新評測可從這裡開始。",
+          "available": {
+            "status": "available",
+            "requirements": [
+              "Node.js >=20"
+            ],
+            "scope": "Local read-only audit; no actual AI or target execution."
+          },
+          "readOnly": true,
+          "reason": {
+            "matchedKeywords": [
+              "ai native",
+              "評測"
+            ],
+            "note": "Metadata match, not a guarantee this operation satisfies the whole task."
+          },
+          "next": {
+            "tool": "ai_native.describe",
+            "input": {
+              "operation": "ai_native.init"
+            }
+          }
+        }
+      ],
+      "hasMore": false,
+      "nextAction": "For a new assessment, select ai_native.init first for a JSON template (returned only; no file is written), then gather evidence and call ai_native.evaluate with the completed report JSON or a report_path. Both start and evaluation contracts are listed above.",
+      "limitations": [
+        "Only this supplied catalog is searched; no global registry or semantic model lookup.",
+        "Recommendation does not execute, grant permissions, or install a plugin."
+      ]
+    },
+    "diagnostics": [],
+    "effects": [],
+    "telemetry": {
+      "elapsed_ms": 7.009,
+      "gpu_ms": null,
+      "note": "Plugin wall time only, not target performance. No target commands or probes executed."
+    }
+  },
+  "stderr": ""
+}

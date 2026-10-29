@@ -44,6 +44,9 @@ impl crate::Renderer {
         snapshot: &WorldSnapshot,
         request: CaptureRequest,
     ) -> Result<Value, String> {
+        if !snapshot.heightfields.is_empty() {
+            return Err("HEIGHTFIELD_BACKEND_UNSUPPORTED: diagnostic CLI capture does not render heightfields; use the official Windows native player".into());
+        }
         let (width, height) = request.size(self.config.width, self.config.height)?;
         let bgra = match self.config.format {
             wgpu::TextureFormat::Bgra8Unorm | wgpu::TextureFormat::Bgra8UnormSrgb => true,

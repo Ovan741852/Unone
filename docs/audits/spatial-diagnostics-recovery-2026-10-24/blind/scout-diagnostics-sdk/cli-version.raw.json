@@ -1,0 +1,12 @@
+{
+  "executable": "D:/Projects/Unone/artifacts/spatial-hardening-sdk-v2/bin/game.exe",
+  "args": [
+    "--version"
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "elapsed_ms": 93.3684,
+  "stdout": "game 0.1.0\n",
+  "stderr": ""
+}

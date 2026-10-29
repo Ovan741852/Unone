@@ -1,0 +1,129 @@
+{
+  "ok": true,
+  "value": {
+    "query": "observation",
+    "matches": [
+      {
+        "name": "observation.set",
+        "category": "observation",
+        "purpose": "Publish the game's current serializable semantic state for observation by AI, tests, and the host.",
+        "when_to_use": "When dialogue ViewModels, combat results, random results, or other game state must be readable by headless, Web, or mobile hosts.",
+        "when_not_to_use": "Do not treat it as a second copy of gameplay state, and do not publish large unchanged assets or telemetry every frame.",
+        "parameters": [
+          {
+            "name": "key",
+            "type_name": "string",
+            "meaning": "A non-empty stable observation name, such as view_model."
+          },
+          {
+            "name": "value",
+            "type_name": "ObservationValue",
+            "meaning": "A serializable string, number, boolean, null, object, or array."
+          }
+        ],
+        "returns": "(): no additional data on success.",
+        "side_effects": [
+          "Replace the latest game observation for the specified key"
+        ],
+        "frame_semantics": "The value updates immediately within the same update; the next observe, run report, and test assertion see the latest value. Only the last publication for each key is retained.",
+        "common_errors": [
+          "An empty key returns LUAU_RUNTIME_ERROR",
+          "A value containing a function, userdata, cyclic table, non-finite number, or non-contiguous array key returns LUAU_RUNTIME_ERROR"
+        ],
+        "example": "api.observation.set(\"view_model\", { screen = \"dialogue\", node = \"intro\" })",
+        "related_apis": [
+          "log",
+          "input.isDown"
+        ]
+      },
+      {
+        "name": "log",
+        "category": "diagnostics",
+        "purpose": "Write a semantic script trace for observation by AI, tests, and development records.",
+        "when_to_use": "When important game events must be recorded or a script branch must be verified.",
+        "when_not_to_use": "Do not emit large amounts of output every frame; high-frequency data belongs in observation state.",
+        "parameters": [
+          {
+            "name": "message",
+            "type_name": "string",
+            "meaning": "An event description understandable to people and AI."
+          }
+        ],
+        "returns": "(): no additional data on success.",
+        "side_effects": [
+          "Add one script_log trace event"
+        ],
+        "frame_semantics": "The event uses the world frame at call time; the run report retains only the semantic trace and does not create per-frame noise.",
+        "common_errors": [
+          "Excessive logging increases observation output size"
+        ],
+        "example": "api.log(\"player_started\")",
+        "related_apis": [
+          "entity.getPosition",
+          "input.isDown"
+        ]
+      },
+      {
+        "name": "audio.loop",
+        "category": "presentation",
+        "purpose": "Start a looping sound and return the handle that stops it.",
+        "when_to_use": "When a sound should keep playing until the game says otherwise: background music, an engine hum, an ambience bed. It stays in the observation, so a reload or a late-joining host knows what should be playing.",
+        "when_not_to_use": "Do not use it for one-shots; a loop that nothing stops plays forever, and the engine refuses more than 64 live loops rather than growing without bound.",
+        "parameters": [
+          {
+            "name": "asset",
+            "type_name": "string",
+            "meaning": "The audio asset id."
+          },
+          {
+            "name": "options",
+            "type_name": "table?",
+            "meaning": "Same options as audio.play, plus entity to attach the loop to an entity: the engine then keeps the loop on that entity's position and stops it when the entity is gone. The category is what applies the project's exclusive and fade rules."
+          }
+        ],
+        "returns": "string: the handle for this loop, required by audio.stop.",
+        "side_effects": [
+          "Modify Rust-owned audio loop list",
+          "Stop other loops in an exclusive category"
+        ],
+        "frame_semantics": "Starting a loop in an exclusive category begins stopping the ones already in it, honouring their fade_out_frames. A fade is counted in frames by the engine, so it ends on the same frame in every replay.",
+        "common_errors": [
+          "asset is empty",
+          "volume is not between 0 and 1",
+          "speed is not a finite number greater than 0",
+          "More than 64 loops are live at once",
+          "system 'audio' is not enabled"
+        ],
+        "example": "local music = api.audio.loop(\"music://lobby\", {category = \"bgm\"})",
+        "related_apis": [
+          "audio.stop",
+          "audio.stopAll",
+          "audio.play"
+        ]
+      },
+      {
+        "name": "ui.getViewport",
+        "category": "ui",
+        "purpose": "Read the host-reported viewport aspect ratio; feed it to ui.components.createResponsiveLayout for shared authored responsive composition.",
+        "when_to_use": "Advanced environment observation, or input to layout.resolve(api.ui.getViewport()). Start responsive authoring at ui.components.createResponsiveLayout and docs/ui-responsive.md instead of copying breakpoint conditionals. The host reports the actual stage aspect; headless callers may set it through the runtime viewport boundary.",
+        "when_not_to_use": "This environment getter does not itself choose rectangles, reflow content or report device pixels. Project-authored responsive models own layout policy; do not use font raster metrics as simulation input.",
+        "parameters": [],
+        "returns": "{aspect:number}; width divided by height.",
+        "side_effects": [
+          "Read-only host viewport observation"
+        ],
+        "frame_semantics": "Reads the current runtime viewport aspect without advancing a frame or mutating the UI tree.",
+        "common_errors": [],
+        "example": "local resolved = responsiveLayout.resolve(api.ui.getViewport()); api.observation.set(\"ui_variant\", resolved.variant)",
+        "related_apis": [
+          "ui.components.createResponsiveLayout",
+          "ui.setRoot",
+          "ui.inspect"
+        ]
+      }
+    ],
+    "suggested_next_actions": []
+  },
+  "diagnostics": [],
+  "effects": []
+}
