@@ -1,0 +1,328 @@
+{
+  "schema": "unone.sdk19.scheduler.source-resolution.v1",
+  "status": "bounded-source-regression-and-package-gates-cleared; emitted-worker-teardown-and-Game-acceptance-recorded-separately",
+  "scope": {
+    "base_revision": "c3160e89c643b80b313efba10ebfddde4bb93309",
+    "reviewed_revision": "c3613570218dc4ad1885aac9f08593a9a1b8412d",
+    "production_file": "web/shared/async-scheduler.mjs",
+    "regression_file": "web/shared/async-scheduler.test.mjs",
+    "external_review_scope": "Only the two committed scheduler files. SDK18 decoded-image retirement review remains separate and unchanged.",
+    "other_packaged_change": "docs/web-image-assets.md line36 clarifies the already-implemented SDK18 pre-onload-only source reset boundary; it is not part of the Claude19 scheduler review.",
+    "reusable_primitive": "Async official-player scheduler generation ownership and teardown cancellation, not Game rules or renderer replacement.",
+    "unchanged": "No active-error message filter, fixed-step/RAF clock policy, catch-up/drop/debt limit, input transaction order, update/accept/draw boundary, completion metric definition, broker/cache/GPU budget, Core/CLI/WASM or Game change.",
+    "writer": "Offline source/log/JSON extraction only; no new test, build, pack, browser, forced GC, profiler or FPS workload."
+  },
+  "trigger": {
+    "observed": "Actual SDK18 worker functional assertions completed, then context.close/pagehide stopped the scheduler and closed the backend. Rejecting an in-flight request with RUNTIME_CLOSED reached an unconditional scheduler catch and emitted a late console error.",
+    "ownership_defect": "An obsolete rejection after stop/start could additionally call stop() on the restarted generation. Active current failures still require reporting.",
+    "preservation": "The original SDK18 failed teardown evidence is owned by Root/Web and retained separately; this record does not relabel it as a clean pass."
+  },
+  "correction": {
+    "guard": "The originating draw captures generation; catch calls stop()+onError only while started && token===generation.",
+    "stop": "External stop changes started/generation; its pending rejection becomes cancelled obsolete work, without rendering or reporting an active failure.",
+    "restart": "Restart waits for busy old transaction retirement. Old catch cannot stop the new owner; finally releases busy and schedules its next RAF once.",
+    "current_failure": "The same RUNTIME_CLOSED Error still stops/reports once if its request belongs to the active current generation. No message-based suppression is used.",
+    "pause_reset_visibility": "These already change the generation/clock. Old rejection cannot stop the current clock or populate its successful submission/active preparation samples.",
+    "finally": "Existing preparation cancellation, busy retirement, onWake and scheduling cleanup remain in the same finally path. No extra parallel tick, timer, render or altered RAF timestamp is introduced."
+  },
+  "independent_codex_review": {
+    "reviewer": "/root/web_lifecycle",
+    "mode": "Read-only independent source/diff/regression inspection; author is /root/native_performance.",
+    "disposition": "CLEAR: no concrete P1/P2 found in the frozen two-file change.",
+    "reported_working_file_hashes": {
+      "scheduler": "9d93682a427dd0544113309629881ec75559711c2b9e36e023ee053dd17b9dd0",
+      "tests": "bda60b476ca55ff1e7a1503a8be09bc1b9d144a09bedfcc27d10ed51b47eba8b"
+    },
+    "source_artifacts": [
+      {
+        "path": "web/shared/async-scheduler.mjs",
+        "committed_lf_postimage": {
+          "bytes": 4251,
+          "sha256": "5d8e950bf8c3d4b0cfbe3a833cd97de65cec4b8a13d7f608a5e527434c1ca8de",
+          "captured": {
+            "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/source-0.txt",
+            "bytes": 4251,
+            "sha256": "5d8e950bf8c3d4b0cfbe3a833cd97de65cec4b8a13d7f608a5e527434c1ca8de"
+          }
+        },
+        "supplied_excerpt": {
+          "ranges": [
+            [
+              1,
+              65
+            ]
+          ],
+          "sha256": "7ad5c920548935f2e9c7a19dc25d9f9de0292260fa5e2d9dcbd7446337253f92",
+          "captured": {
+            "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/excerpt-0.txt",
+            "bytes": 4502,
+            "sha256": "7ad5c920548935f2e9c7a19dc25d9f9de0292260fa5e2d9dcbd7446337253f92"
+          }
+        },
+        "packaged": {
+          "path": "templates/web/shared/async-scheduler.mjs",
+          "bytes": 4315,
+          "sha256": "9d93682a427dd0544113309629881ec75559711c2b9e36e023ee053dd17b9dd0"
+        }
+      },
+      {
+        "path": "web/shared/async-scheduler.test.mjs",
+        "committed_lf_postimage": {
+          "bytes": 15201,
+          "sha256": "bda60b476ca55ff1e7a1503a8be09bc1b9d144a09bedfcc27d10ed51b47eba8b",
+          "captured": {
+            "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/source-1.txt",
+            "bytes": 15201,
+            "sha256": "bda60b476ca55ff1e7a1503a8be09bc1b9d144a09bedfcc27d10ed51b47eba8b"
+          }
+        },
+        "supplied_excerpt": {
+          "ranges": [
+            [
+              1,
+              27
+            ],
+            [
+              82,
+              132
+            ]
+          ],
+          "sha256": "ad6208008c851f5007a66a1bf21f3f61f4433ebae8c506a722cdc0e0d3ce3b2d",
+          "captured": {
+            "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/excerpt-1.txt",
+            "bytes": 6758,
+            "sha256": "ad6208008c851f5007a66a1bf21f3f61f4433ebae8c506a722cdc0e0d3ce3b2d"
+          }
+        },
+        "packaged": null
+      }
+    ],
+    "encoding": "Committed LF source and CRLF packaged checkout can have different byte hashes. Both identities are recorded; they are not interchangeable hashes.",
+    "reviewed": "Generation ownership rather than message filtering; active same-message failure; stale restart isolation; unchanged finally/clock/no-overlap behavior.",
+    "execution_limit": "Independent reviewer ran no workloads for this review; the actual gates below have separate executors/logs."
+  },
+  "tests": {
+    "new_meaningful_cases": 5,
+    "new_cases": [
+      "Pending worker rejection after stop produces no active error, draw, RAF or completed count.",
+      "Old rejection after stop/start cannot stop the new owner; active identical RUNTIME_CLOSED then reports once.",
+      "Pause invalidates old rejection without stopping current paused redraw.",
+      "Clock reset invalidates old rejection and preserves actual fresh RAF timestamp.",
+      "Hide/restore invalidates old rejection and does not catch up hidden time."
+    ],
+    "negative": {
+      "source_baseline": "c3160e89c643b80b313efba10ebfddde4bb93309",
+      "method": "TDD run of the new tests against unchanged old scheduler before the production catch fix; no Game or SDK artifact mutation.",
+      "tests": 17,
+      "pass": 12,
+      "fail": 5,
+      "skip": 0,
+      "duration_ms": 102.2512,
+      "exit_code": 1,
+      "raw": {
+        "path": ".cache/async-scheduler19-negative.log",
+        "bytes": 11745,
+        "sha256": "1dcfe6eddc507c0131fc59240e2f8e4f81b471b6b3be3b8af4bfc71262fd600c"
+      }
+    },
+    "focused": {
+      "executor": "/root/native_performance",
+      "command": [
+        "C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "--test",
+        "--test-reporter=tap",
+        "web/shared/async-scheduler.test.mjs",
+        "web/shared/player-completion.test.mjs"
+      ],
+      "tests": 27,
+      "pass": 27,
+      "fail": 0,
+      "skip": 0,
+      "duration_ms": 121.3283,
+      "exit_code": 0,
+      "raw": {
+        "path": ".cache/async-scheduler19-focused.log",
+        "bytes": 7270,
+        "sha256": "d37d69e3014013850f50c2cf129678c5aefc85ead7e006eaf44823beaf46a7e3"
+      }
+    },
+    "whole_web": {
+      "executor": "/root/web_lifecycle",
+      "tests": 679,
+      "pass": 676,
+      "fail": 0,
+      "skip": 3,
+      "duration_ms": 12257.4235,
+      "skip_scope": "Three existing skips; not679 executed assertions.",
+      "raw": {
+        "path": ".cache/shared-image-host19-full-web-tests.log",
+        "bytes": 69811,
+        "sha256": "0dbf5b3f7aad52f8d4786a0f18917a3fa25419ca601a8628f4c18a67f3e19777"
+      }
+    }
+  },
+  "external_claude_review": {
+    "disposition": "COMPLETED_CLEAR",
+    "review_completed": true,
+    "attempts": 1,
+    "base_revision": "c3160e89c643b80b313efba10ebfddde4bb93309",
+    "reviewed_commit": "c3613570218dc4ad1885aac9f08593a9a1b8412d",
+    "cli": {
+      "path": "C:/Users/liNao/.local/bin/claude.exe",
+      "version_command": [
+        "C:/Users/liNao/.local/bin/claude.exe",
+        "--version"
+      ],
+      "version": "2.1.308 (Claude Code)",
+      "version_exit": 0,
+      "version_error": null,
+      "command": [
+        "C:/Users/liNao/.local/bin/claude.exe",
+        "--safe-mode",
+        "--restricted",
+        "--strict-mcp-config",
+        "--tools",
+        "",
+        "--permission-mode",
+        "plan",
+        "--permission-prompts",
+        "none",
+        "--disable-slash-commands",
+        "--no-session-persistence",
+        "--output-format",
+        "json",
+        "--print"
+      ],
+      "stdin": "prompt.txt",
+      "read_only": true,
+      "tool_access": "none",
+      "timeout_ms": 60000
+    },
+    "elapsed_ms": 35616.7296,
+    "exit_code": 0,
+    "timed_out": false,
+    "stdout_bytes": 5736,
+    "stderr_bytes": 0,
+    "response_status": {
+      "terminal_reason": "completed",
+      "subtype": "success",
+      "is_error": false,
+      "stop_reason": "end_turn",
+      "num_turns": 1
+    },
+    "finding": "No concrete P1/P2 defects found.",
+    "speculative_limits": [
+      "Ownership invalidation cancels old work regardless of its error message; a stale transient fault is not reported as an active owner failure.",
+      "A never-settling obsolete tick retains busy and blocks restart, as before. No new timeout or parallel update chain is added."
+    ],
+    "raw_command": {
+      "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/command.json",
+      "bytes": 1974,
+      "sha256": "2ace618475d104d176347ea3f73b4c321d7b0015b67f400b1388e70489960797"
+    },
+    "raw_result": {
+      "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/result.json",
+      "bytes": 2406,
+      "sha256": "56083f28b49ec5504f70d28cfe77406c2e6c67c7eded02f2b528e3fcecd7bb53"
+    },
+    "raw_response": {
+      "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/review.stdout.json",
+      "bytes": 5736,
+      "sha256": "06280c7e6b0afed5ddd444016ed9af304d6e27fa9e5242bcbb3651dfc0f41087"
+    },
+    "raw_stderr": {
+      "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "adjudication": {
+      "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/response-review.json",
+      "bytes": 1223,
+      "sha256": "b3936789df3552234f4e1cbdba00af479920acf66780bb3cf444108693e7766c"
+    },
+    "fixed_diff": {
+      "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/fixed.diff",
+      "bytes": 5982,
+      "sha256": "ac00072453d583a922bd11346141d9b8bdb7aeaeeb8fe7ec9ed8dfca57f78060"
+    },
+    "prompt": {
+      "path": ".cache/scheduler-sdk19-claude-review-20261030-r1/prompt.txt",
+      "bytes": 19932,
+      "sha256": "6815a980ffb2fc6f607c1c963fabce3c05a7820842ee98f2a4601e121c67ae7f"
+    },
+    "wrapper": {
+      "path": ".cache/run-scheduler-sdk19-claude-review.mjs",
+      "bytes": 7542,
+      "sha256": "48879d28220c9d0236210df593724b24300e775829669abe1815a87d883eb064"
+    },
+    "scope": "One60s-bounded tool-free source-review process. No tests/tools/browser/commands were available to the reviewer; this does not establish emitted shutdown or performance acceptance."
+  },
+  "package": {
+    "path": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate19-host",
+    "host_source_commit": "c3613570218dc4ad1885aac9f08593a9a1b8412d",
+    "host_source_dirty": false,
+    "packaged_source_scope_clean": true,
+    "global_worktree_dirty": true,
+    "sdk_manifest_sha256": "8469de59ec0242771b3eb7e5b02b4fe8d54de226ea624aef52b25a43894ac8ec",
+    "inventory_files": 148,
+    "inventory_bytes": 61275372,
+    "complete_inventory_verified": true,
+    "checkpoint_fingerprint_sha256": "70af33573989ec6ac5996acf7312f755917adf0e845421643c769a9cc0a2e623",
+    "checkpoint_manifest_sha256": "04c8a8f50c78ddce6f8cfc84c63b36fafed8c71c181e01604fd90aa994f88f96",
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "compiled_package_source_sha256": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "package_source_contract": "ExactoriginalUI0.6 compiledintoSDK10CLI; no unbuiltfusedcopy package.",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+        "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      },
+      {
+        "id": "web-development-1",
+        "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+        "runtime_manifest_sha256": "5ddccf3b045430cf06609a3a932d9960f4a218fa74e1746752a96580dd3fb60e",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      }
+    ],
+    "sdk18_to19": {
+      "changed_indexed_payloads": 2,
+      "unchanged_indexed_payloads": 146,
+      "changed": [
+        "docs/web-image-assets.md",
+        "templates/web/shared/async-scheduler.mjs"
+      ],
+      "added": [],
+      "removed": [],
+      "raw": {
+        "path": ".cache/shared-image-host19-pack/sdk18-to19-delta.json",
+        "bytes": 648,
+        "sha256": "d87fc15637085d0c2c642d6f1ab228e24db171a50125b83f36b8c9fa5709c61a"
+      }
+    },
+    "raw": {
+      "path": ".cache/shared-image-host19-pack/result.json",
+      "bytes": 4212,
+      "sha256": "0e5054a8aad7331317586d9d70f0f6e1afa7b2c9f0557f68edc7f8f2cd496c9a"
+    },
+    "raw_pack_command": {
+      "path": ".cache/shared-image-host19-pack/pack-command.json",
+      "bytes": 643,
+      "sha256": "151bf742eec2114ff5a222a28d233766de646ce0350064badc1354e4ea714a41"
+    },
+    "raw_inspect": {
+      "path": ".cache/shared-image-host19-pack/inspect.stdout",
+      "bytes": 50124,
+      "sha256": "45c2c83d86e2864a8da038c3cfb9ae66d4862bc7af2e679e4482c0beaae690db"
+    },
+    "schema_caveat": "Raw pack result retains a legacy sdk15 schema label; actual pinned path/source/runtime identify SDK19."
+  },
+  "limits": [
+    "Node lifecycle tests and source review do not establish the emitted official-player teardown outcome; Root/Core own a strengthened post-close validation separately.",
+    "No actual Game FPS, natural GC cadence, native-node reclamation, resource-cycle slope, leak-free or GC-free claim is made.",
+    "SDK19 reuses exact verified compiled CLI/WASM10 and originalUI0.6; no blocked SDK11/fused-copy runtime is represented.",
+    "SDK18 completed image-retirement Claude review/source/package record is separate; neither its scope nor earlier failed/incomplete evidence is overwritten."
+  ]
+}

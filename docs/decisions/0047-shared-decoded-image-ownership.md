@@ -70,6 +70,18 @@ and retry guarantee, not a promise of atomic visible pixels after allocation
 failure. Functional tests establish retained identities and exact retirement;
 same-Game browser measurements remain necessary to establish timing and churn.
 
+Logical image retirement is separate from physical browser reclamation.
+Completed HTML image elements have no native `close()`; remove all engine
+ownership without resetting their successful source. A browser control found
+that source removal itself left additional native DOM nodes, consistent with
+broken-image fallback state; the control does not identify a native retaining
+path.
+Pending HTML requests still require cancellation, and image types with an
+explicit `close()` retain that operation. Retirement counts and decoded-byte
+estimates describe engine ownership, not measured native bytes returned to the
+browser or OS. Browser GC and repeated lifecycle controls validate reclamation
+separately.
+
 The ownership model draws on shared cached resources and explicit reference
 lifetimes described by [Godot resources](https://docs.godotengine.org/en/stable/tutorials/scripting/resources.html)
 and [Unity Addressables memory management](https://docs.unity3d.com/Packages/com.unity.addressables@2.3/manual/MemoryManagement.html).

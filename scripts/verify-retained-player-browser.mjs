@@ -43,7 +43,16 @@ const server=http.createServer(async(req,res)=>{
 });
 await new Promise(done=>server.listen(0,'127.0.0.1',done));
 await mkdir(out,{recursive:true});
-const report={schema:'unone.retained-official-web-smoke.v2',ok:false,scope:'Actual official production export, Core ABI and main/worker resource/save publication, camera-only retention, pixel snapping, ordered mixed UI, ownership transitions and context recovery. No frame-rate, GC or memory-soak claim.',exportRoot,release:exported.release_root,runtime,runtimeManifestSha256:sha(runtimeBytes),projectScriptSha256:sha(project.script),results:[]};
+const report={schema:'unone.retained-official-web-smoke.v3',ok:false,scope:'Actual official production export, Core ABI and main/worker resource/save publication, camera-only retention, pixel snapping, ordered mixed UI, ownership transitions and context recovery, including context/browser teardown health. No frame-rate, GC or memory-soak claim.',exportRoot,release:exported.release_root,runtime,runtimeManifestSha256:sha(runtimeBytes),projectScriptSha256:sha(project.script),results:[]};
+function finalizeSmokeResult(result,browserClosed){
+    const before=result.teardown.before_context_close;
+    result.teardown.browser_closed=browserClosed;
+    result.teardown.late_events={errors:result.errors.slice(before.errors),failed:result.failed.slice(before.failed),warnings:result.warnings.slice(before.warnings)};
+    result.errors=[...result.errors];result.failed=[...result.failed];result.warnings=[...result.warnings];
+    result.health_checked_after_browser_teardown=true;
+    result.ok=result.phase_assertions_passed===true&&!result.error&&result.teardown.context_closed===true&&browserClosed===true&&!result.teardown.context_close_error&&result.errors.length===0&&result.failed.length===0&&result.warnings.length===0;
+    return result;
+}
 let browser;
 try{
     browser=await chromium.launch({...process.env.UNONE_BROWSER_PATH?{executablePath:process.env.UNONE_BROWSER_PATH}:{channel:process.env.UNONE_BROWSER_CHANNEL??'msedge'},headless:!values.headed});
@@ -55,7 +64,7 @@ try{
         page.on('pageerror',error=>errors.push(error.message));
         page.on('console',message=>{if(message.type()==='error')errors.push(message.text());else if(message.type()==='warning')warnings.push(message.text());});
         page.on('requestfailed',request=>failed.push({url:request.url(),failure:request.failure()}));
-        const result={backend,ok:false,cases:[],errors,failed,warnings};
+        const result={backend,ok:false,phase_assertions_passed:false,cases:[],errors,failed,warnings,teardown:{context_closed:false}};
         try{
             await page.addInitScript(()=>{
                 const probe={kind:null,latest:null,snapshotInspections:0,workerDefinitionUpdates:0,workerSaveUpdates:0,saveMainRevision:null,saveBytes:0,storageWrites:0,workerPackets:0,observerErrors:[]};
@@ -191,10 +200,25 @@ try{
             assert.equal(restored.error,null);assert(restored.completion.completed_draws>lost.completion.completed_draws);assert.equal(restored.completion.last_draw_status,'completed');
             assert.deepEqual(restored.probe.latest.resources,recreated.probe.latest.resources,'Context recovery must not mutate Core resources');
             assert.deepEqual(restored.probe.observerErrors,[]);await page.screenshot({path:join(folder,'restored.png')});
-            assert.deepEqual(errors,[]);assert.deepEqual(failed,[]);result.ok=true;
+            result.phase_assertions_passed=true;
         }catch(error){result.error=String(error.stack??error);await page.screenshot({path:join(folder,'failure.png')}).catch(()=>{});throw error;}
-        finally{report.results.push(result);await writeFile(join(folder,'result.json'),JSON.stringify(result,null,2)+'\n');await context.close();}
+        finally{
+            report.results.push(result);
+            result.teardown.before_context_close={errors:errors.length,failed:failed.length,warnings:warnings.length};
+            try{await context.close();result.teardown.context_closed=true;}catch(error){result.teardown.context_close_error=String(error.stack??error);}
+            // A provisional file preserves phase evidence without claiming a pass.
+            await writeFile(join(folder,'result.json'),JSON.stringify(result,null,2)+'\n');
+        }
     }
-    report.ok=true;
 }catch(error){report.error=String(error.stack??error);process.exitCode=1;}
-finally{await browser?.close();await new Promise(done=>server.close(done));await writeFile(join(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({ok:report.ok,report:join(out,'report.json'),error:report.error}));}
+finally{
+    report.teardown={browser_closed:false,server_closed:false};
+    try{await browser?.close();report.teardown.browser_closed=Boolean(browser);}catch(error){report.teardown.browser_close_error=String(error.stack??error);}
+    try{await new Promise((done,reject)=>server.close(error=>error?reject(error):done()));report.teardown.server_closed=true;}catch(error){report.teardown.server_close_error=String(error.stack??error);}
+    // Drain already queued automation events only after all browser targets close.
+    await new Promise(done=>setImmediate(done));
+    for(const result of report.results){finalizeSmokeResult(result,report.teardown.browser_closed);await writeFile(join(out,result.backend,'result.json'),JSON.stringify(result,null,2)+'\n');}
+    report.ok=!report.error&&report.teardown.browser_closed&&report.teardown.server_closed&&report.results.length===backends.length&&report.results.every(result=>result.ok);
+    if(!report.ok){report.error??='SMOKE_HEALTH_OR_TEARDOWN_FAILED';process.exitCode=1;}
+    await writeFile(join(out,'report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({ok:report.ok,report:join(out,'report.json'),error:report.error}));
+}

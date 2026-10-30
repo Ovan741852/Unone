@@ -1,0 +1,2944 @@
+{
+  "schema": "unone.sdk17.game6073.official-web-fps.v1",
+  "date": "2026-10-30",
+  "status": "eight-short-and-two60second-cadence-gates-passed; legacy-completion-end-diagnostics-and-memory-followups-open",
+  "execution": {
+    "runner": "Authorized Game owner",
+    "root_verification": "Root independently verified all611indexed export files and read bounded original results. Root did not rerun passing windows.",
+    "load_scope": "Root held its own browser/tests/build/pack during measured FPS. Human explicitly retained parallel projects; machine-wide isolation is not claimed.",
+    "no_gate_changes": "Existing v4 scheduler-RAF cadence criteria retained. Prior SDK14/15/16 failed runs remain unchanged. Legacy completion-end and nominal phase overruns remain failure diagnostics; releaseReady is false."
+  },
+  "sdk_manifest_sha256": "e4e3cda7c095298e7bfbfe266a49a6f514f57541516703ed5b2ee71dc85b9d01",
+  "host_source_commit": "310aea1d23182a62446a793b1f08b2398afcae32",
+  "export": {
+    "ok": true,
+    "export": "D:/Projects/JYRogue/game/dist/player-performance-integrated17/",
+    "manifest_sha256": "0b22345fbe0496a2da8dd3145841d80852704ce84e06c7a87fe44d4a909ba89a",
+    "release": "releases/b19abf0c615465d0e1002e6d53e1c82b414a7759b6e51b425b6838ef4d5f262a/",
+    "verified_files": 611,
+    "verified_bytes": 192342475,
+    "source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+    "plan_sha256": "efea86a70892f48a1607546bbd90c774de12302745dc0dea98a55a7ec35e806f",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "renderer": "official"
+  },
+  "runs": [
+    {
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk17-integrated-eight-short/result.json",
+        "bytes": 2847046,
+        "sha256": "88574651cbc3e96afa17aab5c7df2173d40c2bda191679a94f1f3da4203b32e9"
+      },
+      "measured_successfully": true,
+      "target60_passed": true,
+      "target60_scope": "Successful fresh scheduler-RAF submission cadence, actual simulation rate and behavioral progress; not physical scanout or a broad stable-without-stutter/release claim.",
+      "release_ready": false,
+      "release_readiness_scope": "Focused host evidence cannot establish release readiness. Legacy completion-end failures and nominal phase overruns remain unresolved diagnostics.",
+      "seconds": 10,
+      "warmup": 2,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "profiling": false,
+      "analysis_version": "official-browser-benchmark.gates.v4-raf-linked-v1.overlay-cases.inventory-travel",
+      "benchmark_sha256": "bf61d7b614621332a2a9d189f4dfd20de50ca7cfa3b4012b92a0ec330d04c50f",
+      "analysis_sha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+      "preparation_sha256": "65cea93439cdeefc35effc3fb9cab7032778133a3e0e312e1d6e348d2f308903",
+      "results": [
+        {
+          "name": "idle",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.002899999976158,
+            "rafCallbacks": 600,
+            "rafFps": 59.98260504468005,
+            "simulationFrames": 600,
+            "simulationFps": 59.98260504468005,
+            "simulationSeconds": 10,
+            "simulationToWall": 0.9997100840780009,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 599,
+            "p50": 16.69999999999891,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000109,
+            "min": 16.399999999999636,
+            "max": 16.899999999999636,
+            "mean": 16.66711185308846
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": true,
+            "shaderChanged": false,
+            "entityChanged": false,
+            "viewportDistancePixels": 0,
+            "continuousTravelDistanceTiles": 0,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "after": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "backgroundSimulationSeconds": 10
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.10000002384185791,
+              "p95": 0.2999999523162842,
+              "p99": 0.2999999523162842,
+              "min": 0.09999990463256836,
+              "max": 0.2999999523162842,
+              "mean": 0.15833333134651184
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 600,
+              "seconds": 10,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 12
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 600,
+              "newSnapshotPresentations": 600,
+              "presentedSnapshotFps": 59.98320470296919,
+              "legacyGlobalFrameChanges": 600,
+              "lastPresentedSnapshotFrame": 802,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 1000,
+                "p95": 1012,
+                "p99": 1012,
+                "min": 0.19999992847442627,
+                "max": 1012,
+                "mean": 909.3454545411197
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 600,
+                "unknown": 0
+              },
+              "pairedRows": 600,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 600,
+                "p50": 0.8999999761581421,
+                "p95": 1.600000023841858,
+                "p99": 1.899999976158142,
+                "min": 0.6000000238418579,
+                "max": 2.399999976158142,
+                "mean": 1.0526666623353957
+              },
+              "callback_sync_wall_ms": {
+                "n": 600,
+                "p50": 0.8999999761581421,
+                "p95": 1.600000023841858,
+                "p99": 2,
+                "min": 0.6000000238418579,
+                "max": 2.399999976158142,
+                "mean": 1.077333330710729
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 600,
+                "p50": 4.700000023842222,
+                "p95": 10.19999995231592,
+                "p99": 13.099999952315557,
+                "min": 3.7999999999992724,
+                "max": 17.100000023841858,
+                "mean": 5.989333329717341
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 600,
+                  "missed": 1,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 600,
+                  "missed": 1,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 600,
+                  "missed": 0,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 3.6999999284744263,
+              "p95": 10.099999904632568,
+              "p99": 10.699999928474426,
+              "min": 3.200000047683716,
+              "max": 10.699999928474426,
+              "mean": 4.8099999845027925
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 0.8999999761581421,
+              "p95": 1.5,
+              "p99": 1.7000000476837158,
+              "min": 0.6999999284744263,
+              "max": 1.7000000476837158,
+              "mean": 1.0200000047683715
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.7999999523162842,
+              "p95": 0.7999999523162842,
+              "p99": 0.7999999523162842,
+              "min": 0.7999999523162842,
+              "max": 0.7999999523162842,
+              "mean": 0.7999999523162842
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "drag",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.003199999928475,
+            "rafCallbacks": 600,
+            "rafFps": 59.98080614246343,
+            "simulationFrames": 600,
+            "simulationFps": 59.98080614246343,
+            "simulationSeconds": 10,
+            "simulationToWall": 0.9996801023743904,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 599,
+            "p50": 16.69999999999891,
+            "p95": 16.800000000000182,
+            "p99": 16.80000000000109,
+            "min": 16.5,
+            "max": 16.900000000000546,
+            "mean": 16.667111853088446
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": true,
+            "shaderChanged": true,
+            "entityChanged": false,
+            "viewportDistancePixels": 32.07479432115756,
+            "continuousTravelDistanceTiles": 0,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "after": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "backgroundSimulationSeconds": 10
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.10000002384185791,
+              "p95": 0.20000004768371582,
+              "p99": 0.20000004768371582,
+              "min": 0,
+              "max": 0.20000004768371582,
+              "mean": 0.09999999403953552
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 600,
+              "seconds": 10,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 19
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 600,
+              "newSnapshotPresentations": 600,
+              "presentedSnapshotFps": 59.98200539838049,
+              "legacyGlobalFrameChanges": 600,
+              "lastPresentedSnapshotFrame": 801,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 1000.5,
+                "p95": 1001.8999999761581,
+                "p99": 1001.8999999761581,
+                "min": 0.19999992847442627,
+                "max": 1001.8999999761581,
+                "mean": 909.3636363636364
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 600,
+                "unknown": 0
+              },
+              "pairedRows": 600,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 600,
+                "p50": 0.9000000953674316,
+                "p95": 2.4000000953674316,
+                "p99": 3.5,
+                "min": 0.5999999046325684,
+                "max": 4.5,
+                "mean": 1.2609999992450078
+              },
+              "callback_sync_wall_ms": {
+                "n": 600,
+                "p50": 1,
+                "p95": 2.5,
+                "p99": 3.5,
+                "min": 0.6000000238418579,
+                "max": 4.5,
+                "mean": 1.2893333315849305
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 600,
+                "p50": 7.80000004768408,
+                "p95": 14.500000047683898,
+                "p99": 16.600000000000364,
+                "min": 4.59999997615796,
+                "max": 21.80000004768408,
+                "mean": 8.517333357334136
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 600,
+                  "missed": 5,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 600,
+                  "missed": 6,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 600,
+                  "missed": 1,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 6.699999928474426,
+              "p95": 9.5,
+              "p99": 12.299999952316284,
+              "min": 5.700000047683716,
+              "max": 12.299999952316284,
+              "mean": 7.154999989271164
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1,
+              "p95": 2.3000000715255737,
+              "p99": 3.600000023841858,
+              "min": 0.6999999284744263,
+              "max": 3.600000023841858,
+              "mean": 1.3999999940395356
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.6000000238418579,
+              "p95": 0.7999999523162842,
+              "p99": 1.1999999284744263,
+              "min": 0.3999999761581421,
+              "max": 1.1999999284744263,
+              "mean": 0.6199999988079071
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "travel",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.012200000047685,
+            "rafCallbacks": 601,
+            "rafFps": 60.02676734355463,
+            "simulationFrames": 601,
+            "simulationFps": 60.02676734355463,
+            "simulationSeconds": 10.016666666666666,
+            "simulationToWall": 1.0004461223925771,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 600,
+            "p50": 16.69999999999891,
+            "p95": 16.800000000000182,
+            "p99": 16.80000000000109,
+            "min": 16.399999999999636,
+            "max": 16.900000000001455,
+            "mean": 16.667166666666656
+          },
+          "dropped": {
+            "before": 1,
+            "after": 1,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": true,
+            "shaderChanged": true,
+            "entityChanged": false,
+            "viewportDistancePixels": 148.56364473667284,
+            "continuousTravelDistanceTiles": 4.2937620311282565,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "after": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "backgroundSimulationSeconds": 10.016666666666666
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.10000002384185791,
+              "p95": 0.30000007152557373,
+              "p99": 0.30000007152557373,
+              "min": 0.09999990463256836,
+              "max": 0.30000007152557373,
+              "mean": 0.1500000258286794
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 1,
+              "after": 1,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 601,
+              "seconds": 10.016666666666666,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 18
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 601,
+              "newSnapshotPresentations": 601,
+              "presentedSnapshotFps": 60.02796644027167,
+              "legacyGlobalFrameChanges": 601,
+              "lastPresentedSnapshotFrame": 924,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 1000.1999999284744,
+                "p95": 1007.7999999523163,
+                "p99": 1007.7999999523163,
+                "min": 0.20000004768371582,
+                "max": 1007.7999999523163,
+                "mean": 910.1818181818181
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 601,
+                "unknown": 0
+              },
+              "pairedRows": 601,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 601,
+                "p50": 2.1999999284744263,
+                "p95": 2.799999952316284,
+                "p99": 3.700000047683716,
+                "min": 1.7999999523162842,
+                "max": 4.299999952316284,
+                "mean": 2.2216306139347757
+              },
+              "callback_sync_wall_ms": {
+                "n": 601,
+                "p50": 2.1999999284744263,
+                "p95": 2.8000000715255737,
+                "p99": 3.799999952316284,
+                "min": 1.7999999523162842,
+                "max": 4.299999952316284,
+                "mean": 2.248419300093627
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 601,
+                "p50": 9.10000009536816,
+                "p95": 14.699999999999818,
+                "p99": 19.5,
+                "min": 7.9000000715259375,
+                "max": 20.800000095367068,
+                "mean": 9.825124839022648
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 601,
+                  "missed": 11,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 601,
+                  "missed": 11,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 601,
+                  "missed": 2,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 6.799999952316284,
+              "p95": 9.899999976158142,
+              "p99": 10.599999904632568,
+              "min": 6.099999904632568,
+              "max": 10.599999904632568,
+              "mean": 7.339999967813492
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 2.100000023841858,
+              "p95": 2.3000000715255737,
+              "p99": 2.4000000953674316,
+              "min": 2,
+              "max": 2.4000000953674316,
+              "mean": 2.1250000178813933
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.5999999046325684,
+              "p95": 0.7000000476837158,
+              "p99": 0.7999999523162842,
+              "min": 0.3999999761581421,
+              "max": 0.7999999523162842,
+              "mean": 0.5850000023841858
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "travel-card",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.007400000095368,
+            "rafCallbacks": 601,
+            "rafFps": 60.05555888585173,
+            "simulationFrames": 601,
+            "simulationFps": 60.05555888585173,
+            "simulationSeconds": 10.016666666666666,
+            "simulationToWall": 1.0009259814308622,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 600,
+            "p50": 16.69999999999891,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000109,
+            "min": 16.5,
+            "max": 16.80000000000109,
+            "mean": 16.667166666666652
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": true,
+            "shaderChanged": true,
+            "entityChanged": false,
+            "viewportDistancePixels": 149.22234132623868,
+            "continuousTravelDistanceTiles": 4.3815721535991505,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": true,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "after": {
+                "cardOpen": true,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "backgroundSimulationSeconds": 10.016666666666666
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.10000002384185791,
+              "p95": 0.20000004768371582,
+              "p99": 0.20000004768371582,
+              "min": 0.09999990463256836,
+              "max": 0.20000004768371582,
+              "mean": 0.1166666845480601
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 601,
+              "seconds": 10.016666666666666,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 19
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 601,
+              "newSnapshotPresentations": 601,
+              "presentedSnapshotFps": 60.05735927477173,
+              "legacyGlobalFrameChanges": 601,
+              "lastPresentedSnapshotFrame": 884,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 999.8999999761581,
+                "p95": 1007.8999999761581,
+                "p99": 1007.8999999761581,
+                "min": 0.20000004768371582,
+                "max": 1007.8999999761581,
+                "mean": 909.7363636385311
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 601,
+                "unknown": 0
+              },
+              "pairedRows": 601,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 601,
+                "p50": 1.6999999284744263,
+                "p95": 2.5,
+                "p99": 3.6999999284744263,
+                "min": 1.399999976158142,
+                "max": 4,
+                "mean": 1.7457570678580818
+              },
+              "callback_sync_wall_ms": {
+                "n": 601,
+                "p50": 1.6999999284744263,
+                "p95": 2.5,
+                "p99": 3.6999999284744263,
+                "min": 1.399999976158142,
+                "max": 4.300000071525574,
+                "mean": 1.769883525153365
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 601,
+                "p50": 9.100000023841858,
+                "p95": 14.899999952316648,
+                "p99": 19.599999952315557,
+                "min": 7.6999999761574145,
+                "max": 21.5,
+                "mean": 9.899168025118353
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 601,
+                  "missed": 19,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 601,
+                  "missed": 19,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 601,
+                  "missed": 5,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 7.199999928474426,
+              "p95": 10.799999952316284,
+              "p99": 16.09999990463257,
+              "min": 6.300000071525574,
+              "max": 16.09999990463257,
+              "mean": 7.880000013113022
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1.600000023841858,
+              "p95": 1.899999976158142,
+              "p99": 3.9000000953674316,
+              "min": 1.4000000953674316,
+              "max": 3.9000000953674316,
+              "mean": 1.7199999928474425
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.7000000476837158,
+              "p95": 1,
+              "p99": 1,
+              "min": 0.5999999046325684,
+              "max": 1,
+              "mean": 0.7750000059604645
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "inventory",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.011299999952316,
+            "rafCallbacks": 601,
+            "rafFps": 60.03216365535571,
+            "simulationFrames": 601,
+            "simulationFps": 60.03216365535571,
+            "simulationSeconds": 10.016666666666666,
+            "simulationToWall": 1.000536060922595,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 600,
+            "p50": 16.69999999999891,
+            "p95": 16.800000000000182,
+            "p99": 16.80000000000109,
+            "min": 16.5,
+            "max": 16.899999999999636,
+            "mean": 16.66733333333331
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": false,
+            "shaderChanged": false,
+            "entityChanged": false,
+            "viewportDistancePixels": 0,
+            "continuousTravelDistanceTiles": 0,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": false,
+                "window": "inventory",
+                "blocksSceneInput": true
+              },
+              "after": {
+                "cardOpen": false,
+                "window": "inventory",
+                "blocksSceneInput": true
+              },
+              "backgroundSimulationSeconds": 10.016666666666666
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.10000002384185791,
+              "p95": 0.20000004768371582,
+              "p99": 0.20000004768371582,
+              "min": 0,
+              "max": 0.20000004768371582,
+              "mean": 0.14166666070620218
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 601,
+              "seconds": 10.016666666666666,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 13
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 601,
+              "newSnapshotPresentations": 601,
+              "presentedSnapshotFps": 60.033362966963544,
+              "legacyGlobalFrameChanges": 601,
+              "lastPresentedSnapshotFrame": 835,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 999.6999999284744,
+                "p95": 1006.3000000715256,
+                "p99": 1006.3000000715256,
+                "min": 0.2999999523162842,
+                "max": 1006.3000000715256,
+                "mean": 910.1000000021675
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 601,
+                "unknown": 0
+              },
+              "pairedRows": 601,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 601,
+                "p50": 0.7999999523162842,
+                "p95": 0.9000000953674316,
+                "p99": 1,
+                "min": 0.5999999046325684,
+                "max": 1.2000000476837158,
+                "mean": 0.7805324489384047
+              },
+              "callback_sync_wall_ms": {
+                "n": 601,
+                "p50": 0.7999999523162842,
+                "p95": 1,
+                "p99": 1.3000000715255737,
+                "min": 0.5999999046325684,
+                "max": 1.7999999523162842,
+                "mean": 0.8049916838250819
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 601,
+                "p50": 4.80000004768408,
+                "p95": 9.799999976157778,
+                "p99": 12.399999999999636,
+                "min": 3.899999952316648,
+                "max": 17.200000000000728,
+                "mean": 6.209650583433859
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 601,
+                  "missed": 1,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 601,
+                  "missed": 1,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 601,
+                  "missed": 0,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 3.9000000953674316,
+              "p95": 7.899999976158142,
+              "p99": 10.400000095367432,
+              "min": 3.0999999046325684,
+              "max": 10.400000095367432,
+              "mean": 5.3599999964237215
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 0.7000000476837158,
+              "p95": 0.8000000715255737,
+              "p99": 1.1999999284744263,
+              "min": 0.6000000238418579,
+              "max": 1.1999999284744263,
+              "mean": 0.7600000083446503
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 18.5,
+              "p95": 18.5,
+              "p99": 18.5,
+              "min": 18.5,
+              "max": 18.5,
+              "mean": 18.5
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "inventory-travel",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.001,
+            "rafCallbacks": 600,
+            "rafFps": 59.99400059994001,
+            "simulationFrames": 600,
+            "simulationFps": 59.99400059994001,
+            "simulationSeconds": 10,
+            "simulationToWall": 0.9999000099990002,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 599,
+            "p50": 16.69999999999891,
+            "p95": 16.800000000000182,
+            "p99": 16.80000000000109,
+            "min": 16.5,
+            "max": 16.900000000000546,
+            "mean": 16.66711185308847
+          },
+          "dropped": {
+            "before": 1,
+            "after": 1,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": true,
+            "shaderChanged": true,
+            "entityChanged": false,
+            "viewportDistancePixels": 148.11469431784013,
+            "continuousTravelDistanceTiles": 4.290235280129005,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": true,
+                "window": "inventory",
+                "blocksSceneInput": true
+              },
+              "after": {
+                "cardOpen": true,
+                "window": "inventory",
+                "blocksSceneInput": true
+              },
+              "backgroundSimulationSeconds": 10
+            },
+            "inventoryTravel": {
+              "before": {
+                "available": true,
+                "windowAboveMapArtwork": true,
+                "movingArtworkCount": 5
+              },
+              "after": {
+                "available": true,
+                "windowAboveMapArtwork": true,
+                "movingArtworkCount": 4
+              },
+              "backgroundChanged": true
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.10000002384185791,
+              "p95": 0.2999999523162842,
+              "p99": 0.2999999523162842,
+              "min": 0,
+              "max": 0.2999999523162842,
+              "mean": 0.11666664481163025
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 1,
+              "after": 1,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 600,
+              "seconds": 10,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 18
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 600,
+              "newSnapshotPresentations": 600,
+              "presentedSnapshotFps": 59.995200384255334,
+              "legacyGlobalFrameChanges": 600,
+              "lastPresentedSnapshotFrame": 923,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 999.2000000476837,
+                "p95": 1014.3999999761581,
+                "p99": 1014.3999999761581,
+                "min": 0.20000004768371582,
+                "max": 1014.3999999761581,
+                "mean": 909.1636363593014
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 600,
+                "unknown": 0
+              },
+              "pairedRows": 600,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 600,
+                "p50": 1.7000000476837158,
+                "p95": 2.399999976158142,
+                "p99": 3.1999999284744263,
+                "min": 1.399999976158142,
+                "max": 3.5,
+                "mean": 1.792000000476837
+              },
+              "callback_sync_wall_ms": {
+                "n": 600,
+                "p50": 1.7000000476837158,
+                "p95": 2.399999976158142,
+                "p99": 3.1999999284744263,
+                "min": 1.399999976158142,
+                "max": 3.5,
+                "mean": 1.8174999994039536
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 600,
+                "p50": 10.10000009536816,
+                "p95": 16.200000047683716,
+                "p99": 20.600000023841858,
+                "min": 8.500000023841494,
+                "max": 22.70000002384222,
+                "mean": 10.885833381017022
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 600,
+                  "missed": 29,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 600,
+                  "missed": 29,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 600,
+                  "missed": 9,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 7.899999976158142,
+              "p95": 8.799999952316284,
+              "p99": 9.800000071525574,
+              "min": 6.899999976158142,
+              "max": 9.800000071525574,
+              "mean": 7.940000009536743
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 1.600000023841858,
+              "p95": 1.8000000715255737,
+              "p99": 1.899999976158142,
+              "min": 1.399999976158142,
+              "max": 1.899999976158142,
+              "mean": 1.6150000095367432
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 2.299999952316284,
+              "p95": 2.299999952316284,
+              "p99": 2.299999952316284,
+              "min": 2.299999952316284,
+              "max": 2.299999952316284,
+              "mean": 2.299999952316284
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "atlas",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.013100000023842,
+            "rafCallbacks": 601,
+            "rafFps": 60.02137200253358,
+            "simulationFrames": 601,
+            "simulationFps": 60.02137200253358,
+            "simulationSeconds": 10.016666666666666,
+            "simulationToWall": 1.0003562000422261,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 600,
+            "p50": 16.69999999999891,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000109,
+            "min": 15.800000000000182,
+            "max": 17.599999999999454,
+            "mean": 16.66716666666666
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": false,
+            "shaderChanged": false,
+            "entityChanged": false,
+            "viewportDistancePixels": 0,
+            "continuousTravelDistanceTiles": 0,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "after": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "backgroundSimulationSeconds": 10.016666666666666
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.19999992847442627,
+              "p95": 0.30000007152557373,
+              "p99": 0.30000007152557373,
+              "min": 0.10000002384185791,
+              "max": 0.30000007152557373,
+              "mean": 0.19166667262713113
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 601,
+              "seconds": 10.016666666666666,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 12
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 601,
+              "newSnapshotPresentations": 601,
+              "presentedSnapshotFps": 60.02257088370313,
+              "legacyGlobalFrameChanges": 601,
+              "lastPresentedSnapshotFrame": 876,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 994.8999999761581,
+                "p95": 1012.5999999046326,
+                "p99": 1012.5999999046326,
+                "min": 0.20000004768371582,
+                "max": 1012.5999999046326,
+                "mean": 910.2636363614689
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 601,
+                "unknown": 0
+              },
+              "pairedRows": 601,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 601,
+                "p50": 0.6000000238418579,
+                "p95": 0.7999999523162842,
+                "p99": 0.8999999761581421,
+                "min": 0.3999999761581421,
+                "max": 1.8000000715255737,
+                "mean": 0.6226289500412647
+              },
+              "callback_sync_wall_ms": {
+                "n": 601,
+                "p50": 0.6000000238418579,
+                "p95": 0.8999999761581421,
+                "p99": 1.100000023841858,
+                "min": 0.3999999761581421,
+                "max": 1.8000000715255737,
+                "mean": 0.6519134748795267
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 601,
+                "p50": 4.100000071524846,
+                "p95": 7.500000047682988,
+                "p99": 10.5,
+                "min": 3.4000000476844434,
+                "max": 12.399999999999636,
+                "mean": 4.450416021735812
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 601,
+                  "missed": 0,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 601,
+                  "missed": 0,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 601,
+                  "missed": 0,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 3.299999952316284,
+              "p95": 3.600000023841858,
+              "p99": 4,
+              "min": 2.899999976158142,
+              "max": 4,
+              "mean": 3.314999979734421
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 0.5,
+              "p95": 0.7000000476837158,
+              "p99": 0.8999999761581421,
+              "min": 0.3999999761581421,
+              "max": 0.8999999761581421,
+              "mean": 0.5649999976158142
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.7999999523162842,
+              "p95": 0.7999999523162842,
+              "p99": 0.7999999523162842,
+              "min": 0.7999999523162842,
+              "max": 0.7999999523162842,
+              "mean": 0.7999999523162842
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "battle",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 10.009899999976158,
+            "rafCallbacks": 601,
+            "rafFps": 60.040559845895714,
+            "simulationFrames": 601,
+            "simulationFps": 60.040559845895714,
+            "simulationSeconds": 10.016666666666666,
+            "simulationToWall": 1.000675997431595,
+            "battleElapsedDelta": 10.016666666666879
+          },
+          "raf_interval_ms": {
+            "n": 600,
+            "p50": 16.69999999999891,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000109,
+            "min": 16.5,
+            "max": 16.80000000000109,
+            "mean": 16.666999999999987
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": true,
+            "shaderChanged": true,
+            "entityChanged": true,
+            "viewportDistancePixels": 0,
+            "continuousTravelDistanceTiles": 0,
+            "battleElapsedDelta": 10.016666666666879,
+            "battleVsSimulationErrorSeconds": 2.1316282072803006e-13,
+            "overlay": {
+              "before": {
+                "cardOpen": true,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "after": {
+                "cardOpen": true,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "backgroundSimulationSeconds": 10.016666666666666
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 12,
+              "p50": 0.20000004768371582,
+              "p95": 0.3999999761581421,
+              "p99": 0.3999999761581421,
+              "min": 0,
+              "max": 0.3999999761581421,
+              "mean": 0.20833335320154825
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 601,
+              "seconds": 10.016666666666666,
+              "one_second_windows": {
+                "count": 19,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 19
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 601,
+              "newSnapshotPresentations": 601,
+              "presentedSnapshotFps": 60.04235933489535,
+              "legacyGlobalFrameChanges": 601,
+              "lastPresentedSnapshotFrame": 870,
+              "queryGapMs": {
+                "n": 11,
+                "p50": 1000.1000000238419,
+                "p95": 1028.9000000953674,
+                "p99": 1028.9000000953674,
+                "min": 0.19999992847442627,
+                "max": 1028.9000000953674,
+                "mean": 909.9636363658038
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 601,
+                "unknown": 0
+              },
+              "pairedRows": 601,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 601,
+                "p50": 2.100000023841858,
+                "p95": 2.799999952316284,
+                "p99": 4.799999952316284,
+                "min": 0.8999999761581421,
+                "max": 21.90000009536743,
+                "mean": 2.0527454239754825
+              },
+              "callback_sync_wall_ms": {
+                "n": 601,
+                "p50": 2.100000023841858,
+                "p95": 2.9000000953674316,
+                "p99": 4.799999952316284,
+                "min": 0.8999999761581421,
+                "max": 21.90000009536743,
+                "mean": 2.0835274543222693
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 601,
+                "p50": 7.0999999284740625,
+                "p95": 10.29999992847479,
+                "p99": 15.200000000000728,
+                "min": 5.199999904632932,
+                "max": 27.800000000000182,
+                "mean": 7.455241216478666
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 601,
+                  "missed": 3,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 601,
+                  "missed": 3,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 601,
+                  "missed": 1,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 12,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 20,
+              "p50": 4.799999952316284,
+              "p95": 6,
+              "p99": 6.600000023841858,
+              "min": 4.100000023841858,
+              "max": 6.600000023841858,
+              "mean": 5.024999982118606
+            },
+            "renderPublished": {
+              "n": 20,
+              "p50": 2.0999999046325684,
+              "p95": 3.899999976158142,
+              "p99": 4,
+              "min": 1,
+              "max": 4,
+              "mean": 2.064999985694885
+            },
+            "uiPublished": {
+              "n": 20,
+              "p50": 0.6999999284744263,
+              "p95": 0.7999999523162842,
+              "p99": 0.8999999761581421,
+              "min": 0.5,
+              "max": 0.8999999761581421,
+              "mean": 0.674999988079071
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        }
+      ],
+      "unresolved_phase_overruns": [
+        {
+          "case": "idle",
+          "nominalSubmission": {
+            "eligible": 600,
+            "missed": 1,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 600,
+            "p50": 4.700000023842222,
+            "p95": 10.19999995231592,
+            "p99": 13.099999952315557,
+            "min": 3.7999999999992724,
+            "max": 17.100000023841858,
+            "mean": 5.989333329717341
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "drag",
+          "nominalSubmission": {
+            "eligible": 600,
+            "missed": 5,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 600,
+            "p50": 7.80000004768408,
+            "p95": 14.500000047683898,
+            "p99": 16.600000000000364,
+            "min": 4.59999997615796,
+            "max": 21.80000004768408,
+            "mean": 8.517333357334136
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "travel",
+          "nominalSubmission": {
+            "eligible": 601,
+            "missed": 11,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 601,
+            "p50": 9.10000009536816,
+            "p95": 14.699999999999818,
+            "p99": 19.5,
+            "min": 7.9000000715259375,
+            "max": 20.800000095367068,
+            "mean": 9.825124839022648
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "travel-card",
+          "nominalSubmission": {
+            "eligible": 601,
+            "missed": 19,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 601,
+            "p50": 9.100000023841858,
+            "p95": 14.899999952316648,
+            "p99": 19.599999952315557,
+            "min": 7.6999999761574145,
+            "max": 21.5,
+            "mean": 9.899168025118353
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "inventory",
+          "nominalSubmission": {
+            "eligible": 601,
+            "missed": 1,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 601,
+            "p50": 4.80000004768408,
+            "p95": 9.799999976157778,
+            "p99": 12.399999999999636,
+            "min": 3.899999952316648,
+            "max": 17.200000000000728,
+            "mean": 6.209650583433859
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "inventory-travel",
+          "nominalSubmission": {
+            "eligible": 600,
+            "missed": 29,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 600,
+            "p50": 10.10000009536816,
+            "p95": 16.200000047683716,
+            "p99": 20.600000023841858,
+            "min": 8.500000023841494,
+            "max": 22.70000002384222,
+            "mean": 10.885833381017022
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "atlas",
+          "nominalSubmission": {
+            "eligible": 601,
+            "missed": 0,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 601,
+            "p50": 4.100000071524846,
+            "p95": 7.500000047682988,
+            "p99": 10.5,
+            "min": 3.4000000476844434,
+            "max": 12.399999999999636,
+            "mean": 4.450416021735812
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "battle",
+          "nominalSubmission": {
+            "eligible": 601,
+            "missed": 3,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 601,
+            "p50": 7.0999999284740625,
+            "p95": 10.29999992847479,
+            "p99": 15.200000000000728,
+            "min": 5.199999904632932,
+            "max": 27.800000000000182,
+            "mean": 7.455241216478666
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        }
+      ],
+      "errors": [],
+      "limitations": [
+        "Headless Chrome on this host, no exclusive CPU/GPU reservation. Compare candidates only under similar machine load.",
+        "Optional completion v1 adapter is checked against official candidate SDK documentation; this is not acceptance of a final SDK or game export. Old or unsupported SDKs fall back to official profile; absent either adequate evidence yields insufficient-evidence.",
+        "Completion v1 reports synchronous world/UI/cursor submissions. One-second samples establish sampled progress and interval percentiles, not OS display scanout, every intermediate frame ordering or UI pixel correctness. Current map/battle UI progress is checked at both boundaries; future scene2D needs its documented revision/transform adapter.",
+        "Legacy published dropped totals can be 29 draws stale; only a consistent v1 session supplies exact boundary counters. Sparse bridge/render samples cannot establish per-frame CPU tails; profile phase statistics and their measured overhead remain separate.",
+        "These short windows are focused regressions, not long soak or maximal army/dungeon stress acceptance."
+      ]
+    },
+    {
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk17-integrated-sixty-idle-inventory/result.json",
+        "bytes": 1944361,
+        "sha256": "bc0f25ede7167ac7713dbbc04a82c1c4184dbe8ea6a9b31b4b8a8caeddf44331"
+      },
+      "measured_successfully": true,
+      "target60_passed": true,
+      "target60_scope": "Successful fresh scheduler-RAF submission cadence, actual simulation rate and behavioral progress; not physical scanout or a broad stable-without-stutter/release claim.",
+      "release_ready": false,
+      "release_readiness_scope": "Focused host evidence cannot establish release readiness. Legacy completion-end failures and nominal phase overruns remain unresolved diagnostics.",
+      "seconds": 60,
+      "warmup": 2,
+      "viewport": {
+        "width": 1600,
+        "height": 900
+      },
+      "profiling": false,
+      "analysis_version": "official-browser-benchmark.gates.v4-raf-linked-v1.overlay-cases.inventory-travel",
+      "benchmark_sha256": "bf61d7b614621332a2a9d189f4dfd20de50ca7cfa3b4012b92a0ec330d04c50f",
+      "analysis_sha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+      "preparation_sha256": "65cea93439cdeefc35effc3fb9cab7032778133a3e0e312e1d6e348d2f308903",
+      "results": [
+        {
+          "name": "idle",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 60.001299999952316,
+            "rafCallbacks": 3600,
+            "rafFps": 59.99870002821374,
+            "simulationFrames": 3600,
+            "simulationFps": 59.99870002821374,
+            "simulationSeconds": 60,
+            "simulationToWall": 0.9999783338035623,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 3599,
+            "p50": 16.69999999999709,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000291,
+            "min": 16.30000000000291,
+            "max": 17,
+            "mean": 16.6671297582654
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": false,
+            "shaderChanged": false,
+            "entityChanged": false,
+            "viewportDistancePixels": 0,
+            "continuousTravelDistanceTiles": 0,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "after": {
+                "cardOpen": false,
+                "window": "none",
+                "blocksSceneInput": false
+              },
+              "backgroundSimulationSeconds": 60
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 62,
+              "p50": 0.10000002384185791,
+              "p95": 0.20000004768371582,
+              "p99": 0.30000007152557373,
+              "min": 0,
+              "max": 0.30000007152557373,
+              "mean": 0.1338709765864957
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 3600,
+              "seconds": 60,
+              "one_second_windows": {
+                "count": 119,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 70
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 3600,
+              "newSnapshotPresentations": 3600,
+              "presentedSnapshotFps": 59.99890002026166,
+              "legacyGlobalFrameChanges": 3600,
+              "lastPresentedSnapshotFrame": 3805,
+              "queryGapMs": {
+                "n": 61,
+                "p50": 1000,
+                "p95": 1011.8999999761581,
+                "p99": 1017,
+                "min": 0.09999990463256836,
+                "max": 1017,
+                "mean": 983.6245901623711
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 3600,
+                "unknown": 0
+              },
+              "pairedRows": 3600,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 3600,
+                "p50": 0.9000000953674316,
+                "p95": 1.7999999523162842,
+                "p99": 2,
+                "min": 0.5999999046325684,
+                "max": 2.600000023841858,
+                "mean": 1.1428611113627751
+              },
+              "callback_sync_wall_ms": {
+                "n": 3600,
+                "p50": 1,
+                "p95": 1.8000000715255737,
+                "p99": 2.100000023841858,
+                "min": 0.5999999046325684,
+                "max": 2.8000000715255737,
+                "mean": 1.1696666669845581
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 3600,
+                "p50": 5.799999952316284,
+                "p95": 10.899999976158142,
+                "p99": 13.200000023840403,
+                "min": 3.599999952316466,
+                "max": 23.899999976158142,
+                "mean": 7.063194421178758
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 3600,
+                  "missed": 5,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 3600,
+                  "missed": 5,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 3600,
+                  "missed": 3,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 62,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 120,
+              "p50": 4.5,
+              "p95": 8.700000047683716,
+              "p99": 9.100000023841858,
+              "min": 3,
+              "max": 11.100000023841858,
+              "mean": 5.595833337306976
+            },
+            "renderPublished": {
+              "n": 120,
+              "p50": 0.8999999761581421,
+              "p95": 1.6999999284744263,
+              "p99": 1.8000000715255737,
+              "min": 0.5,
+              "max": 2.200000047683716,
+              "mean": 1.0824999908606212
+            },
+            "uiPublished": {
+              "n": 120,
+              "p50": 0.8999999761581421,
+              "p95": 0.8999999761581421,
+              "p99": 0.8999999761581421,
+              "min": 0.8999999761581421,
+              "max": 0.8999999761581421,
+              "mean": 0.8999999761581421
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        },
+        {
+          "name": "inventory",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "target60": {
+            "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+            "criteria": {
+              "minimumRafFps": 59,
+              "minimumSimulationFps": 59,
+              "rafP95Ms": 18.5,
+              "rafP99Ms": 25,
+              "reportedDroppedDelta": 0,
+              "minimumOneSecondSimulationFrames": 58,
+              "maximumPresentedFrameGapMs": 50,
+              "minimumPresentedSnapshotFps": 58,
+              "battleClockToleranceSeconds": 0.05,
+              "minimumTravelTiles": 0.05,
+              "minimumViewportPanPixels": 8
+            },
+            "raf": true,
+            "simulation": true,
+            "rafTail": true,
+            "noReportedDropped": true,
+            "scenarioMaintained": true,
+            "behaviorProgress": true,
+            "visible": true,
+            "errorsClean": true,
+            "temporalEvidence": true,
+            "evidenceComplete": true,
+            "throughputOnlyPassed": true,
+            "passed": true,
+            "status": "pass"
+          },
+          "rates": {
+            "wallSeconds": 60.002,
+            "rafCallbacks": 3600,
+            "rafFps": 59.99800006666444,
+            "simulationFrames": 3600,
+            "simulationFps": 59.99800006666444,
+            "simulationSeconds": 60,
+            "simulationToWall": 0.9999666677777407,
+            "battleElapsedDelta": null
+          },
+          "raf_interval_ms": {
+            "n": 3599,
+            "p50": 16.69999999999709,
+            "p95": 16.799999999999272,
+            "p99": 16.80000000000291,
+            "min": 14.099999999998545,
+            "max": 19.30000000000291,
+            "mean": 16.667129758265535
+          },
+          "dropped": {
+            "before": 0,
+            "after": 0,
+            "delta": 0,
+            "exact": true,
+            "precision": "Synchronous v1 query boundaries within the same session/time origin."
+          },
+          "health": {
+            "clean": true,
+            "issues": []
+          },
+          "behavior": {
+            "passed": true,
+            "sceneMaintained": true,
+            "progressed": true,
+            "uiChanged": false,
+            "shaderChanged": false,
+            "entityChanged": false,
+            "viewportDistancePixels": 0,
+            "continuousTravelDistanceTiles": 0,
+            "battleElapsedDelta": null,
+            "battleVsSimulationErrorSeconds": null,
+            "overlay": {
+              "before": {
+                "cardOpen": false,
+                "window": "inventory",
+                "blocksSceneInput": true
+              },
+              "after": {
+                "cardOpen": false,
+                "window": "inventory",
+                "blocksSceneInput": true
+              },
+              "backgroundSimulationSeconds": 60
+            },
+            "evidenceScope": "Boundary evidence under the current UI-image map/battle contract. It catches a fully stuck UI or no-op gesture, not every intermediate pixel stall; a future scene2D presentation requires its documented revision/transform adapter."
+          },
+          "completion_counters": {
+            "source": "official-completion-v1-raf-linked",
+            "available": true,
+            "complete": true,
+            "passed": true,
+            "known_failure": false,
+            "issues": [],
+            "faults": [],
+            "read_errors": [],
+            "query_cpu_ms": {
+              "n": 62,
+              "p50": 0.10000002384185791,
+              "p95": 0.20000004768371582,
+              "p99": 0.2999999523162842,
+              "min": 0,
+              "max": 0.2999999523162842,
+              "mean": 0.11129032219609906
+            },
+            "query": {
+              "windowMs": 1500,
+              "sampleEveryMs": 1000,
+              "includeRafSamples": true,
+              "gateWindowMs": 1000,
+              "gateStepMs": 500
+            },
+            "dropped": {
+              "before": 0,
+              "after": 0,
+              "delta": 0,
+              "exact": true,
+              "precision": "Synchronous v1 query boundaries within the same session/time origin."
+            },
+            "simulation": {
+              "available": true,
+              "passed": true,
+              "frames": 3600,
+              "seconds": 60,
+              "one_second_windows": {
+                "count": 119,
+                "all_covered": true,
+                "all_simulation_passed": true,
+                "all_presentation_passed": true,
+                "minimum_simulation_frames": 60,
+                "minimum_new_snapshot_fps": 60,
+                "legacy_completion_end_failed_windows": 52
+              }
+            },
+            "presentation": {
+              "available": true,
+              "passed": true,
+              "completedDraws": 3600,
+              "newSnapshotPresentations": 3600,
+              "presentedSnapshotFps": 59.99820005404606,
+              "legacyGlobalFrameChanges": 3600,
+              "lastPresentedSnapshotFrame": 3835,
+              "queryGapMs": {
+                "n": 61,
+                "p50": 1000.1000000238419,
+                "p95": 1008,
+                "p99": 1016.2000000476837,
+                "min": 0.20000004768371582,
+                "max": 1016.2000000476837,
+                "mean": 983.6360655729887
+              },
+              "sourceDeltas": {
+                "manual": 0,
+                "startup": 0,
+                "scheduler_raf": 3600,
+                "unknown": 0
+              },
+              "pairedRows": 3600,
+              "scope": "Completed globally fresh scheduler_raf submissions bound to their originating RAF timestamps, checked in fixed 1000ms windows. Manual/startup/repeated/regressed/in-flight rows cannot provide new RAF frames. No GPU/OS scanout or pixel-correctness proof."
+            },
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            },
+            "paired_submission_work": {
+              "submit_sync_wall_ms": {
+                "n": 3600,
+                "p50": 0.7999999523162842,
+                "p95": 0.9000000953674316,
+                "p99": 1.100000023841858,
+                "min": 0.5,
+                "max": 1.399999976158142,
+                "mean": 0.7664444436298476
+              },
+              "callback_sync_wall_ms": {
+                "n": 3600,
+                "p50": 0.7999999523162842,
+                "p95": 1,
+                "p99": 1.2999999523162842,
+                "min": 0.5,
+                "max": 1.7000000476837158,
+                "mean": 0.7914722210499976
+              },
+              "submission_phase_from_raf_ms": {
+                "n": 3600,
+                "p50": 5.599999952319195,
+                "p95": 10.59999997615887,
+                "p99": 12.899999976158142,
+                "min": 4.09999997615887,
+                "max": 17.100000023841858,
+                "mean": 6.941249976323729
+              },
+              "nominal_deadline_deltas": {
+                "submission": {
+                  "eligible": 3600,
+                  "missed": 1,
+                  "unknown": 0
+                },
+                "callback": {
+                  "eligible": 3600,
+                  "missed": 1,
+                  "unknown": 0
+                },
+                "preparation": {
+                  "eligible": 3600,
+                  "missed": 0,
+                  "unknown": 0
+                }
+              },
+              "official_summary_rows": 62,
+              "scope": "Submission/callback synchronous drawing wall scopes are nested, not additive. Preparation includes waits and is not CPU time. Nominal lateness is an estimate, never an OS/GPU deadline."
+            },
+            "missing": [],
+            "contract_status": "Version-1 additive RAF-linked fields checked against official SDK6. Missing fields never fall back to global frame changes or completion-end cadence."
+          },
+          "temporal_gate": {
+            "complete": true,
+            "passed": true,
+            "issues": [],
+            "faults": [],
+            "legacy_end_clock_gate": {
+              "complete": true,
+              "passed": false,
+              "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+            }
+          },
+          "cpu_ms": {
+            "bridgePublished": {
+              "n": 120,
+              "p50": 4.600000023841858,
+              "p95": 10,
+              "p99": 11.699999928474426,
+              "min": 3.100000023841858,
+              "max": 11.799999952316284,
+              "mean": 6.069166671236356
+            },
+            "renderPublished": {
+              "n": 120,
+              "p50": 0.7000000476837158,
+              "p95": 0.9000000953674316,
+              "p99": 1,
+              "min": 0.5999999046325684,
+              "max": 1.100000023841858,
+              "mean": 0.7433333357175191
+            },
+            "uiPublished": {
+              "n": 120,
+              "p50": 19.300000071525574,
+              "p95": 19.300000071525574,
+              "p99": 19.300000071525574,
+              "min": 19.300000071525574,
+              "max": 19.300000071525574,
+              "mean": 19.300000071525574
+            },
+            "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+            "phases": {}
+          }
+        }
+      ],
+      "unresolved_phase_overruns": [
+        {
+          "case": "idle",
+          "nominalSubmission": {
+            "eligible": 3600,
+            "missed": 5,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 3600,
+            "p50": 5.799999952316284,
+            "p95": 10.899999976158142,
+            "p99": 13.200000023840403,
+            "min": 3.599999952316466,
+            "max": 23.899999976158142,
+            "mean": 7.063194421178758
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        },
+        {
+          "case": "inventory",
+          "nominalSubmission": {
+            "eligible": 3600,
+            "missed": 1,
+            "unknown": 0
+          },
+          "submissionPhaseFromRafMs": {
+            "n": 3600,
+            "p50": 5.599999952319195,
+            "p95": 10.59999997615887,
+            "p99": 12.899999976158142,
+            "min": 4.09999997615887,
+            "max": 17.100000023841858,
+            "mean": 6.941249976323729
+          },
+          "legacyEndClockGate": {
+            "complete": true,
+            "passed": false,
+            "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+          }
+        }
+      ],
+      "errors": [],
+      "limitations": [
+        "Headless Chrome on this host, no exclusive CPU/GPU reservation. Compare candidates only under similar machine load.",
+        "Optional completion v1 adapter is checked against official candidate SDK documentation; this is not acceptance of a final SDK or game export. Old or unsupported SDKs fall back to official profile; absent either adequate evidence yields insufficient-evidence.",
+        "Completion v1 reports synchronous world/UI/cursor submissions. One-second samples establish sampled progress and interval percentiles, not OS display scanout, every intermediate frame ordering or UI pixel correctness. Current map/battle UI progress is checked at both boundaries; future scene2D needs its documented revision/transform adapter.",
+        "Legacy published dropped totals can be 29 draws stale; only a consistent v1 session supplies exact boundary counters. Sparse bridge/render samples cannot establish per-frame CPU tails; profile phase statistics and their measured overhead remain separate.",
+        "These short windows are focused regressions, not long soak or maximal army/dungeon stress acceptance."
+      ]
+    }
+  ],
+  "gpu_comparison": {
+    "raw": {
+      "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk17-gpu-prefix-reuse-comparison.json",
+      "bytes": 28807,
+      "sha256": "819d48d314252b29b5f23efceb4ae859a4a1df281108195b4e94d8081e1d7476"
+    },
+    "owner_report": "brawler removal retains geometry4,material1,texture-build19; only outgoing texture disposed. Idle60s maxRAFgap17ms; no global GPU rebuild. Root has not duplicated this counter extraction."
+  },
+  "scope": [
+    "Seven original cases plus inventory-during-travel; two original maintained idle/inventory cases measured60s.",
+    "Fresh successful scheduler-RAF submissions, simulation progress and draw-completion health are not physical scanout or universal no-stutter proof.",
+    "Sparse published render/bridge samples are not per-frame CPU-tail profiling.",
+    "Natural GC and100cycle resource liveness are separate experiments. SDK17 does not contain the later completed-image retirement correction."
+  ]
+}

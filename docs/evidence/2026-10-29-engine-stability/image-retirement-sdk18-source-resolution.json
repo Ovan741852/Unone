@@ -1,0 +1,381 @@
+{
+  "schema": "unone.sdk18.image-retirement.source-resolution.v1",
+  "status": "bounded-source-Node-and-package-gates-cleared; emitted-browser-retirement-and-game-FPS-memory-acceptance-separate",
+  "scope": {
+    "base_revision": "310aea1d23182a62446a793b1f08b2398afcae32",
+    "reviewed_revision": "c3160e89c643b80b313efba10ebfddde4bb93309",
+    "production_file": "web/shared/asset-encoding.js",
+    "regression_file": "web/shared/image-asset-retirement.test.mjs",
+    "documentation": "docs/web-image-assets.md",
+    "reusable_primitive": "Presentation-owned decoded-image lifetime and request cancellation, not Game asset choices or gameplay rules.",
+    "unchanged": "No Core/WASM/CLI/package algorithm, renderer, GPU/cache budgets, Game, input timing or performance acceptance threshold changes.",
+    "extraction": "Independent reviewer read source and existing small JSON/logs. The reviewer launched exactly one tool-free bounded external source-review process; this evidence writer runs no test/build/package/browser/FPS or memory workload."
+  },
+  "trigger": {
+    "reference": "docs/evidence/2026-10-29-engine-stability/browser-image-retirement-isolation.json",
+    "scope": "Actual frozen SDK16 broker/defaultloader and directImage successful remove-src controls each retained300 excess CDP nodes relative to the no-completed-src-mutation broker control after matching2GC requests for50images. This isolates an avoidable branch without identifying every browser native retaining path.",
+    "not_a_verdict": "No general leak-free/GC-free/native-memory/FPS conclusion follows from this count or source change."
+  },
+  "correction": {
+    "completed_html": "After successful decode and final broker image ownership retirement, remove engine references without resetting HTMLImageElement.src.",
+    "explicit_close": "Decoded images exposing an explicit close() retain exactly-once final-owner close behavior.",
+    "pending_abort": "Only a real abort before onload resets src to cancel the pending request. Cleanup clears onload/onerror and the abort listener first.",
+    "decode_pending_abort": "After onload, abort rejects readiness and clears callbacks without resetting the completed source. settled fences captured late load/error and eventual decode resolution.",
+    "late_custom_loader": "A fulfilled custom loader result is owned then checked against disposal/retirement/controller/map identity. A stale result is immediately retired rather than published.",
+    "metrics": "closed_images counts logical final image-ownership retirement. released_bytes_estimate counts retired decoded payload estimates, not measured browser/OS reclamation."
+  },
+  "independent_codex_review": {
+    "reviewer": "/root/native_performance",
+    "mode": "read-only bounded production diff and8regression source inspection",
+    "disposition": "CLEAR: no concrete P1/P2 found.",
+    "source_artifacts": [
+      {
+        "path": "web/shared/asset-encoding.js",
+        "committed_lf_postimage": {
+          "bytes": 27359,
+          "sha256": "5053751585b7b549debcc514015b310066e074633416b1e93c1a3b8eeadf8597",
+          "captured": {
+            "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/source-0.txt",
+            "bytes": 27359,
+            "sha256": "5053751585b7b549debcc514015b310066e074633416b1e93c1a3b8eeadf8597"
+          }
+        },
+        "supplied_excerpt": {
+          "line_ranges": [
+            [
+              153,
+              192
+            ],
+            [
+              205,
+              292
+            ],
+            [
+              332,
+              347
+            ]
+          ],
+          "sha256": "c048beea1f32a8fb10e0d8111aca97aff8b740b60899e1f121acb6073abca9cf",
+          "captured": {
+            "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/excerpt-0.txt",
+            "bytes": 12641,
+            "sha256": "c048beea1f32a8fb10e0d8111aca97aff8b740b60899e1f121acb6073abca9cf"
+          }
+        },
+        "packaged": {
+          "path": "templates/web/shared/asset-encoding.js",
+          "bytes": 27700,
+          "sha256": "79999065f3ac9e4283bf1915ddd9d74c5c86bb083b2d85a636ecc00677afc67c"
+        }
+      },
+      {
+        "path": "web/shared/image-asset-retirement.test.mjs",
+        "committed_lf_postimage": {
+          "bytes": 6460,
+          "sha256": "175fbef156ae60583228fa436ba131b2e9d05571c7e8c9dac5cc4c9898b3eaaf",
+          "captured": {
+            "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/source-1.txt",
+            "bytes": 6460,
+            "sha256": "175fbef156ae60583228fa436ba131b2e9d05571c7e8c9dac5cc4c9898b3eaaf"
+          }
+        },
+        "supplied_excerpt": {
+          "line_ranges": [
+            [
+              1,
+              54
+            ]
+          ],
+          "sha256": "81be8c14870217014f1a4b5fdbeead4fb661bab6e77c63e6c5781bc0d6e5e810",
+          "captured": {
+            "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/excerpt-1.txt",
+            "bytes": 6667,
+            "sha256": "81be8c14870217014f1a4b5fdbeead4fb661bab6e77c63e6c5781bc0d6e5e810"
+          }
+        },
+        "packaged": null
+      },
+      {
+        "path": "docs/web-image-assets.md",
+        "committed_lf_postimage": {
+          "bytes": 15182,
+          "sha256": "e4cb3336a8df6fda754d7b227c25bb82ad50a7be690701ec697cbfa25fa816c5",
+          "captured": {
+            "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/source-2.txt",
+            "bytes": 15182,
+            "sha256": "e4cb3336a8df6fda754d7b227c25bb82ad50a7be690701ec697cbfa25fa816c5"
+          }
+        },
+        "supplied_excerpt": {
+          "line_ranges": [
+            [
+              27,
+              62
+            ]
+          ],
+          "sha256": "13bd3ce8094ecbe6d2b86bdfa377dea42d124402252146e9d9386ec813af4572",
+          "captured": {
+            "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/excerpt-2.txt",
+            "bytes": 8646,
+            "sha256": "13bd3ce8094ecbe6d2b86bdfa377dea42d124402252146e9d9386ec813af4572"
+          }
+        },
+        "packaged": {
+          "path": "docs/web-image-assets.md",
+          "bytes": 15182,
+          "sha256": "e4cb3336a8df6fda754d7b227c25bb82ad50a7be690701ec697cbfa25fa816c5"
+        }
+      }
+    ],
+    "source_encoding_note": "Git committed postimages use LF; packaged checkout files can use CRLF. The reviewer verified exact text equality after CRLF normalization for the production file; both byte identities are retained instead of conflated.",
+    "reviewed_boundaries": [
+      "True pending request abort removes source once and ignores captured late callbacks.",
+      "Aborting after onload during decode rejects/fences without resetting a completed image.",
+      "Network/decode/dimension failure retains original observable error and clears callbacks.",
+      "Successful and cancelled-generation late HTML results retire without source mutation.",
+      "Shared explicit-close identity retains final-owner close once and consumer lease idempotency.",
+      "Broker entry/refcount/generation/map ownership and GPU/cache budgets are unchanged."
+    ],
+    "limitation": "Source review does not execute browser loaders or establish native collection/frame timing."
+  },
+  "tests": {
+    "new_meaningful_cases": 8,
+    "coverage": [
+      "Default completed HTML retirement and shared leased-ready lifetime.",
+      "Explicit custom close remains once after the final shared lease.",
+      "True pending abort cancels source once, clears handlers and ignores captured late events.",
+      "Abort during decode after onload preserves source and fences late completion.",
+      "Decode rejection preserves its original error without source reset.",
+      "Invalid completed dimensions reject before decode without source mutation.",
+      "Completed network error clears callbacks without a second source mutation.",
+      "Late cancelled-generation custom HTML result retires logically without source reset."
+    ],
+    "negative_control": {
+      "status": "expected-retirement-defects-reproduced",
+      "baseline_commit": "310aea1d23182a62446a793b1f08b2398afcae32",
+      "baseline_file": "web/shared/asset-encoding.js",
+      "command": [
+        "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--test",
+        "--test-reporter=tap",
+        "web/shared/image-asset-retirement.test.mjs"
+      ],
+      "exit_code": 1,
+      "failed_regressions": 7,
+      "passed_preserved_close_behavior": 1,
+      "scope": "Private SDK17 source copy only. Completed HTML src reset and captured late-load decode are expected failures; explicit close-once behavior remains passing. No shared source or SDK artifact changed.",
+      "duration_ms": 74.019,
+      "private_copy_only": true,
+      "raw_result": {
+        "path": ".cache/image-retirement18-negative/result.json",
+        "bytes": 686,
+        "sha256": "a499d714a8c5cdb08aa6ed3503647c7dbdbbc446d8cf0056c8f1fc602a2a7b86"
+      },
+      "raw_stdout": {
+        "path": ".cache/image-retirement18-negative/tests.stdout.log",
+        "bytes": 6446,
+        "sha256": "608d8cc5e0179a2a6ed970eeef5160330f473cbecf8c90646e6e19c3e3365b6f"
+      },
+      "raw_stderr": {
+        "path": ".cache/image-retirement18-negative/tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "focused": {
+      "executor": "/root/web_lifecycle",
+      "tests": 46,
+      "pass": 46,
+      "fail": 0,
+      "skip": 0,
+      "duration_ms": 125.421,
+      "raw": {
+        "path": ".cache/image-retirement18-focused-r1.log",
+        "bytes": 5013,
+        "sha256": "8d919e47dd7815faa75b5c4b1829e488bae9fc85ea3e0519e09c98c2e575266a"
+      }
+    },
+    "whole_web": {
+      "executor": "Root/Web",
+      "tests": 674,
+      "pass": 671,
+      "fail": 0,
+      "skip": 3,
+      "duration_ms": 12743.7775,
+      "skip_scope": "Three existing skips; this is not674 executed assertions.",
+      "raw": {
+        "path": ".cache/shared-image-host18-full-web-tests.log",
+        "bytes": 69274,
+        "sha256": "60e6e5f03beebd4f8127069a3d711ab1c12ba966c781b195e576030e2f37afaf"
+      }
+    }
+  },
+  "external_claude_review": {
+    "disposition": "COMPLETED_CLEAR",
+    "review_completed": true,
+    "attempts": 1,
+    "base_revision": "310aea1d23182a62446a793b1f08b2398afcae32",
+    "reviewed_commit": "c3160e89c643b80b313efba10ebfddde4bb93309",
+    "cli": {
+      "path": "C:/Users/liNao/.local/bin/claude.exe",
+      "version_command": [
+        "C:/Users/liNao/.local/bin/claude.exe",
+        "--version"
+      ],
+      "version": "2.1.308 (Claude Code)",
+      "version_exit": 0,
+      "version_error": null,
+      "command": [
+        "C:/Users/liNao/.local/bin/claude.exe",
+        "--safe-mode",
+        "--restricted",
+        "--strict-mcp-config",
+        "--tools",
+        "",
+        "--permission-mode",
+        "plan",
+        "--permission-prompts",
+        "none",
+        "--disable-slash-commands",
+        "--no-session-persistence",
+        "--output-format",
+        "json",
+        "--print"
+      ],
+      "stdin": "prompt.txt",
+      "read_only": true,
+      "tool_access": "none",
+      "timeout_ms": 60000
+    },
+    "elapsed_ms": 41405.5242,
+    "exit_code": 0,
+    "timed_out": false,
+    "stdout_bytes": 6148,
+    "stderr_bytes": 0,
+    "response_status": {
+      "terminal_reason": "completed",
+      "subtype": "success",
+      "is_error": false,
+      "stop_reason": "end_turn",
+      "num_turns": 1
+    },
+    "finding": "No concrete P1/P2 found.",
+    "minor_notes": [
+      {
+        "path": "docs/web-image-assets.md",
+        "line": 36,
+        "status": "below-P2 wording note; SDK18 frozen unchanged",
+        "note": "Unchanged broad cancellation wording is narrowed by new line50. Web separately prepared the line36 clarification for SDK19."
+      }
+    ],
+    "raw_command": {
+      "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/command.json",
+      "bytes": 2367,
+      "sha256": "20b564d7f0eb9322d1d0efd764214d55830890080161ae6b0db61f0e9cf3b4e0"
+    },
+    "raw_wrapper_result": {
+      "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/result.json",
+      "bytes": 2799,
+      "sha256": "b2ee323024e6bc70e1ae632e99ebd82847e6f67e3355cf4e4c4f087f33b11955"
+    },
+    "raw_response": {
+      "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/review.stdout.json",
+      "bytes": 6148,
+      "sha256": "c9f108d70679b49043c4e04022b31d37730f77ebea39efd7d6ae6a6821785358"
+    },
+    "raw_stderr": {
+      "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "adjudication": {
+      "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/response-review.json",
+      "bytes": 1066,
+      "sha256": "6aca5a736e57c3347fe6c754d8ddfd67f56c14282940e8869c9c6f90d36fdd55"
+    },
+    "fixed_diff": {
+      "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/fixed.diff",
+      "bytes": 18960,
+      "sha256": "26dc87d0bd6243f75eb2b36b6b24be113ee69d98601023c9d7b17d5d83cd9f22"
+    },
+    "prompt": {
+      "path": ".cache/image-retirement-sdk18-claude-review-20261030-r1/prompt.txt",
+      "bytes": 49943,
+      "sha256": "2b9f90fbf5363c7c82f7ba3b2548b711df76439ded8a97acf9893b6b569c1285"
+    },
+    "wrapper": {
+      "path": ".cache/run-image-retirement-sdk18-claude-review.mjs",
+      "bytes": 7781,
+      "sha256": "da308e6aabcd57ad10793e90e76912b6b35355ab92746602000f10c82158713b"
+    },
+    "separation": "This completed external source review is independent of the Codex source disposition and Node execution. It makes no emitted-runtime/FPS/reclamation assertion."
+  },
+  "package": {
+    "path": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate18-host",
+    "host_source_commit": "c3160e89c643b80b313efba10ebfddde4bb93309",
+    "host_source_dirty": false,
+    "packaged_source_scope_clean": true,
+    "global_worktree_dirty": true,
+    "sdk_manifest_sha256": "192237076a2851423a122da3b279876590d2142f9e3c6e35f4b0d8f051b9f980",
+    "inventory_files": 148,
+    "inventory_bytes": 61274965,
+    "complete_inventory_verified": true,
+    "checkpoint_fingerprint_sha256": "40132c1d0319734779edb22a19d4cd66344307e4c33913b457ff0400bad55e81",
+    "checkpoint_manifest_sha256": "87ccd532b63cc7966fb8bf6fdea22a7c76fae90e46443044976697abb1d80145",
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "compiled_package_source_sha256": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "package_source_contract": "ExactoriginalUI0.6 compiledintoSDK10CLI; no unbuiltfusedcopy package.",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+        "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      },
+      {
+        "id": "web-development-1",
+        "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+        "runtime_manifest_sha256": "5ddccf3b045430cf06609a3a932d9960f4a218fa74e1746752a96580dd3fb60e",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      }
+    ],
+    "sdk17_to18": {
+      "changed_indexed_payloads": 2,
+      "unchanged_indexed_payloads": 146,
+      "changed": [
+        "docs/web-image-assets.md",
+        "templates/web/shared/asset-encoding.js"
+      ],
+      "added": [],
+      "removed": [],
+      "raw": {
+        "path": ".cache/shared-image-host18-pack/sdk17-to18-delta.json",
+        "bytes": 1752,
+        "sha256": "0258fc3dca358feda5cb098a40ee7fe0c52c57dc9c670290ccf63b1e600b18d3"
+      }
+    },
+    "raw": {
+      "path": ".cache/shared-image-host18-pack/result.json",
+      "bytes": 4164,
+      "sha256": "9f685e12db7a9289b9779c868beee27afd8a0d8dc97f675e91a2aeadf985ee9c"
+    },
+    "raw_pack_command": {
+      "path": ".cache/shared-image-host18-pack/pack-command.json",
+      "bytes": 643,
+      "sha256": "070806527397529eb67049e08c504e949c4e5ccbb00f2f562450e0a910fc8544"
+    },
+    "raw_inspect": {
+      "path": ".cache/shared-image-host18-pack/inspect.stdout",
+      "bytes": 50124,
+      "sha256": "153550f0e834165d709479a792c428a444455ee2e0ff016b8eb5f4102d65c2ac"
+    },
+    "schema_caveat": "Pack result retains a legacy sdk15 schema label; actual pinned path/source/runtime identities here identify SDK18."
+  },
+  "emitted_validation_limit": {
+    "retirement": "Actual SDK18 emitted-browser isolation is owned by Root and recorded separately; no outcome is invented here.",
+    "worker_teardown": "Root/Web reported an actual late RUNTIME_CLOSED console error during context.close after the SDK18 worker functional assertions. That separate scheduler teardown defect is not labelled a clean smoke pass here; a subsequent narrow SDK19 generation-cancellation correction is being validated separately.",
+    "acceptance": "No Game FPS, natural-GC frequency,100cycle resource slope, leak-free or native-memory acceptance is claimed by this source/package record."
+  },
+  "historical_scope": "SDK17 ownership/staging fixes remain recorded separately. This record does not overwrite previous failed/INCOMPLETE review or browser artifacts."
+}

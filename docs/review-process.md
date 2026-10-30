@@ -50,6 +50,17 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-30: completed HTML-image retirement at `c3160e8` and asynchronous
+  scheduler cancellation at `c361357`. Separate bounded tool-free Claude
+  2.1.308 source reviews completed with exit 0 in 41.4 and 35.6 seconds,
+  respectively, with no concrete P1/P2 findings. Independent Codex reviews,
+  old-code negative controls and source/Node/package results are recorded in
+  [retirement resolution](evidence/2026-10-29-engine-stability/image-retirement-sdk18-source-resolution.json)
+  and [scheduler resolution](evidence/2026-10-29-engine-stability/scheduler-sdk19-source-resolution.json).
+  SDK18's actual late worker teardown error is preserved separately and is not
+  hidden by the passing phase assertions or source review:
+  [actual failure](evidence/2026-10-29-engine-stability/image-handoff-sdk18-official-web-smoke-failure.json).
+
 - 2026-10-30: shared-image caller handoff fixed range `f054a62..337a95d`.
   Claude 2.1.308 completed a read-only, tool-free review (exit 0, 57.1 seconds)
   and reported two confirmed P2 lifecycle defects: skipped Canvas retirement

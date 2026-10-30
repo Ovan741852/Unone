@@ -1,0 +1,1126 @@
+{
+  "schema": "unone.browser-image-retirement.sdk18-validation.v1",
+  "date": "2026-10-30",
+  "status": "completed-image-retirement-control-matches-no-remove-src-baseline; legacy-remove-src-negative-control-reproduced",
+  "scope": "Pure image-retirement control with actual SDK18 broker module and one independent2x2 PNG. No Game, WASM, backend, Three, shader or explicit GPU drawing. No production FPS/natural-GC/no-leak verdict.",
+  "execution": {
+    "executed_by": "Root",
+    "reported_exit_code": 0,
+    "reported_wall_seconds": 4.99,
+    "wall_scope": "Root-reported command wall time, not an independently measured benchmark.",
+    "executable": "C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "argv": [
+      "D:/Projects/Unone/.cache/browser-image-retirement-isolation18.mjs",
+      "--diagnostic",
+      "--allow-two-gc-per-variant",
+      "--base-url",
+      "http://127.0.0.1:8293/",
+      "--manifest",
+      "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18/export.json",
+      "--output",
+      "D:/Projects/Unone/.cache/browser-image-retirement-isolation18-run1"
+    ],
+    "browser": "156.0.8078.48",
+    "all_contexts_and_browsers_closed": true,
+    "errors": [],
+    "unexpected_requests": [],
+    "load_scope": "Authorized concurrent project work is permitted; no machine-exclusive timing or cross-run GC-duration comparability is claimed."
+  },
+  "pins": {
+    "runner_sha256": "934fb6867ba7a38ac069156fe03a078a8ad538be120cd34e2351098d9e639ae9",
+    "manifest": "D:\\Projects\\Unone\\artifacts\\retained-official-web-preload-20261030-candidate18\\export.json",
+    "manifest_sha256": "3fea117fe63eaff7829cbcd6c2fd29e985ed70f4751a3d3125663d16d2715af3",
+    "release": "releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/",
+    "module": {
+      "url": "http://127.0.0.1:8293/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/web/shared/asset-encoding.js",
+      "sha256": "79999065f3ac9e4283bf1915ddd9d74c5c86bb083b2d85a636ecc00677afc67c"
+    },
+    "png": {
+      "url": "http://127.0.0.1:8293/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/content/assets/qa-preload-only.png",
+      "sha256": "4c55a49112f63ed3ce2cb2687a1175b08c554f836f19d93afb706650672c7e40",
+      "width": 2,
+      "height": 2,
+      "encoded_bytes": 79
+    },
+    "asset": {
+      "bundle": "content",
+      "encoding": {
+        "companions": [],
+        "decoder": "image",
+        "format": "png",
+        "mime": "image/png"
+      },
+      "id": "texture://qa-preload-only",
+      "kind": "texture2d",
+      "source": "assets/qa-preload-only.png"
+    },
+    "fixture_script_identity_sha256": "73f85519ce972c0fde76a028bf76267fa157a1bb5be563ac44350e1c5eef85c3",
+    "fixture_identity_scope": "Metadata only; fixture/Game script is not executed."
+  },
+  "mapping": {
+    "base": {
+      "path": "D:/Projects/Unone/.cache/browser-image-retirement-isolation-final16-run1/diagnostic-script.mjs",
+      "sha256": "b5f2989218bcc4e4050970d5b008a74c17b93189e245a1abfed0592987fa1aaf"
+    },
+    "generated": {
+      "path": "D:/Projects/Unone/.cache/browser-image-retirement-isolation18.mjs",
+      "sha256": "934fb6867ba7a38ac069156fe03a078a8ad538be120cd34e2351098d9e639ae9"
+    },
+    "reverse_normalized_body_sha256": "b5f2989218bcc4e4050970d5b008a74c17b93189e245a1abfed0592987fa1aaf",
+    "algorithm_and_instrumentation_unchanged": true,
+    "substitutions": [
+      {
+        "label": "default frozen manifest path",
+        "from": "'D:/Projects/JYRogue/game/dist/player-performance-integrated16/export.json'",
+        "to": "\"D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18/export.json\"",
+        "occurrences": 1
+      },
+      {
+        "label": "manifest SHA",
+        "from": "5482bfd16bed44c587d0f7d66334ae36b75c2fe8753a04bd67427d43b86edd17",
+        "to": "3fea117fe63eaff7829cbcd6c2fd29e985ed70f4751a3d3125663d16d2715af3",
+        "occurrences": 1
+      },
+      {
+        "label": "actual exported broker-module SHA",
+        "from": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed",
+        "to": "79999065f3ac9e4283bf1915ddd9d74c5c86bb083b2d85a636ecc00677afc67c",
+        "occurrences": 1
+      },
+      {
+        "label": "actual fixture PNG SHA",
+        "from": "207582c096097e22a62b2b50c3acdd22406717dcd5c249066b2f04aa9685c272",
+        "to": "4c55a49112f63ed3ce2cb2687a1175b08c554f836f19d93afb706650672c7e40",
+        "occurrences": 1
+      },
+      {
+        "label": "asset catalog SHA",
+        "from": "3b7d956059b22d914a6c8578ede8797986665495305e231c53e64d0570d26fa7",
+        "to": "bd431ed00a194024e27d11536500cfa66f9690f2a50ec94e9545296f8f059ffc",
+        "occurrences": 1
+      },
+      {
+        "label": "artifact script identity SHA, not executed",
+        "from": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+        "to": "73f85519ce972c0fde76a028bf76267fa157a1bb5be563ac44350e1c5eef85c3",
+        "occurrences": 1
+      },
+      {
+        "label": "independent fixture asset ID",
+        "from": "texture://jy/world-tiles/isometric-shadow",
+        "to": "texture://qa-preload-only",
+        "occurrences": 1
+      },
+      {
+        "label": "immutable release root",
+        "from": "releases/01c4854690abf848b62ed169500b44674b973550f1856fae12570096e7e4f5a8/",
+        "to": "releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/",
+        "occurrences": 1
+      },
+      {
+        "label": "identity error label",
+        "from": "Frozen final16 manifest changed",
+        "to": "Frozen final18 manifest changed",
+        "occurrences": 1
+      },
+      {
+        "label": "PNG header dimension assertion",
+        "from": "assert.equal(png.readUInt32BE(16),96);assert.equal(png.readUInt32BE(20),48);",
+        "to": "assert.equal(png.readUInt32BE(16),2);assert.equal(png.readUInt32BE(20),2);",
+        "occurrences": 1
+      },
+      {
+        "label": "PNG dimension metadata",
+        "from": "width:96,height:48",
+        "to": "width:2,height:2",
+        "occurrences": 1
+      },
+      {
+        "label": "direct Image dimension assertion",
+        "from": "image.naturalWidth!==96||image.naturalHeight!==48",
+        "to": "image.naturalWidth!==2||image.naturalHeight!==2",
+        "occurrences": 1
+      },
+      {
+        "label": "broker Image dimension assertion",
+        "from": "lease.image?.naturalWidth!==96||lease.image?.naturalHeight!==48",
+        "to": "lease.image?.naturalWidth!==2||lease.image?.naturalHeight!==2",
+        "occurrences": 1
+      }
+    ],
+    "historical_label_caveat": "The inherited b5 source metadata still names A as remove-src retirement. That is a historical variant label, not the behavior of the newly pinned module79999065. Actual module identity and measured A results govern this record."
+  },
+  "method": {
+    "iterations_per_variant": 50,
+    "settle_ms": 1000,
+    "gc_requests_per_variant": 2,
+    "total_gc_requests": 6,
+    "fresh_chrome_and_context_per_variant": true,
+    "interception": "Only same-origin/__image_retire_control__ empty HTML is fulfilled. Actual frozen module/PNG served bytes are SHA-verified. All other requests are checked against an explicit allowlist.",
+    "ownership": "No image-object history, WeakRefs or remote DOM/debugger handles. Workload locals leave page.evaluate before settle/GC. A/B retain only an empty broker and primitive counts.",
+    "variants": {
+      "A": "Actual SDK18 broker/default loader, unused cache budget0: successful completed HTMLImageElement retirement drops ownership without src removal.",
+      "B": "Same actual broker/loader with own no-op close on each Image: diagnostic counterfactual, not production code.",
+      "C": "Direct successful onload/decode/handler-cleanup/removeAttribute(src), without broker/Abort scheduling: unchanged legacy negative control."
+    }
+  },
+  "observations": [
+    {
+      "variant": "A",
+      "status": "completed-control-not-a-verdict",
+      "served_identity": {
+        "verified": true,
+        "module_sha256": "79999065f3ac9e4283bf1915ddd9d74c5c86bb083b2d85a636ecc00677afc67c",
+        "png_sha256": "4c55a49112f63ed3ce2cb2687a1175b08c554f836f19d93afb706650672c7e40",
+        "preflight": "Encoded fetch only, no image decode; identical for all variants."
+      },
+      "workload": {
+        "counts": {
+          "completed": 50,
+          "decoded": 50,
+          "released": 50,
+          "no_op_close_calls": 0
+        },
+        "broker": {
+          "catalog_generation": 1,
+          "disposed": false,
+          "limits": {
+            "sceneMaxBytes": 67108864,
+            "sceneMaxEntries": 128,
+            "unusedMaxBytes": 0,
+            "unusedMaxEntries": 0
+          },
+          "preload_plan": null,
+          "resident_entries": 0,
+          "resident_bytes_estimate": 0,
+          "active_entries": 0,
+          "active_bytes_estimate": 0,
+          "scene_entries": 0,
+          "scene_bytes_estimate": 0,
+          "unused_entries": 0,
+          "unused_bytes_estimate": 0,
+          "loading": 0,
+          "active_tasks": 0,
+          "queued_tasks": 0,
+          "loads": 50,
+          "reuses": 0,
+          "evictions": 50,
+          "closed_images": 50,
+          "released_bytes_estimate": 800,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "preparation": null,
+          "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+        }
+      },
+      "request_count": 5,
+      "snapshots": [
+        {
+          "phase": "before-images",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 21,
+              "jsEventListeners": 0
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 21,
+            "listeners": 0,
+            "js_heap_used_bytes": 1101404,
+            "js_heap_total_capacity_bytes": 1572864
+          },
+          "page_counts": {
+            "completed": 0,
+            "decoded": 0,
+            "released": 0,
+            "no_op_close_calls": 0
+          },
+          "broker": null,
+          "hidden": false
+        },
+        {
+          "phase": "after-fixed50",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 71,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 71,
+            "listeners": 300,
+            "js_heap_used_bytes": 1707152,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "broker": {
+            "catalog_generation": 1,
+            "disposed": false,
+            "limits": {
+              "sceneMaxBytes": 67108864,
+              "sceneMaxEntries": 128,
+              "unusedMaxBytes": 0,
+              "unusedMaxEntries": 0
+            },
+            "preload_plan": null,
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "active_bytes_estimate": 0,
+            "scene_entries": 0,
+            "scene_bytes_estimate": 0,
+            "unused_entries": 0,
+            "unused_bytes_estimate": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "reuses": 0,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 800,
+            "pressure_bytes": 0,
+            "pressure_entries": 0,
+            "preparation": null,
+            "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+          },
+          "hidden": false
+        },
+        {
+          "phase": "after-1000ms-settle",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 71,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 71,
+            "listeners": 300,
+            "js_heap_used_bytes": 1729672,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "broker": {
+            "catalog_generation": 1,
+            "disposed": false,
+            "limits": {
+              "sceneMaxBytes": 67108864,
+              "sceneMaxEntries": 128,
+              "unusedMaxBytes": 0,
+              "unusedMaxEntries": 0
+            },
+            "preload_plan": null,
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "active_bytes_estimate": 0,
+            "scene_entries": 0,
+            "scene_bytes_estimate": 0,
+            "unused_entries": 0,
+            "unused_bytes_estimate": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "reuses": 0,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 800,
+            "pressure_bytes": 0,
+            "pressure_entries": 0,
+            "preparation": null,
+            "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+          },
+          "hidden": false
+        }
+      ],
+      "gc_attempts": [
+        {
+          "index": 1,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 4.220399999999927,
+          "after": {
+            "dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 9,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 9,
+              "listeners": 0,
+              "js_heap_used_bytes": 840020,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "broker": {
+              "catalog_generation": 1,
+              "disposed": false,
+              "limits": {
+                "sceneMaxBytes": 67108864,
+                "sceneMaxEntries": 128,
+                "unusedMaxBytes": 0,
+                "unusedMaxEntries": 0
+              },
+              "preload_plan": null,
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "active_bytes_estimate": 0,
+              "scene_entries": 0,
+              "scene_bytes_estimate": 0,
+              "unused_entries": 0,
+              "unused_bytes_estimate": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "reuses": 0,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 800,
+              "pressure_bytes": 0,
+              "pressure_entries": 0,
+              "preparation": null,
+              "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+            },
+            "hidden": false
+          }
+        },
+        {
+          "index": 2,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 1.8899000000001251,
+          "after": {
+            "dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 9,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 9,
+              "listeners": 0,
+              "js_heap_used_bytes": 840020,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "broker": {
+              "catalog_generation": 1,
+              "disposed": false,
+              "limits": {
+                "sceneMaxBytes": 67108864,
+                "sceneMaxEntries": 128,
+                "unusedMaxBytes": 0,
+                "unusedMaxEntries": 0
+              },
+              "preload_plan": null,
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "active_bytes_estimate": 0,
+              "scene_entries": 0,
+              "scene_bytes_estimate": 0,
+              "unused_entries": 0,
+              "unused_bytes_estimate": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "reuses": 0,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 800,
+              "pressure_bytes": 0,
+              "pressure_entries": 0,
+              "preparation": null,
+              "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+            },
+            "hidden": false
+          }
+        }
+      ],
+      "closed": true,
+      "context_closed": true,
+      "browser_closed": true,
+      "errors": [],
+      "unexpected_requests": []
+    },
+    {
+      "variant": "B",
+      "status": "completed-control-not-a-verdict",
+      "served_identity": {
+        "verified": true,
+        "module_sha256": "79999065f3ac9e4283bf1915ddd9d74c5c86bb083b2d85a636ecc00677afc67c",
+        "png_sha256": "4c55a49112f63ed3ce2cb2687a1175b08c554f836f19d93afb706650672c7e40",
+        "preflight": "Encoded fetch only, no image decode; identical for all variants."
+      },
+      "workload": {
+        "counts": {
+          "completed": 50,
+          "decoded": 50,
+          "released": 50,
+          "no_op_close_calls": 50
+        },
+        "broker": {
+          "catalog_generation": 1,
+          "disposed": false,
+          "limits": {
+            "sceneMaxBytes": 67108864,
+            "sceneMaxEntries": 128,
+            "unusedMaxBytes": 0,
+            "unusedMaxEntries": 0
+          },
+          "preload_plan": null,
+          "resident_entries": 0,
+          "resident_bytes_estimate": 0,
+          "active_entries": 0,
+          "active_bytes_estimate": 0,
+          "scene_entries": 0,
+          "scene_bytes_estimate": 0,
+          "unused_entries": 0,
+          "unused_bytes_estimate": 0,
+          "loading": 0,
+          "active_tasks": 0,
+          "queued_tasks": 0,
+          "loads": 50,
+          "reuses": 0,
+          "evictions": 50,
+          "closed_images": 50,
+          "released_bytes_estimate": 800,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "preparation": null,
+          "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+        }
+      },
+      "request_count": 5,
+      "snapshots": [
+        {
+          "phase": "before-images",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 21,
+              "jsEventListeners": 0
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 21,
+            "listeners": 0,
+            "js_heap_used_bytes": 1101404,
+            "js_heap_total_capacity_bytes": 1572864
+          },
+          "page_counts": {
+            "completed": 0,
+            "decoded": 0,
+            "released": 0,
+            "no_op_close_calls": 0
+          },
+          "broker": null,
+          "hidden": false
+        },
+        {
+          "phase": "after-fixed50",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 71,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 71,
+            "listeners": 300,
+            "js_heap_used_bytes": 1711588,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 50
+          },
+          "broker": {
+            "catalog_generation": 1,
+            "disposed": false,
+            "limits": {
+              "sceneMaxBytes": 67108864,
+              "sceneMaxEntries": 128,
+              "unusedMaxBytes": 0,
+              "unusedMaxEntries": 0
+            },
+            "preload_plan": null,
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "active_bytes_estimate": 0,
+            "scene_entries": 0,
+            "scene_bytes_estimate": 0,
+            "unused_entries": 0,
+            "unused_bytes_estimate": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "reuses": 0,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 800,
+            "pressure_bytes": 0,
+            "pressure_entries": 0,
+            "preparation": null,
+            "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+          },
+          "hidden": false
+        },
+        {
+          "phase": "after-1000ms-settle",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 71,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 71,
+            "listeners": 300,
+            "js_heap_used_bytes": 1734108,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 50
+          },
+          "broker": {
+            "catalog_generation": 1,
+            "disposed": false,
+            "limits": {
+              "sceneMaxBytes": 67108864,
+              "sceneMaxEntries": 128,
+              "unusedMaxBytes": 0,
+              "unusedMaxEntries": 0
+            },
+            "preload_plan": null,
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "active_bytes_estimate": 0,
+            "scene_entries": 0,
+            "scene_bytes_estimate": 0,
+            "unused_entries": 0,
+            "unused_bytes_estimate": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "reuses": 0,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 800,
+            "pressure_bytes": 0,
+            "pressure_entries": 0,
+            "preparation": null,
+            "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+          },
+          "hidden": false
+        }
+      ],
+      "gc_attempts": [
+        {
+          "index": 1,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 3.774999999999636,
+          "after": {
+            "dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 9,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 9,
+              "listeners": 0,
+              "js_heap_used_bytes": 840004,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 50
+            },
+            "broker": {
+              "catalog_generation": 1,
+              "disposed": false,
+              "limits": {
+                "sceneMaxBytes": 67108864,
+                "sceneMaxEntries": 128,
+                "unusedMaxBytes": 0,
+                "unusedMaxEntries": 0
+              },
+              "preload_plan": null,
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "active_bytes_estimate": 0,
+              "scene_entries": 0,
+              "scene_bytes_estimate": 0,
+              "unused_entries": 0,
+              "unused_bytes_estimate": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "reuses": 0,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 800,
+              "pressure_bytes": 0,
+              "pressure_entries": 0,
+              "preparation": null,
+              "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+            },
+            "hidden": false
+          }
+        },
+        {
+          "index": 2,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 2.195299999999861,
+          "after": {
+            "dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 9,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 9,
+              "listeners": 0,
+              "js_heap_used_bytes": 840004,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 50
+            },
+            "broker": {
+              "catalog_generation": 1,
+              "disposed": false,
+              "limits": {
+                "sceneMaxBytes": 67108864,
+                "sceneMaxEntries": 128,
+                "unusedMaxBytes": 0,
+                "unusedMaxEntries": 0
+              },
+              "preload_plan": null,
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "active_bytes_estimate": 0,
+              "scene_entries": 0,
+              "scene_bytes_estimate": 0,
+              "unused_entries": 0,
+              "unused_bytes_estimate": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "reuses": 0,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 800,
+              "pressure_bytes": 0,
+              "pressure_entries": 0,
+              "preparation": null,
+              "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+            },
+            "hidden": false
+          }
+        }
+      ],
+      "closed": true,
+      "context_closed": true,
+      "browser_closed": true,
+      "errors": [],
+      "unexpected_requests": []
+    },
+    {
+      "variant": "C",
+      "status": "completed-control-not-a-verdict",
+      "served_identity": {
+        "verified": true,
+        "module_sha256": "79999065f3ac9e4283bf1915ddd9d74c5c86bb083b2d85a636ecc00677afc67c",
+        "png_sha256": "4c55a49112f63ed3ce2cb2687a1175b08c554f836f19d93afb706650672c7e40",
+        "preflight": "Encoded fetch only, no image decode; identical for all variants."
+      },
+      "workload": {
+        "counts": {
+          "completed": 50,
+          "decoded": 50,
+          "released": 50,
+          "no_op_close_calls": 0
+        },
+        "broker": null
+      },
+      "request_count": 4,
+      "snapshots": [
+        {
+          "phase": "before-images",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 21,
+              "jsEventListeners": 0
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 21,
+            "listeners": 0,
+            "js_heap_used_bytes": 1101404,
+            "js_heap_total_capacity_bytes": 1572864
+          },
+          "page_counts": {
+            "completed": 0,
+            "decoded": 0,
+            "released": 0,
+            "no_op_close_calls": 0
+          },
+          "broker": null,
+          "hidden": false
+        },
+        {
+          "phase": "after-fixed50",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 321,
+              "jsEventListeners": 100
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 321,
+            "listeners": 100,
+            "js_heap_used_bytes": 1317504,
+            "js_heap_total_capacity_bytes": 2359296
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "broker": null,
+          "hidden": false
+        },
+        {
+          "phase": "after-1000ms-settle",
+          "dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 321,
+              "jsEventListeners": 100
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 321,
+            "listeners": 100,
+            "js_heap_used_bytes": 1326640,
+            "js_heap_total_capacity_bytes": 2359296
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "broker": null,
+          "hidden": false
+        }
+      ],
+      "gc_attempts": [
+        {
+          "index": 1,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 4.701999999999316,
+          "after": {
+            "dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 309,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 309,
+              "listeners": 0,
+              "js_heap_used_bytes": 755768,
+              "js_heap_total_capacity_bytes": 1572864
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "broker": null,
+            "hidden": false
+          }
+        },
+        {
+          "index": 2,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 2.1594999999997526,
+          "after": {
+            "dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 309,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 309,
+              "listeners": 0,
+              "js_heap_used_bytes": 755832,
+              "js_heap_total_capacity_bytes": 1572864
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "broker": null,
+            "hidden": false
+          }
+        }
+      ],
+      "closed": true,
+      "context_closed": true,
+      "browser_closed": true,
+      "errors": [],
+      "unexpected_requests": []
+    }
+  ],
+  "comparison": {
+    "nodes": {
+      "A": {
+        "before": 21,
+        "after50": 71,
+        "after1s": 71,
+        "after_gc1": 9,
+        "after_gc2": 9
+      },
+      "B": {
+        "before": 21,
+        "after50": 71,
+        "after1s": 71,
+        "after_gc1": 9,
+        "after_gc2": 9
+      },
+      "C": {
+        "before": 21,
+        "after50": 321,
+        "after1s": 321,
+        "after_gc1": 309,
+        "after_gc2": 309
+      }
+    },
+    "documents_before": 4,
+    "documents_after_gc": 1,
+    "post_gc_listeners_all_variants": 0,
+    "matched_post_gc_excess_relative_to_B": {
+      "A": 0,
+      "C": 300,
+      "C_per_image": 6
+    },
+    "post_gc2_js_heap_used_bytes": {
+      "A": 840020,
+      "B": 840004,
+      "C": 755832
+    },
+    "conclusion": "Within this matched2x2 control, the actual SDK18 completed-image retirement follows the no-remove-src baseline: A and B both reach9 nodes after each GC. The unchanged direct remove-src negative control remains309, reproducing300 excess nodes. This validates removal of that narrow successful-retirement trigger under these conditions.",
+    "semantic_counter_caveat": "closed_images is logical final image-ownership retirement; retired-byte estimates are not physical native-memory reclamation. A/B each retire50 payloads (800 estimated RGBA bytes) without keeping broker entries.",
+    "cross_version_caveat": "SDK16 used a96x48 PNG; SDK18 uses this2x2 fixture. Do not label A16 versusA18 a same-asset controlled comparison. The matched A/B/C comparison inside each run remains the primary branch-isolation evidence."
+  },
+  "separate_functional_scope": {
+    "sdk18_official_player": "The separate main/worker fixture passed its pre-teardown nine-phase assertions but reported a worker pagehide RUNTIME_CLOSED error. That open host teardown issue is not exercised or repaired by this image-only control.",
+    "reason": "No Game/WASM/runtime-backend/scheduler is loaded by this control. It cannot establish host shutdown correctness or override the separate failed teardown evidence.",
+    "game_natural_memory_and_cycles": "Not executed here. No Root Game18 natural45-second trace or100-cycle acceptance is claimed."
+  },
+  "raw_evidence": {
+    "source": {
+      "path": ".cache/browser-image-retirement-isolation18-run1/source.json",
+      "bytes": 2246,
+      "sha256": "f7c7eb3c2ab11a39e76109f4e7adc870e5ca826d878da4c5c141bcd6f37cf5c3"
+    },
+    "captured_runner": {
+      "path": ".cache/browser-image-retirement-isolation18-run1/diagnostic-script.mjs",
+      "bytes": 14170,
+      "sha256": "934fb6867ba7a38ac069156fe03a078a8ad538be120cd34e2351098d9e639ae9"
+    },
+    "report": {
+      "path": ".cache/browser-image-retirement-isolation18-run1/report.json",
+      "bytes": 101257,
+      "sha256": "622f1d5c1a3a8eb05b6a0292f41b72113fc52efdfecf2f31a9c3c421627ac910"
+    },
+    "variant_A": {
+      "path": ".cache/browser-image-retirement-isolation18-run1/variant-A.json",
+      "bytes": 31283,
+      "sha256": "67c581fc7a796b3adbf1b89442b1dcc0f4ee0f20972591aee14c07c55d457caa"
+    },
+    "variant_B": {
+      "path": ".cache/browser-image-retirement-isolation18-run1/variant-B.json",
+      "bytes": 31299,
+      "sha256": "cf6800c740c7e215cbce51d77f426a8e10d53f19c661f6214b73a90be425f1ce"
+    },
+    "variant_C": {
+      "path": ".cache/browser-image-retirement-isolation18-run1/variant-C.json",
+      "bytes": 24888,
+      "sha256": "73dcf7017f67359fe53b91be0586d52b759130371b9fc243f05da8f418c99a77"
+    },
+    "mapping": {
+      "path": ".cache/browser-image-retirement-isolation18.mjs.mapping.json",
+      "bytes": 4679,
+      "sha256": "e494e822624caeee6389774e0d944380302262a3d78fb496423d817379b5462d"
+    },
+    "mapping_helper": {
+      "path": ".cache/prepare-image-retirement-isolation18.mjs",
+      "bytes": 6334,
+      "sha256": "81ca592884698d44ce682ee17daace8c63016841bef3edfd13f64002324736a0"
+    },
+    "prior_control": {
+      "path": "docs/evidence/2026-10-29-engine-stability/browser-image-retirement-isolation.json",
+      "bytes": 29547,
+      "sha256": "9ce683b11ef3f397c2e848a4a887556148c93e36bc7f3ba1530edbf2d5e8dce7"
+    }
+  },
+  "limits": [
+    "One small PNG, fixed50 retirements per variant, one Chrome build. No broad format/device/decoder/GPU-lifetime coverage.",
+    "Two successful GC RPCs are not proof that all Blink/native collectors completed. Nodes are counts, not identity-level retaining paths.",
+    "The no-op close constructor is a counterfactual and C omits broker/Abort scheduling. Pending-request cancellation/error cleanup needs its separate source/tests; this successful-retirement control does not prove it.",
+    "No universal no-leak, absence of frequent GC, production FPS, no-stutter or release-readiness claim. No additional browser/protocol work occurred during this offline evidence extraction."
+  ]
+}

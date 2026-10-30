@@ -310,8 +310,15 @@ identity and failure cleanup. The full Web/tool suite passed 663 of 666 tests
 with three existing skips. SDK17's 148 indexed files were hash-verified and
 retain the exact SDK10 CLI, WASM and compiled UI package. Its emitted official
 player passed nine phases on each of main and worker, with required PNG decode
-before READY, retained pixels and context recovery. Same-Game performance is
-being measured separately; a passing functional fixture is not a 60 FPS result.
+before READY, retained pixels and context recovery. The same frozen Game6073
+then passed all eight short cadence cases and both 60-second idle/inventory
+cases. The long windows measured about 59.998 fresh submissions/s with zero
+dropped steps. The idle maximum RAF gap was 17 ms; the outgoing actor image no
+longer caused a full GPU rebuild. These results retain the existing v4 cadence
+scope, legacy completion-end failures and nominal phase-overrun diagnostics;
+`releaseReady` remains false. A passing functional fixture alone is not a
+60 FPS result. See the separate
+[same-Game FPS record](../evidence/2026-10-29-engine-stability/sdk17-game6073-official-web-fps.json).
 See [source/package review](../evidence/2026-10-29-engine-stability/image-handoff-sdk17-source-resolution.json)
 and [actual official-player smoke](../evidence/2026-10-29-engine-stability/image-handoff-sdk17-official-web-smoke.json).
 
@@ -325,3 +332,52 @@ Neither collector event counts nor persistent native-node counts alone prove
 whole-cycle frequency or a memory leak verdict. This unresolved reclamation
 question and the same-artifact SDK17 follow-up remain explicit in
 [the SDK16 memory record](../evidence/2026-10-29-engine-stability/sdk16-game6073-main-memory-cycles.json).
+
+### Completed HTML image retirement isolation
+
+A separate control removed Game, WASM, GPU and UI from the image lifecycle.
+Each fresh Chrome context loaded and retired the same PNG fifty times. The
+actual broker and a direct `Image` implementation both reached 309 DOM nodes
+after two explicit V8 GC commands when successful retirement removed `src`.
+The same broker/default loader with only successful source removal suppressed
+reached nine nodes. The 300-node difference is exactly six per image,
+matching the 1,800-node difference across 300 Game image retirements. All
+broker maps and tasks were empty, requests stayed within the allowlist and
+all control browsers closed. This isolates an avoidable source-reset trigger;
+it does not establish a browser-native retaining path or universal leak verdict.
+The correction at `c3160e8` retires completed HTML images by dropping ownership,
+retains explicit `close()` for image types that support it, and still cancels
+an actually pending request. See [the fixed isolation control](../evidence/2026-10-29-engine-stability/browser-image-retirement-isolation.json).
+
+The emitted SDK18 broker then passed a matched fifty-image control: both its
+ordinary loader and the no-source-reset counterfactual returned to nine nodes
+after each explicit V8 GC, while the direct old source-reset path retained 309.
+All control brokers were empty and all contexts closed. The smaller fixture PNG
+differs from the original SDK16 PNG, so this is a within-control branch result,
+not an otherwise identical cross-version performance comparison. The exact
+broker bytes are also packaged in SDK19. See
+[the emitted retirement control](../evidence/2026-10-29-engine-stability/browser-image-retirement-sdk18-validation.json).
+
+SDK18's main/worker fixture passed its nine phase assertions but exposed a late
+worker error during context closure: `pagehide` stopped the scheduler, then
+closing the backend rejected an in-flight request. The scheduler still reported
+that obsolete rejection as a current error. The original late error and the
+harness's premature success are preserved. At `c361357`, only the current
+started scheduler generation can stop/report its rejected asynchronous work;
+an identical error in the active generation is still reported. Five new tests
+fail on the old code; the focused suite passes 27 tests and the full suite
+passes 676 of 679 with three existing skips. SDK19 retains SDK10 Core/CLI/UI and
+SDK18's image-retirement bytes. Actual official-player teardown and same-Game
+acceptance remain separate gates. See
+[the source resolution](../evidence/2026-10-29-engine-stability/scheduler-sdk19-source-resolution.json)
+and [the preserved SDK18 failure](../evidence/2026-10-29-engine-stability/image-handoff-sdk18-official-web-smoke-failure.json).
+
+The smoke harness now keeps phase completion separate from overall health and
+checks errors, warnings and failed requests after context, browser and server
+closure. Provisional results cannot claim success; late events and cleanup
+failures remain visible. SDK19 passed all nine phases on each backend with
+zero final or late errors/warnings/failed requests, required PNG decode before
+READY, and viewed initial/restored pixels. Source/Node/package proof and this
+functional fixture do not substitute for the final same-Game FPS, natural GC
+and repeated inventory checks. See
+[the SDK19 official-player record](../evidence/2026-10-29-engine-stability/image-handoff-sdk19-official-web-smoke.json).

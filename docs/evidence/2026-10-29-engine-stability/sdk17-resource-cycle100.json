@@ -1,0 +1,867 @@
+{
+  "schema": "unone.sdk17.resource-cycle100.v1",
+  "date": "2026-10-30",
+  "status": "bounded-live-resource-counts-with-persistent-reload-and-CDP-node-growth; liveness-cause-not-established",
+  "scope": {
+    "game_source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+    "backend": "actual official main",
+    "interpolation": false,
+    "host": "SDK17",
+    "runtime": {
+      "localReleaseRoot": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-integrated17\\releases\\b19abf0c615465d0e1002e6d53e1c82b414a7759b6e51b425b6838ef4d5f262a",
+      "sdkManifestPath": "D:\\Projects\\Unone\\artifacts\\core-sdk-web-shared-images-20261030-candidate17-host\\runtimes\\web-production-0\\runtime.json",
+      "sdkManifestSha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+      "localRuntimeManifestSha256": "933540c4ae8aba0f94d492df14b8f4be1845124d8349b54ceb288e8ce24cee51",
+      "projectFileSha256": "8c04fe1c04a48052cc8176c82a2a0277fea633b6e10992b014965b2d475d91f4",
+      "presentationFileSha256": "14143be37553f8880500a00143bb55720e79cf85037f477d1ba0b6a423d58ac1",
+      "projectMetadataSha256": "2709551597807dfe377b16df9d31527c3b3adc3f8ee1a103ed94147db2d18b1c",
+      "presentationMetadataSha256": "14143be37553f8880500a00143bb55720e79cf85037f477d1ba0b6a423d58ac1",
+      "advertisedWasmSha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "advertisedJavascriptSha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "worldMapInputSha256": "8f05cb0207eef7c27f36637c6150e1b8cfd74cc828cc2677ce30b7e482853b3e",
+      "sourceSha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e"
+    },
+    "diagnostic_not_fps_acceptance": true,
+    "load_scope": "The owner authorized this instrumented cycle run alongside ZIP/compression, Cloudflare deployment and IAB work. This was not an exclusive FPS window. Concurrent CPU/I/O utilization was not measured; machine-wide isolation is not claimed.",
+    "timing_comparability": "Instrumented pacing and intrusive GC RPC wall times may be affected by that concurrent load. No natural-GC-frequency or GC-duration comparison to another run is established.",
+    "natural_gc_frequency_run": {
+      "executed": false,
+      "reason": "No separate SDK17 natural45-second trace run is included; later completed-image retirement fix is a separate host candidate."
+    },
+    "natural_and_forced_separation": "The100-cycle16-row natural report is sealed before2 separately recorded intrusive page GC requests. Forced samples never supply natural frequency or FPS evidence."
+  },
+  "artifact": {
+    "manifest_sha256": "0b22345fbe0496a2da8dd3145841d80852704ce84e06c7a87fe44d4a909ba89a",
+    "release": "releases/b19abf0c615465d0e1002e6d53e1c82b414a7759b6e51b425b6838ef4d5f262a/",
+    "project_file_sha256": "8c04fe1c04a48052cc8176c82a2a0277fea633b6e10992b014965b2d475d91f4",
+    "presentation_file_sha256": "14143be37553f8880500a00143bb55720e79cf85037f477d1ba0b6a423d58ac1",
+    "runner_sha256": "58ebacddef75fe79fe5ce542a3f84fa8816899e9dd23b09f257584864469dd07",
+    "control_helper_sha256": "3f76c0c85e48a10eeea5fcdb6252a9e99f9985bdb7a9abca28bad73f3c0f3eee"
+  },
+  "natural": {
+    "status": "completed-instrumented-diagnostic",
+    "cycles": 100,
+    "warmup_cycles": 2,
+    "native_toggles": 204,
+    "samples": 16,
+    "tail_seconds": 10,
+    "resource_ranges": {
+      "textures": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 36,
+          "last": 36,
+          "min": 24,
+          "max": 37
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 36,
+          "last": 36,
+          "min": 36,
+          "max": 36
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_geometries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 5
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 4
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_materials": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_meshes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 5
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 4
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_textures": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 18,
+          "last": 18,
+          "min": 6,
+          "max": 19
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 18,
+          "last": 18,
+          "min": 18,
+          "max": 18
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.buffer_capacity_quads": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 960,
+          "last": 960,
+          "min": 960,
+          "max": 968
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 960,
+          "last": 960,
+          "min": 960,
+          "max": 960
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "backend.direct_wasm_linear_bytes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.resident_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 93,
+          "last": 93,
+          "min": 90,
+          "max": 93
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 93,
+          "last": 93,
+          "min": 93,
+          "max": 93
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.resident_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 158340896,
+          "last": 158340896,
+          "min": 139855648,
+          "max": 158340896
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 158340896,
+          "last": 158340896,
+          "min": 158340896,
+          "max": 158340896
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.active_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 45,
+          "last": 45,
+          "min": 45,
+          "max": 50
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 45,
+          "last": 45,
+          "min": 45,
+          "max": 45
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.active_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 116046892,
+          "last": 116046892,
+          "min": 106265604,
+          "max": 116301508
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 116046892,
+          "last": 116046892,
+          "min": 116046892,
+          "max": 116046892
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.scene_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 70,
+          "last": 70,
+          "min": 70,
+          "max": 70
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 70,
+          "last": 70,
+          "min": 70,
+          "max": 70
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.scene_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 66906784,
+          "last": 66906784,
+          "min": 66906784,
+          "max": 66906784
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 66906784,
+          "last": 66906784,
+          "min": 66906784,
+          "max": 66906784
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.unused_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.unused_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 6291456,
+          "last": 6291456,
+          "min": 704512,
+          "max": 6291456
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 6291456,
+          "last": 6291456,
+          "min": 6291456,
+          "max": 6291456
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.loading": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.active_tasks": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.queued_tasks": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.loads": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 100,
+          "last": 400,
+          "min": 100,
+          "max": 400
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 400,
+          "last": 400,
+          "min": 400,
+          "max": 400
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.reuses": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 125,
+          "last": 4401,
+          "min": 125,
+          "max": 4401
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 4401,
+          "last": 4401,
+          "min": 4401,
+          "max": 4401
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.evictions": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 7,
+          "last": 307,
+          "min": 7,
+          "max": 307
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 307,
+          "last": 307,
+          "min": 307,
+          "max": 307
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.closed_images": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 7,
+          "last": 307,
+          "min": 7,
+          "max": 307
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 307,
+          "last": 307,
+          "min": 307,
+          "max": 307
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.released_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 43263904,
+          "last": 1891788704,
+          "min": 43263904,
+          "max": 1891788704
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1891788704,
+          "last": 1891788704,
+          "min": 1891788704,
+          "max": 1891788704
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "cursor.shared_image_leases": {
+        "closed_checkpoints": {
+          "available": false,
+          "samples": 0,
+          "first": null,
+          "last": null,
+          "min": null,
+          "max": null
+        },
+        "tail": {
+          "available": false,
+          "samples": 0,
+          "first": null,
+          "last": null,
+          "min": null,
+          "max": null
+        },
+        "strictly_increasing_closed_checkpoints": null,
+        "tail_last_three_stable": null,
+        "tail_final_at_or_below_warm_world_baseline": null,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      }
+    },
+    "dom_counters": {
+      "Nodes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 168,
+          "last": 1968,
+          "min": 168,
+          "max": 1968
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1968,
+          "last": 1968,
+          "min": 1968,
+          "max": 1968
+        }
+      },
+      "JSEventListeners": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 70,
+          "last": 88,
+          "min": 70,
+          "max": 88
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 70,
+          "last": 70,
+          "min": 70,
+          "max": 70
+        }
+      }
+    },
+    "heap_used_bytes": {
+      "availability": "observed",
+      "n": 16,
+      "first": 36858648,
+      "last": 33027352,
+      "delta": -3831296,
+      "min": 13607548,
+      "max": 36858648,
+      "median": 19304152,
+      "p95": 36858648,
+      "slope_units_per_s": -9608.907264286025,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 13607548,
+        "max": 33027352,
+        "median": 19686800,
+        "p95": 33027352,
+        "slope_units_per_s": 300657.5334690341
+      }
+    },
+    "heap_total_capacity_bytes": {
+      "availability": "observed",
+      "n": 16,
+      "first": 71401472,
+      "last": 83722240,
+      "delta": 12320768,
+      "min": 71401472,
+      "max": 89227264,
+      "median": 83460096,
+      "p95": 89227264,
+      "slope_units_per_s": 54071.8724172197,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 83460096,
+        "max": 83722240,
+        "median": 83460096,
+        "p95": 83722240,
+        "slope_units_per_s": 39710.647331745684
+      }
+    },
+    "attached_dom_diff": {
+      "availability": "observed",
+      "added": [],
+      "removed": [],
+      "changed": []
+    },
+    "cached_ui_asset_diff": {
+      "availability": "observed",
+      "added": [],
+      "removed": []
+    },
+    "listener_diff": {
+      "availability": "observed",
+      "added": [],
+      "removed": [],
+      "note": "Descriptor/count multiset comparison. It does not claim distinct closures at one source location share identity."
+    },
+    "listener_handle_release": {
+      "baseline": "observed",
+      "end": "observed",
+      "baseline_release_errors": [],
+      "end_release_errors": []
+    },
+    "errors": [],
+    "findings": [
+      "Tail GPU prefix geometries4/materials1/meshes4/textures18 and ordinary textures36 are flat. Broker tail resident93 and158340896estimatedB, active45, scene70, unused1, and loading/queue/tasks0 are flat.",
+      "Cumulative loads100→400, evictions/closed7→307 and released43263904→1891788704B mean300 loads/retirements and1848524800estimatedB of churn, not300 live leaks.",
+      "CDP Nodes168→1968 remain1968 during all10 tail samples. Attached-DOM, cached-UI-asset and document/window listener diffs are empty. Tail listeners70; closed checkpoint listeners vary70..88.",
+      "WASM reserved linear capacity remains29097984B. It is not Luau live memory. Cursor leases are unavailable, not zero."
+    ]
+  },
+  "separate_gc_control": {
+    "status": "completed-intrusive-control",
+    "commands_sent": 2,
+    "command": "HeapProfiler.collectGarbage",
+    "before": {
+      "availability": "observed",
+      "frame": 7684,
+      "elapsed_ms": 120828.4295,
+      "metrics": {
+        "Timestamp": 662621.854816,
+        "Documents": 1,
+        "JSEventListeners": 70,
+        "Nodes": 1968,
+        "LayoutCount": 0,
+        "RecalcStyleCount": 5814,
+        "ScriptDuration": 0.353884,
+        "TaskDuration": 85.449863,
+        "JSHeapUsedSize": 33220584,
+        "JSHeapTotalSize": 83984384
+      },
+      "broker": {
+        "resident_entries": 93,
+        "resident_bytes_estimate": 158340896,
+        "active_entries": 45,
+        "scene_entries": 70,
+        "unused_entries": 1,
+        "loading": 0,
+        "loads": 400,
+        "evictions": 307,
+        "closed_images": 307
+      },
+      "wasm_capacity_bytes": 29097984,
+      "player_error": "",
+      "hidden": false
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "status": "command-completed",
+        "response": {},
+        "error": null,
+        "command_wall_ms": 36.05939999999828,
+        "after": {
+          "availability": "observed",
+          "frame": 7686,
+          "elapsed_ms": 120876.74919999999,
+          "metrics": {
+            "Timestamp": 662621.895197,
+            "Documents": 1,
+            "JSEventListeners": 70,
+            "Nodes": 1968,
+            "LayoutCount": 0,
+            "RecalcStyleCount": 5815,
+            "ScriptDuration": 0.35398,
+            "TaskDuration": 85.489405,
+            "JSHeapUsedSize": 12132476,
+            "JSHeapTotalSize": 12980224
+          },
+          "broker": {
+            "resident_entries": 93,
+            "resident_bytes_estimate": 158340896,
+            "active_entries": 45,
+            "scene_entries": 70,
+            "unused_entries": 1,
+            "loading": 0,
+            "loads": 400,
+            "evictions": 307,
+            "closed_images": 307
+          },
+          "wasm_capacity_bytes": 29097984,
+          "player_error": "",
+          "hidden": false
+        }
+      },
+      {
+        "index": 2,
+        "status": "command-completed",
+        "response": {},
+        "error": null,
+        "command_wall_ms": 27.405799999993178,
+        "after": {
+          "availability": "observed",
+          "frame": 7689,
+          "elapsed_ms": 120917.90479999999,
+          "metrics": {
+            "Timestamp": 662621.934968,
+            "Documents": 1,
+            "JSEventListeners": 70,
+            "Nodes": 1968,
+            "LayoutCount": 0,
+            "RecalcStyleCount": 5818,
+            "ScriptDuration": 0.3541,
+            "TaskDuration": 85.529102,
+            "JSHeapUsedSize": 12132760,
+            "JSHeapTotalSize": 13242368
+          },
+          "broker": {
+            "resident_entries": 93,
+            "resident_bytes_estimate": 158340896,
+            "active_entries": 45,
+            "scene_entries": 70,
+            "unused_entries": 1,
+            "loading": 0,
+            "loads": 400,
+            "evictions": 307,
+            "closed_images": 307
+          },
+          "wasm_capacity_bytes": 29097984,
+          "player_error": "",
+          "hidden": false
+        }
+      }
+    ],
+    "natural_report_seal": {
+      "path": "report.json",
+      "bytes": 28560,
+      "sha256": "b9c4ac6c5b41066939216997b740cac9f607845d895abf157bb10ee9b476ce09"
+    },
+    "natural_report_integrity": {
+      "unchanged": true,
+      "before": {
+        "path": "report.json",
+        "bytes": 28560,
+        "sha256": "b9c4ac6c5b41066939216997b740cac9f607845d895abf157bb10ee9b476ce09"
+      },
+      "after": {
+        "path": "report.json",
+        "bytes": 28560,
+        "sha256": "b9c4ac6c5b41066939216997b740cac9f607845d895abf157bb10ee9b476ce09"
+      }
+    },
+    "finding": "Both RPCs succeeded. CDP Nodes stays1968 and listeners70; JS heap used33220584B→12132476B→12132760B. Simulation advances7684→7686→7689. This is a scoped observation, not a native retaining-path or universal leak result."
+  },
+  "comparison_to_sdk16": {
+    "scope": "Same Game6073/config/presentation metadata and unchanged production WASM, but separate instrumented runs with possible external-load differences; no FPS/GC-frequency causal claim.",
+    "sdk16_reference": {
+      "path": "docs/evidence/2026-10-29-engine-stability/sdk16-game6073-main-memory-cycles.json",
+      "bytes": 69014,
+      "sha256": "946791d7c6a530b036edb8e8881f8a25e20cc559c55b5dec0fc19322ee4f89e1"
+    },
+    "observation": "SDK17 settled GPU/broker tail counts are flat in this run; this descriptive contrast alone does not establish a causal improvement over SDK16. The remaining300 loads/retirements and+1800CDP Nodes are unchanged. The completed src-removal isolation and later fix are separate evidence."
+  },
+  "raw_evidence": {
+    "report": {
+      "path": ".cache/jy-final6073-sdk17-v5-cycles100-run1/report.json",
+      "bytes": 28560,
+      "sha256": "b9c4ac6c5b41066939216997b740cac9f607845d895abf157bb10ee9b476ce09"
+    },
+    "source": {
+      "path": ".cache/jy-final6073-sdk17-v5-cycles100-run1/source.json",
+      "bytes": 142549,
+      "sha256": "187d67147565e715419cb31becaa916914da21f468fb89269a0ec2a06943b9e0"
+    },
+    "samples": {
+      "path": ".cache/jy-final6073-sdk17-v5-cycles100-run1/samples.json",
+      "bytes": 196082,
+      "sha256": "af0a07c694ecf302d4bd61a35065c60a399e7edffc1fa4a42526d78c24de1283"
+    },
+    "runner": {
+      "path": ".cache/jy-final6073-sdk17-v5-cycles100-run1/diagnostic-script.mjs",
+      "bytes": 35684,
+      "sha256": "58ebacddef75fe79fe5ce542a3f84fa8816899e9dd23b09f257584864469dd07"
+    },
+    "natural_seal": {
+      "path": ".cache/jy-final6073-sdk17-v5-cycles100-run1/natural-report-seal.json",
+      "bytes": 125,
+      "sha256": "94eff82a7b8e851fa42c5030788daf5a315cf1dfa2aed95c385dd20b7b6409d8"
+    },
+    "forced_control": {
+      "path": ".cache/jy-final6073-sdk17-v5-cycles100-run1/post-cycle-forced-gc-control.json",
+      "bytes": 56223,
+      "sha256": "af760f11194ee69dcaebacda10bc458910ca32ec21cd8bc66cb7ae3109308654"
+    }
+  },
+  "limits": [
+    "Only one100-cycle main-backend run and10-second natural tail; no new browser or runtime execution occurred during this extraction.",
+    "No natural GC trace, Game FPS, native/Blink retaining path, worker/Luau/GPU live bytes, universal no-leak/no-frequent-GC or release-readiness claim.",
+    "Cached publications may lag a closed UI boundary. Active and scene sets overlap; cumulative operations are not live owners. Tracing is absent from this cycle probe.",
+    "The Game stays live during2 intrusive GC requests. Successful requests do not guarantee all native/browser collectors completed, and forced data is excluded from natural metrics."
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "schema": "unone.sdk18-official-web-smoke-late-teardown-failure.v1",
+  "date": "2026-10-30",
+  "status": "failed-late-worker-teardown-error",
+  "scope": "SDK18 actual official production Web fixture, main and worker lifecycle/preload smoke. Both9-phase assertion chains passed, but the final raw global report contains a late worker shutdown error. This record does not convert a successful runner exit into an error-free smoke.",
+  "source_and_sdk": {
+    "host_source_commit": "c3160e89c643b80b313efba10ebfddde4bb93309",
+    "sdk_manifest": {
+      "path": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate18-host/sdk.json",
+      "bytes": 26624,
+      "sha256": "192237076a2851423a122da3b279876590d2142f9e3c6e35f4b0d8f051b9f980"
+    },
+    "production_wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_and_runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "fixture_script_sha256": "73f85519ce972c0fde76a028bf76267fa157a1bb5be563ac44350e1c5eef85c3",
+    "fixture_unchanged": true,
+    "publisher_runner_provenance": {
+      "path": "D:/Projects/Unone/.cache/prepare-sdk18-preload-official.mjs",
+      "bytes": 4689,
+      "sha256": "55a88af57cd27dd57f49ae794b470041cf9f6412009451a2dbddfbc9d3037397"
+    },
+    "hash_domain": "Actual file bytes, without Git LF normalization."
+  },
+  "pipeline": {
+    "status": "passed",
+    "commands": [
+      {
+        "label": "platform-snapshot",
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate18-host/bin/game.exe",
+        "args": [
+          "--project",
+          "D:/Projects/Unone/.cache/sdk14-preload-official-fixture",
+          "--sdk",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate18-host",
+          "--json",
+          "platform",
+          "snapshot"
+        ],
+        "exit_code": 0,
+        "error": null
+      },
+      {
+        "label": "export",
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate18-host/bin/game.exe",
+        "args": [
+          "--project",
+          "D:/Projects/Unone/.cache/sdk14-preload-official-fixture",
+          "--sdk",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate18-host",
+          "--json",
+          "export",
+          "platform",
+          "--target",
+          "web",
+          "--output",
+          "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18-raw"
+        ],
+        "exit_code": 0,
+        "error": null
+      },
+      {
+        "label": "publisher",
+        "command": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "args": [
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate18-host/scripts/prepare-web-image-assets.mjs",
+          "--project",
+          "D:/Projects/Unone/.cache/sdk14-preload-official-fixture",
+          "--input-export",
+          "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18-raw",
+          "--output",
+          "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18"
+        ],
+        "exit_code": 0,
+        "error": null
+      }
+    ],
+    "raw_export": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18-raw",
+    "published_export": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18",
+    "manifest": {
+      "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate18/export.json",
+      "bytes": 42059,
+      "sha256": "3fea117fe63eaff7829cbcd6c2fd29e985ed70f4751a3d3125663d16d2715af3"
+    },
+    "release_root": "releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/",
+    "indexed_files_verified": 197,
+    "report": {
+      "path": "D:/Projects/Unone/.cache/sdk18-preload-official-validation/report.json",
+      "bytes": 6021,
+      "sha256": "1bcf90fcac73538bad0b43c8758cf4a4f49e27a41961e350fecd5002c885c327"
+    }
+  },
+  "actual_smoke": {
+    "command": [
+      "node",
+      ".cache/verify-sdk18-preload-browser.mjs",
+      "--export",
+      "artifacts/retained-official-web-preload-20261030-candidate18",
+      "--out",
+      "artifacts/retained-official-web-preload-smoke-candidate18",
+      "--backends",
+      "main,worker"
+    ],
+    "runner": {
+      "path": "D:/Projects/Unone/.cache/verify-sdk18-preload-browser.mjs",
+      "bytes": 23205,
+      "sha256": "e75efb3c23193b088a063099061e576c08b2d1f9922ee96f4c4cea555f141532"
+    },
+    "runner_exit_code": 0,
+    "raw_runner_reported_ok": true,
+    "adjudicated_health_clean": false,
+    "browser": "156.0.4314.50",
+    "raw_global_report": {
+      "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/report.json",
+      "bytes": 908824,
+      "sha256": "5058ed51acdaffaf967a38bc430c329c20197d2435419be4251ea71c42d738ac"
+    },
+    "stdout": {
+      "path": "D:/Projects/Unone/.cache/sdk18-preload-official-browser.log",
+      "bytes": 117,
+      "sha256": "4d0ff64015c8b6a73e18bc5604889a898809f0e5b948b087f029f2c6427adaa4"
+    },
+    "backends": [
+      {
+        "backend": "main",
+        "phase_assertions_passed": true,
+        "phase_count": 9,
+        "phases": [
+          "initial",
+          "moving-camera",
+          "save-replacement",
+          "official-button-hit",
+          "replace-live-resource",
+          "remove-after-tree-replacement",
+          "recreate-id",
+          "context-lost",
+          "context-restored"
+        ],
+        "final_global_errors": [],
+        "failed_requests": [],
+        "warnings": [],
+        "required_preload": {
+          "decode_calls": 1,
+          "decode_successes": 1,
+          "decoded_before_ready": true,
+          "decode_error": null,
+          "required_entries": 1,
+          "required_ready_entries": 1
+        },
+        "preclose_backend_report": {
+          "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/main/result.json",
+          "bytes": 397062,
+          "sha256": "88e7930d70bd5bab289a52cfe616cc9728b681ee72737d91ee506e072534bf23"
+        },
+        "screenshots": [
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/main/initial.png",
+            "bytes": 11815,
+            "sha256": "91f77bfdcab6eec6f4b31c59883cb4a8977e099e8fcdfe0aef44b48abb5af181",
+            "visually_viewed": true
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/main/replaced.png",
+            "bytes": 11221,
+            "sha256": "aaf93897b6508999b55783c455a507d5b2e0d8c23f03e0a600593b2e72f48088",
+            "visually_viewed": false
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/main/restored.png",
+            "bytes": 11270,
+            "sha256": "271959e736815aa33edcdb440180ed38b4e7dfe26434dda827c39fbedec527d2",
+            "visually_viewed": true
+          }
+        ]
+      },
+      {
+        "backend": "worker",
+        "phase_assertions_passed": true,
+        "phase_count": 9,
+        "phases": [
+          "initial",
+          "moving-camera",
+          "save-replacement",
+          "official-button-hit",
+          "replace-live-resource",
+          "remove-after-tree-replacement",
+          "recreate-id",
+          "context-lost",
+          "context-restored"
+        ],
+        "final_global_errors": [
+          "Error: RUNTIME_CLOSED\n    at Object.shutdown [as close] (http://127.0.0.1:57153/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/web/shared/runtime-backend.mjs:7:26)\n    at http://127.0.0.1:57153/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/web/player/main.js:261:377"
+        ],
+        "failed_requests": [],
+        "warnings": [],
+        "required_preload": {
+          "decode_calls": 1,
+          "decode_successes": 1,
+          "decoded_before_ready": true,
+          "decode_error": null,
+          "required_entries": 1,
+          "required_ready_entries": 1
+        },
+        "preclose_backend_report": {
+          "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/worker/result.json",
+          "bytes": 421763,
+          "sha256": "2b01e0181cbe02a7f5a93f44e989809dfd2209c0ec75558d6e4f56f59756289c"
+        },
+        "screenshots": [
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/worker/initial.png",
+            "bytes": 11815,
+            "sha256": "a2c773f403e586552c62a6393504b2e5ea4923548e15e084e9618d7bd7941b83",
+            "visually_viewed": true
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/worker/replaced.png",
+            "bytes": 11149,
+            "sha256": "84b0cd5a981af44f85d735eca5809b2efce506f185c882292927bcb0625f1485",
+            "visually_viewed": false
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate18/worker/restored.png",
+            "bytes": 11197,
+            "sha256": "313b0850c0a9c5cf165003492966a574abf9bfe1d8c5d656050583878ea89ecc",
+            "visually_viewed": true
+          }
+        ]
+      }
+    ],
+    "teardown_error": {
+      "backend": "worker",
+      "count": 1,
+      "observed_error": "Error: RUNTIME_CLOSED\n    at Object.shutdown [as close] (http://127.0.0.1:57153/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/web/shared/runtime-backend.mjs:7:26)\n    at http://127.0.0.1:57153/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/web/player/main.js:261:377",
+      "observed_timing": "Added to the shared errors array during context.close, after the backend assertions and backend result.json write; present in the global report written after browser/server cleanup.",
+      "preclose_worker_errors": [],
+      "postclose_global_worker_errors": [
+        "Error: RUNTIME_CLOSED\n    at Object.shutdown [as close] (http://127.0.0.1:57153/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/web/shared/runtime-backend.mjs:7:26)\n    at http://127.0.0.1:57153/releases/4fbaad8ff30f465d689348e3657f69da3c0faec0dce9367c8fec4848888c27fc/web/player/main.js:261:377"
+      ],
+      "observer_gap": "The existing reviewed runner checks errors and writes each backend result before awaiting context.close. The result object retains a mutable errors array, so a late shutdown error reaches the final global report without changing the earlier result.ok flag or exit code. A future smoke must check after teardown too; this failure is preserved and is not filtered out."
+    },
+    "cleanup": {
+      "browser_and_own_loopback_server_closed": true,
+      "basis": "Runner exited0 after awaiting browser.close and its ephemeral127.0.0.1 server.close in finally; isolated backend contexts were closed.",
+      "other_project_servers_or_saves_modified": false
+    },
+    "visual_scope": "Four main/worker initial/restored PNGs were viewed: heading, control, alpha layers and mixed image/text HUD were visible. Visual phase success does not override the late shutdown error."
+  },
+  "bounded_diagnosis": {
+    "classification": "Source-derived lifecycle cancellation race, consistent with the observed trace; not proof that the retirement change introduced it.",
+    "chain": [
+      "main pagehide calls scheduler.stop() then backend.close().",
+      "Worker backend.shutdown rejects an in-flight request with RUNTIME_CLOSED.",
+      "The scheduler catch in this frozen source unconditionally invokes onError even when the originating generation was already stopped; main fail logs the error."
+    ],
+    "relevant_source_files_byte_identical_sdk17_to_sdk18": [
+      {
+        "path": "templates/web/shared/async-scheduler.mjs",
+        "bytes": 4038,
+        "sha256": "0f743b61721c20052707fa15d0e5d52b596ce53d1b904c3bd7ff6286cdcfe6e7"
+      },
+      {
+        "path": "templates/web/shared/runtime-backend.mjs",
+        "bytes": 5808,
+        "sha256": "b62585d5cf122bcd7c0c6c131712d5b3fae10d92406da65c6961946b40782538"
+      },
+      {
+        "path": "templates/web/player/main.js",
+        "bytes": 28249,
+        "sha256": "0e423f276721eda0f8cc466db6cd43ac6ebadd7ea272cff9c20e1d94bd8760dc"
+      }
+    ],
+    "production_changes_after_failure": "None in frozen SDK18/export. A separate scheduler follow-up is owned and reviewed independently."
+  },
+  "validation_boundaries": {
+    "node_tests": {
+      "total": 674,
+      "pass": 671,
+      "fail": 0,
+      "skipped": 3,
+      "log": "D:/Projects/Unone/.cache/shared-image-host18-full-web-tests.log"
+    },
+    "fps": "outside-this-record",
+    "actual_image_retirement_isolation": "separate evidence; not established by this lifecycle fixture",
+    "no_memory_leak_or_gc_acceptance_claim": true,
+    "no_error_filter_or_gate_relaxation": true,
+    "no_retry_until_pass": true,
+    "no_product_game_writes": true
+  }
+}

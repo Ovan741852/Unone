@@ -1,0 +1,875 @@
+{
+  "schema": "unone.browser-image-retirement-isolation.v1",
+  "date": "2026-10-30",
+  "status": "actual-remove-src-control-reproduces-persistent-CDP-node-excess-without-Game-or-GPU-renderer; native-liveness-cause-unresolved",
+  "execution": {
+    "executed_by": "Root",
+    "reported_exit_code": 0,
+    "reported_wall_seconds": 4.77,
+    "wall_scope": "Root reported command wall time; not a benchmark or independently instrumented duration.",
+    "command": {
+      "executable": "C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "argv": [
+        "D:/Projects/Unone/.cache/browser-image-retirement-isolation.mjs",
+        "--diagnostic",
+        "--allow-two-gc-per-variant",
+        "--base-url",
+        "http://127.0.0.1:8293/",
+        "--manifest",
+        "D:/Projects/JYRogue/game/dist/player-performance-integrated16/export.json",
+        "--output",
+        "D:/Projects/Unone/.cache/browser-image-retirement-isolation-final16-run1"
+      ]
+    },
+    "command_authority": "Root confirmed execution of the exact independently reviewed runner SHA recorded here. No separate terminal stdout/timing log is present in this run directory.",
+    "browser": "156.0.8078.48",
+    "all_contexts_and_browsers_closed": true,
+    "errors": [],
+    "unexpected_requests": []
+  },
+  "selected_artifact": {
+    "manifest": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-integrated16\\export.json",
+    "manifest_sha256": "5482bfd16bed44c587d0f7d66334ae36b75c2fe8753a04bd67427d43b86edd17",
+    "release": "releases/01c4854690abf848b62ed169500b44674b973550f1856fae12570096e7e4f5a8/",
+    "selected_game_source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+    "game_identity_scope": "Artifact identity only; Game script/scene/WASM are never loaded by this control.",
+    "actual_export_module": {
+      "url": "http://127.0.0.1:8293/releases/01c4854690abf848b62ed169500b44674b973550f1856fae12570096e7e4f5a8/web/shared/asset-encoding.js",
+      "sha256": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed"
+    },
+    "actual_png": {
+      "url": "http://127.0.0.1:8293/releases/01c4854690abf848b62ed169500b44674b973550f1856fae12570096e7e4f5a8/content/assets/art/world-tiles/isometric-shadow.png",
+      "sha256": "207582c096097e22a62b2b50c3acdd22406717dcd5c249066b2f04aa9685c272",
+      "width": 96,
+      "height": 48,
+      "encoded_bytes": 2713
+    },
+    "asset": {
+      "bundle": "content",
+      "id": "texture://jy/world-tiles/isometric-shadow",
+      "kind": "texture2d",
+      "source": "assets/art/world-tiles/isometric-shadow.png"
+    }
+  },
+  "method": {
+    "iterations_per_variant": 50,
+    "settle_ms": 1000,
+    "gc_requests_per_variant": 2,
+    "total_gc_requests": 6,
+    "fresh_browser_and_context_per_variant": true,
+    "intercepted_url_only": "http://127.0.0.1:8293/__image_retire_control__",
+    "http_scope": "Only the synthetic empty HTML is fulfilled by Playwright. The unchanged existing8293 server serves the frozen export module and PNG; their served bytes are SHA-verified before work. An empty data favicon avoids unrelated favicon requests.",
+    "ownership": "No image-object history, WeakRefs, JSHandles, DOM/debugger handles or heap tracking/snapshot is used. Page state stores only an empty broker and primitive counts; workload image/lease locals leave page.evaluate before settle/GC.",
+    "no_game_runtime": "No Game, WASM, scene, Three, shader or explicit GPU drawing is loaded. The Game SHA is artifact identity only.",
+    "variants": {
+      "A": "Actual frozen export broker and default loader; unusedMaxBytes=unusedMaxEntries=0 forces retirement after each successful lease release. HTMLImageElement retirement removes src.",
+      "B": "Same actual broker/default loader/config. Only Image construction adds an own no-op close method, suppressing successful src-removal retirement. Global Image is restored before settle/GC.",
+      "C": "Direct Image onload/decode, handler cleanup and removeAttribute(src), without broker. No AbortController/scheduling layer is reproduced."
+    }
+  },
+  "observations": [
+    {
+      "variant": "A",
+      "status": "completed-control-not-a-verdict",
+      "served_identity": {
+        "verified": true,
+        "module_sha256": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed",
+        "png_sha256": "207582c096097e22a62b2b50c3acdd22406717dcd5c249066b2f04aa9685c272",
+        "preflight": "Encoded fetch only, no image decode; identical for all variants."
+      },
+      "workload": {
+        "counts": {
+          "completed": 50,
+          "decoded": 50,
+          "released": 50,
+          "no_op_close_calls": 0
+        },
+        "broker": {
+          "catalog_generation": 1,
+          "disposed": false,
+          "limits": {
+            "sceneMaxBytes": 67108864,
+            "sceneMaxEntries": 128,
+            "unusedMaxBytes": 0,
+            "unusedMaxEntries": 0
+          },
+          "preload_plan": null,
+          "resident_entries": 0,
+          "resident_bytes_estimate": 0,
+          "active_entries": 0,
+          "active_bytes_estimate": 0,
+          "scene_entries": 0,
+          "scene_bytes_estimate": 0,
+          "unused_entries": 0,
+          "unused_bytes_estimate": 0,
+          "loading": 0,
+          "active_tasks": 0,
+          "queued_tasks": 0,
+          "loads": 50,
+          "reuses": 0,
+          "evictions": 50,
+          "closed_images": 50,
+          "released_bytes_estimate": 921600,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "preparation": null,
+          "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted."
+        }
+      },
+      "request_count": 5,
+      "snapshots": [
+        {
+          "phase": "before-images",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 21,
+              "jsEventListeners": 0
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 21,
+            "listeners": 0,
+            "js_heap_used_bytes": 1100596,
+            "js_heap_total_capacity_bytes": 1572864
+          },
+          "page_counts": {
+            "completed": 0,
+            "decoded": 0,
+            "released": 0,
+            "no_op_close_calls": 0
+          },
+          "hidden": false,
+          "broker": null
+        },
+        {
+          "phase": "after-fixed50",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 321,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 321,
+            "listeners": 300,
+            "js_heap_used_bytes": 1703264,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "hidden": false,
+          "broker": {
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "scene_entries": 0,
+            "unused_entries": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 921600
+          }
+        },
+        {
+          "phase": "after-1000ms-settle",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 321,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 321,
+            "listeners": 300,
+            "js_heap_used_bytes": 1725768,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "hidden": false,
+          "broker": {
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "scene_entries": 0,
+            "unused_entries": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 921600
+          }
+        }
+      ],
+      "gc_attempts": [
+        {
+          "index": 1,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 3.921000000000049,
+          "after": {
+            "memory_dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 309,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 309,
+              "listeners": 0,
+              "js_heap_used_bytes": 838280,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "hidden": false,
+            "broker": {
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "scene_entries": 0,
+              "unused_entries": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 921600
+            }
+          }
+        },
+        {
+          "index": 2,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 1.506099999999833,
+          "after": {
+            "memory_dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 309,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 309,
+              "listeners": 0,
+              "js_heap_used_bytes": 838280,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "hidden": false,
+            "broker": {
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "scene_entries": 0,
+              "unused_entries": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 921600
+            }
+          }
+        }
+      ],
+      "context_closed": true,
+      "browser_closed": true,
+      "errors": [],
+      "unexpected_requests": []
+    },
+    {
+      "variant": "B",
+      "status": "completed-control-not-a-verdict",
+      "served_identity": {
+        "verified": true,
+        "module_sha256": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed",
+        "png_sha256": "207582c096097e22a62b2b50c3acdd22406717dcd5c249066b2f04aa9685c272",
+        "preflight": "Encoded fetch only, no image decode; identical for all variants."
+      },
+      "workload": {
+        "counts": {
+          "completed": 50,
+          "decoded": 50,
+          "released": 50,
+          "no_op_close_calls": 50
+        },
+        "broker": {
+          "catalog_generation": 1,
+          "disposed": false,
+          "limits": {
+            "sceneMaxBytes": 67108864,
+            "sceneMaxEntries": 128,
+            "unusedMaxBytes": 0,
+            "unusedMaxEntries": 0
+          },
+          "preload_plan": null,
+          "resident_entries": 0,
+          "resident_bytes_estimate": 0,
+          "active_entries": 0,
+          "active_bytes_estimate": 0,
+          "scene_entries": 0,
+          "scene_bytes_estimate": 0,
+          "unused_entries": 0,
+          "unused_bytes_estimate": 0,
+          "loading": 0,
+          "active_tasks": 0,
+          "queued_tasks": 0,
+          "loads": 50,
+          "reuses": 0,
+          "evictions": 50,
+          "closed_images": 50,
+          "released_bytes_estimate": 921600,
+          "pressure_bytes": 0,
+          "pressure_entries": 0,
+          "preparation": null,
+          "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted."
+        }
+      },
+      "request_count": 5,
+      "snapshots": [
+        {
+          "phase": "before-images",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 21,
+              "jsEventListeners": 0
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 21,
+            "listeners": 0,
+            "js_heap_used_bytes": 1101436,
+            "js_heap_total_capacity_bytes": 1572864
+          },
+          "page_counts": {
+            "completed": 0,
+            "decoded": 0,
+            "released": 0,
+            "no_op_close_calls": 0
+          },
+          "hidden": false,
+          "broker": null
+        },
+        {
+          "phase": "after-fixed50",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 71,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 71,
+            "listeners": 300,
+            "js_heap_used_bytes": 1708032,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 50
+          },
+          "hidden": false,
+          "broker": {
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "scene_entries": 0,
+            "unused_entries": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 921600
+          }
+        },
+        {
+          "phase": "after-1000ms-settle",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 71,
+              "jsEventListeners": 300
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 71,
+            "listeners": 300,
+            "js_heap_used_bytes": 1730536,
+            "js_heap_total_capacity_bytes": 3145728
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 50
+          },
+          "hidden": false,
+          "broker": {
+            "resident_entries": 0,
+            "resident_bytes_estimate": 0,
+            "active_entries": 0,
+            "scene_entries": 0,
+            "unused_entries": 0,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "loads": 50,
+            "evictions": 50,
+            "closed_images": 50,
+            "released_bytes_estimate": 921600
+          }
+        }
+      ],
+      "gc_attempts": [
+        {
+          "index": 1,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 3.1131000000000313,
+          "after": {
+            "memory_dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 9,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 9,
+              "listeners": 0,
+              "js_heap_used_bytes": 837448,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 50
+            },
+            "hidden": false,
+            "broker": {
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "scene_entries": 0,
+              "unused_entries": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 921600
+            }
+          }
+        },
+        {
+          "index": 2,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 1.7975999999998749,
+          "after": {
+            "memory_dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 9,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 9,
+              "listeners": 0,
+              "js_heap_used_bytes": 837448,
+              "js_heap_total_capacity_bytes": 1835008
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 50
+            },
+            "hidden": false,
+            "broker": {
+              "resident_entries": 0,
+              "resident_bytes_estimate": 0,
+              "active_entries": 0,
+              "scene_entries": 0,
+              "unused_entries": 0,
+              "loading": 0,
+              "active_tasks": 0,
+              "queued_tasks": 0,
+              "loads": 50,
+              "evictions": 50,
+              "closed_images": 50,
+              "released_bytes_estimate": 921600
+            }
+          }
+        }
+      ],
+      "context_closed": true,
+      "browser_closed": true,
+      "errors": [],
+      "unexpected_requests": []
+    },
+    {
+      "variant": "C",
+      "status": "completed-control-not-a-verdict",
+      "served_identity": {
+        "verified": true,
+        "module_sha256": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed",
+        "png_sha256": "207582c096097e22a62b2b50c3acdd22406717dcd5c249066b2f04aa9685c272",
+        "preflight": "Encoded fetch only, no image decode; identical for all variants."
+      },
+      "workload": {
+        "counts": {
+          "completed": 50,
+          "decoded": 50,
+          "released": 50,
+          "no_op_close_calls": 0
+        },
+        "broker": null
+      },
+      "request_count": 4,
+      "snapshots": [
+        {
+          "phase": "before-images",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 21,
+              "jsEventListeners": 0
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 21,
+            "listeners": 0,
+            "js_heap_used_bytes": 1101436,
+            "js_heap_total_capacity_bytes": 1572864
+          },
+          "page_counts": {
+            "completed": 0,
+            "decoded": 0,
+            "released": 0,
+            "no_op_close_calls": 0
+          },
+          "hidden": false,
+          "broker": null
+        },
+        {
+          "phase": "after-fixed50",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 321,
+              "jsEventListeners": 100
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 321,
+            "listeners": 100,
+            "js_heap_used_bytes": 1315728,
+            "js_heap_total_capacity_bytes": 2359296
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "hidden": false,
+          "broker": null
+        },
+        {
+          "phase": "after-1000ms-settle",
+          "memory_dom": {
+            "availability": "observed",
+            "response": {
+              "documents": 4,
+              "nodes": 321,
+              "jsEventListeners": 100
+            },
+            "error": null
+          },
+          "performance": {
+            "availability": "observed",
+            "error": null,
+            "documents": 4,
+            "nodes": 321,
+            "listeners": 100,
+            "js_heap_used_bytes": 1324848,
+            "js_heap_total_capacity_bytes": 2359296
+          },
+          "page_counts": {
+            "completed": 50,
+            "decoded": 50,
+            "released": 50,
+            "no_op_close_calls": 0
+          },
+          "hidden": false,
+          "broker": null
+        }
+      ],
+      "gc_attempts": [
+        {
+          "index": 1,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 4.24369999999999,
+          "after": {
+            "memory_dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 309,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 309,
+              "listeners": 0,
+              "js_heap_used_bytes": 755620,
+              "js_heap_total_capacity_bytes": 1572864
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "hidden": false,
+            "broker": null
+          }
+        },
+        {
+          "index": 2,
+          "status": "command-completed",
+          "response": {},
+          "error": null,
+          "command_wall_ms": 1.6520000000000437,
+          "after": {
+            "memory_dom": {
+              "availability": "observed",
+              "response": {
+                "documents": 1,
+                "nodes": 309,
+                "jsEventListeners": 0
+              },
+              "error": null
+            },
+            "performance": {
+              "availability": "observed",
+              "error": null,
+              "documents": 1,
+              "nodes": 309,
+              "listeners": 0,
+              "js_heap_used_bytes": 755684,
+              "js_heap_total_capacity_bytes": 1572864
+            },
+            "page_counts": {
+              "completed": 50,
+              "decoded": 50,
+              "released": 50,
+              "no_op_close_calls": 0
+            },
+            "hidden": false,
+            "broker": null
+          }
+        }
+      ],
+      "context_closed": true,
+      "browser_closed": true,
+      "errors": [],
+      "unexpected_requests": []
+    }
+  ],
+  "comparison": {
+    "raw_nodes": {
+      "A": {
+        "before": 21,
+        "after50": 321,
+        "after1s": 321,
+        "after_gc1": 309,
+        "after_gc2": 309
+      },
+      "B": {
+        "before": 21,
+        "after50": 71,
+        "after1s": 71,
+        "after_gc1": 9,
+        "after_gc2": 9
+      },
+      "C": {
+        "before": 21,
+        "after50": 321,
+        "after1s": 321,
+        "after_gc1": 309,
+        "after_gc2": 309
+      }
+    },
+    "node_baseline_caveat": "Before-images has4 documents/21 nodes. After GC every variant has1 document; B has9 nodes. The persistent excess is300 relative to B after matching GC, not309-21.",
+    "persistent_excess_relative_to_B_after_matching_gc": {
+      "A": 300,
+      "C": 300,
+      "excess_per_successful_image": 6
+    },
+    "post_gc_listeners_all_variants": 0,
+    "post_gc2_js_heap_used_bytes": {
+      "A": 838280,
+      "B": 837448,
+      "C": 755684
+    },
+    "observed_conclusion": "With this PNG and Chrome build, successful remove-src retirement reproduces exactly6 excess CDP nodes per image even without broker/Game/renderer; suppressing that retirement branch in the same broker removes the excess after GC. Broker ownership is empty and JS listener counts return0 in all variants.",
+    "production_relevance": "This isolates a concrete avoidable trigger in the frozen closeDecodedImage HTMLImageElement fallback. It matches the SDK16 aggregate +1800nodes/300retirements, but does not prove the same browser retaining path or a native leak.",
+    "safe_followup_boundary": "Evaluate successful decoded-image reference release separately from abort/error/pending-request cancellation. The no-op close Proxy is a counterfactual diagnostic, not a production implementation or authorization to remove cancellation semantics."
+  },
+  "raw_evidence": {
+    "source": {
+      "path": ".cache/browser-image-retirement-isolation-final16-run1/source.json",
+      "bytes": 2160,
+      "sha256": "d9e0f786a87418c35ff20aafc0b59da568467b6087595ec0d6dd201eabb9316b"
+    },
+    "captured_runner": {
+      "path": ".cache/browser-image-retirement-isolation-final16-run1/diagnostic-script.mjs",
+      "bytes": 14177,
+      "sha256": "b5f2989218bcc4e4050970d5b008a74c17b93189e245a1abfed0592987fa1aaf"
+    },
+    "report": {
+      "path": ".cache/browser-image-retirement-isolation-final16-run1/report.json",
+      "bytes": 99919,
+      "sha256": "52e7d8b7422c292dcad19b7b666177ac0d7664dca9291636d5b21355b6fe30dd"
+    },
+    "variant_A": {
+      "path": ".cache/browser-image-retirement-isolation-final16-run1/variant-A.json",
+      "bytes": 30597,
+      "sha256": "5bac4e786778baf2b4ed9a57503cebab423a393e09106e85c85d04a3873a80d9"
+    },
+    "variant_B": {
+      "path": ".cache/browser-image-retirement-isolation-final16-run1/variant-B.json",
+      "bytes": 30607,
+      "sha256": "f8834469bafa55eec95c8a984b48757e43f7e8623aa1296da29a9adc999bc5ef"
+    },
+    "variant_C": {
+      "path": ".cache/browser-image-retirement-isolation-final16-run1/variant-C.json",
+      "bytes": 24928,
+      "sha256": "e191a67bf36c75f41a75df8e9b2d8b03f57ac666544490146efcca1a2c502a5f"
+    },
+    "related_game_control": {
+      "path": "docs/evidence/2026-10-29-engine-stability/sdk16-game6073-main-memory-cycles.json",
+      "bytes": 69014,
+      "sha256": "946791d7c6a530b036edb8e8881f8a25e20cc559c55b5dec0fc19322ee4f89e1"
+    }
+  },
+  "limits": [
+    "Single small PNG, fixed50 successful retirements, one Chrome build, loopback server and three fresh browser contexts. No broad asset/format/device coverage.",
+    "Successful HeapProfiler.collectGarbage replies are not proof that every Blink/native collector completed. CDP Nodes is a count, not an identity-level heap retaining path.",
+    "Variant B intentionally changes retirement behavior; variant C omits broker/Abort scheduling. Results are causal evidence for this narrow branch, not general engine/no-leak proof.",
+    "Natural GC frequency, Game FPS, memory under GPU rendering and universal resource lifetime are outside this intrusive control. No renderer replacement, gameplay edit, clock change or Product/export mutation occurred.",
+    "This evidence records existing results only. It does not include a subsequent production fix or SDK17 performance acceptance."
+  ]
+}
