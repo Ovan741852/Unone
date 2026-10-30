@@ -228,10 +228,15 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
           else if(node.kind==='image')used.add(node.asset);if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
         // Pin the complete incoming set before outgoing releases can sweep
         // the shared idle cache and evict an image needed by this very draw.
-        requiredAssets=used;for(const id of used)ensureAsset(id);
-        if([...assets.keys()].some(id=>!used.has(id)))retireGpu();
-        for(const [id,e]of assets)if(!used.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
-        batchResolver.prune(nodes);}
+        requiredAssets=used;
+        try{for(const id of used){if(disposed||requiredAssets!==used)break;ensureAsset(id);}}
+        finally{if(!disposed){
+          // Callbacks may throw or replace this composition synchronously.
+          // Retire against the latest required set, after its incoming pins.
+          if([...assets.keys()].some(id=>!requiredAssets.has(id)))retireGpu();
+          for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
+          batchResolver.prune(nodes);}}
+        if(disposed)throw Error('UI_DISPOSED');}
       prefixContext.width=bw;prefixContext.height=bh;
       const presenter=getImageBatchPresenter(),presented=presenter?.drawPrefix(prefix,prefixContext)??0;
       if(!Number.isInteger(presented)||presented<0||presented>prefix.length)throw Error('UI_IMAGE_PREFIX_RESULT_INVALID');

@@ -6,7 +6,7 @@ import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 
 const ids={a:'texture://handoff/a',b:'texture://handoff/b',c:'texture://handoff/c'};
 const snapshot=names=>({world:{ui:{kind:'screen',id:'screen',node:'stage',children:names.map((name,index)=>({kind:'image',id:'art-'+name,asset:ids[name]??name,rect:{x:index*100/names.length,y:0,width:100/names.length,height:100}}))}}});
-function host({sizes={},unusedBytes=16}={}){
+function host({sizes={},unusedBytes=16,onDiagnostic,requestRender}={}){
  const trace=[],loads=new Map(),images=[];
  const catalog=createAssetCatalog({assets:Object.values(ids).map(id=>({id,kind:'texture2d',source:id.split('/').at(-1)+'.png'}))});
  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:asset=>asset.source,unusedMaxBytes:unusedBytes,unusedMaxEntries:3,
@@ -14,7 +14,7 @@ function host({sizes={},unusedBytes=16}={}){
   loadImage:async(url,{asset})=>{loads.set(asset.id,(loads.get(asset.id)??0)+1);const [width,height]=sizes[asset.id]??[2,2];const image={id:asset.id,naturalWidth:width,naturalHeight:height,width,height,closed:0,close(){this.closed++;trace.push('close:'+this.id);}};images.push(image);return image;}});
  const painted=[],context={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},rect(){},clip(){},drawImage:image=>painted.push(image),fillText(){},measureText:()=>({width:1})};
  const presenter={drawPrefix:()=>0,completion:()=>DRAW_COMPLETED,clear:()=>trace.push('gpu.clear')};
- const ui=createCanvasUi({width:100,height:100,getContext:()=>context},{acquireAsset:id=>{trace.push('acquire:'+id);return broker.acquire(id);},getImageBatchPresenter:()=>presenter});
+ const ui=createCanvasUi({width:100,height:100,getContext:()=>context},{acquireAsset:id=>{trace.push('acquire:'+id);return broker.acquire(id);},getImageBatchPresenter:()=>presenter,onDiagnostic,requestRender});
  return{ui,broker,images,loads,painted,trace,dispose(){ui.dispose();broker.dispose();}};
 }
 async function showFirst(h,names){assert.equal(h.ui.draw(snapshot(names)),DRAW_SKIPPED.ui_assets_pending);await h.ui.ready();assert.equal(h.ui.draw(snapshot(names)),DRAW_COMPLETED);}
@@ -39,4 +39,24 @@ test('GPU retirement precedes final outgoing pixel release even when incoming ac
  const h=host({unusedBytes:0});t.after(()=>h.dispose());await showFirst(h,['a']);h.trace.length=0;
  assert.equal(h.ui.draw(snapshot(['texture://undeclared'])),DRAW_SKIPPED.ui_diagnostics);await assert.rejects(h.ui.ready(),/UI_ASSET_FAILED/);const old=h.images.find(image=>image.id===ids.a);assert.equal(old.closed,1);
  assert(h.trace.indexOf('gpu.clear')>=0);assert(h.trace.indexOf('gpu.clear')<h.trace.indexOf('close:'+ids.a));assert.equal(h.broker.report().resident_entries,0);assert.equal(h.ui.report().assets.length,1);h.dispose();assert.equal(old.closed,1);assert.throws(()=>h.ui.draw(snapshot(['b'])),/UI_DISPOSED/);
+});
+
+for(const callback of ['onDiagnostic','requestRender'])test(`a throwing ${callback} still retires outgoing Canvas pixels before a same-tree retry`,async t=>{
+ let armed=false;const h=host({unusedBytes:0,[callback](){if(armed)throw Error('callback-threw');}});t.after(()=>h.dispose());await showFirst(h,['a']);const old=h.images[0];h.trace.length=0;armed=true;
+ const next=snapshot(['texture://undeclared']);assert.throws(()=>h.ui.draw(next),/callback-threw/);
+ assert.equal(old.closed,1);assert.equal(h.broker.report().active_entries,0);assert(h.trace.indexOf('gpu.clear')<h.trace.indexOf('close:'+ids.a));assert.equal(h.ui.report().assets.length,1);
+ assert.equal(h.ui.draw(next),DRAW_SKIPPED.ui_diagnostics);await assert.rejects(h.ui.ready(),/UI_ASSET_FAILED/);h.dispose();assert.equal(old.closed,1);
+});
+
+test('a reentrant diagnostic recovery keeps the newer Canvas owners and skips obsolete remaining acquisitions',async t=>{
+ let h,armed=false,recovered;h=host({unusedBytes:0,onDiagnostic(){if(armed){armed=false;recovered=h.ui.draw(snapshot(['c']));}}});t.after(()=>h.dispose());
+ await h.broker.prepareScene({entities:[{sprite:{asset:ids.c,visible:false}}]});await showFirst(h,['a']);const old=h.images.find(image=>image.id===ids.a),current=h.images.find(image=>image.id===ids.c);h.trace.length=0;armed=true;
+ assert.equal(h.ui.draw(snapshot(['texture://undeclared','b'])),DRAW_COMPLETED);assert.equal(recovered,DRAW_COMPLETED);assert.equal(h.painted.at(-1),current);assert.equal(old.closed,1);assert.equal(current.closed,0);
+ assert(!h.trace.includes('acquire:'+ids.b),'an obsolete remaining image must never be acquired');assert.deepEqual(h.ui.report().assets.map(asset=>asset.id),[ids.c]);assert.equal(h.broker.report().active_entries,1);assert.equal(h.broker.report().loads,2);
+ h.dispose();assert.equal(current.closed,1);assert.equal(old.closed,1);
+});
+
+test('disposing Canvas inside a diagnostic callback stops acquisition and does not repeat GPU retirement',async t=>{
+ let h,armed=false;h=host({unusedBytes:0,onDiagnostic(){if(armed){armed=false;h.ui.dispose();}}});t.after(()=>h.dispose());await showFirst(h,['a']);const old=h.images[0];h.trace.length=0;armed=true;
+ assert.throws(()=>h.ui.draw(snapshot(['texture://undeclared','b'])),/UI_DISPOSED/);assert(!h.trace.includes('acquire:'+ids.b));assert.equal(h.trace.filter(event=>event==='gpu.clear').length,1);assert.equal(old.closed,1);assert.equal(h.broker.report().active_entries,0);assert.equal(h.ui.report().assets.length,0);await assert.rejects(h.ui.ready(),/UI_DISPOSED/);
 });

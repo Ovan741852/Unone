@@ -77,7 +77,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  target.addEventListener('pointermove',move,{passive:true});target.addEventListener('pointerenter',move,{passive:true});
  target.addEventListener('pointerleave',leave,{passive:true});focus?.addEventListener('blur',leave);
  return {
-  update(value){const next=validateCursor(value);spec=next;
+  update(value){if(disposed)return DRAW_SKIPPED.cursor_diagnostics;const next=validateCursor(value);spec=next;
    // Pin the incoming cursor before retiring the outgoing lease can sweep it
    // from the shared idle cache. Retire old ownership even if onError throws.
    try{if(spec.kind==='image')resource(spec.asset);}

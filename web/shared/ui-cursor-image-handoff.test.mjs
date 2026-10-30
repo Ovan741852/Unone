@@ -6,16 +6,17 @@ import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 const ids={a:'texture://cursor-handoff/a',b:'texture://cursor-handoff/b'};
 const spec=name=>({kind:'image',asset:ids[name]??name,width:2,height:2,hotspot_x:0,hotspot_y:0,filter:'nearest'});
 function fixture({unusedBytes=16,onError,loadImage}={}){
- const images=[],loads=new Map(),errors=[],handlers=new Map(),painted=[];
+ const images=[],loads=new Map(),errors=[],handlers=new Map(),painted=[],calls={provider:0,acquire:0};
  const broker=createImageAssetBroker(createAssetCatalog({assets:Object.values(ids).map(id=>({id,kind:'texture2d',source:id+'.png'}))}),{
   resolveAssetUrl:asset=>asset.source,unusedMaxBytes:unusedBytes,unusedMaxEntries:2,inspectImage:async()=>({format:'png',width:2,height:2}),
   loadImage:async(url,options)=>{const {asset}=options;loads.set(asset.id,(loads.get(asset.id)??0)+1);if(loadImage)return loadImage(url,options);const image={id:asset.id,width:2,height:2,closed:0,close(){this.closed++;}};images.push(image);return image;},
  });
  const target={width:100,height:100,style:{cursor:'crosshair'},getBoundingClientRect:()=>({left:0,top:0,width:100,height:100}),addEventListener:(name,fn)=>handlers.set(name,fn),removeEventListener:name=>handlers.delete(name)};
  const layer={width:100,height:100,style:{},getContext:()=>({clearRect(){},drawImage:image=>painted.push(image)})};
- const host=createUiCursorHost({target,layer,focus:null,getImageAssets:()=>broker,onError:error=>{errors.push(error);onError?.(error);}});
+ const imageAssets={acquire(id){calls.acquire++;return broker.acquire(id);}};
+ const host=createUiCursorHost({target,layer,focus:null,getImageAssets:()=>{calls.provider++;return imageAssets;},onError:error=>{errors.push(error);onError?.(error);}});
  handlers.get('pointermove')({clientX:50,clientY:50,pointerType:'mouse'});
- return{host,broker,images,loads,errors,painted,target,dispose(){host.dispose();broker.dispose();}};
+ return{host,broker,images,loads,errors,painted,target,calls,dispose(){host.dispose();broker.dispose();}};
 }
 async function warm(f,name){const lease=f.broker.acquire(ids[name]);await lease.promise;lease.release();}
 
@@ -40,4 +41,10 @@ test('an incoming error callback cannot retain the outgoing broker lease by thro
 test('reentrant acquisition-error recovery retains the newer cursor rather than retiring its lease',async t=>{
  let f;f=fixture({unusedBytes:0,onError(){f.host.update(spec('b'));}});t.after(()=>f.dispose());await f.broker.prepareScene({entities:[{sprite:{asset:ids.b,visible:false}}]});f.host.update(spec('a'));await f.host.ready();
  assert.equal(f.host.update(spec('texture://missing')),DRAW_COMPLETED);assert.equal(f.errors.length,1);assert.equal(f.host.report().asset,ids.b);assert.equal(f.painted.at(-1).id,ids.b);assert.equal(f.host.report().shared_image_leases,1);assert.equal(f.broker.report().active_entries,1);assert.equal(f.images.find(image=>image.id===ids.a).closed,1);
+});
+
+test('disposed cursor updates cannot acquire either cold or already warm shared artwork',async t=>{
+ const f=fixture({unusedBytes:0});t.after(()=>f.dispose());await f.broker.prepareScene({entities:[{sprite:{asset:ids.b,visible:false}}]});const warmImage=f.images[0];f.host.dispose();const before={...f.calls},loads=f.broker.report().loads;
+ assert.equal(f.host.update(spec('a')),DRAW_SKIPPED.cursor_diagnostics);assert.equal(f.host.update(spec('b')),DRAW_SKIPPED.cursor_diagnostics);assert.equal(f.host.update({kind:'image'}),DRAW_SKIPPED.cursor_diagnostics);assert.equal(f.host.render(),DRAW_SKIPPED.cursor_diagnostics);assert.equal(f.host.invalidateAssets(),DRAW_SKIPPED.cursor_diagnostics);
+ assert.deepEqual(f.calls,before);assert.equal(f.broker.report().loads,loads);assert.equal(f.broker.report().active_entries,0);assert.equal(f.host.report().shared_image_leases,0);assert.equal(warmImage.closed,0);assert.deepEqual(f.errors,[]);await assert.rejects(f.host.ready(),/UI_CURSOR_DISPOSED/);f.dispose();assert.equal(warmImage.closed,1);
 });
