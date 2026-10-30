@@ -152,27 +152,10 @@ fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_trans
     ];
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let presentation_started = measuring.then(std::time::Instant::now);
-    let mut retained = Vec::new();
-    // Instance-bearing worlds retain the established transport rewrite path.
-    let world = {
-        let mut value: serde_json::Value =
-            serde_json::from_str(world.get()).map_err(|e| e.to_string())?;
-        if INSTANCE_MEMORY.with(|m| m.get()) {
-            for (id, batch) in &snapshot.instances3d {
-                value["instances3d"][id] = serde_json::json!({"asset":batch.asset,"count":batch.count,"format":batch.format,
-                    "memory":{"offset":batch.packed.as_ptr() as usize,"byte_length":batch.packed.len(),"revision":batch.revision.to_string()}});
-                retained.push(batch.packed.clone());
-            }
-        } else {
-            for (id, batch) in &snapshot.instances3d {
-                if let Some(entry) = value.get_mut("instances3d").and_then(|v| v.get_mut(id))
-                    && let Some(object) = entry.as_object_mut() {
-                        object.insert("data".into(), serde_json::Value::String(batch.data().to_string()));
-                    }
-            }
-        }
-        serde_json::value::to_raw_value(&value).map_err(|e| e.to_string())?
-    };
+    // The digest covers the canonical bytes above; the published world carries
+    // each instance batch's transport, encoded directly in one pass.
+    let world = serde_json::value::to_raw_value(&ui_transport::InstanceWorld(snapshot)).map_err(|e| e.to_string())?;
+    let retained = ui_transport::instance_leases(snapshot);
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let presentation_ms = presentation_started
         .map(|s| s.elapsed().as_secs_f64() * 1000.)

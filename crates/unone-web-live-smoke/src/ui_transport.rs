@@ -55,13 +55,49 @@ struct Observation<'a,W:Serialize+?Sized>{
 struct Presentation<'a>(&'a WorldSnapshot,bool);
 impl Serialize for Presentation<'_>{
     fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
-        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:true,hide_ui:self.1,capture:None},field_count:usize::from(!self.0.ui_image_batches.is_empty())+usize::from(self.1&&self.0.ui.is_some())})
+        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:true,hide_ui:self.1,capture:None,instances:Some(self.0)},field_count:usize::from(!self.0.ui_image_batches.is_empty())+usize::from(self.1&&self.0.ui.is_some())})
     }
+}
+/// The canonical world with only its instance batches in transport form, for
+/// publications without the retained UI wire.
+pub(super) struct InstanceWorld<'a>(pub(super) &'a WorldSnapshot);
+impl Serialize for InstanceWorld<'_>{
+    fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
+        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:None,instances:Some(self.0)},field_count:0})
+    }
+}
+// Instance batches publish their presentation transport in place of the
+// canonical {asset,count,format} entries: a Wasm memory view or base64 bytes,
+// encoded directly instead of re-parsing and re-encoding the whole world.
+struct InstanceTransport<'a>(&'a WorldSnapshot);
+impl Serialize for InstanceTransport<'_>{
+    fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
+        use serde::ser::SerializeMap;
+        #[derive(Serialize)]
+        struct View{offset:usize,byte_length:usize,revision:String}
+        #[derive(Serialize)]
+        struct Entry<'a>{asset:&'a str,count:usize,format:&'static str,
+            #[serde(skip_serializing_if="Option::is_none")]memory:Option<View>,
+            #[serde(skip_serializing_if="Option::is_none")]data:Option<&'a str>}
+        let memory=INSTANCE_MEMORY.with(|m|m.get());
+        let mut map=serializer.serialize_map(Some(self.0.instances3d.len()))?;
+        for (id,batch) in &self.0.instances3d{
+            map.serialize_entry(id,&Entry{asset:&batch.asset,count:batch.count,format:batch.format,
+                memory:memory.then(||View{offset:batch.packed.as_ptr() as usize,byte_length:batch.packed.len(),revision:batch.revision.to_string()}),
+                data:(!memory).then(||batch.data())})?;
+        }
+        map.end()
+    }
+}
+/// Packed instance bytes the published memory views point into; kept alive
+/// until the next complete publication.
+pub(super) fn instance_leases(snapshot:&WorldSnapshot)->Vec<std::sync::Arc<[u8]>>{
+    if INSTANCE_MEMORY.with(|m|m.get()){snapshot.instances3d.values().map(|batch|batch.packed.clone()).collect()}else{Vec::new()}
 }
 #[derive(Clone,Copy)]
 struct Capture<'a>{position:&'a Cell<usize>,span:&'a Cell<Option<(usize,usize)>>}
 #[derive(Clone,Copy)]
-struct Fields<'a>{hide_registry:bool,hide_ui:bool,capture:Option<Capture<'a>>}
+struct Fields<'a>{hide_registry:bool,hide_ui:bool,capture:Option<Capture<'a>>,instances:Option<&'a WorldSnapshot>}
 impl Fields<'_>{fn skips(self,key:&str)->bool{(self.hide_registry&&key=="ui_image_batches")||(self.hide_ui&&key=="ui")}}
 struct CapturedValue<'a,T:?Sized>{value:&'a T,capture:Capture<'a>}
 impl<T:Serialize+?Sized> Serialize for CapturedValue<'_,T>{
@@ -79,6 +115,7 @@ impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct
     fn serialize_field<T:Serialize+?Sized>(&mut self,key:&'static str,value:&T)->Result<(),Self::Error>{
         if self.fields.skips(key){Ok(())}
         else if key=="ui"&&self.fields.capture.is_some(){self.serializer.serialize_field(key,&CapturedValue{value,capture:self.fields.capture.unwrap()})}
+        else if key=="instances3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&InstanceTransport(world))}
         else{self.serializer.serialize_field(key,value)}
     }
     fn skip_field(&mut self,key:&'static str)->Result<(),Self::Error>{
@@ -126,7 +163,7 @@ impl std::io::Write for CountingWriter<'_>{
 fn canonical<T:Serialize+?Sized>(bytes:&mut Vec<u8>,snapshot:&T)->Result<Option<(usize,usize)>,String>{
     bytes.clear();let position=Cell::new(0);let span=Cell::new(None);
     let mut serializer=serde_json::Serializer::new(CountingWriter{bytes,position:&position});
-    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,span:&span})},field_count:0}).map_err(|e|e.to_string())?;
+    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,span:&span}),instances:None},field_count:0}).map_err(|e|e.to_string())?;
     Ok(span.get())
 }
 fn finish_ui_publication(ui_tree:super::ui_tree_transport::Prepared,oversized:bool){
@@ -170,23 +207,10 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
         resources.insert(id.clone(),Resource{revision:resource.revision().to_string(),memory:Memory{offset:bytes.as_ptr() as usize,byte_length:bytes.len()}});
         leases.push(resource.clone());
     }
-    let mut instances=Vec::new();
-    let rewritten=if snapshot.instances3d.is_empty(){None}else{
-        // Instance-bearing worlds retain the established transport rewrite.
-        let mut world=serde_json::to_value(Presentation(snapshot,ui_tree.has_lease())).map_err(|e|e.to_string())?;
-        for (id,batch) in &snapshot.instances3d {
-            if INSTANCE_MEMORY.with(|m|m.get()) {
-                world["instances3d"][id]=serde_json::json!({"asset":batch.asset,"count":batch.count,"format":batch.format,
-                    "memory":{"offset":batch.packed.as_ptr() as usize,"byte_length":batch.packed.len(),"revision":batch.revision.to_string()}});
-                instances.push(batch.packed.clone());
-            }else{world["instances3d"][id]["data"]=serde_json::Value::String(batch.data().to_string());}
-        }
-        Some(world)
-    };
+    let instances=instance_leases(snapshot);
     let _presentation_ms=presentation_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     let envelope_started=measuring.then(std::time::Instant::now);
-    if let Some(world)=rewritten.as_ref(){envelope(project,world,&digest,save,resources,&ui_tree)?;}
-    else{envelope(project,&Presentation(snapshot,ui_tree.has_lease()),&digest,save,resources,&ui_tree)?;}
+    envelope(project,&Presentation(snapshot,ui_tree.has_lease()),&digest,save,resources,&ui_tree)?;
     let _envelope_ms=envelope_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     // Retire previous leases only after the complete envelope was written.
     INSTANCE_BUFFERS.with(|out|*out.borrow_mut()=instances);
@@ -196,7 +220,7 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     // the current complete canonical world still needs that capacity.
     finish_ui_publication(ui_tree,oversized);
     #[cfg(any(feature="dev-tools",feature="preview-tools"))]
-    if measuring{PUBLICATION_PROFILE.with(|p|p.borrow_mut().record([_encode_ms,_hash_ms,_presentation_ms,_envelope_ms],_work,snapshot.frame,if rewritten.is_some(){"retained-instances"}else{"retained"}));}
+    if measuring{PUBLICATION_PROFILE.with(|p|p.borrow_mut().record([_encode_ms,_hash_ms,_presentation_ms,_envelope_ms],_work,snapshot.frame,if snapshot.instances3d.is_empty(){"retained"}else{"retained-instances"}));}
     Ok(())
 }
 /// Enable the optional immutable-resource memory wire; 0 restores complete JSON.

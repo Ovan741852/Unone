@@ -325,8 +325,9 @@ pub enum UiTextWrap { None, Word }
 #[serde(rename_all = "snake_case")]
 pub enum UiTextOverflow { Clip, Ellipsis }
 
-/// Portable style data. Sharp text_shadow requires the official Web Canvas host;
-/// editable text_input and native glyph-shadow parity are unsupported.
+/// Portable style data. Web and native hosts draw sharp text_shadow (native
+/// clips the shadow pass to the unshifted content rectangle); editable
+/// text_input is unsupported natively.
 /// Fonts name installed host families, not files
 /// or URLs. An explicit font_size is never inferred from the node's box and is
 /// never silently shrunk to fit it. A styled text leaf defaults to font_size=2,

@@ -530,9 +530,6 @@ impl Rasterizer {
         rect: [f64; 4],
         unit: f64,
     ) -> R<()> {
-        if style.text_shadow.is_some() {
-            return Err("UI_HOST_CAPABILITY_UNSUPPORTED: text_shadow currently requires the official Web Canvas host; native glyph-shadow parity is not implemented".into());
-        }
         if text.is_empty() {
             return Ok(());
         }
@@ -585,15 +582,22 @@ impl Rasterizer {
             UiTextAlign::End => (x + w, "end"),
         };
         let color = style.color.unwrap_or([1., 1., 1., 1.]);
-        for (index, line) in lines.iter().enumerate() {
-            let cy = top + line_height * (index as f64 + 0.5);
-            *svg += &format!(
-                "<text x='{tx}' y='{cy}' xml:space='preserve' text-anchor='{anchor}' dominant-baseline='central' font-family='{}' font-size='{size}' font-weight='{weight}' letter-spacing='{spacing}' fill='{}' fill-opacity='{}'>{}</text>",
-                escape(family),
-                rgba(color),
-                color[3],
-                escape(line)
-            );
+        // A sharp shadow is the same glyph layout drawn first, offset and in the
+        // shadow color. It shares the content clip; Web clips each pass to its
+        // own translated rectangle, so a large offset can differ at the edges.
+        let shadow = style.text_shadow.map(|s| (s.offset_x * unit, s.offset_y * unit, s.color));
+        for (dx, dy, fill) in shadow.into_iter().chain(std::iter::once((0., 0., color))) {
+            for (index, line) in lines.iter().enumerate() {
+                let cy = top + line_height * (index as f64 + 0.5) + dy;
+                *svg += &format!(
+                    "<text x='{}' y='{cy}' xml:space='preserve' text-anchor='{anchor}' dominant-baseline='central' font-family='{}' font-size='{size}' font-weight='{weight}' letter-spacing='{spacing}' fill='{}' fill-opacity='{}'>{}</text>",
+                    tx + dx,
+                    escape(family),
+                    rgba(fill),
+                    fill[3],
+                    escape(line)
+                );
+            }
         }
         Ok(())
     }

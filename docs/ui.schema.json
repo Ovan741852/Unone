@@ -638,7 +638,7 @@
     },
     "UiStyle": {
       "additionalProperties": false,
-      "description": "Portable style data. Sharp text_shadow requires the official Web Canvas host;\neditable text_input and native glyph-shadow parity are unsupported.\nFonts name installed host families, not files\nor URLs. An explicit font_size is never inferred from the node's box and is\nnever silently shrunk to fit it. A styled text leaf defaults to font_size=2,\nweight=400, line_height=1.2, centered/middle, no-wrap and clipped overflow.\nAbsence of the entire style object preserves the legacy presentation path.",
+      "description": "Portable style data. Web and native hosts draw sharp text_shadow (native\nclips the shadow pass to the unshifted content rectangle); editable\ntext_input is unsupported natively.\nFonts name installed host families, not files\nor URLs. An explicit font_size is never inferred from the node's box and is\nnever silently shrunk to fit it. A styled text leaf defaults to font_size=2,\nweight=400, line_height=1.2, centered/middle, no-wrap and clipped overflow.\nAbsence of the entire style object preserves the legacy presentation path.",
       "properties": {
         "background": {
           "items": {

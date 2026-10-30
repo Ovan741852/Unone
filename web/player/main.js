@@ -23,8 +23,10 @@ import {serializedSavePayload} from '../shared/save-publication.mjs';
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
 let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null;
-const uiCanvas=document.createElement('canvas');Object.assign(uiCanvas.style,{width:'100%',height:'100%',pointerEvents:'none'});document.querySelector('#ui-layer').replaceChildren(uiCanvas);
-const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{getImageBatchPresenter:()=>renderer?.uiImageBatchPrefix,onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),acquireAsset:assetId=>imageAssets.acquire(assetId),resolveAsset:assetId=>{
+// Game UI is drawn by the renderer's ui pass inside the WebGL frame; #ui-layer
+// only hosts the cursor overlay and the text-input/scroll DOM hosts.
+document.querySelector('#ui-layer').replaceChildren();
+const input=createHostInput(),uiRenderer=createCanvasUi(null,{getPresenter:()=>renderer?.ui??null,onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),acquireAsset:assetId=>imageAssets.acquire(assetId),resolveAsset:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
  if(!asset)throw Error(`UI asset ${assetId} is not declared in the active asset manifest`);
  requireAssetEncoding(asset,'image');

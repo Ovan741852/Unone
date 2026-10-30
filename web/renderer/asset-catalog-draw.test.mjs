@@ -33,12 +33,12 @@ function fixture({getAssetManifest,getAssetCatalog,profiler=null}){
  // Host texture loader: records which declared spec (id/source/kind) every decision used.
  const textureFor=spec=>{calls.push(['texture',spec?.id,spec?.source]);if(state.failed.has(spec.id))return {state:'error',error:Error('TEXTURE_LOAD_FAILED: '+spec.id)};return state.pending.has(spec.id)?{state:'loading'}:{state:'ready',texture};};
  const frameDraws=createFrameDraws(THREE,textureFor);
- const context={retireWorldGpuBindings:noop,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},...encoding,profile:profiler?.renderer??null,options:{...(getAssetManifest?{getAssetManifest}:{}),...(getAssetCatalog?{getAssetCatalog}:{})},
+ const context={ui:null,worldSubmitted:false,retireWorldGpuBindings:noop,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},...encoding,profile:profiler?.renderer??null,options:{...(getAssetManifest?{getAssetManifest}:{}),...(getAssetCatalog?{getAssetCatalog}:{})},
   textureCache:createTextureCachePolicy(new Map()),frameDecoder:createProjectedFrameDecoder(),framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,assertFrameSnapshot,
   assertProjectedBackend:noop,assertRasterSnapshot:noop,assertFrameGpuError:noop,rasterAvailable:()=>true,projectedEntries:()=>[],heightfieldEntries:()=>[],
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop,render:{calls:0,triangles:0},memory:{geometries:0,textures:0}},getContext:()=>({}),render(){calls.push('ordinary');}},worldOf:x=>x,resize:noop,
-  checkedRaster:true,validateRaster:()=>true,visibleSprites:()=>[],records:new Map(),shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshes3d:new Map(),
+  checkedRaster:true,validateRaster:()=>true,visibleSprites:()=>[],records:new Map(),shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshEntities:{draw:()=>false,clear(){},contextLost(){}},
   heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},projected:{entries:()=>[],prepare:noop,draw:noop,clear:noop},rasterPass:{draw:noop,invalidate:noop},frameDraws,
   framePass:{draw(d,c,frame){d.draw({getPixelRatio:()=>1,setScissor(...s){calls.push(['scissor',...s]);},setScissorTest:noop,render(scene){calls.push(['draw',scene.children[0].material.uniforms.frameTexture.value===texture]);}},c,1280,720);return true;},invalidate:noop},
   startupPresentation:{invalidate:noop,drawn(){calls.push('drawn');}},rasterCapability:{metrics:()=>({status:'validated',context_epoch:1,target_generation:1}),lost:noop,restored:noop}};

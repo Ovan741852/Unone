@@ -133,7 +133,8 @@ export function createParticleRenderer(THREE, scene) {
         object.updateMatrix(); group.mesh.setMatrixAt(i, object.matrix);
       }
       group.mesh.count = particles.length;
-      group.mesh.instanceMatrix.needsUpdate = true;
+      // Upload only the live instances, not the pooled capacity.
+      const matrix = group.mesh.instanceMatrix;matrix.clearUpdateRanges();matrix.addUpdateRange(0, particles.length * 16);matrix.needsUpdate = true;
     }
     for (const [key, group] of groups) {
       const list=pending.get(key);

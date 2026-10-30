@@ -80,7 +80,7 @@ override precedence, padding-edge merging and whole RGBA-array replacement.
 | `border_width` | Non-negative vertical units, at most 100; drawn inside the box. |
 | `border_radius` | Non-negative vertical units, at most 100; clamped to half the shorter box edge. Clips content too. |
 | `opacity` | 0..1 for the whole leaf, including image, text, background and border. |
-| `text_shadow` | Sharp same-layout glyph copy `{offset_x,offset_y,color}`; offsets are vertical units in -100..100, positive y downward. Official Web Canvas nonediting text only; see [shadow and input regions](ui-presentation-input.md). |
+| `text_shadow` | Sharp same-layout glyph copy `{offset_x,offset_y,color}`; offsets are vertical units in -100..100, positive y downward. Web and native nonediting text; see [shadow and input regions](ui-presentation-input.md). |
 
 `image` and `panel` accept box fields (`padding`, background, border and opacity),
 not text fields. Image padding reduces its content rectangle before fit/slicing.

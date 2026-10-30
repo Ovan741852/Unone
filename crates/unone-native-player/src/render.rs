@@ -610,6 +610,8 @@ pub struct Renderer {
     heightfield_revisions: BTreeMap<String, u64>,
     textures: BTreeMap<String, Arc<wgpu::BindGroup>>,
     batches: BTreeMap<String, Batch>,
+    // Packed mesh-entity records per asset, retained between frames.
+    entity_records: BTreeMap<String, Vec<u8>>,
     sprites: crate::sprites::Frame,
     sprite_buffer: Option<wgpu::Buffer>,
     sprite_capacity: usize,
@@ -1480,6 +1482,7 @@ impl Renderer {
             heightfield_revisions: BTreeMap::new(),
             textures,
             batches: BTreeMap::new(),
+            entity_records: BTreeMap::new(),
             sprites: Default::default(),
             sprite_buffer: None,
             sprite_capacity: 0,
@@ -1658,7 +1661,13 @@ impl Renderer {
         self.lod_cache
             .retain(|id, _| s.instances3d.contains_key(id));
         self.lod_ms = lod_start.elapsed().as_secs_f64() * 1000.;
-        for (id, e) in &s.entities {
+        // Mesh entities draw as one instanced batch per asset, like instance
+        // batches: draws scale with distinct assets, not entity count.
+        let mut groups = std::mem::take(&mut self.entity_records);
+        for records in groups.values_mut() {
+            records.clear();
+        }
+        for e in s.entities.values() {
             if let (Some(t), Some(m)) = (&e.transform3d, &e.mesh3d) {
                 if !m.visible {
                     continue;
@@ -1679,14 +1688,20 @@ impl Renderer {
                     t.scale.z,
                 ]
                 .map(|x| x as f32);
-                self.batch(
-                    &format!("entity:{id}"),
-                    &m.asset,
-                    bytemuck::cast_slice(&v),
-                    0,
-                )?;
+                let bytes: &[u8] = bytemuck::cast_slice(&v);
+                match groups.get_mut(m.asset.as_str()) {
+                    Some(records) => records.extend_from_slice(bytes),
+                    None => {
+                        groups.insert(m.asset.clone(), bytes.to_vec());
+                    }
+                }
             }
         }
+        groups.retain(|_, records| !records.is_empty());
+        for (asset, records) in &groups {
+            self.batch(&format!("entities:{asset}"), asset, records, 0)?;
+        }
+        self.entity_records = groups;
         self.batches.retain(|_, b| b.count > 0);
         let c = s.camera3d.as_ref().ok_or("NATIVE_CAMERA3D_REQUIRED")?;
         if self.last_particle != Some((s.frame, view)) {

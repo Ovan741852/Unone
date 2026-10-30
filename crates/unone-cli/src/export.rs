@@ -4,6 +4,8 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/mesh.js",
         "renderer/projected.js",
         "renderer/ui-image-batch-prefix.js",
+        "renderer/ui-gpu.js",
+        "renderer/mesh-entities.js",
         "renderer/projected-frame-shaders.js",
         "renderer/projected-frame-material.js",
         "renderer/projected-frame-draws.js",
@@ -238,6 +240,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             || (path == "shared/ui-scroll.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-contract.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-geometry.mjs" && !settings.is_enabled("ui"))
+            || (path == "renderer/ui-gpu.js" && !settings.is_enabled("ui"))
             // VFX presentation statically imports particles even with simulation disabled.
             || (path == "renderer/effekseer.js" && !settings.is_enabled("effekseer"))
             || (path == "vendor/rapier/LICENSE" && !compiled.iter().any(|v| v == "physics3d"))
@@ -261,6 +264,9 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                     "import {createEffects} from './effekseer.js';",
                     "const createEffects = async () => null;",
                 )?;
+            }
+            if !settings.is_enabled("ui") {
+                text = replace_required(text, "import {createGpuUi} from './ui-gpu.js';", "const createGpuUi = () => null;")?;
             }
             bytes = text.into_bytes();
             bytes = String::from_utf8(bytes)?

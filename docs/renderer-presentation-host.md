@@ -79,7 +79,7 @@ then applies exposure, tone mapping and one sRGB output conversion in the final
 pass. With this option enabled, that final pass also runs when
 `setBloom(false)` and `setAO(false)` select a low-quality mode. Built-in materials
 and raw VFX shaders therefore share the same output color treatment across
-quality modes. Separate DOM/Canvas UI is unaffected. `setBloom` and `setAO`
+quality modes. Game UI is drawn afterwards in the `ui` stage and is not post-processed. `setBloom` and `setAO`
 remain Boolean switches; strength values do not enable either effect by themselves.
 The final pass restores the renderer's previous tone-mapping/exposure state.
 

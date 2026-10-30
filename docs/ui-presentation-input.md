@@ -11,9 +11,10 @@ rectangle, then the parent clip and viewport. Opacity composites the complete
 leaf once. Inspection reports the union paint rectangle, using the actual
 viewport aspect, separately from the unchanged authored rectangle.
 
-This new capability is implemented and tested in the official Web Canvas host
-for `text`, `button`, `slider`, and `combobox`. Editable `text_input`, native text
-shadow, and the legacy DOM host explicitly reject it. It is not yet a verified
+This capability is implemented in the official Web player and the native host
+for `text`, `button`, `slider`, and `combobox`; native clips the shadow pass to
+the unshifted content rectangle. Editable `text_input` and the legacy DOM host
+explicitly reject it. It is not yet a verified
 platform-neutral presentation capability.
 
 `ui.inputRegion({id, action, rect})` (also `api.ui.components.inputRegion`) is a

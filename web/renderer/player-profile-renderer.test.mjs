@@ -21,13 +21,13 @@ function fixture(profiler){
  const calls=[],noop=()=>{},texture=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);
  const records={white:{state:'ready',texture},pending:{state:'loading'}};let available=true,status='validated',epoch=1;
  const frameDraws=createFrameDraws(THREE,s=>records[s.id]),textureRecords=new Map();
- const context={retireWorldGpuBindings:noop,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:profiler?.renderer??null,options:profiler?{profiler}:{},textureCache:createTextureCachePolicy(textureRecords),frameDecoder:createProjectedFrameDecoder(),
+ const context={ui:null,worldSubmitted:false,retireWorldGpuBindings:noop,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:profiler?.renderer??null,options:profiler?{profiler}:{},textureCache:createTextureCachePolicy(textureRecords),frameDecoder:createProjectedFrameDecoder(),
   framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,assertFrameSnapshot,
   assertProjectedBackend:noop,assertRasterSnapshot:noop,assertFrameGpuError:noop,rasterAvailable:()=>available,projectedEntries:()=>[],heightfieldEntries:()=>[],
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop,render:{calls:0,triangles:0},memory:{geometries:0,textures:0}},getContext:()=>({}),render(){calls.push('ordinary');}},worldOf:x=>x,resize:noop,
   checkedRaster:true,validateRaster:()=>true,specsOf:()=>new Map(Object.keys(records).map(id=>[id,{id,kind:'texture2d'}])),visibleSprites:()=>[],records:new Map(),
-  shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshes3d:new Map(),heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
+  shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshEntities:{draw:()=>false,clear(){},contextLost(){}},heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
   projected:{entries:()=>[],prepare:noop,draw:noop,clear(){calls.push('projected.clear');}},rasterPass:{draw:noop,invalidate(){calls.push('rasterPass.invalidate');}},frameDraws,
   framePass:{draw(d,c,frame){calls.push(['pass',frame.draws.length]);d.draw({getPixelRatio:()=>1,setScissor:noop,setScissorTest:noop,render(){calls.push('frame-draw');}},c,1280,720);return true;},invalidate(){calls.push('framePass.invalidate');}},
   startupPresentation:{invalidate(){calls.push('invalidate');},drawn(){calls.push('drawn');}},

@@ -10,10 +10,19 @@ by a shared configurable budget. See [authoring, diagnostics and verification](u
 Native still CPU-rasterizes changed UI before GPU composition; a larger capacity
 is not a guarantee that thousands of changing panels redraw at 60 FPS.
 
-`web/shared/canvas-ui.mjs` renders text, buttons, image skins, semantic controls,
-decorative panels and nested `component` leaves into one Canvas2D surface. It
-creates no DOM game controls. Native draws the same supported leaves into a
-CPU-rasterized texture composited by wgpu after the world. Rectangles are resolved
+The official Web player draws text, buttons, image skins, semantic controls,
+decorative panels, image batches and nested `component` leaves with three.js in
+the render pipeline's `ui` stage, inside the same WebGL frame as the world
+(`web/renderer/ui-gpu.js`). One instanced quad shader draws rounded fills,
+borders, images, nine-slices and image batches in painter order; a draw call
+ends only where the texture changes. The browser font engine rasterizes each
+text block once into an atlas page and only changed blocks are uploaded; the
+geometry is rebuilt only when the composition changes. Leaf `opacity` multiplies
+each of the leaf's quads rather than compositing the leaf offscreen.
+`web/shared/canvas-ui.mjs` owns layout, validation, pointer routing, assets and
+diagnostics for that pass, and still paints Canvas2D for tool and preview hosts
+that pass it a 2D canvas. It creates no DOM game controls. Native draws the same
+supported leaves into a CPU-rasterized texture composited by wgpu after the world. Rectangles are resolved
 screen coordinates, 0–100, y-up; component wrappers do not transform them again.
 The [shared typography and box style contract](ui-styling.md) extends these
 existing leaves; game/SDK component functions remain the composition boundary.

@@ -10,12 +10,12 @@ import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 const frameFixture=()=>({profile:'rgb8_encoded_rebuild_v1',initial:{rgb8:[17,24,39],depth:1},draws:[],revision:1});
 function fixture(){
  const events=[],noop=()=>{};let complete=true;
- const context={DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:null,textureCache:{begin:noop,sweep:noop},framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,projectedFrame,frameDecoder:createProjectedFrameDecoder(),assertFrameSnapshot,
+ const context={ui:null,worldSubmitted:false,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},profile:null,textureCache:{begin:noop,sweep:noop},framePublicationIdentity:null,framePresentationIdentity,frameProfile:'rgb8_encoded_rebuild_v1',framePublication:null,projectedFrame,frameDecoder:createProjectedFrameDecoder(),assertFrameSnapshot,
   assertProjectedBackend:noop,assertRasterSnapshot:noop,assertFrameGpuError:noop,rasterAvailable:()=>true,projectedEntries:()=>[],heightfieldEntries:()=>[],
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop},getContext:()=>({NO_ERROR:0,getError:()=>0}),render(){events.push('ordinary');}},worldOf:x=>x,resize:noop,
   checkedRaster:true,validateRaster:()=>true,specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),shaderMaterials:{retain:noop},
-  scene:{},camera:{},camera3d:{},meshes3d:new Map(),heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
+  scene:{},camera:{},camera3d:{},meshEntities:{draw:()=>false,clear(){},contextLost(){}},heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
   projected:{entries:()=>[],prepare:noop,draw:noop},rasterPass:{draw:noop},
   frameDraws:{prepare(frame){events.push(['prepare',frame.draws.length]);return true;}},
   framePass:{draw(draws,camera,frame){events.push(['frame',frame.revision]);return complete;}},

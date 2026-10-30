@@ -95,8 +95,11 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
   try{for(const face of presentationFontFaces(ui))loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));return loaded;}
   catch(error){for(const font of loaded)document.fonts.delete(font);throw error;}
 }
-export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireAsset,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null}={}){
-  const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
+// Pass a 2D canvas to paint with Canvas2D (tools, previews), or null with
+// getPresenter to hand painting to the game renderer's GPU UI pass. Layout,
+// routing, assets and diagnostics are shared by both.
+export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireAsset,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>(canvas?.ownerDocument??globalThis.document)?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null,getPresenter=()=>null}={}){
+  const ctx=canvas?canvas.getContext('2d'):null;if(canvas&&!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
   const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets,acquireAsset};
   const readyWaiters=new Set();let requiredAssets=new Set();
@@ -148,14 +151,19 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}});
     return entry;
   }
-  function image(node,x,y,w,h,target=ctx,quadIndex=null){const e=ensureAsset(node.asset);if(!e.image)return;
+  function imageFailure(node,quadIndex,error){
     let key=quadIndex===null?node.id:quadDiagnosticKeys.get(node.id)?.get(quadIndex);
+    const original=String(error.message).split(':')[0],code=quadIndex!==null&&original==='UI_SLICE_BOUNDS'?'UI_IMAGE_BATCH_SOURCE_BOUNDS':original;
+    if(key===undefined){let keys=quadDiagnosticKeys.get(node.id);if(!keys){keys=new Map();quadDiagnosticKeys.set(node.id,keys);}key=Symbol();keys.set(quadIndex,key);}
+    const asset=quadIndex===null?node.asset:batches.get(node)?.definition.quads[quadIndex]?.asset??node.asset;
+    const value={code,node:node.id,asset,message:error.message,...(quadIndex!==null?{quad:quadIndex}:{})};diagnostics.set(key,value);onDiagnostic(value);
+  }
+  function image(node,x,y,w,h,target=ctx,quadIndex=null){const e=ensureAsset(node.asset);if(!e.image)return;
+    const key=quadIndex===null?node.id:quadDiagnosticKeys.get(node.id)?.get(quadIndex);
     try {
       renderRegions+=paintUiImage(target,node,e.image,{x,y,width:w,height:h,viewportHeight:canvas.height});
       if(key!==undefined)diagnostics.delete(key);
-    }catch(error){const original=String(error.message).split(':')[0],code=quadIndex!==null&&original==='UI_SLICE_BOUNDS'?'UI_IMAGE_BATCH_SOURCE_BOUNDS':original;
-      if(key===undefined){let keys=quadDiagnosticKeys.get(node.id);if(!keys){keys=new Map();quadDiagnosticKeys.set(node.id,keys);}key=Symbol();keys.set(quadIndex,key);}
-      const value={code,node:node.id,asset:node.asset,message:error.message,...(quadIndex!==null?{quad:quadIndex}:{})};diagnostics.set(key,value);onDiagnostic(value);}
+    }catch(error){imageFailure(node,quadIndex,error);}
   }
   function imageBatch(node){
     const instance=batches.get(node);ctx.save();
@@ -173,17 +181,26 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     }
     }finally{ctx.restore();}
   }
-  function text(node,x,y,w,h,scale=1){if(!node.text)return;const lines=String(node.text).split('\n');
+  function text(target,node,x,y,w,h,scale=1){if(!node.text)return;const lines=String(node.text).split('\n');
     const lh=Number.isFinite(node.lineHeight)&&node.lineHeight>0?node.lineHeight:1.2;
     const align=node.align==='start'||node.align==='end'?node.align:'center';
     const pad=align==='center'?0:Math.min(w*0.05,14*scale);
     const requested=Number.isFinite(node.fontSize)&&node.fontSize>0?node.fontSize*scale:Infinity;
     let size=Math.max(1,Math.min(requested,h/(lines.length*lh),h*0.72));
-    ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.fillStyle=textColor;ctx.textAlign=align==='start'?'left':align==='end'?'right':'center';ctx.textBaseline='middle';
-    ctx.font=`${size}px ${fontFamily}`;const longest=Math.max(...lines.map(l=>ctx.measureText(l).width),1);size*=Math.min(1,(w-pad*2)/longest);ctx.font=`${size}px ${fontFamily}`;
+    target.save();target.beginPath();target.rect(x,y,w,h);target.clip();target.fillStyle=textColor;target.textAlign=align==='start'?'left':align==='end'?'right':'center';target.textBaseline='middle';
+    target.font=`${size}px ${fontFamily}`;const longest=Math.max(...lines.map(l=>target.measureText(l).width),1);size*=Math.min(1,(w-pad*2)/longest);target.font=`${size}px ${fontFamily}`;
     const anchorX=align==='start'?x+pad:align==='end'?x+w-pad:x+w/2;
-    lines.forEach((line,i)=>ctx.fillText(line,anchorX,y+h/2+(i-(lines.length-1)/2)*size*lh));ctx.restore();
+    lines.forEach((line,i)=>target.fillText(line,anchorX,y+h/2+(i-(lines.length-1)/2)*size*lh));target.restore();
   }
+  // Text the GPU presenter rasterizes into its atlas: the same painters and
+  // node rules as the Canvas2D loop below.
+  const hasText=node=>node.kind==='text_input'||(Boolean(node.text)&&node.kind!=='panel'&&node.kind!=='image'&&(Boolean(node.style)||!['slider','combobox'].includes(node.kind)));
+  function paintText(target,node,bounds,scale){
+    if(node.kind==='text_input')textInput(target,node,bounds);
+    else if(node.style)paintUiText(target,node,{...bounds,fontFamily,textColor});
+    else text(target,node,bounds.x,bounds.y,bounds.width,bounds.height,scale);
+  }
+  let gpuTarget={width:0,height:0},nodeKeys=[];
   function textInput(target,node,bounds){
     const empty=node.text.length===0,style={text_align:'start',vertical_align:'middle',wrap:'none',...(node.style??{})};
     const value={...node,text:empty?(node.placeholder??''):node.text,style};
@@ -216,10 +233,18 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     }finally{target.restore();}
   }
   return {
-    draw(snapshot,{width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}={}){
-      if(disposed)throw Error('UI_DISPOSED');if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return DRAW_SKIPPED.ui_target_unavailable;
-      const bw=Math.min(8192,Math.max(1,Math.round(width*dpr))),bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));
-      if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
+    draw(snapshot,options={}){
+      if(disposed)throw Error('UI_DISPOSED');
+      const gpu=canvas?null:getPresenter();let bw,bh,scale;
+      if(gpu){const target=gpu.target();if(!target)return DRAW_SKIPPED.ui_target_unavailable;bw=target.width;bh=target.height;scale=target.scale;
+        if(gpuTarget.width!==bw||gpuTarget.height!==bh){gpuTarget={width:bw,height:bh};dirty=true;}}
+      else{
+        if(!canvas)return DRAW_SKIPPED.ui_target_unavailable;
+        const {width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}=options;
+        if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return DRAW_SKIPPED.ui_target_unavailable;
+        bw=Math.min(8192,Math.max(1,Math.round(width*dpr)));bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));scale=bw/width;
+        if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
+      }
       const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=uiTreeGeneration(tree)??uiProjectionGeneration(tree)??JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
       let compositionChanged=false;
       if(key!==previous||resourceChanged){const prepared=prepareUi(tree,imageBatches,batchResolver);usage=prepared.usage;nodes=prepared.nodes;batches=prepared.batches;routing.setNodes(nodes);previous=key;compositionChanged=true;
@@ -237,6 +262,17 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
           for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
           batchResolver.prune(nodes);}}
         if(disposed)throw Error('UI_DISPOSED');}
+      if(gpu){
+        // One serialization per node serves change detection and the presenter's text cache keys.
+        if(compositionChanged){nodeKeys=nodes.map(n=>JSON.stringify(n));const nextKey=nodeKeys.join(''),definitions=nodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
+          if(nextKey!==paintKey||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;paintKey=nextKey;paintDefinitions=definitions;}
+        const changed=dirty;dirty=false;
+        if(changed){for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
+        const result=gpu.draw({nodes,nodeKeys,batches,images:assets,scale,changed,identity:JSON.stringify([fontFamily,textColor]),paintText,hasText,imageError:imageFailure});
+        if(result.skipped)dirty||=changed;else if(changed){renderRegions=result.regions;renderMs=result.cpu_ms;}
+        notifyReady();
+        return result.skipped?DRAW_SKIPPED.ui_target_unavailable:outcome();
+      }
       prefixContext.width=bw;prefixContext.height=bh;
       const presenter=getImageBatchPresenter(),presented=presenter?.drawPrefix(prefix,prefixContext)??0;
       if(!Number.isInteger(presented)||presented<0||presented>prefix.length)throw Error('UI_IMAGE_PREFIX_RESULT_INVALID');
@@ -268,7 +304,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
           else if(node.kind==='image')image(node,x,y,w,h);
           else if(node.kind==='text_input'){textInput(ctx,node,{x,y,width:w,height:h,viewportHeight:bh});renderRegions++;}
           else if(['panel','slider','combobox'].includes(node.kind)){renderRegions++;}
-          else {text(node,x,y,w,h,bw/width);renderRegions++;}
+          else {text(ctx,node,x,y,w,h,scale);renderRegions++;}
         }finally{if(c)ctx.restore();}}
       renderMs=performance.now()-started;
       notifyReady();
@@ -277,7 +313,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,
     setFont(family){fontFamily=family;dirty=true;},
     invalidateAssets(){retireGpu();generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
-    report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
+    report(){const gpu=canvas?null:getPresenter();return {backend:canvas?'canvas2d':'three.js',...(gpu?{gpu:gpu.metrics()}:{}),nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
     dispose(){if(disposed)return;retireGpu();router.dispose();disposed=true;generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();},
   };
 }
