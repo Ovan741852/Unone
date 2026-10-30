@@ -25,9 +25,15 @@ end}
         runtime.memory_sample("published", true, false).unwrap();
     }
     let report = runtime.memory_report();
+    // used_memory counts Luau's 16 KiB small-object pages (lmem.cpp
+    // kSmallPageSize = 16360 bytes). Fragmentation after a full GC depends on
+    // collection timing and moves the reading by several whole pages between
+    // otherwise identical rounds. The defect this guards against, retaining
+    // each published tree, grows by megabytes per 120-tick round.
+    const PAGE: u64 = 16 * 1024 - 24;
     for sample in report["samples"].as_array().unwrap() {
         if sample["label"] != "published" { continue; }
-        assert!(sample["lua_used_after_bytes"].as_u64().unwrap() <= baseline + 32 * 1024,
+        assert!(sample["lua_used_after_bytes"].as_u64().unwrap() <= baseline + 16 * PAGE,
             "same-phase reachable UI heap grew beyond warmup: {report}");
     }
 }
