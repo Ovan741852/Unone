@@ -1,0 +1,199 @@
+{
+  "status": "running",
+  "review_completed": false,
+  "base_revision": "1f1219821a0bbe05b876ee3c2fe0b82485ff1b1a",
+  "captured_head": "5e69fd659c1186b90b8b88fa12c9285320332d81",
+  "started_utc": "2026-10-30T15:39:09.097Z",
+  "fixed_diff_sha256": "1242003159969b61b70a87eeb04fe4770e05f281a7460b4ac2fe81f16dc2e0f8",
+  "prompt_sha256": "1dc94cb6ca175cbe369cc331d1865b86234d42ac66033b719c7264e4f03b8d1a",
+  "prompt_bytes": 91670,
+  "sources": [
+    {
+      "path": "crates/unone-engine/src/runtime/bindings/bytes.rs",
+      "bytes": 2070,
+      "sha256": "49d5c256709ff4b729bbe56328b3b6b74cef2c5f519ee2f7d247c5135558934e",
+      "archive": "source-0.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/include/lua.h",
+      "bytes": 19736,
+      "sha256": "c094dd150c69dbdda7d0df98d0f2eb6a17f3b3f2e1f683f41941d51265d290e6",
+      "archive": "source-1.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/include/lualib.h",
+      "bytes": 6474,
+      "sha256": "6873cfc03abd8de905d12a986ba298352013cba4968551f0b916f2899d069067",
+      "archive": "source-2.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lobject.h",
+      "bytes": 12485,
+      "sha256": "3651d025a0c219e63cc21051f768a5cde20c2e6ce38a42185797950feeb4c6db",
+      "archive": "source-3.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lbuffer.h",
+      "bytes": 692,
+      "sha256": "f1cf419a08f386bf826c09bf6f24a145db8a558052f50e5b3c7d425a1bc4b30b",
+      "archive": "source-4.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lbuffer.cpp",
+      "bytes": 1114,
+      "sha256": "6e353c133f728ff4ef88e80f09ea6db283c680384ec6d439682e70e9cbb6281d",
+      "archive": "source-5.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lapi.cpp",
+      "bytes": 40862,
+      "sha256": "543af1c39addc31eff7171d04e10d9f1bccf95a2ca0a5b7c963bf3cc8c72d58a",
+      "archive": "source-6.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lbuflib.cpp",
+      "bytes": 16075,
+      "sha256": "9ff02e939630bd7d1ff689ed082061ee532e2e4e5f2b9095fe4f2a4aac93d1ba",
+      "archive": "source-7.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lbuiltins.cpp",
+      "bytes": 51151,
+      "sha256": "78ce1f17a6efc787d1ae4a2d910ac57100bc3f7a94f35cab628da1874ef6c643",
+      "archive": "source-8.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lgc.cpp",
+      "bytes": 44069,
+      "sha256": "080778e86d54f67f386f87328222260b9cd4bb27942c6848f6215b19de71b060",
+      "archive": "source-9.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lgcdebug.cpp",
+      "bytes": 25190,
+      "sha256": "b1576fbef474b42ab17fd9ab1c1f6facc3a252fa0977181ad776bb3ae15737bd",
+      "archive": "source-10.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/VM/src/lmem.cpp",
+      "bytes": 25890,
+      "sha256": "d44b30720026965e016331e6cac7928be8244899d9b54c467b09a44ae13804c2",
+      "archive": "source-11.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.h",
+      "bytes": 2726,
+      "sha256": "2647908d8e47558a7d33d23f9ffab45b05606449430fdf3e75dac6cc9a619abe",
+      "archive": "source-12.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.cpp",
+      "bytes": 123211,
+      "sha256": "907d43ef4fe4d98aea132f4a4126c6f17a0c4d1c535af435a5881b3f2c4deeb1",
+      "archive": "source-13.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/CodeGen/src/IrLoweringA64.cpp",
+      "bytes": 130902,
+      "sha256": "5a53bbc0fdedbe527b68d43b59057d2d7b24421a93a2bf700e60a50733d34fa0",
+      "archive": "source-14.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/CodeGen/src/IrTranslateBuiltins.cpp",
+      "bytes": 55498,
+      "sha256": "e0236e462a22993b60772939946fa37dc1d1e165597eb08eff5ae114dd1d417e",
+      "archive": "source-15.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/CodeGen/src/IrUtils.cpp",
+      "bytes": 51379,
+      "sha256": "8da01efe5a2d9934d34bfdbddcbc99a210aed14d400d14d7831db9049bab1403",
+      "archive": "source-16.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/CodeGen/src/EmitCommonX64.cpp",
+      "bytes": 20260,
+      "sha256": "ac2d0f5623f725158357a9f808f1642c1a7fb1fb8494dcd77e5534536297933c",
+      "archive": "source-17.txt"
+    },
+    {
+      "path": "vendor/luau0-src/luau/CodeGen/src/CodeGenContext.cpp",
+      "bytes": 25230,
+      "sha256": "7bed83275fb0380dd7b0d9b4b3077812335d9898b1131ef3549f7bc66c2ce0b3",
+      "archive": "source-18.txt"
+    },
+    {
+      "path": "vendor/luau0-src/UNONE.md",
+      "bytes": 5777,
+      "sha256": "42f9278101588c90b8d20fa624e03e97b7bc6adc599f284cdcdd05e18c5bd6bb",
+      "archive": "source-19.txt"
+    },
+    {
+      "path": "vendor/mlua/src/buffer.rs",
+      "bytes": 6069,
+      "sha256": "34fe199caf955ba49737c5fb90096116622927fba44d1c1ed819102e76beb540",
+      "archive": "source-20.txt"
+    },
+    {
+      "path": "vendor/mlua/UNONE.md",
+      "bytes": 2467,
+      "sha256": "9d6a58ed39ad278a4f1afbe16acbfde5e18ae0b965f9725c5880125904b7d6b3",
+      "archive": "source-21.txt"
+    },
+    {
+      "path": "vendor/mlua/UNONE-safe-buffer-writes.patch",
+      "bytes": 3993,
+      "sha256": "939e280faeb812e6af3e9a286c3351cfdcf5131dbe1ff4bf32d486b291517899",
+      "archive": "source-22.txt"
+    },
+    {
+      "path": "crates/unone-engine/tests/fixtures/immutable-bytes.luau",
+      "bytes": 13313,
+      "sha256": "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38",
+      "archive": "source-23.txt"
+    },
+    {
+      "path": "crates/unone-engine/tests/immutable_bytes_host.rs",
+      "bytes": 9879,
+      "sha256": "b7b0c8da0a1b2e34d7450a7d17b3429a4a9472bd2ccefdb34cb0c9c135ad575e",
+      "archive": "source-24.txt"
+    },
+    {
+      "path": "crates/unone-engine/tests/immutable_bytes.rs",
+      "bytes": 5386,
+      "sha256": "dc915123e38cf064d3b4ef64326d7f8c352ec549e1807000fdb7e0ae0f49052a",
+      "archive": "source-25.txt"
+    }
+  ],
+  "cli": {
+    "path": "C:/Users/liNao/.local/bin/claude.exe",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version": "2.1.308 (Claude Code)",
+    "version_exit": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 60000
+  }
+}

@@ -50,6 +50,16 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-30/31: immutable bounded byte views, checked safe mlua writes, strict
+  buffer ranges and vendored C++ build tracking. Native production and reload
+  gates passed; clean `905e20e` WASM passed 353 checks/69 rejection cases, an
+  exact historical-fixture Native pairing and a natural-GC root/view lifetime
+  witness. The bounded Claude attempt timed out without output; final Native
+  rebuild and matching release CLI remain blocked by Windows App Control4551.
+  Complete SDK delivery is not claimed. See the
+  [review](reviews/2026-10-30-immutable-byte-spans.md) and
+  [acceptance/evidence](evidence/2026-10-30-immutable-bytes/acceptance.json).
+
 - 2026-10-30: completed HTML-image retirement at `c3160e8` and asynchronous
   scheduler cancellation at `c361357`. Separate bounded tool-free Claude
   2.1.308 source reviews completed with exit 0 in 41.4 and 35.6 seconds,

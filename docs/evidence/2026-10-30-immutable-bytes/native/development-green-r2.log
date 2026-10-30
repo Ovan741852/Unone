@@ -1,0 +1,27 @@
+   Compiling luau0-src v0.18.3+luau709 (D:\Projects\Unone\vendor\luau0-src)
+   Compiling mlua-sys v0.10.0
+   Compiling mlua v0.11.6 (D:\Projects\Unone\vendor\mlua)
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.79s
+     Running tests\immutable_bytes.rs (target\debug\deps\immutable_bytes-8873e89fac30a114.exe)
+
+running 4 tests
+test frozen_buffers_reject_every_write_and_snapshots_never_alias ... ok
+test successful_reload_owns_new_nested_views_without_relying_on_old_parent_handles ... ok
+test failed_reload_keeps_old_view_readable_and_rolls_back_portable_state ... ok
+test full_canonical_state_repeats_and_nested_views_survive_fixed_ticks_and_runtime_reset ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests\immutable_bytes_host.rs (target\debug\deps\immutable_bytes_host-04599ee47ecd55da.exe)
+
+running 6 tests
+test safe_host_cursor_cannot_mutate_a_frozen_alias ... ok
+test cursor_created_while_mutable_observes_later_freeze_without_losing_read_access ... ok
+test zero_copy_views_have_their_own_host_bounds_and_never_allow_mutation ... ok
+test writable_host_writes_remain_valid_and_bad_ranges_are_atomic ... ok
+test safe_host_write_bytes_cannot_mutate_a_frozen_alias ... ok
+test nested_views_pin_only_the_root_and_release_it_after_the_last_view ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,89 @@
+{
+  "schema": "unone.immutable-bytes.actual-wasm-execution.v1",
+  "ok": true,
+  "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "runtime": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+  "pins": {
+    "manifest": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+    "javascript": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+    "wasm": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+    "loader": "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018"
+  },
+  "jobs": [
+    {
+      "name": "functional",
+      "command": {
+        "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "args": [
+          "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-functional-wasm.mjs",
+          "--runtime",
+          "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+          "--expected-manifest",
+          "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+          "--expected-javascript",
+          "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+          "--expected-wasm",
+          "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+          "--expected-source",
+          "905e20e9a552eef4930690d13c5cf58829dc55cb",
+          "--expected-loader",
+          "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018",
+          "--fixture",
+          "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes.luau",
+          "--expected-fixture",
+          "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848",
+          "--out",
+          "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-functional-905e20e-run1"
+        ],
+        "cwd": "D:/Projects/Unone"
+      },
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-functional-905e20e-run1",
+      "stdout_sha256": "ae1666a598e57d116a8de0c61a41b128bdaac669f8b8e60cd688e7556d31a863",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "operations",
+      "command": {
+        "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "args": [
+          "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-ops-wasm.mjs",
+          "--runtime",
+          "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+          "--expected-manifest",
+          "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+          "--expected-javascript",
+          "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+          "--expected-wasm",
+          "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+          "--expected-source",
+          "905e20e9a552eef4930690d13c5cf58829dc55cb",
+          "--expected-loader",
+          "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018",
+          "--fixture",
+          "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes-ops-perf.luau",
+          "--expected-fixture",
+          "db739afbaa9d639a1b08cd60e64787e7f6d0085b4aa166bc487de96d9153463a",
+          "--out",
+          "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-operations-905e20e-run1"
+        ],
+        "cwd": "D:/Projects/Unone"
+      },
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "output": "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-operations-905e20e-run1",
+      "stdout_sha256": "f8965a3395ca72832ec2163a05bc26f1e358cbb00d8f63cf643951fa29ba931e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Actual newly emitted Core functional and operation diagnostics; no native historical mismatch waiver, no SDK/export/browser/FPS claim",
+  "final_pins": {
+    "manifest": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+    "javascript": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+    "wasm": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+    "loader": "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018"
+  }
+}

@@ -1,0 +1,265 @@
+{
+  "schema": "unone.immutable-bytes.actual-wasm-natural-gc.v1",
+  "ok": true,
+  "started_at": "2026-10-30T15:58:25.323Z",
+  "node": "v24.19.0",
+  "command": {
+    "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "argv": [
+      "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-natural-gc-wasm.mjs",
+      "--runtime",
+      "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+      "--expected-manifest",
+      "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+      "--expected-javascript",
+      "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+      "--expected-wasm",
+      "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+      "--expected-source",
+      "905e20e9a552eef4930690d13c5cf58829dc55cb",
+      "--expected-loader",
+      "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018",
+      "--fixture",
+      "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes-natural-gc.luau",
+      "--expected-fixture",
+      "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0",
+      "--out",
+      "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-natural-gc-905e20e-run1"
+    ],
+    "cwd": "D:\\Projects\\Unone"
+  },
+  "pins": {
+    "runtime_harness": {
+      "path": "D:\\Projects\\Unone\\scripts\\immutable-bytes-emitted-runtime.mjs",
+      "bytes": 3825,
+      "sha256": "c937d4536fe352cc2b4132b711a85f5b14737ab99a5a10baa26f9fb0f9312720"
+    },
+    "runtime_manifest": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\runtime.json",
+      "bytes": 1638,
+      "sha256": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659"
+    },
+    "javascript": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\unone-player.js",
+      "bytes": 102701,
+      "sha256": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c"
+    },
+    "wasm": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\unone_player.wasm",
+      "bytes": 4820424,
+      "sha256": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0"
+    },
+    "fixture": {
+      "path": "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes-natural-gc.luau",
+      "bytes": 3591,
+      "sha256": "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0"
+    },
+    "observation_loader": {
+      "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+      "bytes": 10082,
+      "sha256": "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018"
+    }
+  },
+  "stderr": [],
+  "stderr_overflow": 0,
+  "aborts": [],
+  "checkpoints": [
+    {
+      "frame": 0,
+      "observation_digest": "sha256:3dcb7a1dc7ead066165e594ea26613ccf2900b461631c1dd85fba73d8d883e48",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": true,
+        "bytes_gc_intermediate_collected": false,
+        "bytes_gc_pressure_bytes": 0,
+        "bytes_gc_pressure_checksum": 0,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": false,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 0
+      }
+    },
+    {
+      "frame": 1,
+      "observation_digest": "sha256:1046fbd576149aaba32ff1e5fde305bfbd598b49a97c49812077672c76ec5756",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": true,
+        "bytes_gc_intermediate_collected": false,
+        "bytes_gc_pressure_bytes": 2097152,
+        "bytes_gc_pressure_checksum": 560,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": false,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 1
+      }
+    },
+    {
+      "frame": 2,
+      "observation_digest": "sha256:f96215f32062436fa88a4a53fdcc06fca2cec4a060d027b8f6d5464ea7664579",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": true,
+        "bytes_gc_intermediate_collected": true,
+        "bytes_gc_pressure_bytes": 4194304,
+        "bytes_gc_pressure_checksum": 592,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": false,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 2
+      }
+    },
+    {
+      "frame": 3,
+      "observation_digest": "sha256:e4bf530ab4c938e8bc2d6375a7141a6368ed80fa64179bcdedb605a255650dcb",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": false,
+        "bytes_gc_intermediate_collected": true,
+        "bytes_gc_pressure_bytes": 6291456,
+        "bytes_gc_pressure_checksum": 624,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": true,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 3
+      }
+    },
+    {
+      "frame": 4,
+      "observation_digest": "sha256:5dcaee4ff22fc1a348d359237725c8d782c819d83d48f9b0374f73210dd07336",
+      "observations": {
+        "bytes_gc_child_collected": true,
+        "bytes_gc_child_valid": false,
+        "bytes_gc_intermediate_collected": true,
+        "bytes_gc_pressure_bytes": 8388608,
+        "bytes_gc_pressure_checksum": 656,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": true,
+        "bytes_gc_root_alive": false,
+        "bytes_gc_ticks": 4
+      }
+    }
+  ],
+  "budget": {
+    "maximum_fixed_ticks": 100,
+    "ephemeral_buffers_per_tick": 32,
+    "ephemeral_buffer_bytes": 65536,
+    "maximum_cumulative_pressure_bytes": 209715200
+  },
+  "cleanup": {
+    "attempted": true,
+    "unloaded": true,
+    "decoder_released": true
+  },
+  "limitations": [
+    "No force-GC API, profiler, browser, gameplay code or clock replacement is used.",
+    "Weak-value disappearance witnesses actual collection of these specific objects; it is not a collection-frequency measurement.",
+    "Pressure bytes are cumulative requested ephemeral payload bytes, not live memory, allocation counters or WASM capacity.",
+    "The test proves bounded span/root ownership behavior on this actual WASM artifact, not global leak freedom or FPS."
+  ],
+  "runtime_metadata": {
+    "dev_tools": false,
+    "sampling_profile": false,
+    "phase_profile": false,
+    "profile": "release",
+    "profile_mode": "none",
+    "wasm_bytes": 4820424,
+    "preview_tools": false,
+    "javascript": "unone-player.js",
+    "exports": [
+      "init",
+      "alloc",
+      "stage_data",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "input",
+      "jobs",
+      "observation",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui",
+      "world"
+    ],
+    "bytecode_optimization_level": 2,
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "wasm": "unone_player.wasm",
+    "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+    "wasm_sha256": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+    "javascript_sha256": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+    "source_dirty": false,
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "jobs",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui"
+    ]
+  },
+  "retained_root_witness": {
+    "frame": 2,
+    "observations": {
+      "bytes_gc_child_collected": false,
+      "bytes_gc_child_valid": true,
+      "bytes_gc_intermediate_collected": true,
+      "bytes_gc_pressure_bytes": 4194304,
+      "bytes_gc_pressure_checksum": 592,
+      "bytes_gc_ready": true,
+      "bytes_gc_released": false,
+      "bytes_gc_root_alive": true,
+      "bytes_gc_ticks": 2
+    }
+  },
+  "release_action_frame": 3,
+  "final_collection_witness": {
+    "frame": 4,
+    "observations": {
+      "bytes_gc_child_collected": true,
+      "bytes_gc_child_valid": false,
+      "bytes_gc_intermediate_collected": true,
+      "bytes_gc_pressure_bytes": 8388608,
+      "bytes_gc_pressure_checksum": 656,
+      "bytes_gc_ready": true,
+      "bytes_gc_released": true,
+      "bytes_gc_root_alive": false,
+      "bytes_gc_ticks": 4
+    }
+  },
+  "finished_at": "2026-10-30T15:58:25.432Z"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "unone.immutable-bytes.executed-verifier-sources.v1",
+  "core_source": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "note": "The ops warmup correction was executed before measurement and is committed after Core905. Its executed capture exactly matches the corrected script, including per-mode per-round warmups. Core/WASM artifacts were unchanged.",
+  "records": [
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/historical-native-r1-fixture.luau",
+      "source": ".cache/immutable-bytes-fixture-transition-905e20e-run1/historical-native-r1-65a7557.luau",
+      "bytes": 13313,
+      "sha256": "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/historical-fixture-analysis.mjs",
+      "source": ".cache/immutable-bytes-fixture-transition-905e20e-run1/analysis-script.mjs",
+      "bytes": 5040,
+      "sha256": "1be45c165bfaab299e94d665419a7792f8a7b7d82fbfc716c369142eb74941e5"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/ops-verifier-executed.mjs",
+      "source": ".cache/immutable-bytes-wasm-operations-905e20e-run1/verification-script.mjs",
+      "bytes": 11147,
+      "sha256": "8297d1b0c6f8fbf059fe3d589ac93a3f0a0b9ea8dd645ecce573047fadf51226"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/verifier-source-correction.json",
+      "source": ".cache/immutable-bytes-verifier-source-correction.json",
+      "bytes": 2197,
+      "sha256": "397fcd96795638d6b0bbc9182587593b50547e1fa35658cdb83b3e013fc88ca3"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/compact-summary.json",
+      "source": ".cache/immutable-bytes-wasm-905e20e-compact-summary.json",
+      "bytes": 7311,
+      "sha256": "9326f32360d68caad831221d881d29642d96ebefbd4c9f5e28a28fd88ce217c5"
+    }
+  ]
+}

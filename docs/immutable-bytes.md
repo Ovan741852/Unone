@@ -158,6 +158,12 @@ functional, lifetime or official-player validation.
 
 ## Implementation
 
+The namespace is a Core capability, independent of optional project systems.
+Use a matching engine/CLI/runtime distribution: a UI package version alone does
+not identify whether a Core contains byte views. Ordinary Luau `buffer` types
+describe the value; the VM flag, rather than a caller-supplied type or brand,
+enforces immutability.
+
 The VM owns readonly state, logical buffer lengths, adjusted data pointers and
 view-to-root GC edges. The layout differs from upstream inline buffers; the
 source maintenance notes are [the Luau fork](../vendor/luau0-src/UNONE.md) and
@@ -178,3 +184,9 @@ compiles target functions and verifies their native entry through a private
 host probe before freezing the writer's buffer and checking rejection. Merely
 building the feature is not proof of native execution. Recorded results must
 distinguish executed tests from a compiled executable blocked by the platform.
+
+The [2026-10-30/31 review](reviews/2026-10-30-immutable-byte-spans.md) records
+executed Native/JIT and release-WASM checks, strict historical-fixture parity,
+bounded natural-GC lifetime evidence and operation diagnostics. It also records
+the Windows-blocked final rebuild and unavailable matching SDK, rather than
+treating an older CLI or SDK as the new distribution.

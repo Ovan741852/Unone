@@ -1,0 +1,10 @@
+   Compiling mlua-sys v0.10.0
+error: linking with `x86_64-w64-mingw32-gcc` failed: exit code: 1
+  |
+  = note: "x86_64-w64-mingw32-gcc" "-fno-use-linker-plugin" "-Wl,--dynamicbase" "-Wl,--disable-auto-image-base" "-m64" "-Wl,--high-entropy-va" "D:\\Projects\\Unone\\target\\debug\\build\\mlua-sys-5e01e63b9bfa5364\\rustc8Bu629\\symbols.o" "<2 object files omitted>" "-Wl,-Bstatic" "D:\\Projects\\Unone\\target\\debug\\deps/{libluau0_src-f9811491cb0d3d48,libcc-0c21eed860dc9532,libjobserver-406ecab716111537,libgetrandom-b053b619193e4dd3,libfind_msvc_tools-7796a2f52fd0e5f5,libshlex-d8860d0f1abc7fb7,libcfg_if-02c1fcfa729b180b}.rlib" "<sysroot>\\lib\\rustlib\\x86_64-pc-windows-gnu\\lib/{libstd-*,libpanic_unwind-*,libobject-*,libmemchr-*,libaddr2line-*,libgimli-*,libcfg_if-*,libwindows_link-*,librustc_demangle-*,libstd_detect-*,libhashbrown-*,librustc_std_workspace_alloc-*,libminiz_oxide-*,libadler2-*,libunwind-*,liblibc-*,librustc_std_workspace_core-*,liballoc-*,libcore-*,libcompiler_builtins-*}.rlib" "-Wl,-Bdynamic" "-lkernel32" "-lkernel32" "-ladvapi32" "-lole32" "-loleaut32" "-lkernel32" "-lkernel32" "-lkernel32" "-lntdll" "-luserenv" "-lws2_32" "-ldbghelp" "-lgcc_eh" "-l:libpthread.a" "-lmsvcrt" "-lmingwex" "-lmingw32" "-lgcc" "-lmsvcrt" "-lmingwex" "-luser32" "-lkernel32" "-Wl,--nxcompat" "-o" "D:\\Projects\\Unone\\target\\debug\\build\\mlua-sys-5e01e63b9bfa5364\\build_script_main-5e01e63b9bfa5364.exe" "-Wl,--gc-sections" "-nodefaultlibs"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: D:/Projects/Unone/.toolcache/w64devkit/bin/ld.exe: cannot find -lgcc_eh: No such file or directory
+          collect2.exe: error: ld returned 1 exit status
+          
+
+error: could not compile `mlua-sys` (build script) due to 1 previous error

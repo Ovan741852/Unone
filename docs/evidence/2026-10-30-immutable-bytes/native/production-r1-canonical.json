@@ -1,0 +1,281 @@
+{
+  "checkpoints": [
+    {
+      "frame": 0,
+      "observation_digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a",
+      "observations": {
+        "copied_value": 3735928559.0,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559.0,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 0,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "camera": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "view_height": 10.0,
+          "zoom": 1.0
+        },
+        "entities": {},
+        "frame": 0,
+        "observations": {
+          "copied_value": 3735928559.0,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559.0,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 0,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        },
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "time_seconds": 0.0
+      }
+    },
+    {
+      "frame": 1,
+      "observation_digest": "sha256:fbbb572ee3b61631583dbda981d6af74f8dded670dc374474a78ae06ff880bd5",
+      "observations": {
+        "copied_value": 3735928559.0,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559.0,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 1,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "camera": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "view_height": 10.0,
+          "zoom": 1.0
+        },
+        "entities": {},
+        "frame": 1,
+        "observations": {
+          "copied_value": 3735928559.0,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559.0,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 1,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        },
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "time_seconds": 0.016666666666666666
+      }
+    },
+    {
+      "frame": 2,
+      "observation_digest": "sha256:5141a686af9ea250d43f7b4b6cd952c3f7c292e08720275ea2eaca50adfd281c",
+      "observations": {
+        "copied_value": 3735928559.0,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559.0,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 2,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "camera": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "view_height": 10.0,
+          "zoom": 1.0
+        },
+        "entities": {},
+        "frame": 2,
+        "observations": {
+          "copied_value": 3735928559.0,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559.0,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 2,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        },
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "time_seconds": 0.03333333333333333
+      }
+    },
+    {
+      "frame": 3,
+      "observation_digest": "sha256:b73895bb0cae4c4cdf53a013222413f77cd3e2b31c3a6909cb0a4cf6ff59fbb5",
+      "observations": {
+        "copied_value": 3735928559.0,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559.0,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 3,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "camera": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "view_height": 10.0,
+          "zoom": 1.0
+        },
+        "entities": {},
+        "frame": 3,
+        "observations": {
+          "copied_value": 3735928559.0,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559.0,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 3,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        },
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "time_seconds": 0.05
+      }
+    }
+  ],
+  "config": {
+    "entry_script": "main.luau",
+    "name": "immutable-bytes"
+  },
+  "fixture_sha256": "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38",
+  "ok": true,
+  "schema_version": 1,
+  "scope": "Executed native public API fixture, deterministic canonical state and reset; no FPS/GC-frequency conclusion.",
+  "seed": 42
+}

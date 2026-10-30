@@ -1,0 +1,30 @@
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.90s
+     Running tests\bytes_perf.rs (target\debug\deps\bytes_perf-615211bbf9602d8a.exe)
+
+running 1 test
+test immutable_read_cost ... ignored, benchmark
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\immutable_bytes.rs (target\debug\deps\immutable_bytes-bb8ca1f12e8b3601.exe)
+
+running 2 tests
+test frozen_buffers_reject_every_write_and_snapshots_never_alias ... ok
+test full_canonical_state_repeats_and_nested_views_survive_fixed_ticks_and_runtime_reset ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests\immutable_bytes_host.rs (target\debug\deps\immutable_bytes_host-c3027b05794bfccd.exe)
+
+running 7 tests
+test cursor_created_while_mutable_observes_later_freeze_without_losing_read_access ... ok
+test zero_copy_views_have_their_own_host_bounds_and_never_allow_mutation ... ok
+test safe_host_write_bytes_cannot_mutate_a_frozen_alias ... ok
+test safe_host_cursor_cannot_mutate_a_frozen_alias ... ok
+test writable_host_writes_remain_valid_and_bad_ranges_are_atomic ... ok
+test nested_views_pin_only_the_root_and_release_it_after_the_last_view ... ok
+test actual_native_writer_compiled_before_freeze_and_native_view_reads_keep_vm_guards ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

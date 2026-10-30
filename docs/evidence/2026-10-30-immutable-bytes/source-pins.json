@@ -1,0 +1,127 @@
+[
+  {
+    "path": "crates/unone-engine/src/runtime/bindings/bytes.rs",
+    "bytes": 2070,
+    "sha256": "49d5c256709ff4b729bbe56328b3b6b74cef2c5f519ee2f7d247c5135558934e"
+  },
+  {
+    "path": "vendor/luau0-src/UNONE-readonly-buffers.patch",
+    "bytes": 44810,
+    "sha256": "8a907e003827fb4dd574c520045af78e1378dd924db693cf332c69aa9a4abbf1"
+  },
+  {
+    "path": "vendor/luau0-src/UNONE.md",
+    "bytes": 6070,
+    "sha256": "ffd1eadc6b6ab0840ad0a52fe6479f098cbcebe78cdbce0ccb3cbc4895f62cd5"
+  },
+  {
+    "path": "vendor/luau0-src/src/lib.rs",
+    "bytes": 12953,
+    "sha256": "d0e38290bc7efd08f8ecd1deb723bbc0bf10036a4729fd14fefb0ba81429d76e"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/include/lua.h",
+    "bytes": 19736,
+    "sha256": "c094dd150c69dbdda7d0df98d0f2eb6a17f3b3f2e1f683f41941d51265d290e6"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/include/lualib.h",
+    "bytes": 6474,
+    "sha256": "6873cfc03abd8de905d12a986ba298352013cba4968551f0b916f2899d069067"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lobject.h",
+    "bytes": 12485,
+    "sha256": "3651d025a0c219e63cc21051f768a5cde20c2e6ce38a42185797950feeb4c6db"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lbuffer.h",
+    "bytes": 692,
+    "sha256": "f1cf419a08f386bf826c09bf6f24a145db8a558052f50e5b3c7d425a1bc4b30b"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lbuffer.cpp",
+    "bytes": 1114,
+    "sha256": "6e353c133f728ff4ef88e80f09ea6db283c680384ec6d439682e70e9cbb6281d"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lapi.cpp",
+    "bytes": 40862,
+    "sha256": "543af1c39addc31eff7171d04e10d9f1bccf95a2ca0a5b7c963bf3cc8c72d58a"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lbuflib.cpp",
+    "bytes": 16075,
+    "sha256": "9ff02e939630bd7d1ff689ed082061ee532e2e4e5f2b9095fe4f2a4aac93d1ba"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lbuiltins.cpp",
+    "bytes": 51151,
+    "sha256": "78ce1f17a6efc787d1ae4a2d910ac57100bc3f7a94f35cab628da1874ef6c643"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lgc.cpp",
+    "bytes": 44069,
+    "sha256": "080778e86d54f67f386f87328222260b9cd4bb27942c6848f6215b19de71b060"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lgcdebug.cpp",
+    "bytes": 25190,
+    "sha256": "b1576fbef474b42ab17fd9ab1c1f6facc3a252fa0977181ad776bb3ae15737bd"
+  },
+  {
+    "path": "vendor/luau0-src/luau/VM/src/lmem.cpp",
+    "bytes": 25890,
+    "sha256": "d44b30720026965e016331e6cac7928be8244899d9b54c467b09a44ae13804c2"
+  },
+  {
+    "path": "vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.h",
+    "bytes": 2726,
+    "sha256": "2647908d8e47558a7d33d23f9ffab45b05606449430fdf3e75dac6cc9a619abe"
+  },
+  {
+    "path": "vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.cpp",
+    "bytes": 123211,
+    "sha256": "907d43ef4fe4d98aea132f4a4126c6f17a0c4d1c535af435a5881b3f2c4deeb1"
+  },
+  {
+    "path": "vendor/luau0-src/luau/CodeGen/src/IrLoweringA64.cpp",
+    "bytes": 130902,
+    "sha256": "5a53bbc0fdedbe527b68d43b59057d2d7b24421a93a2bf700e60a50733d34fa0"
+  },
+  {
+    "path": "vendor/luau0-src/luau/CodeGen/src/IrTranslateBuiltins.cpp",
+    "bytes": 55498,
+    "sha256": "e0236e462a22993b60772939946fa37dc1d1e165597eb08eff5ae114dd1d417e"
+  },
+  {
+    "path": "vendor/mlua/src/buffer.rs",
+    "bytes": 6069,
+    "sha256": "34fe199caf955ba49737c5fb90096116622927fba44d1c1ed819102e76beb540"
+  },
+  {
+    "path": "vendor/mlua/UNONE.md",
+    "bytes": 2467,
+    "sha256": "9d6a58ed39ad278a4f1afbe16acbfde5e18ae0b965f9725c5880125904b7d6b3"
+  },
+  {
+    "path": "vendor/mlua/UNONE-safe-buffer-writes.patch",
+    "bytes": 3993,
+    "sha256": "939e280faeb812e6af3e9a286c3351cfdcf5131dbe1ff4bf32d486b291517899"
+  },
+  {
+    "path": "crates/unone-engine/tests/fixtures/immutable-bytes.luau",
+    "bytes": 13378,
+    "sha256": "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848"
+  },
+  {
+    "path": "crates/unone-engine/tests/immutable_bytes_host.rs",
+    "bytes": 9879,
+    "sha256": "b7b0c8da0a1b2e34d7450a7d17b3429a4a9472bd2ccefdb34cb0c9c135ad575e"
+  },
+  {
+    "path": "crates/unone-engine/tests/immutable_bytes.rs",
+    "bytes": 5390,
+    "sha256": "ff6b0126ee59c511391e0dc21a08911b9c5a14188f30e3ac8766c7cfcad30949"
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "scope": "Actual current VM freeze + unchanged cached mlua0.11.6 safe host mutation regression. No MLua vendor patch yet.",
+  "started_utc": "2026-10-30T15:06:39.313Z",
+  "baseline_commit": "1f1219821a0bbe05b876ee3c2fe0b82485ff1b1a",
+  "dirty_status": " M crates/unone-cli/src/export.rs\n M crates/unone-engine/src/asset.rs\n M crates/unone-engine/src/host.rs\n M crates/unone-engine/src/lib.rs\n M crates/unone-engine/src/runtime.rs\n M crates/unone-engine/src/runtime/bindings/bytes.rs\n M crates/unone-engine/src/runtime/bindings/mod.rs\n M crates/unone-engine/src/runtime/host_time.rs\n?? .claude/\n?? crates/unone-engine/src/data_assets.rs\n?? crates/unone-engine/src/runtime/bindings/assets.rs\n?? crates/unone-engine/tests/data_assets.rs\n?? crates/unone-engine/tests/immutable_bytes_host.rs\n",
+  "command": [
+    "D:/Projects/Unone/.toolcache/cargo/bin/cargo.exe",
+    "test",
+    "-p",
+    "unone-engine",
+    "--test",
+    "immutable_bytes_host",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "D:/Projects/Unone",
+  "env": {
+    "CARGO_HOME": "D:/Projects/Unone/.toolcache/cargo",
+    "RUSTUP_HOME": "D:/Projects/Unone/.toolcache/rustup",
+    "RUSTC": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/bin/rustc.exe",
+    "LIBRARY_PATH": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/self-contained",
+    "PATH_prefix": [
+      "D:/Projects/Unone/.toolcache/cargo/bin",
+      "D:/Projects/Unone/.toolcache/w64devkit/bin"
+    ]
+  },
+  "test_source": {
+    "path": "crates/unone-engine/tests/immutable_bytes_host.rs",
+    "bytes": 1742,
+    "sha256": "2f9dde7eecf5b4970cf96d62d1c4b48646d42635a1eec2487a3ec6dd88f2d16c"
+  }
+}

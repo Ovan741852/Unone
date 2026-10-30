@@ -1,0 +1,7 @@
+{
+  "scope": "final immutable bytes fixture plus actual-JIT host guards",
+  "exit_code": 101,
+  "ended_utc": "2026-10-30T15:46:43.2906411Z",
+  "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "worktree_has_foreign_render_changes": true
+}

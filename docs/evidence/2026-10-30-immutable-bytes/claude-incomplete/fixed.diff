@@ -1,0 +1,1254 @@
+diff --git a/crates/unone-engine/src/runtime/bindings/bytes.rs b/crates/unone-engine/src/runtime/bindings/bytes.rs
+index dcfb451..fc462a0 100644
+--- a/crates/unone-engine/src/runtime/bindings/bytes.rs
++++ b/crates/unone-engine/src/runtime/bindings/bytes.rs
+@@ -1,16 +1,20 @@
+ //! Immutable bytes are ordinary Luau buffers made read-only by the VM (see
+ //! vendor/luau0-src/UNONE.md). Reads keep the VM's own `buffer.read*` fast
+-//! paths; every write path, native code included, rejects a frozen buffer, so
+-//! no writable alias of frozen bytes exists anywhere.
++//! paths. Luau writes (including native-codegen functions) and safe Rust mlua
++//! writes reject frozen roots and views. Trusted unsafe raw C/FFI pointer writes
++//! remain outside this ownership guarantee.
+ use mlua::{Lua, Table, ffi};
+ use std::ffi::c_int;
+ 
+ unsafe extern "C-unwind" {
+     fn unone_buffer_freeze(state: *mut ffi::lua_State) -> c_int;
+     fn unone_buffer_isfrozen(state: *mut ffi::lua_State) -> c_int;
+     fn unone_buffer_snapshot(state: *mut ffi::lua_State) -> c_int;
++    fn unone_buffer_span(state: *mut ffi::lua_State) -> c_int;
++    fn unone_buffer_equals(state: *mut ffi::lua_State) -> c_int;
++    fn unone_buffer_equalsrange(state: *mut ffi::lua_State) -> c_int;
+ }
+ 
+ pub(super) fn bind(lua: &Lua) -> mlua::Result<Table> {
+     let api = lua.create_table()?;
+     // SAFETY: the patched VM defines these as ordinary lua_CFunctions. They
+@@ -18,8 +22,23 @@ pub(super) fn bind(lua: &Lua) -> mlua::Result<Table> {
+     // VM frames, never across Rust frames.
+     unsafe {
+         api.set("freeze", lua.create_c_function(unone_buffer_freeze)?)?;
+         api.set("isFrozen", lua.create_c_function(unone_buffer_isfrozen)?)?;
+         api.set("snapshot", lua.create_c_function(unone_buffer_snapshot)?)?;
++        api.set("span", lua.create_c_function(unone_buffer_span)?)?;
++        api.set("equals", lua.create_c_function(unone_buffer_equals)?)?;
++        api.set("equalsRange", lua.create_c_function(unone_buffer_equalsrange)?)?;
+     }
+     Ok(api)
+ }
++
++/// Freeze a buffer from Rust, as api.bytes.freeze does.
++pub(super) fn freeze(lua: &Lua, buffer: &mlua::Buffer) -> mlua::Result<()> {
++    // SAFETY: exec_raw pushes the buffer as the only argument; lua_setreadonly
++    // flips its readonly byte, and the pop leaves the stack as it found it.
++    unsafe {
++        lua.exec_raw::<()>(buffer.clone(), |state| {
++            ffi::lua_setreadonly(state, -1, 1);
++            ffi::lua_pop(state, 1);
++        })
++    }
++}
+diff --git a/vendor/luau0-src/luau/CodeGen/src/IrLoweringA64.cpp b/vendor/luau0-src/luau/CodeGen/src/IrLoweringA64.cpp
+index 3da708d..0630a99 100644
+--- a/vendor/luau0-src/luau/CodeGen/src/IrLoweringA64.cpp
++++ b/vendor/luau0-src/luau/CodeGen/src/IrLoweringA64.cpp
+@@ -3647,33 +3647,40 @@ AddressA64 IrLoweringA64::tempAddr(IrOp op, int offset, RegisterA64 tempStorage)
+ }
+ 
+ AddressA64 IrLoweringA64::tempAddrBuffer(IrOp bufferOp, IrOp indexOp, uint8_t tag)
+ {
+     CODEGEN_ASSERT(tag == LUA_TUSERDATA || tag == LUA_TBUFFER);
+-    int dataOffset = tag == LUA_TBUFFER ? offsetof(Buffer, data) : offsetof(Udata, data);
++    int dataOffset = tag == LUA_TBUFFER ? 0 : offsetof(Udata, data);
++    RegisterA64 base = regOp(bufferOp);
++    if (tag == LUA_TBUFFER)
++    {
++        RegisterA64 data = regs.allocTemp(KindA64::x);
++        build.ldr(data, mem(base, offsetof(Buffer, data)));
++        base = data;
++    }
+ 
+     if (indexOp.kind == IrOpKind::Inst)
+     {
+         CODEGEN_ASSERT(!producesDirtyHighRegisterBits(function.instOp(indexOp).cmd));
+ 
+         RegisterA64 temp = regs.allocTemp(KindA64::x);
+-        build.add(temp, regOp(bufferOp), regOp(indexOp)); // implicit uxtw
++        build.add(temp, base, regOp(indexOp)); // implicit uxtw
+         return mem(temp, dataOffset);
+     }
+     else if (indexOp.kind == IrOpKind::Constant)
+     {
+         // Since the resulting address may be used to load any size, including 1 byte, from an unaligned offset, we are limited by unscaled
+         // encoding
+         if (unsigned(intOp(indexOp)) + dataOffset <= 255)
+-            return mem(regOp(bufferOp), int(intOp(indexOp) + dataOffset));
++            return mem(base, int(intOp(indexOp) + dataOffset));
+ 
+         // indexOp can only be negative in dead code (since offsets are checked); this avoids assertion in emitAddOffset
+         if (intOp(indexOp) < 0)
+-            return mem(regOp(bufferOp), dataOffset);
++            return mem(base, dataOffset);
+ 
+         RegisterA64 temp = regs.allocTemp(KindA64::x);
+-        emitAddOffset(build, temp, regOp(bufferOp), size_t(intOp(indexOp)));
++        emitAddOffset(build, temp, base, size_t(intOp(indexOp)));
+         return mem(temp, dataOffset);
+     }
+     else
+     {
+         CODEGEN_ASSERT(!"Unsupported instruction form");
+diff --git a/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.cpp b/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.cpp
+index b73bd4b..2085bec 100644
+--- a/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.cpp
++++ b/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.cpp
+@@ -55,10 +55,11 @@ IrLoweringX64::IrLoweringX64(AssemblyBuilderX64& build, ModuleHelpers& helpers,
+ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+ {
+     regs.currInstIdx = index;
+ 
+     valueTracker.beforeInstLowering(inst);
++    ScopedRegX64 bufferData{regs};
+ 
+     switch (inst.cmd)
+     {
+     case IrCmd::LOAD_TAG:
+         inst.regX64 = regs.allocReg(SizeX64::dword, index);
+@@ -2806,11 +2807,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+         build.movsx(
+             inst.regX64,
+             byte[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
+             )]
+         );
+         break;
+ 
+     case IrCmd::BUFFER_READU8:
+@@ -2819,11 +2820,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+         build.movzx(
+             inst.regX64,
+             byte[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
+             )]
+         );
+         break;
+ 
+     case IrCmd::BUFFER_WRITEI8:
+@@ -2832,11 +2833,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+ 
+         build.mov(
+             byte[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
+             )],
+             value
+         );
+         break;
+     }
+@@ -2847,11 +2848,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+         build.movsx(
+             inst.regX64,
+             word[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
+             )]
+         );
+         break;
+ 
+     case IrCmd::BUFFER_READU16:
+@@ -2860,11 +2861,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+         build.movzx(
+             inst.regX64,
+             word[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
+             )]
+         );
+         break;
+ 
+     case IrCmd::BUFFER_WRITEI16:
+@@ -2873,11 +2874,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+ 
+         build.mov(
+             word[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
+             )],
+             value
+         );
+         break;
+     }
+@@ -2888,11 +2889,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+         build.mov(
+             inst.regX64,
+             dword[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
+             )]
+         );
+         break;
+ 
+     case IrCmd::BUFFER_WRITEI32:
+@@ -2901,11 +2902,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+ 
+         build.mov(
+             dword[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
+             )],
+             value
+         );
+         break;
+     }
+@@ -2916,21 +2917,21 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+         build.vmovss(
+             inst.regX64,
+             dword[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
+             )]
+         );
+         break;
+ 
+     case IrCmd::BUFFER_WRITEF32:
+         storeFloat(
+             dword[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
+             )],
+             OP_C(inst)
+         );
+         break;
+ 
+@@ -2940,11 +2941,11 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+         build.vmovsd(
+             inst.regX64,
+             qword[bufferAddrOp(
+                 OP_A(inst),
+                 OP_B(inst),
+-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
++                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
+             )]
+         );
+         break;
+ 
+     case IrCmd::BUFFER_WRITEF64:
+@@ -2954,22 +2955,22 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+             build.vmovsd(tmp.reg, build.f64(doubleOp(OP_C(inst))));
+             build.vmovsd(
+                 qword[bufferAddrOp(
+                     OP_A(inst),
+                     OP_B(inst),
+-                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
++                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
+                 )],
+                 tmp.reg
+             );
+         }
+         else if (OP_C(inst).kind == IrOpKind::Inst)
+         {
+             build.vmovsd(
+                 qword[bufferAddrOp(
+                     OP_A(inst),
+                     OP_B(inst),
+-                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
++                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
+                 )],
+                 regOp(OP_C(inst))
+             );
+         }
+         else
+@@ -2983,10 +2984,12 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
+     case IrCmd::SUBSTITUTE:
+         CODEGEN_ASSERT(!"Pseudo instructions should not be lowered");
+         break;
+     }
+ 
++    if (bufferData.reg != noreg)
++        bufferData.free();
+     valueTracker.afterInstLowering(inst, index);
+ 
+     regs.currInstIdx = kInvalidInstIdx;
+ 
+     regs.freeLastUseRegs(inst, index);
+@@ -3291,24 +3294,33 @@ RegisterX64 IrLoweringX64::regOp(IrOp op)
+ 
+     CODEGEN_ASSERT(inst.regX64 != noreg);
+     return inst.regX64;
+ }
+ 
+-OperandX64 IrLoweringX64::bufferAddrOp(IrOp bufferOp, IrOp indexOp, uint8_t tag)
++OperandX64 IrLoweringX64::bufferAddrOp(IrOp bufferOp, IrOp indexOp, uint8_t tag, ScopedRegX64& data)
+ {
+     CODEGEN_ASSERT(tag == LUA_TUSERDATA || tag == LUA_TBUFFER);
+-    int dataOffset = tag == LUA_TBUFFER ? offsetof(Buffer, data) : offsetof(Udata, data);
++    int dataOffset = tag == LUA_TBUFFER ? 0 : offsetof(Udata, data);
++    RegisterX64 base;
++    if (tag == LUA_TBUFFER)
++    {
++        data.alloc(SizeX64::qword);
++        build.mov(data.reg, qword[regOp(bufferOp) + offsetof(Buffer, data)]);
++        base = data.reg;
++    }
++    else
++        base = regOp(bufferOp);
+ 
+     if (indexOp.kind == IrOpKind::Inst)
+     {
+         CODEGEN_ASSERT(!producesDirtyHighRegisterBits(function.instOp(indexOp).cmd)); // Ensure that high register bits are cleared
+ 
+-        return regOp(bufferOp) + qwordReg(regOp(indexOp)) + dataOffset;
++        return base + qwordReg(regOp(indexOp)) + dataOffset;
+     }
+     else if (indexOp.kind == IrOpKind::Constant)
+     {
+-        return regOp(bufferOp) + intOp(indexOp) + dataOffset;
++        return base + intOp(indexOp) + dataOffset;
+     }
+ 
+     CODEGEN_ASSERT(!"Unsupported instruction form");
+     return noreg;
+ }
+diff --git a/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.h b/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.h
+index 4d4137c..9ca64bc 100644
+--- a/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.h
++++ b/vendor/luau0-src/luau/CodeGen/src/IrLoweringX64.h
+@@ -52,11 +52,11 @@ struct IrLoweringX64
+     OperandX64 memRegFloatOp(IrOp op);
+     OperandX64 memRegUintOp(IrOp op);
+     OperandX64 memRegIntOp(IrOp op);
+     OperandX64 memRegTagOp(IrOp op);
+     RegisterX64 regOp(IrOp op);
+-    OperandX64 bufferAddrOp(IrOp bufferOp, IrOp indexOp, uint8_t tag);
++    OperandX64 bufferAddrOp(IrOp bufferOp, IrOp indexOp, uint8_t tag, ScopedRegX64& data);
+     RegisterX64 vecOp(IrOp op, ScopedRegX64& tmp);
+ 
+     IrConst constOp(IrOp op) const;
+     uint8_t tagOp(IrOp op) const;
+     int intOp(IrOp op) const;
+diff --git a/vendor/luau0-src/luau/CodeGen/src/IrTranslateBuiltins.cpp b/vendor/luau0-src/luau/CodeGen/src/IrTranslateBuiltins.cpp
+index 596f455..fb1db58 100644
+--- a/vendor/luau0-src/luau/CodeGen/src/IrTranslateBuiltins.cpp
++++ b/vendor/luau0-src/luau/CodeGen/src/IrTranslateBuiltins.cpp
+@@ -983,10 +983,11 @@ static void translateBufferArgsAndCheckBounds(
+     int arg,
+     IrOp args,
+     IrOp arg3,
+     int size,
+     int pcpos,
++    IrOp fallback,
+     IrOp& buf,
+     IrOp& intIndex
+ )
+ {
+     build.loadAndCheckTag(build.vmReg(arg), LUA_TBUFFER, build.vmExit(pcpos));
+@@ -997,10 +998,17 @@ static void translateBufferArgsAndCheckBounds(
+ 
+     buf = build.inst(IrCmd::LOAD_POINTER, build.vmReg(arg));
+ 
+     IrOp numIndex = builtinLoadDouble(build, args);
+     intIndex = build.inst(IrCmd::NUM_TO_INT, numIndex);
++    IrOp exactInteger = build.block(IrBlockKind::Internal);
++    IrOp roundtrip = build.inst(IrCmd::INT_TO_NUM, intIndex);
++    // NotEqual includes unordered comparisons on both targets, rejecting NaN.
++    // NUM_TO_INT uses defined machine conversion; constant folding separately
++    // range-checks its C++ cast in IrUtils.cpp.
++    build.inst(IrCmd::JUMP_CMP_NUM, numIndex, roundtrip, build.cond(IrCondition::NotEqual), fallback, exactInteger);
++    build.beginBlock(exactInteger);
+ 
+     if (FFlag::LuauCodegenBufferRangeMerge3)
+         build.inst(IrCmd::CHECK_BUFFER_LEN, buf, intIndex, build.constInt(0), build.constInt(size), build.undef(), build.vmExit(pcpos));
+     else
+         build.inst(IrCmd::CHECK_BUFFER_LEN, buf, intIndex, build.constInt(size), build.vmExit(pcpos));
+@@ -1012,27 +1020,28 @@ static BuiltinImplResult translateBuiltinBufferRead(
+     int ra,
+     int arg,
+     IrOp args,
+     IrOp arg3,
+     int nresults,
++    IrOp fallback,
+     int pcpos,
+     IrCmd readCmd,
+     int size,
+     IrCmd convCmd
+ )
+ {
+     if (nparams < 2 || nresults > 1)
+         return {BuiltinImplType::None, -1};
+ 
+     IrOp buf, intIndex;
+-    translateBufferArgsAndCheckBounds(build, nparams, arg, args, arg3, size, pcpos, buf, intIndex);
++    translateBufferArgsAndCheckBounds(build, nparams, arg, args, arg3, size, pcpos, fallback, buf, intIndex);
+ 
+     IrOp result = build.inst(readCmd, buf, intIndex);
+     build.inst(IrCmd::STORE_DOUBLE, build.vmReg(ra), convCmd == IrCmd::NOP ? result : build.inst(convCmd, result));
+     build.inst(IrCmd::STORE_TAG, build.vmReg(ra), build.constTag(LUA_TNUMBER));
+ 
+-    return {BuiltinImplType::Full, 1};
++    return {BuiltinImplType::UsesFallback, 1};
+ }
+ 
+ static BuiltinImplResult translateBuiltinBufferWrite(
+     IrBuilder& build,
+     int nparams,
+@@ -1045,23 +1054,12 @@ static BuiltinImplResult translateBuiltinBufferWrite(
+     IrCmd writeCmd,
+     int size,
+     IrCmd convCmd
+ )
+ {
+-    // UNONE: a readonly buffer is rejected by the luauF_write* fastcall, so a
+-    // write is never inlined; reads stay inline. nparams is never negative: the
+-    // inline path below stays compiled to keep upstream merges small.
+-    if (nparams >= 0)
+-        return {BuiltinImplType::None, -1};
+-
+-    IrOp buf, intIndex;
+-    translateBufferArgsAndCheckBounds(build, nparams, arg, args, arg3, size, pcpos, buf, intIndex);
+-
+-    IrOp numValue = builtinLoadDouble(build, arg3);
+-    build.inst(writeCmd, buf, intIndex, convCmd == IrCmd::NOP ? numValue : build.inst(convCmd, numValue));
+-
+-    return {BuiltinImplType::Full, 0};
++    // Readonly and range checks remain in the checked VM fastcall/C path.
++    return {BuiltinImplType::None, -1};
+ }
+ 
+ static BuiltinImplResult translateBuiltinVectorMagnitude(
+     IrBuilder& build,
+     int nparams,
+@@ -1485,33 +1483,33 @@ BuiltinImplResult translateBuiltin(
+     case LBF_STRING_LEN:
+         return translateBuiltinStringLen(build, nparams, ra, arg, args, nresults, pcpos);
+     case LBF_BIT32_BYTESWAP:
+         return translateBuiltinBit32Unary(build, IrCmd::BYTESWAP_UINT, nparams, ra, arg, args, nresults, pcpos);
+     case LBF_BUFFER_READI8:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI8, 1, IrCmd::INT_TO_NUM);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI8, 1, IrCmd::INT_TO_NUM);
+     case LBF_BUFFER_READU8:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READU8, 1, IrCmd::INT_TO_NUM);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READU8, 1, IrCmd::INT_TO_NUM);
+     case LBF_BUFFER_WRITEU8:
+         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEI8, 1, IrCmd::NUM_TO_UINT);
+     case LBF_BUFFER_READI16:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI16, 2, IrCmd::INT_TO_NUM);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI16, 2, IrCmd::INT_TO_NUM);
+     case LBF_BUFFER_READU16:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READU16, 2, IrCmd::INT_TO_NUM);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READU16, 2, IrCmd::INT_TO_NUM);
+     case LBF_BUFFER_WRITEU16:
+         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEI16, 2, IrCmd::NUM_TO_UINT);
+     case LBF_BUFFER_READI32:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::INT_TO_NUM);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::INT_TO_NUM);
+     case LBF_BUFFER_READU32:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::UINT_TO_NUM);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::UINT_TO_NUM);
+     case LBF_BUFFER_WRITEU32:
+         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEI32, 4, IrCmd::NUM_TO_UINT);
+     case LBF_BUFFER_READF32:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READF32, 4, IrCmd::FLOAT_TO_NUM);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READF32, 4, IrCmd::FLOAT_TO_NUM);
+     case LBF_BUFFER_WRITEF32:
+         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEF32, 4, IrCmd::NUM_TO_FLOAT);
+     case LBF_BUFFER_READF64:
+-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READF64, 8, IrCmd::NOP);
++        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READF64, 8, IrCmd::NOP);
+     case LBF_BUFFER_WRITEF64:
+         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEF64, 8, IrCmd::NOP);
+     case LBF_VECTOR_MAGNITUDE:
+         return translateBuiltinVectorMagnitude(build, nparams, ra, arg, args, arg3, nresults, pcpos);
+     case LBF_VECTOR_NORMALIZE:
+diff --git a/vendor/luau0-src/luau/VM/include/lua.h b/vendor/luau0-src/luau/VM/include/lua.h
+index 09046d0..46c89ba 100644
+--- a/vendor/luau0-src/luau/VM/include/lua.h
++++ b/vendor/luau0-src/luau/VM/include/lua.h
+@@ -196,10 +196,12 @@ LUA_API void lua_pushlightuserdatatagged(lua_State* L, void* p, int tag);
+ LUA_API void* lua_newuserdatatagged(lua_State* L, size_t sz, int tag);
+ LUA_API void* lua_newuserdatataggedwithmetatable(lua_State* L, size_t sz, int tag); // metatable fetched with lua_getuserdatametatable
+ LUA_API void* lua_newuserdatadtor(lua_State* L, size_t sz, lua_Destructor dtor);
+ 
+ LUA_API void* lua_newbuffer(lua_State* L, size_t sz);
++// UNONE: a readonly, independently bounded view retaining its ultimate root.
++LUA_API void* lua_newbufferview(lua_State* L, int idx, size_t offset, size_t sz);
+ 
+ /*
+ ** get functions (Lua -> stack)
+ */
+ LUA_API int lua_gettable(lua_State* L, int idx);
+diff --git a/vendor/luau0-src/luau/VM/include/lualib.h b/vendor/luau0-src/luau/VM/include/lualib.h
+index e1639b3..1be734c 100644
+--- a/vendor/luau0-src/luau/VM/include/lualib.h
++++ b/vendor/luau0-src/luau/VM/include/lualib.h
+@@ -134,10 +134,13 @@ LUALIB_API int luaopen_buffer(lua_State* L);
+ 
+ // UNONE: immutable buffer operations the engine registers as api.bytes.*.
+ LUALIB_API int unone_buffer_freeze(lua_State* L);
+ LUALIB_API int unone_buffer_isfrozen(lua_State* L);
+ LUALIB_API int unone_buffer_snapshot(lua_State* L);
++LUALIB_API int unone_buffer_span(lua_State* L);
++LUALIB_API int unone_buffer_equals(lua_State* L);
++LUALIB_API int unone_buffer_equalsrange(lua_State* L);
+ 
+ #define LUA_UTF8LIBNAME "utf8"
+ LUALIB_API int luaopen_utf8(lua_State* L);
+ 
+ #define LUA_MATHLIBNAME "math"
+diff --git a/vendor/luau0-src/luau/VM/src/lapi.cpp b/vendor/luau0-src/luau/VM/src/lapi.cpp
+index 18e44ed..87fc314 100644
+--- a/vendor/luau0-src/luau/VM/src/lapi.cpp
++++ b/vendor/luau0-src/luau/VM/src/lapi.cpp
+@@ -10,10 +10,11 @@
+ #include "ldo.h"
+ #include "ludata.h"
+ #include "lvm.h"
+ #include "lnumutils.h"
+ #include "lbuffer.h"
++#include "Luau/Bytecode.h"
+ 
+ #include <string.h>
+ 
+ /*
+  * This file contains most implementations of core Lua APIs from lua.h.
+@@ -816,10 +817,12 @@ void lua_createtable(lua_State* L, int narray, int nrec)
+ void lua_setreadonly(lua_State* L, int objindex, int enabled)
+ {
+     const TValue* o = index2addr(L, objindex);
+     if (ttisbuffer(o))
+     {
++        if (!enabled && bufvalue(o)->readonly)
++            luaG_runerror(L, "attempt to unfreeze a readonly buffer");
+         bufvalue(o)->readonly = bool(enabled);
+         return;
+     }
+     api_check(L, ttistable(o));
+     LuaTable* t = hvalue(o);
+@@ -1432,10 +1435,35 @@ void* lua_newbuffer(lua_State* L, size_t sz)
+     setbufvalue(L, L->top, b);
+     api_incr_top(L);
+     return b->data;
+ }
+ 
++void* lua_newbufferview(lua_State* L, int idx, size_t offset, size_t sz)
++{
++    const TValue* value = index2addr(L, idx);
++    api_check(L, ttisbuffer(value));
++    Buffer* source = bufvalue(value);
++    api_check(L, source->readonly && offset <= source->len && sz <= source->len - offset);
++    luaC_checkGC(L);
++    luaC_threadbarrier(L);
++    Buffer* b = luaB_newbufferview(L, source, offset, sz);
++    setbufvalue(L, L->top, b);
++    api_incr_top(L);
++    return b->data;
++}
++
++// Private host-test probe. No Lua binding, pointer result or WASM ABI export.
++extern "C" int unone_bytes_nativecompiled(lua_State* L, int idx)
++{
++    const TValue* value = index2addr(L, idx);
++    if (!isLfunction(value))
++        return 0;
++    const Proto* proto = clvalue(value)->l.p;
++    return proto->execdata && proto->exectarget && proto->codeentry && proto->codeentry != proto->code &&
++        LUAU_INSN_OP(*proto->codeentry) == LOP_NATIVECALL;
++}
++
+ static const char* aux_upvalue(StkId fi, int n, TValue** val)
+ {
+     Closure* f;
+     if (!ttisfunction(fi))
+         return NULL;
+diff --git a/vendor/luau0-src/luau/VM/src/lbuffer.cpp b/vendor/luau0-src/luau/VM/src/lbuffer.cpp
+index 6d4652a..594253d 100644
+--- a/vendor/luau0-src/luau/VM/src/lbuffer.cpp
++++ b/vendor/luau0-src/luau/VM/src/lbuffer.cpp
+@@ -13,13 +13,27 @@ Buffer* luaB_newbuffer(lua_State* L, size_t s)
+ 
+     Buffer* b = luaM_newgco(L, Buffer, sizebuffer(s), L->activememcat);
+     luaC_init(L, b, LUA_TBUFFER);
+     b->len = unsigned(s);
+     b->readonly = 0;
++    b->owner = NULL;
++    b->data = b->inlineData;
+     memset(b->data, 0, b->len);
+     return b;
+ }
+ 
++Buffer* luaB_newbufferview(lua_State* L, Buffer* source, size_t offset, size_t s)
++{
++    LUAU_ASSERT(source->readonly && offset <= source->len && s <= source->len - offset);
++    Buffer* b = luaM_newgco(L, Buffer, sizebuffer(0), L->activememcat);
++    luaC_init(L, b, LUA_TBUFFER);
++    b->len = unsigned(s);
++    b->readonly = 1;
++    b->owner = source->owner ? source->owner : source;
++    b->data = source->data + offset;
++    return b;
++}
++
+ void luaB_freebuffer(lua_State* L, Buffer* b, lua_Page* page)
+ {
+-    luaM_freegco(L, b, sizebuffer(b->len), b->memcat, page);
++    luaM_freegco(L, b, sizebufferobject(b), b->memcat, page);
+ }
+diff --git a/vendor/luau0-src/luau/VM/src/lbuffer.h b/vendor/luau0-src/luau/VM/src/lbuffer.h
+index 728e89b..58fb80f 100644
+--- a/vendor/luau0-src/luau/VM/src/lbuffer.h
++++ b/vendor/luau0-src/luau/VM/src/lbuffer.h
+@@ -5,9 +5,11 @@
+ 
+ // buffer size limit
+ #define MAX_BUFFER_SIZE (1 << 30)
+ 
+ // GCObject size has to be at least 16 bytes, so a minimum of 8 bytes is always reserved
+-#define sizebuffer(len) (offsetof(Buffer, data) + ((len) < 8 ? 8 : (len)))
++#define sizebuffer(len) (offsetof(Buffer, inlineData) + ((len) < 8 ? 8 : (len)))
++#define sizebufferobject(buffer) sizebuffer((buffer)->owner ? 0 : (buffer)->len)
+ 
+ LUAI_FUNC Buffer* luaB_newbuffer(lua_State* L, size_t s);
++LUAI_FUNC Buffer* luaB_newbufferview(lua_State* L, Buffer* source, size_t offset, size_t s);
+ LUAI_FUNC void luaB_freebuffer(lua_State* L, Buffer* u, struct lua_Page* page);
+diff --git a/vendor/luau0-src/luau/VM/src/lbuflib.cpp b/vendor/luau0-src/luau/VM/src/lbuflib.cpp
+index 594907f..2f7fab8 100644
+--- a/vendor/luau0-src/luau/VM/src/lbuflib.cpp
++++ b/vendor/luau0-src/luau/VM/src/lbuflib.cpp
+@@ -7,18 +7,46 @@
+ #if defined(LUAU_BIG_ENDIAN)
+ #include <endian.h>
+ #endif
+ 
+ #include <string.h>
++#include <cmath>
+ 
+ // while C API returns 'size_t' for binary compatibility in case of future extensions,
+ // in the current implementation, length and offset are limited to 31 bits
+ // because offset is limited to an integer, a single 64bit comparison can be used and will not overflow
+ #define isoutofbounds(offset, len, accessize) (uint64_t(unsigned(offset)) + (accessize) > uint64_t(len))
+ 
+ static_assert(MAX_BUFFER_SIZE <= INT_MAX, "current implementation can't handle a larger limit");
+ 
++// Range arguments never use Luau's coercing/truncating integer conversion.
++static uint64_t checkbufferrangeinteger(lua_State* L, int argument)
++{
++    if (lua_type(L, argument) != LUA_TNUMBER)
++        luaL_error(L, "BUFFER_RANGE_INVALID: buffer range offsets and counts must be numbers");
++    double value = lua_tonumber(L, argument);
++    if (!std::isfinite(value) || value < 0 || std::floor(value) != value || value > 9007199254740991.0)
++        luaL_error(L, "BUFFER_RANGE_INVALID: buffer range offsets and counts must be nonnegative finite safe integers");
++    return uint64_t(value);
++}
++
++static size_t checkbufferposition(lua_State* L, int argument, size_t length)
++{
++    uint64_t value = checkbufferrangeinteger(L, argument);
++    if (value > length)
++        luaL_error(L, "buffer access out of bounds");
++    return size_t(value);
++}
++
++static size_t optbuffercount(lua_State* L, int argument, size_t defaultValue, size_t available)
++{
++    uint64_t count = lua_isnoneornil(L, argument) ? defaultValue : checkbufferrangeinteger(L, argument);
++    if (count > available)
++        luaL_error(L, "buffer access out of bounds");
++    return size_t(count);
++}
++
+ // UNONE: every buffer write goes through this check; a readonly buffer stays
+ // immutable for every reference to it, so no writable alias can exist.
+ static void* checkwritablebuffer(lua_State* L, int narg, size_t* len)
+ {
+     void* buf = luaL_checkbuffer(L, narg, len);
+@@ -42,14 +70,11 @@ inline T buffer_swapbe(T v)
+ }
+ #endif
+ 
+ static int buffer_create(lua_State* L)
+ {
+-    int size = luaL_checkinteger(L, 1);
+-
+-    luaL_argcheck(L, size >= 0, 1, "size");
+-
++    size_t size = checkbufferposition(L, 1, MAX_BUFFER_SIZE);
+     lua_newbuffer(L, size);
+     return 1;
+ }
+ 
+ static int buffer_fromstring(lua_State* L)
+@@ -74,11 +99,11 @@ static int buffer_tostring(lua_State* L)
+ template<typename T>
+ static int buffer_readinteger(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = luaL_checkbuffer(L, 1, &len);
+-    int offset = luaL_checkinteger(L, 2);
++    size_t offset = checkbufferposition(L, 2, len);
+ 
+     if (isoutofbounds(offset, len, sizeof(T)))
+         luaL_error(L, "buffer access out of bounds");
+ 
+     T val;
+@@ -95,11 +120,11 @@ static int buffer_readinteger(lua_State* L)
+ template<typename T>
+ static int buffer_writeinteger(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = checkwritablebuffer(L, 1, &len);
+-    int offset = luaL_checkinteger(L, 2);
++    size_t offset = checkbufferposition(L, 2, len);
+     int value = luaL_checkunsigned(L, 3);
+ 
+     if (isoutofbounds(offset, len, sizeof(T)))
+         luaL_error(L, "buffer access out of bounds");
+ 
+@@ -116,11 +141,11 @@ static int buffer_writeinteger(lua_State* L)
+ template<typename T, typename StorageType>
+ static int buffer_readfp(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = luaL_checkbuffer(L, 1, &len);
+-    int offset = luaL_checkinteger(L, 2);
++    size_t offset = checkbufferposition(L, 2, len);
+ 
+     if (isoutofbounds(offset, len, sizeof(T)))
+         luaL_error(L, "buffer access out of bounds");
+ 
+     T val;
+@@ -143,11 +168,11 @@ static int buffer_readfp(lua_State* L)
+ template<typename T, typename StorageType>
+ static int buffer_writefp(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = checkwritablebuffer(L, 1, &len);
+-    int offset = luaL_checkinteger(L, 2);
++    size_t offset = checkbufferposition(L, 2, len);
+     double value = luaL_checknumber(L, 3);
+ 
+     if (isoutofbounds(offset, len, sizeof(T)))
+         luaL_error(L, "buffer access out of bounds");
+ 
+@@ -169,14 +194,12 @@ static int buffer_writefp(lua_State* L)
+ 
+ static int buffer_readstring(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = luaL_checkbuffer(L, 1, &len);
+-    int offset = luaL_checkinteger(L, 2);
+-    int size = luaL_checkinteger(L, 3);
+-
+-    luaL_argcheck(L, size >= 0, 3, "size");
++    size_t offset = checkbufferposition(L, 2, len);
++    size_t size = checkbufferposition(L, 3, len - offset);
+ 
+     if (isoutofbounds(offset, len, unsigned(size)))
+         luaL_error(L, "buffer access out of bounds");
+ 
+     lua_pushlstring(L, (char*)buf + offset, size);
+@@ -185,25 +208,21 @@ static int buffer_readstring(lua_State* L)
+ 
+ static int buffer_writestring(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = checkwritablebuffer(L, 1, &len);
+-    int offset = luaL_checkinteger(L, 2);
++    size_t offset = checkbufferposition(L, 2, len);
+     size_t size = 0;
+     const char* val = luaL_checklstring(L, 3, &size);
+-    int count = luaL_optinteger(L, 4, int(size));
+-
+-    luaL_argcheck(L, count >= 0, 4, "count");
+-
+-    if (size_t(count) > size)
++    uint64_t count = lua_isnoneornil(L, 4) ? size : checkbufferrangeinteger(L, 4);
++    if (count > size)
+         luaL_error(L, "string length overflow");
+ 
+-    // string size can't exceed INT_MAX at this point
+-    if (isoutofbounds(offset, len, unsigned(count)))
++    if (count > len - offset)
+         luaL_error(L, "buffer access out of bounds");
+ 
+-    memcpy((char*)buf + offset, val, count);
++    memcpy((char*)buf + offset, val, size_t(count));
+     return 0;
+ }
+ 
+ static int buffer_len(lua_State* L)
+ {
+@@ -216,63 +235,45 @@ static int buffer_len(lua_State* L)
+ 
+ static int buffer_copy(lua_State* L)
+ {
+     size_t tlen = 0;
+     void* tbuf = checkwritablebuffer(L, 1, &tlen);
+-    int toffset = luaL_checkinteger(L, 2);
++    size_t toffset = checkbufferposition(L, 2, tlen);
+ 
+     size_t slen = 0;
+     void* sbuf = luaL_checkbuffer(L, 3, &slen);
+-    int soffset = luaL_optinteger(L, 4, 0);
+-
+-    int size = luaL_optinteger(L, 5, int(slen) - soffset);
+-
+-    if (size < 0)
+-        luaL_error(L, "buffer access out of bounds");
+-
+-    if (isoutofbounds(soffset, slen, unsigned(size)))
+-        luaL_error(L, "buffer access out of bounds");
+-
+-    if (isoutofbounds(toffset, tlen, unsigned(size)))
++    size_t soffset = lua_isnoneornil(L, 4) ? 0 : checkbufferposition(L, 4, slen);
++    size_t size = optbuffercount(L, 5, slen - soffset, slen - soffset);
++    if (size > tlen - toffset)
+         luaL_error(L, "buffer access out of bounds");
+ 
+     memmove((char*)tbuf + toffset, (char*)sbuf + soffset, size);
+     return 0;
+ }
+ 
+ static int buffer_fill(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = checkwritablebuffer(L, 1, &len);
+-    int offset = luaL_checkinteger(L, 2);
++    size_t offset = checkbufferposition(L, 2, len);
+     unsigned value = luaL_checkunsigned(L, 3);
+-    int size = luaL_optinteger(L, 4, int(len) - offset);
+-
+-    if (size < 0)
+-        luaL_error(L, "buffer access out of bounds");
+-
+-    if (isoutofbounds(offset, len, unsigned(size)))
+-        luaL_error(L, "buffer access out of bounds");
++    size_t size = optbuffercount(L, 4, len - offset, len - offset);
+ 
+     memset((char*)buf + offset, value & 0xff, size);
+     return 0;
+ }
+ 
+ static int buffer_readbits(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = luaL_checkbuffer(L, 1, &len);
+-    int64_t bitoffset = (int64_t)luaL_checknumber(L, 2);
+-    int bitcount = luaL_checkinteger(L, 3);
+-
+-    if (bitoffset < 0)
+-        luaL_error(L, "buffer access out of bounds");
+-
+-    if (unsigned(bitcount) > 32)
++    uint64_t bitoffset = checkbufferrangeinteger(L, 2);
++    uint64_t bitcount = checkbufferrangeinteger(L, 3);
++    if (bitcount > 32)
+         luaL_error(L, "bit count is out of range of [0; 32]");
+ 
+-    if (uint64_t(bitoffset + bitcount) > uint64_t(len) * 8)
++    if (bitoffset > uint64_t(len) * 8 || bitcount > uint64_t(len) * 8 - bitoffset)
+         luaL_error(L, "buffer access out of bounds");
+ 
+     unsigned startbyte = unsigned(bitoffset / 8);
+     unsigned endbyte = unsigned((bitoffset + bitcount + 7) / 8);
+ 
+@@ -294,21 +295,18 @@ static int buffer_readbits(lua_State* L)
+ 
+ static int buffer_writebits(lua_State* L)
+ {
+     size_t len = 0;
+     void* buf = checkwritablebuffer(L, 1, &len);
+-    int64_t bitoffset = (int64_t)luaL_checknumber(L, 2);
+-    int bitcount = luaL_checkinteger(L, 3);
++    uint64_t bitoffset = checkbufferrangeinteger(L, 2);
++    uint64_t bitcount = checkbufferrangeinteger(L, 3);
+     unsigned value = luaL_checkunsigned(L, 4);
+ 
+-    if (bitoffset < 0)
+-        luaL_error(L, "buffer access out of bounds");
+-
+-    if (unsigned(bitcount) > 32)
++    if (bitcount > 32)
+         luaL_error(L, "bit count is out of range of [0; 32]");
+ 
+-    if (uint64_t(bitoffset + bitcount) > uint64_t(len) * 8)
++    if (bitoffset > uint64_t(len) * 8 || bitcount > uint64_t(len) * 8 - bitoffset)
+         luaL_error(L, "buffer access out of bounds");
+ 
+     unsigned startbyte = unsigned(bitoffset / 8);
+     unsigned endbyte = unsigned((bitoffset + bitcount + 7) / 8);
+ 
+@@ -337,61 +335,141 @@ static int buffer_writebits(lua_State* L)
+ #endif
+     return 0;
+ }
+ 
+ // UNONE: called directly by the VM, so errors never cross host frames.
+-static void* checkbufferargument(lua_State* L, const char* operation, size_t* len)
++static void checkbytesarity(lua_State* L, const char* operation, int minimum, int maximum)
++{
++    int count = lua_gettop(L);
++    if (count < minimum || count > maximum)
++        luaL_error(L, "BYTES_ARGUMENTS_INVALID: api.bytes.%s expects %d..%d arguments", operation, minimum, maximum);
++}
++
++static void* checkbufferargument(lua_State* L, int argument, const char* operation, size_t* len)
+ {
+-    void* buf = lua_tobuffer(L, 1, len);
++    void* buf = lua_tobuffer(L, argument, len);
+     if (!buf)
+-        luaL_error(L, "BYTES_BUFFER_REQUIRED: api.bytes.%s expects a buffer, got %s", operation, luaL_typename(L, 1));
++        luaL_error(L, "BYTES_BUFFER_REQUIRED: api.bytes.%s expects a buffer, got %s", operation, luaL_typename(L, argument));
+     return buf;
+ }
+ 
++static uint64_t checkbytesinteger(lua_State* L, int argument, const char* operation)
++{
++    if (lua_type(L, argument) != LUA_TNUMBER)
++        luaL_error(L, "BYTES_ARGUMENTS_INVALID: api.bytes.%s offsets and lengths must be numbers", operation);
++    double value = lua_tonumber(L, argument);
++    if (!std::isfinite(value) || std::floor(value) != value || std::fabs(value) > 9007199254740991.0)
++        luaL_error(L, "BYTES_ARGUMENTS_INVALID: api.bytes.%s offsets and lengths must be finite safe integers", operation);
++    if (value < 0)
++        luaL_error(L, "BYTES_RANGE_INVALID: api.bytes.%s range is outside the buffer", operation);
++    return uint64_t(value);
++}
++
++struct ByteRange
++{
++    size_t offset;
++    size_t length;
++};
++
++static ByteRange checkbytesrange(lua_State* L, const char* operation, size_t total, uint64_t offset, uint64_t length)
++{
++    if (offset > total || length > uint64_t(total) - offset)
++        luaL_error(L, "BYTES_RANGE_INVALID: api.bytes.%s range is outside the buffer", operation);
++    return {size_t(offset), size_t(length)};
++}
++
++static ByteRange checkbytessnapshotrange(lua_State* L, size_t total)
++{
++    uint64_t offset = lua_isnoneornil(L, 2) ? 0 : checkbytesinteger(L, 2, "snapshot");
++    // Validate offset before evaluating a default length; never subtract an
++    // unchecked signed value or narrow a binary64 value to a host-sized int.
++    checkbytesrange(L, "snapshot", total, offset, 0);
++    uint64_t length = lua_isnoneornil(L, 3) ? uint64_t(total) - offset : checkbytesinteger(L, 3, "snapshot");
++    return checkbytesrange(L, "snapshot", total, offset, length);
++}
++
+ // Make the buffer immutable for every reference to it, in place and in O(1).
+ // Readonly is permanent: there is no operation that clears it.
+ int unone_buffer_freeze(lua_State* L)
+ {
+-    checkbufferargument(L, "freeze", NULL);
++    checkbytesarity(L, "freeze", 1, 1);
++    checkbufferargument(L, 1, "freeze", NULL);
+     lua_setreadonly(L, 1, 1);
+     lua_settop(L, 1);
+     return 1;
+ }
+ 
+ int unone_buffer_isfrozen(lua_State* L)
+ {
+-    checkbufferargument(L, "isFrozen", NULL);
++    checkbytesarity(L, "isFrozen", 1, 1);
++    checkbufferargument(L, 1, "isFrozen", NULL);
+     lua_pushboolean(L, lua_getreadonly(L, 1));
+     return 1;
+ }
+ 
+ // A frozen copy of a range. A whole frozen buffer is returned as is, since no
+ // reference to it can change it.
+ int unone_buffer_snapshot(lua_State* L)
+ {
++    checkbytesarity(L, "snapshot", 1, 3);
+     size_t len = 0;
+-    void* source = checkbufferargument(L, "snapshot", &len);
+-    int offset = luaL_optinteger(L, 2, 0);
+-    int size = luaL_optinteger(L, 3, int(len) - offset);
+-
+-    if (offset < 0 || size < 0 || isoutofbounds(offset, len, unsigned(size)))
+-        luaL_error(L, "BYTES_RANGE_INVALID: api.bytes.snapshot range is outside the buffer");
++    void* source = checkbufferargument(L, 1, "snapshot", &len);
++    ByteRange range = checkbytessnapshotrange(L, len);
+ 
+-    if (lua_getreadonly(L, 1) && offset == 0 && size_t(size) == len)
++    if (lua_getreadonly(L, 1) && range.offset == 0 && range.length == len)
+     {
+         lua_settop(L, 1);
+         return 1;
+     }
+ 
+     // The source stays on the stack, so a collection here cannot free it, and
+     // buffers never move.
+-    void* copy = lua_newbuffer(L, size_t(size));
+-    memcpy(copy, (char*)source + offset, size_t(size));
++    void* copy = lua_newbuffer(L, range.length);
++    memcpy(copy, (char*)source + range.offset, range.length);
+     lua_setreadonly(L, -1, 1);
+     return 1;
+ }
+ 
++int unone_buffer_span(lua_State* L)
++{
++    checkbytesarity(L, "span", 3, 3);
++    size_t len = 0;
++    checkbufferargument(L, 1, "span", &len);
++    if (!lua_getreadonly(L, 1))
++        luaL_error(L, "BYTES_FROZEN_REQUIRED: api.bytes.span requires a frozen buffer");
++    uint64_t offset = checkbytesinteger(L, 2, "span");
++    uint64_t length = checkbytesinteger(L, 3, "span");
++    ByteRange range = checkbytesrange(L, "span", len, offset, length);
++    lua_newbufferview(L, 1, range.offset, range.length);
++    return 1;
++}
++
++int unone_buffer_equals(lua_State* L)
++{
++    checkbytesarity(L, "equals", 2, 2);
++    size_t aLen = 0, bLen = 0;
++    void* a = checkbufferargument(L, 1, "equals", &aLen);
++    void* b = checkbufferargument(L, 2, "equals", &bLen);
++    lua_pushboolean(L, aLen == bLen && memcmp(a, b, aLen) == 0);
++    return 1;
++}
++
++int unone_buffer_equalsrange(lua_State* L)
++{
++    checkbytesarity(L, "equalsRange", 5, 5);
++    size_t aLen = 0, bLen = 0;
++    void* a = checkbufferargument(L, 1, "equalsRange", &aLen);
++    void* b = checkbufferargument(L, 3, "equalsRange", &bLen);
++    uint64_t aOffset = checkbytesinteger(L, 2, "equalsRange");
++    uint64_t bOffset = checkbytesinteger(L, 4, "equalsRange");
++    uint64_t length = checkbytesinteger(L, 5, "equalsRange");
++    ByteRange ar = checkbytesrange(L, "equalsRange", aLen, aOffset, length);
++    ByteRange br = checkbytesrange(L, "equalsRange", bLen, bOffset, length);
++    lua_pushboolean(L, memcmp((char*)a + ar.offset, (char*)b + br.offset, ar.length) == 0);
++    return 1;
++}
++
+ static const luaL_Reg bufferlib[] = {
+     {"create", buffer_create},
+     {"fromstring", buffer_fromstring},
+     {"tostring", buffer_tostring},
+     {"readi8", buffer_readinteger<int8_t>},
+diff --git a/vendor/luau0-src/luau/VM/src/lbuiltins.cpp b/vendor/luau0-src/luau/VM/src/lbuiltins.cpp
+index 2f877c0..1d98bd3 100644
+--- a/vendor/luau0-src/luau/VM/src/lbuiltins.cpp
++++ b/vendor/luau0-src/luau/VM/src/lbuiltins.cpp
+@@ -1346,18 +1346,28 @@ static int luauF_byteswap(lua_State* L, StkId res, TValue* arg0, int nresults, S
+ }
+ 
+ // because offset is limited to an integer, a single 64bit comparison can be used and will not overflow
+ #define checkoutofbounds(offset, len, accessize) (uint64_t(unsigned(offset)) + (accessize - 1) >= uint64_t(len))
+ 
++static bool checkedbufferoffset(double value, unsigned length, int& offset)
++{
++    // Ordered bounds reject NaN/infinities before the C++ integer cast.
++    if (!(value >= 0 && value <= length))
++        return false;
++    offset = int(value);
++    return double(offset) == value;
++}
++
+ template<typename T>
+ static int luauF_readinteger(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
+ {
+ #if !defined(LUAU_BIG_ENDIAN)
+     if (nparams >= 2 && nresults <= 1 && ttisbuffer(arg0) && ttisnumber(args))
+     {
+         int offset;
+-        luai_num2int(offset, nvalue(args));
++        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
++            return -1;
+         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
+             return -1;
+ 
+         T val;
+         memcpy(&val, (char*)bufvalue(arg0)->data + unsigned(offset), sizeof(T));
+@@ -1374,11 +1384,12 @@ static int luauF_writeinteger(lua_State* L, StkId res, TValue* arg0, int nresult
+ {
+ #if !defined(LUAU_BIG_ENDIAN)
+     if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && !bufvalue(arg0)->readonly && ttisnumber(args) && ttisnumber(args + 1))
+     {
+         int offset;
+-        luai_num2int(offset, nvalue(args));
++        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
++            return -1;
+         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
+             return -1;
+ 
+         unsigned value;
+         double incoming = nvalue(args + 1);
+@@ -1398,11 +1409,12 @@ static int luauF_readfp(lua_State* L, StkId res, TValue* arg0, int nresults, Stk
+ {
+ #if !defined(LUAU_BIG_ENDIAN)
+     if (nparams >= 2 && nresults <= 1 && ttisbuffer(arg0) && ttisnumber(args))
+     {
+         int offset;
+-        luai_num2int(offset, nvalue(args));
++        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
++            return -1;
+         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
+             return -1;
+ 
+         T val;
+ #ifdef _MSC_VER
+@@ -1424,11 +1436,12 @@ static int luauF_writefp(lua_State* L, StkId res, TValue* arg0, int nresults, St
+ {
+ #if !defined(LUAU_BIG_ENDIAN)
+     if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && !bufvalue(arg0)->readonly && ttisnumber(args) && ttisnumber(args + 1))
+     {
+         int offset;
+-        luai_num2int(offset, nvalue(args));
++        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
++            return -1;
+         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
+             return -1;
+ 
+         T val = T(nvalue(args + 1));
+ #ifdef _MSC_VER
+diff --git a/vendor/luau0-src/luau/VM/src/lgc.cpp b/vendor/luau0-src/luau/VM/src/lgc.cpp
+index 873877c..cf27db2 100644
+--- a/vendor/luau0-src/luau/VM/src/lgc.cpp
++++ b/vendor/luau0-src/luau/VM/src/lgc.cpp
+@@ -276,11 +276,14 @@ static void reallymarkobject(global_State* g, GCObject* o)
+         g->gray = o;
+         break;
+     }
+     case LUA_TBUFFER:
+     {
+-        gray2black(o); // buffers are never gray
++        gray2black(o);
++        Buffer* owner = gco2buf(o)->owner;
++        if (owner)
++            markobject(g, owner);
+         return;
+     }
+     case LUA_TPROTO:
+     {
+         gco2p(o)->gclist = g->gray;
+diff --git a/vendor/luau0-src/luau/VM/src/lgcdebug.cpp b/vendor/luau0-src/luau/VM/src/lgcdebug.cpp
+index f695188..fbef28e 100644
+--- a/vendor/luau0-src/luau/VM/src/lgcdebug.cpp
++++ b/vendor/luau0-src/luau/VM/src/lgcdebug.cpp
+@@ -166,10 +166,18 @@ static void validateobj(global_State* g, GCObject* o)
+     case LUA_TTHREAD:
+         validatestack(g, gco2th(o));
+         break;
+ 
+     case LUA_TBUFFER:
++        if (gco2buf(o)->owner)
++        {
++            Buffer* b = gco2buf(o);
++            validateobjref(g, o, obj2gco(b->owner));
++            LUAU_ASSERT(b->readonly && b->owner->readonly && !b->owner->owner);
++            LUAU_ASSERT(b->data >= b->owner->data && size_t(b->data - b->owner->data) <= b->owner->len);
++            LUAU_ASSERT(b->len <= b->owner->len - size_t(b->data - b->owner->data));
++        }
+         break;
+ 
+     case LUA_TPROTO:
+         validateproto(g, gco2p(o));
+         break;
+@@ -478,11 +486,17 @@ static void dumpthread(FILE* f, lua_State* th)
+     fprintf(f, "}");
+ }
+ 
+ static void dumpbuffer(FILE* f, Buffer* b)
+ {
+-    fprintf(f, "{\"type\":\"buffer\",\"cat\":%d,\"size\":%d}", b->memcat, int(sizebuffer(b->len)));
++    fprintf(f, "{\"type\":\"buffer\",\"cat\":%d,\"size\":%d", b->memcat, int(sizebufferobject(b)));
++    if (b->owner)
++    {
++        fprintf(f, ",\"owner\":");
++        dumpref(f, obj2gco(b->owner));
++    }
++    fprintf(f, "}");
+ }
+ 
+ static void dumpproto(FILE* f, Proto* p)
+ {
+     size_t size = sizeof(Proto) + sizeof(Instruction) * p->sizecode + sizeof(Proto*) * p->sizep + sizeof(TValue) * p->sizek + p->sizelineinfo +
+@@ -815,11 +829,13 @@ static void enumthread(EnumContext* ctx, lua_State* th)
+         enumedges(ctx, obj2gco(th), th->stack, th->top - th->stack, "stack");
+ }
+ 
+ static void enumbuffer(EnumContext* ctx, Buffer* b)
+ {
+-    enumnode(ctx, obj2gco(b), sizebuffer(b->len), NULL);
++    enumnode(ctx, obj2gco(b), sizebufferobject(b), NULL);
++    if (b->owner)
++        enumedge(ctx, obj2gco(b), obj2gco(b->owner), "owner");
+ }
+ 
+ static void enumproto(EnumContext* ctx, Proto* p)
+ {
+     size_t size = sizeof(Proto) + sizeof(Instruction) * p->sizecode + sizeof(Proto*) * p->sizep + sizeof(TValue) * p->sizek + p->sizelineinfo +
+diff --git a/vendor/luau0-src/luau/VM/src/lmem.cpp b/vendor/luau0-src/luau/VM/src/lmem.cpp
+index c6e1495..b3898f6 100644
+--- a/vendor/luau0-src/luau/VM/src/lmem.cpp
++++ b/vendor/luau0-src/luau/VM/src/lmem.cpp
+@@ -120,10 +120,11 @@ static_assert(sizeof(LuaNode) == ABISWITCH(32, 32, 32), "size mismatch for table
+ #endif
+ 
+ static_assert(offsetof(TString, data) == ABISWITCH(24, 20, 20), "size mismatch for string header");
+ static_assert(sizeof(LuaTable) == ABISWITCH(48, 32, 32), "size mismatch for table header");
+ static_assert(offsetof(Buffer, data) == ABISWITCH(8, 8, 8), "size mismatch for buffer header");
++static_assert(offsetof(Buffer, inlineData) == ABISWITCH(24, 16, 16), "size mismatch for buffer payload");
+ 
+ // The userdata is designed to provide 16 byte alignment for 16 byte and larger userdata sizes
+ static_assert(offsetof(Udata, data) == 16, "data must be at precise offset provide proper alignment");
+ 
+ const size_t kSizeClasses = LUA_SIZECLASSES;
+diff --git a/vendor/luau0-src/luau/VM/src/lobject.h b/vendor/luau0-src/luau/VM/src/lobject.h
+index 57de711..35dba21 100644
+--- a/vendor/luau0-src/luau/VM/src/lobject.h
++++ b/vendor/luau0-src/luau/VM/src/lobject.h
+@@ -272,17 +272,20 @@ typedef struct Udata
+ 
+ typedef struct LuauBuffer
+ {
+     CommonHeader;
+ 
+-    // UNONE: set once by lua_setreadonly and never cleared by the engine. It
+-    // occupies the header padding, so the layout and data offset are unchanged.
++    // UNONE: readonly applies to every alias; views can only refer to readonly roots.
+     uint8_t readonly;
+ 
+     unsigned int len;
+ 
+-    alignas(8) char data[1];
++    // Both roots and views expose their logical payload through this pointer.
++    // A view owns a strong GC reference directly to the ultimate root.
++    char* data;
++    struct LuauBuffer* owner;
++    alignas(8) char inlineData[1];
+ } Buffer;
+ 
+ /*
+ ** Function Prototypes
+ */

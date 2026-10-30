@@ -1,0 +1,29 @@
+{
+  "schema": "unone.immutable-bytes.verifier-source-correction.v1",
+  "correction": "The operation verifier contained an author-owned pre-execution warm-up change relative to Core commit905e20e. The earlier statement that all four verifier sources were unchanged from905e20e was incorrect. The frozen hashes and the actual execution capture were correct.",
+  "core_source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "core_wasm_sha256": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+  "core_artifact_changed": false,
+  "operation_verifier": {
+    "current_path": "scripts/verify-immutable-bytes-ops-wasm.mjs",
+    "captured_path": ".cache/immutable-bytes-wasm-operations-905e20e-run1/verification-script.mjs",
+    "both_sha256": "8297d1b0c6f8fbf059fe3d589ac93a3f0a0b9ea8dd645ecce573047fadf51226",
+    "change": "Three discarded warm-up ticks before each baseline/actual mode sample in every round, matching the native benchmark protocol, instead of only before the first round.",
+    "raw_report": ".cache/immutable-bytes-wasm-operations-905e20e-run1/report.json",
+    "reported_warmup_ticks_per_mode_sample": 3,
+    "reported_rounds": 3,
+    "reported_ticks_per_round": 4,
+    "first_row_round_frames": [
+      {"round":0,"baseline":[4,5,6,7],"actual":[11,12,13,14]},
+      {"round":1,"actual":[18,19,20,21],"baseline":[25,26,27,28]},
+      {"round":2,"baseline":[32,33,34,35],"actual":[39,40,41,42]}
+    ],
+    "last_measured_frame": 1386,
+    "rerun_needed": false
+  },
+  "natural_gc_sources": [
+    {"current":"crates/unone-engine/tests/fixtures/immutable-bytes-natural-gc.luau","captured":".cache/immutable-bytes-wasm-natural-gc-905e20e-run1/immutable-bytes-natural-gc.luau","both_sha256":"3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0","frozen":true},
+    {"current":"scripts/verify-immutable-bytes-natural-gc-wasm.mjs","captured":".cache/immutable-bytes-wasm-natural-gc-905e20e-run1/verification-script.mjs","both_sha256":"a13c5c05f0544e02ebf38fdb02622269e88c8a704e280ae2874b5c89b3eb037b","frozen":true}
+  ],
+  "scope": "Read-only source/hash/protocol inspection only; no runtime test was rerun and no historical report was rewritten."
+}

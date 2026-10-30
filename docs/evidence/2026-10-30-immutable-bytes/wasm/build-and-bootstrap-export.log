@@ -1,0 +1,128 @@
+   Compiling libm v0.2.16
+   Compiling num-traits v0.2.19
+   Compiling crossbeam-utils v0.8.23
+   Compiling typenum v1.20.1
+   Compiling smallvec v1.16.0
+   Compiling bytemuck v1.25.2
+   Compiling paste v1.0.15
+   Compiling matrixmultiply v0.3.11
+   Compiling heapless v0.8.0
+   Compiling crossbeam-epoch v0.9.21
+   Compiling equivalent v1.0.2
+   Compiling byteorder v1.5.0
+   Compiling quote v1.0.47
+   Compiling getrandom v0.4.3
+   Compiling serde_core v1.0.229
+   Compiling libc v0.2.189
+   Compiling rawpointer v0.2.1
+   Compiling crossbeam-deque v0.8.8
+   Compiling foldhash v0.2.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling allocator-api2 v0.2.21
+   Compiling generic-array v0.14.7
+   Compiling cfg-if v1.0.4
+   Compiling parking_lot_core v0.9.12
+   Compiling thiserror v2.0.20
+   Compiling safe_arch v0.7.4
+   Compiling hash32 v0.3.1
+   Compiling log v0.4.34
+   Compiling robust v1.2.0
+   Compiling memchr v2.8.3
+   Compiling hashbrown v0.17.1
+   Compiling either v1.18.0
+   Compiling foldhash v0.1.5
+   Compiling hashbrown v0.16.1
+   Compiling scopeguard v1.2.0
+   Compiling zmij v1.0.23
+   Compiling wide v0.7.33
+   Compiling arrayvec v0.7.8
+   Compiling slab v0.4.12
+   Compiling ena v0.14.4
+   Compiling rustc-hash v2.1.3
+   Compiling jobserver v0.1.35
+   Compiling syn v2.0.119
+   Compiling syn v3.0.5
+   Compiling hashbrown v0.15.5
+   Compiling downcast-rs v2.0.2
+   Compiling bitflags v2.13.1
+   Compiling bstr v1.13.1
+   Compiling serde v1.0.229
+   Compiling lock_api v0.4.14
+   Compiling serde_json v1.0.151
+   Compiling anyhow v1.0.104
+   Compiling rustversion v1.0.23
+   Compiling itoa v1.0.18
+   Compiling bit-vec v0.8.0
+   Compiling base64 v0.23.1
+   Compiling cc v1.4.5
+   Compiling crossbeam-channel v0.5.17
+   Compiling crossbeam-queue v0.3.14
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling parking_lot v0.12.5
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling crossbeam v0.8.5
+   Compiling lua-src v550.0.0
+   Compiling luajit-src v210.6.6+707c12b
+   Compiling luau0-src v0.18.3+luau709 (C:\Users\liNao\.codex\worktrees\ui-fused-build\Unone\vendor\luau0-src)
+   Compiling indexmap v2.14.2
+   Compiling mlua-sys v0.10.0
+   Compiling num-integer v0.1.47
+   Compiling num-complex v0.4.6
+   Compiling approx v0.5.1
+   Compiling spade v2.15.1
+   Compiling ordered-float v5.5.0
+   Compiling rstar v0.12.2
+   Compiling thiserror-impl v2.0.20
+   Compiling serde_derive v1.0.229
+   Compiling num-rational v0.4.2
+   Compiling simba v0.9.1
+   Compiling nalgebra-macros v0.2.2
+   Compiling num-derive v0.4.2
+   Compiling profiling-procmacros v1.0.18
+   Compiling profiling v1.0.18
+   Compiling nalgebra v0.33.3
+   Compiling parry3d v0.21.1
+   Compiling mlua v0.11.6 (C:\Users\liNao\.codex\worktrees\ui-fused-build\Unone\vendor\mlua)
+   Compiling rapier3d v0.26.1
+   Compiling unone-engine v0.2.0 (C:\Users\liNao\.codex\worktrees\ui-fused-build\Unone\crates\unone-engine)
+   Compiling unone-player v0.2.0 (C:\Users\liNao\.codex\worktrees\ui-fused-build\Unone\crates\unone-player)
+    Finished `release` profile [optimized] target(s) in 2m 51s
+file:///C:/Users/liNao/.codex/worktrees/ui-fused-build/Unone/scripts/verify-player-parity.mjs:20
+  if(built.status!==0)throw new Error(`PLAYER_EXPORT_FAILED: ${built.stdout}\n${built.stderr}`);
+                            ^
+
+Error: PLAYER_EXPORT_FAILED: {
+  "ok": false,
+  "value": null,
+  "diagnostics": [
+    {
+      "code": "EXPORT_FAILED",
+      "severity": "ERROR",
+      "summary": "Web export failed",
+      "explanation": "WEB_MODULE_DEPENDENCY_MISSING: web/renderer/three.js -> ./sprite-cells.js (web/renderer/sprite-cells.js). Build the player with scripts/build-web-live.ps1 -Player, correct the reported input, and retry game export web with an empty output directory.",
+      "facts": {},
+      "likely_causes": [],
+      "suggested_actions": [],
+      "source": null
+    }
+  ],
+  "effects": []
+}
+
+
+    at file:///C:/Users/liNao/.codex/worktrees/ui-fused-build/Unone/scripts/verify-player-parity.mjs:20:29
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
+Exception: C:\Users\liNao\.codex\worktrees\ui-fused-build\Unone\scripts\build-web-live.ps1:135
+Line |
+ 135 |  … DE -ne 0) { throw 'Player artifact parity failed. Build the current n …
+     |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Player artifact parity failed. Build the current native CLI with cargo build -p unone-cli, fix any mismatch,
+     | then rerun this player build.
+
+

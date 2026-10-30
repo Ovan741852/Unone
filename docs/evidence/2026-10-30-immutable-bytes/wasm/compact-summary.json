@@ -1,0 +1,251 @@
+{
+  "schema": "unone.immutable-bytes.actual-wasm-compact.v1",
+  "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "runtime_pins": {
+    "runtime_harness": {
+      "path": "D:\\Projects\\Unone\\scripts\\immutable-bytes-emitted-runtime.mjs",
+      "bytes": 3825,
+      "sha256": "c937d4536fe352cc2b4132b711a85f5b14737ab99a5a10baa26f9fb0f9312720"
+    },
+    "runtime_manifest": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\runtime.json",
+      "bytes": 1638,
+      "sha256": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659"
+    },
+    "javascript": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\unone-player.js",
+      "bytes": 102701,
+      "sha256": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c"
+    },
+    "wasm": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\unone_player.wasm",
+      "bytes": 4820424,
+      "sha256": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0"
+    },
+    "fixture": {
+      "path": "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes.luau",
+      "bytes": 13378,
+      "sha256": "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848"
+    },
+    "observation_loader": {
+      "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+      "bytes": 10082,
+      "sha256": "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018"
+    }
+  },
+  "functional": {
+    "ok": true,
+    "checks": 353,
+    "rejections": 69,
+    "checkpoint_frames": [
+      0,
+      1,
+      2,
+      3,
+      0
+    ],
+    "checkpoint_digests": [
+      "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a",
+      "sha256:fbbb572ee3b61631583dbda981d6af74f8dded670dc374474a78ae06ff880bd5",
+      "sha256:5141a686af9ea250d43f7b4b6cd952c3f7c292e08720275ea2eaca50adfd281c",
+      "sha256:b73895bb0cae4c4cdf53a013222413f77cd3e2b31c3a6909cb0a4cf6ff59fbb5",
+      "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a"
+    ],
+    "native_pairing": {
+      "status": "outside-this-record",
+      "reason": "No executed native report supplied"
+    },
+    "cleanup": {
+      "attempted": true,
+      "unloaded": true,
+      "decoder_released": true
+    },
+    "stderr_count": 0,
+    "abort_count": 0
+  },
+  "operations": {
+    "ok": true,
+    "row_count": 33,
+    "protocol": {
+      "sizes": [
+        4096,
+        65536,
+        1048576
+      ],
+      "cases": [
+        "span",
+        "equals_mutable",
+        "equals_frozen",
+        "equals_mixed",
+        "equals_range_mutable",
+        "equals_range_frozen",
+        "equals_range_mixed",
+        "snapshot_mutable",
+        "snapshot_partial_frozen",
+        "snapshot_whole_frozen",
+        "readstring_same_content"
+      ],
+      "warmup_ticks_per_mode_sample": 3,
+      "rounds": 3,
+      "ticks_per_round": 4,
+      "mode_order": "baseline/actual alternates by round",
+      "seed": 42,
+      "timed_scope": "Synchronous actual _unone_web_tick call; input submission and JavaScript observation decoding are outside the timed span"
+    },
+    "selected_medians": [
+      {
+        "case": "span",
+        "sizes": [
+          4096,
+          65536,
+          1048576
+        ],
+        "actual_ns_per_op": [
+          155.51757812499318,
+          89.20898437500547,
+          89.25781250002098
+        ],
+        "adjusted_ns_per_op": [
+          108.34960937500246,
+          61.23046875002037,
+          63.37890625000843
+        ]
+      },
+      {
+        "case": "equals_frozen",
+        "sizes": [
+          4096,
+          65536,
+          1048576
+        ],
+        "actual_ns_per_op": [
+          380.664062500008,
+          4449.999999999844,
+          73099.99999999662
+        ],
+        "adjusted_ns_per_op": [
+          328.320312500019,
+          3809.3749999994493,
+          63349.9999999927
+        ]
+      },
+      {
+        "case": "equals_range_frozen",
+        "sizes": [
+          4096,
+          65536,
+          1048576
+        ],
+        "actual_ns_per_op": [
+          296.58203124999227,
+          2571.875000000112,
+          46175.00000000518
+        ],
+        "adjusted_ns_per_op": [
+          196.58203124997553,
+          1962.4999999998668,
+          36050.00000001013
+        ]
+      },
+      {
+        "case": "snapshot_mutable",
+        "sizes": [
+          4096,
+          65536,
+          1048576
+        ],
+        "actual_ns_per_op": [
+          467.2851562499969,
+          6393.750000000419,
+          57024.99999999589
+        ],
+        "adjusted_ns_per_op": [
+          422.9492187499684,
+          5484.375000000429,
+          47574.99999999482
+        ]
+      },
+      {
+        "case": "snapshot_partial_frozen",
+        "sizes": [
+          4096,
+          65536,
+          1048576
+        ],
+        "actual_ns_per_op": [
+          360.83984374998823,
+          3851.562499999961,
+          28774.999999996
+        ],
+        "adjusted_ns_per_op": [
+          282.3242187499908,
+          2989.0625000001946,
+          19574.999999989017
+        ]
+      },
+      {
+        "case": "snapshot_whole_frozen",
+        "sizes": [
+          4096,
+          65536,
+          1048576
+        ],
+        "actual_ns_per_op": [
+          73.97460937499933,
+          73.09570312499791,
+          69.58007812500611
+        ],
+        "adjusted_ns_per_op": [
+          49.072265624991445,
+          47.70507812498769,
+          43.65234375000583
+        ]
+      },
+      {
+        "case": "readstring_same_content",
+        "sizes": [
+          4096,
+          65536,
+          1048576
+        ],
+        "actual_ns_per_op": [
+          460.5468749999952,
+          6104.687500000149,
+          101675.00000000728
+        ],
+        "adjusted_ns_per_op": [
+          416.11328124999125,
+          5493.7500000002965,
+          91950.00000000419
+        ]
+      }
+    ],
+    "negative_adjusted_rows": 0,
+    "cleanup": {
+      "attempted": true,
+      "unloaded": true,
+      "decoder_released": true
+    },
+    "stderr_count": 0,
+    "abort_count": 0
+  },
+  "limits": [
+    "Tick wall includes Core publication and assertions; baseline adjustment is not isolated memcpy/memcmp time.",
+    "Root sizes are4KiB/64KiB/1MiB; range cases read half of the root.",
+    "No allocation-count, browser/FPS, leak or natural-GC-frequency conclusion.",
+    "Native historical report fixture65a7557 differs from WASMfixturef1165619; no matching-native pairing is inferred.",
+    "Natural-pressure WASM lifetime probe is pending."
+  ],
+  "references": [
+    {
+      "path": "D:/Projects/Unone/.cache/immutable-bytes-wasm-functional-905e20e-run1/report.json",
+      "bytes": 15977,
+      "sha256": "fa2619a2f9f7329cbe7bfa739b01048be3092cc57963f138f3188e3999e12f90"
+    },
+    {
+      "path": "D:/Projects/Unone/.cache/immutable-bytes-wasm-operations-905e20e-run1/report.json",
+      "bytes": 289599,
+      "sha256": "a6d0867f8006e61746e5411ce6a65a7c553653a0b2ecae449e5b7ff0893a2702"
+    }
+  ]
+}

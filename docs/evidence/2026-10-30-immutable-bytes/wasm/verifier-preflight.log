@@ -1,0 +1,14 @@
+✔ a rejected runtime-contained output leaves its immutable runtime untouched (97.4576ms)
+✔ normalized traversal into the runtime is rejected before writes (67.7386ms)
+✔ manifest rejection preserves a fresh failed report without initializing a VM (72.7461ms)
+✔ an existing evidence directory is preserved instead of overwritten (74.3932ms)
+✔ native pairing cannot proceed with an unpinned report (66.0015ms)
+✔ malformed source pins fail before creating evidence (79.741ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 526.0622

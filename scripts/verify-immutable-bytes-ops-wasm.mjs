@@ -41,7 +41,7 @@ const report = {
   started_at: new Date().toISOString(), node: process.version,
   command: {executable: process.execPath, argv: process.argv.slice(1), cwd: process.cwd()},
   pins: {}, stderr: [], stderr_overflow: 0, aborts: [], rows: [],
-  protocol: {sizes, cases, warmup_ticks_per_mode: warmupTicks, rounds, ticks_per_round: ticksPerRound,
+  protocol: {sizes, cases, warmup_ticks_per_mode_sample: warmupTicks, rounds, ticks_per_round: ticksPerRound,
     mode_order: 'baseline/actual alternates by round', seed: 42,
     timed_scope: 'Synchronous actual _unone_web_tick call; input submission and JavaScript observation decoding are outside the timed span'},
   cleanup: {attempted: false, unloaded: false, decoder_released: false},
@@ -117,11 +117,11 @@ try {
   for (const size of sizes) for (let index = 1; index <= cases.length; index++) {
     const row = {size, case: cases[index - 1], case_index: index, rounds: []};
     report.rows.push(row);
-    for (const baseline of [true, false]) for (let tick = 0; tick < warmupTicks; tick++) sample(size, index, baseline, false);
     for (let round = 0; round < rounds; round++) {
       const measured = {round, order: round % 2 === 0 ? ['baseline', 'actual'] : ['actual', 'baseline']};
       row.rounds.push(measured);
       for (const mode of measured.order) {
+        for (let tick = 0; tick < warmupTicks; tick++) sample(size, index, mode === 'baseline', false);
         measured[mode] = [];
         for (let tick = 0; tick < ticksPerRound; tick++) measured[mode].push(sample(size, index, mode === 'baseline', true));
       }

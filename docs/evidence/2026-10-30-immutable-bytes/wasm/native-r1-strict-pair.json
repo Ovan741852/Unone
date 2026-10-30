@@ -1,0 +1,520 @@
+{
+  "schema": "unone.immutable-bytes.functional-wasm.v1",
+  "ok": true,
+  "started_at": "2026-10-30T15:58:25.082Z",
+  "node": "v24.19.0",
+  "command": {
+    "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "argv": [
+      "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-functional-wasm.mjs",
+      "--runtime",
+      "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+      "--expected-manifest",
+      "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+      "--expected-javascript",
+      "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+      "--expected-wasm",
+      "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+      "--expected-source",
+      "905e20e9a552eef4930690d13c5cf58829dc55cb",
+      "--expected-loader",
+      "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018",
+      "--fixture",
+      "D:\\Projects\\Unone\\.cache\\immutable-bytes-fixture-transition-905e20e-run1\\historical-native-r1-65a7557.luau",
+      "--expected-fixture",
+      "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38",
+      "--out",
+      "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-native-pair-905e20e-run1",
+      "--native-report",
+      "D:\\Projects\\Unone\\.cache\\immutable-bytes-native-final-r1.json",
+      "--expected-native-report",
+      "8ed7d36b930f2db63a722b855415824e32749be3840f1949bb7eea7132aa0f67"
+    ],
+    "cwd": "D:\\Projects\\Unone"
+  },
+  "pins": {
+    "runtime_harness": {
+      "path": "D:\\Projects\\Unone\\scripts\\immutable-bytes-emitted-runtime.mjs",
+      "bytes": 3825,
+      "sha256": "c937d4536fe352cc2b4132b711a85f5b14737ab99a5a10baa26f9fb0f9312720"
+    },
+    "runtime_manifest": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\runtime.json",
+      "bytes": 1638,
+      "sha256": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659"
+    },
+    "javascript": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\unone-player.js",
+      "bytes": 102701,
+      "sha256": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c"
+    },
+    "wasm": {
+      "path": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e\\unone_player.wasm",
+      "bytes": 4820424,
+      "sha256": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0"
+    },
+    "fixture": {
+      "path": "D:\\Projects\\Unone\\.cache\\immutable-bytes-fixture-transition-905e20e-run1\\historical-native-r1-65a7557.luau",
+      "bytes": 13313,
+      "sha256": "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38"
+    },
+    "observation_loader": {
+      "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+      "bytes": 10082,
+      "sha256": "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018"
+    },
+    "native_report": {
+      "path": "D:\\Projects\\Unone\\.cache\\immutable-bytes-native-final-r1.json",
+      "bytes": 8695,
+      "sha256": "8ed7d36b930f2db63a722b855415824e32749be3840f1949bb7eea7132aa0f67"
+    }
+  },
+  "checks": [
+    "Actual emitted module exposes Core ABI",
+    "Shared expanded fixture passes at load and frames 1..3",
+    "Actually executed Native report matches WASM canonical digest and values at frames 0..3",
+    "Unload and new runtime reproduce the complete initial canonical result"
+  ],
+  "checkpoints": [
+    {
+      "label": "initial",
+      "frame": 0,
+      "observation_digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a",
+      "observations": {
+        "copied_value": 3735928559,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 0,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "frame": 0,
+        "time_seconds": 0,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "zoom": 1,
+          "view_height": 10
+        },
+        "entities": {},
+        "observations": {
+          "copied_value": 3735928559,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 0,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        }
+      }
+    },
+    {
+      "label": "tick-1",
+      "frame": 1,
+      "observation_digest": "sha256:fbbb572ee3b61631583dbda981d6af74f8dded670dc374474a78ae06ff880bd5",
+      "observations": {
+        "copied_value": 3735928559,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 1,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "frame": 1,
+        "time_seconds": 0.016666666666666666,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "zoom": 1,
+          "view_height": 10
+        },
+        "entities": {},
+        "observations": {
+          "copied_value": 3735928559,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 1,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        }
+      }
+    },
+    {
+      "label": "tick-2",
+      "frame": 2,
+      "observation_digest": "sha256:5141a686af9ea250d43f7b4b6cd952c3f7c292e08720275ea2eaca50adfd281c",
+      "observations": {
+        "copied_value": 3735928559,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 2,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "frame": 2,
+        "time_seconds": 0.03333333333333333,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "zoom": 1,
+          "view_height": 10
+        },
+        "entities": {},
+        "observations": {
+          "copied_value": 3735928559,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 2,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        }
+      }
+    },
+    {
+      "label": "tick-3",
+      "frame": 3,
+      "observation_digest": "sha256:b73895bb0cae4c4cdf53a013222413f77cd3e2b31c3a6909cb0a4cf6ff59fbb5",
+      "observations": {
+        "copied_value": 3735928559,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 3,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "frame": 3,
+        "time_seconds": 0.05,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "zoom": 1,
+          "view_height": 10
+        },
+        "entities": {},
+        "observations": {
+          "copied_value": 3735928559,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 3,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        }
+      }
+    },
+    {
+      "label": "fresh-after-unload",
+      "frame": 0,
+      "observation_digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a",
+      "observations": {
+        "copied_value": 3735928559,
+        "frozen_input_index": 1,
+        "frozen_value": 3735928559,
+        "immutable_bytes_boundary": "unchanged",
+        "immutable_bytes_checks": 353,
+        "immutable_bytes_lifetime_value": 17,
+        "immutable_bytes_pass": true,
+        "immutable_bytes_rejections": 69,
+        "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+        "immutable_bytes_ticks": 0,
+        "rejected_ranges": 3,
+        "rejected_types": 3,
+        "rejected_writes": 14,
+        "snapshot_tail": 42,
+        "snapshot_whole": 42
+      },
+      "save_payload": {
+        "immutable_bytes": "portable-only",
+        "revision": 1
+      },
+      "world": {
+        "spatial": {
+          "indices": [
+            {
+              "bodies_sha256": "fc43684588dec581629a9bccbac8a78d52bb36553b7a6611dad35439c42b0105",
+              "body_count": 1,
+              "id": 1,
+              "version": 1
+            }
+          ],
+          "sequence": 1,
+          "tickets": []
+        },
+        "frame": 0,
+        "time_seconds": 0,
+        "camera": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "zoom": 1,
+          "view_height": 10
+        },
+        "entities": {},
+        "observations": {
+          "copied_value": 3735928559,
+          "frozen_input_index": 1,
+          "frozen_value": 3735928559,
+          "immutable_bytes_boundary": "unchanged",
+          "immutable_bytes_checks": 353,
+          "immutable_bytes_lifetime_value": 17,
+          "immutable_bytes_pass": true,
+          "immutable_bytes_rejections": 69,
+          "immutable_bytes_signature": "bytes-v2:256:32640:4294967295",
+          "immutable_bytes_ticks": 0,
+          "rejected_ranges": 3,
+          "rejected_types": 3,
+          "rejected_writes": 14,
+          "snapshot_tail": 42,
+          "snapshot_whole": 42
+        }
+      }
+    }
+  ],
+  "stderr": [],
+  "stderr_overflow": 0,
+  "aborts": [],
+  "cleanup": {
+    "attempted": true,
+    "unloaded": true,
+    "decoder_released": true
+  },
+  "limitations": [
+    "Functional execution of a newly emitted WASM Core and the unchanged shared fixture; no Lua replacement is injected.",
+    "Existing SDK19/7510 and pre-span 28df runtimes cannot satisfy this gate.",
+    "This record does not establish rendering, FPS, comparison-allocation counts, GC frequency or leak freedom.",
+    "Native parity is claimed only when an explicitly pinned, actually executed native report is supplied and matches.",
+    "No gameplay project, SDK selection, browser, forced collector or performance clock is changed."
+  ],
+  "runtime_metadata": {
+    "dev_tools": false,
+    "sampling_profile": false,
+    "phase_profile": false,
+    "profile": "release",
+    "profile_mode": "none",
+    "wasm_bytes": 4820424,
+    "preview_tools": false,
+    "javascript": "unone-player.js",
+    "exports": [
+      "init",
+      "alloc",
+      "stage_data",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "input",
+      "jobs",
+      "observation",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui",
+      "world"
+    ],
+    "bytecode_optimization_level": 2,
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "wasm": "unone_player.wasm",
+    "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+    "wasm_sha256": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+    "javascript_sha256": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+    "source_dirty": false,
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "jobs",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui"
+    ]
+  },
+  "native_pairing": {
+    "status": "passed",
+    "compared_frames": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "finished_at": "2026-10-30T15:58:25.201Z"
+}

@@ -1,0 +1,23 @@
+{
+  "scope": "Exact executed fixture bytes, preserved without Git line-ending conversion for cross-platform reproduction",
+  "fixtures": [
+    {
+      "kind": "functional",
+      "path": "docs\\evidence\\2026-10-30-immutable-bytes\\wasm\\executed-immutable-bytes.luau",
+      "bytes": 13378,
+      "sha256": "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848"
+    },
+    {
+      "kind": "operations",
+      "path": "docs\\evidence\\2026-10-30-immutable-bytes\\wasm\\executed-immutable-bytes-ops-perf.luau",
+      "bytes": 4484,
+      "sha256": "db739afbaa9d639a1b08cd60e64787e7f6d0085b4aa166bc487de96d9153463a"
+    },
+    {
+      "kind": "natural-gc",
+      "path": "docs\\evidence\\2026-10-30-immutable-bytes\\wasm\\executed-immutable-bytes-natural-gc.luau",
+      "bytes": 3591,
+      "sha256": "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0"
+    }
+  ]
+}

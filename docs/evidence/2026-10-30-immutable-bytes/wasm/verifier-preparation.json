@@ -1,0 +1,53 @@
+{
+  "schema": "unone.immutable-bytes.wasm-verifier-preparation.v1",
+  "status": "source-frozen-awaiting-root-new-clean-wasm-build",
+  "owned_sources": [
+    {"path":"scripts/immutable-bytes-emitted-runtime.mjs","sha256":"c937d4536fe352cc2b4132b711a85f5b14737ab99a5a10baa26f9fb0f9312720"},
+    {"path":"scripts/verify-immutable-bytes-functional-wasm.mjs","sha256":"c04986e26e63756dd9f99850526e89812ee6c5ec1aece67b8cc7a620c536d82f"},
+    {"path":"scripts/verify-immutable-bytes-functional-wasm.test.mjs","sha256":"64980a6e442befabd3cd356225b43d257adee9fcebed118f25bb71f535e467ad"},
+    {"path":"scripts/verify-immutable-bytes-ops-wasm.mjs","sha256":"8297d1b0c6f8fbf059fe3d589ac93a3f0a0b9ea8dd645ecce573047fadf51226"}
+  ],
+  "shared_fixture_pins": {
+    "functional":"f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848",
+    "operations":"db739afbaa9d639a1b08cd60e64787e7f6d0085b4aa166bc487de96d9153463a"
+  },
+  "syntax": {
+    "status":"passed",
+    "commands":[
+      "node --check scripts/immutable-bytes-emitted-runtime.mjs",
+      "node --check scripts/verify-immutable-bytes-functional-wasm.mjs",
+      "node --check scripts/verify-immutable-bytes-ops-wasm.mjs"
+    ]
+  },
+  "preflight_tests": {
+    "command":"node --test scripts/verify-immutable-bytes-functional-wasm.test.mjs",
+    "log":".cache/immutable-bytes-verifier-preflight-tests-r3.log",
+    "tests":6,"passed":6,"failed":0,"skipped":0,"duration_ms":526.0622,
+    "scope":"Actual Node subprocess preflight and failure evidence only. No VM or replacement immutable-bytes implementation executes in these tests."
+  },
+  "old_wasm_probe": {
+    "report":".cache/immutable-bytes-old28df-red-run1/report.json",
+    "executed_once":true,
+    "process_exit_code":1,
+    "span_missing_reproduced":true,
+    "fractional_and_numeric_string_snapshot_acceptance_reproduced":true,
+    "two_to_the_32_overflow_reproduced":false,
+    "reason_for_exit":"The expected overflow failure did not reproduce on this WASM; raw failure was preserved rather than relabelled.",
+    "unload_status":0,"remaining_publication_bytes":0
+  },
+  "independent_vm_source_review": {
+    "status":"clear-no-concrete-P1-P2-in-bounded-scope",
+    "scope":[
+      "Ultimate-root ownership and GC marking of buffer views",
+      "Header-only view allocation/free/debug accounting",
+      "Source rooting through C API checkGC/threadbarrier and view publication",
+      "VM data pointer and logical bounds use",
+      "x64 scoped data register lifetime and A64 instruction-local temporaries",
+      "Strict integer roundtrip and unordered-NaN fallback lowering"
+    ],
+    "execution_not_claimed":["new WASM","native","ARM64 codegen"]
+  },
+  "new_wasm_execution":"not-started-awaiting-root-build-and-grant",
+  "native_execution":"outside-this-record",
+  "browser_fps_gc_or_leak_acceptance":"outside-this-record"
+}

@@ -1,0 +1,223 @@
+{
+  "schema": "unone.immutable-bytes.old-wasm-red.v1",
+  "ok": false,
+  "red_reproduced": false,
+  "contract_source_commit": "1f1219821a0bbe05b876ee3c2fe0b82485ff1b1a",
+  "runtime": "D:\\Projects\\Unone\\artifacts\\player-runtime-bytes",
+  "pins": {
+    "manifest": "e921142ebd7346a254d7cc3223c25990817148663947ac0eb603393e8bec714e",
+    "javascript": "6aa82c299556f3bc4fe00653744d8010de11cc03d414819faa5f547ea3735ece",
+    "wasm": "28df55e68e5716bbde46df97fd96c70129f50842f7da5f9fa65c58eaf02a1ba6"
+  },
+  "runtime_build_metadata": {
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "input",
+      "jobs",
+      "observation",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui",
+      "world"
+    ],
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "jobs",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui"
+    ],
+    "profile": "release",
+    "dev_tools": false,
+    "preview_tools": false,
+    "phase_profile": false,
+    "sampling_profile": false,
+    "bytecode_optimization_level": 2,
+    "profile_mode": "none",
+    "javascript": "unone-player.js",
+    "wasm": "unone_player.wasm",
+    "wasm_bytes": 4759569,
+    "wasm_sha256": "28df55e68e5716bbde46df97fd96c70129f50842f7da5f9fa65c58eaf02a1ba6",
+    "javascript_sha256": "6aa82c299556f3bc4fe00653744d8010de11cc03d414819faa5f547ea3735ece",
+    "exports": [
+      "init",
+      "alloc",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "source_commit": "dab0e111913656d7b66c914f557fc56223c63578",
+    "source_dirty": true
+  },
+  "loader_sha256": "eb500c062b6ec59d039679f02b820f6df5ea20ac92db99f7223e5511dbcac476",
+  "cases": [
+    {
+      "name": "span-missing",
+      "source_sha256": "09fc658489d4de47689948b0d2f7ee1fc01a4374dfe40ec3e1c6ec51688e506d",
+      "expected_contract_pass": false,
+      "failure": "Error: HOST_PROJECT_REJECTED: {\"diagnostic\":{\"code\":\"LUAU_RUNTIME_ERROR\",\"explanation\":\"runtime error: [string \\\"span-missing.luau\\\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\\nstack traceback:\\n\\t[C]: in ?\\n\\t[C]: in function 'assert'\\n\\t[string \\\"span-missing.luau\\\"]:1: in function 'start'\",\"facts\":{\"message\":\"runtime error: [string \\\"span-missing.luau\\\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\\nstack traceback:\\n\\t[C]: in ?\\n\\t[C]: in function 'assert'\\n\\t[string \\\"span-missing.luau\\\"]:1: in function 'start'\",\"runtime\":\"Luau\",\"script\":\"span-missing.luau\"},\"likely_causes\":[\"The entry script syntax or Engine API calls do not satisfy the current contract\",\"The script uses a missing Entity or field at runtime\"],\"severity\":\"ERROR\",\"source\":{\"column\":null,\"file\":\"span-missing.luau\",\"line\":1},\"suggested_actions\":[{\"action\":\"check_script\",\"command\":\"game check --json\",\"description\":\"Check the entry script contract first.\"},{\"action\":\"inspect_project\",\"command\":\"game project inspect --json\",\"description\":\"Confirm the scene and Entity ids.\"}],\"summary\":\"Luau script could not be loaded or executed\"},\"diagnostics\":[{\"code\":\"LUAU_RUNTIME_ERROR\",\"explanation\":\"runtime error: [string \\\"span-missing.luau\\\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\\nstack traceback:\\n\\t[C]: in ?\\n\\t[C]: in function 'assert'\\n\\t[string \\\"span-missing.luau\\\"]:1: in function 'start'\",\"facts\":{\"message\":\"runtime error: [string \\\"span-missing.luau\\\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\\nstack traceback:\\n\\t[C]: in ?\\n\\t[C]: in function 'assert'\\n\\t[string \\\"span-missing.luau\\\"]:1: in function 'start'\",\"runtime\":\"Luau\",\"script\":\"span-missing.luau\"},\"likely_causes\":[\"The entry script syntax or Engine API calls do not satisfy the current contract\",\"The script uses a missing Entity or field at runtime\"],\"severity\":\"ERROR\",\"source\":{\"column\":null,\"file\":\"span-missing.luau\",\"line\":1},\"suggested_actions\":[{\"action\":\"check_script\",\"command\":\"game check --json\",\"description\":\"Check the entry script contract first.\"},{\"action\":\"inspect_project\",\"command\":\"game project inspect --json\",\"description\":\"Confirm the scene and Entity ids.\"}],\"summary\":\"Luau script could not be loaded or executed\"}],\"effects\":[],\"error\":\"runtime error: [string \\\"span-missing.luau\\\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\\nstack traceback:\\n\\t[C]: in ?\\n\\t[C]: in function 'assert'\\n\\t[string \\\"span-missing.luau\\\"]:1: in function 'start'\",\"kind\":\"web_error\",\"message\":\"runtime error: [string \\\"span-missing.luau\\\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\\nstack traceback:\\n\\t[C]: in ?\\n\\t[C]: in function 'assert'\\n\\t[string \\\"span-missing.luau\\\"]:1: in function 'start'\",\"ok\":false,\"value\":null}",
+      "core_error": {
+        "diagnostic": {
+          "code": "LUAU_RUNTIME_ERROR",
+          "explanation": "runtime error: [string \"span-missing.luau\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"span-missing.luau\"]:1: in function 'start'",
+          "facts": {
+            "message": "runtime error: [string \"span-missing.luau\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"span-missing.luau\"]:1: in function 'start'",
+            "runtime": "Luau",
+            "script": "span-missing.luau"
+          },
+          "likely_causes": [
+            "The entry script syntax or Engine API calls do not satisfy the current contract",
+            "The script uses a missing Entity or field at runtime"
+          ],
+          "severity": "ERROR",
+          "source": {
+            "column": null,
+            "file": "span-missing.luau",
+            "line": 1
+          },
+          "suggested_actions": [
+            {
+              "action": "check_script",
+              "command": "game check --json",
+              "description": "Check the entry script contract first."
+            },
+            {
+              "action": "inspect_project",
+              "command": "game project inspect --json",
+              "description": "Confirm the scene and Entity ids."
+            }
+          ],
+          "summary": "Luau script could not be loaded or executed"
+        },
+        "diagnostics": [
+          {
+            "code": "LUAU_RUNTIME_ERROR",
+            "explanation": "runtime error: [string \"span-missing.luau\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"span-missing.luau\"]:1: in function 'start'",
+            "facts": {
+              "message": "runtime error: [string \"span-missing.luau\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"span-missing.luau\"]:1: in function 'start'",
+              "runtime": "Luau",
+              "script": "span-missing.luau"
+            },
+            "likely_causes": [
+              "The entry script syntax or Engine API calls do not satisfy the current contract",
+              "The script uses a missing Entity or field at runtime"
+            ],
+            "severity": "ERROR",
+            "source": {
+              "column": null,
+              "file": "span-missing.luau",
+              "line": 1
+            },
+            "suggested_actions": [
+              {
+                "action": "check_script",
+                "command": "game check --json",
+                "description": "Check the entry script contract first."
+              },
+              {
+                "action": "inspect_project",
+                "command": "game project inspect --json",
+                "description": "Confirm the scene and Entity ids."
+              }
+            ],
+            "summary": "Luau script could not be loaded or executed"
+          }
+        ],
+        "effects": [],
+        "error": "runtime error: [string \"span-missing.luau\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"span-missing.luau\"]:1: in function 'start'",
+        "kind": "web_error",
+        "message": "runtime error: [string \"span-missing.luau\"]:1: BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"span-missing.luau\"]:1: in function 'start'",
+        "ok": false,
+        "value": null
+      }
+    },
+    {
+      "name": "numeric-ranges",
+      "source_sha256": "34dbeb3423ca5e66d2aec5eb1ab8f081cb2031c518c7b5f9236238825fb11c35",
+      "observation_digest": "sha256:c815ad6c01e155dd0ee298fe0e482b017f039f310d119e3cab126f5c90af9287",
+      "results": {
+        "length-2pow32": {
+          "accepted": false,
+          "error": "BYTES_RANGE_INVALID: api.bytes.snapshot range is outside the buffer",
+          "output_length": -1
+        },
+        "length-fraction": {
+          "accepted": true,
+          "error": "",
+          "output_length": 1
+        },
+        "numeric-string": {
+          "accepted": true,
+          "error": "",
+          "output_length": 1
+        },
+        "offset-2pow32": {
+          "accepted": false,
+          "error": "BYTES_RANGE_INVALID: api.bytes.snapshot range is outside the buffer",
+          "output_length": -1
+        },
+        "offset-2pow32-plus1": {
+          "accepted": false,
+          "error": "BYTES_RANGE_INVALID: api.bytes.snapshot range is outside the buffer",
+          "output_length": -1
+        },
+        "offset-fraction": {
+          "accepted": true,
+          "error": "",
+          "output_length": 1
+        }
+      },
+      "expected_contract_pass": false
+    }
+  ],
+  "stderr": [],
+  "aborts": [],
+  "cleanup": {
+    "unload_status": 0,
+    "publication_bytes": 0,
+    "decoder_released": true
+  },
+  "scope": "Actual frozen pre-span WASM negative control, no new implementation pass, benchmark, browser or Game change",
+  "accepted_invalid_arguments": [
+    "length-fraction",
+    "numeric-string",
+    "offset-fraction"
+  ],
+  "overflow_red_reproduced": false,
+  "strict_number_red_reproduced": true,
+  "error": "AssertionError [ERR_ASSERTION]: No overflow RED reproduced; preserve raw and investigate, do not relabel\n    at file:///D:/Projects/Unone/.cache/immutable-bytes-old28df-red.mjs:52:2"
+}

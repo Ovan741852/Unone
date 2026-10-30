@@ -1,0 +1,7 @@
+   Compiling mlua-sys v0.10.0
+   Compiling mlua v0.11.6 (D:\Projects\Unone\vendor\mlua)
+   Compiling unone-engine v0.2.0 (D:\Projects\Unone\crates\unone-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 38.89s
+  Executable tests\bytes_perf.rs (target\debug\deps\bytes_perf-615211bbf9602d8a.exe)
+  Executable tests\immutable_bytes.rs (target\debug\deps\immutable_bytes-bb8ca1f12e8b3601.exe)
+  Executable tests\immutable_bytes_host.rs (target\debug\deps\immutable_bytes_host-c3027b05794bfccd.exe)

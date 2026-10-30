@@ -1,0 +1,7 @@
+{
+  "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "ended_utc": "2026-10-30T15:49:14.6948250Z",
+  "exit_code": 1,
+  "cli_scope": "Existing pre-span CLI used only for systems resolution/bootstrap export gate; new matching CLI release separately blocked 4551",
+  "source_directory": "C:\\Users\\liNao\\.codex\\worktrees\\ui-fused-build\\Unone"
+}

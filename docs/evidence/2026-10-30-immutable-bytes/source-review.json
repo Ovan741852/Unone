@@ -1,0 +1,375 @@
+{
+  "schema": "unone.immutable-bytes.source-review.v1",
+  "recorded_utc": "2026-10-30T15:45:39.977Z",
+  "captured_head": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "scope": "VM readonly-buffer, genuinely bounded shared buffer views, safe host mutation, strict range conversion, direct comparisons, GC/accounting/codegen and build-dependency tracking. Concurrent asset/export/game work excluded.",
+  "public_contract": {
+    "functions": [
+      "freeze",
+      "isFrozen",
+      "snapshot",
+      "span",
+      "equals",
+      "equalsRange"
+    ],
+    "span": "Actual readonly buffer, independent logical bounds, O(1) metadata and flattened strong root owner; keeping a small span pins the whole root.",
+    "comparison": "Immediate byte comparison on every call, mutable or frozen buffers; no string/span/hash/memo allocation or retained alias.",
+    "ownership": "Guest Luau writes and checked safe Rust mlua writes reject frozen payloads. Arbitrary unsafe raw native/FFI or host WASM-linear-memory mutation is outside the guarantee."
+  },
+  "findings": [
+    {
+      "id": "IB-01",
+      "status": "fixed-executed-in-new-native-tests",
+      "problem": "Safe mlua write_bytes/cursor bypassed the original VM readonly flag.",
+      "baseline": "Source-confirmed. Initial host test compiled but never executed due Windows App Control4551; do not call that an observed runtime RED.",
+      "fix": "Vendored mlua checks readonly under the same VM lock before constructing any mutable slice; range errors remain atomic; cursor rejection preserves position."
+    },
+    {
+      "id": "IB-02",
+      "status": "fixed-executed-in-new-native-tests",
+      "problem": "Snapshot accepted coercing/truncating range values and computed a signed default subtraction before validation.",
+      "baseline": "Actual old WASM accepted offset/length1.5 and numeric-string0. Its tested 2^32 and2^32+1 inputs were rejected; overflow was not reproduced.",
+      "fix": "Validate actual finite safe integer numbers before casts and default subtraction. Apply equivalent strict range/count rules to the standard buffer library, fastcalls and inlined native reads; write payload-value semantics unchanged."
+    },
+    {
+      "id": "IB-03",
+      "status": "implemented-executed-in-new-native-tests",
+      "problem": "Pre-span runtime had no independently bounded zero-copy buffer view.",
+      "fix": "Real buffer data pointer, logical length and flattened root GC edge; metadata-only allocation/free/debug size; codegen loads data pointer while bounds use logical length."
+    },
+    {
+      "id": "IB-04",
+      "status": "fixed-default-native-red-to-green",
+      "problem": "cc cargo_metadata(false) plus missing C++ source dependency declaration allowed default-feature builds to reuse an older VM archive.",
+      "observed_red": "Four default public tests failed at malformed ordinary buffer read while the fresh no-preview/JIT build passed.",
+      "fix": "Emit cargo:rerun-if-changed for absolute vendored luau subtree; Cargo recursively watches source/header contents. R2 rebuilt Luau and passed. No cache deletion, executable renaming or OS policy bypass.",
+      "limit": "A separate later C++-only edit/retrigger experiment was not run; recursive Cargo dependency semantics and the emitted source declaration were inspected."
+    }
+  ],
+  "negative_controls": {
+    "old_wasm": {
+      "manifest_sha256": "e921142ebd7346a254d7cc3223c25990817148663947ac0eb603393e8bec714e",
+      "wasm_sha256": "28df55e68e5716bbde46df97fd96c70129f50842f7da5f9fa65c58eaf02a1ba6",
+      "javascript_sha256": "6aa82c299556f3bc4fe00653744d8010de11cc03d414819faa5f547ea3735ece",
+      "build_source_commit": "dab0e111913656d7b66c914f557fc56223c63578",
+      "build_source_dirty": true,
+      "missing_span_observed": true,
+      "strict_number_red_reproduced": true,
+      "accepted_invalid_arguments": [
+        "length-fraction",
+        "numeric-string",
+        "offset-fraction"
+      ],
+      "overflow_red_reproduced": false,
+      "raw_runner_ok": false,
+      "raw_runner_red_reproduced": false,
+      "raw_failure_preserved": "Runner expected an overflow reproduction and therefore ended with an assertion. Do not relabel that aggregate result as a pass.",
+      "cleanup": {
+        "unload_status": 0,
+        "publication_bytes": 0,
+        "decoder_released": true
+      }
+    },
+    "initial_host": {
+      "status": "blocked-not-executed",
+      "exit_code": 101,
+      "os_error": 4551,
+      "compiled": true,
+      "test_executable_started": false
+    },
+    "compile_r1": {
+      "status": "linker-failed-not-tests-executed",
+      "exit_code": 101,
+      "error": "cannot find -lgcc_eh",
+      "resolution": "Root corrected LIBRARY_PATH for the normal toolchain; not an App Control result."
+    }
+  },
+  "executed_native": {
+    "production_r1": {
+      "exit_code": 0,
+      "public_pass": 2,
+      "host_pass": 7,
+      "failed": 0,
+      "benchmark_ignored": 1,
+      "architecture": "Windows x86_64-pc-windows-gnu",
+      "rust_profile": "test/debug",
+      "features": "--no-default-features --features all-systems,native-codegen",
+      "actual_compiled_writer_dynamic_reader_literal_nan_reader_probe": true,
+      "dev_tools_reload_tests_in_this_run": false,
+      "canonical_fixture_sha256": "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38",
+      "canonical_frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "canonical_digests": [
+        "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a",
+        "sha256:fbbb572ee3b61631583dbda981d6af74f8dded670dc374474a78ae06ff880bd5",
+        "sha256:5141a686af9ea250d43f7b4b6cd952c3f7c292e08720275ea2eaca50adfd281c",
+        "sha256:b73895bb0cae4c4cdf53a013222413f77cd3e2b31c3a6909cb0a4cf6ff59fbb5"
+      ]
+    },
+    "default_red_r1": {
+      "exit_code": 101,
+      "public_failed": 4,
+      "reason": "Stale C++ archive exposed coercing ordinary buffer range handling."
+    },
+    "default_green_r2": {
+      "exit_code": 0,
+      "public_pass": 4,
+      "host_pass": 6,
+      "failed": 0,
+      "includes_dev_tools_failed_and_successful_reload": true,
+      "jit_execution_claim": false
+    },
+    "warning": "Production R1 report pins its own historical fixture. The later diagnostic-only expectFailure message update changes the fixture hash; no final matching Native/WASM report or release pin is inferred here."
+  },
+  "independent_review": {
+    "codex": {
+      "status": "bounded-source-clear-after-corrections",
+      "participants": [
+        "Root reviewed VM layout, GC and C argument checks.",
+        "Web reviewer independently checked GC rooting/accounting, codegen address temporaries and NaN fallback semantics.",
+        "Runtime reviewer independently checked safe mlua mutation and Native/public/shared test assertions."
+      ],
+      "no_remaining_concrete_p1_p2_in_reviewed_scope": true,
+      "not_an_execution_or_full_engine_audit": true
+    },
+    "claude": {
+      "status": "timed-out-incomplete",
+      "review_completed": false,
+      "version": "2.1.308 (Claude Code)",
+      "command": [
+        "C:/Users/liNao/.local/bin/claude.exe",
+        "--safe-mode",
+        "--restricted",
+        "--strict-mcp-config",
+        "--tools",
+        "",
+        "--permission-mode",
+        "plan",
+        "--permission-prompts",
+        "none",
+        "--disable-slash-commands",
+        "--no-session-persistence",
+        "--output-format",
+        "json",
+        "--print"
+      ],
+      "stdin": "claude-incomplete/prompt.txt",
+      "timeout_ms": 60000,
+      "elapsed_ms": 60340.3813,
+      "exit_code": 1,
+      "timed_out": true,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "base_revision": "1f1219821a0bbe05b876ee3c2fe0b82485ff1b1a",
+      "captured_head": "5e69fd659c1186b90b8b88fa12c9285320332d81",
+      "fixed_diff_sha256": "1242003159969b61b70a87eeb04fe4770e05f281a7460b4ac2fe81f16dc2e0f8",
+      "prompt_sha256": "1dc94cb6ca175cbe369cc331d1865b86234d42ac66033b719c7264e4f03b8d1a",
+      "changed_scope_after_review": [],
+      "interpretation": "No response; independent Claude review remains incomplete, with no findings disposition. Capture predates the subsequent C++ dependency-tracking fix and final fixture diagnostic wording."
+    }
+  },
+  "pending_final_acceptance": {
+    "new_production_wasm_execution": "pending-root-record",
+    "matching_final_native_wasm_canonical_pair": "pending-root-record",
+    "final_native_runtime_pin": null,
+    "final_wasm_pin": null,
+    "indexed_sdk_handoff": "pending-root-record",
+    "performance_or_zero_allocation_measurements": "not-established-here"
+  },
+  "limitations": [
+    "Native execution is Windows x86_64 only; A64 lowering is source-reviewed but unexecuted.",
+    "No final emitted WASM or worker/browser acceptance is claimed by this record.",
+    "Unit-only forced GC establishes the tested ownership lifetime, not natural GC frequency or universal leak freedom.",
+    "No FPS, physical presentation, universal memory-leak absence or no-frequent-GC conclusion.",
+    "Raw unsafe host/FFI/WASM memory authority is excluded.",
+    "Readonly is a VM runtime buffer flag; the public Luau type remains buffer rather than a compile-time write-prohibited type.",
+    "Claude timed out without output; bounded Codex source clearance is recorded separately."
+  ],
+  "source_pins": "source-pins.json",
+  "references": [
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-old28df-red-run1/report.json",
+      "archive": "old28df-red/report.json",
+      "bytes": 11293,
+      "sha256": "52a57ecc7942c881bcd4ce0839f6a1478508de8031fe273177e77ad842f7a3e7"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-old28df-red-run1/runtime.json",
+      "archive": "old28df-red/runtime.json",
+      "bytes": 1545,
+      "sha256": "e921142ebd7346a254d7cc3223c25990817148663947ac0eb603393e8bec714e"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-old28df-red-run1/verification-script.mjs",
+      "archive": "old28df-red/verification-script.mjs",
+      "bytes": 5450,
+      "sha256": "7f39ac71a3d7ba8dc24eebd634a9e53fe590d5916678ae917149b1a99225c3e8"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-old28df-red-run1/numeric-ranges.luau",
+      "archive": "old28df-red/numeric-ranges.luau",
+      "bytes": 562,
+      "sha256": "34dbeb3423ca5e66d2aec5eb1ab8f081cb2031c518c7b5f9236238825fb11c35"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-old28df-red-run1/span-missing.luau",
+      "archive": "old28df-red/span-missing.luau",
+      "bytes": 161,
+      "sha256": "09fc658489d4de47689948b0d2f7ee1fc01a4374dfe40ec3e1c6ec51688e506d"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-host-red-20261030-r1/command.json",
+      "archive": "host-red-blocked/command.json",
+      "bytes": 1729,
+      "sha256": "aa3aa3c78a101d17d8f2633b2f63ca470cafafefec0c77406211ae2a600999d7"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-host-red-20261030-r1/result.json",
+      "archive": "host-red-blocked/result.json",
+      "bytes": 2074,
+      "sha256": "fc29f951b80a3734e81879874c422900efb119f2ba68e1264dc67ceda240f929"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-host-red-20261030-r1/stdout.log",
+      "archive": "host-red-blocked/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-host-red-20261030-r1/stderr.log",
+      "archive": "host-red-blocked/stderr.log",
+      "bytes": 556,
+      "sha256": "bc4ab3c1ac693190a65f72533785151897e62a7ac4d7765de6add840decae131"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-host-red-20261030-r1/test-source.rs",
+      "archive": "host-red-blocked/test-source.rs",
+      "bytes": 1742,
+      "sha256": "2f9dde7eecf5b4970cf96d62d1c4b48646d42635a1eec2487a3ec6dd88f2d16c"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-compile-r1.log",
+      "archive": "native/compile-r1.log",
+      "bytes": 1804,
+      "sha256": "6f78a22a14c170baaf06e9849710bb1fa5e4717a39114d092f1b9e426dde9eab"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-compile-r1-result.json",
+      "archive": "native/compile-r1-result.json",
+      "bytes": 332,
+      "sha256": "5c957d07de43e1ec82f250470af3ad0666df5848abb602c68afad7e78b6bb062"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-compile-r2.log",
+      "archive": "native/compile-r2.log",
+      "bytes": 527,
+      "sha256": "ae351d5d082ece062344cda7a348b5d1639bc2e234958335536e1fb533774f1f"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-compile-r2-result.json",
+      "archive": "native/compile-r2-result.json",
+      "bytes": 128,
+      "sha256": "8037eca734acb0ac905c5b111f791a3b4758a18b2d3aabdfa09f4de8bd15be13"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-final-r1.log",
+      "archive": "native/production-r1.log",
+      "bytes": 1549,
+      "sha256": "93f3aa5c4ab93e40bd55240045b3435daf7a0fa673f04de6ed760f8ad9eb7400"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-final-r1-result.json",
+      "archive": "native/production-r1-result.json",
+      "bytes": 72,
+      "sha256": "18d791c6f6b9600484bcf9100af2c6ad8ca31a934bea4e49a1c33a9608776424"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-final-r1.json",
+      "archive": "native/production-r1-canonical.json",
+      "bytes": 8695,
+      "sha256": "8ed7d36b930f2db63a722b855415824e32749be3840f1949bb7eea7132aa0f67"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-development-r1.log",
+      "archive": "native/development-red-r1.log",
+      "bytes": 7508,
+      "sha256": "eb62edec2a4fe8842c829f74735f7b909e6567d690e4ae6f32867361d7c95654"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-development-r1-result.json",
+      "archive": "native/development-red-r1-result.json",
+      "bytes": 172,
+      "sha256": "6aff4a1c0f6f666aeeeb025be76f9ffd16be5b3f833781acd044927bb4d5ec61"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-development-r2.log",
+      "archive": "native/development-green-r2.log",
+      "bytes": 1543,
+      "sha256": "85c972a3d1d5c84ef3b2a42147ee8b73ebcce40ec0ea475afc253248a3e01d06"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-native-development-r2-result.json",
+      "archive": "native/development-green-r2-result.json",
+      "bytes": 182,
+      "sha256": "e8e7f3252ce8e4913801bb9f71b7bb047c934f8d8e7d80b0263873b4d96653f0"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/command.json",
+      "archive": "claude-incomplete/command.json",
+      "bytes": 6673,
+      "sha256": "3ef521faa34f637f6b389f0840eef1d54ff3e378c5c5c925ca545a58309d7e0e"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/result.json",
+      "archive": "claude-incomplete/result.json",
+      "bytes": 7514,
+      "sha256": "56c2100059fb0c84eb75f6a6f2cbb2c7d1aca41cb38fe15a19820165d953ad4c"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/version.stdout.txt",
+      "archive": "claude-incomplete/version.stdout.txt",
+      "bytes": 22,
+      "sha256": "b354fe63f3ea7b46441790aa41c704340be3e4722cd759d1b77da284764c82ef"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/version.stderr.txt",
+      "archive": "claude-incomplete/version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/review.stdout.json",
+      "archive": "claude-incomplete/review.stdout.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/review.stderr.txt",
+      "archive": "claude-incomplete/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/fixed.diff",
+      "archive": "claude-incomplete/fixed.diff",
+      "bytes": 53053,
+      "sha256": "1242003159969b61b70a87eeb04fe4770e05f281a7460b4ac2fe81f16dc2e0f8"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/immutable-bytes-vm-claude-review-20261030-r1/prompt.txt",
+      "archive": "claude-incomplete/prompt.txt",
+      "bytes": 91670,
+      "sha256": "1dc94cb6ca175cbe369cc331d1865b86234d42ac66033b719c7264e4f03b8d1a"
+    },
+    {
+      "source": "D:/Projects/Unone/.cache/run-immutable-bytes-vm-claude-review.mjs",
+      "archive": "claude-incomplete/runner.mjs",
+      "bytes": 9433,
+      "sha256": "35828b7a544e585280b56ec6ab0b00a88973ba50ce58fb780cd43e48a3b02271"
+    }
+  ]
+}

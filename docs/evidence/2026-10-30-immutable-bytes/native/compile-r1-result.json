@@ -1,0 +1,6 @@
+{
+  "finished_utc": "2026-10-30T15:32:08.8955471Z",
+  "scope": "compile only; test executables are not run",
+  "exit_code": 101,
+  "command": "cargo test --offline -p unone-engine --no-default-features --features all-systems,native-codegen --test immutable_bytes_host --test immutable_bytes --test bytes_perf --no-run -j 4"
+}

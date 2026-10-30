@@ -1,0 +1,1 @@
+return {start=function(api) assert(type(api.bytes.span)=='function','BYTES_SPAN_EXPECTED: api.bytes.span is missing from the old Core') end,update=function()end}

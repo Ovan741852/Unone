@@ -1,0 +1,8 @@
+   Compiling mlua-sys v0.10.0
+error: failed to run custom build command for `mlua-sys v0.10.0`
+
+Caused by:
+  could not execute process `D:\Projects\Unone\target\debug\build\mlua-sys-5e01e63b9bfa5364\build-script-main` (never executed)
+
+Caused by:
+  應用程式控制原則已封鎖此檔案。 (os error 4551)

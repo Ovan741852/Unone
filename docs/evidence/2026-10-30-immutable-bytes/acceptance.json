@@ -1,0 +1,113 @@
+{
+  "schema": "unone.immutable-bytes.acceptance.v1",
+  "recorded_utc": "2026-10-30T16:00:19.032Z",
+  "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "status": "core-native-and-wasm-bounded-gates-passed; complete-sdk-not-delivered",
+  "contract": "VM-frozen ordinary buffers, bounded zero-copy views with flattened strong root owners, strict numeric ranges, fresh direct content comparisons; safe Rust writes honor the VM flag.",
+  "native": {
+    "production": "2 public +7 host tests actually passed, including real compiled writer/reader/literal-NaN guards",
+    "development": "4 public +6 host tests actually passed, including successful/failed reload",
+    "bounded_lifetime": "Actual pointer sharing, own bounds, metadata allocation and forced unit-only weak-root/last-owner checks passed",
+    "limitations": "Final f116 fixture rebuild, optimized operation benchmark and matching release CLI remain blocked4551. Earlier executed results are preserved, not relabeled as the final rebuild."
+  },
+  "wasm": {
+    "artifact": "artifacts/player-runtime-immutable-spans-905e20e",
+    "sha256": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+    "source_dirty": false,
+    "expanded_fixture": "353 checks and69 rejection cases at load/ticks/unload/reset",
+    "strict_native_pair": {
+      "status": "passed",
+      "compared_frames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "pair_fixture_sha256": "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38",
+    "final_fixture_sha256": "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848",
+    "natural_gc": {
+      "status": "passed-real-collection-no-forced-gc",
+      "retained_root_witness": {
+        "frame": 2,
+        "observations": {
+          "bytes_gc_child_collected": false,
+          "bytes_gc_child_valid": true,
+          "bytes_gc_intermediate_collected": true,
+          "bytes_gc_pressure_bytes": 4194304,
+          "bytes_gc_pressure_checksum": 592,
+          "bytes_gc_ready": true,
+          "bytes_gc_released": false,
+          "bytes_gc_root_alive": true,
+          "bytes_gc_ticks": 2
+        }
+      },
+      "release_action_frame": 3,
+      "final_collection_witness": {
+        "frame": 4,
+        "observations": {
+          "bytes_gc_child_collected": true,
+          "bytes_gc_child_valid": false,
+          "bytes_gc_intermediate_collected": true,
+          "bytes_gc_pressure_bytes": 8388608,
+          "bytes_gc_pressure_checksum": 656,
+          "bytes_gc_ready": true,
+          "bytes_gc_released": true,
+          "bytes_gc_root_alive": false,
+          "bytes_gc_ticks": 4
+        }
+      },
+      "cleanup": {
+        "attempted": true,
+        "unloaded": true,
+        "decoder_released": true
+      }
+    },
+    "operation_diagnostic": "33 actual rows; raw samples and paired baselines retained in wasm/operations.json"
+  },
+  "history": {
+    "source_review": "source-review.json",
+    "pre_pair_checkpoint": "actual-validation.json",
+    "original_old_wasm": "Actual old28df missing-span/coercion RED retained; overflow not reproduced",
+    "external_claude": "Incomplete timeout, no external clearance"
+  },
+  "delivery": {
+    "main_source_pushed": true,
+    "web_runtime_built_and_executed": true,
+    "complete_sdk": false,
+    "reason": "Matching new release CLI blocked4551; old bootstrap CLI export fails missing sprite-cells.js inventory. No old SDK or game selection was modified."
+  },
+  "limitations": [
+    "No global leak-free, zero-allocation, no-GC, game-FPS, browser/worker rendering or ARM64 execution claim.",
+    "Historical strict pairing used the exactly reconstructed NativeR1 fixture and unmodified actual report, with no hash/allowlist waiver. The final fixture differs in a comment and eager diagnostic string; no performance equivalence is asserted.",
+    "The bounded WASM natural-GC test proves intermediate retirement while a child retains its root, then root retirement after the last child. It does not measure collection frequency in a game.",
+    "Raw unsafe native/FFI or arbitrary JavaScript access to WASM memory remains outside the guest/safe-host ownership guarantee.",
+    "Windows policy was not changed; blocked executables were not renamed, relocated or retried to evade policy."
+  ],
+  "copied": [
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/native-r1-strict-pair.json",
+      "source": ".cache/immutable-bytes-wasm-native-pair-905e20e-run1/report.json",
+      "bytes": 16562,
+      "sha256": "5c09b2fc4823a37c561706c1888c9794496653edb8c69d191ef3442e1334ed5f"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/natural-gc.json",
+      "source": ".cache/immutable-bytes-wasm-natural-gc-905e20e-run1/report.json",
+      "bytes": 8765,
+      "sha256": "6b4cdf6729ef0efc1c18793d07b5e04e329a4374c105a1df33a12bf2863ee6cb"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/pair-and-gc-execution.json",
+      "source": ".cache/immutable-bytes-pair-and-natural-gc-execution-905e20e-run1/result.json",
+      "bytes": 4761,
+      "sha256": "f91e34a6b7e37e71324225c08f1faf2af19bff60779c3152ffdaa974a6ab67a2"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/historical-fixture-transition.json",
+      "source": ".cache/immutable-bytes-fixture-transition-905e20e-run1/report.json",
+      "bytes": 3540,
+      "sha256": "3ff12d5dbe0360721bc553fec1139fafd37ca534bbd47119acc296fbad94c7c8"
+    }
+  ]
+}

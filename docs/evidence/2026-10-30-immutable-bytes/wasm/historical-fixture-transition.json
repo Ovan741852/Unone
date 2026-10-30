@@ -1,0 +1,83 @@
+{
+  "schema": "unone.immutable-bytes.fixture-transition.v1",
+  "ok": true,
+  "scope": "Exact historical fixture reconstruction plus read-only comparison of independently executed Native R1 and final WASM reports; no native report mutation or exact-pair gate waiver",
+  "pins": {
+    "native_report": {
+      "path": "D:\\Projects\\Unone\\.cache\\immutable-bytes-native-final-r1.json",
+      "sha256": "8ed7d36b930f2db63a722b855415824e32749be3840f1949bb7eea7132aa0f67"
+    },
+    "wasm_report": {
+      "path": "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-functional-905e20e-run1\\report.json",
+      "sha256": "fa2619a2f9f7329cbe7bfa739b01048be3092cc57963f138f3188e3999e12f90"
+    },
+    "final_fixture": {
+      "path": "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes.luau",
+      "sha256": "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848"
+    }
+  },
+  "changes": [
+    {
+      "kind": "comment-only",
+      "from": "-- check (scripts/verify-immutable-bytes-wasm.mjs): both must observe the same.",
+      "to": "-- check (scripts/verify-immutable-bytes-functional-wasm.mjs): both observe the same."
+    },
+    {
+      "kind": "assertion-diagnostic-expression",
+      "from": "assert(not ok, \"expected a failure containing \" .. needle)",
+      "to": "assert(not ok, \"expected a failure containing \" .. needle .. \"; ok=\" .. tostring(ok) .. \"; result=\" .. tostring(err))"
+    }
+  ],
+  "limitations": [
+    "FinalNativeR2 was blocked before execution; this record does not relabel that attempt as passed.",
+    "The functional verifier exact fixture-hash gate remains unchanged. These two executed reports have distinct fixture hashes.",
+    "Lua evaluates assert arguments eagerly: the expanded diagnostic builds extra strings/calls tostring even when rejection assertions pass. No allocation or performance equivalence is inferred.",
+    "Parent source owner reports VM C++ unchanged between Native R1 and finalWASM; report files alone do not prove an entire binary/source identity.",
+    "Default development R2 passing tests have no canonical checkpoint report here; no canonical pairing is inferred from them.",
+    "No runtime, Native executable, browser or collector executes in this analysis."
+  ],
+  "checkpoints": [
+    {
+      "frame": 0,
+      "digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a",
+      "full_world_equal": true,
+      "all_observations_equal": true,
+      "save_equal": true,
+      "allowlist": []
+    },
+    {
+      "frame": 1,
+      "digest": "sha256:fbbb572ee3b61631583dbda981d6af74f8dded670dc374474a78ae06ff880bd5",
+      "full_world_equal": true,
+      "all_observations_equal": true,
+      "save_equal": true,
+      "allowlist": []
+    },
+    {
+      "frame": 2,
+      "digest": "sha256:5141a686af9ea250d43f7b4b6cd952c3f7c292e08720275ea2eaca50adfd281c",
+      "full_world_equal": true,
+      "all_observations_equal": true,
+      "save_equal": true,
+      "allowlist": []
+    },
+    {
+      "frame": 3,
+      "digest": "sha256:b73895bb0cae4c4cdf53a013222413f77cd3e2b31c3a6909cb0a4cf6ff59fbb5",
+      "full_world_equal": true,
+      "all_observations_equal": true,
+      "save_equal": true,
+      "allowlist": []
+    }
+  ],
+  "reconstructed": {
+    "native_r1": {
+      "sha256": "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38",
+      "bytes": 13313
+    },
+    "development_r2": {
+      "sha256": "a8b742a96bf90a7a30851fa688354e99c7e4d1a3b599afaa577f87023fbcfe8c",
+      "bytes": 13372
+    }
+  }
+}

@@ -1,0 +1,424 @@
+{
+  "schema": "unone.immutable-bytes.actual-validation.v1",
+  "recorded_utc": "2026-10-30T15:56:51.858Z",
+  "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "runtime": {
+    "directory": "artifacts/player-runtime-immutable-spans-905e20e",
+    "source_dirty": false,
+    "wasm": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0"
+  },
+  "wasm_functional": {
+    "status": "passed-actual-emitted-wasm",
+    "checks": 353,
+    "rejections": 69,
+    "frames": [
+      {
+        "label": "initial",
+        "frame": 0,
+        "digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a"
+      },
+      {
+        "label": "tick-1",
+        "frame": 1,
+        "digest": "sha256:fbbb572ee3b61631583dbda981d6af74f8dded670dc374474a78ae06ff880bd5"
+      },
+      {
+        "label": "tick-2",
+        "frame": 2,
+        "digest": "sha256:5141a686af9ea250d43f7b4b6cd952c3f7c292e08720275ea2eaca50adfd281c"
+      },
+      {
+        "label": "tick-3",
+        "frame": 3,
+        "digest": "sha256:b73895bb0cae4c4cdf53a013222413f77cd3e2b31c3a6909cb0a4cf6ff59fbb5"
+      },
+      {
+        "label": "fresh-after-unload",
+        "frame": 0,
+        "digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a"
+      }
+    ],
+    "native_pairing": {
+      "status": "outside-this-record",
+      "reason": "No executed native report supplied"
+    },
+    "cleanup": {
+      "attempted": true,
+      "unloaded": true,
+      "decoder_released": true
+    }
+  },
+  "wasm_operations": {
+    "status": "passed-diagnostic-not-fps-gate",
+    "rows": 33,
+    "protocol": {
+      "sizes": [
+        4096,
+        65536,
+        1048576
+      ],
+      "cases": [
+        "span",
+        "equals_mutable",
+        "equals_frozen",
+        "equals_mixed",
+        "equals_range_mutable",
+        "equals_range_frozen",
+        "equals_range_mixed",
+        "snapshot_mutable",
+        "snapshot_partial_frozen",
+        "snapshot_whole_frozen",
+        "readstring_same_content"
+      ],
+      "warmup_ticks_per_mode_sample": 3,
+      "rounds": 3,
+      "ticks_per_round": 4,
+      "mode_order": "baseline/actual alternates by round",
+      "seed": 42,
+      "timed_scope": "Synchronous actual _unone_web_tick call; input submission and JavaScript observation decoding are outside the timed span"
+    },
+    "results": [
+      {
+        "size": 4096,
+        "operation": "span",
+        "raw_ns_per_op": 155.51757812499318,
+        "baseline_ns_per_op": 56.347656249997044,
+        "adjusted_ns_per_op": 108.34960937500246
+      },
+      {
+        "size": 4096,
+        "operation": "equals_mutable",
+        "raw_ns_per_op": 438.37890625000875,
+        "baseline_ns_per_op": 72.8515624999898,
+        "adjusted_ns_per_op": 365.527343750019
+      },
+      {
+        "size": 4096,
+        "operation": "equals_frozen",
+        "raw_ns_per_op": 380.664062500008,
+        "baseline_ns_per_op": 52.34374999998903,
+        "adjusted_ns_per_op": 328.320312500019
+      },
+      {
+        "size": 4096,
+        "operation": "equals_mixed",
+        "raw_ns_per_op": 331.83593750002456,
+        "baseline_ns_per_op": 51.85546875000058,
+        "adjusted_ns_per_op": 287.50000000005156
+      },
+      {
+        "size": 4096,
+        "operation": "equals_range_mutable",
+        "raw_ns_per_op": 247.85156250001216,
+        "baseline_ns_per_op": 44.238281250025274,
+        "adjusted_ns_per_op": 201.75781250000858
+      },
+      {
+        "size": 4096,
+        "operation": "equals_range_frozen",
+        "raw_ns_per_op": 296.58203124999227,
+        "baseline_ns_per_op": 93.75000000003129,
+        "adjusted_ns_per_op": 196.58203124997553
+      },
+      {
+        "size": 4096,
+        "operation": "equals_range_mixed",
+        "raw_ns_per_op": 235.15625000003482,
+        "baseline_ns_per_op": 48.925781250014346,
+        "adjusted_ns_per_op": 186.23046875002046
+      },
+      {
+        "size": 4096,
+        "operation": "snapshot_mutable",
+        "raw_ns_per_op": 467.2851562499969,
+        "baseline_ns_per_op": 44.72656249998596,
+        "adjusted_ns_per_op": 422.9492187499684
+      },
+      {
+        "size": 4096,
+        "operation": "snapshot_partial_frozen",
+        "raw_ns_per_op": 360.83984374998823,
+        "baseline_ns_per_op": 49.316406249971806,
+        "adjusted_ns_per_op": 282.3242187499908
+      },
+      {
+        "size": 4096,
+        "operation": "snapshot_whole_frozen",
+        "raw_ns_per_op": 73.97460937499933,
+        "baseline_ns_per_op": 25.390625000010214,
+        "adjusted_ns_per_op": 49.072265624991445
+      },
+      {
+        "size": 4096,
+        "operation": "readstring_same_content",
+        "raw_ns_per_op": 460.5468749999952,
+        "baseline_ns_per_op": 51.46484374998761,
+        "adjusted_ns_per_op": 416.11328124999125
+      },
+      {
+        "size": 65536,
+        "operation": "span",
+        "raw_ns_per_op": 89.20898437500547,
+        "baseline_ns_per_op": 28.0273437500006,
+        "adjusted_ns_per_op": 61.23046875002037
+      },
+      {
+        "size": 65536,
+        "operation": "equals_mutable",
+        "raw_ns_per_op": 4439.06249999948,
+        "baseline_ns_per_op": 609.374999999801,
+        "adjusted_ns_per_op": 3823.4375000003593
+      },
+      {
+        "size": 65536,
+        "operation": "equals_frozen",
+        "raw_ns_per_op": 4449.999999999844,
+        "baseline_ns_per_op": 631.2500000009713,
+        "adjusted_ns_per_op": 3809.3749999994493
+      },
+      {
+        "size": 65536,
+        "operation": "equals_mixed",
+        "raw_ns_per_op": 4434.374999999768,
+        "baseline_ns_per_op": 604.6874999996454,
+        "adjusted_ns_per_op": 3826.562500000464
+      },
+      {
+        "size": 65536,
+        "operation": "equals_range_mutable",
+        "raw_ns_per_op": 2798.437500000084,
+        "baseline_ns_per_op": 595.3125000002224,
+        "adjusted_ns_per_op": 2176.562499999868
+      },
+      {
+        "size": 65536,
+        "operation": "equals_range_frozen",
+        "raw_ns_per_op": 2571.875000000112,
+        "baseline_ns_per_op": 628.1249999995352,
+        "adjusted_ns_per_op": 1962.4999999998668
+      },
+      {
+        "size": 65536,
+        "operation": "equals_range_mixed",
+        "raw_ns_per_op": 2621.8749999995516,
+        "baseline_ns_per_op": 612.4999999999048,
+        "adjusted_ns_per_op": 1960.9374999998154
+      },
+      {
+        "size": 65536,
+        "operation": "snapshot_mutable",
+        "raw_ns_per_op": 6393.750000000419,
+        "baseline_ns_per_op": 932.81249999988,
+        "adjusted_ns_per_op": 5484.375000000429
+      },
+      {
+        "size": 65536,
+        "operation": "snapshot_partial_frozen",
+        "raw_ns_per_op": 3851.562499999961,
+        "baseline_ns_per_op": 698.4375000005372,
+        "adjusted_ns_per_op": 2989.0625000001946
+      },
+      {
+        "size": 65536,
+        "operation": "snapshot_whole_frozen",
+        "raw_ns_per_op": 73.09570312499791,
+        "baseline_ns_per_op": 25.390625000010214,
+        "adjusted_ns_per_op": 47.70507812498769
+      },
+      {
+        "size": 65536,
+        "operation": "readstring_same_content",
+        "raw_ns_per_op": 6104.687500000149,
+        "baseline_ns_per_op": 610.9374999998529,
+        "adjusted_ns_per_op": 5493.7500000002965
+      },
+      {
+        "size": 1048576,
+        "operation": "span",
+        "raw_ns_per_op": 89.25781250002098,
+        "baseline_ns_per_op": 25.390625000010214,
+        "adjusted_ns_per_op": 63.37890625000843
+      },
+      {
+        "size": 1048576,
+        "operation": "equals_mutable",
+        "raw_ns_per_op": 77875.00000000592,
+        "baseline_ns_per_op": 9549.999999997282,
+        "adjusted_ns_per_op": 66649.99999999566
+      },
+      {
+        "size": 1048576,
+        "operation": "equals_frozen",
+        "raw_ns_per_op": 73099.99999999662,
+        "baseline_ns_per_op": 9599.999999998943,
+        "adjusted_ns_per_op": 63349.9999999927
+      },
+      {
+        "size": 1048576,
+        "operation": "equals_mixed",
+        "raw_ns_per_op": 99125.00000000079,
+        "baseline_ns_per_op": 9949.999999996351,
+        "adjusted_ns_per_op": 89549.99999999556
+      },
+      {
+        "size": 1048576,
+        "operation": "equals_range_mutable",
+        "raw_ns_per_op": 54724.99999999769,
+        "baseline_ns_per_op": 10075.0000000005,
+        "adjusted_ns_per_op": 43750.000000002845
+      },
+      {
+        "size": 1048576,
+        "operation": "equals_range_frozen",
+        "raw_ns_per_op": 46175.00000000518,
+        "baseline_ns_per_op": 10124.999999995054,
+        "adjusted_ns_per_op": 36050.00000001013
+      },
+      {
+        "size": 1048576,
+        "operation": "equals_range_mixed",
+        "raw_ns_per_op": 45975.00000000565,
+        "baseline_ns_per_op": 9650.000000000604,
+        "adjusted_ns_per_op": 35950.00000001392
+      },
+      {
+        "size": 1048576,
+        "operation": "snapshot_mutable",
+        "raw_ns_per_op": 57024.99999999589,
+        "baseline_ns_per_op": 9450.00000000107,
+        "adjusted_ns_per_op": 47574.99999999482
+      },
+      {
+        "size": 1048576,
+        "operation": "snapshot_partial_frozen",
+        "raw_ns_per_op": 28774.999999996,
+        "baseline_ns_per_op": 9200.000000006981,
+        "adjusted_ns_per_op": 19574.999999989017
+      },
+      {
+        "size": 1048576,
+        "operation": "snapshot_whole_frozen",
+        "raw_ns_per_op": 69.58007812500611,
+        "baseline_ns_per_op": 25.927734375000288,
+        "adjusted_ns_per_op": 43.65234375000583
+      },
+      {
+        "size": 1048576,
+        "operation": "readstring_same_content",
+        "raw_ns_per_op": 101675.00000000728,
+        "baseline_ns_per_op": 9300.000000003194,
+        "adjusted_ns_per_op": 91950.00000000419
+      }
+    ],
+    "cleanup": {
+      "attempted": true,
+      "unloaded": true,
+      "decoder_released": true
+    }
+  },
+  "native": {
+    "executed_production_r1": "2 public +7 host passed, including actual compiled JIT; original fixture pin preserved in source-review.json",
+    "executed_development_r2": "4 public +6 host passed, including reload after C++ tracking correction",
+    "final_rebuild": "blocked-not-executed, Windows App Control4551; neither failed compilation nor missing exact fixture pairing is called a pass",
+    "operations_benchmark": "source provided, optimized Native execution not established"
+  },
+  "build_and_distribution": {
+    "wasm_compilation": "release build succeeded in 2m51s from clean pinned checkout",
+    "bootstrap_export_gate": "FAILED: existing pre-span CLI lacks web/renderer/sprite-cells.js template inventory",
+    "matching_cli_release": "BLOCKED4551",
+    "complete_sdk": "not-produced; existing SDK19 was not silently changed"
+  },
+  "blocked_executables": [
+    {
+      "path": "D:/Projects/Unone/target/debug/build/mlua-sys-5e01e63b9bfa5364/build-script-main.exe",
+      "sha256": "ef137dd8ba4c5f95d9b865bade0c637583227bfb621818ba1c598487b743b94a",
+      "scope": "Final native-codegen rebuild; no final fixture report was emitted"
+    },
+    {
+      "path": "D:/Projects/Unone/target/immutable-bytes-release/release/build/quote-4809819e2575fa2b/build-script-build.exe",
+      "sha256": "9b8e0fff53cc2cc51444d230968c09ba8c436a6e3cd4835ab380d7bd7ad79d5b",
+      "scope": "New matching release CLI/SDK publisher"
+    }
+  ],
+  "copied": [
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/execution.json",
+      "source": ".cache/immutable-bytes-wasm-execution-905e20e-run1/result.json",
+      "bytes": 4382,
+      "sha256": "204eeaf2675537e4544762181f2d46e6e550a4fa9e6d1eaac3f5d39941478798"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/functional.json",
+      "source": ".cache/immutable-bytes-wasm-functional-905e20e-run1/report.json",
+      "bytes": 15977,
+      "sha256": "fa2619a2f9f7329cbe7bfa739b01048be3092cc57963f138f3188e3999e12f90"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/operations.json",
+      "source": ".cache/immutable-bytes-wasm-operations-905e20e-run1/report.json",
+      "bytes": 289599,
+      "sha256": "a6d0867f8006e61746e5411ce6a65a7c553653a0b2ecae449e5b7ff0893a2702"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/runtime.json",
+      "source": "artifacts/player-runtime-immutable-spans-905e20e/runtime.json",
+      "bytes": 1638,
+      "sha256": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/build-and-bootstrap-export.log",
+      "source": ".cache/immutable-bytes-wasm-build-r1.log",
+      "bytes": 4806,
+      "sha256": "733ecc8c02a0c7b5f244dcdc112b9a5a1176097cfeec945341250ba3d44ace5b"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/build-and-bootstrap-export-result.json",
+      "source": ".cache/immutable-bytes-wasm-build-r1-result.json",
+      "bytes": 367,
+      "sha256": "4a27acefa670819895bf3479987b4775f4e8f31a301c5400c8980378ef28d0b7"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/native-final-blocked.log",
+      "source": ".cache/immutable-bytes-native-final-r2.log",
+      "bytes": 319,
+      "sha256": "68f2c4e7fbdb2459d983bb249c813e713461b8a5cad52c718c3a7f045793157e"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/native-final-blocked-result.json",
+      "source": ".cache/immutable-bytes-native-final-r2-result.json",
+      "bytes": 259,
+      "sha256": "414834cea0607cd00336fc0f46d8a2f65126c54f122fee31d8e3089cfcd80abd"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/cli-release-blocked.log",
+      "source": ".cache/immutable-bytes-cli-release-r1.log",
+      "bytes": 591,
+      "sha256": "f33c7f86e6759a62e1efb65eff65010de1b8667656966bc51d5c42285c680a5a"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/cli-release-blocked-result.json",
+      "source": ".cache/immutable-bytes-cli-release-r1-result.json",
+      "bytes": 223,
+      "sha256": "928555e8029dbac7be8930a4842e5d05f6cc83cdd96dc6b304b5ff6b30c44f79"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/verifier-preflight.log",
+      "source": ".cache/immutable-bytes-verifier-preflight-tests-r3.log",
+      "bytes": 611,
+      "sha256": "2c2e04f4e24d523f4f5563c3ff72bc7c7ac87815abadf84f30a1ab4788ed5823"
+    },
+    {
+      "path": "docs/evidence/2026-10-30-immutable-bytes/wasm/verifier-preparation.json",
+      "source": ".cache/immutable-bytes-wasm-verifier-preparation.json",
+      "bytes": 2850,
+      "sha256": "d406e6c5c8bcf4f62ef7ecce52d0f348a93cc25396a187bead9c1fc6a4b8417e"
+    }
+  ],
+  "limits": [
+    "No Windows security policy was changed and blocked files were not renamed, relocated or retried to evade policy.",
+    "WASM is actual Node WebAssembly execution, not browser rendering or worker acceptance.",
+    "Unit GC/lifetime and publication teardown checks do not prove global leak freedom or natural GC frequency.",
+    "Parallel machine load was retained; operation timings include normal Core tick/publication and matching-baseline subtraction, not isolated CPU or allocation counts.",
+    "Final exact-fixture Native/WASM pairing and a matching complete SDK remain unavailable until blocked build dependencies can execute."
+  ]
+}

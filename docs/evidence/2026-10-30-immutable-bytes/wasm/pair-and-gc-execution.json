@@ -1,0 +1,98 @@
+{
+  "schema": "unone.immutable-bytes.actual-wasm-pair-and-natural-gc-execution.v1",
+  "ok": true,
+  "source_commit": "905e20e9a552eef4930690d13c5cf58829dc55cb",
+  "runtime": "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+  "initial_pins": {
+    "manifest": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+    "javascript": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+    "wasm": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+    "loader": "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018"
+  },
+  "native_report": {
+    "path": "D:\\Projects\\Unone\\.cache\\immutable-bytes-native-final-r1.json",
+    "sha256": "8ed7d36b930f2db63a722b855415824e32749be3840f1949bb7eea7132aa0f67"
+  },
+  "jobs": [
+    {
+      "name": "native-pair",
+      "command": {
+        "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "args": [
+          "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-functional-wasm.mjs",
+          "--runtime",
+          "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+          "--expected-manifest",
+          "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+          "--expected-javascript",
+          "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+          "--expected-wasm",
+          "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+          "--expected-source",
+          "905e20e9a552eef4930690d13c5cf58829dc55cb",
+          "--expected-loader",
+          "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018",
+          "--fixture",
+          "D:\\Projects\\Unone\\.cache\\immutable-bytes-fixture-transition-905e20e-run1\\historical-native-r1-65a7557.luau",
+          "--expected-fixture",
+          "65a7557ea5d325a22b79816c64e7b4deaeb5aed1a7b6e0b089d7ab712d8b7c38",
+          "--out",
+          "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-native-pair-905e20e-run1",
+          "--native-report",
+          "D:\\Projects\\Unone\\.cache\\immutable-bytes-native-final-r1.json",
+          "--expected-native-report",
+          "8ed7d36b930f2db63a722b855415824e32749be3840f1949bb7eea7132aa0f67"
+        ],
+        "cwd": "D:/Projects/Unone"
+      },
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "wall_ms": 241,
+      "output": "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-native-pair-905e20e-run1",
+      "stdout_sha256": "8664bdc16270f0f4eb9833004e422aabedd9e99af6d07afbb70940248d6f3774",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "natural-gc",
+      "command": {
+        "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "args": [
+          "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-natural-gc-wasm.mjs",
+          "--runtime",
+          "D:\\Projects\\Unone\\artifacts\\player-runtime-immutable-spans-905e20e",
+          "--expected-manifest",
+          "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+          "--expected-javascript",
+          "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+          "--expected-wasm",
+          "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+          "--expected-source",
+          "905e20e9a552eef4930690d13c5cf58829dc55cb",
+          "--expected-loader",
+          "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018",
+          "--fixture",
+          "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes-natural-gc.luau",
+          "--expected-fixture",
+          "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0",
+          "--out",
+          "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-natural-gc-905e20e-run1"
+        ],
+        "cwd": "D:/Projects/Unone"
+      },
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "wall_ms": 235,
+      "output": "D:\\Projects\\Unone\\.cache\\immutable-bytes-wasm-natural-gc-905e20e-run1",
+      "stdout_sha256": "5aba103a95b631ca5932b699284b33fbe6e999655373fce0b4d15790e1ef6ba4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "final_pins": {
+    "manifest": "fdb9634dd74fa6071ce23ae2b890802b4392a112bb83396b5e2552eb11154659",
+    "javascript": "d17d3716e24947c954518da6f6eb168b097b97eb63e924033eb7d1c76a2d2c4c",
+    "wasm": "c66a32bf4345015755e3a2e384d7ad5fd1409b70b5b3559c09c7d44467c768d0",
+    "loader": "8dddaa06da776ccd35f6e29c23beb20e15ddbc9e77cf0877f9bbbf80ff289018"
+  }
+}
