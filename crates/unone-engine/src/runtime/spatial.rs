@@ -19,11 +19,25 @@ const MAX_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 struct Index {
     version: u32,
     bodies: Vec<SpatialBody>,
+    /// Content digest for world snapshots, computed once per version.
+    digest: std::cell::OnceCell<String>,
+}
+
+impl Index {
+    fn new(version: u32, bodies: Vec<SpatialBody>) -> Self {
+        Self { version, bodies, digest: std::cell::OnceCell::new() }
+    }
+
+    fn digest(&self) -> &str {
+        self.digest.get_or_init(|| crate::spatial::bodies_digest(&self.bodies))
+    }
 }
 
 struct Ticket {
     submitted: u64,
     batch: SpatialBatch,
+    /// Digest of the frozen batch (index content digest, version, queries).
+    batch_digest: String,
     dispatched: bool,
     drained: bool,
     delivered: bool,
@@ -244,7 +258,7 @@ impl SpatialJobs {
         }
         let id = self.allocate("spatial.create")?;
         self.used = true;
-        self.indices.insert(id, Index { version: 1, bodies });
+        self.indices.insert(id, Index::new(1, bodies));
         Ok(id)
     }
 
@@ -257,7 +271,7 @@ impl SpatialJobs {
         }
         let version = index.version.checked_add(1)
             .ok_or_else(|| self.reject("spatial.update", "SPATIAL_VERSION_EXHAUSTED", "SPATIAL_VERSION_EXHAUSTED", "after_release", "Destroy and recreate the index; versions cannot wrap.", Some(id), None))?;
-        self.indices.insert(id, Index { version, bodies });
+        self.indices.insert(id, Index::new(version, bodies));
         Ok(u64::from(version))
     }
 
@@ -283,6 +297,14 @@ impl SpatialJobs {
         let started = Instant::now();
         validate_batch_detailed(&batch).map_err(|issue| self.record_input("spatial.submit", issue, Some(id), None))?;
         let validation_ms = elapsed_ms(started);
+        let batch_digest = {
+            use sha2::{Digest, Sha256};
+            let mut hasher = Sha256::new();
+            hasher.update(index.digest().as_bytes());
+            hasher.update(batch.version.to_le_bytes());
+            hasher.update(serde_json::to_vec(&batch.queries).map_err(|error| error.to_string())?);
+            format!("{:x}", hasher.finalize())
+        };
         let ticket = self.allocate("spatial.submit")?;
         self.used = true;
         let totals = &mut self.profile.totals;
@@ -296,6 +318,7 @@ impl SpatialJobs {
         self.tickets.insert(ticket, Ticket {
             submitted: self.frame,
             batch,
+            batch_digest,
             dispatched: false,
             drained: false,
             delivered: false,
@@ -564,12 +587,16 @@ impl SpatialJobs {
         }
         Some(serde_json::json!({
             "sequence": self.sequence.get(),
+            // Content digests keep deterministic coverage of every body and
+            // query without serializing up to 65,536 bodies on each observe.
             "indices": self.indices.iter().map(|(id, index)| serde_json::json!({
-                "id": id, "version": index.version, "bodies": index.bodies,
+                "id": id, "version": index.version, "body_count": index.bodies.len(),
+                "bodies_sha256": index.digest(),
             })).collect::<Vec<_>>(),
             "tickets": self.tickets.iter().map(|(id, entry)| serde_json::json!({
-                "id": id, "submit_tick": entry.submitted,
-                "delivered": entry.delivered, "batch": entry.batch,
+                "id": id, "submit_tick": entry.submitted, "delivered": entry.delivered,
+                "version": entry.batch.version, "body_count": entry.batch.bodies.len(),
+                "query_count": entry.batch.queries.len(), "batch_sha256": entry.batch_digest,
             })).collect::<Vec<_>>(),
         }))
     }

@@ -217,8 +217,14 @@ pub fn validate_bodies(bodies: &[SpatialBody]) -> Result<(), String> {
     validate_bodies_detailed(bodies).map_err(|issue| issue.message)
 }
 
-fn point_detailed(point: [f32; 3], legacy: &str, path: &str) -> Result<(), crate::diagnostics::InputDiagnostic> {
-    if let Err(message) = validate_point(point, legacy) {
+// Labels are built only on failure: validators run over up to MAX_BODIES
+// records per batch, and eager path strings dominated their allocation cost.
+fn point_detailed(point: [f32; 3], labels: impl FnOnce() -> (String, String)) -> Result<(), crate::diagnostics::InputDiagnostic> {
+    if point.iter().all(|value| value.is_finite() && value.abs() <= MAX_COORDINATE) {
+        return Ok(());
+    }
+    let (legacy, path) = labels();
+    if let Err(message) = validate_point(point, &legacy) {
         let actual = point.iter().map(|value| finite_fact(*value)).collect::<Vec<_>>();
         return Err(crate::diagnostics::InputDiagnostic::new(message, path, serde_json::json!(actual),
             serde_json::json!({"type":"vector3","finite":true,"coordinate_abs_max":MAX_COORDINATE})));
@@ -230,8 +236,12 @@ pub(crate) fn finite_fact(value: f32) -> serde_json::Value {
     if value.is_finite() { serde_json::json!(value) } else { serde_json::json!(value.to_string()) }
 }
 
-fn radius_detailed(radius: f32, legacy: &str, path: &str) -> Result<(), crate::diagnostics::InputDiagnostic> {
-    validate_radius(radius, legacy).map_err(|message| crate::diagnostics::InputDiagnostic::new(message, path,
+fn radius_detailed(radius: f32, labels: impl FnOnce() -> (String, String)) -> Result<(), crate::diagnostics::InputDiagnostic> {
+    if radius.is_finite() && (0.0..=MAX_COORDINATE).contains(&radius) {
+        return Ok(());
+    }
+    let (legacy, path) = labels();
+    validate_radius(radius, &legacy).map_err(|message| crate::diagnostics::InputDiagnostic::new(message, path,
         finite_fact(radius), serde_json::json!({"finite":true,"min":0,"max":MAX_COORDINATE})))
 }
 
@@ -243,15 +253,15 @@ pub(crate) fn validate_bodies_detailed(bodies: &[SpatialBody]) -> Result<(), cra
     }
     let mut ids = HashSet::with_capacity(bodies.len());
     for (index, body) in bodies.iter().enumerate() {
-        let path = format!("bodies[{}]", index + 1);
+        let path = || format!("bodies[{}]", index + 1);
         if !ids.insert(body.id) {
-            return Err(InputDiagnostic::new(format!("duplicate body ID {}", body.id), format!("{path}.id"),
+            return Err(InputDiagnostic::new(format!("duplicate body ID {}", body.id), format!("{}.id", path()),
                 serde_json::json!(body.id), serde_json::json!({"unique":true})));
         }
-        point_detailed(body.position, &format!("bodies[{index}].position"), &format!("{path}.position"))?;
-        radius_detailed(body.radius, &format!("bodies[{index}].radius"), &format!("{path}.radius"))?;
+        point_detailed(body.position, || (format!("bodies[{index}].position"), format!("{}.position", path())))?;
+        radius_detailed(body.radius, || (format!("bodies[{index}].radius"), format!("{}.radius", path())))?;
         if let Some(previous) = body.previous_position {
-            point_detailed(previous, &format!("bodies[{index}].previous_position"), &format!("{path}.previous_position"))?;
+            point_detailed(previous, || (format!("bodies[{index}].previous_position"), format!("{}.previous_position", path())))?;
         }
     }
     Ok(())
@@ -269,23 +279,23 @@ pub(crate) fn validate_batch_detailed(batch: &SpatialBatch) -> Result<(), crate:
             serde_json::json!(batch.queries.len()), serde_json::json!({"max_count":MAX_QUERIES})));
     }
     for (index, query) in batch.queries.iter().enumerate() {
-        let path = format!("queries[{}]", index + 1);
+        let path = || format!("queries[{}]", index + 1);
         match query {
             SpatialQuery::Nearest { point, max_distance, .. } => {
-                point_detailed(*point, &format!("queries[{index}].point"), &format!("{path}.point"))?;
+                point_detailed(*point, || (format!("queries[{index}].point"), format!("{}.point", path())))?;
                 if !max_distance.is_finite() || *max_distance < 0.0 {
                     return Err(InputDiagnostic::new(format!("queries[{index}].max_distance must be finite and nonnegative"),
-                        format!("{path}.max_distance"), finite_fact(*max_distance), serde_json::json!({"finite":true,"min":0})));
+                        format!("{}.max_distance", path()), finite_fact(*max_distance), serde_json::json!({"finite":true,"min":0})));
                 }
             }
             SpatialQuery::OverlapSphere { center, radius, .. } => {
-                point_detailed(*center, &format!("queries[{index}].center"), &format!("{path}.center"))?;
-                radius_detailed(*radius, &format!("queries[{index}].radius"), &format!("{path}.radius"))?;
+                point_detailed(*center, || (format!("queries[{index}].center"), format!("{}.center", path())))?;
+                radius_detailed(*radius, || (format!("queries[{index}].radius"), format!("{}.radius", path())))?;
             }
             SpatialQuery::SweepSphere { from, to, radius, .. } => {
-                point_detailed(*from, &format!("queries[{index}].from"), &format!("{path}.from"))?;
-                point_detailed(*to, &format!("queries[{index}].to"), &format!("{path}.to"))?;
-                radius_detailed(*radius, &format!("queries[{index}].radius"), &format!("{path}.radius"))?;
+                point_detailed(*from, || (format!("queries[{index}].from"), format!("{}.from", path())))?;
+                point_detailed(*to, || (format!("queries[{index}].to"), format!("{}.to", path())))?;
+                radius_detailed(*radius, || (format!("queries[{index}].radius"), format!("{}.radius", path())))?;
             }
         }
     }
@@ -310,37 +320,37 @@ pub(crate) fn validate_result_detailed(batch: &SpatialBatch, result: &SpatialBat
     }
     let bodies: HashMap<_, _> = batch.bodies.iter().map(|body| (body.id, body)).collect();
     for (index, (query, output)) in batch.queries.iter().zip(&result.results).enumerate() {
-        let path = format!("result.results[{}].hits",index+1);
+        let path = || format!("result.results[{}].hits",index+1);
         let (mask, exclude_id, max_hits, is_sweep) = match query {
             SpatialQuery::Nearest { mask, exclude_id, .. } => (*mask, *exclude_id, 1, false),
             SpatialQuery::OverlapSphere { mask, exclude_id, .. } => (*mask, *exclude_id, MAX_HITS, false),
             SpatialQuery::SweepSphere { mask, exclude_id, .. } => (*mask, *exclude_id, 1, true),
         };
         if output.hits.len() > max_hits {
-            return Err(InputDiagnostic::new(format!("spatial result[{index}] exceeds {max_hits} hits"),path,serde_json::json!(output.hits.len()),serde_json::json!({"max_count":max_hits})));
+            return Err(InputDiagnostic::new(format!("spatial result[{index}] exceeds {max_hits} hits"),path(),serde_json::json!(output.hits.len()),serde_json::json!({"max_count":max_hits})));
         }
         let mut previous_id = None;
         for (hit_index,hit) in output.hits.iter().enumerate() {
-            let path = format!("{path}[{}]",hit_index+1);
+            let path = || format!("{}[{}]",path(),hit_index+1);
             let Some(body) = bodies.get(&hit.id) else {
-                return Err(InputDiagnostic::new(format!("spatial result[{index}] contains an unknown body ID"),format!("{path}.id"),serde_json::json!(hit.id),serde_json::json!("an ID present in the submitted batch")));
+                return Err(InputDiagnostic::new(format!("spatial result[{index}] contains an unknown body ID"),format!("{}.id",path()),serde_json::json!(hit.id),serde_json::json!("an ID present in the submitted batch")));
             };
             if !eligible(body, mask, exclude_id) {
-                return Err(InputDiagnostic::new(format!("spatial result[{index}] violates its body filter"),format!("{path}.id"),serde_json::json!(hit.id),serde_json::json!({"mask":mask,"exclude_id":exclude_id})));
+                return Err(InputDiagnostic::new(format!("spatial result[{index}] violates its body filter"),format!("{}.id",path()),serde_json::json!(hit.id),serde_json::json!({"mask":mask,"exclude_id":exclude_id})));
             }
             if previous_id.is_some_and(|previous| hit.id <= previous) {
-                return Err(InputDiagnostic::new(format!("spatial result[{index}] IDs must be unique and ascending"),format!("{path}.id"),serde_json::json!(hit.id),serde_json::json!({"greater_than":previous_id})));
+                return Err(InputDiagnostic::new(format!("spatial result[{index}] IDs must be unique and ascending"),format!("{}.id",path()),serde_json::json!(hit.id),serde_json::json!({"greater_than":previous_id})));
             }
             previous_id = Some(hit.id);
             if !hit.distance.is_finite() || hit.distance < 0.0 {
-                return Err(InputDiagnostic::new(format!("spatial result[{index}] distance must be finite and nonnegative"),format!("{path}.distance"),finite_fact(hit.distance),serde_json::json!({"finite":true,"min":0})));
+                return Err(InputDiagnostic::new(format!("spatial result[{index}] distance must be finite and nonnegative"),format!("{}.distance",path()),finite_fact(hit.distance),serde_json::json!({"finite":true,"min":0})));
             }
             if !hit.fraction.is_finite() || !(0.0..=1.0).contains(&hit.fraction) || (!is_sweep && hit.fraction != 0.0) {
-                return Err(InputDiagnostic::new(format!("spatial result[{index}] contains an invalid fraction"),format!("{path}.fraction"),finite_fact(hit.fraction),serde_json::json!({"finite":true,"min":0,"max":if is_sweep{1}else{0}})));
+                return Err(InputDiagnostic::new(format!("spatial result[{index}] contains an invalid fraction"),format!("{}.fraction",path()),finite_fact(hit.fraction),serde_json::json!({"finite":true,"min":0,"max":if is_sweep{1}else{0}})));
             }
             if hit.point.iter().any(|value| !value.is_finite() || value.abs() > MAX_COORDINATE * 2.0)
                 || hit.normal.iter().any(|value| !value.is_finite()) || (dot(hit.normal, hit.normal) - 1.0).abs() > 0.002 {
-                return Err(InputDiagnostic::new(format!("spatial result[{index}] contains invalid contact geometry"),path,
+                return Err(InputDiagnostic::new(format!("spatial result[{index}] contains invalid contact geometry"),path(),
                     serde_json::json!({"point":hit.point.map(finite_fact),"normal":hit.normal.map(finite_fact)}),serde_json::json!({"finite":true,"point_abs_max":MAX_COORDINATE*2.0,"unit_normal_tolerance":0.002})));
             }
         }
@@ -575,6 +585,29 @@ pub fn pack_bodies(bodies: &[SpatialBody]) -> Result<Vec<u8>, String> {
     Ok(bytes)
 }
 
+/// SHA-256 of the canonical USB1 encoding produced by [`pack_bodies`], streamed
+/// without building the packed buffer. World snapshots carry this instead of
+/// every body so per-tick observation stays O(indices), not O(bodies).
+pub(crate) fn bodies_digest(bodies: &[SpatialBody]) -> String {
+    use sha2::{Digest, Sha256};
+    let mut hasher = Sha256::new();
+    hasher.update(PACKED_MAGIC);
+    hasher.update((bodies.len() as u32).to_le_bytes());
+    for body in bodies {
+        hasher.update(body.id.to_le_bytes());
+        hasher.update(body.category.to_le_bytes());
+        for value in body.position {
+            hasher.update(value.to_le_bytes());
+        }
+        hasher.update(body.radius.to_le_bytes());
+        for value in body.previous_position.unwrap_or(body.position) {
+            hasher.update(value.to_le_bytes());
+        }
+        hasher.update(u32::from(body.previous_position.is_some()).to_le_bytes());
+    }
+    format!("{:x}", hasher.finalize())
+}
+
 pub fn unpack_bodies(bytes: &[u8]) -> Result<Vec<SpatialBody>, String> {
     unpack_bodies_detailed(bytes).map_err(|issue| issue.message)
 }
@@ -601,7 +634,7 @@ pub(crate) fn unpack_bodies_detailed(bytes: &[u8]) -> Result<Vec<SpatialBody>, c
         let uint = |offset| u32::from_le_bytes(record[offset..offset + 4].try_into().unwrap());
         let float = |offset| f32::from_bits(uint(offset));
         let previous = [float(24), float(28), float(32)];
-        point_detailed(previous, &format!("packed bodies[{index}].previous_position"), &format!("bodies[{}].previous_position", index + 1))?;
+        point_detailed(previous, || (format!("packed bodies[{index}].previous_position"), format!("bodies[{}].previous_position", index + 1)))?;
         let previous_position = match uint(36) {
             0 => None, 1 => Some(previous),
             other => return Err(InputDiagnostic::new(format!("packed bodies[{index}].has_previous must be 0 or 1"),
@@ -611,4 +644,23 @@ pub(crate) fn unpack_bodies_detailed(bytes: &[u8]) -> Result<Vec<SpatialBody>, c
     }
     validate_bodies_detailed(&bodies)?;
     Ok(bodies)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn snapshot_digest_matches_the_packed_usb1_encoding() {
+        use sha2::{Digest, Sha256};
+        let bodies = vec![
+            SpatialBody { id: 3, category: 2, position: [1.0, -2.0, 0.5], radius: 0.25, previous_position: None },
+            SpatialBody { id: 9, category: 1, position: [4.0, 0.0, 0.0], radius: 1.0, previous_position: Some([3.0, 0.0, 0.0]) },
+        ];
+        let packed = pack_bodies(&bodies).unwrap();
+        assert_eq!(bodies_digest(&bodies), format!("{:x}", Sha256::digest(&packed)));
+        let mut moved = bodies.clone();
+        moved[1].position[0] = 4.5;
+        assert_ne!(bodies_digest(&bodies), bodies_digest(&moved));
+    }
 }

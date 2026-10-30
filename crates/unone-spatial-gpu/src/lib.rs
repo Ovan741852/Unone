@@ -228,12 +228,19 @@ fn pack_queries(batch: &SpatialBatch) -> Vec<u32> {
 }
 
 fn decode_results(version: u32, count: usize, words: &[u32]) -> Result<SpatialBatchResult, String> {
+    // Readback words come from the device; a driver fault must surface as an
+    // executor error rather than an out-of-bounds panic in the host.
+    if words.len() < count * RESULT_WORDS {
+        return Err(format!("spatial GPU readback has {} words, expected {}", words.len(), count * RESULT_WORDS));
+    }
     let mut results = Vec::with_capacity(count);
     for index in 0..count {
         let base = index * RESULT_WORDS;
         if words[base + 1] != 0 { return Err(format!("spatial overlap query {index} exceeds 64 hits")); }
-        let mut hits = Vec::with_capacity(words[base] as usize);
-        for slot in 0..words[base] as usize {
+        let hit_count = words[base] as usize;
+        if hit_count > 64 { return Err(format!("spatial GPU result {index} reports {hit_count} hits; the maximum is 64")); }
+        let mut hits = Vec::with_capacity(hit_count);
+        for slot in 0..hit_count {
             let offset = base + 4 + slot * HIT_WORDS;
             let f = |index| f32::from_bits(words[offset + index]);
             hits.push(SpatialHit { id: words[offset], distance: f(1), fraction: f(2), point: [f(4), f(5), f(6)], normal: [f(8), f(9), f(10)] });
@@ -249,5 +256,15 @@ mod tests {
     fn canonical_shader_validates_without_a_device() {
         let module = naga::front::wgsl::parse_str(super::SHADER_SOURCE).unwrap();
         naga::valid::Validator::new(naga::valid::ValidationFlags::all(), naga::valid::Capabilities::empty()).validate(&module).unwrap();
+    }
+
+    #[test]
+    fn corrupt_readback_is_an_error_not_a_panic() {
+        let mut words = vec![0u32; super::RESULT_WORDS];
+        words[0] = 65;
+        assert!(super::decode_results(1, 1, &words).unwrap_err().contains("maximum is 64"));
+        assert!(super::decode_results(1, 2, &words).unwrap_err().contains("readback has"));
+        words[0] = 0;
+        assert_eq!(super::decode_results(1, 1, &words).unwrap().results.len(), 1);
     }
 }

@@ -199,8 +199,10 @@ return {
     let pending = runtime.observe().spatial.unwrap();
     assert_eq!(pending["indices"].as_array().unwrap().len(), 1);
     assert_eq!(pending["tickets"].as_array().unwrap().len(), 2);
-    assert_eq!(pending["tickets"][0]["batch"]["version"], 1);
-    assert_eq!(pending["tickets"][0]["batch"]["bodies"][0]["id"], 17);
+    assert_eq!(pending["tickets"][0]["version"], 1);
+    // Snapshots carry content digests, not every body (see bodies_digest).
+    assert_eq!(pending["indices"][0]["bodies_sha256"].as_str().unwrap().len(), 64);
+    assert_eq!(pending["tickets"][0]["batch_sha256"].as_str().unwrap().len(), 64);
     runtime.tick().unwrap();
     assert_eq!(runtime.semantic_observations()["completed"], true);
     assert_eq!(runtime.spatial_report()["indices"], 0);

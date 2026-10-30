@@ -136,6 +136,14 @@ can fail. A new runtime and successful reload clear it; failed reload preserves 
 live diagnostic. A successful development reload resets the manager but retains
 the selected executor, so it does not promise to repair a failed GPU/device.
 Reads neither consume tickets nor change deterministic snapshots.
+
+The world snapshot's `spatial` field records each index as `id`, `version`,
+`body_count` and `bodies_sha256` (SHA-256 of the canonical `USB1` packing), and
+each ticket as `id`, `submit_tick`, `delivered`, `version`, `body_count`,
+`query_count` and `batch_sha256`. Observation digests therefore still cover
+every body and query, while a tick no longer serializes up to 65,536 bodies.
+The index digest is computed once per version.
+
 This spatial diagnostic envelope is separate from the CLI's existing `Diagnostic`
 report type. It covers input, manager, executor and host failures, without game
 policy. VM out-of-memory, output encoding and `create_buffer` allocation failures
