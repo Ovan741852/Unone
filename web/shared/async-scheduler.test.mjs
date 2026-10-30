@@ -94,6 +94,37 @@ test('failed updates never claim a completed draw and actual draw errors stop sc
  }
 });
 
+test('stopping before a pending worker rejects ignores cancellation and never reports a completed draw',async()=>{
+ let reject;const failure=Error('RUNTIME_CLOSED'),h=fixture({tick:()=>new Promise((_,r)=>reject=r)});
+ h.scheduler.start();await h.frame(10);assert.equal(h.scheduler.busy,true);
+ h.scheduler.stop();reject(failure);await flush();
+ assert.deepEqual(h.errors,[]);assert.deepEqual(h.seen,[]);assert.equal(h.frames.size,0);assert.equal(h.scheduler.busy,false);
+ assert.equal(h.metrics.snapshot().completed_draws,0);assert.equal(h.metrics.snapshot().raf_diagnostics.preparation_cancelled,1);
+ assert.equal(h.wakes.length,1);assert.equal(h.wakes[0].error,null);assert.equal(h.wakes[0].steps,0);
+});
+
+test('an old rejection cannot stop a restarted generation, while the same current failure still reports once',async()=>{
+ const pending=[],failure=Error('RUNTIME_CLOSED'),h=fixture({tick:()=>new Promise((resolve,reject)=>pending.push({resolve,reject}))});
+ h.scheduler.start();await h.frame(10);h.scheduler.stop();h.setTime(1000);h.scheduler.start();
+ await h.frame(1010);assert.equal(pending.length,1,'restart cannot overlap the old request');
+ pending[0].reject(failure);await flush();assert.deepEqual(h.errors,[]);assert.deepEqual(h.seen,[]);assert.equal(h.scheduler.busy,false);assert.equal(h.frames.size,1);
+ await h.frame(1020);assert.equal(pending.length,2);assert.equal(h.scheduler.busy,true);assert.equal(h.frames.size,0);
+ pending[1].reject(failure);await flush();assert.deepEqual(h.errors,[failure]);assert.equal(h.frames.size,0);assert.equal(h.scheduler.busy,false);
+ assert.deepEqual(h.seen,[]);assert.equal(h.metrics.snapshot().completed_draws,0);assert.equal(h.wakes[0].error,null);assert.equal(h.wakes[1].error,'RUNTIME_CLOSED');
+});
+
+for(const transition of ['pause','reset','hide-restore'])test(`a rejection from before ${transition} cannot stop the new clock or contaminate its RAF metadata`,async()=>{
+ let reject;const h=fixture({tick:()=>new Promise((_,r)=>reject=r)});h.scheduler.start();await h.frame(10);
+ if(transition==='pause'){h.scheduler.pause();h.setTime(1000);}
+ else if(transition==='reset'){h.setTime(1000);h.scheduler.resetClock();}
+ else{await h.visibility(true,20);await h.visibility(false,1000);}
+ reject(Error('cancelled-old-transaction'));await flush();assert.deepEqual(h.errors,[]);assert.equal(h.frames.size,1);assert.equal(h.scheduler.busy,false);assert.deepEqual(h.seen,[]);
+ assert.equal(h.metrics.snapshot().raf_diagnostics.preparation_cancelled,1);assert.equal(h.metrics.snapshot().preparation_wall.retained,0);
+ await h.frame(1005);assert.deepEqual(h.seen,[0]);assert.equal(h.counts().ticks,1);
+ const rows=h.metrics.snapshot({includeRafSamples:true}).raf_diagnostics.samples;assert.equal(rows.length,1);assert.equal(rows[0].raf_time_ms,1005);
+ assert.equal(h.scheduler.totalDroppedSteps,0);h.scheduler.stop();
+});
+
 test('reset during a tick suppresses its catch-up tail and resumes only at a new RAF boundary',async()=>{
  let resolve;const h=fixture({tick:()=>new Promise(r=>resolve=r)});h.scheduler.start();await h.frame(30);h.scheduler.resetClock();
  resolve();await flush();assert.equal(h.counts().ticks,1);assert.deepEqual(h.seen,[]);assert.equal(h.frames.size,1);

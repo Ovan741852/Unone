@@ -41,7 +41,12 @@ export function createAsyncScheduler({
     // worker/job waits belong to preparation_wall, never sync CPU/wall work.
     submissionStart=now();try{render(at,submissionStart,false,'scheduler_raf',stepMs);}finally{submissionEnd=now();}
    }
-  }catch(cause){error=String(cause?.message??cause);stop();onError(cause);}
+  }catch(cause){
+   // Teardown can reject an in-flight worker request after stop(), or after
+   // a new clock/generation has replaced it. Only its current owner may fail
+   // the scheduler; an obsolete continuation must not stop a restarted one.
+   if(started&&token===generation){error=String(cause?.message??cause);stop();onError(cause);}
+  }
   finally{
    if(preparationStart!==null&&!preparationReported)onPreparationEnd?.(tag,at,preparationStart,now(),steps,true,stepMs);
    busy=false;
