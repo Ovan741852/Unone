@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "engine_version": "0.2.0",
+  "runtime_package": {"name": "@unone/ui", "version": "0.6.0"},
+  "source_state": "Frozen working-tree 0.6 ownership slice after intrinsic-authority correction, before SDK9 packaging; not a final commit or Web acceptance claim",
+  "source_hashes": {
+    "packages/unone-ui/src/components.luau": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "crates/unone-engine/src/runtime/bindings/scroll.luau": "eb9d12a2dfcfeea1f9b98c422fed340e21b8382eef6f939e8183ec6dd95c321a",
+    "crates/unone-engine/tests/fixtures/ui-components-0.5.0.luau": "6d79ff0d8c2c07ff61821b4f34b6d043fcc367c7dd4ae794a761599e08263b98"
+  },
+  "contract": {
+    "ordinary_values": "Constructors and composeStyle return deeply frozen detached values. Parents reuse privately proven immutable subtrees; caller-authored mutable inputs are copied and never frozen in place.",
+    "registry": "Per-VM package closure, weak table keys, numeric work/height metadata with no reference to the key or descendants",
+    "expanded_copy_work_limit": 131072,
+    "copy_depth_limit": 64,
+    "shared_dag_accounting": "Every reused occurrence charges its complete expanded work and relative height. Identity sharing cannot bypass either original copy limit.",
+    "finalization": "Private mutable assembly completes kind/style/drag/surface/children edits first. Generated output fields enter cached statistics without retroactively reducing the borrowed-input copy boundary.",
+    "managed_exception": "Exact registered virtualList/virtualGrid handles remain mutable engine-owned objects. Frozen ancestors containing them receive no pure immutable grant; later composition revisits those branches.",
+    "authority": "Package and scroll chunks capture all used sealed standard libraries and validation builtins before Game code executes. Scroll ownership uses captured rawget plus rawequal, not author-controlled equality.",
+    "core_and_host_limits_changed": false
+  },
+  "actual_authority_reproduction": {
+    "executable": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate8/bin/game.exe",
+    "scope": "Cache-only tiny projects embed the actual package and scroll source, then execute through the existing SDK8 native CLI. No Game source or player renderer is modified.",
+    "before_fix": {
+      "exit_code": 1,
+      "ok": false,
+      "diagnostic_code": "LUAU_RUNTIME_ERROR",
+      "failure": "function environment replaced freeze authority",
+      "raw_result": "ui06-authority-before-result.json"
+    },
+    "after_fix": {
+      "exit_code": 0,
+      "ok": true,
+      "observation": {"immutable_authority": true},
+      "raw_result": "ui06-authority-after-result.json"
+    },
+    "regression": "ui_immutable::global_and_function_environment_shadowing_cannot_forge_ownership_authority",
+    "attacks_covered": [
+      "Writable getfenv proxy shadows table.freeze/clone, math/string and validation builtins",
+      "setfenv replaces a public constructor function environment",
+      "Shadowed assert/pairs/type cannot grant mutable data or waive cycles, expanded work, cached work or cached depth",
+      "Matching __eq metatables and shadowed rawget/rawequal cannot impersonate a registered virtual node"
+    ],
+    "test_cleanup": "Test captures its own trusted assertions/libraries and restores all changed environment keys and the public function environment even when the attack assertion fails"
+  },
+  "executed_focused_tests": {
+    "command": "cargo test -p unone-engine --test ui_immutable --test ui_components --test ui_slider_control -- --nocapture",
+    "passed": 33,
+    "failed": 0,
+    "ignored": 0,
+    "groups": {"ui_components": 19, "ui_immutable": 4, "ui_slider_control": 10},
+    "raw_log": "ui06-immutable-focused-tests.log",
+    "coverage": [
+      "Borrowed mutable input detachment, recursively frozen outputs and reuse across kits",
+      "Copy-on-write frozen style/padding and frozen child-array surface insertion, including a privately granted surface record",
+      "Slider drag metadata assembled before finalization and ordinary scroll snapshot detachment",
+      "Exact work/depth boundaries, repeated immutable DAG expansion, caller-frozen impostors, cloned values and cyclic/nonportable inputs",
+      "Managed materialization, failed-publication rollback, retirement and stale mutable descendants cannot hide in a pure grant",
+      "Reload publishes new values without modifying retained older Rust snapshots",
+      "Private weak registry does not retain obsolete nodes, rects or child arrays while the kit remains live",
+      "Intrinsic-authority and raw managed-identity attacks"
+    ],
+    "weak_reclamation_method": "A standalone unit VM keeps the kit and registry alive, stores obsolete values only through weak observations, then invokes three explicit unit-test collections and verifies all obsolete observations cleared. No force-GC is used in production or FPS/memory acceptance."
+  },
+  "opt2_synthetic_pair": {
+    "command": "cargo test -p unone-engine --features sampling-profile --test ui_components immutable_package_matches_0_5_canonical_worlds_across_changed_views -- --nocapture",
+    "environment_output": "UNONE_UI_IMMUTABLE_ALLOCATION_OUTPUT=D:/Projects/Unone/.cache/unone-ui-immutable-prototype/authority-fixed-opt2-allocation-pair.json",
+    "passed": 1,
+    "failed": 0,
+    "raw_log": "ui06-immutable-opt2-pair-tests.log",
+    "raw_metrics": "ui06-immutable-opt2-pair.json",
+    "scope": "Native Windows x86_64 Rust debug build, production-policy opt2 Luau interpreter, sampling disabled but VM allocation/incremental-GC diagnostic hooks enabled. This is a synthetic changing View, not a Web FPS or actual inventory result.",
+    "leaves_per_view": 96,
+    "warmup_ticks": 120,
+    "measured_ticks": 10,
+    "canonical_equality": "Initial state and all 120 warmup snapshots are byte-equal; all warmup digests match. All 10 measured snapshots remain byte-equal.",
+    "comparison": "Exact historical 0.5 package source versus corrected immutable 0.6 source, same authored View and injected 0.6 metadata in both VMs. The historical source fixture itself is unchanged.",
+    "before": {
+      "allocation_growth_bytes": 8322395,
+      "allocation_growth_events": 122167,
+      "incremental_gc_steps": 1855,
+      "incremental_gc_ms": 3.400300000000001,
+      "incremental_gc_max_step_ms": 0.0305
+    },
+    "after": {
+      "allocation_growth_bytes": 3822412,
+      "allocation_growth_events": 48356,
+      "incremental_gc_steps": 711,
+      "incremental_gc_ms": 2.597200000000001,
+      "incremental_gc_max_step_ms": 0.1882
+    },
+    "allocation_growth_bytes_reduction_percent": 54.07076929177238,
+    "allocation_growth_events_reduction_percent": 60.41811618522187,
+    "allocation_method": "Luau onallocate sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JavaScript allocations",
+    "gc_method": "Paired Luau incremental-step interrupts, including automatic assists and instrumentation overhead; steps are not whole collector cycles",
+    "full_gc_wall_time": null,
+    "max_step_disposition": "The corrected immutable run has a larger maximum observed GC step despite lower total measured incremental time and fewer steps. This evidence does not establish a general pause improvement."
+  },
+  "baseline_diagnostic_identity": {
+    "sampling_manifest": "artifacts/web-retained-20261030-sampling-profile-candidate8/runtime.json",
+    "sampling_source_commit": "3cd20499b9aa77efd24dc299e7ce9fd7762b7baa",
+    "sampling_source_dirty": false,
+    "sampling_wasm_sha256": "68c9db3c4cc0c863a4265a9373d5f331cbb94989cb77b8c0adc66b8c6732e5d3",
+    "sampling_profile_mode": "opt2-sampling",
+    "phase_manifest": "artifacts/web-retained-20261030-phase-profile-candidate8/runtime.json",
+    "phase_source_commit": "da74da06b45cb3b65f91dfdc0f2673312513d510",
+    "phase_source_dirty": false,
+    "phase_wasm_sha256": "c2c1834b0e6cbf8206cfa20044e8e63cc07bd2f48b923e6c91419a0ea5dea621",
+    "package_version": "0.5.0",
+    "scope": "Matching 0.5 pre-change diagnostic artifacts were preserved before 0.6 tracked edits. Game inventory phase/stack attribution belongs to the owner-run evidence and is not invented or replaced by this synthetic pair."
+  },
+  "toolchain_environment": {
+    "CARGO_HOME": "D:/Projects/Unone/.toolcache/cargo",
+    "RUSTUP_HOME": "D:/Projects/Unone/.toolcache/rustup",
+    "RUSTC": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/bin/rustc.exe",
+    "PATH_prefix": ["D:/Projects/Unone/.toolcache/cargo/bin", "D:/Projects/Unone/.toolcache/w64devkit/bin"],
+    "LIBRARY_PATH": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/self-contained",
+    "cargo_profile_overrides": []
+  },
+  "independent_review": {
+    "reviewers": ["Codex /root/runtime_audit", "Codex /root/web_lifecycle"],
+    "scope": "Read-only source, exact intrinsic list, lifecycle/ownership, bounds and regression review. Reviewers' read-only work is separate from the author's executed commands.",
+    "finding": "P2 writable function-environment authority and equality-based managed-node spoofing",
+    "disposition": "Corrected through lexical capture of trusted intrinsics and raw identity; actual before-failure/after-success and adversarial regression executed",
+    "remaining_concrete_P1_P2": 0
+  },
+  "superseded_evidence": {
+    "pre_authority_fix_focused_pass_count": 32,
+    "pre_authority_fix_allocation_reduction_percent": 56.11885694512038,
+    "disposition": "Historical cache-only results; not the final fixed-source pass count or allocation result. Superseded by the 33-test and corrected opt2 records above."
+  },
+  "limitations": [
+    "No official Web seven-scenario pass, inventory 60 FPS, OS presentation cadence, GPU or whole-player acceptance is claimed here",
+    "Short synthetic allocation/GC diagnostics are instrumented and cannot establish leak-free or GC-free behavior",
+    "The weak-reclamation unit proves the private grant map does not strongly retain the tested obsolete graphs; it is not a whole-engine memory leak proof",
+    "Full Luau GC time, JavaScript GC and Rust allocator traffic are unavailable in this pair and remain null or explicitly outside its scope",
+    "Breaking 0.6 constructor ownership requires matching canonical types/package/player/CLI and actual Game adoption validation before shipment"
+  ]
+}

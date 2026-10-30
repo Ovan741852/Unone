@@ -88,7 +88,7 @@ mod tests {
     fn exact_versions_and_system_ownership_are_checked_without_loading_game_code() {
         let settings = SystemSettings::default();
         let available = compiled_runtime_packages(&settings);
-        assert_eq!(available.get("@unone/ui").unwrap(), "0.5.0");
+        assert_eq!(available.get("@unone/ui").unwrap(), "0.6.0");
         validate_runtime_packages(&available, &settings).unwrap();
         for required in [
             BTreeMap::from([("@unone/ui".into(), "99.0.0".into())]),

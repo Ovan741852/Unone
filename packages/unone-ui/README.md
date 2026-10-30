@@ -7,6 +7,12 @@ mechanics belong to the package: use `createSlider` for numeric values and
 pointer dragging, and `createResponsiveLayout` for explicit authored breakpoint
 selection and slot/row/column/grid geometry. Components never arrange children
 implicitly.
+Version 0.6 returns recursively frozen ordinary nodes and composed styles.
+Authored props remain mutable borrowed inputs; retain and reuse owned immutable
+subtrees, and construct a new result when values change. Registered virtual
+handles remain helper-owned live state with readonly public types. See the
+[ownership and migration contract](../../docs/ui-components.md#theme-copying-and-surfaces)
+for mutable input descriptors, readonly child iteration and runtime enforcement.
 The [full component guide](../../docs/ui-components.md), style contract and
 canonical strict types accompany the portable SDK's verified package inventory.
 
@@ -26,7 +32,7 @@ coordinates. Anchors do not translate the quads and are rejected.
 Declare the exact installed version in `project.unone.json`:
 
 ```json
-{"runtime_packages":{"@unone/ui":"0.5.0"}}
+{"runtime_packages":{"@unone/ui":"0.6.0"}}
 ```
 
 The SDK includes the manifest and source at `packages/unone-ui/`. The matching

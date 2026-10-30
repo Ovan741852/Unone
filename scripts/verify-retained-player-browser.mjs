@@ -27,7 +27,7 @@ const project=await readJson(join(releaseRoot,'content/project.json'));
 const presentation=await readJson(join(releaseRoot,'content/presentation.json'));
 const runtimeBytes=await readFile(join(releaseRoot,'runtime/runtime.json'));
 const runtime=JSON.parse(runtimeBytes);
-assert.equal(project.config.runtime_packages['@unone/ui'],'0.5.0');
+assert.equal(project.config.runtime_packages['@unone/ui'],runtime.runtime_packages?.['@unone/ui'],'Fixture and selected runtime must declare the same exact UI package');
 assert.equal(presentation.renderer_mode,'official');
 assert.equal(exported.dev_tools,false,'Use a production export to exercise the production path');
 assert.equal(sha(await readFile(join(releaseRoot,'runtime',runtime.wasm))),runtime.wasm_sha256);

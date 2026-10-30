@@ -33,7 +33,7 @@ api.observation.set("ui_budget", report)
 - 一個邏輯節點、一次 asset reference，最多九個 render regions。這不等於一次 GPU draw call。透明區仍保留既有矩形 hit-test 規則。
 - 解碼後仍檢查來源實際尺寸。`UI_SLICE_BOUNDS` 帶來源／節點資訊；不能靜默改成整張拉伸。SVG 仍受各 host 的静態資產安全限制。
 
-UnoneUI 0.5.0 的 `UI.image(spec)`／`ui.generate(image, spec)` 同樣接收 `slice`。
+UnoneUI 0.6.0 的 `UI.image(spec)`／`ui.generate(image, spec)` 同樣接收 `slice`。
 無需安裝插件也能直接使用 Core API；UI 架構不是強制依賴。
 
 ## Reusable background intent
@@ -93,8 +93,14 @@ Canonical constructor inputs are `UiInlineImageBatchProps` and
 outer fields are read-only inputs, so fresh table literals and explicitly typed
 variables can be passed directly; `background_for.screen=true` stays strict.
 `never?` exclusions reject mixing the two forms or adding a transform to inline
-quads. The constructor keeps its existing union signature and returns mutable,
-game-owned nodes; no runtime freeze or new constructor is introduced.
+quads. The constructor keeps its union signature and returns an ordinary
+recursively frozen node in UI 0.6. Mutable authored definitions can use
+`UiImageBatchDefinitionInput` and `UiImageQuadInput`; changing those builders
+does not mutate an earlier constructor result or Core resource generation.
+See the [ownership migration](ui-components.md#theme-copying-and-surfaces).
+For explicit replacement, retain a `UiImageBatchDefinitionInput` builder, change
+its quad opacity/crop as authored, and call `define(id,builder)` again. Use the
+readonly `UiImageBatchDefinition` view when no caller mutation is required.
 
 ```lua
 -- Game.start: source pixels and local artwork coordinates are independent.

@@ -1,6 +1,11 @@
 --!strict
 -- Official, pure Luau constructors over the existing UI transport.
 -- The runtime supplies package metadata and the project's exact declaration.
+-- Capture trusted intrinsics before authored Game code can shadow globals or
+-- replace a public function's environment. Ownership grants depend on these.
+local table, math, string = table, math, string
+local assert, error, type, pairs, ipairs, tostring = assert, error, type, pairs, ipairs, tostring
+local getmetatable, setmetatable = getmetatable, setmetatable
 local metadata: any, declared: boolean, isManagedNode: (any) -> boolean, helpers: any = ...
 type Fields = {[string]: boolean}
 local placement: Fields = {rect=true,anchor=true,pivot=true,offset=true,size=true}
@@ -92,10 +97,15 @@ local function dense(value: any, path: string): number
     return count
 end
 
--- Clone portable author data with explicit cycle/depth/work bounds. Registered
--- virtual nodes retain their engine-owned identity so scroll requests reach the
--- exact node published in the tree. Their live contents belong to the helper.
-local function copy(value: any): any
+-- Only private, transitively frozen portable values can be borrowed. Weak keys
+-- do not keep retired views alive; metadata contains numbers, never table refs.
+type OwnedStats = {work: number, height: number}
+local immutableOwned: {[any]: OwnedStats} = setmetatable({}, {__mode="k"}) :: any
+
+-- Clone borrowed author data with the original expanded depth/work accounting.
+-- A shared immutable DAG still charges every occurrence, not just unique nodes.
+-- Registered virtual nodes keep their separate mutable, engine-owned identity.
+local function copy(value: any, mutableRoot: boolean?): any
     local active: {[any]: boolean} = {}
     local remaining = 131072
     local function visit(item: any, depth: number): any
@@ -106,6 +116,12 @@ local function copy(value: any): any
             assert(kind=="nil" or kind=="string" or kind=="number" or kind=="boolean",
                 "UI_COMPONENT_COPY: only portable UI data can be copied")
             return item
+        end
+        local grant = immutableOwned[item]
+        if grant~=nil then
+            remaining -= grant.work-1
+            assert(remaining>=0 and depth+grant.height<=64, "UI_COMPONENT_COPY: data exceeds copy limits")
+            return if depth==0 and mutableRoot then table.clone(item) else item
         end
         if isManagedNode(item) then return item end
         assert(not active[item], "UI_COMPONENT_COPY: cyclic UI data")
@@ -135,6 +151,31 @@ local function copy(value: any): any
     return visit(value,0)
 end
 
+-- Finalize only detached construction results, after all kind/style/drag and
+-- surface edits. The copied inputs already passed their admission bounds.
+-- Generated fields contribute to cached output cost, so later parent copies
+-- account for them too, without retroactively changing input-copy boundaries.
+local function finish(value: any): any
+    local function visit(item: any): (number, number, boolean)
+        if type(item)~="table" then return 1,0,false end
+        local grant=immutableOwned[item]
+        if grant~=nil then return grant.work,grant.height,false end
+        if isManagedNode(item) then return 1,0,true end
+        local work,height,managed=1,0,false
+        for _,child in pairs(item) do
+            local childWork,childHeight,childManaged=visit(child)
+            work+=childWork;height=math.max(height,childHeight+1);managed=managed or childManaged
+        end
+        table.freeze(item)
+        -- A frozen envelope containing a mutable virtual handle is not a pure
+        -- immutable subtree. Revisit that branch when composing future views.
+        if not managed then immutableOwned[item]={work=work,height=height} end
+        return work,height,managed
+    end
+    visit(value)
+    return value
+end
+
 local function style(value: any, path: string)
     if value==nil then return end
     fields(value,styleFields,path)
@@ -147,12 +188,14 @@ end
 local function compose(base: any?, override: any?): any
     style(base,"base style")
     style(override,"override style")
-    local result = if base==nil then {} else copy(base)
+    local result = if base==nil then {} else copy(base,true)
     if override~=nil then
         local replacement = copy(override)
         for key, value in pairs(replacement) do
             if key=="padding" and result.padding~=nil then
-                for edge, length in pairs(value) do result.padding[edge] = length end
+                local padding=table.clone(result.padding)
+                for edge, length in pairs(value) do padding[edge] = length end
+                result.padding=padding
             else
                 result[key] = value
             end
@@ -161,15 +204,18 @@ local function compose(base: any?, override: any?): any
     return result
 end
 
--- Only leaf's detached copy may enter this path. Defaults still need a fresh
--- copy for every result; an owned override can transfer its private children.
+-- Defaults are privately frozen once per kit. Retain unchanged immutable
+-- values; only the merged envelope and an overridden padding record are new.
 local function mergeOwnedStyle(base: any?, override: any?): any
     if base==nil then return override end
-    local result = copy(base)
+    if override==nil then return base end
+    local result = table.clone(base)
     if override~=nil then
         for key, value in pairs(override) do
             if key=="padding" and result.padding~=nil then
-                for edge, length in pairs(value) do result.padding[edge] = length end
+                local padding=table.clone(result.padding)
+                for edge, length in pairs(value) do padding[edge] = length end
+                result.padding=padding
             else
                 result[key] = value
             end
@@ -493,14 +539,14 @@ local function makeKit(theme: any?): any
         fields(theme,themeFields,"theme")
         for key, value in pairs(theme) do style(value,"theme."..tostring(key)) end
     end
-    local defaults = if theme==nil then {} else copy(theme)
+    local defaults = if theme==nil then {} else finish(copy(theme))
     local kit: any = {}
     kit.createResponsiveLayout = function(options: any): any available();return responsiveLayout(options) end
     local function leaf(kind: string, props: any): any
         available()
         fields(props,leafFields[kind],kind)
         style(props.style,kind..".style")
-        local node = copy(props)
+        local node = copy(props,true)
         node.kind = kind
         if defaults[kind]~=nil or props.style~=nil then
             if getmetatable(props)==nil and (props.style==nil or getmetatable(props.style)==nil) then
@@ -513,11 +559,11 @@ local function makeKit(theme: any?): any
         end
         return node
     end
-    kit.textInput = function(props: any): any return leaf("text_input",props) end
-    kit.inputRegion = function(props: any): any return leaf("input_region",props) end
-    kit.text = function(props: any): any return leaf("text",props) end
-    kit.button = function(props: any): any return leaf("button",props) end
-    kit.slider = function(props: any): any return leaf("slider",props) end
+    kit.textInput = function(props: any): any return finish(leaf("text_input",props)) end
+    kit.inputRegion = function(props: any): any return finish(leaf("input_region",props)) end
+    kit.text = function(props: any): any return finish(leaf("text",props)) end
+    kit.button = function(props: any): any return finish(leaf("button",props)) end
+    kit.slider = function(props: any): any return finish(leaf("slider",props)) end
     -- The official control owns numeric/gesture state, while the host owns
     -- hit testing in the fully projected/clipped stage or scroll space.
     -- view remains pure so virtual materialization never advances interaction.
@@ -581,7 +627,7 @@ local function makeKit(theme: any?): any
             finite(hitRect.width,"hit_rect.width");finite(hitRect.height,"hit_rect.height")
             local node = leaf("slider",{id=id,text=props.text,action=action,rect=rect,style=props.style})
             node.drag = {axis=axis,reverse=reverse,track_rect=track,hit_rect=hitRect,enabled=props.enabled~=false}
-            return node
+            return finish(node)
         end
         control.update = function(input: any): any
             assert(type(input)=="table",
@@ -619,9 +665,9 @@ local function makeKit(theme: any?): any
         end
         return control
     end
-    kit.combobox = function(props: any): any return leaf("combobox",props) end
-    kit.panel = function(props: any): any return leaf("panel",props) end
-    kit.image = function(props: any): any return leaf("image",props) end
+    kit.combobox = function(props: any): any return finish(leaf("combobox",props)) end
+    kit.panel = function(props: any): any return finish(leaf("panel",props)) end
+    kit.image = function(props: any): any return finish(leaf("image",props)) end
     kit.imageBatch = function(props: any): any
         available()
         fields(props,leafFields.image_batch,"imageBatch")
@@ -639,13 +685,13 @@ local function makeKit(theme: any?): any
                 if quad.source~=nil then fields(quad.source,rectFields,"imageBatch.quad.source") end
             end
         end
-        return leaf("image_batch",props)
+        return finish(leaf("image_batch",props))
     end
     kit.component = function(props: any): any
         available()
         fields(props,componentFields,"component")
         if props.children~=nil then dense(props.children,"component.children") end
-        local node = copy(props)
+        local node = copy(props,true)
         node.kind = "component"
         node.surface = nil
         local children: any = node.children or {}
@@ -654,23 +700,24 @@ local function makeKit(theme: any?): any
             assert(type(surface)=="table" and (surface.kind=="panel" or surface.kind=="image"),
                 "UI_COMPONENT_SURFACE: surface.kind must be panel or image")
             fields(surface,surfaceFields[surface.kind],"surface")
-            local surfaceProps: any = copy(surface)
+            local surfaceProps: any = copy(surface,true)
             surfaceProps.kind = nil
             surfaceProps.id = identifier(props.id,"surface")
             surfaceProps.background_for = {component=props.id}
             for key in pairs(placement) do surfaceProps[key] = copy(props[key]) end
-            table.insert(children,1,leaf(surface.kind,surfaceProps))
+            if immutableOwned[children]~=nil then children=table.clone(children) end
+            table.insert(children,1,finish(leaf(surface.kind,surfaceProps)))
         end
         node.children = if #children>0 then children else nil
-        return node
+        return finish(node)
     end
     kit.screen = function(props: any): any
         available()
         fields(props,screenFields,"screen")
         dense(props.children,"screen.children")
-        local node = copy(props)
+        local node = copy(props,true)
         node.kind = "screen"
-        return node
+        return finish(node)
     end
     -- Forward the original helper options, including renderItem/key functions.
     -- These helpers own registration, materialization and live node identity;
@@ -678,7 +725,7 @@ local function makeKit(theme: any?): any
     kit.scrollView = function(options: any): any
         available()
         fields(options,scrollFields,"scrollView")
-        return helpers.scrollView(options)
+        return finish(copy(helpers.scrollView(options)))
     end
     kit.virtualList = function(options: any): any
         available()
@@ -691,7 +738,7 @@ local function makeKit(theme: any?): any
         return helpers.virtualGrid(options)
     end
     kit.id = function(instanceId: string, role: string): string available(); return identifier(instanceId,role) end
-    kit.composeStyle = function(base: any?, override: any?): any available(); return compose(base,override) end
+    kit.composeStyle = function(base: any?, override: any?): any available(); return finish(compose(base,override)) end
     return kit
 end
 

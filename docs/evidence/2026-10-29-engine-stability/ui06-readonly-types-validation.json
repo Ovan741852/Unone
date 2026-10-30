@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "scope": "UI0.6 canonical readonly output views and mutable borrowed authoring descriptors. These checks do not execute a browser or establish game FPS, GC frequency or leak freedom.",
+  "engine_version": "0.2.0",
+  "package_version": "0.6.0",
+  "canonical_sha256": "5c92b7d058fb75cf9b063e39ac57e3c6790e8ebc1bfb50219b7e13bb4db12196",
+  "analyzers": {
+    "0.734": {
+      "path": "D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe",
+      "sha256": "fc28e3a85eccdbdca4974784ffb96134cf2166d5fbd149078cb28cffde88bfee"
+    },
+    "0.743": {
+      "path": "D:/Projects/JYRogue/.cache/tools/luau-0.743/luau-analyze.exe",
+      "sha256": "e8c8d1149b9ff97d154022be33829df62ac583a15683f3da33f8c15d5443b74f"
+    }
+  },
+  "cases": [
+    {
+      "version": "0.734",
+      "fixture": "positive-mutable-input-readonly-output",
+      "exit_code": 0,
+      "errors": 0,
+      "passed": true,
+      "expected_write_rejections": []
+    },
+    {
+      "version": "0.734",
+      "fixture": "negative-readonly-writes",
+      "exit_code": 1,
+      "errors": 10,
+      "passed": true,
+      "expected_write_rejections": [
+        {
+          "mutation": "node-id",
+          "line": 828,
+          "passed": true
+        },
+        {
+          "mutation": "nested-rect",
+          "line": 829,
+          "passed": true
+        },
+        {
+          "mutation": "style-field",
+          "line": 831,
+          "passed": true
+        },
+        {
+          "mutation": "rgba-index",
+          "line": 832,
+          "passed": true
+        },
+        {
+          "mutation": "padding-edge",
+          "line": 833,
+          "passed": true
+        },
+        {
+          "mutation": "child-index",
+          "line": 835,
+          "passed": true
+        },
+        {
+          "mutation": "child-insert",
+          "line": 836,
+          "passed": true
+        },
+        {
+          "mutation": "child-array-replacement",
+          "line": 837,
+          "passed": true
+        },
+        {
+          "mutation": "live-children-replacement",
+          "line": 838,
+          "passed": true
+        },
+        {
+          "mutation": "live-window-field",
+          "line": 839,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "0.743",
+      "fixture": "positive-mutable-input-readonly-output",
+      "exit_code": 0,
+      "errors": 0,
+      "passed": true,
+      "expected_write_rejections": []
+    },
+    {
+      "version": "0.743",
+      "fixture": "negative-readonly-writes",
+      "exit_code": 1,
+      "errors": 10,
+      "passed": true,
+      "expected_write_rejections": [
+        {
+          "mutation": "node-id",
+          "line": 828,
+          "passed": true
+        },
+        {
+          "mutation": "nested-rect",
+          "line": 829,
+          "passed": true
+        },
+        {
+          "mutation": "style-field",
+          "line": 831,
+          "passed": true
+        },
+        {
+          "mutation": "rgba-index",
+          "line": 832,
+          "passed": true
+        },
+        {
+          "mutation": "padding-edge",
+          "line": 833,
+          "passed": true
+        },
+        {
+          "mutation": "child-index",
+          "line": 835,
+          "passed": true
+        },
+        {
+          "mutation": "child-insert",
+          "line": 836,
+          "passed": true
+        },
+        {
+          "mutation": "child-array-replacement",
+          "line": 837,
+          "passed": true
+        },
+        {
+          "mutation": "live-children-replacement",
+          "line": 838,
+          "passed": true
+        },
+        {
+          "mutation": "live-window-field",
+          "line": 839,
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "raw_evidence": {
+    "path": ".cache/ui-immutable-types-feasibility/canonical-final-report-r2.json",
+    "sha256": "177ddd74be1abd2b84e828229de532ace9b1db4a91e66f36e381f8b1f4fd0abf"
+  },
+  "runtime_parser": {
+    "executed": true,
+    "ok": true,
+    "scope": "SDK8 production actual vendored runtime parser accepts recursive readonly generic types, then executes a tiny three-tick fixture. This does not test runtime UI0.6 freezing.",
+    "wasm_sha256": "167456acc192215d1812fb8e3f08bbd47487b5ff18aabb9e385622b88081c625",
+    "runtime_ui_package": "0.5.0",
+    "source_sha256": "8e31ab076c5e9a86e37bfd626bf343b2444530ccec9ba0b40f5c56148fbf6e46",
+    "ticks": 3,
+    "raw": ".cache/ui-immutable-types-feasibility/runtime-parser.json"
+  },
+  "generic_virtual_options": {
+    "scope": "Same miniature Row fixture on old0.5/current0.6 canonical types: inline generic literal inference fails in both; named canonical UiVirtualOptions<Row> works in both. No any or casts.",
+    "results": [
+      {
+        "version": "0.734",
+        "contract": "before",
+        "kind": "literal",
+        "exit_code": 1
+      },
+      {
+        "version": "0.734",
+        "contract": "before",
+        "kind": "typed",
+        "exit_code": 0
+      },
+      {
+        "version": "0.734",
+        "contract": "after",
+        "kind": "literal",
+        "exit_code": 1
+      },
+      {
+        "version": "0.734",
+        "contract": "after",
+        "kind": "typed",
+        "exit_code": 0
+      },
+      {
+        "version": "0.743",
+        "contract": "before",
+        "kind": "literal",
+        "exit_code": 1
+      },
+      {
+        "version": "0.743",
+        "contract": "before",
+        "kind": "typed",
+        "exit_code": 0
+      },
+      {
+        "version": "0.743",
+        "contract": "after",
+        "kind": "literal",
+        "exit_code": 1
+      },
+      {
+        "version": "0.743",
+        "contract": "after",
+        "kind": "typed",
+        "exit_code": 0
+      }
+    ],
+    "raw": ".cache/ui-immutable-types-feasibility/virtual-before-after-report-r2.json"
+  },
+  "targeted_core_tests": {
+    "api_passed": 17,
+    "package_metadata_passed": 2,
+    "version_sensitive_integration_passed": 11,
+    "full_core_rerun": false,
+    "logs": [
+      {
+        "path": ".cache/ui06-api-tests.log",
+        "sha256": "5c05c408ee2f8998eb2f1c066b09241ffacfc1afb255771a296d3a31604ceff3"
+      },
+      {
+        "path": ".cache/ui06-runtime-package-tests.log",
+        "sha256": "f8e5decc9c8a633f0bb93276710d41329558d78d504937f7fbc5831e791e8430"
+      },
+      {
+        "path": ".cache/ui06-version-sensitive-input-tests.log",
+        "sha256": "05060005da5c7475967f588c5f42dd1f72f16d3b186069979f213eab9dc09113"
+      }
+    ]
+  },
+  "limitations": [
+    "Readonly views do not freeze arbitrary tables by type annotation. Ordinary UI0.6 constructor results are protected by runtime recursive freezing.",
+    "Both pinned analyzers allow table.clear through readonly arrays and do not infer readonly solely from table.freeze. Runtime freezing is the ownership authority.",
+    "Readonly array ipairs typing is inconsistent; generalized iteration is the documented migration.",
+    "Registered virtual handles expose readonly public types but remain helper-owned live state; manual mutation violates the contract and is not universally blocked by runtime freezing.",
+    "This actual runtime parser check uses immutable SDK8 UI0.5 production WASM with new type-only syntax; it is not a packaged UI0.6 player acceptance test.",
+    "Native33 package/authority/controls and opt2 pair tests were executed and reported by their author, independently source-reviewed here; they are not added to these30 targeted Core checks."
+  ]
+}

@@ -2,7 +2,7 @@
 
 Start reusable controls with the official [`@unone/ui` package](ui-components.md),
 a versioned pure Luau kit bundled with Core and the portable SDK. Declare
-`"runtime_packages":{"@unone/ui":"0.5.0"}` in `project.unone.json`, inspect
+`"runtime_packages":{"@unone/ui":"0.6.0"}` in `project.unone.json`, inspect
 `ui.components.info`, and call `api.ui.components.create(theme?)`. The returned
 kit constructs typed text/button/slider/combobox/panel/image leaves, component
 and screen wrappers, the `createSlider` numeric control, `createResponsiveLayout`, plus the existing scroll

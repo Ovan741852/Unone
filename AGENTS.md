@@ -65,7 +65,7 @@ with Core and the SDK. Search `game api search "UI package"` / `"shared componen
 / `"button component"` / `"card component"` / `"官方UI套件"` / `"共用元件"` /
 `"主題樣式"`, describe `ui.components.info` and `ui.components.create`, and read
 [the package contract](docs/ui-components.md). Declare the exact package version
-in `project.unone.json` (`"runtime_packages":{"@unone/ui":"0.5.0"}`). Both
+in `project.unone.json` (`"runtime_packages":{"@unone/ui":"0.6.0"}`). Both
 `api.ui.components` and the themed kit returned by `create` expose typed
 text/button/slider/combobox/panel/image/component/screen constructors, the
 `createSlider` numeric control, `createResponsiveLayout` model, plus
@@ -75,6 +75,15 @@ scrollView/virtualList/virtualGrid wrappers. Search `"create button"` /
 This is not an npm
 module or a new renderer. Keep themes, content, application state, action meanings and
 authored semantic grouping in project Luau. Custom factories remain valid.
+UI 0.6 ordinary constructor nodes and composed styles are recursively frozen;
+construct a new result when its data changes. Mutable authored builders use
+`UiRectInput`, `UiStyleInput`, `UiImageQuadInput` or
+`UiImageBatchDefinitionInput`; readonly outputs can be reused as borrowed inputs.
+Build mutable child arrays as `{UiNode}` before composition, then read returned
+`UiReadArray<UiNode>` with generalized iteration (`for _,node in children do`).
+Registered virtual handles expose readonly public types but retain helper-owned
+live state. Do not freeze, clone or mutate those handles yourself. See the
+[ownership contract](docs/ui-components.md#theme-copying-and-surfaces).
 
 For responsive composition search `"responsive layout"` / `"breakpoints"` /
 `"row column grid layout"` / `"自適應排版"`, describe

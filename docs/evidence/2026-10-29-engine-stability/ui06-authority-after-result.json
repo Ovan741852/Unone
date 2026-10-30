@@ -1,0 +1,86 @@
+{
+  "ok": true,
+  "value": {
+    "project": "immutable-authority-after",
+    "seed": 42,
+    "status": "completed",
+    "frames": 1,
+    "observation_digest": "sha256:28452f0a44ccffe3c07f5a35a5b6b058dafdd7af79d47514db9ba42a5e662e1c",
+    "world": {
+      "frame": 1,
+      "time_seconds": 0.016666666666666666,
+      "camera": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "zoom": 1.0,
+        "view_height": 10.0
+      },
+      "entities": {},
+      "observations": {
+        "immutable_authority": true
+      }
+    },
+    "save_payload": null,
+    "trace": [],
+    "performance": {
+      "frames": 1,
+      "total_ms": 0.04,
+      "mean_frame_ms": 0.04,
+      "median_frame_ms": 0.04,
+      "p95_frame_ms": 0.04,
+      "slowest_frame": {
+        "frame": 1,
+        "total_ms": 0.04,
+        "script_ms": 0.001,
+        "physics_ms": 0.008,
+        "observe_ms": 0.001
+      },
+      "sustained_fps": 25252.5,
+      "frame_budget_ms": 16.667,
+      "frames_over_budget": 0,
+      "phases": [
+        {
+          "name": "script",
+          "total_ms": 0.001,
+          "mean_ms": 0.001,
+          "share": 0.09
+        },
+        {
+          "name": "physics",
+          "total_ms": 0.008,
+          "mean_ms": 0.008,
+          "share": 0.84
+        },
+        {
+          "name": "observe",
+          "total_ms": 0.001,
+          "mean_ms": 0.001,
+          "share": 0.07
+        }
+      ],
+      "counts": {
+        "entities": 0,
+        "instances": 0,
+        "instance_bytes": 0,
+        "rigidbodies": 0,
+        "ui_nodes": 0,
+        "effects": 0,
+        "particles": 0,
+        "observations": 1
+      },
+      "luau_memory_bytes": 9598920,
+      "luau_positive_heap_delta_bytes_per_frame": 0,
+      "profile": "release",
+      "notes": [
+        "wall clock timings, excluded from the observation digest",
+        "serialize is an optional canonical-JSON probe, not actual Web publication or decode time; measure those separately",
+        "luau_positive_heap_delta_bytes_per_frame is positive net heap growth, not total allocated bytes or GC pause attribution",
+        "median, p95, and frames-over-budget use the most recent bounded sample window (up to 1024 frames)"
+      ]
+    }
+  },
+  "diagnostics": [],
+  "effects": []
+}

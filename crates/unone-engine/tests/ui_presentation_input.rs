@@ -74,7 +74,7 @@ fn nonvisual_input_does_not_collide_with_art_but_interactive_conflicts_remain() 
 fn canonical_package_publishes_typed_region_and_shadow_in_the_normal_runtime() {
     use unone_engine::{EngineRuntime,ProjectConfig,SourceProject};
     let config:ProjectConfig=serde_json::from_value(json!({"name":"presentation-input",
-        "entry_script":"main.luau","systems":{"ui":true},"runtime_packages":{"@unone/ui":"0.5.0"}})).unwrap();
+        "entry_script":"main.luau","systems":{"ui":true},"runtime_packages":{"@unone/ui":"0.6.0"}})).unwrap();
     let source=r#"return {start=function(api)
         local ui=api.ui.components.create()
         local r={x=10,y=10,width=30,height=10}

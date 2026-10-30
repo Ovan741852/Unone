@@ -1,5 +1,10 @@
 -- Engine helper: local content rects are top-left/y-down. Data/functions stay
 -- in Lua; only the visible window crosses the host boundary.
+-- This chunk loads before Game code. Keep validation and exact identity rooted
+-- in the sealed standard library, independent of authored global environments.
+local table, math = table, math
+local assert, error, type, pairs, ipairs, tostring = assert, error, type, pairs, ipairs, tostring
+local next, pcall, rawget, rawequal = next, pcall, rawget, rawequal
 local publish, renderPure = ...
 local registry, root, revision = {}, nil, 0
 local function positive(n, name)
@@ -140,5 +145,5 @@ return {scrollView=scrollView,virtualList=function(s)return virtual(s,false)end,
   if type(node)~="table" then return false end
   -- Private identity probes must not run authored __index callbacks.
   local entry=registry[rawget(node,'id')]
-  return entry~=nil and entry.node==node
+  return entry~=nil and rawequal(entry.node,node)
  end}

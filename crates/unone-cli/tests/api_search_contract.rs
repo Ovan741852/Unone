@@ -358,7 +358,7 @@ fn shared_component_search_has_cli_mcp_parity_and_typed_package_guidance() {
                 .unwrap()
                 .contains("docs/ui-components.md")
         );
-        assert!(entry["when_to_use"].as_str().unwrap().contains("0.5.0"));
+        assert!(entry["when_to_use"].as_str().unwrap().contains("0.6.0"));
         assert!(
             entry["returns"]
                 .as_str()

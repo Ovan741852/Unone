@@ -129,7 +129,7 @@ Retention must exist across the complete path, not only in a JavaScript cache.
   dropped/invalid deltas, reload, scene reset and GPU context loss require an
   explicit full-state recovery path with host epoch/generation checks.
 - Prioritize the effective model over backward compatibility, as directed by the
-  user. This coordinated contract is engine 0.2.0 with `@unone/ui` 0.5.0. Keep
+  user. This coordinated contract is engine 0.2.0 with `@unone/ui` 0.6.0. Keep
   canonical state complete and deterministic within that version; do not omit
   resource content from a digest merely to improve frame time. Existing game
   products are not silently migrated or rewritten.

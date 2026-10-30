@@ -357,7 +357,7 @@ which ships as pure Luau with Core and the portable SDK. Search
 `game api search "UI package"`, `"shared components"`, `"button component"`,
 `"card component"`, `"官方UI套件"`, `"共用元件"` or `"主題樣式"`; describe
 `ui.components.info` and `ui.components.create`. Declare the exact bundled version
-in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.5.0"}`. `info()` is
+in `project.unone.json`: `"runtime_packages":{"@unone/ui":"0.6.0"}`. `info()` is
 available before declaration and reports the name, version and `declared` flag.
 No npm install, import or filesystem module loader is involved.
 
@@ -371,6 +371,13 @@ publication step. Leaf/component props use explicit flattened `rect` or
 `anchor`+`size` fields. Per-kind theme styles are copied, overrides win, padding
 merges by edge and RGBA arrays replace. The project owns themes, content, application state,
 action meanings, screen flow and geometry. Custom Luau factories remain valid.
+UI 0.6 ordinary node/style results are recursively frozen. Constructor inputs
+remain borrowed mutable authored data; `UiRectInput`, `UiStyleInput`,
+`UiImageQuadInput` and `UiImageBatchDefinitionInput` support typed builders.
+Reuse immutable outputs, and construct replacements when values change. Public
+virtual-handle views are readonly while their helper-owned state remains live.
+Read returned child arrays with generalized Luau iteration; see the
+[ownership migration and analyzer limits](ui-components.md#theme-copying-and-surfaces).
 
 Search `"create button"` / `"建立按鈕"`, `"slider drag"` / `"slider value"` /
 `"滑桿拖曳"` for the button and `ui.components.createSlider` descriptors.

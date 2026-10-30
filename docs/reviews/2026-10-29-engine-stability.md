@@ -923,3 +923,27 @@ Luau's collector. Sampler end-to-end latency is explicit and can be substantial.
 Neither stable resource tails nor these short heap windows proves universal
 leak freedom or no frequent GC. Compact evidence is retained; raw traces and
 user fixture data remain in the local cache.
+
+## UI 0.6 immutable-value ownership slice
+
+The reusable engine/package change is recorded in ADR 0045. Ordinary UI values
+are deeply frozen snapshots with private weak identity grants; managed virtual
+handles keep their existing exact-identity lifecycle. Full expanded budgets and
+Core conversion/validation remain. A concrete shared-environment shadowing P2
+was reproduced before the fix and passed afterward; sealed library functions
+are now captured before Game code can replace environment globals.
+
+Final focused checks passed 33 package/ownership/control cases, 17 API discovery
+cases, two runtime-package cases, and 11 version-sensitive input/package cases.
+The canonical 0.5/0.6 pair matched and measured about 54.1% lower allocation growth
+bytes in a synthetic opt2 window. The maximum observed incremental GC step was
+higher; neither result establishes actual Web FPS or leak freedom. Readonly
+types passed positive and negative fixtures in two analyzers, with builtin
+mutation/inference limits documented. See ADR 0045 and its linked raw evidence.
+
+Claude CLI 2.1.308 received four fixed source files at base 3cd2049, no tools,
+one turn and no session persistence. It timed out after 60,034 ms, SIGTERM,
+with zero stdout/stderr bytes. This independent review remains incomplete;
+its exact command and file hashes are preserved in ui06-claude-review.json.
+Independent Codex source review and the reproduced authority regression are
+separate evidence. SDK9 and actual seven-scene Web acceptance are still pending.

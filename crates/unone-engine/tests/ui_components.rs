@@ -10,7 +10,8 @@ fn load(body: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
 fn load_script(source: &str, declared: bool) -> Result<EngineRuntime, Box<Diagnostic>> {
     let mut config = json!({"name":"ui-components","entry_script":"main.luau","systems":{"ui":true}});
     if declared {
-        config["runtime_packages"] = json!({"@unone/ui":"0.5.0"});
+        let manifest: Value = serde_json::from_str(include_str!("../../../packages/unone-ui/package.unone.json")).unwrap();
+        config["runtime_packages"] = json!({"@unone/ui":manifest["version"]});
     }
     let config: ProjectConfig = serde_json::from_value(config).unwrap();
     EngineRuntime::load_source_project(SourceProject {
@@ -45,7 +46,7 @@ function Game.start(api)
     local parent=ui.component({id='container',component='test.container',rect={x=0,y=0,width=100,height=100},
         children={list,grid,ordinary}})
     assert(parent.children[1]==list and parent.children[2]==grid)
-    assert(parent.children[3]~=ordinary and parent.children[3].rect~=ordinary.rect)
+    assert(parent.children[3]==ordinary and table.isfrozen(ordinary.rect))
     api.ui.setRoot(ui.screen({id='screen',node='virtual',children={parent}}))
     api.observation.set('updates',updates)
 end
@@ -112,9 +113,9 @@ fn undeclared_projects_can_inspect_metadata_but_cannot_use_the_package() {
     let runtime = load(r#"
 local c=api.ui.components
 local info=c.info()
-assert(info.name=='@unone/ui' and info.version=='0.5.0' and info.declared==false)
+assert(info.name=='@unone/ui' and info.version=='0.6.0' and info.declared==false)
 info.version='changed'
-assert(c.info().version=='0.5.0')
+assert(c.info().version=='0.6.0')
 local calls={function()c.create()end,function()c.id('a','b')end,function()c.composeStyle()end}
 for _,name in ipairs({'text','button','slider','combobox','panel','image','imageBatch','component','screen','scrollView','virtualList','virtualGrid'}) do
     table.insert(calls,function()c[name]({})end)
@@ -122,7 +123,7 @@ end
 for _,call in ipairs(calls) do
     local ok,message=pcall(call)
     assert(not ok and string.find(message,'UI_PACKAGE_NOT_DECLARED',1,true))
-    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.5.0',1,true))
+    assert(string.find(message,'runtime_packages',1,true) and string.find(message,'0.6.0',1,true))
 end
 api.observation.set('declared',c.info().declared)
 "#, false).unwrap();
@@ -142,8 +143,8 @@ local children={
 }
 local card=ui.component({id='card',component='test.card',rect=bounds,
     surface={kind='panel',style={background={0.1,0.2,0.3,1}}},children=children})
-assert(card.rect~=bounds and card.children[2]~=children[1])
-bounds.x=99;children[1].text='Changed'
+assert(card.rect~=bounds and card.children[2]==children[1])
+bounds.x=99;assert(not pcall(function()children[1].text='Changed'end))
 api.ui.setRoot({kind='screen',id='screen',node='test',children={card,
     ui.image({id='art',asset='asset://art',fit='contain',alt='Art',rect={x=85,y=10,width=10,height=10}})}})
 "#, true).unwrap();
@@ -205,8 +206,8 @@ assert(combo.style.font_size==2 and combo.expanded==true)
 assert(c.slider({id='plain',action='Plain',rect=bounds}).style==nil)
 local children={slider,combo}
 local screen=c.screen({id='controls',node='test',children=children})
-assert(screen.children~=children and screen.children[1]~=slider)
-children[1].text='Mutated';assert(screen.children[1].text=='Volume')
+assert(screen.children~=children and screen.children[1]==slider)
+assert(not pcall(function()children[1].text='Mutated'end));assert(screen.children[1].text=='Volume')
 api.ui.setRoot(screen)
 api.observation.set('parity_checks',#cases)
 "#, true).unwrap();
@@ -228,7 +229,12 @@ local function checkScroll(factory,id)
         axis='both',resetKey='catalog',wheelRect={left=1,top=2,width=3,height=4},
         content={ui.text({id=id..'_text',text='Local',rect={x=0,y=0,width=10,height=5}})}}
     local node=factory(options)
-    assert(node.kind=='scroll_view' and node.viewport==options.viewport and node.children==options.content)
+    assert(node.kind=='scroll_view')
+    if factory==api.ui.scrollView then
+        assert(node.viewport==options.viewport and node.children==options.content)
+    else
+        assert(node.viewport~=options.viewport and node.children~=options.content and table.isfrozen(node))
+    end
     assert(node.scroll.axis=='both' and node.scroll.reset_key=='catalog' and node.scroll.wheel_rect.y==94)
     return node
 end
@@ -308,12 +314,12 @@ local b=ui.text({id='b',text='B',rect={x=20,y=1,width=10,height=5}})
 override.padding.left=88;override.color[1]=0.8
 assert(a.style.padding.left==3 and a.style.padding.right==2 and a.style.color[1]==0.4)
 assert(b.style.font_size==2 and b.style.color[1]==0.1 and b.style.padding.left==1)
-a.style.padding.right=77;a.style.color[2]=0.9
+assert(not pcall(function()a.style.padding.right=77 end));assert(not pcall(function()a.style.color[2]=0.9 end))
 assert(b.style.padding.right==2 and b.style.color[2]==0.2)
 local base={padding={left=1,top=2},color={1,1,1,1}}
 local merged=c.composeStyle(base,{padding={right=3},color={0.2,0.3}})
 assert(#merged.color==2 and merged.padding.left==1 and merged.padding.top==2 and merged.padding.right==3)
-merged.padding.left=55;assert(base.padding.left==1)
+assert(not pcall(function()merged.padding.left=55 end));assert(base.padding.left==1)
 local slice={left=2,top=3,right=4,bottom=5,pixels_per_unit=2,source={x=1,y=2,width=8,height=8}}
 local image=ui.image({id='image',asset='asset://image',rect={x=1,y=1,width=10,height=10},slice=slice})
 slice.source.x=99;assert(image.slice.source.x==1)
@@ -377,7 +383,7 @@ api.observation.set('checks',#calls)
 }
 
 #[test]
-fn portable_copy_keeps_mutable_unaliased_data_without_metatables() {
+fn borrowed_portable_data_is_detached_frozen_and_strips_metatables() {
     let values = observed(r#"
 local c=api.ui.components
 local shared=table.freeze({0.1,0.2,0.3,1})
@@ -385,12 +391,12 @@ local source=table.freeze({color=shared,background=shared})
 local copied=c.composeStyle(source)
 assert(copied~=source and copied.color~=shared and copied.background~=shared)
 assert(copied.color~=copied.background)
-assert(not table.isfrozen(copied) and not table.isfrozen(copied.color))
-copied.color[1]=0.9;assert(copied.background[1]==0.1 and shared[1]==0.1)
+assert(table.isfrozen(copied) and table.isfrozen(copied.color))
+assert(not pcall(function()copied.color[1]=0.9 end));assert(copied.background[1]==0.1 and shared[1]==0.1)
 local protected=setmetatable({1,2,3},{__metatable='protected',__index={inherited=4}})
 local plain=c.composeStyle({color=protected})
 assert(getmetatable(plain.color)==nil and plain.color.inherited==nil and plain.color[2]==2)
-plain.color[2]=8;assert(protected[2]==2)
+assert(not pcall(function()plain.color[2]=8 end));assert(protected[2]==2)
 local cases={
  {function()c.composeStyle({color={function()end}})end,'only portable'},
  {function()c.composeStyle({color={coroutine.create(function()end)}})end,'only portable'},
@@ -441,9 +447,11 @@ rejected(ui.text({id='bad_style',rect=rect,style={font_size=-2}}),'UI_STYLE_INVA
 rejected(ui.component({id='duplicate',component='test.card',rect=rect,surface={kind='panel'},
     children={ui.text({id='duplicate/surface',rect=rect})}}),'duplicate')
 local card=ui.component({id='bad_scope',component='test.card',rect=rect,surface={kind='panel'}})
+card=table.clone(card);card.children=table.clone(card.children);card.children[1]=table.clone(card.children[1])
 card.children[1].background_for={component='unrelated'}
 rejected(card,'UI_BACKGROUND_SCOPE')
 local outside=ui.component({id='outside',component='test.card',rect=rect,surface={kind='panel'}})
+outside=table.clone(outside);outside.children=table.clone(outside.children);outside.children[1]=table.clone(outside.children[1]);outside.children[1].rect=table.clone(outside.children[1].rect)
 outside.children[1].rect.x=0
 rejected(outside,'UI_BACKGROUND_BOUNDS')
 api.observation.set('rejected',true)
@@ -487,20 +495,20 @@ assert(a.style.text_shadow.offset_x==3 and a.style.text_shadow.offset_y==nil,'sh
 assert(a.style.text_shadow~=props.style.text_shadow and a.style.text_shadow.color~=props.style.text_shadow.color)
 props.style.color[1]=0;props.style.padding.right=9;props.rect.x=90;theme.text.padding.left=50;shared[1]=.99
 assert(a.style.color[1]==.7 and a.style.padding.right==4 and a.rect.x==0)
-a.style.color[1]=.5;a.style.padding.left=80;a.style.text_shadow.color[1]=0
+assert(not pcall(function()a.style.color[1]=.5 end));assert(not pcall(function()a.style.padding.left=80 end));assert(not pcall(function()a.style.text_shadow.color[1]=0 end))
 assert(b.style.color[1]==.7 and b.style.padding.left==1 and b.style.text_shadow.color[1]==1)
 local base=ui.text({id='base',rect={x=0,y=0,width=10,height=5}})
 local later=ui.text({id='later',rect={x=0,y=0,width=10,height=5}})
 assert(base.style.padding.left==1 and base.style.color[1]==.1)
-assert(base.style.color~=base.style.background and base.style.color~=later.style.color)
-base.style.color[1]=.6;assert(base.style.background[1]==.1 and later.style.color[1]==.1)
+assert(base.style.color~=base.style.background and base.style.color==later.style.color)
+assert(not pcall(function()base.style.color[1]=.6 end));assert(base.style.background[1]==.1 and later.style.color[1]==.1)
 local plain=c.text({id='plain',rect=base.rect})
 local empty=c.text({id='empty',rect=base.rect,style={}})
 assert(plain.style==nil and type(empty.style)=='table' and next(empty.style)==nil)
 local noBase={id='no-base',rect=base.rect,style={padding={left=1},color=shared,background=shared}}
 local detached=c.text(noBase)
 assert(detached.style~=noBase.style and detached.style.color~=shared and detached.style.color~=detached.style.background)
-detached.style.color[1]=0;assert(detached.style.background[1]==.99 and shared[1]==.99)
+assert(not pcall(function()detached.style.color[1]=0 end));assert(detached.style.background[1]==.99 and shared[1]==.99)
 api.observation.set('owned_style',true)
 "#);
     assert_eq!(values["owned_style"],true);
@@ -527,7 +535,7 @@ assert(fallback.style.padding.left==1 and fallback.style.padding.right==3 and fa
 assert(fallback.style.text_shadow.offset_x==2 and fallback.style.text_shadow.offset_y==nil)
 local nested=ui.text({id='nested-meta',rect=node.rect,style={padding=padding,text_shadow=shadow}})
 assert(nested.style.padding.left==1 and nested.style.padding.right==3 and nested.style.text_shadow.offset_y==nil)
-nested.style.padding.right=8;assert(padding.right==3 and fallback.style.padding.right==3)
+assert(not pcall(function()nested.style.padding.right=8 end));assert(padding.right==3 and fallback.style.padding.right==3)
 api.observation.set('metatable_style',true)
 "#);
     assert_eq!(values["metatable_style"],true);
@@ -549,7 +557,7 @@ local composed=c.composeStyle({color=color})
 assert(calls==0 and color[1]==0,'private ownership probes cannot call authored getters')
 assert(a.style.color[1]==0 and b.style.color[1]==0 and composed.color[1]==0)
 assert(getmetatable(a.style.color)==nil and a.style.color~=color and a.style.color~=b.style.color)
-a.style.color[1]=.8;assert(b.style.color[1]==0 and color[1]==0)
+assert(not pcall(function()a.style.color[1]=.8 end));assert(b.style.color[1]==0 and color[1]==0)
 api.observation.set('pure_identity_probe',true)
 "#);
     assert_eq!(values["pure_identity_probe"],true);
@@ -581,27 +589,18 @@ api.observation.set('leaf_copy_bounds',true)
 }
 
 #[test]
-fn owned_style_package_matches_previous_source_canonical_worlds_across_changed_views() {
+fn immutable_package_matches_0_5_canonical_worlds_across_changed_views() {
     let current=include_str!("../../../packages/unone-ui/src/components.luau");
-    let fast=r#"            if getmetatable(props)==nil and (props.style==nil or getmetatable(props.style)==nil) then
-                node.style = mergeOwnedStyle(defaults[kind],node.style)
-            else
-                -- A root metatable may supply inherited style. copy(props)
-                -- intentionally contains raw fields only, so retain compose.
-                node.style = compose(defaults[kind],props.style)
-            end"#;
-    let current=current.replace("\r\n","\n");
-    assert_eq!(current.matches(fast).count(),1,"exact production leaf fast path");
-    // Only switch the call site back to the previous compose path. Both VMs
-    // use the actual bundled package source and identical authored game views.
-    let previous=current.replacen(fast,"            node.style = compose(defaults[kind],props.style)",1);
+    // Frozen historical 0.5 source, not a second implementation of the new
+    // ownership algorithm. The same authored changing View runs in both VMs.
+    let previous=include_str!("fixtures/ui-components-0.5.0.luau");
     let make=|package:&str| {
         let mut script=String::from("local helpers=(function(...)\n");
         script.push_str(include_str!("../src/runtime/bindings/scroll.luau"));
         script.push_str("\nend)(function()end,function(callback)return callback()end)\nlocal components=(function(...)\n");
         script.push_str(package);
         script.push_str(r#"
-end)({name='@unone/ui',version='0.5.0'},true,helpers.isManagedNode,helpers)
+end)({name='@unone/ui',version='0.6.0'},true,helpers.isManagedNode,helpers)
 local ui
 local frame=0
 local function view()
@@ -625,7 +624,7 @@ end,update=function(api)frame+=1;api.ui.setRoot(view())end}
 "#);
         load_script(&script,true).unwrap()
     };
-    let mut before=make(&previous);let mut after=make(&current);
+    let mut before=make(previous);let mut after=make(current);
     assert_eq!(serde_json::to_vec(&before.observe()).unwrap(),serde_json::to_vec(&after.observe()).unwrap());
     for _ in 0..120 {
         let a=before.tick().unwrap();let b=after.tick().unwrap();
@@ -649,8 +648,8 @@ end,update=function(api)frame+=1;api.ui.setRoot(view())end}
         assert_eq!(b["window"]["vm"]["tick_count"],10);
         // Optional local evidence, never an allocation/time pass threshold.
         // Both sides use opt2, VM allocation/GC probes and sampling=false.
-        if let Some(path)=std::env::var_os("UNONE_UI_OWNED_STYLE_ALLOCATION_OUTPUT") {
-            let value=json!({"scope":"Synthetic owned-style package pair; Luau update allocation-growth/GC diagnostics, not CPU milliseconds, production FPS or total allocator traffic", "warmup_ticks":120,"measured_ticks":10,"leaves_per_view":96,"canonical_worlds_equal":true,"sampling":false,"execution":b["execution"],"before":a["window"]["vm"],"after":b["window"]["vm"]});
+        if let Some(path)=std::env::var_os("UNONE_UI_IMMUTABLE_ALLOCATION_OUTPUT") {
+            let value=json!({"scope":"Synthetic historical0.5 versus immutable0.6 package pair; Luau update allocation-growth/GC diagnostics, not CPU milliseconds, production FPS or total allocator traffic", "warmup_ticks":120,"measured_ticks":10,"leaves_per_view":96,"canonical_worlds_equal":true,"sampling":false,"execution":b["execution"],"before":a["window"]["vm"],"after":b["window"]["vm"]});
             let path=std::path::PathBuf::from(path);
             if let Some(parent)=path.parent(){std::fs::create_dir_all(parent).unwrap();}
             std::fs::write(path,serde_json::to_vec_pretty(&value).unwrap()).unwrap();

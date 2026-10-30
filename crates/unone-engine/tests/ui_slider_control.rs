@@ -105,7 +105,8 @@ assert(math.abs(a.drag.hit_rect.width-40)<1e-9 and math.abs(a.drag.hit_rect.heig
 assert(a.style.font_size==2 and a.style.padding.left==3 and a.style.padding.right==2)
 rect.x=99;track.x=88;props.style.padding.left=99
 assert(a.rect.x==10 and a.drag.track_rect.x==12 and a.style.padding.left==3)
-a.style.color[1]=0.9
+assert(table.isfrozen(a) and table.isfrozen(a.drag) and table.isfrozen(a.drag.track_rect))
+assert(not pcall(function()a.style.color[1]=0.9 end))
 local b=c.view({rect={x=1,y=2,width=3,height=4},hitPadding=0,enabled=false,action='Gain'})
 assert(b.drag.hit_rect.x==1 and b.drag.hit_rect.y==2 and b.drag.hit_rect.width==3 and b.drag.hit_rect.height==4)
 assert(b.drag.track_rect.x==b.rect.x and b.drag.track_rect~=b.rect)
@@ -240,7 +241,7 @@ local ok,message=pcall(function() ui.createSlider({id=string.rep('x',1025),value
 assert(not ok and string.find(tostring(message),'UI_SLIDER_ID',1,true))
 local max=ui.createSlider({id=string.rep('x',1024),value=.5})
 api.ui.setRoot(ui.screen({id='ids',node='test',children={max.view({rect={x=0,y=0,width=20,height=5}})}}))
-local raw=max.view({rect={x=0,y=0,width=20,height=5}})
+local raw=table.clone(max.view({rect={x=0,y=0,width=20,height=5}}))
 raw.id=string.rep('x',1025)
 ok,message=pcall(function() api.ui.setRoot(ui.screen({id='ids',node='test',children={raw}})) end)
 assert(not ok and string.find(tostring(message),'UI_SLIDER_ID',1,true))

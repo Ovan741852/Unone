@@ -3,7 +3,7 @@ use serde_json::json;
 use unone_engine::{EngineRuntime,InputFrame,ProjectConfig,SourceProject,UiTree};
 
 fn runtime()->EngineRuntime {
-    let config:ProjectConfig=serde_json::from_value(json!({"name":"plain-text-input","runtime_packages":{"@unone/ui":"0.5.0"}})).unwrap();
+    let config:ProjectConfig=serde_json::from_value(json!({"name":"plain-text-input","runtime_packages":{"@unone/ui":"0.6.0"}})).unwrap();
     let source=r#"
 return {start=function(api)
  local ui=api.ui.components.create()

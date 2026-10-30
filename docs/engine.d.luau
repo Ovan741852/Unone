@@ -263,53 +263,70 @@ export type UiApi = {
     -- Actual host ceilings and the last valid tree's node/subtree usage.
     inspect: () -> ObservationValue,
 }
-export type UiRect = {x: number, y: number, width: number, height: number}
+-- Borrowed mutable authored tables are accepted; constructor results expose readonly views.
+-- Runtime recursive freezing is authoritative; analyzer builtins such as table.clear have gaps.
+export type UiReadArray<T> = {read [number]:T}
+-- Optional mutable authoring descriptors. Constructors borrow these values,
+-- copy unowned input and never freeze or retain caller-owned tables.
+export type UiRectInput = {x:number,y:number,width:number,height:number}
+export type UiRect = {read x: number, read y: number, read width: number, read height: number}
 -- Every style length uses vertical units (1 = 1% of viewport height).
 -- Styles belong to one leaf, with no implicit inheritance. An explicit
 -- font_size does not change when its box changes and never silently shrinks.
-export type UiColor = {number} -- exactly four RGBA values, each in 0..1
-export type UiInsets = {left: number?, top: number?, right: number?, bottom: number?}
+export type UiColor = UiReadArray<number> -- exactly four RGBA values, each in 0..1
+export type UiInsets = {read left: number?, read top: number?, read right: number?, read bottom: number?}
 -- Viewport-height units; positive y paints downward. Sharp same-layout glyph copy.
-export type UiTextShadow = {offset_x: number, offset_y: number, color: UiColor}
+export type UiTextShadow = {read offset_x: number, read offset_y: number, read color: UiColor}
 export type UiStyle = {
-    text_shadow: UiTextShadow?,
-    font_family: string?, font_size: number?, font_weight: number?,
-    line_height: number?, letter_spacing: number?, color: UiColor?,
-    text_align: ("start" | "center" | "end")?,
-    vertical_align: ("top" | "middle" | "bottom")?,
-    wrap: ("none" | "word")?, overflow: ("clip" | "ellipsis")?,
-    padding: UiInsets?, background: UiColor?, border_color: UiColor?,
-    border_width: number?, border_radius: number?, opacity: number?,
+    read text_shadow: UiTextShadow?,
+    read font_family: string?, read font_size: number?, read font_weight: number?,
+    read line_height: number?, read letter_spacing: number?, read color: UiColor?,
+    read text_align: ("start" | "center" | "end")?,
+    read vertical_align: ("top" | "middle" | "bottom")?,
+    read wrap: ("none" | "word")?, read overflow: ("clip" | "ellipsis")?,
+    read padding: UiInsets?, read background: UiColor?, read border_color: UiColor?,
+    read border_width: number?, read border_radius: number?, read opacity: number?,
+}
+export type UiStyleInput = {
+    text_shadow: {offset_x:number,offset_y:number,color:{number}}?,
+    font_family:string?,font_size:number?,font_weight:number?,
+    line_height:number?,letter_spacing:number?,color:{number}?,
+    text_align:("start"|"center"|"end")?,
+    vertical_align:("top"|"middle"|"bottom")?,
+    wrap:("none"|"word")?,overflow:("clip"|"ellipsis")?,
+    padding:{left:number?,top:number?,right:number?,bottom:number?}?,
+    background:{number}?,border_color:{number}?,
+    border_width:number?,border_radius:number?,opacity:number?,
 }
 export type UiPlacement = {
-    rect: UiRect?, anchor: UiAnchor?, pivot: UiAnchor?,
-    offset: {x: number?, y: number?}?, size: {width: number, height: number}?,
+    read rect: UiRect?, read anchor: UiAnchor?, read pivot: UiAnchor?,
+    read offset: {read x: number?, read y: number?}?, read size: {read width: number, read height: number}?,
 }
 export type UiTextNode = UiPlacement & {
-    kind: "text", id: string, text: string?, style: UiStyle?,
+    read kind: "text", read id: string, read text: string?, read style: UiStyle?,
 }
 export type UiButtonNode = UiPlacement & {
-    kind: "button", id: string, text: string?, action: string, style: UiStyle?,
+    read kind: "button", read id: string, read text: string?, read action: string, read style: UiStyle?,
 }
 -- No paint/style/children; ordinary semantic action and button capture lifetime.
 export type UiInputRegionNode = UiPlacement & {
-    kind: "input_region", id: string, action: string,
+    read kind: "input_region", read id: string, read action: string,
 }
 export type UiTextInputNode = UiPlacement & {
-    kind: "text_input", id: string, text: string?, placeholder: string?, max_length: number?,
-    focused: boolean?, enabled: boolean?, style: UiStyle?,
+    read kind: "text_input", read id: string, read text: string?, read placeholder: string?, read max_length: number?,
+    read focused: boolean?, read enabled: boolean?, read style: UiStyle?,
 }
 export type UiTextInputInteraction = {
     phase: "change" | "submit" | "cancel" | "focus" | "blur", text: string, composing: boolean,
 }
 export type UiSliderNode = UiPlacement & {
-    kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
-    drag: UiSliderDrag?,
+    read kind: "slider", read id: string, read text: string?, read action: string, read style: UiStyle?,
+    read drag: UiSliderDrag?,
 }
 export type UiSliderInteraction = {phase: "start" | "drag" | "end" | "cancel", ratio: number}
 export type UiSliderDrag = {
-    axis: "horizontal" | "vertical", reverse: boolean, enabled: boolean,
-    track_rect: UiRect, hit_rect: UiRect,
+    read axis: "horizontal" | "vertical", read reverse: boolean, read enabled: boolean,
+    read track_rect: UiRect, read hit_rect: UiRect,
 }
 export type UiSliderOptions = {
     id: string, value: number, min: number?, max: number?, step: number?,
@@ -335,96 +352,103 @@ export type UiSliderControl = {
     cancel: () -> (),
 }
 export type UiComboBoxNode = UiPlacement & {
-    kind: "combobox", id: string, text: string?, action: string,
-    expanded: boolean?, style: UiStyle?,
+    read kind: "combobox", read id: string, read text: string?, read action: string,
+    read expanded: boolean?, read style: UiStyle?,
 }
 -- Image and panel styles accept box fields; typography requires a text leaf.
 -- A decorative surface may explicitly belong to its screen or an ancestor
 -- component in the same coordinate space. This never changes placement/order.
-export type UiBackgroundScope = {screen: true} | {component: string}
+export type UiBackgroundScope = {read screen: true} | {read component: string}
 export type UiImageNode = UiPlacement & {
-    kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+    read kind: "image", read id: string, read asset: string, read fit: ("contain" | "cover" | "stretch")?,
+    read alt: string?, read slice: UiSlice?, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
 -- Ordered, noninteractive artwork. Quads use the batch's coordinate space;
 -- source is an optional pixel crop, while rect is an absolute design rectangle.
 export type UiImageQuad = {
-    asset: string, rect: UiRect,
-    source: {x:number,y:number,width:number,height:number}?, opacity: number?,
+    read asset: string, read rect: UiRect,
+    read source: {read x:number,read y:number,read width:number,read height:number}?, read opacity: number?,
+}
+export type UiImageQuadInput = {
+    asset:string,rect:UiRectInput,source:UiRectInput?,opacity:number?,
 }
 -- x'=a*x+c*y+tx, y'=b*x+d*y+ty. Maps retained local coordinates to stage y-up.
-export type UiImageTransform = {a:number,b:number,c:number,d:number,tx:number,ty:number}
-export type UiImageBatchDefinition = {bounds:UiRect,quads:{UiImageQuad}}
+export type UiImageTransform = {read a:number,read b:number,read c:number,read d:number,read tx:number,read ty:number}
+export type UiImageBatchDefinition = {read bounds:UiRect,read quads:UiReadArray<UiImageQuad>}
+export type UiImageBatchDefinitionInput = {bounds:UiRectInput,quads:{UiImageQuadInput}}
 export type UiImageBatchApi = {
     define: (id:string, content:UiImageBatchDefinition) -> (),
     remove: (id:string) -> boolean,
 }
 export type UiInlineImageBatchNode = {
-    kind: "image_batch", id: string, rect: UiRect, quads: {UiImageQuad},
-    background_for: UiBackgroundScope?, pixel_snap:boolean?,
+    read kind: "image_batch", read id: string, read rect: UiRect, read quads: UiReadArray<UiImageQuad>,
+    read background_for: UiBackgroundScope?, read pixel_snap:boolean?,
 }
 export type UiRetainedImageBatchNode = {
     -- rect is the stage clip/layout bound; it never translates the resource.
-    kind:"image_batch", id:string, rect:UiRect, content:string,
-    transform:UiImageTransform?, background_for:UiBackgroundScope?, pixel_snap:boolean?,
+    read kind:"image_batch", read id:string, read rect:UiRect, read content:string,
+    read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read pixel_snap:boolean?,
 }
 export type UiImageBatchNode = UiInlineImageBatchNode | UiRetainedImageBatchNode
 export type UiPanelNode = UiPlacement & {
-    kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+    read kind: "panel", read id: string, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
 export type UiComponentNode = UiPlacement & {
-    -- Grouping does not transform children: their coordinates remain in the
+    -- Grouping does not transform read children: their coordinates remain in the
     -- current stage/scroll space, with no relative-placement or style inheritance.
-    kind: "component", id: string, component: string, children: {UiNode}?,
+    read kind: "component", read id: string, read component: string, read children: UiReadArray<UiNode>?,
 }
+-- Engine-managed virtual handles are a readonly public view of helper-owned live state.
+-- They are not immutable reusable-subtree grants.
+export type UiVirtualItems = {read keys:UiReadArray<string>,read row_height:number,read column_width:number,read columns:number,read gap_x:number,read gap_y:number,read revision:number,read first:number,read last:number}
 export type UiScrollNode = UiPlacement & {
-    kind: "scroll_view", id: string, viewport: UiViewport?,
-    scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
-    children: {UiNode}?,
+    read kind: "scroll_view", read id: string, read viewport: UiViewport?,
+    read scroll: {read axis: string?, read enabled: boolean?, read inertia: boolean?, read deceleration: number?, read reset_key: string?, read wheel_rect: UiRect?, read virtual_items: UiVirtualItems?},
+    read children: UiReadArray<UiNode>?,
 }
 export type UiNode = UiInputRegionNode | UiTextInputNode | UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiImageBatchNode | UiPanelNode | UiComponentNode | UiScrollNode
-export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
--- @unone/ui: pure constructors and explicitly selected declarative layout.
+export type UiScreen = {read kind: "screen", read id: string, read node: string, read children: UiReadArray<UiNode>, read budget: UiBudget?}
+-- @unone/read ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
-    text_input: UiStyle?,
-    text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
-    slider: UiStyle?, combobox: UiStyle?,
+    read text_input: UiStyle?,
+    read text: UiStyle?, read button: UiStyle?, read panel: UiStyle?, read image: UiStyle?,
+    read slider: UiStyle?, read combobox: UiStyle?,
 }
 export type UiComponentTextProps = UiPlacement & {
-    id: string, text: string?, style: UiStyle?,
+    read id: string, read text: string?, read style: UiStyle?,
 }
 export type UiComponentInputRegionProps = UiPlacement & {
-    id: string, action: string,
+    read id: string, read action: string,
 }
 export type UiComponentTextInputProps = UiPlacement & {
-    id: string, text: string?, placeholder: string?, max_length: number?,
-    focused: boolean?, enabled: boolean?, style: UiStyle?,
+    read id: string, read text: string?, read placeholder: string?, read max_length: number?,
+    read focused: boolean?, read enabled: boolean?, read style: UiStyle?,
 }
 export type UiComponentButtonProps = UiPlacement & {
-    id: string, text: string?, action: string, style: UiStyle?,
+    read id: string, read text: string?, read action: string, read style: UiStyle?,
 }
 -- Common invented value/binding props are absent; state belongs to the project.
 -- Unknown fields and placement combinations still require runtime validation.
 export type UiComponentSliderProps = UiPlacement & {
-    value: never?, min: never?, max: never?, step: never?, onChange: never?,
-    id: string, text: string?, action: string, style: UiStyle?,
+    read value: never?, read min: never?, read max: never?, read step: never?, read onChange: never?,
+    read id: string, read text: string?, read action: string, read style: UiStyle?,
 }
 export type UiComponentComboBoxProps = UiPlacement & {
-    value: never?, options: never?, selected: never?, onChange: never?,
-    id: string, text: string?, action: string, expanded: boolean?, style: UiStyle?,
+    read value: never?, read options: never?, read selected: never?, read onChange: never?,
+    read id: string, read text: string?, read action: string, read expanded: boolean?, read style: UiStyle?,
 }
 export type UiComponentPanelProps = UiPlacement & {
-    id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+    read id: string, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
 export type UiComponentImageProps = UiPlacement & {
-    id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+    read id: string, read asset: string, read fit: ("contain" | "cover" | "stretch")?,
+    read alt: string?, read slice: UiSlice?, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
--- Constructors borrow their inputs; returned nodes remain mutable game-owned data.
+-- Constructors borrow inputs and return recursively frozen ordinary nodes.
 export type UiInlineImageBatchProps = {
-    read id:string, read rect:UiRect, read quads:{UiImageQuad},
+    read id:string, read rect:UiRect, read quads:UiReadArray<UiImageQuad>,
     read background_for:UiBackgroundScope?, read content:never?, read transform:never?,
     -- Optional physical-pixel edge rounding, ties away from zero; clip/UV unchanged.
     read pixel_snap:boolean?,
@@ -437,16 +461,16 @@ export type UiRetainedImageBatchProps = {
 }
 export type UiComponentImageBatchProps = UiInlineImageBatchProps | UiRetainedImageBatchProps
 export type UiComponentSurface = {
-    kind: "panel", style: UiStyle?,
+    read kind: "panel", read style: UiStyle?,
 } | {
-    kind: "image", asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?,
+    read kind: "image", read asset: string, read fit: ("contain" | "cover" | "stretch")?,
+    read alt: string?, read slice: UiSlice?, read style: UiStyle?,
 }
 export type UiComponentProps = UiPlacement & {
-    id: string, component: string, children: {UiNode}?, surface: UiComponentSurface?,
+    read id: string, read component: string, read children: UiReadArray<UiNode>?, read surface: UiComponentSurface?,
 }
 export type UiComponentScreenProps = {
-    id: string, node: string, children: {UiNode}, budget: UiBudget?,
+    read id: string, read node: string, read children: UiReadArray<UiNode>, read budget: UiBudget?,
 }
 -- Layout lengths use normalized stage units per axis, like rect/viewport.
 -- They are NOT font/anchor vertical units. No intrinsic text measurement.
@@ -514,9 +538,9 @@ export type UiComponentsApi = UiComponentKit & {
     composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
     id: (instanceId: string, role: string) -> string,
 }
-export type UiViewport = {left: number, top: number, width: number, height: number}
+export type UiViewport = {read left: number, read top: number, read width: number, read height: number}
 export type UiScrollOptions = {
-    id: string, viewport: UiViewport, content: {UiNode}?,
+    id: string, viewport: UiViewport, content: UiReadArray<UiNode>?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
     inertia: boolean?, deceleration: number?,
@@ -526,7 +550,7 @@ export type UiScrollOptions = {
 export type UiVirtualOptions<T = any> = {
     id: string, viewport: UiViewport, items: {T}, key: string | ((T, number) -> string),
     rowHeight: number, gapY: number?,
-    renderItem: (T, number, string) -> {UiNode},
+    renderItem: (T, number, string) -> UiReadArray<UiNode>,
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
     inertia: boolean?, deceleration: number?,
 }
@@ -537,11 +561,11 @@ export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
 -- One source texture and one node. Border pixels / pixels_per_unit become
 -- vertical design units; optional source is a y-down pixel crop, not UI rect.
 export type UiSlice = {
-    left: number, top: number, right: number, bottom: number,
-    pixels_per_unit: number,
-    source: {x: number, y: number, width: number, height: number}?,
+    read left: number, read top: number, read right: number, read bottom: number,
+    read pixels_per_unit: number,
+    read source: {read x: number, read y: number, read width: number, read height: number}?,
 }
-export type UiBudget = {max_nodes: number}
+export type UiBudget = {read max_nodes: number}
 
 export type SaveApi = {
     set: (value: ObservationValue) -> (),

@@ -1,7 +1,7 @@
 # ScrollView and virtual collections (Web)
 
 Start with the official [`@unone/ui` package](ui-components.md), declaring
-`"runtime_packages":{"@unone/ui":"0.5.0"}` in `project.unone.json`. Use
+`"runtime_packages":{"@unone/ui":"0.6.0"}` in `project.unone.json`. Use
 `api.ui.components.scrollView` for small, irregular authored content,
 `api.ui.components.virtualList` for long fixed-height rows, or
 `api.ui.components.virtualGrid` for fixed-size cells. The same methods exist on
@@ -9,6 +9,10 @@ the `UiComponentKit` returned by `api.ui.components.create(theme?)`; use that ki
 when the leaves share per-kind styles. Module constructors have no theme defaults.
 All three helpers return a real `scroll_view` node; put it in the `children` of
 a screen and publish with `api.ui.setRoot`.
+UI 0.6 package `scrollView` copies authored viewport/content into a frozen
+ordinary snapshot. `virtualList` / `virtualGrid` instead return registered live
+handles with readonly public views; only the helper may mutate their contents.
+See the [ownership contract](ui-components.md#theme-copying-and-surfaces).
 
 The existing `api.ui.scrollView`, `api.ui.virtualList` and `api.ui.virtualGrid`
 entrypoints remain compatible. Package wrappers forward the existing options,

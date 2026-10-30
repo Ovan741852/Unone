@@ -64,7 +64,7 @@ Declare the exact bundled version in `project.unone.json`:
 ```json
 {
   "runtime_packages": {
-    "@unone/ui": "0.5.0"
+    "@unone/ui": "0.6.0"
   }
 }
 ```
@@ -73,16 +73,16 @@ This is a project configuration fragment; keep the project's other fields.
 `api.ui.components.info()` returns `UiComponentsInfo`: the bundled manifest
 metadata (`name`, `version`, `kind`, `entry`, `api`, `license`) plus `declared`.
 This works before a project declares the package. The package name is `@unone/ui`
-and its current version is `0.5.0`. Calling other package helpers without declaring the
+and its current version is `0.6.0`. Calling other package helpers without declaring the
 package reports `UI_PACKAGE_NOT_DECLARED` with the required fix. Unknown package
 names, unsupported versions and disabled declarations fail explicitly at load.
 Use the version shipped with the selected Core/SDK; there is no npm installation,
 `require` import, filesystem module loader or dynamic package download.
 
-The engine 0.2.0 SDK ships `@unone/ui` 0.5.0, including retained-content
-`imageBatch` constructor props. This release deliberately changes the engine
-presentation contract; it does not promise compatibility with the 0.1 runtime
-or a package declaration pinned to 0.4.0. Upgrade the SDK, canonical typings and
+The engine 0.2.0 SDK ships `@unone/ui` 0.6.0. This package release changes ordinary
+constructor outputs to recursively frozen values, including retained-content
+`imageBatch` instance props. A project pinned to 0.5.0 must upgrade its exact
+declaration and refresh the canonical typings. Upgrade the SDK, canonical typings and
 the project's exact package declaration together. Existing game projects are
 not rewritten automatically.
 
@@ -426,27 +426,70 @@ virtualization and host limits. Search `"scroll inertia"`, `"deceleration"`,
 
 `theme: UiComponentsTheme` accepts only optional `text`, `button`, `panel`, `image`,
 `slider` and `combobox` `UiStyle`
-defaults. There is no component-level style inheritance. Each leaf copies its
-kind's defaults and then its explicit style; explicit fields win. Padding merges
-by edge, while RGBA arrays replace as a whole. Neither style input, the theme,
-props nor an earlier result is mutated. An omitted theme/style leaves `style`
+defaults. There is no component-level style inheritance. A kit snapshots its
+defaults once; explicit leaf fields win. Padding merges by edge, while RGBA arrays
+replace as a whole. Neither style input, the theme, props nor an earlier result
+is mutated. An omitted theme/style leaves `style`
 omitted and retains canonical legacy fitting; an explicit empty style selects
 [explicit typography defaults](ui-styling.md#coordinates-and-defaults).
 
-Ordinary authored tables are copied. Nodes returned by the official
+Ordinary constructor outputs and `composeStyle` results are recursively frozen:
+node fields, rectangles, styles, padding, RGBA arrays and child arrays cannot be
+edited after construction. Build a new result when its data changes. Mutable
+authored props remain borrowed inputs: the package neither freezes nor retains
+them. Previously owned immutable subtrees may be shared across results instead
+of copied again. A caller's `table.freeze`, an authored ID or matching contents
+does not grant that ownership. Private reuse metadata contains only expanded
+work/depth values and uses weak keys; every occurrence still consumes the same
+copy budget, even when a subtree appears more than once.
+
+Use `UiRectInput`, `UiStyleInput`, `UiImageQuadInput` and
+`UiImageBatchDefinitionInput` for mutable authored builders. Constructor parameters
+accept these mutable values and existing readonly styles/children. For example:
+
+```luau
+local rect: UiRectInput = {x=10,y=20,width=30,height=8}
+local style: UiStyleInput = {color={1,1,1,1},padding={left=1}}
+local first = kit.text({id="first",rect=rect,style=style,text="First"})
+rect.y = 30
+style.color = {1,0.8,0.2,1}
+local second = kit.text({id="second",rect=rect,style=style,text="Second"})
+local children: {UiNode} = {first}
+table.insert(children,second) -- the authored array is still mutable
+local screen = kit.screen({id="screen",node="main",children=children})
+for _,child in screen.children do -- readonly UiReadArray<UiNode>
+    print(child.id)
+end
+```
+
+Luau 0.734 and 0.743 accept recursive readonly record/indexer types. Their
+`ipairs` builtin typing requires writable arrays in some cases; use generalized
+iteration as above. Their analyzers also allow some mutating builtins, including
+`table.clear`, through readonly views, and do not infer readonly types merely from
+`table.freeze`. Runtime freezing is the ownership authority; type checking does
+not prove that every attempted mutation was rejected statically.
+
+Nodes returned by the official
 `virtualList` and `virtualGrid` helpers are engine-managed live handles: the
 composer preserves their exact registered identity so later viewport requests
 update the published tree. Do not clone or manually mutate those handles. The
 exception is recognized by the engine's private registry, not by a node name or
-an ID pattern; ordinary hand-authored nodes remain independent copies. Existing
+an ID pattern. Their public `UiScrollNode` type is readonly; the helper alone
+owns mutation. Live handles are not recursively frozen; manual edits violate the
+contract, and analyzer builtin gaps do not provide runtime protection for them.
+An ordinary component/screen containing such a handle freezes
+its copied envelope but is never granted pure-subtree reuse. Ordinary package
+`scrollView` results are copied, frozen snapshots. Slider controllers and layout
+models retain their existing mutable state/lifecycle; their ordinary `view`
+nodes are frozen values. Existing
 [scroll lifecycle and purity rules](ui-scroll.md) continue to apply.
 The private identity probe reads the raw ID and checks the registered object;
 it does not invoke authored `__index` getters while copying ordinary data.
 
 ```luau
-local base: UiStyle = {padding={left=1,right=1},color={1,1,1,1}}
+local base: UiStyleInput = {padding={left=1,right=1},color={1,1,1,1}}
 local variant = ui.composeStyle(base,{padding={right=2},color={1,0.8,0.2,1}})
--- variant padding is left=1,right=2; base and both RGBA arrays remain independent.
+-- variant padding is left=1,right=2; base stays mutable, variant is frozen.
 ```
 
 A component's optional `surface` chooses `kind="panel"` or `kind="image"` and

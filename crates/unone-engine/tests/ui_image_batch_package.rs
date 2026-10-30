@@ -4,7 +4,7 @@ use unone_engine::{EngineRuntime, ProjectConfig, SourceProject};
 
 #[test]
 fn retained_image_batch_constructor_is_pure_and_copies_only_small_instance_state() {
-    let config:ProjectConfig=serde_json::from_value(json!({"name":"retained-package","entry_script":"main.luau","runtime_packages":{"@unone/ui":"0.5.0"}})).unwrap();
+    let config:ProjectConfig=serde_json::from_value(json!({"name":"retained-package","entry_script":"main.luau","runtime_packages":{"@unone/ui":"0.6.0"}})).unwrap();
     let source=r#"return {start=function(api)
         api.ui.imageBatch.define('shared',{bounds={x=0,y=0,width=10,height=10},quads={{asset='texture://tile',rect={x=0,y=0,width=10,height=10}}}})
         local kit=api.ui.components.create()
@@ -29,7 +29,7 @@ fn retained_image_batch_constructor_is_pure_and_copies_only_small_instance_state
 fn image_batch_constructor_is_detached_typed_artwork_with_no_theme_or_actions() {
     let config: ProjectConfig = serde_json::from_value(json!({
         "name":"image-batch-package","entry_script":"main.luau",
-        "systems":{"ui":true},"runtime_packages":{"@unone/ui":"0.5.0"}
+        "systems":{"ui":true},"runtime_packages":{"@unone/ui":"0.6.0"}
     })).unwrap();
     let source = r#"
 return {start=function(api)

@@ -1,0 +1,39 @@
+{
+  "ok": false,
+  "value": null,
+  "diagnostics": [
+    {
+      "code": "LUAU_RUNTIME_ERROR",
+      "severity": "ERROR",
+      "summary": "Luau script could not be loaded or executed",
+      "explanation": "runtime error: [string \"\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau\"]:946: [string \"\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau\"]:929: function environment replaced freeze authority\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau\"]:946: in function 'start'",
+      "facts": {
+        "message": "runtime error: [string \"\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau\"]:946: [string \"\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau\"]:929: function environment replaced freeze authority\nstack traceback:\n\t[C]: in ?\n\t[C]: in function 'assert'\n\t[string \"\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau\"]:946: in function 'start'",
+        "runtime": "Luau",
+        "script": "\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau"
+      },
+      "likely_causes": [
+        "The entry script syntax or Engine API calls do not satisfy the current contract",
+        "The script uses a missing Entity or field at runtime"
+      ],
+      "suggested_actions": [
+        {
+          "action": "check_script",
+          "description": "Check the entry script contract first.",
+          "command": "game check --json"
+        },
+        {
+          "action": "inspect_project",
+          "description": "Confirm the scene and Entity ids.",
+          "command": "game project inspect --json"
+        }
+      ],
+      "source": {
+        "file": "\\\\?\\D:\\Projects\\Unone\\.cache\\unone-ui-immutable-prototype\\authority-project-before\\main.luau",
+        "line": 946,
+        "column": null
+      }
+    }
+  ],
+  "effects": []
+}

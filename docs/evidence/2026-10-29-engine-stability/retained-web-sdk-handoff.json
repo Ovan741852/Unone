@@ -238,8 +238,15 @@
       "mode": "phase-only opt2;hasPressedActions supported;noVM/functioncallbacks",
       "verification": "docs/evidence/2026-10-29-engine-stability/phase8-production-policy-validation.json"
     },
-    "matching_sampling_runtime": null,
-    "status": "Matching phase8 verified with new API:68digestcheckpoints/60activeCore+publicationframes/VMnotcollected/stopfreeze/samplingrejected. Function-sampling runtime remains historical and not matching SDK8.",
+    "matching_sampling_runtime": {
+      "path": "D:/Projects/Unone/artifacts/web-retained-20261030-sampling-profile-candidate8",
+      "wasm_sha256": "68c9db3c4cc0c863a4265a9373d5f331cbb94989cb77b8c0adc66b8c6732e5d3",
+      "source_commit": "3cd20499b9aa77efd24dc299e7ce9fd7762b7baa",
+      "source_dirty": false,
+      "mode": "opt2-sampling;SDK8/UI0.5baseline;hasPressedActions supported",
+      "verification": "docs/evidence/2026-10-29-engine-stability/sampling8-baseline-ui05-validation.json"
+    },
+    "status": "Both matching phase8 and sampling8 validated for SDK8/UI0.5. They do not represent the future immutableUI0.6 release. Production acceptance uses shippedSDK8productionruntime, not either diagnostic.",
     "historical": {
       "phase": {
         "path": "D:/Projects/Unone/artifacts/web-retained-20261030-phase-profile-candidate1",
