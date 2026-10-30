@@ -128,9 +128,14 @@ local function copy(value: any, mutableRoot: boolean?, sealChildren: boolean?): 
         end
         local grant = immutableOwned[item]
         if grant~=nil then
-            local work,height
-            if type(grant)=="number" then height=grant%256;work=(grant-height)/256
-            else work=grant.work;height=grant.height end
+            local work: number,height: number
+            if type(grant)=="number" then
+                local packed=grant :: number
+                height=packed%256;work=(packed-height)/256
+            else
+                local stats=grant :: OwnedStats
+                work=stats.work;height=stats.height
+            end
             remaining -= work-1
             assert(remaining>=0 and depth+height<=64, "UI_COMPONENT_COPY: data exceeds copy limits")
             return if depth==0 and mutableRoot then table.clone(item) else item,height,false
@@ -185,10 +190,12 @@ local function finish(value: any): any
         local grant=immutableOwned[item]
         if grant~=nil then
             if type(grant)=="number" then
-                local height=grant%256
-                return (grant-height)/256,height,false
+                local packed=grant :: number
+                local height=packed%256
+                return (packed-height)/256,height,false
             end
-            return grant.work,grant.height,false
+            local stats=grant :: OwnedStats
+            return stats.work,stats.height,false
         end
         if isManagedNode(item) then return 1,0,true end
         local work,height,managed=1,0,false
@@ -224,7 +231,7 @@ local function compose(base: any?, override: any?): any
         for key, value in pairs(replacement) do
             if key=="padding" and result.padding~=nil then
                 local padding=table.clone(result.padding)
-                for edge, length in pairs(value) do padding[edge] = length end
+                for edge, length in pairs(value :: {[string]: any}) do padding[edge] = length end
                 result.padding=padding
             else
                 result[key] = value
@@ -244,7 +251,7 @@ local function mergeOwnedStyle(base: any?, override: any?): any
         for key, value in pairs(override) do
             if key=="padding" and result.padding~=nil then
                 local padding=table.clone(result.padding)
-                for edge, length in pairs(value) do padding[edge] = length end
+                for edge, length in pairs(value :: {[string]: any}) do padding[edge] = length end
                 result.padding=padding
             else
                 result[key] = value
