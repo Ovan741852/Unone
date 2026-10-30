@@ -1,7 +1,7 @@
 # Decision 0047: Shared decoded images and declared scene preparation
 
 - Date: 2026-10-30
-- Status: implemented; official main/worker functional checks passed; timing and resource-cycle followups remain open
+- Status: implemented; official functional, baseline cadence and bounded resource checks complete; recurring GC and concurrent-load limits remain
 - Scope: official Web presentation; existing Core/WASM ABI unchanged
 
 The long-running official-player test found two skipped draws when a previously
@@ -88,3 +88,14 @@ and [Unity Addressables memory management](https://docs.unity3d.com/Packages/com
 Unity also documents rapid unload/reload churn. Unone's catalog-generation
 boundary, decoded-image leases and separate GPU ownership are its application
 of those principles, not claims that the engines expose identical APIs.
+
+The final SDK19 host retains the user-selected verified SDK10 Core/WASM and
+compiled UI package. Its official main/worker lifecycle and post-teardown
+health passed. A predeclared same-Game baseline passed eight short cadence
+cases and sixty-second idle/inventory windows; the original extra-display-page
+travel failure remains recorded without a causal verdict. One hundred
+inventory cycles kept natural DOM-node checkpoints at 126 and settled owners
+bounded, resolving the observed completed-image node growth. Natural V8 GC
+still recurs; these measurements do not establish a no-frequent-GC guarantee
+or expose Luau collector frequency. See the
+[final handoff](../evidence/2026-10-29-engine-stability/retained-web-sdk-handoff.json).

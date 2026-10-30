@@ -213,7 +213,7 @@
     "fake_finalizer_validation": {
       "cases": 6,
       "status": "reported-actual-pass-by-Core",
-      "scope": "Core executed actual extracted finalizer logic with synthetic phase/late-error/cleanup cases; no browser. Raw metadata is added if available."
+      "scope": "Core reported6/6 actual cache tests of extracted finalizer logic with synthetic phase/late-error/cleanup cases, without a browser. No raw log filename is claimed in this field."
     }
   },
   "actual_browser": {
@@ -511,7 +511,8 @@
       "fail": 0,
       "skipped": 3,
       "log": "D:/Projects/Unone/.cache/shared-image-host19-full-web-tests.log",
-      "file_list": "D:/Projects/Unone/.cache/shared-image-host19-web-test-files.txt"
+      "file_list": "D:/Projects/Unone/.cache/shared-image-host19-web-test-files.txt",
+      "scope": "Production scheduler/docs source atc361357. The separately strengthened QA runner is covered by its6case finalizer validation and this actual post-teardown browser run; it was not retroactively included in the earlier679-test source snapshot."
     },
     "focused_scheduler_and_completion": {
       "pass": 27,

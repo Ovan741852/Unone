@@ -381,3 +381,45 @@ READY, and viewed initial/restored pixels. Source/Node/package proof and this
 functional fixture do not substitute for the final same-Game FPS, natural GC
 and repeated inventory checks. See
 [the SDK19 official-player record](../evidence/2026-10-29-engine-stability/image-handoff-sdk19-official-web-smoke.json).
+
+### Final user-selected SDK10 acceptance with SDK19 host
+
+The exact Game6073 SDK19 export passed the predeclared baseline-tabs control:
+eight short cases and both sixty-second idle/inventory windows passed the
+unchanged v4 cadence criteria. The original run with an additional visible
+display page passed seven of eight; travel had two 33.3 ms RAF gaps. Its GPU
+resource and broker counters stayed unchanged around those gaps. The control
+does not prove that the additional page caused them. Both runs, their
+environment plan, all legacy completion-end failures and `releaseReady=false`
+remain in [the final FPS record](../evidence/2026-10-29-engine-stability/sdk19-game6073-official-web-fps.json).
+
+Root independently verified all 611 export files and the four critical host
+modules against the indexed SDK19. One hundred inventory open/close cycles
+kept DOM nodes at 126 at every closed checkpoint and all ten settled tail
+samples. Listener counts ranged from 70 to 88 at closed checkpoints and
+returned to 70 throughout the settled tail and after two separate GC commands.
+Prefix owners similarly varied during transitions and settled at four
+geometries, one material, four meshes and eighteen textures. WASM capacity
+remained 29,097,984 bytes. The broker still performed 300 logical load/retirement
+operations; this is not a zero-churn result. The natural report was sealed
+before the intrusive control and remained byte-identical.
+
+Fresh natural 45-second idle/inventory captures had no player/sampler errors,
+hidden samples, engine profiling, trace truncation or data loss. Idle recorded
+42 canonical `MinorGC` and 56 `MajorGC` duration events, with maxima of 5.365
+and 2.160 ms; inventory recorded 14 and 51, with maxima of 0.949 and 1.974 ms.
+These are page-main V8 trace events/phases, not whole collector cycles or OS
+pause counts. GC remains recurrent and Luau GC frequency is unavailable in the
+selected production runtime. No no-frequent-GC or universal leak-free claim is
+made. The observed completed-image DOM accumulation is resolved within the
+bounded repeated-lifecycle experiment. See
+[the final memory/GC record](../evidence/2026-10-29-engine-stability/sdk19-game6073-main-memory-cycles.json).
+
+The cycle test overlapped authorized deployment activity. Fresh natural
+capture files bound the later run to 11:47:09–11:48:57 UTC, after the known
+public HTTP and UI-test CLIs completed. A static deployment page and light
+text/JSON work could remain; unrelated project load was not isolated. No
+before/after GC-duration improvement percentage is derived. The build-blocked
+fused-copy Runtime11 remains source-only and was not substituted into these
+results. Exact identities and remaining limits are in
+[the final handoff](../evidence/2026-10-29-engine-stability/retained-web-sdk-handoff.json).

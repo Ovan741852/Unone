@@ -1,7 +1,7 @@
 {
-  "schema": "unone.retained-web-sdk-handoff.v8",
+  "schema": "unone.retained-web-sdk-handoff.v9",
   "date": "2026-10-30",
-  "status": "SDK19 source/Node/package and strengthened post-teardown official main/worker lifecycle passed. Same Game6073 final FPS and memory acceptance in progress; earlier SDK17 cadence successes and SDK18 worker-teardown failure remain preserved.",
+  "status": "User-selected SDK10 Core with SDK19 host: official lifecycle/post-teardown passed; same-Game baseline8/8 short and2/2 sixty-second cadence gates passed;100cycles and natural45s idle/inventory completed. Recurring GC, legacy completion-end diagnostics and original extra-title travel failure remain disclosed.",
   "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate19-host",
   "sdk_manifest_sha256": "8469de59ec0242771b3eb7e5b02b4fe8d54de226ea624aef52b25a43894ac8ec",
   "host_source_commit": "c3613570218dc4ad1885aac9f08593a9a1b8412d",
@@ -76,7 +76,7 @@
       "scheduler": "scheduler-sdk19-source-resolution.json"
     },
     "fps": {
-      "current_pass": false,
+      "current_pass": true,
       "prior_a_sdk14_main": {
         "passed": 6,
         "cases": 8,
@@ -845,19 +845,92 @@
         "release_ready": false,
         "scope": "Official scheduler-RAF submission cadence and simulation/behavior, not physical scanout or universal no-stutter/release readiness."
       },
-      "final_source_and_sdk19": "Not measured; owner will normally prepare frozen6073/70plan with SDK19 after functional handoff."
+      "final_source_and_sdk19": {
+        "record": "sdk19-game6073-official-web-fps.json",
+        "original_extra_title_run": {
+          "passed": 7,
+          "cases": 8,
+          "failed_case": "travel",
+          "preserved": true
+        },
+        "predeclared_baseline_control": {
+          "passed": 8,
+          "cases": 8
+        },
+        "long_cases": {
+          "passed": 2,
+          "cases": 2,
+          "seconds_each": 60
+        },
+        "source_and_gates_unchanged": true,
+        "extra_title_causality": "not-established",
+        "legacy_completion_end_gates_passed": false,
+        "release_ready": false
+      },
+      "current_pass_scope": "SDK19 predeclared baseline-tabs control on Windows official Web main backend at1600x900,seed42. Eight short cases and sixty-second idle/inventory. Not all workloads, physical scanout or release readiness."
     },
     "memory_gc_cycles": {
       "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
-      "sdk": "17",
+      "sdk": "19",
       "backend": "main",
       "completed": true,
-      "record": "sdk17-resource-cycle100.json",
-      "status": "GPU/broker/WASM tail owners bounded;100cycles still300logicalretirements and1800additional DOM nodes aftertwoGC. Separate SDK18 branch control confirms completed-image source reset trigger and corrected reclaimability.",
-      "load_scope": "Cycle17 overlapped authorized owner ZIP/Cloudflare/IAB work; no timing or natural-GC-frequency comparison.",
+      "record": "sdk19-game6073-main-memory-cycles.json",
+      "natural": {
+        "cases": [
+          "idle",
+          "inventory"
+        ],
+        "seconds_each": 45,
+        "forced_gc": false,
+        "engine_profile": false,
+        "trace_truncated": false,
+        "trace_data_loss": false,
+        "canonical_gc_events": {
+          "idle": {
+            "MinorGC": 42,
+            "MajorGC": 56,
+            "max_duration_ms": 5.365
+          },
+          "inventory": {
+            "MinorGC": 14,
+            "MajorGC": 51,
+            "max_duration_ms": 1.974
+          }
+        },
+        "scope": "Page-main V8 trace events/phases, not whole collector cycles, OS pauses, Luau GC frequency or worker totals. Recurring GC remains observed."
+      },
+      "cycles100": {
+        "natural_samples": 16,
+        "dom_nodes_each": 126,
+        "listener_closed_range": [
+          70,
+          88
+        ],
+        "listener_settled_tail": 70,
+        "prefix_settled": {
+          "geometries": 4,
+          "materials": 1,
+          "meshes": 4,
+          "textures": 18
+        },
+        "wasm_linear_capacity_bytes": 29097984,
+        "logical_image_load_delta": 300,
+        "logical_image_retirement_delta": 300
+      },
+      "separate_post_cycle_gc": {
+        "commands": 2,
+        "nodes_after_each": [
+          126,
+          126
+        ],
+        "natural_report_unchanged": true,
+        "natural_report_sha256": "92ffdfaff6da784a3cfe48f6cd6d3d10e9211489fea130f24aac2c35a0deea58"
+      },
+      "verdict": "Observed repeated-lifecycle DOM growth is resolved in this bounded test; no universal leak-free or no-frequent-GC guarantee.",
+      "load_scope": "100cycles overlapped authorized deployment work. Natural capture11:47:09Z–11:48:57Z started after known public HTTP/r2 CLIs ended; static CF/light text and uncontrolled other projects may remain. No old/new GC duration improvement percentage.",
       "retirement_control": "browser-image-retirement-sdk18-validation.json",
-      "original_isolation": "browser-image-retirement-isolation.json",
-      "final_sdk19_same_game_memory_status": "Not measured; natural-GC plus100cycles still required."
+      "prior_sdk17": "sdk17-resource-cycle100.json",
+      "prior_sdk16": "sdk16-game6073-main-memory-cycles.json"
     },
     "focused_node": {
       "scheduler": {
@@ -891,12 +964,50 @@
   "product": {
     "owner_thread": "01a1642e-1a1f-7453-ad60-4e8e5b2e3c24",
     "source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
-    "selection": "Owner-applied HUD core cache, single-read inventory model and input gate; frozen Game6073. SDK16 actual performance/resource results retained; SDK17 ownership correction under same-source acceptance.",
+    "selection": "Frozen Game6073 with unchanged authored70-image plan. Owner prepared/exported official SDK19; Root independently verified all611files and four critical host modules against indexed SDK19. No Game-owned renderer.",
     "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate19-host",
     "sidecar_required_images": 32,
     "scene_images": 38,
     "combined_planned_decoded_bytes": 66906784,
-    "export": "SDK19 normal owner preparation pending",
+    "export": {
+      "ok": true,
+      "export": "D:/Projects/JYRogue/game/dist/player-performance-integrated19/",
+      "manifest_sha256": "309fa010e24fa6c26188d47dc1b23727f647cb17597cf3b2a862c2f772dc17b5",
+      "release": "releases/258573be55d4c51c8ca747954ab9dbf10f54bf5583e153454c805a8775b86347/",
+      "verified_files": 611,
+      "verified_bytes": 192343853,
+      "source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+      "plan_sha256": "efea86a70892f48a1607546bbd90c774de12302745dc0dea98a55a7ec35e806f",
+      "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "sdk_manifest_sha256": "8469de59ec0242771b3eb7e5b02b4fe8d54de226ea624aef52b25a43894ac8ec",
+      "renderer": "official",
+      "host_modules": [
+        {
+          "path": "web/shared/asset-encoding.js",
+          "bytes": 27700,
+          "sha256": "79999065f3ac9e4283bf1915ddd9d74c5c86bb083b2d85a636ecc00677afc67c",
+          "same_as_indexed_sdk19": true
+        },
+        {
+          "path": "web/shared/async-scheduler.mjs",
+          "bytes": 4315,
+          "sha256": "9d93682a427dd0544113309629881ec75559711c2b9e36e023ee053dd17b9dd0",
+          "same_as_indexed_sdk19": true
+        },
+        {
+          "path": "web/renderer/ui-image-batch-prefix.js",
+          "bytes": 17107,
+          "sha256": "aee247d737f4e5536d916a2f022af2a5a87429eba6a8b7c4889c13a29aea281c",
+          "same_as_indexed_sdk19": true
+        },
+        {
+          "path": "web/shared/canvas-ui.mjs",
+          "bytes": 25960,
+          "sha256": "36817d4636d7790d952065e0f3e41937dd545938366c22dfad7cbf95c1e5b990",
+          "same_as_indexed_sdk19": true
+        }
+      ]
+    },
     "previous_sdk16_export": {
       "ok": true,
       "export": "D:/Projects/JYRogue/game/dist/player-performance-integrated16/",
@@ -920,18 +1031,22 @@
       "plan_sha256": "efea86a70892f48a1607546bbd90c774de12302745dc0dea98a55a7ec35e806f",
       "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
       "renderer": "official"
+    },
+    "server": {
+      "url": "http://127.0.0.1:8293/",
+      "bind": "127.0.0.1",
+      "scope": "Root managed foreground official-player preview, serving the same immutable SDK19 export."
     }
   },
   "authorization": {
     "game_chat_coordination": "Explicit human authorization received; active",
-    "localhost_server": "Explicit human authorization for127.0.0.1:8293 received. Root managed foreground server is rebound between immutable official exports for QA; exact served identities are recorded per experiment.",
+    "localhost_server": "Human-authorized127.0.0.1:8293 managed foreground server currently serves the exact final Game6073 SDK19 artifact; all diagnostic browsers closed.",
     "concurrent_projects": "Human selected continued parallel project work. Coordinate known test windows and retain uncontrolled-machine-load limitations."
   },
   "remaining_acceptance": [
-    "Validate exact SDK19 Game6073 official export in seven original scenes plus inventory during travel and60s idle/inventory, retaining clocks/gates and phase-overrun/legacy diagnostics.",
-    "Measure same SDK19 artifact natural GC/heap and100inventory cycles; compare logical owners and actual native-node reclamation without universal leak-free or zero-GC claims.",
-    "Preserve original failed windows, source identities and human-authorized concurrent-project load limits.",
-    "Windows AppControl4551 still blocks separate fused-copy Runtime11. Unchanged verified SDK10 WASM remains the human-selected production runtime."
+    "The broad no-frequent-GC requirement is not established: V8 events/phases recur, and Luau GC frequency is unavailable in the selected production runtime.",
+    "Unconditional60FPS under all concurrent loads is not established. The original extra-title travel failure, nominal phase overruns and legacy completion-end failures remain preserved; releaseReady is false.",
+    "The separate fused-copy Runtime11 remains source-only and blocked by Windows AppControl4551. User-selected unchanged SDK10 Core/WASM is the measured runtime."
   ],
   "historical_sdk10_record": {
     "schema": "unone.retained-web-sdk-handoff.v4",
@@ -1271,5 +1386,11 @@
     },
     "claude": "SDK15 fixed review completed with2confirmedP2 findings; both resolved inSDK16. Original findings remain inimage-handoff-sdk15-source-review.json.",
     "gpu_prefix_source_review": "image-handoff-sdk17-source-resolution.json"
-  }
+  },
+  "completed_authorized_sdk10_acceptance": [
+    "Generic UI/GPU decoded-image lifetime correction; completed-image native-node retirement fix; normal async shutdown cancellation fix.",
+    "Official main/worker nine-phase fixture including post-context/browser teardown health and viewed pixels.",
+    "Same-source baseline seven original scenes plus inventory-during-travel and60s idle/inventory cadence.",
+    "One hundred inventory open/close cycles, settled10s resource tail, separate two-command GC control, and natural45s idle/inventory V8 traces."
+  ]
 }
