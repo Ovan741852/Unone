@@ -1,0 +1,28 @@
+   Compiling unone-web-live-smoke v0.2.0 (D:\Projects\Unone\crates\unone-web-live-smoke)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.02s
+     Running unittests src\main.rs (target\debug\deps\unone_web_live_smoke-51026684c451466e.exe)
+
+running 20 tests
+test direct_publication_tests::direct_world_and_cached_save_match_the_previous_envelope_bytes_in_both_transports ... ok
+test direct_publication_tests::removing_the_last_instance_publishes_directly_and_retires_its_previous_memory_lease ... ok
+test host_time_abi_is_readonly_owned_bounded_and_never_ticks ... ok
+test instance_memory_tests::memory_transport_preserves_digest_and_owns_pointer_lifetime ... ok
+test save_transport::tests::actual_abi_leases_saves_with_and_without_artwork_and_preserves_full_inspection ... ok
+test save_transport::tests::unchanged_save_reuses_one_owned_lease_and_failed_candidate_preserves_old_bytes ... ok
+test ui_transport::tests::borrowed_presentation_filters_only_the_registry_and_reuses_output_storage ... ok
+test ui_transport::tests::escaped_oversized_ui_falls_back_inline_and_releases_duplicate_scratch_after_success ... ok
+test ui_transport::tests::failed_envelope_preserves_previous_ui_generation_and_clear_disable_reload_are_monotonic ... ok
+test ui_transport::tests::identical_ui_bytes_do_not_reuse_private_resource_usage_or_hide_registry_updates ... ok
+test ui_transport::tests::no_ui_world_preserves_direct_publication_and_retires_the_previous_lease_after_success ... ok
+test ui_transport::tests::ordinary_ui_without_registry_uses_a_stable_current_lease_and_complete_canonical_bytes ... ok
+test ui_transport::tests::reload_with_reused_resource_revisions_changes_epoch_and_old_generation_is_retired ... ok
+test ui_transport::tests::removing_the_last_resource_retires_resource_bytes_without_clearing_the_ui_lease ... ok
+test ui_transport::tests::retained_memory_wire_is_complete_digest_equivalent_and_camera_updates_reuse_lease ... ok
+test ui_transport::tests::retained_resources_and_instances_share_both_transports_without_digest_or_lease_changes ... ok
+test ui_transport::tests::unload_retires_leases_and_releases_the_canonical_cache ... ok
+test ui_tree_transport::tests::clear_disable_and_new_epoch_do_not_alias_generations ... ok
+test ui_tree_transport::tests::escaped_output_over_64_mib_falls_back_and_retires_only_on_commit ... ok
+test ui_tree_transport::tests::unchanged_bytes_reuse_one_lease_and_failed_candidates_preserve_revision_and_old_bytes ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.94s
+

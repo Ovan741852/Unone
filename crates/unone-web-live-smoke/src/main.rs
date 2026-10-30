@@ -5,6 +5,7 @@ use unone_engine::{BundleSpec, BundleVerifier};
 use serde::Serialize;
 mod ui_transport;
 mod save_transport;
+mod ui_tree_transport;
 use unone_engine::{
     Diagnostic, EngineRuntime, HostInputState, HostProject, Vec2, WorldSnapshot, parse_input_frame,
 };
@@ -118,7 +119,7 @@ fn write_snapshot(
 }
 
 fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_transport::Prepared<'_>)->Result<(),String>{
-    if ui_transport::enabled() && !snapshot.ui_image_batches.is_empty() {
+    if ui_transport::enabled() && (snapshot.ui.is_some() || !snapshot.ui_image_batches.is_empty()) {
         return ui_transport::write(project, snapshot, save);
     }
     if snapshot.instances3d.is_empty() {
@@ -349,7 +350,7 @@ fn publish_snapshot(
     save_payload: Option<&serde_json::value::RawValue>,
 ) -> i32 {
     match write_snapshot(project, snapshot, save_payload) {
-        Ok(()) => { if snapshot.ui_image_batches.is_empty() || !ui_transport::enabled() { ui_transport::retire(); } 0 },
+        Ok(()) => { if !ui_transport::enabled() || (snapshot.ui.is_none() && snapshot.ui_image_batches.is_empty()) { ui_transport::retire(); } 0 },
         Err(error) => {
             write_error(error);
             -1

@@ -1,0 +1,23 @@
+{
+  "schema": "unone.ui-tree-final-web-tests.v1",
+  "command": "node --test @(rg --files web scripts -g '*.test.mjs' | Sort-Object)",
+  "projected_packets": "D:/Projects/Populous-Reborn/reports/root-c01-geometry-r5/packets/pan-adjacent.json",
+  "test_files": 104,
+  "exit_code": 0,
+  "test_file_list": ".cache/ui-tree-final-web-test-files.txt",
+  "raw_log": ".cache/ui-tree-final-web-tests.log",
+  "summary_lines": [
+    "ℹ tests 566",
+    "ℹ suites 0",
+    "ℹ pass 564",
+    "ℹ fail 0",
+    "ℹ cancelled 0",
+    "ℹ skipped 2",
+    "ℹ todo 0",
+    "ℹ duration_ms 3687.3295"
+  ],
+  "skipped_cases": [
+    "﹣ no navigator.gpu reports preview unavailable while real plugin inspection works (0.5116ms) # Set UNONE_SHADER_ROOT to test the installed plugin",
+    "﹣ CPU-only plugin profile keeps GPU null and rejects samples with no timing (0.0951ms) # Set UNONE_SHADER_ROOT to test the installed plugin"
+  ]
+}

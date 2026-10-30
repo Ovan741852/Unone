@@ -1,7 +1,8 @@
 // Official non-DOM UI projection. DOM is used only for the canvas/font host;
 // game controls, hit testing and visual layering are not DOM elements.
 import {uiUsage} from './ui-geometry.mjs';
-import {projectScrollTree} from './ui-scroll.mjs';
+import {projectScrollTree,uiProjectionGeneration} from './ui-scroll.mjs';
+import {uiTreeGeneration} from './ui-tree-publication.mjs';
 import {createImageBatchResolver,imageBatchCanvasTransform,imageBatchSnappedRect} from './ui-image-batch.mjs';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 import {textPaintBounds,validateInputRegion,validateTextShadow} from './ui-presentation.mjs';
@@ -192,7 +193,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       if(disposed)throw Error('UI_DISPOSED');if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return DRAW_SKIPPED.ui_target_unavailable;
       const bw=Math.min(8192,Math.max(1,Math.round(width*dpr))),bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));
       if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
-      const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
+      const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=uiTreeGeneration(tree)??uiProjectionGeneration(tree)??JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
       let compositionChanged=false;
       if(key!==previous||resourceChanged){const prepared=prepareUi(tree,imageBatches,batchResolver);usage=prepared.usage;nodes=prepared.nodes;batches=prepared.batches;routing.setNodes(nodes);previous=key;compositionChanged=true;
         references=[];prefix=[];let leading=true;const used=new Set();

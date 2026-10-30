@@ -1,0 +1,1107 @@
+{
+  "schema_version": 1,
+  "diagnostic_not_fps_acceptance": true,
+  "source_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+  "release": "releases/6ea83eccc6c781a597fe0975e802c8f8ad7687d81c14899ae772e8778ba97d2c/",
+  "browser": "156.0.8078.48",
+  "sdk_runtime_manifest": "D:\\Projects\\Unone\\artifacts\\core-sdk-web-retained-20261030-candidate9\\runtimes\\web-production-0\\runtime.json",
+  "advertised_wasm_sha256": "dd01e4fec0049f46dd78c2504b6c6986d2c78c919bb84f03fbb8ce28262f7b20",
+  "metadata_identity_verified": true,
+  "browser_closed": true,
+  "results": [
+    {
+      "case": "idle",
+      "backend": {
+        "renderer": "official",
+        "presentationBackend": "main",
+        "interpolation": false
+      },
+      "source_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+      "window_seconds": 45.010747,
+      "samples": 45,
+      "trace_quality": {
+        "status": "observed-partial",
+        "bytes": 15551723,
+        "truncated": false,
+        "data_loss": false,
+        "max_buffer_usage": 0.027992352843284607,
+        "category_session": "browser",
+        "category_attempts": [
+          {
+            "attempt": 1,
+            "status": "enumerated-insufficient",
+            "count": 0,
+            "error": null
+          },
+          {
+            "attempt": 2,
+            "status": "enumerated-sufficient",
+            "count": 289,
+            "error": null
+          }
+        ],
+        "failure": null
+      },
+      "canonical_gc_name_duration_events": {
+        "MinorGC": {
+          "duration_events": 31,
+          "events_per_second": 0.6887244061957025,
+          "duration_p95_ms": 2.917,
+          "duration_max_ms": 4.827
+        },
+        "MajorGC": {
+          "duration_events": 49,
+          "events_per_second": 1.0886289001157878,
+          "duration_p95_ms": 2.081,
+          "duration_max_ms": 2.295
+        }
+      },
+      "classified_gc_trace_episodes": {
+        "Minor": {
+          "availability": "observed",
+          "observed_duration_intervals": 523,
+          "root_trace_intervals": 31,
+          "intervals_per_s": 0.6887244061957025,
+          "wall_union_ms": 52.87,
+          "interval_p95_ms": 2.917,
+          "interval_max_ms": 4.827
+        },
+        "Major": {
+          "availability": "observed",
+          "observed_duration_intervals": 2939,
+          "root_trace_intervals": 98,
+          "intervals_per_s": 2.1772578002315757,
+          "wall_union_ms": 98.873,
+          "interval_p95_ms": 2.019,
+          "interval_max_ms": 2.295
+        },
+        "Incremental": {
+          "availability": "observed",
+          "observed_duration_intervals": 4037,
+          "root_trace_intervals": 1362,
+          "intervals_per_s": 30.259440039953123,
+          "wall_union_ms": 66.118,
+          "interval_p95_ms": 0.161,
+          "interval_max_ms": 0.553
+        }
+      },
+      "main_gc_episode_wall_union_ms": 217.861,
+      "js_heap_used_bytes": {
+        "available": true,
+        "n": 45,
+        "first": 14098140,
+        "last": 12692664,
+        "min": 12289364,
+        "max": 46347708,
+        "delta": -1405476,
+        "tail_last_10s": {
+          "n": 10,
+          "min": 12692664,
+          "max": 46347708,
+          "median": 23856512,
+          "p95": 46347708,
+          "slope_units_per_s": -731557.5958911726
+        }
+      },
+      "js_heap_total_capacity_bytes": {
+        "available": true,
+        "n": 45,
+        "first": 41754624,
+        "last": 78979072,
+        "min": 41754624,
+        "max": 83697664,
+        "delta": 37224448,
+        "tail_last_10s": {
+          "n": 10,
+          "min": 78979072,
+          "max": 81338368,
+          "median": 80289792,
+          "p95": 81338368,
+          "slope_units_per_s": -207867.21587549767
+        }
+      },
+      "renderer_cached_owner_and_capacity_counters": {
+        "backend.wasm_linear_bytes": {
+          "available": true,
+          "n": 45,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 29097984,
+            "max": 29097984,
+            "median": 29097984,
+            "p95": 29097984,
+            "slope_units_per_s": 0
+          }
+        },
+        "textures": {
+          "available": true,
+          "n": 45,
+          "first": 37,
+          "last": 38,
+          "min": 37,
+          "max": 38,
+          "delta": 1,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 38,
+            "max": 38,
+            "median": 38,
+            "p95": 38,
+            "slope_units_per_s": 0
+          }
+        },
+        "shader_materials": {
+          "available": true,
+          "n": 45,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 1,
+            "max": 1,
+            "median": 1,
+            "p95": 1,
+            "slope_units_per_s": 0
+          }
+        },
+        "projected_live_geometries": {
+          "available": true,
+          "n": 45,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 0,
+            "max": 0,
+            "median": 0,
+            "p95": 0,
+            "slope_units_per_s": 0
+          }
+        },
+        "projected_live_materials": {
+          "available": true,
+          "n": 45,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 0,
+            "max": 0,
+            "median": 0,
+            "p95": 0,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_geometries": {
+          "available": true,
+          "n": 45,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 4,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 4,
+            "max": 4,
+            "median": 4,
+            "p95": 4,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_materials": {
+          "available": true,
+          "n": 45,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 1,
+            "max": 1,
+            "median": 1,
+            "p95": 1,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_meshes": {
+          "available": true,
+          "n": 45,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 4,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 4,
+            "max": 4,
+            "median": 4,
+            "p95": 4,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_textures": {
+          "available": true,
+          "n": 45,
+          "first": 18,
+          "last": 19,
+          "min": 18,
+          "max": 19,
+          "delta": 1,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 19,
+            "max": 19,
+            "median": 19,
+            "p95": 19,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.buffer_capacity_quads": {
+          "available": true,
+          "n": 45,
+          "first": 960,
+          "last": 960,
+          "min": 960,
+          "max": 960,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 960,
+            "max": 960,
+            "median": 960,
+            "p95": 960,
+            "slope_units_per_s": 0
+          }
+        },
+        "texture_cache.entries": {
+          "available": true,
+          "n": 45,
+          "first": 14,
+          "last": 14,
+          "min": 14,
+          "max": 14,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 14,
+            "max": 14,
+            "median": 14,
+            "p95": 14,
+            "slope_units_per_s": 0
+          }
+        },
+        "texture_cache.decoded_texture_bytes_estimate": {
+          "available": true,
+          "n": 45,
+          "first": 28627248,
+          "last": 28627248,
+          "min": 28627248,
+          "max": 28627248,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 28627248,
+            "max": 28627248,
+            "median": 28627248,
+            "p95": 28627248,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui.usage.logical_nodes": {
+          "available": true,
+          "n": 45,
+          "first": 732,
+          "last": 734,
+          "min": 732,
+          "max": 736,
+          "delta": 2,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 734,
+            "max": 736,
+            "median": 736,
+            "p95": 736,
+            "slope_units_per_s": -0.24310089937486878
+          }
+        }
+      },
+      "page_cdp_duration_deltas_seconds": {
+        "TaskDuration": 36.706372,
+        "ScriptDuration": 0.079069,
+        "scope": "Available page CDP counter differences; ScriptDuration is a reported sub-scope, not a complete JavaScript/WASM CPU accounting or a subtraction-based residual"
+      },
+      "scene_before": {
+        "frame": 354,
+        "values": {
+          "screen": {
+            "available": true,
+            "value": "world"
+          },
+          "travelling": {
+            "available": true,
+            "value": false
+          },
+          "travel_paused": {
+            "available": true,
+            "value": false
+          },
+          "ui_window": {
+            "available": true,
+            "value": "none"
+          },
+          "window_blocks_scene_input": {
+            "available": true,
+            "value": false
+          },
+          "map_view_mode": {
+            "available": true,
+            "value": "detail"
+          },
+          "map_zoom": {
+            "available": true,
+            "value": 14
+          },
+          "world_version": {
+            "available": true,
+            "value": 4
+          },
+          "world_count": {
+            "available": true,
+            "value": 262144
+          },
+          "map_detail_budget": {
+            "available": true,
+            "value": 760
+          },
+          "map_detail_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_attempted_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_budget_fallback": {
+            "available": true,
+            "value": false
+          },
+          "map_image_batches": {
+            "available": true,
+            "value": 4
+          },
+          "map_image_quads": {
+            "available": true,
+            "value": 675
+          },
+          "map_ground_images": {
+            "available": true,
+            "value": 119
+          },
+          "map_ground_tiles": {
+            "available": true,
+            "value": 573
+          },
+          "map_resident_chunks": {
+            "available": true,
+            "value": 16
+          },
+          "map_visible_chunks": {
+            "available": true,
+            "value": 4
+          },
+          "map_cached_tile_descriptors": {
+            "available": true,
+            "value": 0
+          },
+          "map_input_candidate_count": {
+            "available": true,
+            "value": 670
+          },
+          "ui_published_this_tick": {
+            "available": true,
+            "value": false
+          },
+          "world_ui_reused": {
+            "available": true,
+            "value": true
+          }
+        }
+      },
+      "scene_after": {
+        "frame": 2944,
+        "values": {
+          "screen": {
+            "available": true,
+            "value": "world"
+          },
+          "travelling": {
+            "available": true,
+            "value": false
+          },
+          "travel_paused": {
+            "available": true,
+            "value": false
+          },
+          "ui_window": {
+            "available": true,
+            "value": "none"
+          },
+          "window_blocks_scene_input": {
+            "available": true,
+            "value": false
+          },
+          "map_view_mode": {
+            "available": true,
+            "value": "detail"
+          },
+          "map_zoom": {
+            "available": true,
+            "value": 14
+          },
+          "world_version": {
+            "available": true,
+            "value": 4
+          },
+          "world_count": {
+            "available": true,
+            "value": 262144
+          },
+          "map_detail_budget": {
+            "available": true,
+            "value": 760
+          },
+          "map_detail_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_attempted_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_budget_fallback": {
+            "available": true,
+            "value": false
+          },
+          "map_image_batches": {
+            "available": true,
+            "value": 4
+          },
+          "map_image_quads": {
+            "available": true,
+            "value": 675
+          },
+          "map_ground_images": {
+            "available": true,
+            "value": 119
+          },
+          "map_ground_tiles": {
+            "available": true,
+            "value": 573
+          },
+          "map_resident_chunks": {
+            "available": true,
+            "value": 16
+          },
+          "map_visible_chunks": {
+            "available": true,
+            "value": 4
+          },
+          "map_cached_tile_descriptors": {
+            "available": true,
+            "value": 717
+          },
+          "map_input_candidate_count": {
+            "available": true,
+            "value": 670
+          },
+          "ui_published_this_tick": {
+            "available": true,
+            "value": false
+          },
+          "world_ui_reused": {
+            "available": true,
+            "value": true
+          }
+        }
+      },
+      "sampler_roundtrip_ms": {
+        "median": 10.037700000000768,
+        "p95": 94.54509999999573,
+        "max": 99.48809999999503
+      },
+      "errors": {
+        "hidden_samples": 0,
+        "player_errors": [],
+        "engine_profiler_samples": 0,
+        "sampler": []
+      }
+    },
+    {
+      "case": "inventory",
+      "backend": {
+        "renderer": "official",
+        "presentationBackend": "main",
+        "interpolation": false
+      },
+      "source_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+      "window_seconds": 45.056448,
+      "samples": 45,
+      "trace_quality": {
+        "status": "observed-partial",
+        "bytes": 11839145,
+        "truncated": false,
+        "data_loss": false,
+        "max_buffer_usage": 0.022042756900191307,
+        "category_session": "browser",
+        "category_attempts": [
+          {
+            "attempt": 1,
+            "status": "enumerated-sufficient",
+            "count": 289,
+            "error": null
+          }
+        ],
+        "failure": null
+      },
+      "canonical_gc_name_duration_events": {
+        "MinorGC": {
+          "duration_events": 21,
+          "events_per_second": 0.4660820133890714,
+          "duration_p95_ms": 0.923,
+          "duration_max_ms": 1.123
+        },
+        "MajorGC": {
+          "duration_events": 42,
+          "events_per_second": 0.9321640267781428,
+          "duration_p95_ms": 2.252,
+          "duration_max_ms": 2.481
+        }
+      },
+      "classified_gc_trace_episodes": {
+        "Minor": {
+          "availability": "observed",
+          "observed_duration_intervals": 371,
+          "root_trace_intervals": 21,
+          "intervals_per_s": 0.4660820133890714,
+          "wall_union_ms": 16.198,
+          "interval_p95_ms": 0.923,
+          "interval_max_ms": 1.123
+        },
+        "Major": {
+          "availability": "observed",
+          "observed_duration_intervals": 2505,
+          "root_trace_intervals": 84,
+          "intervals_per_s": 1.8643280535562856,
+          "wall_union_ms": 87.579,
+          "interval_p95_ms": 2.112,
+          "interval_max_ms": 2.481
+        },
+        "Incremental": {
+          "availability": "observed",
+          "observed_duration_intervals": 2554,
+          "root_trace_intervals": 831,
+          "intervals_per_s": 18.443531101253253,
+          "wall_union_ms": 41.947,
+          "interval_p95_ms": 0.175,
+          "interval_max_ms": 0.444
+        }
+      },
+      "main_gc_episode_wall_union_ms": 145.724,
+      "js_heap_used_bytes": {
+        "available": true,
+        "n": 45,
+        "first": 19059400,
+        "last": 24878512,
+        "min": 12820380,
+        "max": 46264032,
+        "delta": 5819112,
+        "tail_last_10s": {
+          "n": 11,
+          "min": 12835744,
+          "max": 43199900,
+          "median": 24878512,
+          "p95": 43199900,
+          "slope_units_per_s": -175534.35187848436
+        }
+      },
+      "js_heap_total_capacity_bytes": {
+        "available": true,
+        "n": 45,
+        "first": 45948928,
+        "last": 70066176,
+        "min": 45948928,
+        "max": 82386944,
+        "delta": 24117248,
+        "tail_last_10s": {
+          "n": 11,
+          "min": 70066176,
+          "max": 74260480,
+          "median": 71901184,
+          "p95": 74260480,
+          "slope_units_per_s": -438734.52122771344
+        }
+      },
+      "renderer_cached_owner_and_capacity_counters": {
+        "backend.wasm_linear_bytes": {
+          "available": true,
+          "n": 45,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 29097984,
+            "max": 29097984,
+            "median": 29097984,
+            "p95": 29097984,
+            "slope_units_per_s": 0
+          }
+        },
+        "textures": {
+          "available": true,
+          "n": 45,
+          "first": 25,
+          "last": 25,
+          "min": 25,
+          "max": 25,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 25,
+            "max": 25,
+            "median": 25,
+            "p95": 25,
+            "slope_units_per_s": 0
+          }
+        },
+        "shader_materials": {
+          "available": true,
+          "n": 45,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 1,
+            "max": 1,
+            "median": 1,
+            "p95": 1,
+            "slope_units_per_s": 0
+          }
+        },
+        "projected_live_geometries": {
+          "available": true,
+          "n": 45,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 0,
+            "max": 0,
+            "median": 0,
+            "p95": 0,
+            "slope_units_per_s": 0
+          }
+        },
+        "projected_live_materials": {
+          "available": true,
+          "n": 45,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 0,
+            "max": 0,
+            "median": 0,
+            "p95": 0,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_geometries": {
+          "available": true,
+          "n": 45,
+          "first": 5,
+          "last": 5,
+          "min": 5,
+          "max": 5,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 5,
+            "max": 5,
+            "median": 5,
+            "p95": 5,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_materials": {
+          "available": true,
+          "n": 45,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 1,
+            "max": 1,
+            "median": 1,
+            "p95": 1,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_meshes": {
+          "available": true,
+          "n": 45,
+          "first": 5,
+          "last": 5,
+          "min": 5,
+          "max": 5,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 5,
+            "max": 5,
+            "median": 5,
+            "p95": 5,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.live_textures": {
+          "available": true,
+          "n": 45,
+          "first": 6,
+          "last": 6,
+          "min": 6,
+          "max": 6,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 6,
+            "max": 6,
+            "median": 6,
+            "p95": 6,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui_image_batches.buffer_capacity_quads": {
+          "available": true,
+          "n": 45,
+          "first": 920,
+          "last": 920,
+          "min": 920,
+          "max": 920,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 920,
+            "max": 920,
+            "median": 920,
+            "p95": 920,
+            "slope_units_per_s": 0
+          }
+        },
+        "texture_cache.entries": {
+          "available": true,
+          "n": 45,
+          "first": 14,
+          "last": 14,
+          "min": 14,
+          "max": 14,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 14,
+            "max": 14,
+            "median": 14,
+            "p95": 14,
+            "slope_units_per_s": 0
+          }
+        },
+        "texture_cache.decoded_texture_bytes_estimate": {
+          "available": true,
+          "n": 45,
+          "first": 28627248,
+          "last": 28627248,
+          "min": 28627248,
+          "max": 28627248,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 28627248,
+            "max": 28627248,
+            "median": 28627248,
+            "p95": 28627248,
+            "slope_units_per_s": 0
+          }
+        },
+        "ui.usage.logical_nodes": {
+          "available": true,
+          "n": 45,
+          "first": 838,
+          "last": 838,
+          "min": 838,
+          "max": 838,
+          "delta": 0,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 838,
+            "max": 838,
+            "median": 838,
+            "p95": 838,
+            "slope_units_per_s": 0
+          }
+        }
+      },
+      "page_cdp_duration_deltas_seconds": {
+        "TaskDuration": 43.610524,
+        "ScriptDuration": 0.055986,
+        "scope": "Available page CDP counter differences; ScriptDuration is a reported sub-scope, not a complete JavaScript/WASM CPU accounting or a subtraction-based residual"
+      },
+      "scene_before": {
+        "frame": 389,
+        "values": {
+          "screen": {
+            "available": true,
+            "value": "world"
+          },
+          "travelling": {
+            "available": true,
+            "value": false
+          },
+          "travel_paused": {
+            "available": true,
+            "value": false
+          },
+          "ui_window": {
+            "available": true,
+            "value": "inventory"
+          },
+          "window_blocks_scene_input": {
+            "available": true,
+            "value": true
+          },
+          "map_view_mode": {
+            "available": true,
+            "value": "detail"
+          },
+          "map_zoom": {
+            "available": true,
+            "value": 14
+          },
+          "world_version": {
+            "available": true,
+            "value": 4
+          },
+          "world_count": {
+            "available": true,
+            "value": 262144
+          },
+          "map_detail_budget": {
+            "available": true,
+            "value": 760
+          },
+          "map_detail_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_attempted_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_budget_fallback": {
+            "available": true,
+            "value": false
+          },
+          "map_image_batches": {
+            "available": true,
+            "value": 4
+          },
+          "map_image_quads": {
+            "available": true,
+            "value": 675
+          },
+          "map_ground_images": {
+            "available": true,
+            "value": 119
+          },
+          "map_ground_tiles": {
+            "available": true,
+            "value": 573
+          },
+          "map_resident_chunks": {
+            "available": true,
+            "value": 16
+          },
+          "map_visible_chunks": {
+            "available": true,
+            "value": 4
+          },
+          "map_cached_tile_descriptors": {
+            "available": true,
+            "value": 717
+          },
+          "map_input_candidate_count": {
+            "available": true,
+            "value": 670
+          },
+          "ui_published_this_tick": {
+            "available": true,
+            "value": true
+          },
+          "world_ui_reused": {
+            "available": true,
+            "value": false
+          }
+        }
+      },
+      "scene_after": {
+        "frame": 3024,
+        "values": {
+          "screen": {
+            "available": true,
+            "value": "world"
+          },
+          "travelling": {
+            "available": true,
+            "value": false
+          },
+          "travel_paused": {
+            "available": true,
+            "value": false
+          },
+          "ui_window": {
+            "available": true,
+            "value": "inventory"
+          },
+          "window_blocks_scene_input": {
+            "available": true,
+            "value": true
+          },
+          "map_view_mode": {
+            "available": true,
+            "value": "detail"
+          },
+          "map_zoom": {
+            "available": true,
+            "value": 14
+          },
+          "world_version": {
+            "available": true,
+            "value": 4
+          },
+          "world_count": {
+            "available": true,
+            "value": 262144
+          },
+          "map_detail_budget": {
+            "available": true,
+            "value": 760
+          },
+          "map_detail_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_attempted_cost": {
+            "available": true,
+            "value": 679
+          },
+          "map_detail_budget_fallback": {
+            "available": true,
+            "value": false
+          },
+          "map_image_batches": {
+            "available": true,
+            "value": 4
+          },
+          "map_image_quads": {
+            "available": true,
+            "value": 675
+          },
+          "map_ground_images": {
+            "available": true,
+            "value": 119
+          },
+          "map_ground_tiles": {
+            "available": true,
+            "value": 573
+          },
+          "map_resident_chunks": {
+            "available": true,
+            "value": 16
+          },
+          "map_visible_chunks": {
+            "available": true,
+            "value": 4
+          },
+          "map_cached_tile_descriptors": {
+            "available": true,
+            "value": 717
+          },
+          "map_input_candidate_count": {
+            "available": true,
+            "value": 670
+          },
+          "ui_published_this_tick": {
+            "available": true,
+            "value": true
+          },
+          "world_ui_reused": {
+            "available": true,
+            "value": false
+          }
+        }
+      },
+      "sampler_roundtrip_ms": {
+        "median": 29.53269999999611,
+        "p95": 89.3006999999925,
+        "max": 90.16939999999886
+      },
+      "errors": {
+        "hidden_samples": 0,
+        "player_errors": [],
+        "engine_profiler_samples": 0,
+        "sampler": []
+      }
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "Instrumented exclusive-window 45-second idle and inventory cases; do not use observed frame progression as FPS acceptance.",
+    "GC names and coalesced Minor/Major/Incremental episodes are trace events/phases, not guaranteed whole collector cycles or OS stop-the-world pauses.",
+    "Canonical MinorGC/MajorGC event-name durations are counted separately from all family phase episodes; neither defines Luau GC.",
+    "Only page-main V8 trace coverage; Luau WASM GC and worker isolate totals remain unavailable.",
+    "Natural heap sawtooth and higher reserved JS/WASM capacity do not prove a leak; stable owners and this short tail do not prove leak-free behavior.",
+    "Renderer counters are cached coarse counts and decoded-image estimates, not direct GPU bytes.",
+    "Metadata identity uses selected local/served runtime manifests and their advertised WASM hash, without a duplicate served WASM byte fetch."
+  ]
+}

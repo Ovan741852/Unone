@@ -6,6 +6,7 @@ import {createCanvasUi,createUiPointerRouter} from './canvas-ui.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
 import {createOrderedPhysicalQueue} from './ordered-physical-queue.mjs';
 import {createOrderedPhysicalRouter} from './ordered-physical-router.mjs';
+import {createUiTreePublication,uiTreeGeneration} from './ui-tree-publication.mjs';
 
 class Target{
   listeners=new Map();style={};dataset={};children=[];
@@ -41,6 +42,14 @@ test('screens without fields pass through without visiting image-batch payloads 
    snapshot={world:{ui:{children:[{kind:'component',id:'group',children:[batch]}]}}};
  for(let i=0;i<120;i++)assert.equal(s.host.draw(snapshot),snapshot);
  assert.equal(s.host.report().fields,0);assert.equal(s.body.children.length,0);assert.deepEqual(s.events,[]);s.host.dispose();
+});
+
+test('IME drafts invalidate private published UI identity while preserving the immutable model',()=>{
+ const s=setup(),tree=createUiTreePublication(JSON.stringify({children:[s.node({text:'a'})]})).value,snapshot={world:{ui:tree}};
+ const first=s.host.draw(snapshot);assert.equal(first.world.ui.children[0].text,'a');assert.equal(uiTreeGeneration(first.world.ui),undefined);assert(uiTreeGeneration(tree));
+ const sink=s.sink();sink.value='中文';sink.selectionStart=sink.selectionEnd=2;sink.emit('compositionstart');sink.emit('input');
+ const composing=s.host.draw(snapshot);assert.equal(composing.world.ui.children[0].text,'中文');assert.equal(composing.world.ui.children[0].text_edit.composing,true);
+ assert.equal(uiTreeGeneration(composing.world.ui),undefined);assert.equal(tree.children[0].text,'a');assert(Object.isFrozen(tree.children[0]));s.host.dispose();
 });
 
 test('field presence scan preserves canonical depth rejection for excessive and cyclic trees',()=>{

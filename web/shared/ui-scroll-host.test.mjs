@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createUiScrollHost} from './ui-scroll.mjs';
 import {createUiPointerRouter} from './canvas-ui.mjs';
+import {createUiTreePublication} from './ui-tree-publication.mjs';
 
 // Minimal DOM surface for controller lifecycle checks. Painted native rails,
 // actual keyboard focus and touch dispatch are also exercised by the game UI test.
@@ -54,6 +55,18 @@ test('virtual-list prepend preserves the visible key in returned geometry immedi
  assert(host.scrollToKey('rows','k5'));const before=draw(snapshot).ui.children.find(n=>n.id==='item_k5').rect;
  const next=screen([virtualNode(['new',...keys],1,11,2)]),after=draw(next).ui.children.find(n=>n.id==='item_k5').rect;
  assert.deepEqual(after,before);assert.equal(host.report()[0].offset.y,50);
+});
+
+test('private immutable projections reuse unchanged geometry and follow wheel, reset and virtual anchoring',t=>{
+ const publish=children=>({ui:createUiTreePublication(JSON.stringify(screen(children).ui)).value});
+ const keys=Array.from({length:10},(_,i)=>'k'+i),snapshot=publish([virtualNode(keys,1,10)]),{host,draw}=harness(t,snapshot);
+ const initial=draw(snapshot).ui;assert.equal(draw(snapshot).ui,initial);
+ assert(host.scrollToKey('rows','k5'));const moved=draw(snapshot).ui;assert.notEqual(moved,initial);assert.equal(draw(snapshot).ui,moved);
+ const before=moved.children.find(n=>n.id==='item_k5').rect;
+ const prepended=publish([virtualNode(['new',...keys],1,11,2)]),after=draw(prepended).ui;
+ assert.deepEqual(after.children.find(n=>n.id==='item_k5').rect,before);assert.equal(host.report()[0].offset.y,50);
+ const resetNode=virtualNode(['new',...keys],1,11,2);resetNode.scroll.reset_key='reset';draw(publish([resetNode]));assert.equal(host.report()[0].offset.y,0);
+ draw(publish([]));assert.deepEqual(host.report(),[]);assert.equal(host.ensureVisible('item_k5'),false);
 });
 
 test('queued virtual requests are suppressed when disposed or unmounted before their microtask',async t=>{

@@ -1,0 +1,103 @@
+{
+  "schema": "unone.immutable-ui-publication-source-validation.v1",
+  "source_hashes": {
+    "crates/unone-web-live-smoke/src/main.rs": "8ef5cfb28bb0141e6fef1d598221c389da63d6455374711363db07981dadbcb8",
+    "crates/unone-web-live-smoke/src/ui_transport.rs": "18ad11569cafb915802f2f6c1fbd01ec2f31c0ccae8462948d062c9157771a49",
+    "crates/unone-web-live-smoke/src/ui_tree_transport.rs": "d63ed0464f903015fe0d7baf9d1db4873685f34b65566081c9f4a468eeb3d132",
+    "web/shared/ui-tree-publication.mjs": "1a83c34391c60906da1c599429266ae448fdea8a295dbeb6cb373ec9771b75ba",
+    "web/shared/load-project.js": "a20b5c7ce34fd33dde437f96808271f5a7755b7da1c54de3bb36850fff92750b",
+    "web/shared/instance-transfer.mjs": "2417ae5f2da33f11998d29a02e2141e153297fae1fb9053d34e62240434288fe",
+    "web/shared/ui-scroll.mjs": "266b4b321279c5344a125781233a7c0baaccf16b3481624ab36301de7b8a672f",
+    "web/shared/canvas-ui.mjs": "c50e46ff6083d20a2ef56c94350c0a691649fcf37bca9f1b6f4b23998dc68922",
+    "crates/unone-cli/src/export.rs": "71bbb63800b05779d52f4632fd6121bc486a7a2522b06e247ad33aa06ef3d46d"
+  },
+  "rust": {
+    "schema_version": 1,
+    "scope": "Native ABI whole-UI encoded-generation publication; not actual emitted WASM or player FPS/GC acceptance",
+    "source_sha256": {
+      "crates/unone-web-live-smoke/src/ui_transport.rs": "18ad11569cafb915802f2f6c1fbd01ec2f31c0ccae8462948d062c9157771a49",
+      "crates/unone-web-live-smoke/src/ui_tree_transport.rs": "d63ed0464f903015fe0d7baf9d1db4873685f34b65566081c9f4a468eeb3d132",
+      "crates/unone-web-live-smoke/src/main.rs": "8ef5cfb28bb0141e6fef1d598221c389da63d6455374711363db07981dadbcb8"
+    },
+    "commands": [
+      {
+        "passed": 20,
+        "failed": 0,
+        "ignored": 0,
+        "command": "cargo test -p unone-web-live-smoke --no-default-features -- --test-threads=1",
+        "raw_log": ".cache/ui-tree-abi-tests.log"
+      },
+      {
+        "raw_log": ".cache/ui-tree-abi-reload-tests.log",
+        "failed": 0,
+        "passed": 1,
+        "command": "cargo test -p unone-web-live-smoke ui_transport::tests::developer_reload -- --test-threads=1",
+        "filtered": 32,
+        "ignored": 0
+      }
+    ],
+    "toolchain": {
+      "rustc": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/bin/rustc.exe",
+      "profile": "test debug default, no profile overrides",
+      "library_path": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/self-contained",
+      "rustup_home": "D:/Projects/Unone/.toolcache/rustup",
+      "cargo_home": "D:/Projects/Unone/.toolcache/cargo",
+      "path_prefix": [
+        "D:/Projects/Unone/.toolcache/cargo/bin",
+        "D:/Projects/Unone/.toolcache/w64devkit/bin"
+      ]
+    },
+    "properties": [
+      "One complete canonical serde write; exact top-level ui value span excludes key/comma",
+      "Full canonical bytes/digest unchanged; nested ui and registry keys untouched",
+      "Unchanged encoded UI reuses current immutable Arc lease and revision",
+      "UI/no-registry routes retained writer; no-UI/empty-registry keeps one-pass direct writer",
+      "Fresh hidden resource usage is not cached with equal UI bytes",
+      "Mixed image registry, save and instance JSON/memory transports preserved",
+      "UI candidate and old resources commit after successful envelope; failed candidate/reload preserve old generations",
+      "Revisions monotonic clear/disable/same-epoch reload; new runtime distinct epoch",
+      "Escaped >64MiB inline fallback, original value preserved and duplicate canonical scratch capacity released",
+      "Clear/shrink/unload retire old reachable lease/scratch capacity"
+    ],
+    "review": {
+      "result": "No remaining concrete P1/P2; oversized scratch and no-UI route findings fixed",
+      "mode": "Independent read-only source and log-tail review, no workloads",
+      "reviewer": "/root/runtime_audit"
+    },
+    "limitations": [
+      "Complete canonical serialization and byte comparison still occur; this does not cache a previous Rust UiTree",
+      "No browser/FPS/GC or leak-free conclusion",
+      "Earlier19-test log was intermediate; final gate is20 production +1 targeteddeveloperreload"
+    ]
+  },
+  "web": {
+    "schema": "unone.ui-tree-final-web-tests.v1",
+    "command": "node --test @(rg --files web scripts -g '*.test.mjs' | Sort-Object)",
+    "projected_packets": "D:/Projects/Populous-Reborn/reports/root-c01-geometry-r5/packets/pan-adjacent.json",
+    "test_files": 104,
+    "exit_code": 0,
+    "test_file_list": ".cache/ui-tree-final-web-test-files.txt",
+    "raw_log": ".cache/ui-tree-final-web-tests.log",
+    "summary_lines": [
+      "ℹ tests 566",
+      "ℹ suites 0",
+      "ℹ pass 564",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 2",
+      "ℹ todo 0",
+      "ℹ duration_ms 3687.3295"
+    ],
+    "skipped_cases": [
+      "﹣ no navigator.gpu reports preview unavailable while real plugin inspection works (0.5116ms) # Set UNONE_SHADER_ROOT to test the installed plugin",
+      "﹣ CPU-only plugin profile keeps GPU null and rejects samples with no timing (0.0951ms) # Set UNONE_SHADER_ROOT to test the installed plugin"
+    ]
+  },
+  "export_closure": {
+    "passed": 1,
+    "raw_log": ".cache/ui-tree-export-closure-tests.log",
+    "sha256": "70137474b994d3b67c1f36bad75e26d71d5f5f06c2ffd673408a309c267afee2"
+  },
+  "independent_source_review": "Reciprocal Codex source review clear after closing oversized scratch retention and no-UI double-encoding P2s. Claude fixed-source review timed out with zero output and is incomplete.",
+  "actual_sdk_acceptance": "Pending SDK10 build; no source test is a Web FPS/GC/leak proof."
+}

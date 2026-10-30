@@ -11,14 +11,16 @@ thread_local! {
 pub(super) fn enabled()->bool { ENABLED.with(Cell::get) }
 pub(super) fn epoch()->u64 { EPOCH.with(Cell::get) }
 pub(super) fn retire(){
+    let had_ui=super::ui_tree_transport::clear();
     let had_cache=CANONICAL.with(|v|{let mut bytes=v.borrow_mut();let retained=bytes.capacity()>0;*bytes=Vec::new();retained});
     let had_leases=LEASES.with(|v|{let mut leases=v.borrow_mut();let retained=!leases.is_empty();*leases=Vec::new();retained});
     // Only the retained-wire retirement boundary drops the hash prefix too.
     // Ordinary non-UI publications keep their normal bounded prefix reuse.
-    if had_cache||had_leases{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
+    if had_cache||had_leases||had_ui{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
 }
 pub(super) fn unload(){
     super::save_transport::clear();
+    super::ui_tree_transport::clear();
     LEASES.with(|v|*v.borrow_mut()=Vec::new());
     CANONICAL.with(|v|*v.borrow_mut()=Vec::new());
     ENABLED.with(|v|v.set(false));
@@ -41,40 +43,59 @@ struct Observation<'a,W:Serialize+?Sized>{
     save:&'a super::save_transport::Prepared<'a>,
     #[serde(skip_serializing_if="Option::is_none")]
     instance_transport:Option<&'static str>,
-    ui_transport:Transport,
+    #[serde(skip_serializing_if="Option::is_none")]
+    ui_transport:Option<Transport>,
+    #[serde(flatten)]
+    ui_tree:&'a super::ui_tree_transport::Prepared,
 }
 
 // Delegate the complete canonical struct and filter only its top-level registry
 // field. Nested values serialize through the original serializer, so this does
 // not require a second field inventory or a hidden serialization mode.
-struct Presentation<'a>(&'a WorldSnapshot);
+struct Presentation<'a>(&'a WorldSnapshot,bool);
 impl Serialize for Presentation<'_>{
     fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
-        self.0.serialize(WithoutRegistry{serializer,field_count:usize::from(!self.0.ui_image_batches.is_empty())})
+        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:true,hide_ui:self.1,capture:None},field_count:usize::from(!self.0.ui_image_batches.is_empty())+usize::from(self.1&&self.0.ui.is_some())})
     }
 }
-struct WithoutRegistry<S>{serializer:S,field_count:usize}
-struct FilterStruct<S>(S);
-impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct<S>{
+#[derive(Clone,Copy)]
+struct Capture<'a>{position:&'a Cell<usize>,span:&'a Cell<Option<(usize,usize)>>}
+#[derive(Clone,Copy)]
+struct Fields<'a>{hide_registry:bool,hide_ui:bool,capture:Option<Capture<'a>>}
+impl Fields<'_>{fn skips(self,key:&str)->bool{(self.hide_registry&&key=="ui_image_batches")||(self.hide_ui&&key=="ui")}}
+struct CapturedValue<'a,T:?Sized>{value:&'a T,capture:Capture<'a>}
+impl<T:Serialize+?Sized> Serialize for CapturedValue<'_,T>{
+    fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
+        // SerializeStruct has already written the key and colon. Only the UI
+        // value passes through this wrapper; nested fields are untouched.
+        let start=self.capture.position.get();let result=self.value.serialize(serializer)?;
+        self.capture.span.set(Some((start,self.capture.position.get())));Ok(result)
+    }
+}
+struct WorldSerializer<'a,S>{serializer:S,fields:Fields<'a>,field_count:usize}
+struct FilterStruct<'a,S>{serializer:S,fields:Fields<'a>}
+impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct<'_,S>{
     type Ok=S::Ok;type Error=S::Error;
     fn serialize_field<T:Serialize+?Sized>(&mut self,key:&'static str,value:&T)->Result<(),Self::Error>{
-        if key=="ui_image_batches"{Ok(())}else{self.0.serialize_field(key,value)}
+        if self.fields.skips(key){Ok(())}
+        else if key=="ui"&&self.fields.capture.is_some(){self.serializer.serialize_field(key,&CapturedValue{value,capture:self.fields.capture.unwrap()})}
+        else{self.serializer.serialize_field(key,value)}
     }
     fn skip_field(&mut self,key:&'static str)->Result<(),Self::Error>{
-        if key=="ui_image_batches"{Ok(())}else{self.0.skip_field(key)}
+        if self.fields.skips(key){Ok(())}else{self.serializer.skip_field(key)}
     }
-    fn end(self)->Result<Self::Ok,Self::Error>{self.0.end()}
+    fn end(self)->Result<Self::Ok,Self::Error>{self.serializer.end()}
 }
 macro_rules! forward_values{
     ($($name:ident($($argument:ident:$kind:ty),*));*$(;)?)=>{$(
         fn $name(self,$($argument:$kind),*)->Result<Self::Ok,Self::Error>{self.serializer.$name($($argument),*)}
     )*};
 }
-impl<S:serde::Serializer> serde::Serializer for WithoutRegistry<S>{
+impl<'a,S:serde::Serializer> serde::Serializer for WorldSerializer<'a,S>{
     type Ok=S::Ok;type Error=S::Error;
     type SerializeSeq=S::SerializeSeq;type SerializeTuple=S::SerializeTuple;
     type SerializeTupleStruct=S::SerializeTupleStruct;type SerializeTupleVariant=S::SerializeTupleVariant;
-    type SerializeMap=S::SerializeMap;type SerializeStruct=FilterStruct<S::SerializeStruct>;
+    type SerializeMap=S::SerializeMap;type SerializeStruct=FilterStruct<'a,S::SerializeStruct>;
     type SerializeStructVariant=S::SerializeStructVariant;
     forward_values!{
         serialize_bool(value:bool);serialize_i8(value:i8);serialize_i16(value:i16);serialize_i32(value:i32);serialize_i64(value:i64);serialize_i128(value:i128);
@@ -91,17 +112,38 @@ impl<S:serde::Serializer> serde::Serializer for WithoutRegistry<S>{
     fn serialize_tuple_variant(self,name:&'static str,index:u32,variant:&'static str,len:usize)->Result<Self::SerializeTupleVariant,Self::Error>{self.serializer.serialize_tuple_variant(name,index,variant,len)}
     fn serialize_map(self,len:Option<usize>)->Result<Self::SerializeMap,Self::Error>{self.serializer.serialize_map(len)}
     fn serialize_struct(self,name:&'static str,len:usize)->Result<Self::SerializeStruct,Self::Error>{
-        self.serializer.serialize_struct(name,len.saturating_sub(self.field_count)).map(FilterStruct)
+        self.serializer.serialize_struct(name,len.saturating_sub(self.field_count)).map(|serializer|FilterStruct{serializer,fields:self.fields})
     }
     fn serialize_struct_variant(self,name:&'static str,index:u32,variant:&'static str,len:usize)->Result<Self::SerializeStructVariant,Self::Error>{self.serializer.serialize_struct_variant(name,index,variant,len)}
     fn collect_str<T:std::fmt::Display+?Sized>(self,value:&T)->Result<Self::Ok,Self::Error>{self.serializer.collect_str(value)}
     fn is_human_readable(&self)->bool{self.serializer.is_human_readable()}
 }
-fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:&super::save_transport::Prepared<'_>,resources:BTreeMap<String,Resource>)->Result<(),String>{
+struct CountingWriter<'a>{bytes:&'a mut Vec<u8>,position:&'a Cell<usize>}
+impl std::io::Write for CountingWriter<'_>{
+    fn write(&mut self,bytes:&[u8])->std::io::Result<usize>{self.bytes.extend_from_slice(bytes);self.position.set(self.bytes.len());Ok(bytes.len())}
+    fn flush(&mut self)->std::io::Result<()>{Ok(())}
+}
+fn canonical<T:Serialize+?Sized>(bytes:&mut Vec<u8>,snapshot:&T)->Result<Option<(usize,usize)>,String>{
+    bytes.clear();let position=Cell::new(0);let span=Cell::new(None);
+    let mut serializer=serde_json::Serializer::new(CountingWriter{bytes,position:&position});
+    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,span:&span})},field_count:0}).map_err(|e|e.to_string())?;
+    Ok(span.get())
+}
+fn finish_ui_publication(ui_tree:super::ui_tree_transport::Prepared,oversized:bool){
+    let released_ui=ui_tree.releases_large_bytes();ui_tree.commit();
+    // Inline fallback already lives in OUTPUT. Keeping another >64 MiB copy
+    // as scratch would defeat the lease budget, even while that UI is current.
+    let shrunk=CANONICAL.with(|cache|{let mut bytes=cache.borrow_mut();
+        if oversized{*bytes=Vec::new();true}
+        else if bytes.capacity()>1024*1024&&bytes.len()<bytes.capacity()/4{bytes.shrink_to_fit();true}
+        else{false}});
+    if released_ui||shrunk{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
+}
+fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:&super::save_transport::Prepared<'_>,resources:BTreeMap<String,Resource>,ui_tree:&super::ui_tree_transport::Prepared)->Result<(),String>{
     let observation=Observation{compiled_systems:unone_engine::compiled_systems(),project,world,
         observation_digest:digest,save,
         instance_transport:INSTANCE_MEMORY.with(|m|m.get().then_some("wasm-memory-v1")),
-        ui_transport:Transport{format:"retained-image-batches-v1",epoch:EPOCH.with(|e|e.get().to_string()),resources}};
+        ui_transport:(!resources.is_empty()).then(||Transport{format:"retained-image-batches-v1",epoch:EPOCH.with(|e|e.get().to_string()),resources}),ui_tree};
     OUTPUT.with(|out|{let mut bytes=out.borrow_mut();bytes.clear();
         serde_json::to_writer(&mut *bytes,&observation).map_err(|error|error.to_string())})
 }
@@ -110,16 +152,18 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     let measuring=PUBLICATION_PROFILE.with(|p|p.borrow().active);
     #[cfg(not(any(feature="dev-tools",feature="preview-tools")))]
     let measuring=false;
-    let (digest,_work,_encode_ms,_hash_ms)=CANONICAL.with(|cache|{
+    let (digest,_work,_encode_ms,_hash_ms,span,oversized)=CANONICAL.with(|cache|{
         let started=measuring.then(std::time::Instant::now);
-        let mut bytes=cache.borrow_mut();bytes.clear();
-        serde_json::to_writer(&mut *bytes,snapshot).map_err(|e|e.to_string())?;
+        let mut bytes=cache.borrow_mut();let span=canonical(&mut bytes,snapshot)?;
         let encode_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
         let started=measuring.then(std::time::Instant::now);
         let (digest,work)=CANONICAL_HASHER.with(|h|h.borrow_mut().hash(&bytes));
-        Ok::<_,String>((digest,work,encode_ms,started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.)))
+        let hash_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
+        let oversized=span.is_some_and(|(start,end)|end-start>super::ui_tree_transport::MAX_ENCODED_BYTES);
+        Ok::<_,String>((digest,work,encode_ms,hash_ms,span,oversized))
     })?;
     let presentation_started=measuring.then(std::time::Instant::now);
+    let ui_tree=CANONICAL.with(|cache|{let bytes=cache.borrow();super::ui_tree_transport::prepare(span.map(|(start,end)|&bytes[start..end]),epoch())})?;
     let mut resources=BTreeMap::new();let mut leases=Vec::new();
     for (id,resource) in &snapshot.ui_image_batches {
         let bytes=resource.encoded_json().get().as_bytes();
@@ -129,7 +173,7 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     let mut instances=Vec::new();
     let rewritten=if snapshot.instances3d.is_empty(){None}else{
         // Instance-bearing worlds retain the established transport rewrite.
-        let mut world=serde_json::to_value(Presentation(snapshot)).map_err(|e|e.to_string())?;
+        let mut world=serde_json::to_value(Presentation(snapshot,ui_tree.has_lease())).map_err(|e|e.to_string())?;
         for (id,batch) in &snapshot.instances3d {
             if INSTANCE_MEMORY.with(|m|m.get()) {
                 world["instances3d"][id]=serde_json::json!({"asset":batch.asset,"count":batch.count,"format":batch.format,
@@ -141,12 +185,16 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     };
     let _presentation_ms=presentation_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     let envelope_started=measuring.then(std::time::Instant::now);
-    if let Some(world)=rewritten.as_ref(){envelope(project,world,&digest,save,resources)?;}
-    else{envelope(project,&Presentation(snapshot),&digest,save,resources)?;}
+    if let Some(world)=rewritten.as_ref(){envelope(project,world,&digest,save,resources,&ui_tree)?;}
+    else{envelope(project,&Presentation(snapshot,ui_tree.has_lease()),&digest,save,resources,&ui_tree)?;}
     let _envelope_ms=envelope_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     // Retire previous leases only after the complete envelope was written.
     INSTANCE_BUFFERS.with(|out|*out.borrow_mut()=instances);
     LEASES.with(|out|*out.borrow_mut()=leases);
+    // A cleared/oversized UI must not leave its former large scratch allocation
+    // or hash-prefix contents reachable indefinitely. Keep normal reuse while
+    // the current complete canonical world still needs that capacity.
+    finish_ui_publication(ui_tree,oversized);
     #[cfg(any(feature="dev-tools",feature="preview-tools"))]
     if measuring{PUBLICATION_PROFILE.with(|p|p.borrow_mut().record([_encode_ms,_hash_ms,_presentation_ms,_envelope_ms],_work,snapshot.frame,if rewritten.is_some(){"retained-instances"}else{"retained"}));}
     Ok(())
@@ -185,14 +233,23 @@ mod tests{
   let length=memory["byte_length"].as_u64().unwrap() as usize;
   serde_json::from_slice(unsafe{std::slice::from_raw_parts(pointer,length)}).unwrap()
  }
+ fn ui(value:&serde_json::Value)->serde_json::Value{
+  let memory=&value["ui_tree_transport"]["memory"];
+  let pointer=memory["offset"].as_u64().unwrap() as usize as *const u8;
+  let length=memory["byte_length"].as_u64().unwrap() as usize;
+  serde_json::from_slice(unsafe{std::slice::from_raw_parts(pointer,length)}).unwrap()
+ }
+ fn restored_world(value:&serde_json::Value)->serde_json::Value{
+  let mut world=value["world"].clone();if value.get("ui_tree_transport").is_some(){world["ui"]=ui(value);}world
+ }
  #[test]
  fn retained_memory_wire_is_complete_digest_equivalent_and_camera_updates_reuse_lease(){
   load("texture://a");let full=output();assert!(full["world"]["ui_image_batches"].is_object());
   assert_eq!(unone_web_set_ui_transport(1),0);let wire=output();let resource=definition(&wire);
   assert!(wire["world"].get("ui_image_batches").is_none());assert_eq!(wire["observation_digest"],full["observation_digest"]);
-  let mut restored=wire["world"].clone();restored["ui_image_batches"]=serde_json::json!({"art":resource});assert_eq!(restored,full["world"]);
+  let mut restored=restored_world(&wire);restored["ui_image_batches"]=serde_json::json!({"art":resource});assert_eq!(restored,full["world"]);
   assert_eq!(super::super::unone_web_tick(),0);let moved=output();assert_eq!(moved["ui_transport"],wire["ui_transport"]);
-  assert_eq!(moved["world"]["ui"]["children"][0]["transform"]["tx"],5.0);
+  assert_eq!(ui(&moved)["children"][0]["transform"]["tx"],5.0);
   RUNTIME.with(|r|assert_eq!(moved["observation_digest"],unone_engine::observation_digest(&r.borrow().as_ref().unwrap().observe()).unwrap()));
   assert_eq!(unone_web_set_ui_transport(9),-1);assert!(enabled());
   assert_eq!(unone_web_set_ui_transport(0),0);assert_eq!(output()["observation_digest"],moved["observation_digest"]);LEASES.with(|v|assert!(v.borrow().is_empty()));
@@ -214,11 +271,11 @@ mod tests{
   snapshot.physical_input_receipt=Some(unone_engine::PhysicalReceipt{profile:"ordered_physical_v1",epoch:2,through_sequence:9});
   snapshot.ui_cursor=Some(serde_json::from_value(serde_json::json!({"kind":"hidden"})).unwrap());
   let mut expected=serde_json::to_value(&snapshot).unwrap();expected.as_object_mut().unwrap().remove("ui_image_batches");
-  assert_eq!(serde_json::to_value(Presentation(&snapshot)).unwrap(),expected);
+  assert_eq!(serde_json::to_value(Presentation(&snapshot,false)).unwrap(),expected);
   let save=serde_json::value::to_raw_value(&serde_json::json!({"large":"x".repeat(64*1024)})).unwrap();
   for memory in [false,true]{
    INSTANCE_MEMORY.with(|v|v.set(memory));write("borrowed",&snapshot,Some(&save)).unwrap();
-   let value=output();assert_eq!(value["world"],expected);assert_eq!(value["observation_digest"],unone_engine::observation_digest(&snapshot).unwrap());
+   let value=output();assert_eq!(restored_world(&value),expected);assert_eq!(value["observation_digest"],unone_engine::observation_digest(&snapshot).unwrap());
    assert_eq!(value.get("instance_transport").is_some(),memory);
    assert_eq!(definition(&value)["quads"][0]["asset"],"texture://borrowed");
    let pointer=OUTPUT.with(|v|v.borrow().as_ptr());
@@ -232,7 +289,7 @@ mod tests{
   unload();assert!(!enabled());CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));LEASES.with(|v|assert_eq!(v.borrow().capacity(),0));
  }
  #[test]
- fn removing_the_last_resource_retires_wire_bytes_and_hash_capacity(){
+ fn removing_the_last_resource_retires_resource_bytes_without_clearing_the_ui_lease(){
   let script=r#"return {start=function(api)
    api.ui.imageBatch.define('art',{bounds={x=0,y=0,width=100,height=100},quads={{asset='texture://release',rect={x=0,y=0,width=100,height=100}}}})
    api.ui.setRoot({kind='screen',id='s',node='s',children={{kind='image_batch',id='i',rect={x=0,y=0,width=100,height=100},content='art'}}})
@@ -243,8 +300,10 @@ mod tests{
   let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"release","entry_script":"main.luau"},"script":script})).unwrap();
   assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0);assert_eq!(unone_web_set_ui_transport(1),0);
   CANONICAL_HASHER.with(|v|assert!(v.borrow_mut().hash(&vec![0;1024*1024]).1.cache_storage_bytes>0));
+  CANONICAL.with(|v|v.borrow_mut().reserve(4*1024*1024));
   assert_eq!(super::super::unone_web_tick(),0);let value=output();assert!(value.get("ui_transport").is_none());
-  CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));LEASES.with(|v|assert_eq!(v.borrow().capacity(),0));
+  CANONICAL.with(|v|assert!(v.borrow().capacity()<1024*1024));LEASES.with(|v|assert_eq!(v.borrow().len(),0));
+  assert!(value["world"].get("ui").is_none());assert_eq!(ui(&value)["children"][0]["id"],"empty");
   CANONICAL_HASHER.with(|v|assert_eq!(v.borrow_mut().hash(b"").1.cache_storage_bytes,0));
   RUNTIME.with(|v|assert_eq!(value["observation_digest"],unone_engine::observation_digest(&v.borrow().as_ref().unwrap().observe()).unwrap()));
  }
@@ -265,5 +324,93 @@ mod tests{
    assert_eq!(value["world"]["instances3d"]["crowd"].get("data").is_some(),!memory);
    INSTANCE_BUFFERS.with(|v|assert_eq!(v.borrow().len(),usize::from(memory)));LEASES.with(|v|assert_eq!(v.borrow().len(),1));
   }
+ }
+ #[test]
+ fn ordinary_ui_without_registry_uses_a_stable_current_lease_and_complete_canonical_bytes(){
+  let script=r#"return {start=function(api)api.ui.setRoot({kind='screen',id='s',node='s',children={{kind='text',id='text',rect={x=0,y=0,width=1,height=1},text='中文\\n\"\\'}}})end,update=function()end}"#;
+  let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"ordinary","entry_script":"main.luau"},"script":script})).unwrap();
+  assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0,"{}",output());let full=output();
+  assert_eq!(unone_web_set_ui_transport(1),0);let first=output();
+  assert!(first.get("ui_transport").is_none());assert!(first["world"].get("ui").is_none());assert_eq!(ui(&first),full["world"]["ui"]);
+  assert_eq!(first["observation_digest"],full["observation_digest"]);
+  for _ in 0..8{assert_eq!(super::super::unone_web_tick(),0);assert_eq!(output()["ui_tree_transport"],first["ui_tree_transport"]);}
+  let mut snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());
+  snapshot.observations.insert("nested".into(),serde_json::json!({"ui":{"ui_image_batches":"retain"},"ui_image_batches":{"ui":"retain"},"escape":"\\\"\n中文","number":1e-220}));
+  let mut encoded=Vec::new();let (start,end)=canonical(&mut encoded,&snapshot).unwrap().unwrap();
+  assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());assert_eq!(&encoded[start..end],serde_json::to_vec(snapshot.ui.as_ref().unwrap()).unwrap());
+  snapshot.ui=None;assert!(canonical(&mut encoded,&snapshot).unwrap().is_none());assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());
+ }
+ #[test]
+ fn identical_ui_bytes_do_not_reuse_private_resource_usage_or_hide_registry_updates(){
+  let script=r#"local q={asset='texture://usage',rect={x=0,y=0,width=1,height=1}}
+   return {start=function(api)
+    api.ui.imageBatch.define('art',{bounds={x=0,y=0,width=100,height=100},quads={q}})
+    api.ui.setRoot({kind='screen',id='s',node='s',children={{kind='image_batch',id='i',rect={x=0,y=0,width=100,height=100},content='art'}}})
+   end,update=function(api)
+    api.ui.imageBatch.define('art',{bounds={x=0,y=0,width=100,height=100},quads={q,q}})
+    api.ui.setRoot({kind='screen',id='s',node='s',children={{kind='image_batch',id='i',rect={x=0,y=0,width=100,height=100},content='art'}}})
+   end}"#;
+  let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"usage","entry_script":"main.luau"},"script":script})).unwrap();
+  assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0);assert_eq!(unone_web_set_ui_transport(1),0);let before=output();
+  let usage=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe().ui.unwrap().usage().logical_nodes);
+  assert_eq!(super::super::unone_web_tick(),0);let after=output();assert_eq!(after["ui_tree_transport"],before["ui_tree_transport"]);
+  assert_ne!(after["ui_transport"]["resources"]["art"]["revision"],before["ui_transport"]["resources"]["art"]["revision"]);
+  assert_eq!(definition(&after)["quads"].as_array().unwrap().len(),2);
+  assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe().ui.unwrap().usage().logical_nodes),usage+1);
+ }
+ #[test]
+ fn no_ui_world_preserves_direct_publication_and_retires_the_previous_lease_after_success(){
+  load("texture://direct");assert_eq!(unone_web_set_ui_transport(1),0);let first=output();
+  let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());let mut no_ui=snapshot.clone();no_ui.ui=None;no_ui.ui_image_batches.clear();
+  assert_eq!(publish_snapshot("direct",&no_ui,None),0);let direct=output();assert!(enabled());assert!(direct.get("ui_tree_transport").is_none());assert!(direct.get("ui_transport").is_none());
+  CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));assert_eq!(direct["world"],serde_json::to_value(&no_ui).unwrap());assert_eq!(direct["observation_digest"],unone_engine::observation_digest(&no_ui).unwrap());
+  // A second no-UI frame must stay on the one-pass direct writer, without
+  // allocating the retained canonical scratch again.
+  assert_eq!(publish_snapshot("direct",&no_ui,None),0);CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));
+  assert_eq!(publish_snapshot("restore",&snapshot,None),0);let restored=output();assert_eq!(restored["ui_tree_transport"]["epoch"],first["ui_tree_transport"]["epoch"]);let revision=first["ui_tree_transport"]["revision"].as_str().unwrap().parse::<u64>().unwrap();assert_eq!(restored["ui_tree_transport"]["revision"],(revision+1).to_string());
+ }
+ #[test]
+ fn failed_envelope_preserves_previous_ui_generation_and_clear_disable_reload_are_monotonic(){
+  load("texture://transaction");assert_eq!(unone_web_set_ui_transport(1),0);let first=output();
+  let old=ui(&first);let old_pointer=first["ui_tree_transport"]["memory"]["offset"].clone();
+  let epoch=epoch();let candidate=super::super::ui_tree_transport::prepare(Some(b"{\"changed\":true}"),epoch).unwrap();
+  struct Fails;impl Serialize for Fails{fn serialize<S:serde::Serializer>(&self,_:S)->Result<S::Ok,S::Error>{Err(serde::ser::Error::custom("injected envelope failure"))}}
+  let save=super::super::save_transport::prepare(None,true,epoch).unwrap();
+  assert!(envelope("failed",&Fails,"digest",&save,BTreeMap::new(),&candidate).is_err());drop(candidate);
+  assert_eq!(ui(&first),old);
+  let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());write("transaction",&snapshot,None).unwrap();let retry=output();assert_eq!(retry["ui_tree_transport"]["memory"]["offset"],old_pointer);assert_eq!(retry["ui_tree_transport"]["revision"],first["ui_tree_transport"]["revision"]);
+  let revision=first["ui_tree_transport"]["revision"].as_str().unwrap().parse::<u64>().unwrap();
+  let mut cleared=snapshot.clone();cleared.ui=None;CANONICAL.with(|v|v.borrow_mut().reserve(4*1024*1024));write("clear",&cleared,None).unwrap();assert!(output().get("ui_tree_transport").is_none());CANONICAL.with(|v|assert!(v.borrow().capacity()<1024*1024));
+  write("restore",&snapshot,None).unwrap();assert_eq!(output()["ui_tree_transport"]["revision"],(revision+1).to_string());
+  assert_eq!(unone_web_set_ui_transport(0),0);assert!(output().get("ui_tree_transport").is_none());assert_eq!(unone_web_set_ui_transport(1),0);assert_eq!(output()["ui_tree_transport"]["revision"],(revision+2).to_string());
+  load("texture://transaction");assert_eq!(unone_web_set_ui_transport(1),0);let reloaded=output();assert_ne!(reloaded["ui_tree_transport"]["epoch"],first["ui_tree_transport"]["epoch"]);assert_eq!(reloaded["ui_tree_transport"]["revision"],"1");
+ }
+ #[test]
+ fn escaped_oversized_ui_falls_back_inline_and_releases_duplicate_scratch_after_success(){
+  #[derive(Serialize)]struct Fixture<'a>{before:u32,ui:&'a str,after:u32}
+  let text="\u{1}".repeat(super::super::ui_tree_transport::MAX_ENCODED_BYTES/6+1);let fixture=Fixture{before:1,ui:&text,after:2};
+  let prepared=CANONICAL.with(|cache|{let mut bytes=cache.borrow_mut();let (start,end)=canonical(&mut bytes,&fixture).unwrap().unwrap();assert!(end-start>super::super::ui_tree_transport::MAX_ENCODED_BYTES);super::super::ui_tree_transport::prepare(Some(&bytes[start..end]),epoch()).unwrap()});assert!(!prepared.has_lease());
+  let save=super::super::save_transport::prepare(None,true,epoch()).unwrap();envelope("oversized",&fixture,"digest",&save,BTreeMap::new(),&prepared).unwrap();
+  finish_ui_publication(prepared,true);CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));
+  let value=output();assert!(value.get("ui_tree_transport").is_none());assert_eq!(value["world"]["ui"].as_str().unwrap().len(),text.len());assert_eq!(value["world"]["before"],1);assert_eq!(value["world"]["after"],2);
+  // Test-only large output is not a runtime lease after the test ends.
+  OUTPUT.with(|v|*v.borrow_mut()=Vec::new());
+ }
+ #[cfg(feature="dev-tools")]
+ #[test]
+ fn developer_reload_commits_new_resources_and_ui_only_after_success(){
+  load("texture://reload-before");assert_eq!(unone_web_set_ui_transport(1),0);let before=output();let owned=ui(&before);
+  let success=r#"return {start=function()end,update=function()end,onReload=function(api)
+   api.ui.imageBatch.define('art',{bounds={x=0,y=0,width=100,height=100},quads={{asset='texture://reload-after',rect={x=0,y=0,width=100,height=100}}}})
+   api.ui.setRoot({kind='screen',id='changed',node='s',children={{kind='image_batch',id='new',rect={x=0,y=0,width=100,height=100},content='art'}}})end}"#;
+  assert_eq!(unsafe{super::super::unone_web_reload_script(success.as_ptr(),success.len())},0,"{}",output());let changed=output();
+  assert_eq!(changed["ui_tree_transport"]["epoch"],before["ui_tree_transport"]["epoch"]);assert_ne!(changed["ui_tree_transport"]["revision"],before["ui_tree_transport"]["revision"]);assert_eq!(ui(&changed)["id"],"changed");assert_eq!(owned["id"],"s");
+  assert_eq!(definition(&changed)["quads"][0]["asset"],"texture://reload-after");assert_ne!(changed["ui_transport"]["resources"]["art"]["revision"],before["ui_transport"]["resources"]["art"]["revision"]);
+  let failure=success.replace("texture://reload-after","texture://must-rollback").replace("end}","error('reload rollback')end}");
+  assert_eq!(unsafe{super::super::unone_web_reload_script(failure.as_ptr(),failure.len())},-1);
+  // A failed reload emits diagnostics, but cannot retire the last successful
+  // UI/resource memory views. The next observation must reuse both generations.
+  assert_eq!(ui(&changed)["id"],"changed");assert_eq!(definition(&changed)["quads"][0]["asset"],"texture://reload-after");
+  RUNTIME.with(|r|assert_eq!(write_runtime_snapshot(r.borrow().as_ref().unwrap()),0));let retry=output();assert_eq!(retry["ui_tree_transport"],changed["ui_tree_transport"]);assert_eq!(retry["ui_transport"],changed["ui_transport"]);assert_eq!(retry["observation_digest"],changed["observation_digest"]);
  }
 }

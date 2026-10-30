@@ -409,7 +409,7 @@ export type UiScrollNode = UiPlacement & {
 export type UiNode = UiInputRegionNode | UiTextInputNode | UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiImageBatchNode | UiPanelNode | UiComponentNode | UiScrollNode
 export type UiScreen = {read kind: "screen", read id: string, read node: string, read children: UiReadArray<UiNode>, read budget: UiBudget?}
--- @unone/read ui: pure constructors and explicitly selected declarative layout.
+-- @unone/ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
     read text_input: UiStyle?,

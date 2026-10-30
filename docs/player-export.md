@@ -85,6 +85,15 @@ durations, draw calls, triangles, textures, particle count and dropped fixed ste
 These are raw measurements for AI investigation, not a bottleneck classifier.
 Save restoration precedes Game.start; input/scheduler/UI/audio use shared host modules.
 
+The official presentation wire retains unchanged ordinary UI as an immutable
+encoded generation, alongside retained artwork and save publications. The shared
+reader restores the complete public snapshot; game code does not manage these
+leases or supply dirty IDs. Matching worker templates send a definition only
+when that private generation changes. The renderer still validates new trees
+and preserves scroll, input, asset/font and viewport invalidation. Encodings over
+64 MiB use the ordinary inline path rather than changing Core admission limits.
+See [the ownership and transaction contract](decisions/0046-immutable-ui-publication.md).
+
 The official host also exposes the read-only
 `window.unonePlayerPerformance.snapshot({windowMs:5000})` accessor. It reads cached
 primitives from already accepted main/worker publications; it does not request a

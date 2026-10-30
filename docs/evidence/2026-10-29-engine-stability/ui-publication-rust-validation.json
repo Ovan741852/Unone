@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "scope": "Native ABI whole-UI encoded-generation publication; not actual emitted WASM or player FPS/GC acceptance",
+  "source_sha256": {
+    "crates/unone-web-live-smoke/src/ui_transport.rs": "18ad11569cafb915802f2f6c1fbd01ec2f31c0ccae8462948d062c9157771a49",
+    "crates/unone-web-live-smoke/src/ui_tree_transport.rs": "d63ed0464f903015fe0d7baf9d1db4873685f34b65566081c9f4a468eeb3d132",
+    "crates/unone-web-live-smoke/src/main.rs": "8ef5cfb28bb0141e6fef1d598221c389da63d6455374711363db07981dadbcb8"
+  },
+  "commands": [
+    {
+      "passed": 20,
+      "failed": 0,
+      "ignored": 0,
+      "command": "cargo test -p unone-web-live-smoke --no-default-features -- --test-threads=1",
+      "raw_log": ".cache/ui-tree-abi-tests.log"
+    },
+    {
+      "raw_log": ".cache/ui-tree-abi-reload-tests.log",
+      "failed": 0,
+      "passed": 1,
+      "command": "cargo test -p unone-web-live-smoke ui_transport::tests::developer_reload -- --test-threads=1",
+      "filtered": 32,
+      "ignored": 0
+    }
+  ],
+  "toolchain": {
+    "rustc": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/bin/rustc.exe",
+    "profile": "test debug default, no profile overrides",
+    "library_path": "D:/Projects/Unone/.toolcache/rustup/toolchains/1.95.0-x86_64-pc-windows-gnu/lib/rustlib/x86_64-pc-windows-gnu/lib/self-contained",
+    "rustup_home": "D:/Projects/Unone/.toolcache/rustup",
+    "cargo_home": "D:/Projects/Unone/.toolcache/cargo",
+    "path_prefix": [
+      "D:/Projects/Unone/.toolcache/cargo/bin",
+      "D:/Projects/Unone/.toolcache/w64devkit/bin"
+    ]
+  },
+  "properties": [
+    "One complete canonical serde write; exact top-level ui value span excludes key/comma",
+    "Full canonical bytes/digest unchanged; nested ui and registry keys untouched",
+    "Unchanged encoded UI reuses current immutable Arc lease and revision",
+    "UI/no-registry routes retained writer; no-UI/empty-registry keeps one-pass direct writer",
+    "Fresh hidden resource usage is not cached with equal UI bytes",
+    "Mixed image registry, save and instance JSON/memory transports preserved",
+    "UI candidate and old resources commit after successful envelope; failed candidate/reload preserve old generations",
+    "Revisions monotonic clear/disable/same-epoch reload; new runtime distinct epoch",
+    "Escaped >64MiB inline fallback, original value preserved and duplicate canonical scratch capacity released",
+    "Clear/shrink/unload retire old reachable lease/scratch capacity"
+  ],
+  "review": {
+    "result": "No remaining concrete P1/P2; oversized scratch and no-UI route findings fixed",
+    "mode": "Independent read-only source and log-tail review, no workloads",
+    "reviewer": "/root/runtime_audit"
+  },
+  "limitations": [
+    "Complete canonical serialization and byte comparison still occur; this does not cache a previous Rust UiTree",
+    "No browser/FPS/GC or leak-free conclusion",
+    "Earlier19-test log was intermediate; final gate is20 production +1 targeteddeveloperreload"
+  ]
+}

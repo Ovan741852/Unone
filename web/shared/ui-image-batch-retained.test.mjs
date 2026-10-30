@@ -5,6 +5,7 @@ import {retainImageResource} from './retained-image-generation.mjs';
 import {uiUsage} from './ui-geometry.mjs';
 import {createCanvasUi} from './canvas-ui.mjs';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
+import {createUiTreePublication} from './ui-tree-publication.mjs';
 const rect={x:0,y:0,width:100,height:100};
 const resource=(extra={})=>({revision:1,bounds:{x:-10,y:-5,width:30,height:20},quads:[{asset:'asset://a',rect:{x:-10,y:-5,width:20,height:10},source:{x:1,y:2,width:3,height:4},opacity:.5}],...extra});
 const node=(content='art',extra={})=>({kind:'image_batch',id:'map',rect,content,...extra});
@@ -86,7 +87,7 @@ test('Canvas calls prefix presenter every draw, retains unchanged HUD pixels on 
 test('Canvas resource replacement invalidates unchanged node contents and missing assets never count completed',async()=>{
  const ctx={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},rect(){},clip(){},transform(){},drawImage(){}};let draws=0;
  const ui=createCanvasUi({width:100,height:100,getContext:()=>({...ctx,drawImage(){draws++}})},{resolveAsset:()=>({width:10,height:10})});
- const snapshot={ui:{children:[node()]},ui_image_batches:{art:retainImageResource(resource())}};
+ const snapshot={ui:createUiTreePublication(JSON.stringify({children:[node()]})).value,ui_image_batches:{art:retainImageResource(resource())}};
  ui.draw(snapshot);await new Promise(setImmediate);assert.equal(ui.draw(snapshot),DRAW_COMPLETED);const before=draws;
  snapshot.ui_image_batches.art=retainImageResource(resource({revision:2,quads:[{asset:'asset://a',rect:{x:0,y:0,width:10,height:10}}]}));
  ui.draw(snapshot);assert.equal(draws,before+1);ui.dispose();

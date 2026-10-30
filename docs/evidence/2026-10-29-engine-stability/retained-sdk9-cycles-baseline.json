@@ -1,0 +1,434 @@
+{
+  "schema_version": 1,
+  "status": "completed-instrumented-diagnostic",
+  "diagnostic_not_fps_acceptance": true,
+  "cycles": 20,
+  "warmup_cycles": 2,
+  "native_toggles": 44,
+  "tail_seconds": 10,
+  "source": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+  "analysisScriptSha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+  "metadata": {
+    "renderer": "official",
+    "presentationBackend": "main",
+    "interpolation": false
+  },
+  "seedPath": "game/tests/ui-fixtures/named-fresh.save.json",
+  "initial": {
+    "frame": 223,
+    "time_seconds": 3.716666666666667,
+    "screen": "world",
+    "ui_window": {
+      "available": true,
+      "value": "none"
+    },
+    "window_blocks_scene_input": {
+      "available": true,
+      "value": false
+    },
+    "logical_retained_registry": {
+      "available": true,
+      "entries": 3,
+      "declared_quads": 623
+    },
+    "authored_budget": {
+      "available": true,
+      "value": 760
+    },
+    "authored_cost": {
+      "available": true,
+      "value": 679
+    }
+  },
+  "final": {
+    "frame": 2500,
+    "time_seconds": 41.666666666666664,
+    "screen": "world",
+    "ui_window": {
+      "available": true,
+      "value": "none"
+    },
+    "window_blocks_scene_input": {
+      "available": true,
+      "value": false
+    },
+    "logical_retained_registry": {
+      "available": true,
+      "entries": 3,
+      "declared_quads": 623
+    },
+    "authored_budget": {
+      "available": true,
+      "value": 760
+    },
+    "authored_cost": {
+      "available": true,
+      "value": 683
+    }
+  },
+  "samples": 15,
+  "resource_summary": {
+    "owners": {
+      "textures": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 37,
+          "last": 25,
+          "min": 25,
+          "max": 37
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 38,
+          "last": 38,
+          "min": 38,
+          "max": 38
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "shader_materials": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_geometries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 4,
+          "last": 5,
+          "min": 4,
+          "max": 5
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 4
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_materials": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_meshes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 4,
+          "last": 5,
+          "min": 4,
+          "max": 5
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 4
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_textures": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 18,
+          "last": 6,
+          "min": 6,
+          "max": 18
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 19,
+          "last": 19,
+          "min": 19,
+          "max": 19
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "texture_cache.entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 14,
+          "last": 14,
+          "min": 14,
+          "max": 14
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 14,
+          "last": 14,
+          "min": 14,
+          "max": 14
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "texture_cache.decoded_texture_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 28627248,
+          "last": 28627248,
+          "min": 28627248,
+          "max": 28627248
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 28627248,
+          "last": 28627248,
+          "min": 28627248,
+          "max": 28627248
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "ui_image_batches.buffer_capacity_quads": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 960,
+          "last": 920,
+          "min": 920,
+          "max": 960
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 960,
+          "last": 960,
+          "min": 960,
+          "max": 960
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "backend.direct_wasm_linear_bytes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "backend.wasm_linear_bytes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      }
+    },
+    "logical_retained_registry": {
+      "entries": {
+        "available": true,
+        "samples": 5,
+        "first": 3,
+        "last": 3,
+        "min": 3,
+        "max": 3
+      },
+      "declared_quads": {
+        "available": true,
+        "samples": 5,
+        "first": 623,
+        "last": 623,
+        "min": 623,
+        "max": 623
+      }
+    },
+    "dom": {
+      "Nodes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 76,
+          "last": 77,
+          "min": 76,
+          "max": 95
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 77,
+          "last": 77,
+          "min": 77,
+          "max": 77
+        }
+      },
+      "JSEventListeners": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 5,
+          "first": 132,
+          "last": 134,
+          "min": 132,
+          "max": 170
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 134,
+          "last": 134,
+          "min": 134,
+          "max": 134
+        }
+      }
+    },
+    "unavailable_owner_metrics": [],
+    "renderer_scene_container_count": {
+      "available": false,
+      "reason": "No dedicated cached official counter is exposed; DOM Nodes is recorded separately"
+    },
+    "renderer_listener_owner_count": {
+      "available": false,
+      "reason": "No dedicated cached official owner counter; CDP JSEventListeners is page-wide and not renderer ownership"
+    },
+    "interpretation": "Strictly rising closed checkpoints or a higher settled tail are follow-up signals, never an automatic leak verdict. Capacity/cache growth and GC-delayed objects are not interchangeable with live leaks."
+  },
+  "js_heap_used_bytes": {
+    "availability": "observed",
+    "n": 15,
+    "first": 13044600,
+    "last": 26367548,
+    "delta": 13322948,
+    "min": 13044600,
+    "max": 44282952,
+    "median": 26367548,
+    "p95": 44282952,
+    "slope_units_per_s": 126330.05720254096,
+    "tail_last_10s": {
+      "n": 10,
+      "min": 17370080,
+      "max": 38264956,
+      "median": 22979212,
+      "p95": 38264956,
+      "slope_units_per_s": 559109.1591756449
+    }
+  },
+  "js_heap_total_capacity_bytes": {
+    "availability": "observed",
+    "n": 15,
+    "first": 61415424,
+    "last": 82124800,
+    "delta": 20709376,
+    "min": 61415424,
+    "max": 83435520,
+    "median": 81862656,
+    "p95": 83435520,
+    "slope_units_per_s": 275611.9320713962,
+    "tail_last_10s": {
+      "n": 10,
+      "min": 80551936,
+      "max": 82911232,
+      "median": 81862656,
+      "p95": 82911232,
+      "slope_units_per_s": 178596.79517710663
+    }
+  },
+  "errors": [],
+  "context_loss": {
+    "executed": false,
+    "reason": "The pinned native scenario harness has no context-loss primitive; this probe adds no renderer API. Existing independent official context recovery evidence remains separate."
+  },
+  "limitations": [
+    "Natural GC only; no force-GC, profiling, extra Core commands, renderer calls or fake clocks.",
+    "Native input transitions await observable inventory/world state and actual official completed snapshot frame before the next toggle. This is synchronous submission evidence, not OS display acknowledgement.",
+    "Every fifth closed cycle and a 10-second one-Hz tail read cached official resource reports, actual available WASM buffer capacity and page CDP metrics. Cached resource publications can lag; missing counters remain unavailable.",
+    "Page JS heap and DOM listener counts omit worker isolates and do not measure Luau live bytes or GPU-driver allocations.",
+    "Twenty cycles and a short heap low-water tail cannot prove leak-free or unbounded-growth absence. Higher endpoints/capacity or pending natural garbage alone are not leaks."
+  ]
+}

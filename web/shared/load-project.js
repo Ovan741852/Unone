@@ -1,5 +1,6 @@
 import {retainImageResource} from './retained-image-generation.mjs';
 import {createSavePublication,attachSavePublication} from './save-publication.mjs';
+import {createUiTreePublication,UI_TREE_MAX_ENCODED_BYTES} from './ui-tree-publication.mjs';
 // One config contract: never pick individual ProjectConfig declarations here.
 export async function assembleProject(config, readText, readJson) {
   const job_sources=Object.fromEntries(await Promise.all(Object.entries(config.job_scripts??{}).map(async([id,path])=>[id,await readText(path)])));
@@ -10,12 +11,33 @@ const observationDecoder=new TextDecoder(),projectEncoder=new TextEncoder();
 // the runtime until its next successful publication. Never retain a heap view.
 const imageResources=new WeakMap();
 const saves=new WeakMap();
+const uiTrees=new WeakMap(),uiTreeDecoder=new TextDecoder('utf-8',{fatal:true});
 const uint64=value=>typeof value==='string'&&/^[1-9][0-9]{0,19}$/.test(value)&&BigInt(value)<=18446744073709551615n;
-export function releaseObservationResources(module){imageResources.delete(module);saves.delete(module);}
-function restoreSave(module,value){
+export function releaseObservationResources(module){imageResources.delete(module);saves.delete(module);uiTrees.delete(module);}
+function restoreUiTree(module,value,staged){
+ const wire=value?.ui_tree_transport;
+ if(wire===undefined){staged.uiTree=null;return value;}
+ const memory=wire?.memory,invalid=()=>{throw Error('UI_TREE_TRANSPORT_INVALID');};
+ if(!value.world||typeof value.world!=='object'||Array.isArray(value.world)||!wire
+  ||Object.keys(wire).some(k=>!['format','epoch','revision','memory'].includes(k))||wire.format!=='ui-tree-memory-v1'||!uint64(wire.epoch)||!uint64(wire.revision)
+  ||Object.hasOwn(value.world,'ui')||!memory||Object.keys(memory).some(k=>!['offset','byte_length'].includes(k))
+  ||!Number.isSafeInteger(memory.offset)||memory.offset<0||!Number.isSafeInteger(memory.byte_length)||memory.byte_length<1||memory.byte_length>UI_TREE_MAX_ENCODED_BYTES
+  ||!Number.isSafeInteger(memory.offset+memory.byte_length)||memory.offset+memory.byte_length>module.HEAPU8.byteLength)invalid();
+ let entry=uiTrees.get(module);
+ if(!entry||entry.epoch!==wire.epoch||entry.revision!==wire.revision||entry.bytes!==memory.byte_length){
+  let publication;
+  try{publication=createUiTreePublication(uiTreeDecoder.decode(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length)));}catch{invalid();}
+  entry={epoch:wire.epoch,revision:wire.revision,bytes:memory.byte_length,publication};
+ }
+ // This is the reader's fresh private JSON envelope. Restoring its one field
+ // in place avoids another complete world spread for every unchanged tree.
+ value.world.ui=entry.publication.value;delete value.ui_tree_transport;
+ staged.uiTree=entry;return value;
+}
+function restoreSave(module,value,staged){
  if(!value?.world)return value;
  const wire=value.save_transport;
- if(wire===undefined){saves.delete(module);return value;}
+ if(wire===undefined){staged.save=null;return value;}
  const memory=wire?.memory,invalid=()=>{throw Error('SAVE_TRANSPORT_INVALID');};
  if(!wire||Object.keys(wire).some(k=>!['format','epoch','revision','memory'].includes(k))||wire.format!=='save-memory-v1'||!uint64(wire.epoch)||!uint64(wire.revision)
   ||Object.hasOwn(value,'save_payload')||!memory||Object.keys(memory).some(k=>!['offset','byte_length'].includes(k))||!Number.isSafeInteger(memory.offset)||memory.offset<0
@@ -25,12 +47,12 @@ function restoreSave(module,value){
   entry={epoch:wire.epoch,revision:wire.revision,bytes:memory.byte_length,publication:createSavePublication(observationDecoder.decode(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length)))};
  }
  const {save_transport,...observation}=value,result=attachSavePublication({...observation,save_payload:entry.publication.value},entry.publication);
- saves.set(module,entry);return result;
+ staged.save=entry;return result;
 }
-function restoreImages(module,value){
+function restoreImages(module,value,staged){
  if(!value?.world)return value;
  const transport=value.ui_transport;
- if(transport===undefined){imageResources.delete(module);return value;}
+ if(transport===undefined){staged.images=null;return value;}
  const invalid=()=>{throw Error('UI_IMAGE_TRANSPORT_INVALID');};
  if(!transport||Object.keys(transport).some(k=>!['format','epoch','resources'].includes(k))||transport.format!=='retained-image-batches-v1'||!uint64(transport.epoch)
    ||!transport.resources||typeof transport.resources!=='object'||Array.isArray(transport.resources)||Object.keys(transport.resources).length>256
@@ -51,7 +73,7 @@ function restoreImages(module,value){
   }
   next.set(id,entry);Object.defineProperty(definitions,id,{value:entry.definition,enumerable:true});
  }
- imageResources.set(module,{epoch:transport.epoch,resources:next});
+ staged.images={epoch:transport.epoch,resources:next};
  // Raw memory descriptors are private to this synchronous reader, not hooks.
  const {ui_transport,...observation}=value;
  return {...observation,world:{...value.world,ui_image_batches:Object.freeze(definitions)}};
@@ -64,7 +86,14 @@ export function readObservation(module,mark) {
   const bytes=module.HEAPU8.subarray(pointer,pointer+length);
   if(mark)mark('observation_view',bytes.length);
   const text=observationDecoder.decode(bytes);if(mark)mark('observation_utf8');
-  const value=JSON.parse(text);if(mark)mark('observation_parse');return restoreSave(module,restoreImages(module,value));
+  const value=JSON.parse(text);if(mark)mark('observation_parse');
+  const staged={},restored=restoreSave(module,restoreImages(module,restoreUiTree(module,value,staged),staged),staged);
+  // Advance no generation cache until every descriptor in this publication
+  // has validated. A malformed companion resource/save cannot replace UI.
+  if(Object.hasOwn(staged,'uiTree')){if(staged.uiTree)uiTrees.set(module,staged.uiTree);else uiTrees.delete(module);}
+  if(Object.hasOwn(staged,'images')){if(staged.images)imageResources.set(module,staged.images);else imageResources.delete(module);}
+  if(Object.hasOwn(staged,'save')){if(staged.save)saves.set(module,staged.save);else saves.delete(module);}
+  return restored;
 }
 export function loadProject(module,payload,seed=42n) {
   const bytes=projectEncoder.encode(JSON.stringify(payload));

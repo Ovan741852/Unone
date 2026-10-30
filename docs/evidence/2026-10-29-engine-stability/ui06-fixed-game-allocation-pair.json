@@ -1,0 +1,274 @@
+{
+  "schema": "unone.jy-ui06-fixed-game-allocation-pair.v1",
+  "ok": true,
+  "scope": "Actual emitted matching opt2 diagnostic WASM in Node, fixed same Game source/body, exact restored fixture/seed/viewport/input and same profile frames. Sampling disabled. Complete world (including UI and observations), save JSON bytes and digest are compared at every tick; no field allowlist. VM positive allocation-growth counters are cumulative requests, not live heap. Instrumented GC wall is not pure CPU or production timing.",
+  "started_utc": "2026-10-30T01:46:50.353Z",
+  "finished_utc": "2026-10-30T01:47:03.696Z",
+  "runner_sha256": "717585c87c02a2492df811a6ecb64ccb03bb8108fe0768df15651de2666357af",
+  "source_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+  "fixture": {
+    "path": "D:/Projects/Unone/.cache/jy-ui06-harness/game/tests/ui-fixtures/named-fresh.save.json",
+    "sha256": "098d5f27cc79f1750327dcbe163708ea4567e8fc4cfa857ffc3abad92f732deb"
+  },
+  "canonical": {
+    "all_complete_bytes_and_digests_equal": true,
+    "checkpoints": 439,
+    "ticks_per_variant": 438,
+    "measured_checkpoints": 300,
+    "first_frame": 0,
+    "last_frame": 438,
+    "rows_sha256": "a7d9b19a77c92adb560e96cd548e516869ddbd9dd36e9ed18b4a53b29a182383",
+    "allowlist": []
+  },
+  "execution_order": "Two independent actual WASM modules in one Node process; for each fixed input SDK8 executes first then SDK9, followed by exact byte/digest comparison. No browser host or native real-time scheduler.",
+  "results": [
+    {
+      "name": "sdk8-ui05",
+      "runtime_package": "0.5.0",
+      "runtime_manifest_sha256": "f396191d0ed645a8c19c0df868e531f2850edab5ffd47fe0cb611e5797c96a43",
+      "runtime": {
+        "bytecode_optimization_level": 2,
+        "cargo_features": [
+          "audio",
+          "camera2d",
+          "camera3d",
+          "particle",
+          "random",
+          "save",
+          "ui",
+          "sampling-profile"
+        ],
+        "compiled_systems": [
+          "audio",
+          "camera2d",
+          "camera3d",
+          "input",
+          "observation",
+          "particle",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "unload_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_viewport_size",
+          "set_instance_transport",
+          "set_ui_transport",
+          "tick",
+          "ui_request",
+          "jobs_request",
+          "jobs_binary",
+          "spatial_request",
+          "host_time_request",
+          "observation_ptr",
+          "observation_len",
+          "developer_request",
+          "particle_alloc",
+          "particle_sample",
+          "particle_output_ptr",
+          "particle_output_len"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+        "phase_profile": false,
+        "preview_tools": true,
+        "profile": "release",
+        "profile_mode": "opt2-sampling",
+        "runtime_packages": {
+          "@unone/ui": "0.5.0"
+        },
+        "sampling_profile": true,
+        "source_commit": "3cd20499b9aa77efd24dc299e7ce9fd7762b7baa",
+        "source_dirty": false,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 3606120,
+        "wasm_sha256": "68c9db3c4cc0c863a4265a9373d5f331cbb94989cb77b8c0adc66b8c6732e5d3"
+      },
+      "export_manifest_sha256": "5ed36a07d495a5bdd16353c22126cbcdf488143565d1ece6740fe0c3a364f5c9",
+      "script_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+      "payload_sha256": "0e0c682926729a44e486879fe9e1d354f6c79efe895cc953ed24f1ab7059b6bf",
+      "host_loader_sha256": "2d446e73423d701fe9a113e07af14cdd787cf274862e45570aa1d6b175d3da58",
+      "profile": {
+        "sampling": false,
+        "warmup_ticks": 120,
+        "measured_ticks": 300,
+        "profile_start_after_frame": 138,
+        "first_frame": 139,
+        "last_frame": 438,
+        "vm_tick_count": 300,
+        "retained_vm_frames": 300,
+        "retained_vm_first_frame": 139,
+        "retained_vm_last_frame": 438,
+        "availability": {
+          "allocation_growth": "measured",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "measured",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        }
+      },
+      "totals": {
+        "allocation_growth_bytes": 684330838,
+        "allocation_growth_events": 8531657,
+        "incremental_gc_steps": 345721,
+        "incremental_gc_ms": 441.7924399999995,
+        "incremental_gc_max_step_ms": 0.079101
+      },
+      "per_tick": {
+        "allocation_growth_bytes": 2281102.7933333335,
+        "allocation_growth_events": 28438.856666666667,
+        "incremental_gc_steps": 1152.4033333333334,
+        "incremental_gc_ms": 1.472641466666665
+      }
+    },
+    {
+      "name": "sdk9-ui06",
+      "runtime_package": "0.6.0",
+      "runtime_manifest_sha256": "71670579413d9a78ee5e8993060c508ddca7fffdd00f8f6321fb459505271f67",
+      "runtime": {
+        "bytecode_optimization_level": 2,
+        "cargo_features": [
+          "audio",
+          "camera2d",
+          "camera3d",
+          "particle",
+          "random",
+          "save",
+          "ui",
+          "sampling-profile"
+        ],
+        "compiled_systems": [
+          "audio",
+          "camera2d",
+          "camera3d",
+          "input",
+          "observation",
+          "particle",
+          "random",
+          "save",
+          "ui",
+          "world"
+        ],
+        "dev_tools": false,
+        "exports": [
+          "init",
+          "alloc",
+          "load_project",
+          "unload_project",
+          "set_save_payload",
+          "set_input_frame",
+          "set_viewport_aspect",
+          "set_viewport_size",
+          "set_instance_transport",
+          "set_ui_transport",
+          "tick",
+          "ui_request",
+          "jobs_request",
+          "jobs_binary",
+          "spatial_request",
+          "host_time_request",
+          "observation_ptr",
+          "observation_len",
+          "developer_request",
+          "particle_alloc",
+          "particle_sample",
+          "particle_output_ptr",
+          "particle_output_len"
+        ],
+        "javascript": "unone-player.js",
+        "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+        "phase_profile": false,
+        "preview_tools": true,
+        "profile": "release",
+        "profile_mode": "opt2-sampling",
+        "runtime_packages": {
+          "@unone/ui": "0.6.0"
+        },
+        "sampling_profile": true,
+        "source_commit": "aaf4cb09c2bdc2c76d2dbcc2f41e1e44c443e412",
+        "source_dirty": false,
+        "wasm": "unone_player.wasm",
+        "wasm_bytes": 3609231,
+        "wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60"
+      },
+      "export_manifest_sha256": "b9551ab678bbfb94ac07e6354d24f32302a8865627056acc7505c39f5ecdd784",
+      "script_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+      "payload_sha256": "fa1aa543a0f6a95e533ab9ecb60a435901f4688adbe664ce139d7b47d9eba399",
+      "host_loader_sha256": "2d446e73423d701fe9a113e07af14cdd787cf274862e45570aa1d6b175d3da58",
+      "profile": {
+        "sampling": false,
+        "warmup_ticks": 120,
+        "measured_ticks": 300,
+        "profile_start_after_frame": 138,
+        "first_frame": 139,
+        "last_frame": 438,
+        "vm_tick_count": 300,
+        "retained_vm_frames": 300,
+        "retained_vm_first_frame": 139,
+        "retained_vm_last_frame": 438,
+        "availability": {
+          "allocation_growth": "measured",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "measured",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        }
+      },
+      "totals": {
+        "allocation_growth_bytes": 488163134,
+        "allocation_growth_events": 5721525,
+        "incremental_gc_steps": 243276,
+        "incremental_gc_ms": 411.0421779999998,
+        "incremental_gc_max_step_ms": 0.49010099999999995
+      },
+      "per_tick": {
+        "allocation_growth_bytes": 1627210.4466666668,
+        "allocation_growth_events": 19071.75,
+        "incremental_gc_steps": 810.92,
+        "incremental_gc_ms": 1.3701405933333326
+      }
+    }
+  ],
+  "changes": {
+    "allocation_growth_bytes": {
+      "before": 684330838,
+      "after": 488163134,
+      "change_percent": -28.665623863059054
+    },
+    "allocation_growth_events": {
+      "before": 8531657,
+      "after": 5721525,
+      "change_percent": -32.93770483271889
+    },
+    "incremental_gc_steps": {
+      "before": 345721,
+      "after": 243276,
+      "change_percent": -29.632275736793538
+    },
+    "incremental_gc_ms": {
+      "before": 441.7924399999995,
+      "after": 411.0421779999998,
+      "change_percent": -6.960341376597507
+    },
+    "incremental_gc_max_step_ms": {
+      "before": 0.079101,
+      "after": 0.49010099999999995,
+      "change_percent": 519.5888800394431
+    }
+  },
+  "limitations": [
+    "Same migrated COW Game source on both sides isolates this matching runtime/package pair; it does not attribute original bb2-to-COW Game improvement to UI0.6.",
+    "Diagnostic runtime commits differ and are pinned; this is the emitted SDK8/SDK9 diagnostic pair, not a rebuilt one-symbol experiment.",
+    "Allocation growth is cumulative positive Luau allocator growth requests/events, not retained/live memory, malloc total, V8 heap or WASM committed capacity.",
+    "GC steps/wall/max-step are measured incremental diagnostic work, not V8 GC episodes, full collection pauses or OS scheduler delay. Root may compile Rust concurrently; GC wall values are descriptive instrumented Node observations.",
+    "No function samples, forced GC, browser/GPU, FPS, scanout, leak-free, frequent-GC or release gate acceptance claim."
+  ]
+}

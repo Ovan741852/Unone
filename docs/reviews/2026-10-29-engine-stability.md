@@ -981,3 +981,51 @@ strict layout gates or resource budgets were changed for these results.
 See retained-web-sdk-candidate9-validation.json for pinned artifacts and raw
 local evidence locations. The current SDK8 handoff is not silently replaced
 with an unaccepted Game/UI0.6 migration.
+
+## SDK9 seven-scene baseline and immutable publication follow-up
+
+Actual official Web main-backend production runs pass all seven unchanged
+cadence gates: 59.98–60.04 RAF/s and simulation Hz, zero dropped steps, clean
+health/behavior and complete temporal coverage. Root viewed all seven prepared
+screenshots. Original completion-end gates remain false and nominal overrun
+counters remain explicit. This is headless Chrome submission/cadence evidence,
+not scanout or an unconditional stable-without-stutter/release claim.
+
+The same migrated source also passes 60 on SDK8. Therefore the full original
+bb2 failure-to-60 improvement cannot be assigned to the UI 0.6 package.
+The separate exact-state emitted-WASM comparison matches all439 canonical
+checkpoints across SDK8/9. Its 300 fixed ticks with sampling=false reduce Lua allocation
+growth bytes28.7%, events32.9% and incremental steps29.6%; max instrumented step
+increases0.0791→0.4901ms. These are Node VM diagnostics, not retained heap or
+browser-GC proof. Product Game files remain unchanged; the tested COW migration
+is an isolated candidate and its data/cache policies are preserved.
+
+Natural45s idle and45s inventory traces still observe V8 GC producer activity.
+WASM capacity stays29,097,984 bytes; settled geometry/mesh/material and texture
+cache owners are bounded. A separate20-cycle inventory probe passes all native
+input/presentation waits and keeps closed owners bounded, with one-time+1GPU
+texture and+2listener tails explicitly reported. A cache-runner output-path bug
+was recovered byte-identically with provenance and fixed for future probes;
+none of this proves universal leak freedom. Compact baseline evidence preserves
+all rates, nominal tails, resource changes and raw local paths.
+
+Decision0046 extends immutable ownership through presentation boundaries. Rust
+captures the exact top-level UI span during the complete canonical serialization,
+leases current-only encoded bytes, and keeps no-UI worlds on the original direct
+path. Private JS publications, changed-only worker delivery, scroll projection
+reuse and Canvas identity checks remove unchanged-data work while retaining
+initial validation and existing invalidations. Independent review found and
+fixed two concrete P2s before packaging: oversized duplicate canonical scratch
+retention and double encoding of no-UI worlds. Preparation cost is included in
+the existing publication profile span. A reload alias suspicion was excluded
+by the actual preserved resource counter and a focused success/failure test.
+
+Final native ABI20/20 and developer reload1/1 pass; full Web module tests are
+564pass,0fail,2optional shader-plugin skips across104files. The official export
+static dependency-closure test passes for UI-enabled and UI-disabled outputs,
+including the new always-imported module. Independent reciprocal source review
+found no remaining concreteP1/P2. Claude2.1.308 received eight fixed files from
+base3ad941f with toolsdisabled/one turn; it timed out after60,053ms withSIGTERM
+and zero output, so remains incomplete. Exact hashes/command/failure are kept.
+Actual SDK10 emitted-WASM, main/worker, seven-case and natural-GC comparisons
+are still required and are not implied by these source tests.

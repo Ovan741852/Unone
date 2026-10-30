@@ -1,4 +1,10 @@
 // Reusable scroll projection/controller. No game identifiers or rules.
+import {uiTreeGeneration} from './ui-tree-publication.mjs';
+// Authority is private: a caller-frozen object is still a mutable/raw input to
+// this contract. Cache only decoded immutable publications or our own sealed
+// projections, and retain just the last offset configuration per weak tree.
+const projections=new WeakMap(),projectionGenerations=new WeakMap();
+export const uiProjectionGeneration=tree=>tree&&typeof tree==='object'?projectionGenerations.get(tree):undefined;
 const top=r=>100-r.y-r.height;
 const inside=(r,x,y)=>r&&x>=r.x&&y>=r.y&&x<r.x+r.width&&y<r.y+r.height;
 const clamp=(v,max)=>Math.max(0,Math.min(max,v));
@@ -16,29 +22,34 @@ export function virtualWindow(v,offset,height){
  const start=Math.max(0,Math.floor(offset/pitch)-1),end=Math.min(rows,Math.ceil((offset+height)/pitch)+1);
  return {first:start*v.columns+1,last:Math.min(v.keys.length,end*v.columns)};
 }
-export function projectScrollTree(tree,offsets=new Map()){
- const leaves=[],views=[];
+export function projectScrollTree(tree,offsets=null){
+ const generation=uiTreeGeneration(tree)??uiProjectionGeneration(tree),cached=generation&&projections.get(tree);
+ if(cached&&cached.generation===generation&&cached.offsets.every(saved=>{const current=offsets?.get(saved.id);return saved.x===(current?.x??0)&&saved.y===(current?.y??0);}))return cached.result;
+ const leaves=[],views=[],offsetKeys=generation?[]:null,seal=value=>generation?Object.freeze(value):value;
  function walk(nodes,space=null,clip=null,enabled=true,owner=null,item=null){
   for(const n of nodes??[]){
    if(n.kind==='image_batch'&&space)throw Error(`UI_IMAGE_BATCH_SPACE: ${n.id}; image batches require stage coordinates`);
-   const projectRect=rect=>space?{...rect,x:space.x+rect.x,y:100-space.top-rect.y-rect.height}:rect;
-   const r=projectRect(n.rect),drag=n.drag?{...n.drag,track_rect:projectRect(n.drag.track_rect),hit_rect:projectRect(n.drag.hit_rect)}:undefined;
+   const projectRect=rect=>space?seal({...rect,x:space.x+rect.x,y:100-space.top-rect.y-rect.height}):rect;
+   const r=projectRect(n.rect),drag=n.drag?seal({...n.drag,track_rect:projectRect(n.drag.track_rect),hit_rect:projectRect(n.drag.hit_rect)}):undefined;
    if(n.kind==='component'){walk(n.children,space,clip,enabled,owner,item);continue;}
    if(n.kind==='scroll_view'){
     const extent=scrollExtent(n),maxX=n.scroll.axis==='vertical'?0:Math.max(0,extent.width-r.width),maxY=n.scroll.axis==='horizontal'?0:Math.max(0,extent.height-r.height);
-    const saved=offsets.get(n.id)??{},offset={x:clamp(saved.x??0,maxX),y:clamp(saved.y??0,maxY)},visible=intersect(clip,r),active=enabled&&n.scroll.enabled;
-    views.push({id:n.id,node:n,rect:r,clip:visible,parentClip:clip,extent,maxX,maxY,offset,enabled:active,wheelRect:n.scroll.wheel_rect??visible});
-    if(visible.width>0&&visible.height>0)leaves.push({kind:'text',id:n.id,text:'',rect:r,clip:visible});
+    const saved=offsets?.get(n.id),x=saved?.x??0,y=saved?.y??0,offset=seal({x:clamp(x,maxX),y:clamp(y,maxY)}),visible=seal(intersect(clip,r)),active=enabled&&n.scroll.enabled;
+    if(offsetKeys)offsetKeys.push({id:n.id,x,y});
+    views.push(seal({id:n.id,node:n,rect:r,clip:visible,parentClip:clip,extent:seal(extent),maxX,maxY,offset,enabled:active,wheelRect:n.scroll.wheel_rect??visible}));
+    if(visible.width>0&&visible.height>0)leaves.push(seal({kind:'text',id:n.id,text:'',rect:r,clip:visible}));
     const v=n.scroll.virtual_items;
     for(const [i,child]of (n.children??[]).entries())walk([child],{x:r.x-offset.x,top:top(r)-offset.y},visible,active,n.id,v?{key:v.keys[v.first-1+i],index:v.first-1+i,count:v.keys.length}:null);
     continue;
    }
    const c=intersect(clip,n.clip);if(c&&(c.width<=0||c.height<=0))continue;
    if(!enabled&&n.kind==='input_region')continue;
-   leaves.push({...n,rect:r,...(drag?{drag}:{}),...(c?{clip:c}:{}),...(!enabled&&['button','slider','combobox'].includes(n.kind)?{kind:'text',action:undefined,drag:undefined}:{}),...(!enabled&&n.kind==='text_input'?{enabled:false,focused:false}:{}),...(owner?{scrollOwner:owner}:{}),...(item?{virtualKey:item.key,virtualIndex:item.index,virtualCount:item.count}:{} )});
+   leaves.push(seal({...n,rect:r,...(drag?{drag}:{}),...(c?{clip:seal(c)}:{}),...(!enabled&&['button','slider','combobox'].includes(n.kind)?{kind:'text',action:undefined,drag:undefined}:{}),...(!enabled&&n.kind==='text_input'?{enabled:false,focused:false}:{}),...(owner?{scrollOwner:owner}:{}),...(item?{virtualKey:item.key,virtualIndex:item.index,virtualCount:item.count}:{} )}));
   }
  }
- walk(tree?.children);return {tree:tree?{...tree,children:leaves}:tree,views};
+ walk(tree?.children);const projected=tree?seal({...tree,children:seal(leaves)}):tree,result=seal({tree:projected,views:seal(views)});
+ if(generation){projectionGenerations.set(projected,Object.freeze({}));projections.set(tree,{generation,offsets:offsetKeys,result});}
+ return result;
 }
 
 export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=async()=>{},onDiagnostic=console.error,requestRender=()=>{},now=()=>performance.now(),requestFrame=fn=>requestAnimationFrame(fn),cancelFrame=id=>cancelAnimationFrame(id),getFocusedNode=()=>document.activeElement?.dataset?.uiControl,focusNode=id=>{const el=[...stage.querySelectorAll('[data-ui-control]')].find(el=>el.dataset.uiControl===id);if(!el)return false;el.focus();return true;}}){
