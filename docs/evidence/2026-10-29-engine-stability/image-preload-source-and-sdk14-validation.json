@@ -1,0 +1,635 @@
+{
+  "schema": "unone.image-preload-source-and-sdk14-validation.v1",
+  "date": "2026-10-30",
+  "recorded_utc": "2026-10-30T08:20:12.827Z",
+  "status": "source-node-and-package-validated",
+  "scope": {
+    "included": [
+      "Independent bounded source review of formal preload-plan validation, required startup readiness, broker lifetime, player entry and offline publisher",
+      "Actual Node unit/integration coverage and final full Web/scripts suite",
+      "Fresh scoped-source checkpoint, existing CLI10 SDK pack plus two explicitly indexed authoring files, complete author hash verification and Root-reported independent148-file verification"
+    ],
+    "excluded": [
+      "Actual SDK14 emitted-player/browser/pixel/GPU validation",
+      "FPS, deadline, GC-frequency, natural heap, VRAM or leak-free acceptance",
+      "Any new Rust/native/WASM build or the separately blocked fused-copy runtime",
+      "Product source, save, server, gameplay or acceptance-gate changes"
+    ]
+  },
+  "source": {
+    "production_code_commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+    "captured_host_commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+    "documentation_supplement_commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+    "packaged_source_scope_clean": true,
+    "global_worktree_dirty_at_capture": true,
+    "scope_note": "Only100SDK10-indexed Web templates, Android pack script and the two new indexed publisher/docs files were captured. Unrelated dirty Rust/entity work was excluded. Runtime/CLI/package sources remain the original verified SDK10 contract.",
+    "digests": [
+      {
+        "path": "web/shared/asset-encoding.js",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 26949,
+          "sha256": "41ec5515f182bcaa665a2a69fb92cb405a5d7a7b69a4f642c3cefbe61d12c845",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 339,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 26949,
+          "sha256": "41ec5515f182bcaa665a2a69fb92cb405a5d7a7b69a4f642c3cefbe61d12c845",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 339,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint14/web/shared/asset-encoding.js",
+          "shipped_in_sdk": true,
+          "bytes": 27288,
+          "sha256": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed",
+          "line_endings": {
+            "crlf": 339,
+            "lf_without_cr": 0,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "41ec5515f182bcaa665a2a69fb92cb405a5d7a7b69a4f642c3cefbe61d12c845",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": true,
+        "difference_note": "Review and host use the same Git source. Raw Windows/checkpoint bytes may use CRLF and therefore have a different digest."
+      },
+      {
+        "path": "web/player/main.js",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 27986,
+          "sha256": "ab7a493f2ad9974c5e32121db65eed9cfcd4bba694cf8efb9e76474ae8f481e9",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 263,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 27986,
+          "sha256": "ab7a493f2ad9974c5e32121db65eed9cfcd4bba694cf8efb9e76474ae8f481e9",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 263,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint14/web/player/main.js",
+          "shipped_in_sdk": true,
+          "bytes": 28249,
+          "sha256": "0e423f276721eda0f8cc466db6cd43ac6ebadd7ea272cff9c20e1d94bd8760dc",
+          "line_endings": {
+            "crlf": 263,
+            "lf_without_cr": 0,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "ab7a493f2ad9974c5e32121db65eed9cfcd4bba694cf8efb9e76474ae8f481e9",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": true,
+        "difference_note": "Review and host use the same Git source. Raw Windows/checkpoint bytes may use CRLF and therefore have a different digest."
+      },
+      {
+        "path": "web/player/index.html",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 1133,
+          "sha256": "bf6cf838a9ac09aa518fac48a8bfdb5a8ec78e4d56cde4a43385cd56d64a2e27",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 3,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 1133,
+          "sha256": "bf6cf838a9ac09aa518fac48a8bfdb5a8ec78e4d56cde4a43385cd56d64a2e27",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 3,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint14/web/player/index.html",
+          "shipped_in_sdk": true,
+          "bytes": 1136,
+          "sha256": "c35bde17fb9f6e008b3fca45ad03974255c58c4bd60467da3a4f4db5b6f0aab0",
+          "line_endings": {
+            "crlf": 3,
+            "lf_without_cr": 0,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "bf6cf838a9ac09aa518fac48a8bfdb5a8ec78e4d56cde4a43385cd56d64a2e27",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": true,
+        "difference_note": "Review and host use the same Git source. Raw Windows/checkpoint bytes may use CRLF and therefore have a different digest."
+      },
+      {
+        "path": "scripts/prepare-web-image-assets.mjs",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 21293,
+          "sha256": "881bc631df6ca93e2f0cca7423774ad31d169ac940e94577651815bd91160bfe",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 199,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 21293,
+          "sha256": "881bc631df6ca93e2f0cca7423774ad31d169ac940e94577651815bd91160bfe",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 199,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint14/scripts/prepare-web-image-assets.mjs",
+          "shipped_in_sdk": true,
+          "bytes": 21293,
+          "sha256": "881bc631df6ca93e2f0cca7423774ad31d169ac940e94577651815bd91160bfe",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 199,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "881bc631df6ca93e2f0cca7423774ad31d169ac940e94577651815bd91160bfe",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": true,
+        "difference_note": "Review and host use the same Git source. Raw Windows/checkpoint bytes may use CRLF and therefore have a different digest."
+      },
+      {
+        "path": "scripts/prepare-web-image-assets.test.mjs",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 15300,
+          "sha256": "3afb154a5b3939c957245b3eaa66430b78d0d202cb437209baac4fb76a8b4772",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 123,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 15300,
+          "sha256": "3afb154a5b3939c957245b3eaa66430b78d0d202cb437209baac4fb76a8b4772",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 123,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/scripts/prepare-web-image-assets.test.mjs",
+          "shipped_in_sdk": false,
+          "bytes": 15300,
+          "sha256": "3afb154a5b3939c957245b3eaa66430b78d0d202cb437209baac4fb76a8b4772",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 123,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "3afb154a5b3939c957245b3eaa66430b78d0d202cb437209baac4fb76a8b4772",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": true,
+        "difference_note": "Review and host use the same Git source. Raw Windows/checkpoint bytes may use CRLF and therefore have a different digest."
+      },
+      {
+        "path": "web/shared/image-preload-plan.test.mjs",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 12373,
+          "sha256": "710122e9ee37c807301432fb43dbb702d7fd06f6d90e3b4010ff88f832f285de",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 92,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 12373,
+          "sha256": "710122e9ee37c807301432fb43dbb702d7fd06f6d90e3b4010ff88f832f285de",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 92,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/web/shared/image-preload-plan.test.mjs",
+          "shipped_in_sdk": false,
+          "bytes": 12373,
+          "sha256": "710122e9ee37c807301432fb43dbb702d7fd06f6d90e3b4010ff88f832f285de",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 92,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "710122e9ee37c807301432fb43dbb702d7fd06f6d90e3b4010ff88f832f285de",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": true,
+        "difference_note": "Review and host use the same Git source. Raw Windows/checkpoint bytes may use CRLF and therefore have a different digest."
+      },
+      {
+        "path": "web/shared/image-preload-entry.test.mjs",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 10286,
+          "sha256": "f4cce05e826344a1e19c9b1f12cab3d7889be0a790e4bb6ff11b1cb8dbbefe76",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 132,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 10286,
+          "sha256": "f4cce05e826344a1e19c9b1f12cab3d7889be0a790e4bb6ff11b1cb8dbbefe76",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 132,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/web/shared/image-preload-entry.test.mjs",
+          "shipped_in_sdk": false,
+          "bytes": 10286,
+          "sha256": "f4cce05e826344a1e19c9b1f12cab3d7889be0a790e4bb6ff11b1cb8dbbefe76",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 132,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "f4cce05e826344a1e19c9b1f12cab3d7889be0a790e4bb6ff11b1cb8dbbefe76",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": true,
+        "difference_note": "Review and host use the same Git source. Raw Windows/checkpoint bytes may use CRLF and therefore have a different digest."
+      },
+      {
+        "path": "docs/web-image-assets.md",
+        "reviewed_git_blob": {
+          "commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+          "bytes": 4741,
+          "sha256": "bc0a09372cccbd7c2f1e6ed365d09e0a334cebefb1d38197ede0e2ac0149556d",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 89,
+            "cr_without_lf": 0
+          }
+        },
+        "host_git_blob": {
+          "commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+          "bytes": 12033,
+          "sha256": "244a07b0e8874ebab94d58b8a27af66e48709d3072303b78476d0091e414af8c",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 144,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_bytes": {
+          "reference": "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint14/docs/web-image-assets.md",
+          "shipped_in_sdk": true,
+          "bytes": 12033,
+          "sha256": "244a07b0e8874ebab94d58b8a27af66e48709d3072303b78476d0091e414af8c",
+          "line_endings": {
+            "crlf": 0,
+            "lf_without_cr": 144,
+            "cr_without_lf": 0
+          }
+        },
+        "windows_source_after_crlf_to_lf_sha256": "244a07b0e8874ebab94d58b8a27af66e48709d3072303b78476d0091e414af8c",
+        "host_git_equals_normalized_windows_source": true,
+        "reviewed_git_equals_host_git": false,
+        "difference_note": "Documentation-only supplement restores earlier broker/lifetime guidance in the captured host docs; production code is unchanged."
+      }
+    ],
+    "line_ending_note": "Git-LF review digests and actual Windows/checkpoint byte digests are distinct facts. Compare normalized source only to explain CRLF; use actual shipped byte SHA for SDK integrity."
+  },
+  "independent_source_review": {
+    "schema": "unone.image-preload-independent-source-review.v1",
+    "date": "2026-10-30",
+    "reviewed_commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+    "reviewer": "Codex runtime audit agent, independent of the production implementation authors",
+    "status": "completed-bounded-source-review",
+    "remaining_concrete_p1_p2_findings": [],
+    "scope": [
+      "Strict image plan validator, canonical UTF-8 bounds and detached ownership",
+      "Startup-first merged resource admission, required ready counters and best-effort scene classification",
+      "Actual player meta/stream/UTF-8 reader, start/restart required preparation barriers and cancellation",
+      "SDK-owned offline publisher, trusted validator, project/export identity and fresh generation sealing",
+      "Independent entry regressions in web/shared/image-preload-entry.test.mjs"
+    ],
+    "resolved_findings": [
+      {
+        "problem": "The original plan reader retained one cloned Uint8Array per incoming chunk, allowing unbounded metadata relative to its one-MiB byte cap.",
+        "resolution": "One fixed one-MiB buffer with checked offsets; finely fragmented actual-reader regression passes."
+      },
+      {
+        "problem": "Publisher config matching rejected the officially omitted ui_previews[].save_fixture field.",
+        "resolution": "ProjectConfig comparison projects only the known tool-only field and explicit empty-map serde omissions. Other authored data remains checked."
+      },
+      {
+        "problem": "Publisher checked main_scene existence but not its contents.",
+        "resolution": "Complete parsed scene values now use isDeepStrictEqual; object-key order does not affect equivalence."
+      },
+      {
+        "problem": "Publisher read the entire raw plan before applying its one-MiB size check.",
+        "resolution": "Bounded file-descriptor read with pre-allocation stat cap, at most cap-plus-one bytes and size recheck."
+      },
+      {
+        "problem": "Publisher could deliver a required non-PNG image even though the official bounded preloader cannot admit its dimensions.",
+        "resolution": "Required unknown/non-PNG dimensions fail explicit startup preflight; non-startup groups retain ordinary supported encodings."
+      },
+      {
+        "problem": "Publisher ignored valid unquoted existing HTML meta attributes and could emit duplicate plan declarations.",
+        "resolution": "Quoted and unquoted attributes are recognized; conflicting/duplicate declarations reject instead of creating a non-launchable output."
+      }
+    ],
+    "final_source_checks": [
+      "All groups are validated, including groups outside startup; prototype-sensitive names are own data properties.",
+      "Explicit startup IDs are deduplicated ahead of scene sprites under one planned decoded-image budget, separate from unused/GPU budgets.",
+      "Only decoded ready required leases increment required_ready_entries. Start and restart reject cancelled or incomplete required groups before Core load/READY.",
+      "Absent or empty explicit startup requirements allow best-effort scene-only partial preparation.",
+      "Input export hashes and alias pairs are verified; project script/config/assets and full scene identity are checked.",
+      "Publisher never imports the input export module, preserves other logical bytes and uses the Rust tuple plus UTF-8 byte ordering for a fresh release.",
+      "Stale old release names from legacy finalizers are disclosed; fresh output is resealed, export.json is written last, and existing exports are never overwritten/deleted."
+    ],
+    "validation": {
+      "independent_entry": {
+        "status": "passed-actual-node",
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "executed_by": "reviewer",
+        "raw_log": ".cache/image-preload-entry-tests-run2.log"
+      },
+      "publisher": {
+        "status": "passed-actual-node",
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0,
+        "executed_by": "implementation author; raw summary independently read, not rerun",
+        "raw_log": ".cache/prepare-web-image-assets-tests.log"
+      },
+      "validator_broker_entry_focused": {
+        "passed": 52,
+        "failed": 0,
+        "skipped": 0,
+        "raw_log": ".cache/image-preload-plan-focused-r2.log",
+        "note": "Overlapping focused coverage, not additive to the final full suite."
+      },
+      "final_full_web": {
+        "tests": 640,
+        "passed": 637,
+        "failed": 0,
+        "skipped": 3,
+        "executed_by": "Root; raw summary independently read, not rerun",
+        "raw_log": ".cache/image-preload14-full-web-tests.log"
+      }
+    },
+    "limits": [
+      "This record establishes bounded source and Node test review, not emitted player, pixels, GPU/FPS, GC frequency, browser heap or absence of leaks.",
+      "The new host reuses verified SDK10 Core/WASM; the separately implemented fused-copy runtime remains build-blocked and unexecuted.",
+      "No Claude review was completed for this delta. The prior bounded shared-image CLI attempt is a separate incomplete record and does not cover these changes.",
+      "No Product files, external engine/entity edits, Rust/native builds or browser workloads were modified or executed for this review."
+    ],
+    "record_reference": ".cache/image-preload-source-review.json"
+  },
+  "claude_review": {
+    "status": "INCOMPLETE",
+    "review_completed": false,
+    "conclusion": null,
+    "attempt_status": "timed-out-incomplete",
+    "base_revision": "00f2e9cea808b813175af2ccdd675ca6bf96f875",
+    "reviewed_commit": "ab8941b494b2dfadb57b2e1747bbd0fe093dbe38",
+    "captured_head": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+    "started_utc": "2026-10-30T08:14:45.568Z",
+    "finished_utc": "2026-10-30T08:15:45.797Z",
+    "elapsed_ms": 60225.6631,
+    "timeout_ms": 60000,
+    "timed_out": true,
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "fixed_diff_sha256": "7a9cd19ea2ffcf7195585dcdbf1161ca389d853e191c62fc5f576616fede60f0",
+    "prompt_sha256": "8b5853d2e919a7f00a43efae1327bd8109cbe4c11918011ef4dc998d5713fad4",
+    "prompt_bytes": 246148,
+    "cli_version": "2.1.308 (Claude Code)",
+    "read_only": true,
+    "tool_access": "none",
+    "documentation_supplement": {
+      "path": "docs/web-image-assets.md",
+      "sha256": "244a07b0e8874ebab94d58b8a27af66e48709d3072303b78476d0091e414af8c"
+    },
+    "raw_record": ".cache/image-preload-claude-review-20261030-r1/result.json",
+    "interpretation": "The bounded60-second Claude attempt returned no review text. It is not a pass, a no-findings conclusion, or independent completed approval."
+  },
+  "node_validation": {
+    "final_full_web": {
+      "tests": 640,
+      "passed": 637,
+      "failed": 0,
+      "skipped": 3,
+      "executed_by": "Root",
+      "raw_log": ".cache/image-preload14-full-web-tests.log",
+      "file_list": ".cache/image-preload14-full-web-test-files.txt",
+      "skip_scope": [
+        "Two optional shader-plugin cases",
+        "One missing real normal-world packet fixture"
+      ],
+      "note": "Focused subsets overlap this suite and are not additive."
+    },
+    "focused_validator_broker_entry": {
+      "passed": 52,
+      "failed": 0,
+      "skipped": 0,
+      "raw_log": ".cache/image-preload-plan-focused-r2.log",
+      "note": "Overlapping focused coverage, not additive to the final full suite."
+    },
+    "independent_actual_entry": {
+      "status": "passed-actual-node",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "executed_by": "reviewer",
+      "raw_log": ".cache/image-preload-entry-tests-run2.log"
+    },
+    "publisher": {
+      "status": "passed-actual-node",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "executed_by": "implementation author; raw summary independently read, not rerun",
+      "raw_log": ".cache/prepare-web-image-assets-tests.log"
+    },
+    "tests_reexecuted_for_this_evidence_record": false
+  },
+  "sdk14_package": {
+    "schema": "unone.shared-image-host-sdk14-package-validation.v1",
+    "ok": true,
+    "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate14-host",
+    "checkpoint": "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint14",
+    "host_source_commit": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+    "host_source_dirty": false,
+    "packaged_source_scope_clean": true,
+    "global_worktree_dirty": true,
+    "host_templates": 100,
+    "checkpoint_files": 103,
+    "checkpoint_fingerprint_sha256": "047755d849a2f60a3228a87cb874fb399af86c6c1ff42a152b2d4aaf04188f8d",
+    "checkpoint_manifest_sha256": "34e0b74be82344f7b03e00bafab0a71ee00510ef37506d80bc5b649cfa5303ea",
+    "sdk_manifest_sha256": "9152f79525a84196ef0af2c8a33a13f37be46468e915de8c8899881e9b8543e8",
+    "inventory_files": 148,
+    "inventory_bytes": 61268453,
+    "complete_inventory_verified": true,
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "package_source_contract": "ExactoriginalUI0.6 compiledintoSDK10CLI; no unbuiltfusedcopy package.",
+    "package_source_sha256": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+        "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      },
+      {
+        "id": "web-development-1",
+        "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+        "runtime_manifest_sha256": "5ddccf3b045430cf06609a3a932d9960f4a218fa74e1746752a96580dd3fb60e",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      }
+    ],
+    "changed_templates": [
+      "templates/web/player/index.html",
+      "templates/web/player/main.js",
+      "templates/web/renderer/texture-cache-policy.js",
+      "templates/web/renderer/three.js",
+      "templates/web/shared/asset-encoding.js",
+      "templates/web/shared/canvas-ui.mjs",
+      "templates/web/shared/load-project.js",
+      "templates/web/shared/ui-cursor.mjs"
+    ],
+    "non_template_files_equal_sdk10_except_indexed_additions": true,
+    "extra_indexed_files": [
+      {
+        "path": "docs/web-image-assets.md",
+        "bytes": 12033,
+        "sha256": "244a07b0e8874ebab94d58b8a27af66e48709d3072303b78476d0091e414af8c"
+      },
+      {
+        "path": "scripts/prepare-web-image-assets.mjs",
+        "bytes": 21293,
+        "sha256": "881bc631df6ca93e2f0cca7423774ad31d169ac940e94577651815bd91160bfe"
+      }
+    ],
+    "raw_sdk_manifest_sha256": "7aa47d5967be370c1354ffdcdbd469da839f04f551b717817ac5dc6eeadcb708",
+    "new_uncompiled_player_seed_module_required": false,
+    "commands": [
+      {
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/bin/game.exe",
+        "args": [
+          "--json",
+          "sdk",
+          "pack",
+          "--source-root",
+          "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint14",
+          "--runtime",
+          "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/runtimes/web-production-0",
+          "--runtime",
+          "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/runtimes/web-development-1",
+          "--output",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate14-host"
+        ],
+        "exit_code": 0,
+        "error": null
+      },
+      {
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/bin/game.exe",
+        "args": [
+          "--sdk",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate14-host",
+          "--json",
+          "sdk",
+          "inspect"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "limits": [
+      "Webhost at the pinned scoped source commit with existingSDK10CLI/package/runtimes; this is notfusedRuntime11.",
+      "Packagingandhashvalidation do notestablish actualrender/FPS/GC/memoryacceptance."
+    ],
+    "record_reference": ".cache/shared-image-host14-pack/result.json",
+    "hash_scope_note": "All148indexedSDKfiles were verified by the pack author, including all100source-template fingerprints. Only publisher script and docs were added to the original compiled SDK10 non-template inventory; no SDK top-level schema keys were added."
+  },
+  "root_independent_sdk_verification": {
+    "status": "reported-actual-root-command",
+    "executed_by": "Root, independently of the pack author",
+    "method": "Actual tools.exec_command inline Node: iterate sdk.files; read each indexed file; compare byte length and SHA-256; report SDK manifest and runtime identity. Read-only, no SDK inventory mutation.",
+    "verified_indexed_files": 148,
+    "sdk_manifest_sha256": "9152f79525a84196ef0af2c8a33a13f37be46468e915de8c8899881e9b8543e8",
+    "production_wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "development_wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+    "raw_log": null,
+    "provenance": "Root explicitly reported the actual inline-command stdout in this task; no separate cache log was saved. This evidence writer did not rerun that148-file check.",
+    "exact_command_text_saved": false,
+    "files_written": false
+  },
+  "browser_and_performance": {
+    "sdk14_actual_browser": "outside-this-record",
+    "sdk14_pixels_gpu": "outside-this-record",
+    "sdk14_fps_deadlines": "outside-this-record",
+    "sdk14_gc_memory_leaks": "outside-this-record",
+    "scope_note": "Actual SDK14 functional evidence is recorded separately by the delegated Core reviewer and Root handoff. This source/Node/package record makes no global pending or completion claim for browser, FPS, GC or memory acceptance.",
+    "earlier_host_note": "Historical Host12/Host13 observations do not establish formal-plan SDK14 acceptance. Existing failures are not waived by this source/package record."
+  },
+  "source_cache_records": [
+    {
+      "path": ".cache/image-preload-source-review.json",
+      "bytes": 5143,
+      "sha256": "293bf89aba61380d2cbdb56d38eeb0ddfc32f8c4183e5cc0bb66963ee3eec4fb"
+    },
+    {
+      "path": ".cache/image-preload-claude-review-20261030-r1/result.json",
+      "bytes": 3538,
+      "sha256": "69887f19975275d7205b52ba0b5ab00efc12eb00fd5ac1d5387b5a75f40a817d"
+    },
+    {
+      "path": ".cache/shared-image-host14-pack/result.json",
+      "bytes": 4109,
+      "sha256": "4a9808f872ce440c1d0a94bf9cac6a477bed6412355a57043c395053bb35ad5d"
+    }
+  ],
+  "limits": [
+    "Source review, Node tests and packaging do not prove a player rendered or sustained60FPS.",
+    "No completed Claude review exists for this delta; the timed-out attempt is preserved as incomplete.",
+    "This record hashes only small reviewed source/review metadata; it does not run tests, rebuild, launch a browser or rerun SDK bulk verification.",
+    "PNG header inspection may transfer an entire successful encoded response when Range is ignored; decoded-image limits do not bound encoded network traffic or browser-internal buffering."
+  ]
+}

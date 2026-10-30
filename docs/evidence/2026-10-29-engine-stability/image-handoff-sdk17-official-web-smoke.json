@@ -1,0 +1,456 @@
+{
+  "schema": "unone.image-handoff-sdk17-official-web-smoke.v1",
+  "status": "official-production-functional-smoke-passed",
+  "date": "2026-10-30",
+  "scope": "Actual emitted SDK17 official Web player, main and worker backends, retained resource/save publication, mixed image/text order, live resource replacement/removal/recreation, official control input, context loss/recovery, and required image decode before READY. Functional and visual smoke only.",
+  "source_and_sdk": {
+    "host_source_commit": "310aea1d23182a62446a793b1f08b2398afcae32",
+    "sdk_manifest": {
+      "path": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host/sdk.json",
+      "bytes": 26624,
+      "sha256": "e4e3cda7c095298e7bfbfe266a49a6f514f57541516703ed5b2ee71dc85b9d01"
+    },
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_and_runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "package": "@unone/ui@0.6.0",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "selected_runtime": "web-production-0",
+    "runtime_manifest_export_bytes": {
+      "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17/runtime/runtime.json",
+      "bytes": 1108,
+      "sha256": "933540c4ae8aba0f94d492df14b8f4be1845124d8349b54ceb288e8ce24cee51"
+    },
+    "runtime_note": "Verified SDK10 CLI/UI package and production WASM reused unchanged; SDK17 updates the Web host templates. Exported runtime JSON is separately hashed because CLI serialization differs from SDK manifest bytes; the production WASM SHA above is verified.",
+    "hash_domain": "SHA-256 of actual file/export bytes. No Git LF normalization or Windows CRLF conversion is applied to these recorded file hashes."
+  },
+  "fixture": {
+    "path": "D:/Projects/Unone/.cache/sdk14-preload-official-fixture",
+    "script_sha256": "73f85519ce972c0fde76a028bf76267fa157a1bb5be563ac44350e1c5eef85c3",
+    "immutable_fixture_unchanged": true,
+    "fixture_files": [
+      {
+        "path": "assets/atlas-a.svg",
+        "bytes": 317,
+        "sha256": "a6ca200b1cc68e22ec857dc33e1eb703d5bb2d828735b35353f1189de8e65a58"
+      },
+      {
+        "path": "assets/atlas-b.svg",
+        "bytes": 229,
+        "sha256": "e66a48d31620edde7519d52fb418721decb6da6042c20f88eedebe40f90ade81"
+      },
+      {
+        "path": "assets/background.svg",
+        "bytes": 129,
+        "sha256": "4d029076235aab7846f67fe13cf70d2feda914e76f1035651f33503dde4f0668"
+      },
+      {
+        "path": "assets/LICENSE.txt",
+        "bytes": 224,
+        "sha256": "3d15241f38ca04ccca03d3c456b56f4f9b2d7fcb5fb84c4c704272b074d9ccab"
+      },
+      {
+        "path": "assets/manifest.json",
+        "bytes": 1068,
+        "sha256": "868c5d98718ae2b8cb95c6e88ff1ba09e835d400d60ced3f8137ee50760fb4bc"
+      },
+      {
+        "path": "assets/qa-preload-only.png",
+        "bytes": 79,
+        "sha256": "4c55a49112f63ed3ce2cb2687a1175b08c554f836f19d93afb706650672c7e40"
+      },
+      {
+        "path": "player.image-assets.json",
+        "bytes": 147,
+        "sha256": "dedda95246db0f9eddaee8158be0f90d23ea8184887158f32d791f83c6826182"
+      },
+      {
+        "path": "player.presentation.json",
+        "bytes": 236,
+        "sha256": "b2343887a2ecbba2d09a14d2f7e2cfe829acce4e4c5ae7559693172514c64680"
+      },
+      {
+        "path": "project.unone.json",
+        "bytes": 460,
+        "sha256": "cd916338a44aabb1e5df0bde77a99bf9689fde080207da375fa2beab41dc6412"
+      },
+      {
+        "path": "scripts/main.body.luau",
+        "bytes": 4079,
+        "sha256": "1a6815ddd1bb12e191fa175c3b04ebbcd2071fedb7d877070360218c5a6755d6"
+      },
+      {
+        "path": "scripts/main.luau",
+        "bytes": 46244,
+        "sha256": "73f85519ce972c0fde76a028bf76267fa157a1bb5be563ac44350e1c5eef85c3"
+      }
+    ],
+    "product_project_writes": false,
+    "presentation": "official three-webgl player, projected_raster host, antialias false, interpolation false, runtime backend selected per smoke page"
+  },
+  "export_pipeline": {
+    "status": "passed",
+    "commands": [
+      {
+        "label": "platform-snapshot",
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host/bin/game.exe",
+        "args": [
+          "--project",
+          "D:/Projects/Unone/.cache/sdk14-preload-official-fixture",
+          "--sdk",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host",
+          "--json",
+          "platform",
+          "snapshot"
+        ],
+        "exit_code": 0,
+        "error": null
+      },
+      {
+        "label": "export",
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host/bin/game.exe",
+        "args": [
+          "--project",
+          "D:/Projects/Unone/.cache/sdk14-preload-official-fixture",
+          "--sdk",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host",
+          "--json",
+          "export",
+          "platform",
+          "--target",
+          "web",
+          "--output",
+          "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17-raw"
+        ],
+        "exit_code": 0,
+        "error": null
+      },
+      {
+        "label": "publisher",
+        "command": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "args": [
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host/scripts/prepare-web-image-assets.mjs",
+          "--project",
+          "D:/Projects/Unone/.cache/sdk14-preload-official-fixture",
+          "--input-export",
+          "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17-raw",
+          "--output",
+          "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17"
+        ],
+        "exit_code": 0,
+        "error": null
+      }
+    ],
+    "raw_export": {
+      "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17-raw",
+      "manifest": {
+        "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17-raw/export.json",
+        "bytes": 40574,
+        "sha256": "658f9f29b60200946074780620f5aeefd0b165a18fb5eaf5eda2ab478c802725"
+      },
+      "indexed_files": 195,
+      "total_bytes": 15960709
+    },
+    "published_export": {
+      "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17",
+      "manifest": {
+        "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-20261030-candidate17/export.json",
+        "bytes": 42059,
+        "sha256": "4ac3200ccac0e3eb0a28aa52916e413470c396b23b7bba5999047e4042aadf6b"
+      },
+      "release_root": "releases/3ddbd95e4a6726627b5e7fb131cea924fb006fb1ad9c168615d00bdd89720c22/",
+      "indexed_files": 197,
+      "total_bytes": 15961085,
+      "all_indexed_file_hashes_verified": true
+    },
+    "image_plan_publication": {
+      "publisher_sha256": "881bc631df6ca93e2f0cca7423774ad31d169ac940e94577651815bd91160bfe",
+      "validator_sha256": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed",
+      "plan_sha256": "2b785a121b64f378bc6d6fc1e7b85e8aea7faf5e2f7f812137ee569722dea1a9",
+      "startup_preflight": {
+        "required_entries": 1,
+        "known_rgba_bytes_estimate": 16,
+        "unknown_dimension_assets": [],
+        "scope": "24-byte PNG IHDR estimate only; the official browser still validates decoding and admission before READY"
+      }
+    },
+    "preparation_report": {
+      "path": "D:/Projects/Unone/.cache/sdk17-preload-official-validation/report.json",
+      "bytes": 6021,
+      "sha256": "07d223abd1bd95f1596e47790a0b3f44838e0d5a52c18723ad12fe483154b27e"
+    },
+    "commands_record": {
+      "path": "D:/Projects/Unone/.cache/sdk17-preload-official-validation/commands.json",
+      "bytes": 1682,
+      "sha256": "083b19ba62bfcf3262b5393cb89c4ecee24038f84deb48b6e8e1ecd7b32cf60c"
+    },
+    "platform_snapshot": {
+      "path": "D:/Projects/Unone/.cache/sdk17-preload-official-validation/platform-snapshot.stdout",
+      "bytes": 43683,
+      "sha256": "b414262fba3b30c931609d79e62e20b96a18ec3b19033c9aec5d90a5a24f7725"
+    },
+    "runner_source": {
+      "path": "D:/Projects/Unone/.cache/prepare-sdk17-preload-official.mjs",
+      "bytes": 4689,
+      "sha256": "2b1cdecd550c313adb9ee3a6f713c45549e6aea6e49126f7c6d444d896c9d3d6"
+    }
+  },
+  "browser_smoke": {
+    "status": "passed",
+    "command": [
+      "node",
+      ".cache/verify-sdk17-preload-browser.mjs",
+      "--export",
+      "artifacts/retained-official-web-preload-20261030-candidate17",
+      "--out",
+      "artifacts/retained-official-web-preload-smoke-candidate17",
+      "--backends",
+      "main,worker"
+    ],
+    "runner": {
+      "path": "D:/Projects/Unone/.cache/verify-sdk17-preload-browser.mjs",
+      "bytes": 23205,
+      "sha256": "e75efb3c23193b088a063099061e576c08b2d1f9922ee96f4c4cea555f141532"
+    },
+    "runner_provenance": "Byte-identical copy of the previously reviewed SDK14 augmented official lifecycle runner. It preserves the original HTMLImageElement.decode call/returned Promise and observes only the fixture-required PNG decode before READY; no Core commands, clocks, scheduler or renderer are replaced.",
+    "browser_version": "156.0.4314.50",
+    "renderer": "official",
+    "backends": [
+      {
+        "backend": "main",
+        "status": "passed",
+        "phase_count": 9,
+        "phases": [
+          {
+            "name": "initial",
+            "core_frame": 0,
+            "last_draw_status": "completed",
+            "completed_draws": 2
+          },
+          {
+            "name": "moving-camera",
+            "core_frame": 15,
+            "last_draw_status": "completed",
+            "completed_draws": 18
+          },
+          {
+            "name": "save-replacement",
+            "core_frame": 16,
+            "last_draw_status": "completed",
+            "completed_draws": 19
+          },
+          {
+            "name": "official-button-hit",
+            "core_frame": 24,
+            "last_draw_status": "completed",
+            "completed_draws": 27
+          },
+          {
+            "name": "replace-live-resource",
+            "core_frame": 25,
+            "last_draw_status": "completed",
+            "completed_draws": 28
+          },
+          {
+            "name": "remove-after-tree-replacement",
+            "core_frame": 28,
+            "last_draw_status": "completed",
+            "completed_draws": 31
+          },
+          {
+            "name": "recreate-id",
+            "core_frame": 30,
+            "last_draw_status": "completed",
+            "completed_draws": 33
+          },
+          {
+            "name": "context-lost",
+            "core_frame": 49,
+            "last_draw_status": "skipped",
+            "completed_draws": 34
+          },
+          {
+            "name": "context-restored",
+            "core_frame": 50,
+            "last_draw_status": "completed",
+            "completed_draws": 35
+          }
+        ],
+        "page_and_console_errors": [],
+        "failed_requests": [],
+        "warnings": [],
+        "required_preload": {
+          "asset": "texture://qa-preload-only",
+          "decode_calls": 1,
+          "decode_successes": 1,
+          "decoded_before_ready": true,
+          "decode_error": null,
+          "decoded_at_ms": 109.69999992847443,
+          "ready_at_ms": 306.89999997615814,
+          "clock_scope": "performance.now() within this backend page realm; no display or deadline measurement",
+          "required_entries": 1,
+          "required_ready_entries": 1,
+          "partial": false,
+          "cancelled": false
+        },
+        "screenshots": [
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate17/main/initial.png",
+            "bytes": 11815,
+            "sha256": "91f77bfdcab6eec6f4b31c59883cb4a8977e099e8fcdfe0aef44b48abb5af181",
+            "visually_viewed": true
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate17/main/replaced.png",
+            "bytes": 11213,
+            "sha256": "eb47a3c99f94958222edc7513c4ba39eca2da3041ab263aa8052e426ec0d448d",
+            "visually_viewed": false
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate17/main/restored.png",
+            "bytes": 11262,
+            "sha256": "969c034587159075f21c649416684b9dcb7aa75d2cf0973b2cb9a6673825d3c3",
+            "visually_viewed": true
+          }
+        ]
+      },
+      {
+        "backend": "worker",
+        "status": "passed",
+        "phase_count": 9,
+        "phases": [
+          {
+            "name": "initial",
+            "core_frame": 0,
+            "last_draw_status": "completed",
+            "completed_draws": 2
+          },
+          {
+            "name": "moving-camera",
+            "core_frame": 16,
+            "last_draw_status": "completed",
+            "completed_draws": 19
+          },
+          {
+            "name": "save-replacement",
+            "core_frame": 18,
+            "last_draw_status": "completed",
+            "completed_draws": 21
+          },
+          {
+            "name": "official-button-hit",
+            "core_frame": 25,
+            "last_draw_status": "completed",
+            "completed_draws": 28
+          },
+          {
+            "name": "replace-live-resource",
+            "core_frame": 27,
+            "last_draw_status": "completed",
+            "completed_draws": 30
+          },
+          {
+            "name": "remove-after-tree-replacement",
+            "core_frame": 30,
+            "last_draw_status": "completed",
+            "completed_draws": 33
+          },
+          {
+            "name": "recreate-id",
+            "core_frame": 32,
+            "last_draw_status": "completed",
+            "completed_draws": 35
+          },
+          {
+            "name": "context-lost",
+            "core_frame": 51,
+            "last_draw_status": "skipped",
+            "completed_draws": 35
+          },
+          {
+            "name": "context-restored",
+            "core_frame": 54,
+            "last_draw_status": "completed",
+            "completed_draws": 37
+          }
+        ],
+        "page_and_console_errors": [],
+        "failed_requests": [],
+        "warnings": [],
+        "required_preload": {
+          "asset": "texture://qa-preload-only",
+          "decode_calls": 1,
+          "decode_successes": 1,
+          "decoded_before_ready": true,
+          "decode_error": null,
+          "decoded_at_ms": 82.60000002384186,
+          "ready_at_ms": 235.69999992847443,
+          "clock_scope": "performance.now() within this backend page realm; no display or deadline measurement",
+          "required_entries": 1,
+          "required_ready_entries": 1,
+          "partial": false,
+          "cancelled": false
+        },
+        "screenshots": [
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate17/worker/initial.png",
+            "bytes": 11815,
+            "sha256": "a2c773f403e586552c62a6393504b2e5ea4923548e15e084e9618d7bd7941b83",
+            "visually_viewed": true
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate17/worker/replaced.png",
+            "bytes": 11149,
+            "sha256": "84b0cd5a981af44f85d735eca5809b2efce506f185c882292927bcb0625f1485",
+            "visually_viewed": false
+          },
+          {
+            "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate17/worker/restored.png",
+            "bytes": 11197,
+            "sha256": "313b0850c0a9c5cf165003492966a574abf9bfe1d8c5d656050583878ea89ecc",
+            "visually_viewed": true
+          }
+        ]
+      }
+    ],
+    "raw_report": {
+      "path": "D:/Projects/Unone/artifacts/retained-official-web-preload-smoke-candidate17/report.json",
+      "bytes": 908382,
+      "sha256": "8ac47e9b206ea09b657cb22fcc219ec343d8d0c0c02be95a433d93a5f368ff4f"
+    },
+    "compact_report": {
+      "path": "D:/Projects/Unone/.cache/sdk17-preload-official-validation/browser-compact.json",
+      "bytes": 9232,
+      "sha256": "d6b9c288cadd9016f347a470fa9fd8919d9c03c9bbe678b6294197d40ebed745"
+    },
+    "stdout_log": {
+      "path": "D:/Projects/Unone/.cache/sdk17-preload-official-browser.log",
+      "bytes": 117,
+      "sha256": "f6c9de5a40b460420a96870701ba16bba2478632e7bf537db70f48d8a43ee22e"
+    },
+    "cleanup": {
+      "status": "completed",
+      "basis": "Runner exited0 after awaiting browser.close() and its ephemeral127.0.0.1 server.close() in finally. Each isolated backend browser context was closed. No existing project server, page or save was modified."
+    },
+    "visual_review": {
+      "viewed": [
+        "main/initial.png",
+        "main/restored.png",
+        "worker/initial.png",
+        "worker/restored.png"
+      ],
+      "findings": "Heading, official control, mixed image/text HUD, overlapping alpha artwork and restored display were visible in all four reviewed initial/restored screenshots.",
+      "limits": "Visual inspection only; no quantitative pixel-equality assertion. Intended resource replacement changes the restored artwork."
+    }
+  },
+  "boundaries": {
+    "fps": "outside-this-record",
+    "natural_gc": "outside-this-record",
+    "memory_soak_and_reachability": "outside-this-record",
+    "gpu_scanout": "not-measured",
+    "host_telemetry": "The standard dataset is published every30draws and can predate an individual checkpoint; these samples are not claimed as fresh per-phase resource counters.",
+    "no_rust_build": true,
+    "no_product_game_modification": true,
+    "no_gate_changes": true,
+    "known_scope_limit": "This fixture proves the listed lifecycle and preload barriers; it does not itself establish Game FPS or absence of memory leaks/frequent GC."
+  }
+}

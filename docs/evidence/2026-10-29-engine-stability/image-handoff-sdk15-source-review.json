@@ -1,0 +1,340 @@
+{
+  "schema": "unone.sdk15.image-handoff.source-review.v1",
+  "status": "source-regressions-and-package-identity-validated; two-concrete-lifecycle-P2s-found; source-and-actual-acceptance-not-cleared",
+  "scope": {
+    "base_revision": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+    "reviewed_revision": "337a95da42cbfbc4cdc81a9bc846811f70ed3fa0",
+    "canvas_commit": "4ab6c45",
+    "cursor_commit": "337a95da42cbfbc4cdc81a9bc846811f70ed3fa0",
+    "production_files": [
+      "web/shared/canvas-ui.mjs",
+      "web/shared/ui-cursor.mjs"
+    ],
+    "documentation": "docs/web-image-assets.md",
+    "regression_files": [
+      "web/shared/canvas-ui-image-handoff.test.mjs",
+      "web/shared/ui-cursor-image-handoff.test.mjs"
+    ],
+    "excluded": "Unrelated Rust/entity/typing/roadmap changes in the Git range are excluded. The package reuses verified CLI/WASM10 and original compiled UI0.6; this is not a new Rust/WASM or fused-copy runtime.",
+    "mutation": "This extraction reads fixed review/test/package records only and writes this new evidence file. No Product/SDK/export/source/handoff/issue mutation or new browser/test/build workload."
+  },
+  "problem_and_result": {
+    "concrete_problem": "Releasing an outgoing shared-image lease invokes the broker unused-LRU sweep. Releasing it before acquiring a ready incoming image can evict that incoming image and manufacture an asynchronous cold load/pending draw.",
+    "canvas": "Acquire every image in the complete next used set before retiring any outgoing lease. GPU prefix retirement still occurs before final release of outgoing decoded pixels.",
+    "cursor": "Validate the declaration before changing the current spec, acquire its incoming resource first, then retire old broker resources in finally. The retirement predicate reads the current spec so reentrant onError recovery keeps the newer cursor; a throwing callback cannot retain the old lease.",
+    "bounded_model": "In the functional two-image cache model,100 alternating views/cursors use two total loads and no evictions while preserving synchronous ready draws; this is a targeted functional regression, not measured game/browser allocation or FPS acceptance."
+  },
+  "independent_codex_source_review": {
+    "reviewer": "/root/native_performance",
+    "mode": "read-only exact committed postimages and scoped diff",
+    "disposition": "Initial no-findings disposition superseded: the independent reviewer confirmed both concrete P2s reported by the completed Claude review.",
+    "source_findings": [
+      {
+        "priority": "P2",
+        "file": "web/shared/canvas-ui.mjs",
+        "line": 231,
+        "condition": "A public onDiagnostic or requestRender callback throws during incoming ensureAsset.",
+        "failure": "The incoming-first loop exits before outgoing GPU/lease retirement. previous and next nodes already advanced, so retrying the same tree skips that cleanup and retains old outgoing ownership until a later tree change/invalidation/disposal.",
+        "scope": "Regression when an installed host callback throws. The public callback contract is authoritative; constructor defaults do not justify assuming all host callbacks are no-ops.",
+        "correction": "Guarantee outgoing GPU-before-pixel cleanup in finally around the incoming acquisition loop, preserving incoming-first ordering."
+      },
+      {
+        "priority": "P2",
+        "file": "web/shared/ui-cursor.mjs",
+        "line": 80,
+        "condition": "update(imageSpec) arrives after dispose while the broker remains alive.",
+        "failure": "update still acquires and stores a broker lease. The current-asset filter keeps it, and dispose is already a no-op, so no cursor path releases it.",
+        "scope": "Preexisting disposal-boundary defect in the function reviewed by this slice.",
+        "correction": "Reject update before any validation or acquisition when disposed, and regress no acquisition/ownership after disposal."
+      }
+    ],
+    "verified_boundaries": [
+      "Canvas pins the complete incoming used set before any outgoing release/sweep.",
+      "GPU prefix resources retire before the last outgoing decoded-image ownership releases.",
+      "Invalid cursor declarations preserve current ownership.",
+      "Cursor finally cleanup runs after acquisition/onError failure and uses current spec after reentrant recovery.",
+      "Existing async map/generation fencing, pending outcomes, readiness and disposal remain in place."
+    ],
+    "execution": "The independent reviewer did not run the listed functional suites or browser measurements; test and package results below are separate Root/author evidence."
+  },
+  "functional_regressions": {
+    "negative_old_canvas_order": {
+      "tests": 3,
+      "passed": 1,
+      "failed": 2,
+      "skipped": 0,
+      "duration_ms": 87.1422,
+      "failed_cases": [
+        "100 alternating view handoffs preserve cached synchronous pixels.",
+        "All incoming cached images are pinned before any outgoing lease retires."
+      ],
+      "passed_case": "GPU retirement precedes final outgoing pixel release even when incoming acquisition fails.",
+      "raw": {
+        "path": ".cache/canvas-image-handoff-negative.log",
+        "bytes": 2206,
+        "sha256": "698254aab8843e80f92d1cd2632198aed417c879ecebbf6308ba47b6555f48f0"
+      },
+      "disposition": "Expected negative evidence that the regressions distinguish old ordering from the fix; not a current-tree failure."
+    },
+    "focused_canvas": {
+      "tests": 41,
+      "passed": 41,
+      "raw": {
+        "path": ".cache/canvas-image-handoff-focused.log",
+        "bytes": 4337,
+        "sha256": "99ab6704302522988f4cc348398454840682c28657408fbc90012165a7e6a125"
+      },
+      "scope": "Node actual Canvas + real broker and related focused regressions; no GPU/browser/FPS."
+    },
+    "focused_cursor": {
+      "tests": 39,
+      "passed": 39,
+      "raw": {
+        "path": ".cache/cursor-image-handoff-focused.log",
+        "bytes": 4110,
+        "sha256": "4fb90975a574f0053abe3f5ba005904e48e5035ef5f96182d51008e0d358b687"
+      },
+      "scope": "Node actual cursor + real broker, including100 handoffs, invalid declarations, acquisition failure, throwing onError and reentrant recovery; no browser/FPS."
+    },
+    "full_node": {
+      "tests": 647,
+      "passed": 644,
+      "failed": 0,
+      "skipped": 3,
+      "cancelled": 0,
+      "todo": 0,
+      "duration_ms": 12964.6021,
+      "command": "node --test @taskTests",
+      "file_enumeration": "rg --files web scripts -g '*.test.mjs' | Sort-Object",
+      "test_files": 112,
+      "raw": {
+        "path": ".cache/shared-image-host15-full-web-tests.log",
+        "bytes": 66355,
+        "sha256": "8f14e2bdc1e9241e8c26638003e85c35ce5480e9d722152c57b8d229ff2fc016"
+      },
+      "summary": {
+        "path": ".cache/shared-image-host15-web-tests-summary.json",
+        "bytes": 708,
+        "sha256": "635b6d9abbef60fa791d1118b3ed3e2db6ed625901f0dfc2167cc85cca8e152d"
+      },
+      "file_list": {
+        "path": ".cache/shared-image-host15-web-test-files.txt",
+        "bytes": 4598,
+        "sha256": "618c685be227f7d40559101b006980affc89d6aabf9698f24aaab8f056933a0c"
+      },
+      "scope": "Full web/scripts Node suite. Three existing skipped cases remain skipped; this is not647 passing tests or actual visual/FPS/memory acceptance."
+    }
+  },
+  "sdk15_package": {
+    "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate15-host",
+    "sdk_manifest_sha256": "7603921fc7945d6cb95a5711bbf9c834be28525b3352d24456cb3ac12f43f908",
+    "host_source_commit": "337a95da42cbfbc4cdc81a9bc846811f70ed3fa0",
+    "host_scope_dirty": false,
+    "packaged_source_scope_clean": true,
+    "global_worktree_dirty": true,
+    "inventory_files": 148,
+    "inventory_bytes": 61269487,
+    "complete_inventory_verified": true,
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "original_compiled_ui06_source_sha256": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+        "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      },
+      {
+        "id": "web-development-1",
+        "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+        "runtime_manifest_sha256": "5ddccf3b045430cf06609a3a932d9960f4a218fa74e1746752a96580dd3fb60e",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      }
+    ],
+    "sdk14_to_sdk15": {
+      "status": "passed",
+      "changed_indexed_files": [
+        {
+          "path": "docs/web-image-assets.md",
+          "before": {
+            "path": "docs/web-image-assets.md",
+            "bytes": 12033,
+            "sha256": "244a07b0e8874ebab94d58b8a27af66e48709d3072303b78476d0091e414af8c"
+          },
+          "after": {
+            "path": "docs/web-image-assets.md",
+            "bytes": 12718,
+            "sha256": "65e1d28b22f4082b6d6a711cc29f5f1b39a1c033105647877078da853f17e04c"
+          }
+        },
+        {
+          "path": "templates/web/shared/canvas-ui.mjs",
+          "before": {
+            "path": "templates/web/shared/canvas-ui.mjs",
+            "bytes": 25371,
+            "sha256": "c7e3dcad25a5e9406e1fcc3ec84bf19fb732e63001128c46038973888e7ee3dc"
+          },
+          "after": {
+            "path": "templates/web/shared/canvas-ui.mjs",
+            "bytes": 25537,
+            "sha256": "04f2d39522e391e34e86dac74047b65f8da7133704af21c6580ab2af441447d7"
+          }
+        },
+        {
+          "path": "templates/web/shared/ui-cursor.mjs",
+          "before": {
+            "path": "templates/web/shared/ui-cursor.mjs",
+            "bytes": 7653,
+            "sha256": "3ed90fa6781b87dfb68a4d71bc10d0cdb82b2ebf5026cc40a8a18d54fce15fdd"
+          },
+          "after": {
+            "path": "templates/web/shared/ui-cursor.mjs",
+            "bytes": 7836,
+            "sha256": "a3c326326bb0b2910e68ce55971e1b9c5df09afa93323e9752bbab5c350aa6ec"
+          }
+        }
+      ],
+      "unchanged_indexed_files": 145,
+      "scope": "SDK14 to SDK15 indexed file comparison; exactly Canvas and cursor handoff implementations plus ownership documentation. All other indexed file bytes/hashes unchanged; sdk.json metadata differs as expected."
+    },
+    "inspect": "Official CLI10 sdk inspect exited0; complete indexed files were verified by the packer. Exactly two caller templates and ownership documentation differ from SDK14; all other145 indexed files are identical. sdk.json metadata changes as expected.",
+    "raw_package": {
+      "path": ".cache/shared-image-host15-pack/result.json",
+      "bytes": 4109,
+      "sha256": "57443ddf09ba0cea906ae33fd5dc754555195369d6c8c764b0ea9f761e4fb06a"
+    },
+    "raw_delta": {
+      "path": ".cache/shared-image-host15-pack/sdk14-to15-delta.json",
+      "bytes": 1601,
+      "sha256": "0e2aea0a01d0861ee437c9da55a080692d287d03157638780a85972f5324ef74"
+    }
+  },
+  "bounded_claude_attempt": {
+    "reviewer": "Claude CLI",
+    "status": "completed-with-two-concrete-P2-findings",
+    "review_completed": true,
+    "raw_process_status": "process-exited-zero-needs-response-review",
+    "raw_process_review_completed_flag": false,
+    "version": "2.1.308 (Claude Code)",
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 60000,
+    "base_revision": "f054a6203fbb91a2c15f0ca6a3632c4cbe97ae52",
+    "reviewed_revision": "337a95da42cbfbc4cdc81a9bc846811f70ed3fa0",
+    "captured_head": "337a95da42cbfbc4cdc81a9bc846811f70ed3fa0",
+    "fixed_diff_sha256": "631f41380e697193d105467527089d3ca08bba84366cb2feaf0a4e310a359db6",
+    "prompt_sha256": "3eb79a228a469f8760cadf1b58af49ff6455e651ad844b91a31682e18b59ed34",
+    "prompt_bytes": 80771,
+    "paths": [
+      {
+        "path": "web/shared/canvas-ui.mjs",
+        "bytes": 25259,
+        "sha256": "10e2a38c8c0aa221e1380973a051a22f47442ededcf33f9d20d808ceb67b3ed9"
+      },
+      {
+        "path": "web/shared/ui-cursor.mjs",
+        "bytes": 7836,
+        "sha256": "a3c326326bb0b2910e68ce55971e1b9c5df09afa93323e9752bbab5c350aa6ec"
+      },
+      {
+        "path": "docs/web-image-assets.md",
+        "bytes": 12718,
+        "sha256": "65e1d28b22f4082b6d6a711cc29f5f1b39a1c033105647877078da853f17e04c"
+      },
+      {
+        "path": "web/shared/canvas-ui-image-handoff.test.mjs",
+        "bytes": 4697,
+        "sha256": "eb5a08a81caf78e991fb7d0c1e590e98d77ece5ca6f67954cb7037841e40c7a6"
+      },
+      {
+        "path": "web/shared/ui-cursor-image-handoff.test.mjs",
+        "bytes": 4956,
+        "sha256": "92cb983ef8c1467fb21077a3203aad68de93488982fba1f2c06cab11954d6dca"
+      }
+    ],
+    "elapsed_ms": 57111.0605,
+    "exit_code": 0,
+    "timed_out": false,
+    "termination": null,
+    "stdout_bytes": 7058,
+    "stderr_bytes": 0,
+    "raw_result": {
+      "path": ".cache/image-handoff-sdk15-claude-review-20261030-r1/result.json",
+      "bytes": 2510,
+      "sha256": "25f3e598b9e4e71b3506a8073943b0d42f297df09492cfd4354b974a7bbcc1d0"
+    },
+    "raw_command": {
+      "path": ".cache/image-handoff-sdk15-claude-review-20261030-r1/command.json",
+      "bytes": 2078,
+      "sha256": "ee7ef4a9bb51ad9c3e87102d5b6ccbe3f7354af55450be2e778a37cbe989e1ba"
+    },
+    "raw_stdout": {
+      "path": ".cache/image-handoff-sdk15-claude-review-20261030-r1/review.stdout.json",
+      "bytes": 7058,
+      "sha256": "5775a2402da9fff6215191ee5eb022f2f0b9da98c9041aa73ed296737510ace1"
+    },
+    "raw_stderr": {
+      "path": ".cache/image-handoff-sdk15-claude-review-20261030-r1/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "response_adjudication": {
+      "path": ".cache/image-handoff-sdk15-claude-review-20261030-r1/response-review.json",
+      "bytes": 2343,
+      "sha256": "e8e4645b31fe97667f64c3788f85611ce9184e71d82952b0b1049887b624dbdc"
+    },
+    "findings": [
+      {
+        "priority": "P2",
+        "file": "web/shared/canvas-ui.mjs",
+        "line": 231,
+        "condition": "A public onDiagnostic or requestRender callback throws during incoming ensureAsset.",
+        "failure": "The incoming-first loop exits before outgoing GPU/lease retirement. previous and next nodes already advanced, so retrying the same tree skips that cleanup and retains old outgoing ownership until a later tree change/invalidation/disposal.",
+        "scope": "Regression when an installed host callback throws. The public callback contract is authoritative; constructor defaults do not justify assuming all host callbacks are no-ops.",
+        "correction": "Guarantee outgoing GPU-before-pixel cleanup in finally around the incoming acquisition loop, preserving incoming-first ordering."
+      },
+      {
+        "priority": "P2",
+        "file": "web/shared/ui-cursor.mjs",
+        "line": 80,
+        "condition": "update(imageSpec) arrives after dispose while the broker remains alive.",
+        "failure": "update still acquires and stores a broker lease. The current-asset filter keeps it, and dispose is already a no-op, so no cursor path releases it.",
+        "scope": "Preexisting disposal-boundary defect in the function reviewed by this slice.",
+        "correction": "Reject update before any validation or acquisition when disposed, and regress no acquisition/ownership after disposal."
+      }
+    ],
+    "disposition": "COMPLETED WITH FINDINGS: actual response is success/is_error=false/end_turn/completed, with two concrete P2s independently confirmed. The raw runner process record intentionally remains unmodified; it deferred response review and is supplemented by the adjudication record."
+  },
+  "caller_scope_and_limits": [
+    "The reusable fix is caller incoming-image ownership handoff for Canvas/cursor; it does not infer Game asset choices or change gameplay.",
+    "No broker budget increase, extra pool, image decoder, renderer, new Core API or WASM build is introduced.",
+    "This slice does not make prepareScene acquire/pin its entire future working set before retiring its previous plan. Do not claim a new scene-preparation transaction contract.",
+    "Real unused working sets can exceed the16MiB idle budget, so reduced avoidable eviction does not guarantee zero cold loads or bounded total active pixels in every game.",
+    "Pending/error resources still report incomplete draws; no timestamp/counter/READY semantics were relaxed to claim completion.",
+    "Actual SDK15 game100-cycle image churn, CDP Nodes, natural V8/Luau collection, visual output and long-window FPS remain pending separate selected-artifact validation.",
+    "The earlier SDK14 Game D A/2a16 memory/cycle baseline is preserved separately. This source evidence is not acceptance evidence for a later HUD B game source."
+  ]
+}

@@ -245,3 +245,83 @@ full Game worlds remain cache-only. Exact identities, failures, counts and scope
 are retained in [the compact validation record](../evidence/2026-10-29-engine-stability/ui06-scalar-sdk10-long-validation.json).
 The browser result combines the scalar Game variant and SDK10; the same-Game
 SDK9/SDK10 comparator deliberately rejects their differing script hashes.
+
+## Shared decoded images and explicit Web startup working sets
+
+The official Web player now shares one decoded-image broker across world
+textures, Canvas UI and the cursor. Consumers own leases; GPU textures remain
+renderer-owned. Successful PNG header probes drain to EOF instead of cancelling
+the response, which had produced real browser `ERR_ABORTED` events. Unused
+decoded images have a bounded LRU; active and scene leases are never evicted.
+An oversized unused image is retired before it can displace smaller reusable
+entries.
+
+An authored `player.image-assets.json` declares groups and an explicit startup
+working set. Required images are admitted before automatic scene sprites under
+one decoded-image plan budget and must all decode before Core/READY. Scene-only
+preparation may remain partial. The engine does not infer Game-specific IDs,
+create hidden entities or preload the entire manifest. The SDK-indexed publisher
+validates the source project and sealed official export, preserves project host
+adapters, and emits a fresh generation using the engine's tuple hash. CLI10
+does not apply the sidecar automatically; use the documented publisher after
+normal host finalization. See [the contract](../web-image-assets.md).
+
+Source and Node validation passed at `ab8941b`; `f054a62` also preserves the
+earlier broker ownership guidance. The complete Web/tool suite reported
+637 passes, no failures and three existing optional skips out of 640 tests.
+SDK14 retains the exact verified SDK10 CLI, UI package and both runtime images;
+all 148 indexed files were verified. It includes the new host and indexed
+publisher/documentation, not the build-blocked fused-copy Runtime11. Independent
+source review closed the bounded reader, config projection, scene identity,
+plan allocation, required-format and HTML metadata findings. Claude's separate
+60-second attempt produced no response and remains incomplete.
+
+The emitted official SDK14 player passed nine lifecycle phases on both main
+and worker backends, including required PNG decoding before READY, retained
+publication and context recovery. This fixture establishes functional host
+behavior, not seven-scene FPS or leak-free operation. Source/package evidence
+and actual-player evidence are recorded separately in
+[source and SDK validation](../evidence/2026-10-29-engine-stability/image-preload-source-and-sdk14-validation.json)
+and [official-player smoke](../evidence/2026-10-29-engine-stability/image-preload-official-web-smoke.json).
+The [current handoff](../evidence/2026-10-29-engine-stability/retained-web-sdk-handoff.json)
+tracks the authorized Product integration and subsequent same-artifact
+performance, natural GC and repeated inventory lifecycle acceptance.
+
+### Incremental GPU image ownership and current acceptance
+
+The frozen Game6073 SDK16 eight-case run passed six cadence gates. Inventory
+also passed its 60-second cadence gate at about 60.003 fresh submissions/s;
+idle failed after a single 66.6 ms RAF gap. Its prior synchronous submission
+took 68.4 ms. These are measured failures and bounded successes, not release
+readiness: the original completion-end diagnostics and nominal phase overruns
+remain recorded. The machine continued other project work as authorized.
+
+Around the idle stall, only the Canvas UI asset `brawler` disappeared, while
+four GPU-prefix geometries, the shared material and nineteen textures were
+disposed and recreated. Broker and world-cache counters stayed stable. Canvas
+was globally clearing the prefix when any UI image retired, including images
+used only by Canvas. SDK17 gives the prefix independent ready-image leases and
+retires unused GPU owners incrementally. Surviving resources retain their
+identities. This is a reusable presentation primitive; no Game rule, asset ID,
+idle-cache budget, renderer, scheduler or acceptance gate was changed.
+
+At `310aea1`, fourteen new real-broker/Canvas/prefix regressions cover owner
+identity and failure cleanup. The full Web/tool suite passed 663 of 666 tests
+with three existing skips. SDK17's 148 indexed files were hash-verified and
+retain the exact SDK10 CLI, WASM and compiled UI package. Its emitted official
+player passed nine phases on each of main and worker, with required PNG decode
+before READY, retained pixels and context recovery. Same-Game performance is
+being measured separately; a passing functional fixture is not a 60 FPS result.
+See [source/package review](../evidence/2026-10-29-engine-stability/image-handoff-sdk17-source-resolution.json)
+and [actual official-player smoke](../evidence/2026-10-29-engine-stability/image-handoff-sdk17-official-web-smoke.json).
+
+The exact Game6073 SDK16 natural 45-second idle/inventory windows kept WASM
+capacity fixed at 29,097,984 bytes. One hundred inventory open/close cycles
+kept broker and renderer ownership bounded, but performed 300 image reloads and
+accumulated 1,800 additional CDP DOM nodes. Two separate intrusive V8 GC
+commands reclaimed JavaScript heap without reducing those node counts. The
+natural result was sealed before those commands and remained byte-identical.
+Neither collector event counts nor persistent native-node counts alone prove
+whole-cycle frequency or a memory leak verdict. This unresolved reclamation
+question and the same-artifact SDK17 follow-up remain explicit in
+[the SDK16 memory record](../evidence/2026-10-29-engine-stability/sdk16-game6073-main-memory-cycles.json).

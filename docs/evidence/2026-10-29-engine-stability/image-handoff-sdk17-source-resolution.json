@@ -1,0 +1,352 @@
+{
+  "schema": "unone.sdk17.image-handoff.source-resolution.v1",
+  "status": "bounded-source-and-Node-package-gates-cleared; actual-game-FPS-memory-resource-acceptance-pending",
+  "scope": {
+    "base_revision": "ed0e70278b5305f57c18e0afac84e8d48644a58d",
+    "reviewed_revision": "310aea1d23182a62446a793b1f08b2398afcae32",
+    "production_files": [
+      "web/shared/canvas-ui.mjs",
+      "web/renderer/ui-image-batch-prefix.js"
+    ],
+    "regression_file": "web/shared/canvas-ui-prefix-image-ownership.test.mjs",
+    "documentation": "docs/web-image-assets.md",
+    "reusable_primitive": "GPU image texture ownership and incremental UI resource retirement; no Game rules/asset-name selection, renderer replacement, new pool budget or new Core API.",
+    "unchanged": "Shader/pixel-snap/crop/clip/order/depth policy, cursor, resize, scene preparation and broker budget policies remain unchanged. CLI/WASM10 and the original compiled UI0.6 are reused; no fused-copy runtime build is claimed.",
+    "extraction": "This record reads existing fixed source-review, small JSON and raw Node logs only. No browser, test, package/build, memory or FPS workload was run by its independent reviewer."
+  },
+  "trigger_and_correction": {
+    "trigger": "Removing an actor image or Canvas-only image previously caused Canvas to clear the whole accelerated prefix before releasing that image. Unrelated surviving geometries/material/textures were unnecessarily disposed and recreated.",
+    "ownership": "Each GPU texture now acquires its own synchronous ready broker lease and verifies the exact same decoded-image identity. It retains the lease until that texture is incrementally removed, cleared, invalidated/context-retired or disposed.",
+    "retirement": "GPU texture disposal precedes release of its own decoded-image lease. Canvas can release its separate CPU consumer without closing pixels still owned by the GPU.",
+    "compatibility": "Canvas skips the old global clear only when it has acquireAsset AND the presenter explicitly advertises ownsImageLeases===true. Borrowed/custom legacy paths retain their prior clear-before-final-CPU-release behavior.",
+    "performance_limit": "Preserving source/resource identity avoids the demonstrated overclear path. Source/Node counters do not establish actual browser frame timing or eliminate genuinely capacity-driven cold loads."
+  },
+  "independent_codex_review": {
+    "reviewer": "/root/native_performance",
+    "mode": "read-only source/diff/test inspection, including successive draft failure paths",
+    "final_disposition": "CLEAR: no remaining concrete P1/P2 found in the bounded final-r5 source at310aea1.",
+    "source_artifact_hashes": {
+      "canvas": "36817d4636d7790d952065e0f3e41937dd545938366c22dfad7cbf95c1e5b990",
+      "prefix": "aee247d737f4e5536d916a2f022af2a5a87429eba6a8b7c4889c13a29aea281c",
+      "regressions": "94ad462cef6d0bc838dee489b1bc6a5fc825c66dff9fb1f7bbeec460efc37f31"
+    },
+    "findings_closed": [
+      {
+        "finding": "A first ready GPU image could acquire a texture/lease, then a later asset admission or geometry-construction error left the newly created owner cached without a committed resource.",
+        "resolution": "Created image entries and borrowed-to-owned lease upgrades are staged and rolled back in reverse on preparation failure. Pending/mismatched leases and texture-construction failure also release their acquisition."
+      },
+      {
+        "finding": "A resource written successfully before a later resource failed could retain sources/groups/instance data pointing to a disposed rolled-back texture.",
+        "resolution": "Failure-only successfully touched resources are removed from every cache key and referencing instance; each geometry is freed once and its sources/groups cleared before image rollback. Untouched committed resources remain reusable. Resource fast paths additionally verify the imageMap owns the actual source texture, including borrowed legacy retry."
+      }
+    ],
+    "reviewed_boundaries": [
+      "Actor removal preserves surviving mesh/geometry/material/texture identities and authored group order.",
+      "Canvas-only image removal does not clear unrelated GPU resources.",
+      "Ready, pending, identity-mismatched and constructor-error acquisitions have explicit ownership paths.",
+      "Callback throw/reentrancy/disposal preserve current ownership or clean it up.",
+      "Context retirement, restore, invalidation and final disposal retire GPU texture before its independent image lease.",
+      "Second-asset and later-resource failures preserve untouched committed A/C while purging inconsistent touched records.",
+      "Broker-owned and borrowed retries recreate fresh rolled-back textures while retaining unrelated survivor identities."
+    ],
+    "limit": "This is failure cleanup/ownership consistency, not a full pixel-atomic or arbitrary-OOM rollback guarantee. No root cause for prior persistent native DOM counts is inferred."
+  },
+  "tests": {
+    "meaningful_new_cases": 14,
+    "new_case_coverage": [
+      "Single actor removal uses incremental retirement and preserves survivor identities/build counts.",
+      "Canvas-only artwork removal preserves unrelated accelerated resources.",
+      "Callback failure can release Canvas ownership while GPU ownership preserves pixels until sweep.",
+      "Reentrant recovery preserves the latest prefix owners.",
+      "Callback disposal releases every prefix image lease.",
+      "Context retirement/restore and Canvas invalidation preserve dispose-before-release order.",
+      "Pending GPU image admission rolls back its new lease.",
+      "Different decoded-image identity is rejected and released.",
+      "Texture-constructor error releases its acquisition.",
+      "Failed replacement admission keeps the previous still-valid geometry registered.",
+      "Second-asset failure rolls back earlier new texture admission while preserving old committed owners.",
+      "Geometry allocation failure after texture acquisition rolls back those owners.",
+      "Later-resource failure purges touched broker-owned records and cleanly retries.",
+      "Later-resource failure purges touched borrowed records and cleanly retries without disposed texture reuse."
+    ],
+    "negative_old_overclear": {
+      "baseline": "ed0e70278b5305f57c18e0afac84e8d48644a58d",
+      "status": "expected-overclear-reproduced",
+      "failed_regressions": 2,
+      "exit_code": 1,
+      "private_copy_only": true,
+      "scope": "Two targeted negative regressions reproduce old actor/Canvas-only overclear. The later failure-staging findings were independently source-confirmed and receive positive corrected regressions; no separate pre-fix negative staging run is invented.",
+      "raw_result": {
+        "path": ".cache/image-prefix-owner17-negative/result.json",
+        "bytes": 767,
+        "sha256": "529e7e7af1028d8ec3d373f0c696c6ba32fb4368715de0c80efab807714c5cc7"
+      },
+      "raw_stdout": {
+        "path": ".cache/image-prefix-owner17-negative/tests.stdout.log",
+        "bytes": 1935,
+        "sha256": "71234195f0cf9577c96c8af46b877bf43d1bc524ce12b51c4fc91f43dcf0be7d"
+      },
+      "raw_stderr": {
+        "path": ".cache/image-prefix-owner17-negative/tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "focused": {
+      "log": ".cache/image-prefix-owner17-focused-r5.log",
+      "tests": 51,
+      "new_integration_tests": 14,
+      "pass": 51,
+      "fail": 0,
+      "scope": "Actual Canvas, broker and prefix with real Three classes and mock GPU renderer; ownership/order/crop buffers and error/retry lifecycle, not browser pixels or timing",
+      "skipped": 0,
+      "duration_ms": 186.626,
+      "raw": {
+        "path": ".cache/image-prefix-owner17-focused-r5.log",
+        "bytes": 5573,
+        "sha256": "cfa974d76ab54d883a929b3565a12265bc3d179c7fc2c84f6ae898a3c54ae8e7"
+      }
+    },
+    "final_full_node": {
+      "log": ".cache/shared-image-host17-final-r5-full-web-tests.log",
+      "cancelled": 0,
+      "fail": 0,
+      "command": "node --test @taskTests",
+      "todo": 0,
+      "file_list": ".cache/shared-image-host17-final-r5-web-test-files.txt",
+      "skipped": 3,
+      "tests": 666,
+      "pass": 663,
+      "enumeration": "rg --files web scripts -g '*.test.mjs' | Sort-Object",
+      "file_count": 113,
+      "duration_ms": 12117.3274,
+      "raw": {
+        "path": ".cache/shared-image-host17-final-r5-full-web-tests.log",
+        "bytes": 68421,
+        "sha256": "5913b402d1be8881f7eec2896da93aaa272ed210c3c0c065f1ed8bf1fa81249e"
+      },
+      "file_list_record": {
+        "path": ".cache/shared-image-host17-final-r5-web-test-files.txt",
+        "bytes": 4652,
+        "sha256": "f1b674894249989ae8c0f68d5244b13f1c4ef99206c7fcf5d4dd7c8b7db5e4e6"
+      }
+    },
+    "superseded": {
+      "log": ".cache/shared-image-host17-full-web-tests.log",
+      "tests": 662,
+      "reason": "Pre-failure-staging correction; not final source validation",
+      "scope": "Earlier662/659pass3skip predates final failure-staging corrections; it is not final source validation."
+    },
+    "raw_summary": {
+      "path": ".cache/shared-image-host17-web-tests-summary.json",
+      "bytes": 1838,
+      "sha256": "94af7d1f740c3c003a85a48fd95f1311f00404ed90dde367d88b184ab2df0164"
+    },
+    "execution_scope": "Actual Canvas and broker plus prefix using real Three classes and a mock renderer; validates data/crop/order/ownership and lifecycle, not emitted-browser pixels or GPU timing. Full Node666 means663passed+3existing skipped, not666passes."
+  },
+  "sdk17_package": {
+    "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host",
+    "sdk_manifest_sha256": "e4e3cda7c095298e7bfbfe266a49a6f514f57541516703ed5b2ee71dc85b9d01",
+    "host_source_commit": "310aea1d23182a62446a793b1f08b2398afcae32",
+    "host_source_dirty": false,
+    "packaged_source_scope_clean": true,
+    "global_worktree_dirty": true,
+    "inventory_files": 148,
+    "inventory_bytes": 61273522,
+    "complete_inventory_verified": true,
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "original_compiled_ui06_source_sha256": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+        "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      },
+      {
+        "id": "web-development-1",
+        "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+        "runtime_manifest_sha256": "5ddccf3b045430cf06609a3a932d9960f4a218fa74e1746752a96580dd3fb60e",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      }
+    ],
+    "sdk16_to_sdk17": {
+      "status": "passed",
+      "changed_indexed_files": [
+        {
+          "path": "docs/web-image-assets.md",
+          "before": {
+            "path": "docs/web-image-assets.md",
+            "bytes": 13090,
+            "sha256": "f7769423638941bbe5a857a6a0a5d932d3b88f40332c0de86a509c37fcd52823"
+          },
+          "after": {
+            "path": "docs/web-image-assets.md",
+            "bytes": 14151,
+            "sha256": "3d72cbcc4ceab02606db3fd773b1614380d6949a1f8c3f788016237613cc9461"
+          }
+        },
+        {
+          "path": "templates/web/renderer/ui-image-batch-prefix.js",
+          "before": {
+            "path": "templates/web/renderer/ui-image-batch-prefix.js",
+            "bytes": 14979,
+            "sha256": "1b45068c4e77b578f6d5f6f30d626de05d4e9d9e0823d91ff2687170822219b3"
+          },
+          "after": {
+            "path": "templates/web/renderer/ui-image-batch-prefix.js",
+            "bytes": 17107,
+            "sha256": "aee247d737f4e5536d916a2f022af2a5a87429eba6a8b7c4889c13a29aea281c"
+          }
+        },
+        {
+          "path": "templates/web/shared/canvas-ui.mjs",
+          "before": {
+            "path": "templates/web/shared/canvas-ui.mjs",
+            "bytes": 25860,
+            "sha256": "f15459cdadd40734751b9031de7ea42e66c775bf578047399294c881b0a530fb"
+          },
+          "after": {
+            "path": "templates/web/shared/canvas-ui.mjs",
+            "bytes": 25960,
+            "sha256": "36817d4636d7790d952065e0f3e41937dd545938366c22dfad7cbf95c1e5b990"
+          }
+        }
+      ],
+      "unchanged_indexed_files": 145,
+      "scope": "SDK16 to SDK17 indexed file comparison: Canvas capability-gated incremental image release, prefix-owned decoded-image leases with failure staging cleanup, and ownership documentation only. All other indexed file bytes/hashes unchanged; sdk.json metadata differs as expected."
+    },
+    "commands": [
+      {
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/bin/game.exe",
+        "args": [
+          "--json",
+          "sdk",
+          "pack",
+          "--source-root",
+          "D:/Projects/Unone/artifacts/web-shared-images-20261030-template-checkpoint17",
+          "--runtime",
+          "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/runtimes/web-production-0",
+          "--runtime",
+          "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/runtimes/web-development-1",
+          "--output",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host"
+        ],
+        "exit_code": 0,
+        "error": null
+      },
+      {
+        "command": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/bin/game.exe",
+        "args": [
+          "--sdk",
+          "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host",
+          "--json",
+          "sdk",
+          "inspect"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "raw_package": {
+      "path": ".cache/shared-image-host17-pack/result.json",
+      "bytes": 4164,
+      "sha256": "fb45a5f54807aaf2e981ec0e933af21e8f7c00b4256019b03a66e7570ccf77a2"
+    },
+    "raw_delta": {
+      "path": ".cache/shared-image-host17-pack/sdk16-to17-delta.json",
+      "bytes": 1711,
+      "sha256": "5112753c0efcb3e304edc8c262b7850ff7381162a0a06f2634cedb8cc6d180dc"
+    },
+    "limit": "Official CLI10 sdk inspect and full inventory verification establish package identity only. The148indexed files total61273522bytes; exactly two caller/prefix templates plus ownership documentation differ from SDK16, other145indexed files are identical. sdk.json metadata changes as expected."
+  },
+  "bounded_claude_attempt": {
+    "status": "timed-out-incomplete",
+    "review_completed": false,
+    "base_revision": "ed0e70278b5305f57c18e0afac84e8d48644a58d",
+    "reviewed_revision": "310aea1d23182a62446a793b1f08b2398afcae32",
+    "version": "2.1.308 (Claude Code)",
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 60000,
+    "elapsed_ms": 60292.9239,
+    "exit_code": 1,
+    "timed_out": true,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "fixed_diff_sha256": "68c75e61bd5a3b6235d5d8f5eae1e7d3a26e95bed8ef93a9238b5433b2f49f89",
+    "prompt_sha256": "f425aeea5598388dc90bbfcfa3169717149bcf73551bb735a1b1662f90b88029",
+    "prompt_bytes": 130280,
+    "paths": [
+      {
+        "path": "web/shared/canvas-ui.mjs",
+        "bytes": 25677,
+        "sha256": "0672c2bb8c190aedab7ca535355834f396646918f3c9766f46d01addd3c36849"
+      },
+      {
+        "path": "web/renderer/ui-image-batch-prefix.js",
+        "bytes": 17107,
+        "sha256": "aee247d737f4e5536d916a2f022af2a5a87429eba6a8b7c4889c13a29aea281c"
+      },
+      {
+        "path": "docs/web-image-assets.md",
+        "bytes": 14151,
+        "sha256": "3d72cbcc4ceab02606db3fd773b1614380d6949a1f8c3f788016237613cc9461"
+      },
+      {
+        "path": "web/shared/canvas-ui-prefix-image-ownership.test.mjs",
+        "bytes": 19027,
+        "sha256": "94ad462cef6d0bc838dee489b1bc6a5fc825c66dff9fb1f7bbeec460efc37f31"
+      }
+    ],
+    "raw_result": {
+      "path": ".cache/image-handoff-sdk17-claude-review-20261030-r1/result.json",
+      "bytes": 2730,
+      "sha256": "3c01984e6ebf2c6ab316dc03647c3cc6f921732237cee98abab89fa95a9f7f3a"
+    },
+    "raw_command": {
+      "path": ".cache/image-handoff-sdk17-claude-review-20261030-r1/command.json",
+      "bytes": 1925,
+      "sha256": "a1076e4bc3924e5b583d89742458e1960ca858a508f1d761972ef574315e4a70"
+    },
+    "raw_stdout": {
+      "path": ".cache/image-handoff-sdk17-claude-review-20261030-r1/review.stdout.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "raw_stderr": {
+      "path": ".cache/image-handoff-sdk17-claude-review-20261030-r1/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "disposition": "INCOMPLETE: the one60-second source-only attempt timed out with zero output. It is not a completed Claude review and is separate from the final independent Codex CLEAR. No retry was made by this reviewer."
+  },
+  "acceptance_limits": [
+    "SDK17 source/Node/package validation is not actual selected-game resource-churn, DOM/heap/native reachability, natural GC or long-window FPS acceptance.",
+    "Root separately reported a clean small official main/worker functional smoke; this source-only compact does not turn that smoke into game FPS/pixel/memory acceptance.",
+    "Independent source review ran no workloads. Author/Root Node and package evidence are attributed separately above.",
+    "No leak-free, GC-free or persistent-DOM-root-cause conclusion is claimed. Existing natural and forced-control baselines remain separate and unchanged.",
+    "No Game source/data/save/server/export, existing handoff/issue/review-process file, compiled Core or runtime selection was changed by this evidence extraction."
+  ]
+}

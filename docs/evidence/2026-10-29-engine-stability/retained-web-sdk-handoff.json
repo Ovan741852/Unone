@@ -1,305 +1,1222 @@
 {
-  "schema": "unone.retained-web-sdk-handoff.v4",
+  "schema": "unone.retained-web-sdk-handoff.v7",
   "date": "2026-10-30",
-  "status": "SDK10 functional validation passed; prior60s inventory variants FAILED; reconciled GameC canonical validation passed; current Web FPS/memory acceptance awaits authorized local server",
-  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10",
-  "sdk_manifest_sha256": "2c8c09b65214802fb023eb97821f2198e0f9776bee5daf65cc397848acab8f64",
-  "engine_version": "0.2.0",
-  "runtime_package": "@unone/ui@0.6.0",
-  "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
-  "runtime_id": "web-production-0",
-  "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
-  "runtime_profile": "release opt2; no developer/phase/sampling hooks",
-  "production": {
-    "wasm": "unone_player.wasm",
-    "runtime_packages": {
-      "@unone/ui": "0.6.0"
-    },
-    "wasm_bytes": 3371104,
-    "bytecode_optimization_level": 2,
-    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
-    "compiled_systems": [
-      "audio",
-      "camera2d",
-      "camera3d",
-      "input",
-      "observation",
-      "particle",
-      "random",
-      "save",
-      "ui",
-      "world"
-    ],
-    "sampling_profile": false,
-    "profile": "release",
-    "javascript": "unone-player.js",
-    "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
-    "preview_tools": false,
-    "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
-    "cargo_features": [
-      "audio",
-      "camera2d",
-      "camera3d",
-      "particle",
-      "random",
-      "save",
-      "ui"
-    ],
-    "source_dirty": false,
-    "dev_tools": false,
-    "phase_profile": false,
-    "profile_mode": "none",
-    "exports": [
-      "init",
-      "alloc",
-      "load_project",
-      "unload_project",
-      "set_save_payload",
-      "set_input_frame",
-      "set_viewport_aspect",
-      "set_viewport_size",
-      "set_instance_transport",
-      "set_ui_transport",
-      "tick",
-      "ui_request",
-      "jobs_request",
-      "jobs_binary",
-      "spatial_request",
-      "host_time_request",
-      "observation_ptr",
-      "observation_len",
-      "particle_alloc",
-      "particle_sample",
-      "particle_output_ptr",
-      "particle_output_len"
-    ]
-  },
-  "development": {
-    "compiled_systems": [
-      "audio",
-      "camera2d",
-      "camera3d",
-      "input",
-      "observation",
-      "particle",
-      "random",
-      "save",
-      "ui",
-      "world"
-    ],
-    "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
-    "wasm_bytes": 3697974,
-    "profile_mode": "development-vm",
-    "profile": "release",
-    "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
-    "cargo_features": [
-      "audio",
-      "camera2d",
-      "camera3d",
-      "particle",
-      "random",
-      "save",
-      "ui",
-      "preview-tools"
-    ],
-    "sampling_profile": false,
-    "exports": [
-      "init",
-      "alloc",
-      "load_project",
-      "unload_project",
-      "set_save_payload",
-      "set_input_frame",
-      "set_viewport_aspect",
-      "set_viewport_size",
-      "set_instance_transport",
-      "set_ui_transport",
-      "tick",
-      "ui_request",
-      "jobs_request",
-      "jobs_binary",
-      "spatial_request",
-      "host_time_request",
-      "observation_ptr",
-      "observation_len",
-      "developer_request",
-      "particle_alloc",
-      "particle_sample",
-      "particle_output_ptr",
-      "particle_output_len"
-    ],
-    "wasm": "unone_player.wasm",
-    "preview_tools": true,
-    "runtime_packages": {
-      "@unone/ui": "0.6.0"
-    },
-    "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
-    "dev_tools": false,
-    "javascript": "unone-player.js",
-    "phase_profile": false,
-    "bytecode_optimization_level": 1,
-    "source_dirty": false
-  },
-  "provenance": {
-    "source": "eb2459c91c0998eac3c75fca066638a647300fec",
-    "source_dirty": false,
-    "template_checkpoint": "D:/Projects/Unone/artifacts/web-retained-20261030-template-checkpoint10",
-    "indexed_files_verified": 146,
-    "web_template_fingerprints_verified": 100
-  },
-  "api": {
-    "ownership": "Ordinary @unone/ui constructor values are deeply immutable. Update callers to build before construction or use explicit shallow COW; borrowed builder inputs remain detached. Stateful controls and virtual live handles retain their narrow lifecycle rules.",
-    "retained_artwork": "Engine-owned logical imageBatch definitions plus immutable generations and placement instances. No Game GPU/context/renderer lifetime code.",
-    "unchanged_ui": "Private encoded UI generation <=64MiB; exact canonical digest unchanged. Larger valid UI stays inline. Official readers/workers/projectors/renderers retain decoded immutable data; callers provide no dirty IDs.",
-    "input": "api.input.hasPressedActions() remains non-consuming O(1); gate only discrete scanners, preserve held/slider/text/pointer/release behavior."
-  },
-  "verification": {
-    "actual_wasm_ui_ownership": 17,
-    "actual_wasm_ui_wire": 16,
-    "unchanged_tick_identity": 120,
-    "official_smoke": [
+  "status": "SDK17 source, Node, inventory and actual official main/worker lifecycle passed; Game6073 SDK17 FPS and memory acceptance in progress. Prior SDK16 short6/8,60s inventory pass/idle fail and unresolved native-node reclamation are retained.",
+  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host",
+  "sdk_manifest_sha256": "e4e3cda7c095298e7bfbfe266a49a6f514f57541516703ed5b2ee71dc85b9d01",
+  "host_source_commit": "310aea1d23182a62446a793b1f08b2398afcae32",
+  "core": {
+    "selection": "Unchanged verified SDK10",
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "runtime_package": "@unone/ui@0.6.0",
+    "package_source_sha256": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "runtimes": [
       {
-        "backend": "main",
-        "ok": true,
-        "phases": 9
+        "id": "web-production-0",
+        "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+        "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
       },
       {
-        "backend": "worker",
-        "ok": true,
-        "phases": 9
+        "id": "web-development-1",
+        "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+        "runtime_manifest_sha256": "5ddccf3b045430cf06609a3a932d9960f4a218fa74e1746752a96580dd3fb60e",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
       }
     ],
-    "packed_cli": "Matching standard release CLI10 executed canonical refresh and strict0.734 fixture typecheck.",
-    "game_fixed_replay": "439 checkpoints: full values + sorted-object-key JSON + raw Core digest equal between production9/10. JS object field insertion order changes when UI is reattached; no values/array order ignored.",
-    "source_tests": "Rust20 ABI +1 developer reload; Web564 pass/2 optional shader skips; enabled/disabled export closure1 pass."
+    "fused_copy_runtime_built": false
   },
-  "game_acceptance": {
-    "source": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
-    "artifact": "D:/Projects/Unone/artifacts/jy-ui06-migrated-sdk10-production-20261030-r2",
-    "scope": "Official renderer plus the existing Game wheel adapter and16:9 host postprocess. Frozen isolated ownership migration; Product Game remains unchanged.",
-    "seven_short_cases": {
-      "passed": true,
-      "seconds_each": 10,
-      "raf_fps": [
-        {
-          "name": "idle",
-          "fps": 59.99100134979753,
-          "dropped": 0,
-          "passed": true
-        },
-        {
-          "name": "drag",
-          "fps": 60.029765174459634,
-          "dropped": 0,
-          "passed": true
-        },
-        {
-          "name": "travel",
-          "fps": 60.02077257990832,
-          "dropped": 0,
-          "passed": true
-        },
-        {
-          "name": "travel-card",
-          "fps": 60.009385827257766,
-          "dropped": 0,
-          "passed": true
-        },
-        {
-          "name": "inventory",
-          "fps": 60.00698916679148,
-          "dropped": 0,
-          "passed": true
-        },
-        {
-          "name": "atlas",
-          "fps": 60.020173169970136,
-          "dropped": 0,
-          "passed": true
-        },
-        {
-          "name": "battle",
-          "fps": 60.017775647077315,
-          "dropped": 0,
-          "passed": true
-        }
+  "ownership": {
+    "ordinary_ui": "Immutable UI0.6 values and retained UI publication",
+    "images": "One catalog-scoped decoded-image broker. World, Canvas UI, GPU prefix and cursor hold independent pixel leases. GPU textures/resources remain renderer-local and retire incrementally; losing a Canvas-only asset does not rebuild surviving prefix resources.",
+    "preload": "Project-authored startup groups must fully decode before Core/READY. Automatic scene sprites share the plan budget and remain best effort.",
+    "publisher": "SDK-indexed offline tool emits a fresh sealed official-player export after normal project finalization. No Game-owned renderer or hidden entities."
+  },
+  "validation": {
+    "full_node": {
+      "tests": 666,
+      "pass": 663,
+      "fail": 0,
+      "skipped": 3,
+      "cancelled": 0,
+      "todo": 0,
+      "file_count": 113,
+      "file_list": ".cache/shared-image-host17-final-r5-web-test-files.txt",
+      "log": ".cache/shared-image-host17-final-r5-full-web-tests.log",
+      "enumeration": "rg --files web scripts -g '*.test.mjs' | Sort-Object",
+      "command": "node --test @taskTests"
+    },
+    "inventory": {
+      "files": 148,
+      "bytes": 61273522,
+      "all_hashes_verified": true,
+      "pack": ".cache/shared-image-host17-pack/result.json",
+      "delta_from_sdk16": ".cache/shared-image-host17-pack/sdk16-to17-delta.json",
+      "unchanged_files_from_sdk16": 145,
+      "changed_files_from_sdk16": [
+        "templates/web/shared/canvas-ui.mjs",
+        "templates/web/renderer/ui-image-batch-prefix.js",
+        "docs/web-image-assets.md"
       ]
     },
-    "inventory_long_soak": {
-      "passed": false,
-      "seconds": 60,
-      "raf_fps": 32.01711133027205,
-      "simulation_fps": 58.80353953998977,
-      "dropped": 71,
-      "raw": "D:/Projects/Unone/.cache/jy-ui06-sdk10-inventory-soak-run1/result.json"
+    "official_functional": {
+      "passed": true,
+      "backends": [
+        "main",
+        "worker"
+      ],
+      "phases_per_backend": 9,
+      "required_png_ready_before_ready": true,
+      "raw": "artifacts/retained-official-web-preload-smoke-candidate17/report.json",
+      "record": "image-handoff-sdk17-official-web-smoke.json",
+      "scope": "Actual SDK17 official fixture lifecycle/pixels/context recovery. Not Game6073 FPS, physical scanout or leak-free proof."
     },
-    "late_diagnosis": "Actual opt2 Sampler9 fixed3600tick replay reproduces tick median11.17→22.80ms. Lua allocated boundary14.4–18.2MB and UI size stay bounded; added hot work is Game WorldRepository full RLE page decoding from worldPeople→terrain. This is not a confirmed weak-registry leak. A separate bounded immutable scalar lookup is being fixed in isolated Game Luau, without moving NPC rules into Rust."
+    "source_review": "image-handoff-sdk17-source-resolution.json",
+    "fps": {
+      "current_pass": false,
+      "prior_a_sdk14_main": {
+        "passed": 6,
+        "cases": 8,
+        "source": "2a16dd4713286e0e8420373246de1ce393d066bc193618bca1a5648a31743ab8",
+        "owner_evidence": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk14-integrated-eight-short-r2"
+      },
+      "prior_a_sdk14_worker": {
+        "passed": 1,
+        "cases": 8,
+        "source": "2a16dd4713286e0e8420373246de1ce393d066bc193618bca1a5648a31743ab8",
+        "owner_evidence": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk14-worker-eight-short-r2"
+      },
+      "prior_b_sdk15_main": {
+        "passed": 6,
+        "cases": 8,
+        "source": "48dffba0afa20f85bee9ee7e49d3e1e0d859a72e65e120eb729f16f9fce68a69",
+        "note": "Health/assets clean after shadow preload; travel-card and inventory-travel retained33ms cadence failures. Owner report, not yet independently summarized here."
+      },
+      "selected_backend": "main",
+      "final_source_and_sdk16": "Measured: short6/8;60s inventory passes cadence gate, idle fails at66.6ms gap; releaseReady false for both runs, legacy completion-end diagnostics remain open.",
+      "prior_final_game6073_sdk16": [
+        {
+          "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk16-integrated-eight-short/result.json",
+          "bytes": 2846399,
+          "sha256": "639faf0664540e5206cb7917482d3e410b688a7ae4cb8c85961628d2ba6b8789",
+          "measured_successfully": true,
+          "target60_passed": false,
+          "release_ready": false,
+          "analysis_version": "official-browser-benchmark.gates.v4-raf-linked-v1.overlay-cases.inventory-travel",
+          "benchmark_sha256": "bf61d7b614621332a2a9d189f4dfd20de50ca7cfa3b4012b92a0ec330d04c50f",
+          "analysis_sha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "seconds": 10,
+          "viewport": {
+            "width": 1600,
+            "height": 900
+          },
+          "profiling": false,
+          "results": [
+            {
+              "name": "idle",
+              "passed": true,
+              "rates": {
+                "wallSeconds": 10.003100000023842,
+                "rafCallbacks": 600,
+                "rafFps": 59.98140576407013,
+                "simulationFrames": 600,
+                "simulationFps": 59.98140576407013,
+                "simulationSeconds": 10,
+                "simulationToWall": 0.9996900960678355,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 599,
+                "p50": 16.69999999999891,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000109,
+                "min": 16.399999999999636,
+                "max": 17,
+                "mean": 16.66727879799665
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": true,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": true,
+                "status": "pass"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "drag",
+              "passed": true,
+              "rates": {
+                "wallSeconds": 10.006,
+                "rafCallbacks": 600,
+                "rafFps": 59.96402158704777,
+                "simulationFrames": 600,
+                "simulationFps": 59.96402158704777,
+                "simulationSeconds": 10,
+                "simulationToWall": 0.9994003597841296,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 599,
+                "p50": 16.69999999999891,
+                "p95": 16.800000000000182,
+                "p99": 16.80000000000109,
+                "min": 16.5,
+                "max": 16.900000000000546,
+                "mean": 16.667111853088453
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 1,
+                "after": 1,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": true,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": true,
+                "status": "pass"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "travel",
+              "passed": false,
+              "rates": {
+                "wallSeconds": 10.011299999952316,
+                "rafCallbacks": 600,
+                "rafFps": 59.93227652780936,
+                "simulationFrames": 601,
+                "simulationFps": 60.03216365535571,
+                "simulationSeconds": 10.016666666666666,
+                "simulationToWall": 1.000536060922595,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 599,
+                "p50": 16.69999999999891,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000109,
+                "min": 16.5,
+                "max": 33.20000000000073,
+                "mean": 16.694824707846404
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 4,
+                "after": 4,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": false,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": false,
+                "status": "fail"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "travel-card",
+              "passed": true,
+              "rates": {
+                "wallSeconds": 10.011,
+                "rafCallbacks": 601,
+                "rafFps": 60.0339626410948,
+                "simulationFrames": 601,
+                "simulationFps": 60.0339626410948,
+                "simulationSeconds": 10.016666666666666,
+                "simulationToWall": 1.0005660440182467,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 600,
+                "p50": 16.69999999999891,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000109,
+                "min": 16.399999999999636,
+                "max": 16.900000000000546,
+                "mean": 16.66716666666666
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 9,
+                "after": 9,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": true,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": true,
+                "status": "pass"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "inventory",
+              "passed": true,
+              "rates": {
+                "wallSeconds": 10.0035,
+                "rafCallbacks": 600,
+                "rafFps": 59.97900734742839,
+                "simulationFrames": 600,
+                "simulationFps": 59.97900734742839,
+                "simulationSeconds": 10,
+                "simulationToWall": 0.9996501224571399,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 599,
+                "p50": 16.69999999999891,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000109,
+                "min": 16.5,
+                "max": 16.899999999999636,
+                "mean": 16.667111853088457
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 1,
+                "after": 1,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": true,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": true,
+                "status": "pass"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "inventory-travel",
+              "passed": false,
+              "rates": {
+                "wallSeconds": 10.014800000071526,
+                "rafCallbacks": 599,
+                "rafFps": 59.81147901063645,
+                "simulationFrames": 601,
+                "simulationFps": 60.01118344806763,
+                "simulationSeconds": 10.016666666666666,
+                "simulationToWall": 1.000186390801127,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 598,
+                "p50": 16.69999999999891,
+                "p95": 16.800000000000182,
+                "p99": 16.80000000000109,
+                "min": 16.5,
+                "max": 33.30000000000018,
+                "mean": 16.72290969899664
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 12,
+                "after": 12,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": false,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": false,
+                "status": "fail"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "atlas",
+              "passed": true,
+              "rates": {
+                "wallSeconds": 10.008400000095367,
+                "rafCallbacks": 601,
+                "rafFps": 60.04955837039619,
+                "simulationFrames": 601,
+                "simulationFps": 60.04955837039619,
+                "simulationSeconds": 10.016666666666666,
+                "simulationToWall": 1.0008259728399365,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 600,
+                "p50": 16.69999999999891,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000109,
+                "min": 16.5,
+                "max": 16.80000000000109,
+                "mean": 16.667166666666652
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": true,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": true,
+                "status": "pass"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "battle",
+              "passed": true,
+              "rates": {
+                "wallSeconds": 10.010300000071526,
+                "rafCallbacks": 601,
+                "rafFps": 60.0381606940557,
+                "simulationFrames": 601,
+                "simulationFps": 60.0381606940557,
+                "simulationSeconds": 10.016666666666666,
+                "simulationToWall": 1.0006360115675947,
+                "battleElapsedDelta": 10.016666666666882
+              },
+              "raf_interval_ms": {
+                "n": 600,
+                "p50": 16.69999999999891,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000109,
+                "min": 16.5,
+                "max": 16.899999999999636,
+                "mean": 16.66733333333332
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 4,
+                "after": 4,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": true,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": true,
+                "status": "pass"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            }
+          ],
+          "limitations": [
+            "Headless Chrome on this host, no exclusive CPU/GPU reservation. Compare candidates only under similar machine load.",
+            "Optional completion v1 adapter is checked against official candidate SDK documentation; this is not acceptance of a final SDK or game export. Old or unsupported SDKs fall back to official profile; absent either adequate evidence yields insufficient-evidence.",
+            "Completion v1 reports synchronous world/UI/cursor submissions. One-second samples establish sampled progress and interval percentiles, not OS display scanout, every intermediate frame ordering or UI pixel correctness. Current map/battle UI progress is checked at both boundaries; future scene2D needs its documented revision/transform adapter.",
+            "Legacy published dropped totals can be 29 draws stale; only a consistent v1 session supplies exact boundary counters. Sparse bridge/render samples cannot establish per-frame CPU tails; profile phase statistics and their measured overhead remain separate.",
+            "These short windows are focused regressions, not long soak or maximal army/dungeon stress acceptance."
+          ]
+        },
+        {
+          "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk16-integrated-sixty-idle-inventory/result.json",
+          "bytes": 1941438,
+          "sha256": "50f4e0592b6b845fd7184f28e6adbcbb033453647ff8c355fc527664500eb07f",
+          "measured_successfully": true,
+          "target60_passed": false,
+          "release_ready": false,
+          "analysis_version": "official-browser-benchmark.gates.v4-raf-linked-v1.overlay-cases.inventory-travel",
+          "benchmark_sha256": "bf61d7b614621332a2a9d189f4dfd20de50ca7cfa3b4012b92a0ec330d04c50f",
+          "analysis_sha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+          "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+          "seconds": 60,
+          "viewport": {
+            "width": 1600,
+            "height": 900
+          },
+          "profiling": false,
+          "results": [
+            {
+              "name": "idle",
+              "passed": false,
+              "rates": {
+                "wallSeconds": 60.00860000002384,
+                "rafCallbacks": 3598,
+                "rafFps": 59.95807267622592,
+                "simulationFrames": 3601,
+                "simulationFps": 60.008065510586306,
+                "simulationSeconds": 60.016666666666666,
+                "simulationToWall": 1.0001344251764384,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 3597,
+                "p50": 16.69999999999709,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000291,
+                "min": 16.200000000000728,
+                "max": 66.59999999999854,
+                "mean": 16.681039755350962
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": false,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": false,
+                "status": "fail"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            },
+            {
+              "name": "inventory",
+              "passed": true,
+              "rates": {
+                "wallSeconds": 60.01339999997616,
+                "rafCallbacks": 3601,
+                "rafFps": 60.00326593729785,
+                "simulationFrames": 3601,
+                "simulationFps": 60.00326593729785,
+                "simulationSeconds": 60.016666666666666,
+                "simulationToWall": 1.0000544322882974,
+                "battleElapsedDelta": null
+              },
+              "raf_interval_ms": {
+                "n": 3600,
+                "p50": 16.69999999999709,
+                "p95": 16.799999999999272,
+                "p99": 16.80000000000291,
+                "min": 16.5,
+                "max": 16.900000000001455,
+                "mean": 16.667166666666017
+              },
+              "health": {
+                "clean": true,
+                "issues": []
+              },
+              "dropped": {
+                "before": 0,
+                "after": 0,
+                "delta": 0,
+                "exact": true,
+                "precision": "Synchronous v1 query boundaries within the same session/time origin."
+              },
+              "target60": {
+                "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+                "criteria": {
+                  "minimumRafFps": 59,
+                  "minimumSimulationFps": 59,
+                  "rafP95Ms": 18.5,
+                  "rafP99Ms": 25,
+                  "reportedDroppedDelta": 0,
+                  "minimumOneSecondSimulationFrames": 58,
+                  "maximumPresentedFrameGapMs": 50,
+                  "minimumPresentedSnapshotFps": 58,
+                  "battleClockToleranceSeconds": 0.05,
+                  "minimumTravelTiles": 0.05,
+                  "minimumViewportPanPixels": 8
+                },
+                "raf": true,
+                "simulation": true,
+                "rafTail": true,
+                "noReportedDropped": true,
+                "scenarioMaintained": true,
+                "behaviorProgress": true,
+                "visible": true,
+                "errorsClean": true,
+                "temporalEvidence": true,
+                "evidenceComplete": true,
+                "throughputOnlyPassed": true,
+                "passed": true,
+                "status": "pass"
+              },
+              "legacy_end_clock_gate": {
+                "complete": true,
+                "passed": false,
+                "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+              }
+            }
+          ],
+          "limitations": [
+            "Headless Chrome on this host, no exclusive CPU/GPU reservation. Compare candidates only under similar machine load.",
+            "Optional completion v1 adapter is checked against official candidate SDK documentation; this is not acceptance of a final SDK or game export. Old or unsupported SDKs fall back to official profile; absent either adequate evidence yields insufficient-evidence.",
+            "Completion v1 reports synchronous world/UI/cursor submissions. One-second samples establish sampled progress and interval percentiles, not OS display scanout, every intermediate frame ordering or UI pixel correctness. Current map/battle UI progress is checked at both boundaries; future scene2D needs its documented revision/transform adapter.",
+            "Legacy published dropped totals can be 29 draws stale; only a consistent v1 session supplies exact boundary counters. Sparse bridge/render samples cannot establish per-frame CPU tails; profile phase statistics and their measured overhead remain separate.",
+            "These short windows are focused regressions, not long soak or maximal army/dungeon stress acceptance."
+          ]
+        }
+      ],
+      "final_source_and_sdk17": "Owner performing original eight short cases plus idle/inventory60s on frozen Game6073; not yet accepted."
+    },
+    "memory_gc_cycles": {
+      "source": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+      "sdk": "16",
+      "backend": "main",
+      "completed": true,
+      "record": "sdk16-game6073-main-memory-cycles.json",
+      "status": "Natural45s idle/inventory plus100cycles completed. Broker/renderer/WASM owners bounded;300 reloads and1800 additional CDP DOM nodes. Nodes persist after two separate intrusive V8 GC commands; actual liveness/reclamation unresolved.",
+      "scope": "Natural V8 trace phases are not whole collector cycles or Luau/worker totals. SDK17 GPU ownership requires fresh measurement; no zero-GC or leak-free claim."
+    },
+    "focused_node": {
+      "tests": 51,
+      "pass": 51,
+      "fail": 0,
+      "skipped": 0,
+      "log": ".cache/image-prefix-owner17-focused-r5.log"
+    }
   },
-  "diagnostics": {
-    "matching_sdk10_sampling_runtime": null,
-    "matching_sdk10_phase_runtime": null,
-    "development": "web-development-1 is opt1 authoring/preview support, not a production performance diagnostic.",
-    "historical_sampler9": "Frozen opt2 UI0.6 Lua package diagnostic was used to identify Game RLE work and fixed-state allocation; it lacks SDK10 whole-UI wire and is not matching presentation/GC acceptance.",
-    "production_gc": "Historical scalarfe919 SDK10 natural-GC/20cycle measurements completed under concurrent load; current authored GameC still requires its own production browser diagnostic."
+  "product": {
+    "owner_thread": "01a1642e-1a1f-7453-ad60-4e8e5b2e3c24",
+    "source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+    "selection": "Owner-applied HUD core cache, single-read inventory model and input gate; frozen Game6073. SDK16 actual performance/resource results retained; SDK17 ownership correction under same-source acceptance.",
+    "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate17-host",
+    "sidecar_required_images": 32,
+    "scene_images": 38,
+    "combined_planned_decoded_bytes": 66906784,
+    "export": "SDK17 normal Game preparation pending owner identity",
+    "previous_sdk16_export": {
+      "ok": true,
+      "export": "D:/Projects/JYRogue/game/dist/player-performance-integrated16/",
+      "manifest_sha256": "5482bfd16bed44c587d0f7d66334ae36b75c2fe8753a04bd67427d43b86edd17",
+      "release": "releases/01c4854690abf848b62ed169500b44674b973550f1856fae12570096e7e4f5a8/",
+      "verified_files": 611,
+      "verified_bytes": 192338019,
+      "source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+      "plan_sha256": "efea86a70892f48a1607546bbd90c774de12302745dc0dea98a55a7ec35e806f",
+      "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "renderer": "official"
+    }
+  },
+  "authorization": {
+    "game_chat_coordination": "Explicit human authorization received; active",
+    "localhost_server": "Explicit human authorization for127.0.0.1:8293 received. Root managed foreground server currently serves frozen Game6073 SDK16; original detached automatic-review rejection preserved only as historical evidence.",
+    "concurrent_projects": "Human selected continued parallel project work. Coordinate known test windows and retain uncontrolled-machine-load limitations."
   },
   "remaining_acceptance": [
-    "Obtain authorization to retry the rejected localhost server startup, then run actual official seven cases and60s inventory for exact GameC source; preserve clocks, drops and timing gates.",
-    "Measure natural V8 GC and100open/close resources for exact GameC; retain finite asset/cache ownership and all missing-counter limits.",
-    "Apply the complete guarded authoring/compiler/type/package/SDK migration without overwriting other Product changes, after actual-player acceptance.",
-    "SDK11 fused-copy runtime cannot be claimed built or measured while Windows App Control blocks necessary build scripts."
+    "Validate exact SDK17 Game6073 export in seven original scenes plus inventory during travel and60s idle/inventory, retaining clocks, thresholds, phase-overrun and legacy completion-end failures.",
+    "Measure same SDK17 artifact natural GC/heap and100inventory cycles; isolate persistent browser-native node counts without assuming leak-free or leak attribution.",
+    "Preserve original failed windows, admitted-versus-presented distinctions and user-authorized concurrent-load limits.",
+    "Windows AppControl4551 still blocks the separate fused-copy Runtime11 build. The unchanged verified SDK10 WASM is the human-selected production runtime."
   ],
-  "prior_handoff": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-web-sdk-handoff-candidate8.json",
-  "current_authored_candidate": {
-    "source_sha256": "d45704216392564a7e8d815ee529b67bfed125528a5e46e4987fdfdb97e089f7",
-    "product_modified": false,
-    "source_bundle": ".cache/jy-ui06-complete-handoff-reconciled-r2b",
-    "patch_files": 21,
-    "product_sha_guards": 103,
-    "preserves_current_uncompiled_authoring": true,
-    "canonical": {
-      "passed": true,
-      "cases": 7,
-      "checkpoints": 4163,
-      "allowlist": [],
-      "full_values_save_and_core_digests_equal": true,
-      "raw": ".cache/jy-ui06-r2b-threeway-canonical-run1/result.json"
+  "historical_sdk10_record": {
+    "schema": "unone.retained-web-sdk-handoff.v4",
+    "date": "2026-10-30",
+    "status": "SDK10 functional validation passed; prior60s inventory variants FAILED; reconciled GameC canonical validation passed; current Web FPS/memory acceptance awaits authorized local server",
+    "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10",
+    "sdk_manifest_sha256": "2c8c09b65214802fb023eb97821f2198e0f9776bee5daf65cc397848acab8f64",
+    "engine_version": "0.2.0",
+    "runtime_package": "@unone/ui@0.6.0",
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "runtime_id": "web-production-0",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "runtime_profile": "release opt2; no developer/phase/sampling hooks",
+    "production": {
+      "wasm": "unone_player.wasm",
+      "runtime_packages": {
+        "@unone/ui": "0.6.0"
+      },
+      "wasm_bytes": 3371104,
+      "bytecode_optimization_level": 2,
+      "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "sampling_profile": false,
+      "profile": "release",
+      "javascript": "unone-player.js",
+      "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+      "preview_tools": false,
+      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "cargo_features": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "particle",
+        "random",
+        "save",
+        "ui"
+      ],
+      "source_dirty": false,
+      "dev_tools": false,
+      "phase_profile": false,
+      "profile_mode": "none",
+      "exports": [
+        "init",
+        "alloc",
+        "load_project",
+        "unload_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_viewport_size",
+        "set_instance_transport",
+        "set_ui_transport",
+        "tick",
+        "ui_request",
+        "jobs_request",
+        "jobs_binary",
+        "spatial_request",
+        "host_time_request",
+        "observation_ptr",
+        "observation_len",
+        "particle_alloc",
+        "particle_sample",
+        "particle_output_ptr",
+        "particle_output_len"
+      ]
     },
-    "export": {
-      "directory": "D:/Projects/Unone/artifacts/jy-ui06-reconciled-r2b-sdk10-production-20261030-r2",
-      "manifest_sha256": "9ba63b00980934f5000c6bbac893dee7bef42fbbe1705042121752095e7cbaf7",
-      "release": "releases/53494f3f55a1e2f625d3898e40074a9d549740868b4f2e1976786f5a23f7a138/",
-      "inventory_files": 605,
-      "all_inventory_hashes_verified": true,
-      "renderer": "official",
-      "runtime": "SDK10 production7510d501"
+    "development": {
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "input",
+        "observation",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "world"
+      ],
+      "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+      "wasm_bytes": 3697974,
+      "profile_mode": "development-vm",
+      "profile": "release",
+      "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+      "cargo_features": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "particle",
+        "random",
+        "save",
+        "ui",
+        "preview-tools"
+      ],
+      "sampling_profile": false,
+      "exports": [
+        "init",
+        "alloc",
+        "load_project",
+        "unload_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_viewport_size",
+        "set_instance_transport",
+        "set_ui_transport",
+        "tick",
+        "ui_request",
+        "jobs_request",
+        "jobs_binary",
+        "spatial_request",
+        "host_time_request",
+        "observation_ptr",
+        "observation_len",
+        "developer_request",
+        "particle_alloc",
+        "particle_sample",
+        "particle_output_ptr",
+        "particle_output_len"
+      ],
+      "wasm": "unone_player.wasm",
+      "preview_tools": true,
+      "runtime_packages": {
+        "@unone/ui": "0.6.0"
+      },
+      "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+      "dev_tools": false,
+      "javascript": "unone-player.js",
+      "phase_profile": false,
+      "bytecode_optimization_level": 1,
+      "source_dirty": false
     },
-    "server": {
-      "status": "not-started-automatic-review-rejected",
-      "intended_url": "http://127.0.0.1:8293/?seed=42",
-      "reason": "blocked by policy; no substantive explanation supplied",
-      "human_authorization": "pending"
+    "provenance": {
+      "source": "eb2459c91c0998eac3c75fca066638a647300fec",
+      "source_dirty": false,
+      "template_checkpoint": "D:/Projects/Unone/artifacts/web-retained-20261030-template-checkpoint10",
+      "indexed_files_verified": 146,
+      "web_template_fingerprints_verified": 100
     },
-    "production_fps": "not-measured-for-this-source",
-    "natural_gc_and_cycles": "not-measured-for-this-source",
-    "lua_diagnostic": ".cache/jy-gamec-sampler9-fixed3600-run1/compact.json",
-    "lua_diagnostic_scope": "Existing older Sampler9 ABI with actual current GameC/UI0.6,3600fixedticks; not matching SDK10 wire, browser FPS or V8 GC acceptance"
+    "api": {
+      "ownership": "Ordinary @unone/ui constructor values are deeply immutable. Update callers to build before construction or use explicit shallow COW; borrowed builder inputs remain detached. Stateful controls and virtual live handles retain their narrow lifecycle rules.",
+      "retained_artwork": "Engine-owned logical imageBatch definitions plus immutable generations and placement instances. No Game GPU/context/renderer lifetime code.",
+      "unchanged_ui": "Private encoded UI generation <=64MiB; exact canonical digest unchanged. Larger valid UI stays inline. Official readers/workers/projectors/renderers retain decoded immutable data; callers provide no dirty IDs.",
+      "input": "api.input.hasPressedActions() remains non-consuming O(1); gate only discrete scanners, preserve held/slider/text/pointer/release behavior."
+    },
+    "verification": {
+      "actual_wasm_ui_ownership": 17,
+      "actual_wasm_ui_wire": 16,
+      "unchanged_tick_identity": 120,
+      "official_smoke": [
+        {
+          "backend": "main",
+          "ok": true,
+          "phases": 9
+        },
+        {
+          "backend": "worker",
+          "ok": true,
+          "phases": 9
+        }
+      ],
+      "packed_cli": "Matching standard release CLI10 executed canonical refresh and strict0.734 fixture typecheck.",
+      "game_fixed_replay": "439 checkpoints: full values + sorted-object-key JSON + raw Core digest equal between production9/10. JS object field insertion order changes when UI is reattached; no values/array order ignored.",
+      "source_tests": "Rust20 ABI +1 developer reload; Web564 pass/2 optional shader skips; enabled/disabled export closure1 pass."
+    },
+    "game_acceptance": {
+      "source": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+      "artifact": "D:/Projects/Unone/artifacts/jy-ui06-migrated-sdk10-production-20261030-r2",
+      "scope": "Official renderer plus the existing Game wheel adapter and16:9 host postprocess. Frozen isolated ownership migration; Product Game remains unchanged.",
+      "seven_short_cases": {
+        "passed": true,
+        "seconds_each": 10,
+        "raf_fps": [
+          {
+            "name": "idle",
+            "fps": 59.99100134979753,
+            "dropped": 0,
+            "passed": true
+          },
+          {
+            "name": "drag",
+            "fps": 60.029765174459634,
+            "dropped": 0,
+            "passed": true
+          },
+          {
+            "name": "travel",
+            "fps": 60.02077257990832,
+            "dropped": 0,
+            "passed": true
+          },
+          {
+            "name": "travel-card",
+            "fps": 60.009385827257766,
+            "dropped": 0,
+            "passed": true
+          },
+          {
+            "name": "inventory",
+            "fps": 60.00698916679148,
+            "dropped": 0,
+            "passed": true
+          },
+          {
+            "name": "atlas",
+            "fps": 60.020173169970136,
+            "dropped": 0,
+            "passed": true
+          },
+          {
+            "name": "battle",
+            "fps": 60.017775647077315,
+            "dropped": 0,
+            "passed": true
+          }
+        ]
+      },
+      "inventory_long_soak": {
+        "passed": false,
+        "seconds": 60,
+        "raf_fps": 32.01711133027205,
+        "simulation_fps": 58.80353953998977,
+        "dropped": 71,
+        "raw": "D:/Projects/Unone/.cache/jy-ui06-sdk10-inventory-soak-run1/result.json"
+      },
+      "late_diagnosis": "Actual opt2 Sampler9 fixed3600tick replay reproduces tick median11.17→22.80ms. Lua allocated boundary14.4–18.2MB and UI size stay bounded; added hot work is Game WorldRepository full RLE page decoding from worldPeople→terrain. This is not a confirmed weak-registry leak. A separate bounded immutable scalar lookup is being fixed in isolated Game Luau, without moving NPC rules into Rust."
+    },
+    "diagnostics": {
+      "matching_sdk10_sampling_runtime": null,
+      "matching_sdk10_phase_runtime": null,
+      "development": "web-development-1 is opt1 authoring/preview support, not a production performance diagnostic.",
+      "historical_sampler9": "Frozen opt2 UI0.6 Lua package diagnostic was used to identify Game RLE work and fixed-state allocation; it lacks SDK10 whole-UI wire and is not matching presentation/GC acceptance.",
+      "production_gc": "Historical scalarfe919 SDK10 natural-GC/20cycle measurements completed under concurrent load; current authored GameC still requires its own production browser diagnostic."
+    },
+    "remaining_acceptance": [
+      "Obtain authorization to retry the rejected localhost server startup, then run actual official seven cases and60s inventory for exact GameC source; preserve clocks, drops and timing gates.",
+      "Measure natural V8 GC and100open/close resources for exact GameC; retain finite asset/cache ownership and all missing-counter limits.",
+      "Apply the complete guarded authoring/compiler/type/package/SDK migration without overwriting other Product changes, after actual-player acceptance.",
+      "SDK11 fused-copy runtime cannot be claimed built or measured while Windows App Control blocks necessary build scripts."
+    ],
+    "prior_handoff": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-web-sdk-handoff-candidate8.json",
+    "current_authored_candidate": {
+      "source_sha256": "d45704216392564a7e8d815ee529b67bfed125528a5e46e4987fdfdb97e089f7",
+      "product_modified": false,
+      "source_bundle": ".cache/jy-ui06-complete-handoff-reconciled-r2b",
+      "patch_files": 21,
+      "product_sha_guards": 103,
+      "preserves_current_uncompiled_authoring": true,
+      "canonical": {
+        "passed": true,
+        "cases": 7,
+        "checkpoints": 4163,
+        "allowlist": [],
+        "full_values_save_and_core_digests_equal": true,
+        "raw": ".cache/jy-ui06-r2b-threeway-canonical-run1/result.json"
+      },
+      "export": {
+        "directory": "D:/Projects/Unone/artifacts/jy-ui06-reconciled-r2b-sdk10-production-20261030-r2",
+        "manifest_sha256": "9ba63b00980934f5000c6bbac893dee7bef42fbbe1705042121752095e7cbaf7",
+        "release": "releases/53494f3f55a1e2f625d3898e40074a9d549740868b4f2e1976786f5a23f7a138/",
+        "inventory_files": 605,
+        "all_inventory_hashes_verified": true,
+        "renderer": "official",
+        "runtime": "SDK10 production7510d501"
+      },
+      "server": {
+        "status": "not-started-automatic-review-rejected",
+        "intended_url": "http://127.0.0.1:8293/?seed=42",
+        "reason": "blocked by policy; no substantive explanation supplied",
+        "human_authorization": "pending"
+      },
+      "production_fps": "not-measured-for-this-source",
+      "natural_gc_and_cycles": "not-measured-for-this-source",
+      "lua_diagnostic": ".cache/jy-gamec-sampler9-fixed3600-run1/compact.json",
+      "lua_diagnostic_scope": "Existing older Sampler9 ABI with actual current GameC/UI0.6,3600fixedticks; not matching SDK10 wire, browser FPS or V8 GC acceptance"
+    },
+    "fused_copy_followup": {
+      "source_commit": "f689df482b44456119821e5ce1fa11bf60761e5c",
+      "status": "source-implemented; SDK11 build blocked; no new runtime emitted",
+      "implementation_commit": "680088118d2ea15865b6650ddcc42799d92356c0",
+      "focused_native_tests": {
+        "passed": 22,
+        "immutable_and_responsive": "not-executed-AppControl4551"
+      },
+      "package_strict_analyzer": "Luau0.734 passed",
+      "build": {
+        "log": ".cache/sdk11-production-build.log",
+        "exit_code": 1,
+        "reason": "Windows application control4551 blocked quote/getrandom/generic-array build scripts before execution",
+        "runtime_manifest_exists": false
+      },
+      "source_review": "ui-fused-copy-source-review.json",
+      "external_claude_review": "incomplete60s timeout with no output; not a completed review"
+    }
   },
-  "fused_copy_followup": {
-    "source_commit": "f689df482b44456119821e5ce1fa11bf60761e5c",
-    "status": "source-implemented; SDK11 build blocked; no new runtime emitted",
-    "implementation_commit": "680088118d2ea15865b6650ddcc42799d92356c0",
-    "focused_native_tests": {
-      "passed": 22,
-      "immutable_and_responsive": "not-executed-AppControl4551"
-    },
-    "package_strict_analyzer": "Luau0.734 passed",
-    "build": {
-      "log": ".cache/sdk11-production-build.log",
+  "measured_product_a_sdk14": {
+    "owner_thread": "01a1642e-1a1f-7453-ad60-4e8e5b2e3c24",
+    "source_sha256": "2a16dd4713286e0e8420373246de1ce393d066bc193618bca1a5648a31743ab8",
+    "integration": "Applied by the authorized Game owner, not Root. Includes feedback cache-key correction after the canonically compared GameC.",
+    "integration_evidence": "D:/Projects/JYRogue/game/evidence/sdk10-game-integration/result.json",
+    "sidecar": "D:/Projects/JYRogue/game/player.image-assets.json",
+    "sidecar_sha256": "d99fa403ca01215513bcb89f16dece5ba8a72dc662c4a623a3c3dc77e4a98164",
+    "sidecar_required_images": 31,
+    "scene_images": 38,
+    "combined_planned_decoded_bytes": 66888352,
+    "export": "Pending owner final SDK14 export identity"
+  },
+  "image_handoff_followup": {
+    "source_commits": [
+      "4ab6c45",
+      "337a95d",
+      "ed0e702",
+      "310aea1"
+    ],
+    "status": "SDK17 adds GPU-prefix-owned pixel leases and incremental resource retirement. Same-source Game acceptance pending.",
+    "policy": "Pin incoming Canvas/cursor images before outgoing release; always clean on callback failure/reentry; reject new cursor ownership after disposal. Default unused16MiB budget is unchanged.",
+    "negative_control": {
+      "baseline": "337a95da42cbfbc4cdc81a9bc846811f70ed3fa0",
+      "private_copy_only": true,
+      "failed_new_regressions": 5,
+      "status": "five-defects-reproduced",
       "exit_code": 1,
-      "reason": "Windows application control4551 blocked quote/getrandom/generic-array build scripts before execution",
-      "runtime_manifest_exists": false
+      "result": ".cache/image-handoff16-negative/result.json"
     },
-    "source_review": "ui-fused-copy-source-review.json",
-    "external_claude_review": "incomplete60s timeout with no output; not a completed review"
+    "claude": "SDK15 fixed review completed with2confirmedP2 findings; both resolved inSDK16. Original findings remain inimage-handoff-sdk15-source-review.json.",
+    "gpu_prefix_source_review": "image-handoff-sdk17-source-resolution.json"
   }
 }

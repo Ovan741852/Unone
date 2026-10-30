@@ -1,0 +1,111 @@
+{
+  "schema": "unone.image-preload-official-web-smoke.v1",
+  "date": "2026-10-30",
+  "status": "passed-actual-exported-official-player",
+  "scope": "SDK14 host image-preload publication and official main/worker functional lifecycle. No Game FPS or natural-GC acceptance is claimed.",
+  "sdk": {
+    "path": "artifacts/core-sdk-web-shared-images-20261030-candidate14-host",
+    "manifest_sha256": "9152f79525a84196ef0af2c8a33a13f37be46468e915de8c8899881e9b8543e8",
+    "core_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+    "runtime_policy": "Reused verified SDK10 production WASM, opt2, profile_mode none, no development/preview/phase/sampling features, UI0.6. This is not the separately build-blocked fused-copy runtime."
+  },
+  "fixture": {
+    "path": ".cache/sdk14-preload-official-fixture",
+    "copied_from": ".cache/sdk10-official-fixture",
+    "entry_script_byte_identical": true,
+    "entry_script_sha256": "73f85519ce972c0fde76a028bf76267fa157a1bb5be563ac44350e1c5eef85c3",
+    "config_sha256": "cd916338a44aabb1e5df0bde77a99bf9689fde080207da375fa2beab41dc6412",
+    "asset_manifest_sha256": "868c5d98718ae2b8cb95c6e88ff1ba09e835d400d60ced3f8137ee50760fb4bc",
+    "authored_plan_sha256": "dedda95246db0f9eddaee8158be0f90d23ea8184887158f32d791f83c6826182",
+    "changes": "Only an independent 2x2 PNG texture2d declaration and player.image-assets.json required startup group were added. Existing Game script, stimuli and visual expectations were preserved.",
+    "required_asset": "texture://qa-preload-only",
+    "png_path": "assets/qa-preload-only.png",
+    "png_sha256": "4c55a49112f63ed3ce2cb2687a1175b08c554f836f19d93afb706650672c7e40",
+    "required_rgba_bytes_estimate": 16,
+    "startup_group": "required_fixture"
+  },
+  "publication": {
+    "raw_export": "artifacts/retained-official-web-preload-20261030-candidate14-raw",
+    "raw_export_manifest_sha256": "f376a92cf74b016d994e1c8506ff006ab73312bb5f09e41e615e468c8c48ebe7",
+    "published_export": "artifacts/retained-official-web-preload-20261030-candidate14",
+    "export_manifest_sha256": "518bb4f3e7eaff7d76ac99b48a4f5816957e4a58cd21ba2cc2173e43c13cce2f",
+    "release_root": "releases/ef30e44d08b5a8766f5e9c664b0bd96b9a5a2da0bde69e1529ddb3e153d4cb80/",
+    "indexed_files_individually_verified": 197,
+    "plan_sha256": "2b785a121b64f378bc6d6fc1e7b85e8aea7faf5e2f7f812137ee569722dea1a9",
+    "sdk_publisher_sha256": "881bc631df6ca93e2f0cca7423774ad31d169ac940e94577651815bd91160bfe",
+    "sdk_validator_sha256": "d6b4df72d9954fc4ccdae2bd6e743e439a39f5bf9c53a7cc933cfac1f9da57ed",
+    "commands": "The actual packed SDK CLI export and packed SDK Node publisher both exited0. Full argv/stdout/stderr are preserved under .cache/sdk14-preload-official-validation.",
+    "publisher_origin": "SDK; tool and validator were checked against its indexed manifest.",
+    "input_generation_matches_content": true
+  },
+  "actual_browser": {
+    "version": "156.0.4314.50",
+    "renderer": "official",
+    "backends": [
+      {
+        "backend": "main",
+        "passed": true,
+        "phases_passed": 9,
+        "errors": 0,
+        "warnings": 0,
+        "failed_requests": 0,
+        "required_image_decode_calls": 1,
+        "required_image_decode_successes": 1,
+        "decode_completion_ms": 117.5,
+        "ready_observed_ms": 318.10000002384186,
+        "decode_completed_before_ready": true,
+        "final_required_entries": 1,
+        "final_required_ready_entries": 1,
+        "final_preparation_partial": false
+      },
+      {
+        "backend": "worker",
+        "passed": true,
+        "phases_passed": 9,
+        "errors": 0,
+        "warnings": 0,
+        "failed_requests": 0,
+        "required_image_decode_calls": 1,
+        "required_image_decode_successes": 1,
+        "decode_completion_ms": 83.10000002384186,
+        "ready_observed_ms": 249.69999992847443,
+        "decode_completed_before_ready": true,
+        "final_required_entries": 1,
+        "final_required_ready_entries": 1,
+        "final_preparation_partial": false
+      }
+    ],
+    "phases": ["initial", "moving-camera", "save-replacement", "official-button-hit", "replace-live-resource", "remove-after-tree-replacement", "recreate-id", "context-lost", "context-restored"],
+    "instrumentation": "A cache copy of the official lifecycle runner retains its original nine phase assertions/stimuli. An additive passive decode observer calls the original HTMLImageElement.decode exactly once, attaches an observation reaction and returns the original Promise unchanged. It records completion before the READY console event. Existing read-only host metrics later confirm required_entries=required_ready_entries=1. No extra Core command, decode invocation, renderer, clock or gameplay change was introduced.",
+    "ordering_scope": "Decode timestamps prove event order within each page only. Broker counts were inspected after the lifecycle run, not directly sampled from a private broker at READY. The production barrier and source/Node tests establish that required ready counts gate Core startup.",
+    "all_contexts_browser_and_server_closed": true,
+    "runner_exit_code": 0
+  },
+  "visual_inspection": {
+    "viewed": true,
+    "additional_parent_spot_check": "Root independently viewed main/initial.png and worker/restored.png and confirmed the expected colored layers, Canvas text and context recovery.",
+    "finding": "Initial and restored main/worker screenshots retain expected crop/alpha/order, Canvas HUD text and Pause/Resume button behavior, with no error overlay. The independent preload-only image does not alter visible Game artwork.",
+    "files": [
+      {"path": "artifacts/retained-official-web-preload-smoke-candidate14/main/initial.png", "sha256": "0c16f60219f918ca6558cef8928400c41e7d2b2614fa42b4ffb5b002188da757"},
+      {"path": "artifacts/retained-official-web-preload-smoke-candidate14/main/restored.png", "sha256": "969c034587159075f21c649416684b9dcb7aa75d2cf0973b2cb9a6673825d3c3"},
+      {"path": "artifacts/retained-official-web-preload-smoke-candidate14/worker/initial.png", "sha256": "a2c773f403e586552c62a6393504b2e5ea4923548e15e084e9618d7bd7941b83"},
+      {"path": "artifacts/retained-official-web-preload-smoke-candidate14/worker/restored.png", "sha256": "313b0850c0a9c5cf165003492966a574abf9bfe1d8c5d656050583878ea89ecc"}
+    ]
+  },
+  "raw_evidence": {
+    "preparation_report": ".cache/sdk14-preload-official-validation/report.json",
+    "preparation_report_sha256": "c4bf9809003fe990d006fd6e9f51c37778c934618ccda226873fba1d46edc59a",
+    "browser_report": "artifacts/retained-official-web-preload-smoke-candidate14/report.json",
+    "browser_report_sha256": "15c1802ee2d93501064cc49cfcc96fac6b37ebb49d7e32136cfd1a5a4e1d3a8f",
+    "base_runner_sha256": "12e8cff322221f952c780d4c8f1b1ff37dc8dbc4bdc0b6772d3eb04767baff47",
+    "instrumented_runner": ".cache/verify-sdk14-preload-browser.mjs",
+    "instrumented_runner_sha256": "e75efb3c23193b088a063099061e576c08b2d1f9922ee96f4c4cea555f141532"
+  },
+  "limits": [
+    "Functional export/publication and actual official-player lifecycle only; no FPS, natural-GC frequency, leak-free or release-readiness claim.",
+    "The required image is an independent preload-only fixture resource; this does not validate a particular Game's resource grouping or cache invalidation policy.",
+    "No Rust build, Game Product write or fused-copy WASM execution occurred. Browser work finished and closed before the subsequent Game FPS quiet window."
+  ]
+}

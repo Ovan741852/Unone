@@ -50,6 +50,19 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-10-30: shared-image caller handoff fixed range `f054a62..337a95d`.
+  Claude 2.1.308 completed a read-only, tool-free review (exit 0, 57.1 seconds)
+  and reported two confirmed P2 lifecycle defects: skipped Canvas retirement
+  when a callback throws, and cursor acquisition after disposal. Both were
+  corrected in `ed0e702`, with five negative-control regressions. The later
+  GPU-prefix ownership range `ed0e702..310aea1` passed independent Codex review
+  after staged-resource cleanup corrections; its separate bounded Claude
+  attempt timed out without output and remains incomplete. Source, raw review
+  identities, tests and package scope are recorded separately in
+  [SDK15 findings](evidence/2026-10-29-engine-stability/image-handoff-sdk15-source-review.json),
+  [SDK16 resolution](evidence/2026-10-29-engine-stability/image-handoff-sdk16-source-resolution.json)
+  and [SDK17 resolution](evidence/2026-10-29-engine-stability/image-handoff-sdk17-source-resolution.json).
+
 - 2026-10-29/30: runtime input/replay/value bounds, production compiler policy,
   native/Web resource lifecycles, publication allocations and SDK UI capability
   compatibility. Independent Codex cross-review identified and corrected the

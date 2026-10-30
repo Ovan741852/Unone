@@ -1,0 +1,197 @@
+{
+  "schema": "unone.sdk16.image-handoff.source-resolution.v1",
+  "status": "two-source-findings-corrected-and-package-identity-validated; actual-game-acceptance-pending",
+  "historical_sdk15_review": {
+    "path": "docs/evidence/2026-10-29-engine-stability/image-handoff-sdk15-source-review.json",
+    "bytes": 17591,
+    "sha256": "def72e1d7aec945fc16fd51a6551c48ec7c25ee8563af6041446cda8e5b6fe0d"
+  },
+  "source_resolution": {
+    "reviewer": "/root/native_performance",
+    "mode": "read-only exact five committed source/test/doc postimages; no workloads executed by reviewer",
+    "checked_revision": "ed0e70278b5305f57c18e0afac84e8d48644a58d",
+    "postimages": [
+      {
+        "path": "web/shared/canvas-ui.mjs",
+        "bytes": 25577,
+        "sha256": "8bff593744eb7f937d722b0d8288aa916881656d705f6555eb3cccce0bae2aaa"
+      },
+      {
+        "path": "web/shared/ui-cursor.mjs",
+        "bytes": 7887,
+        "sha256": "2c7ad713f17ba9f325ecdd153911304c37417fc198e4e5fea58fca4aa5ea1c32"
+      },
+      {
+        "path": "web/shared/canvas-ui-image-handoff.test.mjs",
+        "bytes": 7302,
+        "sha256": "b01c375e1218055af985fc896c9e7c00a98e6f1f0818d1e51ffc9fdbed439b5f"
+      },
+      {
+        "path": "web/shared/ui-cursor-image-handoff.test.mjs",
+        "bytes": 6146,
+        "sha256": "c67d5488f5de46899376c9793396634e06de72ba5781edc082970904a9502f17"
+      },
+      {
+        "path": "docs/web-image-assets.md",
+        "bytes": 13090,
+        "sha256": "f7769423638941bbe5a857a6a0a5d932d3b88f40332c0de86a509c37fcd52823"
+      }
+    ],
+    "disposition": "Both confirmed Claude P2s are corrected in the subsequent source; no remaining concrete P1/P2 found in this bounded correction slice. Original SDK15/337 findings and completed Claude response remain preserved above.",
+    "finding_dispositions": [
+      {
+        "finding": "Canvas outgoing cleanup skipped when an incoming diagnostic/render callback throws",
+        "status": "source-corrected",
+        "correction": "Finally cleanup retires GPU resources before releasing outgoing pixels, against CURRENT requiredAssets/current nodes. Incoming acquisition stops when a callback replaces the composition or disposes the host; post-finally UI_DISPOSED prevents further painting."
+      },
+      {
+        "finding": "Cursor update after dispose acquires an unretired shared image lease",
+        "status": "source-corrected",
+        "correction": "Disposed guard returns the existing cursor_diagnostics skipped outcome before declaration validation, provider lookup or broker acquisition, for both cold and warm assets."
+      }
+    ],
+    "callback_scope_correction": "Earlier wording that default official callbacks are no-ops was overbroad and has been removed from the adjudication/findings. Constructor defaults alone do not bound public host callbacks. In the inspected main.js, fail/draw callbacks are explicitly bound on uiScroll/textInputs; createCanvasUi options do not bind those callbacks. No claim of universal official no-op or universal Canvas fail/draw binding is made.",
+    "regressions": {
+      "new_cases": 5,
+      "coverage": [
+        "Throwing onDiagnostic still retires old Canvas owners before same-tree retry.",
+        "Throwing requestRender still retires old Canvas owners before same-tree retry.",
+        "Reentrant Canvas recovery preserves latest owners and does not acquire obsolete remaining images.",
+        "Disposal inside Canvas diagnostic callback stops acquisitions and does not repeat GPU retirement.",
+        "Disposed cursor rejects cold/warm/invalid updates without provider/resource calls."
+      ],
+      "negative_private_337": {
+        "status": "expected-defects-reproduced",
+        "failed_new_regressions": 5,
+        "exit_code": 1,
+        "reference": {
+          "path": ".cache/image-handoff16-negative/result.json",
+          "bytes": 972,
+          "sha256": "3af6066e6a879abe609aa805f070cb4afbadf171c0fa8661840d83a269ac06ae"
+        }
+      },
+      "focused": {
+        "tests": 61,
+        "passed": 61,
+        "failed": 0,
+        "skipped": 0,
+        "raw": {
+          "path": ".cache/image-handoff16-focused.log",
+          "bytes": 6331,
+          "sha256": "e75d562dbbfed7262517fbfb33d889ae053c880e7fa2dafc4f6b59dd04110723"
+        }
+      },
+      "full": {
+        "tests": 652,
+        "passed": 649,
+        "failed": 0,
+        "skipped": 3,
+        "cancelled": 0,
+        "raw": {
+          "path": ".cache/shared-image-host16-full-web-tests.log",
+          "bytes": 66897,
+          "sha256": "701233ab1fbb3473624fd6f3b02441e608882e3608c77f9befe3302cceb53b4b"
+        }
+      },
+      "source_summary": {
+        "path": ".cache/shared-image-host16-web-tests-summary.json",
+        "bytes": 1398,
+        "sha256": "ef19ead474db5728c794fc9cc26893fb4f5c0723f1db8618f1211befce26dc75"
+      }
+    },
+    "claude_policy": "No second Claude attempt was run. The original completed-with-findings response and raw process metadata remain byte-for-byte intact; this is independent Codex source adjudication of the narrow fixes.",
+    "limits": "Source review and Node regression evidence only. SDK15 package itself is unchanged; SDK16 packaging and actual selected-game image churn/DOM/heap/GC/pixels/FPS validation are separate and not established here. No new scene-plan whole-future-set transaction or zero-load promise."
+  },
+  "sdk16_package": {
+    "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-shared-images-20261030-candidate16-host",
+    "sdk_manifest_sha256": "dcdba1d6b69c89efba8fbd1d92b17407229cfc8980867f044fed496e95deb021",
+    "host_source_commit": "ed0e70278b5305f57c18e0afac84e8d48644a58d",
+    "host_source_dirty": false,
+    "packaged_source_scope_clean": true,
+    "global_worktree_dirty": true,
+    "inventory_files": 148,
+    "inventory_bytes": 61270233,
+    "complete_inventory_verified": true,
+    "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+    "cli_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "original_compiled_ui06_source_sha256": "b7cd1017410b09605b3cbc33b8c77a01c4c69c4273f7523a2e6e127280f5614f",
+    "runtimes": [
+      {
+        "id": "web-production-0",
+        "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+        "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      },
+      {
+        "id": "web-development-1",
+        "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+        "runtime_manifest_sha256": "5ddccf3b045430cf06609a3a932d9960f4a218fa74e1746752a96580dd3fb60e",
+        "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec"
+      }
+    ],
+    "sdk15_to_sdk16": {
+      "status": "passed",
+      "changed_indexed_files": [
+        {
+          "path": "docs/web-image-assets.md",
+          "before": {
+            "path": "docs/web-image-assets.md",
+            "bytes": 12718,
+            "sha256": "65e1d28b22f4082b6d6a711cc29f5f1b39a1c033105647877078da853f17e04c"
+          },
+          "after": {
+            "path": "docs/web-image-assets.md",
+            "bytes": 13090,
+            "sha256": "f7769423638941bbe5a857a6a0a5d932d3b88f40332c0de86a509c37fcd52823"
+          }
+        },
+        {
+          "path": "templates/web/shared/canvas-ui.mjs",
+          "before": {
+            "path": "templates/web/shared/canvas-ui.mjs",
+            "bytes": 25537,
+            "sha256": "04f2d39522e391e34e86dac74047b65f8da7133704af21c6580ab2af441447d7"
+          },
+          "after": {
+            "path": "templates/web/shared/canvas-ui.mjs",
+            "bytes": 25860,
+            "sha256": "f15459cdadd40734751b9031de7ea42e66c775bf578047399294c881b0a530fb"
+          }
+        },
+        {
+          "path": "templates/web/shared/ui-cursor.mjs",
+          "before": {
+            "path": "templates/web/shared/ui-cursor.mjs",
+            "bytes": 7836,
+            "sha256": "a3c326326bb0b2910e68ce55971e1b9c5df09afa93323e9752bbab5c350aa6ec"
+          },
+          "after": {
+            "path": "templates/web/shared/ui-cursor.mjs",
+            "bytes": 7887,
+            "sha256": "2c7ad713f17ba9f325ecdd153911304c37417fc198e4e5fea58fca4aa5ea1c32"
+          }
+        }
+      ],
+      "unchanged_indexed_files": 145,
+      "scope": "SDK15 to SDK16 indexed file comparison: Canvas exception/reentrancy cleanup, cursor disposed guard, and ownership documentation only. All other indexed file bytes/hashes unchanged; sdk.json metadata differs as expected."
+    },
+    "raw_package": {
+      "path": ".cache/shared-image-host16-pack/result.json",
+      "bytes": 4109,
+      "sha256": "1a035d0915c55f749d8a6f383d394177b59d00b26512b45f51cfb6f4d84710d1"
+    },
+    "raw_delta": {
+      "path": ".cache/shared-image-host16-pack/sdk15-to16-delta.json",
+      "bytes": 1615,
+      "sha256": "ce38d355348fb2a37b74df52742cdb7baee32fe9941e633e03f4812cc648b68a"
+    },
+    "identity_scope": "Official CLI10 sdk inspect/complete inventory verification succeeded. SDK16 changes only Canvas/cursor correction templates and ownership documentation from SDK15; other145 indexed files and the verified CLI/WASM10/UI0.6 remain identical. Package identity is not actual resource/FPS acceptance."
+  },
+  "limits": [
+    "The SDK15 review remains historical completed-with-findings at337a95, including the initial Codex no-findings disposition subsequently superseded by confirming Claude findings. Original Claude stdout/process records are unmodified.",
+    "This new record resolves the two source defects only ated0e702 and reports separate Node/pack evidence; no second Claude attempt, browser, profiling, FPS, GC or memory workload was executed by the independent reviewer.",
+    "The public callback contract, not a claim about universal official callback bindings, justifies the Canvas error cleanup fix. Current Canvas options omit those callbacks; fail/draw bindings inspected in main are on uiScroll/textInputs.",
+    "Caller incoming-image ownership correction does not change prepareScene future-set transactionality, raise the unused image budget, or promise zero reloads under insufficient capacity.",
+    "Actual selected-game SDK16 image churn, DOM/native object lifetime, natural GC and long-window FPS remain separate pending validation."
+  ]
+}

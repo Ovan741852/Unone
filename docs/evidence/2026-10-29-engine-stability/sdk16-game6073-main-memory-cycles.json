@@ -1,0 +1,2205 @@
+{
+  "schema": "unone.sdk16.game6073.main.memory-cycles.v1",
+  "date": "2026-10-30",
+  "status": "observed-bounded-broker-ownership-with-reload-churn-and-persistent-CDP-node-growth; liveness-cause-unknown",
+  "scope": {
+    "game_source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+    "game_identity": "final6073 over SDK16 host; not subsequent SDK17 or another HUD candidate",
+    "backend": "actual official main",
+    "interpolation": false,
+    "runtime": "Unchanged verified production WASM10, UI0.6 opt2; SDK16 host image handoff changes. The blocked fused-copy WASM11 was not executed.",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "wasm_linear_capacity_bytes": 29097984,
+    "diagnostic_not_fps_acceptance": true,
+    "load_scope": "User authorized concurrent project CPU/GPU work; no machine-exclusive scope is claimed. Event wall durations and instrumented pacing may be load affected.",
+    "separation": "Two natural45-second trace cases and a natural100-cycle/10-second-tail report are immutable evidence. Exactly2 later intrusive page-V8 GC RPCs are separate liveness-control observations and never part of natural GC frequency or FPS data."
+  },
+  "artifact": {
+    "ok": true,
+    "export": "D:/Projects/JYRogue/game/dist/player-performance-integrated16/",
+    "manifest_sha256": "5482bfd16bed44c587d0f7d66334ae36b75c2fe8753a04bd67427d43b86edd17",
+    "release": "releases/01c4854690abf848b62ed169500b44674b973550f1856fae12570096e7e4f5a8/",
+    "verified_files": 611,
+    "verified_bytes": 192338019,
+    "source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+    "plan_sha256": "efea86a70892f48a1607546bbd90c774de12302745dc0dea98a55a7ec35e806f",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "renderer": "official",
+    "validation_record": {
+      "path": ".cache/jy-sdk16-final6073-export-validation.json",
+      "bytes": 613,
+      "sha256": "beb1cd773fab01b97a5b999d3d44820e3b902f7621be6091d9b8cf7b0b3abbc9"
+    },
+    "runtime_metadata": {
+      "localReleaseRoot": "D:\\Projects\\JYRogue\\game\\dist\\player-performance-integrated16\\releases\\01c4854690abf848b62ed169500b44674b973550f1856fae12570096e7e4f5a8",
+      "sdkManifestPath": "D:\\Projects\\Unone\\artifacts\\core-sdk-web-shared-images-20261030-candidate16-host\\runtimes\\web-production-0\\runtime.json",
+      "sdkManifestSha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+      "localRuntimeManifestSha256": "933540c4ae8aba0f94d492df14b8f4be1845124d8349b54ceb288e8ce24cee51",
+      "projectFileSha256": "8c04fe1c04a48052cc8176c82a2a0277fea633b6e10992b014965b2d475d91f4",
+      "presentationFileSha256": "14143be37553f8880500a00143bb55720e79cf85037f477d1ba0b6a423d58ac1",
+      "projectMetadataSha256": "2709551597807dfe377b16df9d31527c3b3adc3f8ee1a103ed94147db2d18b1c",
+      "presentationMetadataSha256": "14143be37553f8880500a00143bb55720e79cf85037f477d1ba0b6a423d58ac1",
+      "advertisedWasmSha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "advertisedJavascriptSha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "worldMapInputSha256": "8f05cb0207eef7c27f36637c6150e1b8cfd74cc828cc2677ce30b7e482853b3e",
+      "sourceSha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e"
+    }
+  },
+  "raw_evidence": {
+    "memory_compact": {
+      "path": ".cache/jy-final6073-sdk16-v4-memory-run1/compact.json",
+      "bytes": 46913,
+      "sha256": "66703b0b67e6ea57984aa0f39cc9a87ee9b5bb8a3f8c05a5cb4204f60bab1b37"
+    },
+    "memory_source": {
+      "path": ".cache/jy-final6073-sdk16-v4-memory-run1/source.json",
+      "bytes": 142084,
+      "sha256": "e3c135ed5e6b8a319f20cd6f32d518d104cfc8848801a18101a8a7dc516cb91e"
+    },
+    "memory_script": {
+      "path": ".cache/jy-final6073-sdk16-v4-memory-run1/diagnostic-script.mjs",
+      "bytes": 36251,
+      "sha256": "68f72dba5b7952fe2b63f47e270ab8187840b0a9c720034e2052246e2eac003c"
+    },
+    "cycles_report": {
+      "path": ".cache/jy-final6073-sdk16-v5-cycles100-run1/report.json",
+      "bytes": 28674,
+      "sha256": "3ef96be8b8a9e612aad8fbfa8520c32d55d4add9cdb156542473f8f52f27aac2"
+    },
+    "cycles_source": {
+      "path": ".cache/jy-final6073-sdk16-v5-cycles100-run1/source.json",
+      "bytes": 142549,
+      "sha256": "157e91724522363430404d5d4f25f90caa773e9e34c4a5b61b9ead1604b9299e"
+    },
+    "cycles_script": {
+      "path": ".cache/jy-final6073-sdk16-v5-cycles100-run1/diagnostic-script.mjs",
+      "bytes": 35684,
+      "sha256": "58ebacddef75fe79fe5ce542a3f84fa8816899e9dd23b09f257584864469dd07"
+    },
+    "cycles_samples": {
+      "path": ".cache/jy-final6073-sdk16-v5-cycles100-run1/samples.json",
+      "bytes": 195608,
+      "sha256": "816c451676be02d83a81ff928a2a2195df71cee3bca5c78b999e773f4c2d8b06"
+    },
+    "natural_report_seal": {
+      "path": ".cache/jy-final6073-sdk16-v5-cycles100-run1/natural-report-seal.json",
+      "bytes": 125,
+      "sha256": "1d02632fc2b314a59bbef7f396d52395c0011c51233d2a79c4e871fcaf34dd58"
+    },
+    "separate_forced_control": {
+      "path": ".cache/jy-final6073-sdk16-v5-cycles100-run1/post-cycle-forced-gc-control.json",
+      "bytes": 55969,
+      "sha256": "357df7690ef18b7c2fc0038ff9db422d3a0d19803bc19cb4efb8fc6f6c30c647"
+    },
+    "captured_control_helper": {
+      "path": ".cache/jy-final6073-sdk16-v5-cycles100-run1/post-cycle-gc-control.mjs",
+      "bytes": 3878,
+      "sha256": "3f76c0c85e48a10eeea5fcdb6252a9e99f9985bdb7a9abca28bad73f3c0f3eee"
+    },
+    "v5_pure_test_log": {
+      "path": ".cache/sdk16-v5-gc-control-tests.log",
+      "bytes": 1074,
+      "sha256": "42227a16d9030b88cf004ec01e4c5969277f0fdb06dc2dd4a7b0fa28a3429773"
+    },
+    "previous_source_different_evidence": {
+      "path": "docs/evidence/2026-10-29-engine-stability/sdk14-gamed-main-memory-cycles.json",
+      "bytes": 76615,
+      "sha256": "9c8a2eeb392718eb6363f89a106b5982973b0a4fa886df769ad70f2e391e2357"
+    },
+    "storage": "Only bounded JSON/log files were read for this extraction. Full traces and images remain cache-only and were not read/reprocessed."
+  },
+  "instrumentation": {
+    "memory_runner_sha256": "68f72dba5b7952fe2b63f47e270ab8187840b0a9c720034e2052246e2eac003c",
+    "cycle_runner_sha256": "58ebacddef75fe79fe5ce542a3f84fa8816899e9dd23b09f257584864469dd07",
+    "control_helper_sha256": "3f76c0c85e48a10eeea5fcdb6252a9e99f9985bdb7a9abca28bad73f3c0f3eee",
+    "support_sha256": "d39e2e72028fb091e4a000a9b7e098b40153a9782cd755d0829379663891817f",
+    "benchmark_sha256": "bf61d7b614621332a2a9d189f4dfd20de50ca7cfa3b4012b92a0ec330d04c50f",
+    "analysis_sha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+    "dom_helper_sha256": "3915bef2ddc8a4db7f1b00a3b21dc4333f9474ff279f1554e0dabe6515961389",
+    "v5_pure_tests": {
+      "executed_by": "Root; final log read only",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 79.6328
+    },
+    "observation": "Exact-release official readObservation for main; complete worker receiver hook is supported but these measurements are main-only. No additional Core commands, Game/renderer writes, fake clocks, heap snapshots/tracking/sampling, or force GC in natural phases."
+  },
+  "natural_memory": {
+    "browser": "156.0.8078.48",
+    "warmup_seconds": 5,
+    "requested_seconds_per_case": 45,
+    "browser_closed": true,
+    "errors": [],
+    "cases": [
+      {
+        "case": "idle",
+        "seconds": 45.00679,
+        "samples": 46,
+        "observed_backend": "main",
+        "trace_quality": {
+          "status": "observed-partial",
+          "bytes": 21500776,
+          "truncated": false,
+          "data_loss": false,
+          "max_buffer_usage": 0.0376872643828392,
+          "category_session": "browser",
+          "category_attempts": [
+            {
+              "attempt": 1,
+              "status": "enumerated-insufficient",
+              "count": 0,
+              "error": null
+            },
+            {
+              "attempt": 2,
+              "status": "enumerated-sufficient",
+              "count": 289,
+              "error": null
+            }
+          ],
+          "failure": null
+        },
+        "canonical_gc_name_duration_events": {
+          "MinorGC": {
+            "duration_events": 41,
+            "events_per_second": 0.9109736553084545,
+            "duration_p95_ms": 2.665,
+            "duration_max_ms": 2.697
+          },
+          "MajorGC": {
+            "duration_events": 59,
+            "events_per_second": 1.3109133088585077,
+            "duration_p95_ms": 2.322,
+            "duration_max_ms": 2.427
+          }
+        },
+        "recognized_trace_intervals": {
+          "Minor": {
+            "availability": "observed",
+            "observed_duration_intervals": 689,
+            "root_trace_intervals": 41,
+            "intervals_per_s": 0.9109736553084545,
+            "wall_union_ms": 78.812,
+            "interval_p95_ms": 2.665,
+            "interval_max_ms": 2.697
+          },
+          "Major": {
+            "availability": "observed",
+            "observed_duration_intervals": 4291,
+            "root_trace_intervals": 118,
+            "intervals_per_s": 2.6218266177170153,
+            "wall_union_ms": 132.133,
+            "interval_p95_ms": 2.251,
+            "interval_max_ms": 2.427
+          },
+          "Incremental": {
+            "availability": "observed",
+            "observed_duration_intervals": 5402,
+            "root_trace_intervals": 1836,
+            "intervals_per_s": 40.79384466210543,
+            "wall_union_ms": 101.928,
+            "interval_p95_ms": 0.173,
+            "interval_max_ms": 1.72
+          }
+        },
+        "recognized_main_interval_wall_union_ms": 312.873,
+        "heap_used_bytes": {
+          "available": true,
+          "n": 46,
+          "first": 14377640,
+          "last": 12511916,
+          "min": 12511916,
+          "max": 39716496,
+          "delta": -1865724,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 12511916,
+            "max": 37668320,
+            "median": 20444560,
+            "p95": 37668320,
+            "slope_units_per_s": -1478861.642839846
+          }
+        },
+        "heap_total_capacity_bytes": {
+          "available": true,
+          "n": 46,
+          "first": 45973504,
+          "last": 62488576,
+          "min": 45187072,
+          "max": 64323584,
+          "delta": 16515072,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 62488576,
+            "max": 64061440,
+            "median": 63537152,
+            "p95": 64061440,
+            "slope_units_per_s": -163538.25770453265
+          }
+        },
+        "cached_owners_and_capacity": {
+          "backend.wasm_linear_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 29097984,
+              "max": 29097984,
+              "median": 29097984,
+              "p95": 29097984,
+              "slope_units_per_s": 0
+            }
+          },
+          "textures": {
+            "availability": true,
+            "n": 46,
+            "first": 36,
+            "last": 36,
+            "min": 36,
+            "max": 37,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 36,
+              "max": 37,
+              "median": 37,
+              "p95": 37,
+              "slope_units_per_s": -0.10932362249016656
+            }
+          },
+          "ui_image_batches.live_geometries": {
+            "availability": true,
+            "n": 46,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 4,
+              "max": 4,
+              "median": 4,
+              "p95": 4,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_textures": {
+            "availability": true,
+            "n": 46,
+            "first": 18,
+            "last": 18,
+            "min": 18,
+            "max": 19,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 18,
+              "max": 19,
+              "median": 19,
+              "p95": 19,
+              "slope_units_per_s": -0.10932362249016656
+            }
+          },
+          "ui_image_batches.buffer_capacity_quads": {
+            "availability": true,
+            "n": 46,
+            "first": 960,
+            "last": 960,
+            "min": 960,
+            "max": 960,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 960,
+              "max": 960,
+              "median": 960,
+              "p95": 960,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.resident_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 94,
+            "last": 94,
+            "min": 94,
+            "max": 94,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 94,
+              "max": 94,
+              "median": 94,
+              "p95": 94,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.resident_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 164634304,
+            "last": 164634304,
+            "min": 164634304,
+            "max": 164634304,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 164634304,
+              "max": 164634304,
+              "median": 164634304,
+              "p95": 164634304,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 45,
+            "last": 45,
+            "min": 45,
+            "max": 46,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 45,
+              "max": 46,
+              "median": 46,
+              "p95": 46,
+              "slope_units_per_s": -0.10932362249016656
+            }
+          },
+          "decoded_images.active_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 116046892,
+            "last": 116046892,
+            "min": 116046892,
+            "max": 116301508,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 116046892,
+              "max": 116301508,
+              "median": 116301508,
+              "p95": 116301508,
+              "slope_units_per_s": -27835.54346395624
+            }
+          },
+          "decoded_images.scene_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 70,
+            "last": 70,
+            "min": 70,
+            "max": 70,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 70,
+              "max": 70,
+              "median": 70,
+              "p95": 70,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.scene_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 66906784,
+            "last": 66906784,
+            "min": 66906784,
+            "max": 66906784,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 66906784,
+              "max": 66906784,
+              "median": 66906784,
+              "p95": 66906784,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 2,
+            "last": 2,
+            "min": 2,
+            "max": 2,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 2,
+              "max": 2,
+              "median": 2,
+              "p95": 2,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 12584864,
+            "last": 12584864,
+            "min": 12584864,
+            "max": 12584864,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 12584864,
+              "max": 12584864,
+              "median": 12584864,
+              "p95": 12584864,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loading": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.queued_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loads": {
+            "availability": true,
+            "n": 46,
+            "first": 94,
+            "last": 94,
+            "min": 94,
+            "max": 94,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 94,
+              "max": 94,
+              "median": 94,
+              "p95": 94,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.reuses": {
+            "availability": true,
+            "n": 46,
+            "first": 23,
+            "last": 24,
+            "min": 23,
+            "max": 24,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 24,
+              "max": 24,
+              "median": 24,
+              "p95": 24,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.evictions": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.closed_images": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.released_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 80748224,
+            "last": 80748224,
+            "min": 80748224,
+            "max": 80748224,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 80748224,
+              "max": 80748224,
+              "median": 80748224,
+              "p95": 80748224,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "cursor.shared_image_leases": null
+        },
+        "sampler_roundtrip_ms": {
+          "median": 5.201099999998405,
+          "p95": 14.33100000000195,
+          "max": 20.42069999999876
+        },
+        "errors": {
+          "hidden_samples": 0,
+          "player_errors": [],
+          "engine_profiler_samples": 0,
+          "sampler": []
+        }
+      },
+      {
+        "case": "inventory",
+        "seconds": 45.012372,
+        "samples": 46,
+        "observed_backend": "main",
+        "trace_quality": {
+          "status": "observed-partial",
+          "bytes": 20091033,
+          "truncated": false,
+          "data_loss": false,
+          "max_buffer_usage": 0.03542447090148926,
+          "category_session": "browser",
+          "category_attempts": [
+            {
+              "attempt": 1,
+              "status": "enumerated-sufficient",
+              "count": 289,
+              "error": null
+            }
+          ],
+          "failure": null
+        },
+        "canonical_gc_name_duration_events": {
+          "MinorGC": {
+            "duration_events": 14,
+            "events_per_second": 0.3110255998062044,
+            "duration_p95_ms": 1.205,
+            "duration_max_ms": 1.205
+          },
+          "MajorGC": {
+            "duration_events": 51,
+            "events_per_second": 1.133021827865459,
+            "duration_p95_ms": 2.352,
+            "duration_max_ms": 2.44
+          }
+        },
+        "recognized_trace_intervals": {
+          "Minor": {
+            "availability": "observed",
+            "observed_duration_intervals": 235,
+            "root_trace_intervals": 14,
+            "intervals_per_s": 0.3110255998062044,
+            "wall_union_ms": 12.368,
+            "interval_p95_ms": 1.205,
+            "interval_max_ms": 1.205
+          },
+          "Major": {
+            "availability": "observed",
+            "observed_duration_intervals": 3046,
+            "root_trace_intervals": 102,
+            "intervals_per_s": 2.266043655730918,
+            "wall_union_ms": 119.11,
+            "interval_p95_ms": 2.284,
+            "interval_max_ms": 2.44
+          },
+          "Incremental": {
+            "availability": "observed",
+            "observed_duration_intervals": 4643,
+            "root_trace_intervals": 1574,
+            "intervals_per_s": 34.96816386392612,
+            "wall_union_ms": 91.529,
+            "interval_p95_ms": 0.175,
+            "interval_max_ms": 0.385
+          }
+        },
+        "recognized_main_interval_wall_union_ms": 223.007,
+        "heap_used_bytes": {
+          "available": true,
+          "n": 46,
+          "first": 13767560,
+          "last": 17167168,
+          "min": 12613804,
+          "max": 28278416,
+          "delta": 3399608,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 12613804,
+            "max": 26590288,
+            "median": 20220208,
+            "p95": 26590288,
+            "slope_units_per_s": -33311.47322524981
+          }
+        },
+        "heap_total_capacity_bytes": {
+          "available": true,
+          "n": 46,
+          "first": 48070656,
+          "last": 50167808,
+          "min": 48070656,
+          "max": 50167808,
+          "delta": 2097152,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 49905664,
+            "max": 50167808,
+            "median": 49905664,
+            "p95": 50167808,
+            "slope_units_per_s": 36271.26706889984
+          }
+        },
+        "cached_owners_and_capacity": {
+          "backend.wasm_linear_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 29097984,
+              "max": 29097984,
+              "median": 29097984,
+              "p95": 29097984,
+              "slope_units_per_s": 0
+            }
+          },
+          "textures": {
+            "availability": true,
+            "n": 46,
+            "first": 24,
+            "last": 24,
+            "min": 24,
+            "max": 24,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 24,
+              "max": 24,
+              "median": 24,
+              "p95": 24,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_geometries": {
+            "availability": true,
+            "n": 46,
+            "first": 5,
+            "last": 5,
+            "min": 5,
+            "max": 5,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 5,
+              "max": 5,
+              "median": 5,
+              "p95": 5,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_textures": {
+            "availability": true,
+            "n": 46,
+            "first": 6,
+            "last": 6,
+            "min": 6,
+            "max": 6,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 6,
+              "max": 6,
+              "median": 6,
+              "p95": 6,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.buffer_capacity_quads": {
+            "availability": true,
+            "n": 46,
+            "first": 920,
+            "last": 920,
+            "min": 920,
+            "max": 920,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 920,
+              "max": 920,
+              "median": 920,
+              "p95": 920,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.resident_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 90,
+            "last": 90,
+            "min": 90,
+            "max": 90,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 90,
+              "max": 90,
+              "median": 90,
+              "p95": 90,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.resident_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 139855648,
+            "last": 139855648,
+            "min": 139855648,
+            "max": 139855648,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 139855648,
+              "max": 139855648,
+              "median": 139855648,
+              "p95": 139855648,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 50,
+            "last": 50,
+            "min": 50,
+            "max": 50,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 50,
+              "max": 50,
+              "median": 50,
+              "p95": 50,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 106265604,
+            "last": 106265604,
+            "min": 106265604,
+            "max": 106265604,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 106265604,
+              "max": 106265604,
+              "median": 106265604,
+              "p95": 106265604,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.scene_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 70,
+            "last": 70,
+            "min": 70,
+            "max": 70,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 70,
+              "max": 70,
+              "median": 70,
+              "p95": 70,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.scene_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 66906784,
+            "last": 66906784,
+            "min": 66906784,
+            "max": 66906784,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 66906784,
+              "max": 66906784,
+              "median": 66906784,
+              "p95": 66906784,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 704512,
+            "last": 704512,
+            "min": 704512,
+            "max": 704512,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 704512,
+              "max": 704512,
+              "median": 704512,
+              "p95": 704512,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loading": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.queued_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loads": {
+            "availability": true,
+            "n": 46,
+            "first": 94,
+            "last": 94,
+            "min": 94,
+            "max": 94,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 94,
+              "max": 94,
+              "median": 94,
+              "p95": 94,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.reuses": {
+            "availability": true,
+            "n": 46,
+            "first": 41,
+            "last": 41,
+            "min": 41,
+            "max": 41,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 41,
+              "max": 41,
+              "median": 41,
+              "p95": 41,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.evictions": {
+            "availability": true,
+            "n": 46,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 4,
+              "max": 4,
+              "median": 4,
+              "p95": 4,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.closed_images": {
+            "availability": true,
+            "n": 46,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 4,
+              "max": 4,
+              "median": 4,
+              "p95": 4,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.released_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 24778656,
+            "last": 24778656,
+            "min": 24778656,
+            "max": 24778656,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 24778656,
+              "max": 24778656,
+              "median": 24778656,
+              "p95": 24778656,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 55969568,
+            "last": 55969568,
+            "min": 55969568,
+            "max": 55969568,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 55969568,
+              "max": 55969568,
+              "median": 55969568,
+              "p95": 55969568,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "cursor.shared_image_leases": null
+        },
+        "sampler_roundtrip_ms": {
+          "median": 6.421399999991991,
+          "p95": 15.202799999999115,
+          "max": 17.359299999996438
+        },
+        "errors": {
+          "hidden_samples": 0,
+          "player_errors": [],
+          "engine_profiler_samples": 0,
+          "sampler": []
+        }
+      }
+    ],
+    "interpretation": "Idle41 MinorGC/59 MajorGC and inventory14/51 are canonical duration-event names, not whole collector cycles or OS pauses. Producer-family root/nested/incremental phase counts are distinct. Recurrent V8 GC remains observed; no no-frequent-GC result. Luau GC, worker isolates and native/GPU reachability remain unmeasured."
+  },
+  "natural_cycles": {
+    "status": "completed-instrumented-diagnostic",
+    "measured_cycles": 100,
+    "warmup_cycles": 2,
+    "native_toggles": 204,
+    "samples": 16,
+    "tail_seconds": 10,
+    "checkpoint_values": [
+      {
+        "cycle": 0,
+        "elapsed_ms": 152.27099999999882,
+        "nodes": 168,
+        "listeners": 70,
+        "heap_used_bytes": 36357096,
+        "heap_total_capacity_bytes": 69304320,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 45,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 100,
+        "reuses": 77,
+        "evictions": 7,
+        "closed_images": 7,
+        "released_estimated_bytes": 43263904,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 20,
+        "elapsed_ms": 23979.6651,
+        "nodes": 528,
+        "listeners": 70,
+        "heap_used_bytes": 14043020,
+        "heap_total_capacity_bytes": 83197952,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 46,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 160,
+        "reuses": 630,
+        "evictions": 67,
+        "closed_images": 67,
+        "released_estimated_bytes": 412968864,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 40,
+        "elapsed_ms": 49123.3278,
+        "nodes": 888,
+        "listeners": 70,
+        "heap_used_bytes": 14029824,
+        "heap_total_capacity_bytes": 83197952,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 139855648,
+        "active_entries": 45,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 220,
+        "reuses": 1184,
+        "evictions": 127,
+        "closed_images": 127,
+        "released_estimated_bytes": 782673824,
+        "loading": 3,
+        "active_tasks": 2,
+        "queued_tasks": 1,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 60,
+        "elapsed_ms": 72636.0386,
+        "nodes": 1248,
+        "listeners": 70,
+        "heap_used_bytes": 14673972,
+        "heap_total_capacity_bytes": 83722240,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 45,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 280,
+        "reuses": 1724,
+        "evictions": 187,
+        "closed_images": 187,
+        "released_estimated_bytes": 1152378784,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 80,
+        "elapsed_ms": 97925.3456,
+        "nodes": 1608,
+        "listeners": 72,
+        "heap_used_bytes": 15171440,
+        "heap_total_capacity_bytes": 84770816,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 45,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 340,
+        "reuses": 2268,
+        "evictions": 247,
+        "closed_images": 247,
+        "released_estimated_bytes": 1522083744,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 100,
+        "elapsed_ms": 121894.451,
+        "nodes": 1968,
+        "listeners": 88,
+        "heap_used_bytes": 13165576,
+        "heap_total_capacity_bytes": 84246528,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 45,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 400,
+        "reuses": 2808,
+        "evictions": 307,
+        "closed_images": 307,
+        "released_estimated_bytes": 1891788704,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      }
+    ],
+    "tail": {
+      "samples": 10,
+      "first": {
+        "nodes": 1968,
+        "listeners": 70,
+        "heap_used_bytes": 20764816,
+        "heap_total_capacity_bytes": 84246528,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 45,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 400,
+        "reuses": 2808,
+        "evictions": 307,
+        "closed_images": 307,
+        "released_estimated_bytes": 1891788704,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      },
+      "last": {
+        "nodes": 1968,
+        "listeners": 70,
+        "heap_used_bytes": 30538884,
+        "heap_total_capacity_bytes": 83984384,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 46,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 400,
+        "reuses": 2809,
+        "evictions": 307,
+        "closed_images": 307,
+        "released_estimated_bytes": 1891788704,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      },
+      "heap_used_bytes": {
+        "n": 10,
+        "min": 14254596,
+        "max": 31669288,
+        "median": 20764816,
+        "p95": 31669288,
+        "slope_units_per_s": 128336.42416228235
+      },
+      "heap_capacity_bytes": {
+        "n": 10,
+        "min": 83722240,
+        "max": 84508672,
+        "median": 83984384,
+        "p95": 84508672,
+        "slope_units_per_s": -50838.56412648378
+      }
+    },
+    "owner_ranges": {
+      "backend.wasm_linear_bytes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 29097984,
+          "last": 29097984,
+          "min": 29097984,
+          "max": 29097984
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "textures": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 36,
+          "last": 36,
+          "min": 21,
+          "max": 37
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 36,
+          "last": 37,
+          "min": 36,
+          "max": 37
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_geometries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 4,
+          "last": 4,
+          "min": 2,
+          "max": 4
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 4,
+          "last": 4,
+          "min": 4,
+          "max": 4
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_materials": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.live_textures": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 18,
+          "last": 18,
+          "min": 3,
+          "max": 19
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 18,
+          "last": 19,
+          "min": 18,
+          "max": 19
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "ui_image_batches.buffer_capacity_quads": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 960,
+          "last": 960,
+          "min": 384,
+          "max": 960
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 960,
+          "last": 960,
+          "min": 960,
+          "max": 960
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.resident_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 93,
+          "last": 93,
+          "min": 93,
+          "max": 93
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 93,
+          "last": 93,
+          "min": 93,
+          "max": 93
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.resident_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 158340896,
+          "last": 158340896,
+          "min": 139855648,
+          "max": 158340896
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 158340896,
+          "last": 158340896,
+          "min": 158340896,
+          "max": 158340896
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.active_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 45,
+          "last": 45,
+          "min": 45,
+          "max": 46
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 45,
+          "last": 46,
+          "min": 45,
+          "max": 46
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.active_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 116046892,
+          "last": 116046892,
+          "min": 97561644,
+          "max": 116301508
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 116046892,
+          "last": 116301508,
+          "min": 116046892,
+          "max": 116301508
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.scene_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 70,
+          "last": 70,
+          "min": 70,
+          "max": 70
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 70,
+          "last": 70,
+          "min": 70,
+          "max": 70
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.scene_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 66906784,
+          "last": 66906784,
+          "min": 66906784,
+          "max": 66906784
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 66906784,
+          "last": 66906784,
+          "min": 66906784,
+          "max": 66906784
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.unused_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1,
+          "last": 1,
+          "min": 1,
+          "max": 1
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.unused_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 6291456,
+          "last": 6291456,
+          "min": 6291456,
+          "max": 6291456
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 6291456,
+          "last": 6291456,
+          "min": 6291456,
+          "max": 6291456
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.loading": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 3
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.active_tasks": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 2
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.queued_tasks": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 1
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "decoded_images.loads": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 100,
+          "last": 400,
+          "min": 100,
+          "max": 400
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 400,
+          "last": 400,
+          "min": 400,
+          "max": 400
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.reuses": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 77,
+          "last": 2808,
+          "min": 77,
+          "max": 2808
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 2808,
+          "last": 2809,
+          "min": 2808,
+          "max": 2809
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.evictions": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 7,
+          "last": 307,
+          "min": 7,
+          "max": 307
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 307,
+          "last": 307,
+          "min": 307,
+          "max": 307
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.closed_images": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 7,
+          "last": 307,
+          "min": 7,
+          "max": 307
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 307,
+          "last": 307,
+          "min": 307,
+          "max": 307
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.released_bytes_estimate": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 43263904,
+          "last": 1891788704,
+          "min": 43263904,
+          "max": 1891788704
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 1891788704,
+          "last": 1891788704,
+          "min": 1891788704,
+          "max": 1891788704
+        },
+        "strictly_increasing_closed_checkpoints": true,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": false,
+        "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+      },
+      "decoded_images.pressure_bytes": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 74454816,
+          "last": 74454816,
+          "min": 55969568,
+          "max": 74454816
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 74454816,
+          "last": 74454816,
+          "min": 74454816,
+          "max": 74454816
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Reserved/cache capacity, not live-byte reachability"
+      },
+      "decoded_images.pressure_entries": {
+        "closed_checkpoints": {
+          "available": true,
+          "samples": 6,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "tail": {
+          "available": true,
+          "samples": 10,
+          "first": 0,
+          "last": 0,
+          "min": 0,
+          "max": 0
+        },
+        "strictly_increasing_closed_checkpoints": false,
+        "tail_last_three_stable": true,
+        "tail_final_at_or_below_warm_world_baseline": true,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      },
+      "cursor.shared_image_leases": {
+        "closed_checkpoints": {
+          "available": false,
+          "samples": 0,
+          "first": null,
+          "last": null,
+          "min": null,
+          "max": null
+        },
+        "tail": {
+          "available": false,
+          "samples": 0,
+          "first": null,
+          "last": null,
+          "min": null,
+          "max": null
+        },
+        "strictly_increasing_closed_checkpoints": null,
+        "tail_last_three_stable": null,
+        "tail_final_at_or_below_warm_world_baseline": null,
+        "semantics": "Cached owner/cache count; stability is bounded evidence only"
+      }
+    },
+    "heap_used_bytes": {
+      "availability": "observed",
+      "n": 16,
+      "first": 36357096,
+      "last": 30538884,
+      "delta": -5818212,
+      "min": 13165576,
+      "max": 36357096,
+      "median": 15171440,
+      "p95": 36357096,
+      "slope_units_per_s": -2144.5691526514825,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 14254596,
+        "max": 31669288,
+        "median": 20764816,
+        "p95": 31669288,
+        "slope_units_per_s": 128336.42416228235
+      }
+    },
+    "heap_total_capacity_bytes": {
+      "availability": "observed",
+      "n": 16,
+      "first": 69304320,
+      "last": 83984384,
+      "delta": 14680064,
+      "min": 69304320,
+      "max": 84770816,
+      "median": 83984384,
+      "p95": 84770816,
+      "slope_units_per_s": 59525.757340005,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 83722240,
+        "max": 84508672,
+        "median": 83984384,
+        "p95": 84508672,
+        "slope_units_per_s": -50838.56412648378
+      }
+    },
+    "initial_boundary": {
+      "frame": 271,
+      "time_seconds": 4.516666666666667,
+      "screen": "world",
+      "ui_window": {
+        "available": true,
+        "value": "none"
+      },
+      "window_blocks_scene_input": {
+        "available": true,
+        "value": false
+      },
+      "logical_retained_registry": {
+        "available": true,
+        "entries": 3,
+        "declared_quads": 623
+      },
+      "authored_budget": {
+        "available": true,
+        "value": 760
+      },
+      "authored_cost": {
+        "available": true,
+        "value": 679
+      }
+    },
+    "final_boundary": {
+      "frame": 8260,
+      "time_seconds": 137.66666666666666,
+      "screen": "world",
+      "ui_window": {
+        "available": true,
+        "value": "none"
+      },
+      "window_blocks_scene_input": {
+        "available": true,
+        "value": false
+      },
+      "logical_retained_registry": {
+        "available": true,
+        "entries": 3,
+        "declared_quads": 623
+      },
+      "authored_budget": {
+        "available": true,
+        "value": 760
+      },
+      "authored_cost": {
+        "available": true,
+        "value": 683
+      }
+    },
+    "attached_dom_diff": {
+      "availability": "observed",
+      "added": [],
+      "removed": [],
+      "changed": []
+    },
+    "cached_ui_asset_diff": {
+      "availability": "observed",
+      "added": [
+        {
+          "id": "texture://jy/battle-sprites/brawler",
+          "state": "ready"
+        }
+      ],
+      "removed": []
+    },
+    "listener_diff": {
+      "availability": "observed",
+      "added": [],
+      "removed": [],
+      "note": "Descriptor/count multiset comparison. It does not claim distinct closures at one source location share identity."
+    },
+    "remote_listener_handles": {
+      "baseline": "observed",
+      "end": "observed",
+      "baseline_release_errors": [],
+      "end_release_errors": []
+    },
+    "errors": [],
+    "totals": {
+      "dom_nodes_before": 168,
+      "dom_nodes_after": 1968,
+      "dom_node_delta": 1800,
+      "nodes_per_cycle": 18,
+      "loads_delta": 300,
+      "evictions_delta": 300,
+      "closed_images_delta": 300,
+      "released_estimated_byte_delta": 1848524800,
+      "loads_per_cycle": 3,
+      "released_estimated_bytes_per_cycle": 18485248,
+      "aggregate_nodes_per_load": 6,
+      "caveat": "Aggregate count ratio only; no identity-level retaining path or per-load DOM ownership is established."
+    },
+    "observations": [
+      "Broker resident entries stay93 at closed checkpoints and tail, while ready-byte estimates and active counts vary. Cached publication can lag a completed UI boundary; one checkpoint reports3 loads in flight. Tail queues/loading are0.",
+      "Scene plan is70 entries/66,906,784 estimated RGBA bytes. Tail resident is93/158,340,896B and unused1/6,291,456B. Active45..46 overlaps scene pins; these sets cannot be summed. Large pinned memory/pressure and repeat cold loads remain real footprint/churn concerns.",
+      "CDP Nodes grow168 to1968 and remain1968 through the natural10-second tail. Attached DOM and document/window listener diffs are empty; all tail listeners are70. Added ready Canvas asset brawler correlates with tail texture/active changes only.",
+      "Cursor lease metrics remain unavailable, not zero. WASM29,097,984B is reserved linear capacity, not Luau live bytes."
+    ]
+  },
+  "separate_post_cycle_control": {
+    "status": "completed-intrusive-control",
+    "intrusive": true,
+    "commands_planned": 2,
+    "commands_sent": 2,
+    "command": "HeapProfiler.collectGarbage",
+    "elapsed_ms": 108.71790000001783,
+    "natural_report": {
+      "path": "report.json",
+      "bytes": 28674,
+      "sha256": "3ef96be8b8a9e612aad8fbfa8520c32d55d4add9cdb156542473f8f52f27aac2"
+    },
+    "natural_report_integrity": {
+      "unchanged": true,
+      "before": {
+        "path": "report.json",
+        "bytes": 28674,
+        "sha256": "3ef96be8b8a9e612aad8fbfa8520c32d55d4add9cdb156542473f8f52f27aac2"
+      },
+      "after": {
+        "path": "report.json",
+        "bytes": 28674,
+        "sha256": "3ef96be8b8a9e612aad8fbfa8520c32d55d4add9cdb156542473f8f52f27aac2"
+      }
+    },
+    "before": {
+      "availability": "observed",
+      "elapsed_ms": 132898.7289,
+      "completed_snapshot_frame": 8318,
+      "hidden": false,
+      "player_error": "",
+      "values": {
+        "nodes": 1968,
+        "listeners": 70,
+        "heap_used_bytes": 16184828,
+        "heap_total_capacity_bytes": 83984384,
+        "resident_entries": 93,
+        "resident_estimated_bytes": 158340896,
+        "active_entries": 46,
+        "scene_entries": 70,
+        "scene_estimated_bytes": 66906784,
+        "unused_entries": 1,
+        "unused_estimated_bytes": 6291456,
+        "loads": 400,
+        "reuses": 2809,
+        "evictions": 307,
+        "closed_images": 307,
+        "released_estimated_bytes": 1891788704,
+        "loading": 0,
+        "active_tasks": 0,
+        "queued_tasks": 0,
+        "wasm_capacity_bytes": 29097984
+      }
+    },
+    "attempts": [
+      {
+        "index": 1,
+        "status": "command-completed",
+        "response": {},
+        "error": null,
+        "command_wall_ms": 34.03719999999157,
+        "after": {
+          "availability": "observed",
+          "elapsed_ms": 132949.9656,
+          "completed_snapshot_frame": 8320,
+          "hidden": false,
+          "player_error": "",
+          "values": {
+            "nodes": 1968,
+            "listeners": 70,
+            "heap_used_bytes": 12288584,
+            "heap_total_capacity_bytes": 13504512,
+            "resident_entries": 93,
+            "resident_estimated_bytes": 158340896,
+            "active_entries": 46,
+            "scene_entries": 70,
+            "scene_estimated_bytes": 66906784,
+            "unused_entries": 1,
+            "unused_estimated_bytes": 6291456,
+            "loads": 400,
+            "reuses": 2809,
+            "evictions": 307,
+            "closed_images": 307,
+            "released_estimated_bytes": 1891788704,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "wasm_capacity_bytes": 29097984
+          }
+        }
+      },
+      {
+        "index": 2,
+        "status": "command-completed",
+        "response": {},
+        "error": null,
+        "command_wall_ms": 35.509799999999814,
+        "after": {
+          "availability": "observed",
+          "elapsed_ms": 133002.1959,
+          "completed_snapshot_frame": 8324,
+          "hidden": false,
+          "player_error": "",
+          "values": {
+            "nodes": 1968,
+            "listeners": 70,
+            "heap_used_bytes": 12292292,
+            "heap_total_capacity_bytes": 13242368,
+            "resident_entries": 93,
+            "resident_estimated_bytes": 158340896,
+            "active_entries": 46,
+            "scene_entries": 70,
+            "scene_estimated_bytes": 66906784,
+            "unused_entries": 1,
+            "unused_estimated_bytes": 6291456,
+            "loads": 400,
+            "reuses": 2809,
+            "evictions": 307,
+            "closed_images": 307,
+            "released_estimated_bytes": 1891788704,
+            "loading": 0,
+            "active_tasks": 0,
+            "queued_tasks": 0,
+            "wasm_capacity_bytes": 29097984
+          }
+        }
+      }
+    ],
+    "failure": null,
+    "interpretation": "Both page-CDP requests completed with empty successful replies. Nodes remain1968; JS heap used falls16,184,828B to12,288,584B then12,292,292B. Simulation advances frame8318 to8324. This demonstrates observed V8 reclamation plus unresolved node count, not proof of a browser/engine leak or complete native/Blink collection. Broker cached owners remain unchanged across these control samples."
+  },
+  "descriptive_previous_comparison": {
+    "prior_game_source_sha256": "2a16dd4713286e0e8420373246de1ce393d066bc193618bca1a5648a31743ab8",
+    "prior_host": "SDK14",
+    "current_game_source_sha256": "6073d2f8856a7c55140a480d0a5bce4e8ab0b2c0c7bfe3facfb68367eec9917e",
+    "current_host": "SDK16",
+    "prior_load_and_retire_delta": 500,
+    "current_load_and_retire_delta": 300,
+    "prior_dom_node_delta": 3000,
+    "current_dom_node_delta": 1800,
+    "prior_released_estimated_byte_delta": 2479513600,
+    "current_released_estimated_byte_delta": 1848524800,
+    "scope": "Descriptive cross-source/cross-host comparison only. It does not isolate the cause or quantify a controlled SDK-only speedup."
+  },
+  "limitations": [
+    "No production FPS, absence of frequent GC, universal no-leak or release-readiness result is claimed.",
+    "Main page CDP/V8 statistics omit Luau collector events, worker totals and GPU-driver allocations. Heap capacity, pending garbage, decoded RGBA estimates and DOM counts are different scopes.",
+    "Two successful intrusive GC RPCs do not guarantee every Blink/native collector completed; unchanged nodes have no established retaining path.",
+    "The Game and renderer remain live during post-control reads. Recorded frame/broker changes must be considered before causal attribution; no simulation pause or clock rewrite was introduced.",
+    "Tracing, one-Hz CDP/evaluate sampling and post-control GC perturb scheduling. Authorized concurrent project load can affect measured wall time.",
+    "Natural report bytes/hash remained sealed after the control. Forced observations are never merged into natural samples or GC frequency data. Browser closure is reported by Root, while recorded remote-handle releases are independently explicit."
+  ]
+}

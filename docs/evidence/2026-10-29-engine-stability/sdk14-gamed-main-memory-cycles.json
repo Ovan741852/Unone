@@ -1,0 +1,2408 @@
+{
+  "schema": "unone.sdk14.gamed.main.memory-and-cycles.v1",
+  "status": "observed-image-churn-and-linear-CDP-node-growth; cause/liveness not established",
+  "scope": {
+    "game_source_sha256": "2a16dd4713286e0e8420373246de1ce393d066bc193618bca1a5648a31743ab8",
+    "game_identity": "Game D A/2a16; not the later HUD B/48dff source",
+    "target": "official Web player, actual published main backend, interpolation false",
+    "runtime": "SDK14 host over unchanged verified CLI/WASM10, UI0.6 opt2 production; no newly compiled fused-copy runtime",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "diagnostic_not_fps_acceptance": true,
+    "load_scope": "User authorized concurrent project CPU/GPU work; no machine-exclusive scope is claimed. Event wall durations and instrumented pacing may be load affected.",
+    "method": "Natural collection only; no forced GC, engine profiler, extra Core command, fake clock or renderer substitution. Cached host reports and page CDP metrics; browser-scoped trace for memory runs only.",
+    "mutation_scope": "This evidence extraction reads existing small JSON/log files only. No Product source/data/save/server/export changes and no new measurement.",
+    "not_proven": [
+      "leak-free behavior",
+      "absence of frequent GC",
+      "whole-collector cycle or OS pause counts",
+      "Luau GC or live heap",
+      "worker-isolate totals",
+      "GPU driver/VRAM bytes",
+      "stable production FPS"
+    ]
+  },
+  "selected_artifact": {
+    "ok": true,
+    "export": "D:/Projects/JYRogue/game/dist/player-performance-verified14/",
+    "manifest_sha256": "683b800701b4c6741f9e7e88cbfe12967a8b4f723b9bfd92ff76b19e703661e9",
+    "release": "releases/66fd1fe98ba8fd607051e65e05f7a387dddfa21f429143f79873ce1e82528dd6/",
+    "verified_files": 611,
+    "verified_bytes": 192329963,
+    "source_sha256": "2a16dd4713286e0e8420373246de1ce393d066bc193618bca1a5648a31743ab8",
+    "plan_sha256": "5b21fda647e0751e7315bef9ba1e0654023038b88074102e252bad1f6827d0c5",
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "renderer": "official",
+    "validation_record": {
+      "path": ".cache/jy-sdk14-verified14-export-validation.json",
+      "bytes": 611,
+      "sha256": "f18e0dd87ecbec440287d1041148206fe9986e474b764eeb1e9d041045a603ad"
+    }
+  },
+  "raw_evidence": {
+    "memory_compact": {
+      "path": ".cache/jy-gamed-sdk14-v4-memory-run1/compact.json",
+      "bytes": 46929,
+      "sha256": "23d2debb729bb2d892a65098cf1274f14f52cad8d7544e6422b9221ed7b132f3"
+    },
+    "memory_source": {
+      "path": ".cache/jy-gamed-sdk14-v4-memory-run1/source.json",
+      "bytes": 142080,
+      "sha256": "484f80bee7e32888049b9de4b1ec24102b201d1c76c313e54935f5e3659a5d6f"
+    },
+    "cycles_report": {
+      "path": ".cache/jy-gamed-sdk14-v4-cycles100-run1/report.json",
+      "bytes": 28449,
+      "sha256": "54b4055d9793330170833713c30e809b729639709167263042e14a6da80315c9"
+    },
+    "cycles_source": {
+      "path": ".cache/jy-gamed-sdk14-v4-cycles100-run1/source.json",
+      "bytes": 142224,
+      "sha256": "1cf086d0c5efac8b58bc4c0a5cdf0e574a5796db98e931bbfbb801c946f614e9"
+    },
+    "cycles_samples": {
+      "path": ".cache/jy-gamed-sdk14-v4-cycles100-run1/samples.json",
+      "bytes": 195520,
+      "sha256": "cee5d83290b501839053ab783cf9d9e93f9c3873f816f8d904207391984a3643"
+    },
+    "pure_regression_log": {
+      "path": ".cache/sdk14-v4-diagnostic-counters-tests.log",
+      "bytes": 1160,
+      "sha256": "59416a6da771cc0a643f8f08719580bd1628bb0d00304ff1b2f34f8a7a43ddfc"
+    },
+    "retention_audit": {
+      "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk14-cycles100-observer-retention-audit.json",
+      "bytes": 20040,
+      "sha256": "b093b8bdf8e7ce918c2725964978470c8888f40a7783e4c34083d9dd1d8e29f9"
+    },
+    "storage": "Complete raw traces, category/transport errors, game fixture data and full observations remain cache-only; they are not copied into this tracked compact."
+  },
+  "preparation_and_validation": {
+    "v4_pure_gate": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 84.815,
+      "executed_by": "Root; raw log read during this extraction"
+    },
+    "author_script_versions": {
+      "memory": "68f72dba5b7952fe2b63f47e270ab8187840b0a9c720034e2052246e2eac003c",
+      "cycles": "1ab7a0d13ebba8f3dccd39efde39871cacc080e0712cfa5f22fbb9b7aa9ef583",
+      "dom_helper": "3915bef2ddc8a4db7f1b00a3b21dc4333f9474ff279f1554e0dabe6515961389"
+    },
+    "frozen_preparation": {
+      "support_sha256": "d39e2e72028fb091e4a000a9b7e098b40153a9782cd755d0829379663891817f",
+      "benchmark_sha256": "bf61d7b614621332a2a9d189f4dfd20de50ca7cfa3b4012b92a0ec330d04c50f",
+      "analysis_sha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+      "source_directory": "D:/Projects/Unone/.cache/jy-sdk14-v4-preparation",
+      "unchanged_data_fixture_directory": "D:/Projects/Unone/.cache/jy-ui06-harness"
+    },
+    "observation": "Main uses the exact-release official readObservation ABI. Worker support passively observes actual InstanceReceiver.accept return values, but this evidence is main-only. Metadata validates actual backend and pre-READY probe installation.",
+    "instrumentation_changes": "Separate v4 SDK14 diagnostic: v3 cached broker/cursor counters plus frozen official main/worker observation probe and actual backend admission. Remove obsolete raw Worker packet capture; use only actual InstanceReceiver.accept returned values. Timed sampling, scenarios, trace/GC and512-node numeric bound unchanged. Not byte-identical to prior baselines.",
+    "independently_reviewed_scope": "Core read-only v4 review found no concrete P1/P2 in the bounded source slice; this does not establish browser object reachability."
+  },
+  "natural_memory": {
+    "browser": "156.0.8078.48",
+    "warmup_seconds": 5,
+    "requested_seconds_per_case": 45,
+    "metadata_identity_verified": true,
+    "browser_closed_flag": true,
+    "cases": [
+      {
+        "case": "idle",
+        "actual_backend": "main",
+        "interpolation": false,
+        "seconds": 45.015327,
+        "samples": 46,
+        "trace_quality": {
+          "status": "observed-partial",
+          "bytes": 20740731,
+          "truncated": false,
+          "data_loss": false,
+          "max_buffer_usage": 0.036985017359256744,
+          "category_session": "browser",
+          "category_attempts": [
+            {
+              "attempt": 1,
+              "status": "enumerated-insufficient",
+              "count": 0,
+              "error": null
+            },
+            {
+              "attempt": 2,
+              "status": "enumerated-sufficient",
+              "count": 289,
+              "error": null
+            }
+          ],
+          "failure": null
+        },
+        "canonical_gc_name_duration_events": {
+          "MinorGC": {
+            "duration_events": 41,
+            "events_per_second": 0.9108008923271845,
+            "duration_p95_ms": 2.411,
+            "duration_max_ms": 5.234
+          },
+          "MajorGC": {
+            "duration_events": 57,
+            "events_per_second": 1.2662353868938907,
+            "duration_p95_ms": 2.316,
+            "duration_max_ms": 2.409
+          }
+        },
+        "classified_gc_trace_intervals": {
+          "Minor": {
+            "availability": "observed",
+            "observed_duration_intervals": 686,
+            "root_trace_intervals": 41,
+            "intervals_per_s": 0.9108008923271845,
+            "wall_union_ms": 69.199,
+            "interval_p95_ms": 2.411,
+            "interval_max_ms": 5.234
+          },
+          "Major": {
+            "availability": "observed",
+            "observed_duration_intervals": 4075,
+            "root_trace_intervals": 114,
+            "intervals_per_s": 2.5324707737877814,
+            "wall_union_ms": 117.422,
+            "interval_p95_ms": 2.109,
+            "interval_max_ms": 2.409
+          },
+          "Incremental": {
+            "availability": "observed",
+            "observed_duration_intervals": 5154,
+            "root_trace_intervals": 1765,
+            "intervals_per_s": 39.20886768188977,
+            "wall_union_ms": 89.256,
+            "interval_p95_ms": 0.159,
+            "interval_max_ms": 0.383
+          }
+        },
+        "main_trace_interval_wall_union_ms": 275.877,
+        "js_heap_used_bytes": {
+          "availability": true,
+          "n": 46,
+          "first": 18775868,
+          "last": 27874672,
+          "min": 12195416,
+          "max": 39792676,
+          "delta": 9098804,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 14927464,
+            "max": 36473856,
+            "median": 21516724,
+            "p95": 36473856,
+            "slope_units_per_s": -1039584.453538221
+          }
+        },
+        "js_heap_total_capacity_bytes": {
+          "availability": true,
+          "n": 46,
+          "first": 47013888,
+          "last": 67985408,
+          "min": 47013888,
+          "max": 71131136,
+          "delta": 20971520,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 67461120,
+            "max": 69033984,
+            "median": 68509696,
+            "p95": 69033984,
+            "slope_units_per_s": -123538.22960418861
+          }
+        },
+        "cached_owners_and_capacities": {
+          "backend.wasm_linear_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 29097984,
+              "max": 29097984,
+              "median": 29097984,
+              "p95": 29097984,
+              "slope_units_per_s": 0
+            }
+          },
+          "textures": {
+            "availability": true,
+            "n": 46,
+            "first": 36,
+            "last": 36,
+            "min": 36,
+            "max": 37,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 36,
+              "max": 37,
+              "median": 37,
+              "p95": 37,
+              "slope_units_per_s": -0.12835697283223083
+            }
+          },
+          "shader_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_geometries": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_geometries": {
+            "availability": true,
+            "n": 46,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 4,
+              "max": 4,
+              "median": 4,
+              "p95": 4,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_meshes": {
+            "availability": true,
+            "n": 46,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 4,
+              "max": 4,
+              "median": 4,
+              "p95": 4,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_textures": {
+            "availability": true,
+            "n": 46,
+            "first": 18,
+            "last": 18,
+            "min": 18,
+            "max": 19,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 18,
+              "max": 19,
+              "median": 19,
+              "p95": 19,
+              "slope_units_per_s": -0.1283569728322308
+            }
+          },
+          "ui_image_batches.buffer_capacity_quads": {
+            "availability": true,
+            "n": 46,
+            "first": 960,
+            "last": 960,
+            "min": 960,
+            "max": 960,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 960,
+              "max": 960,
+              "median": 960,
+              "p95": 960,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.entries": {
+            "availability": true,
+            "n": 46,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 14,
+              "max": 14,
+              "median": 14,
+              "p95": 14,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.decoded_texture_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 28627248,
+              "max": 28627248,
+              "median": 28627248,
+              "p95": 28627248,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui.usage.logical_nodes": {
+            "availability": true,
+            "n": 46,
+            "first": 732,
+            "last": 732,
+            "min": 732,
+            "max": 736,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 732,
+              "max": 736,
+              "median": 734,
+              "p95": 736,
+              "slope_units_per_s": -0.5338356194750002
+            }
+          },
+          "decoded_images.resident_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 94,
+            "last": 94,
+            "min": 94,
+            "max": 94,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 94,
+              "max": 94,
+              "median": 94,
+              "p95": 94,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.resident_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 164634304,
+            "last": 164634304,
+            "min": 164634304,
+            "max": 164634304,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 164634304,
+              "max": 164634304,
+              "median": 164634304,
+              "p95": 164634304,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 45,
+            "last": 45,
+            "min": 45,
+            "max": 46,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 45,
+              "max": 46,
+              "median": 46,
+              "p95": 46,
+              "slope_units_per_s": -0.12835697283223083
+            }
+          },
+          "decoded_images.active_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 116046892,
+            "last": 116046892,
+            "min": 116046892,
+            "max": 116301508,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 116046892,
+              "max": 116301508,
+              "median": 116301508,
+              "p95": 116301508,
+              "slope_units_per_s": -32681.738994651278
+            }
+          },
+          "decoded_images.scene_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 69,
+            "last": 69,
+            "min": 69,
+            "max": 69,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 69,
+              "max": 69,
+              "median": 69,
+              "p95": 69,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.scene_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 66888352,
+            "last": 66888352,
+            "min": 66888352,
+            "max": 66888352,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 66888352,
+              "max": 66888352,
+              "median": 66888352,
+              "p95": 66888352,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 2,
+            "last": 2,
+            "min": 2,
+            "max": 2,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 2,
+              "max": 2,
+              "median": 2,
+              "p95": 2,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 12584864,
+            "last": 12584864,
+            "min": 12584864,
+            "max": 12584864,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 12584864,
+              "max": 12584864,
+              "median": 12584864,
+              "p95": 12584864,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loading": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.queued_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loads": {
+            "availability": true,
+            "n": 46,
+            "first": 94,
+            "last": 94,
+            "min": 94,
+            "max": 94,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 94,
+              "max": 94,
+              "median": 94,
+              "p95": 94,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.reuses": {
+            "availability": true,
+            "n": 46,
+            "first": 22,
+            "last": 23,
+            "min": 22,
+            "max": 23,
+            "delta": 1,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 23,
+              "max": 23,
+              "median": 23,
+              "p95": 23,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.evictions": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.closed_images": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.released_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 80748224,
+            "last": 80748224,
+            "min": 80748224,
+            "max": 80748224,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 80748224,
+              "max": 80748224,
+              "median": 80748224,
+              "p95": 80748224,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "cursor.shared_image_leases": null
+        },
+        "page_cdp_duration_deltas_seconds": {
+          "TaskDuration": 23.350922999999998,
+          "ScriptDuration": 0.141898,
+          "scope": "Available page CDP counter differences; ScriptDuration is a reported sub-scope, not a complete JavaScript/WASM CPU accounting or a subtraction-based residual"
+        },
+        "errors": {
+          "hidden_samples": 0,
+          "player_errors": [],
+          "engine_profiler_samples": 0,
+          "sampler": []
+        }
+      },
+      {
+        "case": "inventory",
+        "actual_backend": "main",
+        "interpolation": false,
+        "seconds": 45.010994,
+        "samples": 46,
+        "trace_quality": {
+          "status": "observed-partial",
+          "bytes": 19683645,
+          "truncated": false,
+          "data_loss": false,
+          "max_buffer_usage": 0.0352293960750103,
+          "category_session": "browser",
+          "category_attempts": [
+            {
+              "attempt": 1,
+              "status": "enumerated-sufficient",
+              "count": 289,
+              "error": null
+            }
+          ],
+          "failure": null
+        },
+        "canonical_gc_name_duration_events": {
+          "MinorGC": {
+            "duration_events": 13,
+            "events_per_second": 0.28881832736242175,
+            "duration_p95_ms": 0.935,
+            "duration_max_ms": 0.935
+          },
+          "MajorGC": {
+            "duration_events": 50,
+            "events_per_second": 1.110839720624699,
+            "duration_p95_ms": 2.272,
+            "duration_max_ms": 2.346
+          }
+        },
+        "classified_gc_trace_intervals": {
+          "Minor": {
+            "availability": "observed",
+            "observed_duration_intervals": 223,
+            "root_trace_intervals": 13,
+            "intervals_per_s": 0.28881832736242175,
+            "wall_union_ms": 10.391,
+            "interval_p95_ms": 0.935,
+            "interval_max_ms": 0.935
+          },
+          "Major": {
+            "availability": "observed",
+            "observed_duration_intervals": 2988,
+            "root_trace_intervals": 100,
+            "intervals_per_s": 2.221679441249398,
+            "wall_union_ms": 106.637,
+            "interval_p95_ms": 2.138,
+            "interval_max_ms": 2.346
+          },
+          "Incremental": {
+            "availability": "observed",
+            "observed_duration_intervals": 4454,
+            "root_trace_intervals": 1519,
+            "intervals_per_s": 33.747310712578354,
+            "wall_union_ms": 81.586,
+            "interval_p95_ms": 0.171,
+            "interval_max_ms": 0.461
+          }
+        },
+        "main_trace_interval_wall_union_ms": 198.614,
+        "js_heap_used_bytes": {
+          "availability": true,
+          "n": 46,
+          "first": 21322680,
+          "last": 28024532,
+          "min": 12284512,
+          "max": 28966484,
+          "delta": 6701852,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 12599432,
+            "max": 28024532,
+            "median": 19550168,
+            "p95": 28024532,
+            "slope_units_per_s": 374197.22297103953
+          }
+        },
+        "js_heap_total_capacity_bytes": {
+          "availability": true,
+          "n": 46,
+          "first": 47538176,
+          "last": 49635328,
+          "min": 47538176,
+          "max": 49897472,
+          "delta": 2097152,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 49635328,
+            "max": 49897472,
+            "median": 49635328,
+            "p95": 49897472,
+            "slope_units_per_s": 139.4817657257277
+          }
+        },
+        "cached_owners_and_capacities": {
+          "backend.wasm_linear_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 29097984,
+              "max": 29097984,
+              "median": 29097984,
+              "p95": 29097984,
+              "slope_units_per_s": 0
+            }
+          },
+          "textures": {
+            "availability": true,
+            "n": 46,
+            "first": 24,
+            "last": 24,
+            "min": 24,
+            "max": 24,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 24,
+              "max": 24,
+              "median": 24,
+              "p95": 24,
+              "slope_units_per_s": 0
+            }
+          },
+          "shader_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_geometries": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_geometries": {
+            "availability": true,
+            "n": 46,
+            "first": 5,
+            "last": 5,
+            "min": 5,
+            "max": 5,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 5,
+              "max": 5,
+              "median": 5,
+              "p95": 5,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_materials": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_meshes": {
+            "availability": true,
+            "n": 46,
+            "first": 5,
+            "last": 5,
+            "min": 5,
+            "max": 5,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 5,
+              "max": 5,
+              "median": 5,
+              "p95": 5,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_textures": {
+            "availability": true,
+            "n": 46,
+            "first": 6,
+            "last": 6,
+            "min": 6,
+            "max": 6,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 6,
+              "max": 6,
+              "median": 6,
+              "p95": 6,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.buffer_capacity_quads": {
+            "availability": true,
+            "n": 46,
+            "first": 920,
+            "last": 920,
+            "min": 920,
+            "max": 920,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 920,
+              "max": 920,
+              "median": 920,
+              "p95": 920,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.entries": {
+            "availability": true,
+            "n": 46,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 14,
+              "max": 14,
+              "median": 14,
+              "p95": 14,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.decoded_texture_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 28627248,
+              "max": 28627248,
+              "median": 28627248,
+              "p95": 28627248,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui.usage.logical_nodes": {
+            "availability": true,
+            "n": 46,
+            "first": 838,
+            "last": 838,
+            "min": 838,
+            "max": 838,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 838,
+              "max": 838,
+              "median": 838,
+              "p95": 838,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.resident_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 89,
+            "last": 89,
+            "min": 89,
+            "max": 89,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 89,
+              "max": 89,
+              "median": 89,
+              "p95": 89,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.resident_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 139837216,
+            "last": 139837216,
+            "min": 139837216,
+            "max": 139837216,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 139837216,
+              "max": 139837216,
+              "median": 139837216,
+              "p95": 139837216,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 50,
+            "last": 50,
+            "min": 50,
+            "max": 50,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 50,
+              "max": 50,
+              "median": 50,
+              "p95": 50,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 106265604,
+            "last": 106265604,
+            "min": 106265604,
+            "max": 106265604,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 106265604,
+              "max": 106265604,
+              "median": 106265604,
+              "p95": 106265604,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.scene_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 69,
+            "last": 69,
+            "min": 69,
+            "max": 69,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 69,
+              "max": 69,
+              "median": 69,
+              "p95": 69,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.scene_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 66888352,
+            "last": 66888352,
+            "min": 66888352,
+            "max": 66888352,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 66888352,
+              "max": 66888352,
+              "median": 66888352,
+              "p95": 66888352,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.unused_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 704512,
+            "last": 704512,
+            "min": 704512,
+            "max": 704512,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 704512,
+              "max": 704512,
+              "median": 704512,
+              "p95": 704512,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loading": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.active_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.queued_tasks": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.loads": {
+            "availability": true,
+            "n": 46,
+            "first": 95,
+            "last": 95,
+            "min": 95,
+            "max": 95,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 95,
+              "max": 95,
+              "median": 95,
+              "p95": 95,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.reuses": {
+            "availability": true,
+            "n": 46,
+            "first": 39,
+            "last": 39,
+            "min": 39,
+            "max": 39,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 39,
+              "max": 39,
+              "median": 39,
+              "p95": 39,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.evictions": {
+            "availability": true,
+            "n": 46,
+            "first": 6,
+            "last": 6,
+            "min": 6,
+            "max": 6,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 6,
+              "max": 6,
+              "median": 6,
+              "p95": 6,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.closed_images": {
+            "availability": true,
+            "n": 46,
+            "first": 6,
+            "last": 6,
+            "min": 6,
+            "max": 6,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 6,
+              "max": 6,
+              "median": 6,
+              "p95": 6,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.released_bytes_estimate": {
+            "availability": true,
+            "n": 46,
+            "first": 31088544,
+            "last": 31088544,
+            "min": 31088544,
+            "max": 31088544,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 31088544,
+              "max": 31088544,
+              "median": 31088544,
+              "p95": 31088544,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_bytes": {
+            "availability": true,
+            "n": 46,
+            "first": 55951136,
+            "last": 55951136,
+            "min": 55951136,
+            "max": 55951136,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 55951136,
+              "max": 55951136,
+              "median": 55951136,
+              "p95": 55951136,
+              "slope_units_per_s": 0
+            }
+          },
+          "decoded_images.pressure_entries": {
+            "availability": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "cursor.shared_image_leases": null
+        },
+        "page_cdp_duration_deltas_seconds": {
+          "TaskDuration": 25.348045,
+          "ScriptDuration": 0.162609,
+          "scope": "Available page CDP counter differences; ScriptDuration is a reported sub-scope, not a complete JavaScript/WASM CPU accounting or a subtraction-based residual"
+        },
+        "errors": {
+          "hidden_samples": 0,
+          "player_errors": [],
+          "engine_profiler_samples": 0,
+          "sampler": []
+        }
+      }
+    ],
+    "classification": "Canonical MinorGC/MajorGC duration events are separate from producer-family phase/root intervals. Nested/coalesced trace spans are not independent full collector cycles or OS pauses. observed-partial means recognized page-main producer evidence, not complete V8/Luau/worker coverage.",
+    "errors": []
+  },
+  "inventory_cycles": {
+    "status": "completed-instrumented-diagnostic",
+    "measured_cycles": 100,
+    "warmup_cycles": 2,
+    "native_toggles": 204,
+    "samples": 16,
+    "closed_checkpoints": 6,
+    "settled_tail_seconds": 10,
+    "settled_tail_samples": 10,
+    "native_input": "204 fully awaited b open/close toggles including warmup; release edges and observed/presented frame checks precede the next toggle. No simulation tick is injected.",
+    "checkpoint_values": [
+      {
+        "cycle": 0,
+        "cdp_nodes": 192,
+        "cdp_event_listeners": 70,
+        "broker_resident_entries": 93,
+        "broker_resident_estimated_bytes": 158340896,
+        "broker_active_entries": 45,
+        "broker_scene_entries": 69,
+        "loads": 104,
+        "evictions": 11,
+        "closed_images": 11,
+        "released_estimated_bytes": 55883680,
+        "gpu_texture_count": 36,
+        "ui_gpu_texture_count": 18,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 20,
+        "cdp_nodes": 792,
+        "cdp_event_listeners": 94,
+        "broker_resident_entries": 89,
+        "broker_resident_estimated_bytes": 139837216,
+        "broker_active_entries": 50,
+        "broker_scene_entries": 69,
+        "loads": 200,
+        "evictions": 111,
+        "closed_images": 111,
+        "released_estimated_bytes": 551786400,
+        "gpu_texture_count": 24,
+        "ui_gpu_texture_count": 6,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 40,
+        "cdp_nodes": 1392,
+        "cdp_event_listeners": 70,
+        "broker_resident_entries": 89,
+        "broker_resident_estimated_bytes": 139837216,
+        "broker_active_entries": 50,
+        "broker_scene_entries": 69,
+        "loads": 300,
+        "evictions": 211,
+        "closed_images": 211,
+        "released_estimated_bytes": 1047689120,
+        "gpu_texture_count": 24,
+        "ui_gpu_texture_count": 6,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 60,
+        "cdp_nodes": 1992,
+        "cdp_event_listeners": 100,
+        "broker_resident_entries": 93,
+        "broker_resident_estimated_bytes": 158340896,
+        "broker_active_entries": 45,
+        "broker_scene_entries": 69,
+        "loads": 404,
+        "evictions": 311,
+        "closed_images": 311,
+        "released_estimated_bytes": 1543591840,
+        "gpu_texture_count": 36,
+        "ui_gpu_texture_count": 18,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 80,
+        "cdp_nodes": 2592,
+        "cdp_event_listeners": 94,
+        "broker_resident_entries": 93,
+        "broker_resident_estimated_bytes": 158340896,
+        "broker_active_entries": 46,
+        "broker_scene_entries": 69,
+        "loads": 504,
+        "evictions": 411,
+        "closed_images": 411,
+        "released_estimated_bytes": 2039494560,
+        "gpu_texture_count": 37,
+        "ui_gpu_texture_count": 19,
+        "wasm_capacity_bytes": 29097984
+      },
+      {
+        "cycle": 100,
+        "cdp_nodes": 3192,
+        "cdp_event_listeners": 74,
+        "broker_resident_entries": 93,
+        "broker_resident_estimated_bytes": 158340896,
+        "broker_active_entries": 45,
+        "broker_scene_entries": 69,
+        "loads": 604,
+        "evictions": 511,
+        "closed_images": 511,
+        "released_estimated_bytes": 2535397280,
+        "gpu_texture_count": 36,
+        "ui_gpu_texture_count": 18,
+        "wasm_capacity_bytes": 29097984
+      }
+    ],
+    "resources": {
+      "owners": {
+        "textures": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 36,
+            "last": 36,
+            "min": 24,
+            "max": 37
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 36,
+            "last": 37,
+            "min": 36,
+            "max": 37
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": false,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "shader_materials": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_geometries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 5
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_materials": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_meshes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 5
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_textures": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 18,
+            "last": 18,
+            "min": 6,
+            "max": 19
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 18,
+            "last": 19,
+            "min": 18,
+            "max": 19
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": false,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "texture_cache.entries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "texture_cache.decoded_texture_bytes_estimate": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "ui_image_batches.buffer_capacity_quads": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 960,
+            "last": 960,
+            "min": 920,
+            "max": 961
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 960,
+            "last": 960,
+            "min": 960,
+            "max": 960
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "backend.direct_wasm_linear_bytes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "backend.wasm_linear_bytes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "decoded_images.resident_entries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 93,
+            "last": 93,
+            "min": 89,
+            "max": 93
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 93,
+            "last": 93,
+            "min": 93,
+            "max": 93
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "decoded_images.resident_bytes_estimate": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 158340896,
+            "last": 158340896,
+            "min": 139837216,
+            "max": 158340896
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 158340896,
+            "last": 158340896,
+            "min": 158340896,
+            "max": 158340896
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "decoded_images.active_entries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 45,
+            "last": 45,
+            "min": 45,
+            "max": 50
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 45,
+            "last": 46,
+            "min": 45,
+            "max": 46
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": false,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "decoded_images.active_bytes_estimate": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 116046892,
+            "last": 116046892,
+            "min": 106265604,
+            "max": 122338348
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 116046892,
+            "last": 116301508,
+            "min": 116046892,
+            "max": 116301508
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": false,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "decoded_images.scene_entries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 69,
+            "last": 69,
+            "min": 69,
+            "max": 69
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 69,
+            "last": 69,
+            "min": 69,
+            "max": 69
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "decoded_images.scene_bytes_estimate": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 66888352,
+            "last": 66888352,
+            "min": 66888352,
+            "max": 66888352
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 66888352,
+            "last": 66888352,
+            "min": 66888352,
+            "max": 66888352
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "decoded_images.unused_entries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "decoded_images.unused_bytes_estimate": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 6291456,
+            "last": 6291456,
+            "min": 704512,
+            "max": 6291456
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 6291456,
+            "last": 6291456,
+            "min": 6291456,
+            "max": 6291456
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "decoded_images.loading": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "decoded_images.active_tasks": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "decoded_images.queued_tasks": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "decoded_images.loads": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 104,
+            "last": 604,
+            "min": 104,
+            "max": 604
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 604,
+            "last": 604,
+            "min": 604,
+            "max": 604
+          },
+          "strictly_increasing_closed_checkpoints": true,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+        },
+        "decoded_images.reuses": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 72,
+            "last": 2604,
+            "min": 72,
+            "max": 2604
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 2604,
+            "last": 2605,
+            "min": 2604,
+            "max": 2605
+          },
+          "strictly_increasing_closed_checkpoints": true,
+          "tail_last_three_stable": false,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+        },
+        "decoded_images.evictions": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 11,
+            "last": 511,
+            "min": 11,
+            "max": 511
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 511,
+            "last": 511,
+            "min": 511,
+            "max": 511
+          },
+          "strictly_increasing_closed_checkpoints": true,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+        },
+        "decoded_images.closed_images": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 11,
+            "last": 511,
+            "min": 11,
+            "max": 511
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 511,
+            "last": 511,
+            "min": 511,
+            "max": 511
+          },
+          "strictly_increasing_closed_checkpoints": true,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+        },
+        "decoded_images.released_bytes_estimate": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 55883680,
+            "last": 2535397280,
+            "min": 55883680,
+            "max": 2535397280
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 2535397280,
+            "last": 2535397280,
+            "min": 2535397280,
+            "max": 2535397280
+          },
+          "strictly_increasing_closed_checkpoints": true,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cumulative operation counter; growth is expected and does not count live owners"
+        },
+        "decoded_images.pressure_bytes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 74454816,
+            "last": 74454816,
+            "min": 55951136,
+            "max": 74454816
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 74454816,
+            "last": 74454816,
+            "min": 74454816,
+            "max": 74454816
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "decoded_images.pressure_entries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "cursor.shared_image_leases": {
+          "closed_checkpoints": {
+            "available": false,
+            "samples": 0,
+            "first": null,
+            "last": null,
+            "min": null,
+            "max": null
+          },
+          "tail": {
+            "available": false,
+            "samples": 0,
+            "first": null,
+            "last": null,
+            "min": null,
+            "max": null
+          },
+          "strictly_increasing_closed_checkpoints": null,
+          "tail_last_three_stable": null,
+          "tail_final_at_or_below_warm_world_baseline": null,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        }
+      },
+      "logical_retained_registry": {
+        "entries": {
+          "available": true,
+          "samples": 6,
+          "first": 3,
+          "last": 3,
+          "min": 3,
+          "max": 3
+        },
+        "declared_quads": {
+          "available": true,
+          "samples": 6,
+          "first": 623,
+          "last": 623,
+          "min": 623,
+          "max": 623
+        }
+      },
+      "dom": {
+        "Nodes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 192,
+            "last": 3192,
+            "min": 192,
+            "max": 3192
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 3192,
+            "last": 3192,
+            "min": 3192,
+            "max": 3192
+          }
+        },
+        "JSEventListeners": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 6,
+            "first": 70,
+            "last": 74,
+            "min": 70,
+            "max": 100
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 70,
+            "last": 70,
+            "min": 70,
+            "max": 70
+          }
+        }
+      },
+      "unavailable_owner_metrics": [
+        "cursor.shared_image_leases"
+      ],
+      "renderer_scene_container_count": {
+        "available": false,
+        "reason": "No dedicated cached official counter is exposed; DOM Nodes is recorded separately"
+      },
+      "renderer_listener_owner_count": {
+        "available": false,
+        "reason": "No dedicated cached official owner counter; CDP JSEventListeners is page-wide and not renderer ownership"
+      },
+      "interpretation": "Strictly rising closed checkpoints or a higher settled tail are follow-up signals, never an automatic leak verdict. Capacity/cache growth and GC-delayed objects are not interchangeable with live leaks."
+    },
+    "js_heap_used_bytes": {
+      "availability": "observed",
+      "n": 16,
+      "first": 40169484,
+      "last": 32979884,
+      "min": 14609320,
+      "max": 40169484,
+      "delta": -7189600,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 14609320,
+        "max": 32979884,
+        "median": 24015636,
+        "p95": 32979884,
+        "slope_units_per_s": 473778.4280011978
+      }
+    },
+    "js_heap_total_capacity_bytes": {
+      "availability": "observed",
+      "n": 16,
+      "first": 69820416,
+      "last": 83714048,
+      "min": 69820416,
+      "max": 93675520,
+      "delta": 13893632,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 83714048,
+        "max": 85024768,
+        "median": 84238336,
+        "p95": 85024768,
+        "slope_units_per_s": -77770.162827873
+      }
+    },
+    "attached_dom_diff": {
+      "availability": "observed",
+      "added": [],
+      "removed": [],
+      "changed": []
+    },
+    "cached_ui_asset_diff": {
+      "availability": "observed",
+      "added": [
+        {
+          "id": "texture://jy/battle-sprites/brawler",
+          "state": "ready"
+        }
+      ],
+      "removed": []
+    },
+    "listener_diff": {
+      "availability": "observed",
+      "added": [],
+      "removed": [],
+      "note": "Descriptor/count multiset comparison. It does not claim distinct closures at one source location share identity."
+    },
+    "listener_metadata_quality": {
+      "baseline": "observed",
+      "end": "observed",
+      "baseline_release_errors": [],
+      "end_release_errors": []
+    },
+    "numerical_followups": {
+      "cdp_node_delta": 3000,
+      "cdp_nodes_per_cycle": 30,
+      "node_tail": "3192 for all10 settled-tail samples; attached DOM diff is empty. This does not identify detached/native node owners.",
+      "listeners": "Closed checkpoints vary70..100 (last74); all10 settled-tail samples are70, matching baseline70. Do not label every intermediate sample stable.",
+      "broker_resident": "Closed sampled range89..93 and139837216..158340896 estimated RGBA bytes; tail93/158340896. Active/scene sets overlap.",
+      "fixed_scene_plan": {
+        "entries": 69,
+        "estimated_rgba_bytes": 66888352
+      },
+      "fixed_wasm_linear_capacity_bytes": 29097984,
+      "cumulative_load_delta": 500,
+      "cumulative_eviction_delta": 500,
+      "cumulative_closed_image_delta": 500,
+      "cumulative_released_estimated_byte_delta": 2479513600,
+      "average_loads_per_cycle": 5,
+      "average_released_estimated_bytes_per_cycle": 24795136,
+      "gpu_tail": "Ordinary texture count36..37 and UI prefix texture count18..19 during tail; final values are baseline+1 and last-three stability is false. Added ready Canvas asset battle-sprites/brawler is legitimate dynamic presentation and a correlation, not an identity-level GPU retaining-path proof."
+    },
+    "errors": [],
+    "cleanup_scope": "Root reports completed runner/browser cleanup. The report is emitted before finally awaits context/browser close; listener remote-handle release success is explicitly recorded separately."
+  },
+  "source_diagnosis": {
+    "confidence": "Read-only source and existing-data analysis; no new browser reproduction or retaining-path capture.",
+    "observed_cause_candidate": "Frozen Canvas releases outgoing image leases before acquiring the complete next working set. Each release runs broker sweep and can evict an unused image required by that next tree. This is a concrete avoidable-churn path; subsequent generic acquire-before-retire validation is separate.",
+    "candidate_five_image_byte_fingerprint": {
+      "terms": [
+        {
+          "estimated_rgba_bytes": 16777216,
+          "candidate_ids": [
+            "texture://jy/work/work-actions"
+          ]
+        },
+        {
+          "estimated_rgba_bytes": 6291456,
+          "candidate_ids": [
+            "texture://jy/ui-buttons/atlas"
+          ]
+        },
+        {
+          "estimated_rgba_bytes": 1048576,
+          "candidate_ids": [
+            "texture://jy/world-tiles/forest-cluster",
+            "texture://jy/world-tiles/mountain-cluster"
+          ]
+        },
+        {
+          "estimated_rgba_bytes": 659456,
+          "candidate_ids": [
+            "texture://jy/exploration/props/market-block"
+          ]
+        },
+        {
+          "estimated_rgba_bytes": 18432,
+          "candidate_ids": [
+            "texture://jy/world-tiles/isometric-selected",
+            "texture://jy/world-tiles/isometric-shadow"
+          ]
+        }
+      ],
+      "total_estimated_rgba_bytes": 24795136,
+      "all_candidates_absent_from_full_startup_plus_scene_69": true,
+      "caveat": "A plausible exact five-term byte decomposition, not an observed per-load identity log. Equal-sized forest/mountain and selected/shadow prevent unique ID attribution; other equal-sized assets also exist in the catalog.",
+      "capacity_caveat": "The four world-image terms total18503680B, exceeding the16777216B unused LRU. Ordering repair alone does not promise zero cold loads if all these owners actually retire."
+    },
+    "released_image_source_lifetime": "Frozen loader clears onload/onerror and abort listener after decode. Broker forget deletes entry ownership, aborts its controller, removes the last imageOwners reference and nulls entry.image. Canvas retires relevant GPU prefix resources before releasing its lease and removes the old asset entry. No obvious external strong root retaining every retired entry was found; cyclic/pending garbage and browser-internal ownership remain unmeasured.",
+    "svg_followup": {
+      "asset": "texture://jy/exploration/world-atlas-vector",
+      "bytes": 275683,
+      "literal_svg_elements": 5,
+      "tags": {
+        "svg": 1,
+        "path": 4
+      },
+      "text_segments_including_whitespace": 5,
+      "interpretation": "Source token count only. This atlas asset is absent from closed/detail UI inventory; the proposed PNG byte fingerprint does not establish an SVG cause. UA remove-src fallback nodes are an unproven hypothesis."
+    }
+  },
+  "independent_owner_observer_audit": {
+    "reference": {
+      "path": "D:/Projects/JYRogue/game/evidence/performance-audit-20261030/sdk14-cycles100-observer-retention-audit.json",
+      "bytes": 20040,
+      "sha256": "b093b8bdf8e7ce918c2725964978470c8888f40a7783e4c34083d9dd1d8e29f9"
+    },
+    "status": "Static source audit only; no leak/no-leak verdict",
+    "scope": "Pinned diagnostic v4 script, its DOM helper, pinned native observation support and existing report summary only. No Core, browser, GC, heap traversal, trace or timing run; engine/game/tools unchanged.",
+    "pins_match": true,
+    "inputs_unchanged": true,
+    "conclusion": "Owner source audit found no explicit strong per-cycle DOM/Image retention in the pinned diagnostic observer and reported successful CDP handler/object-group release. This is bounded source evidence; it cannot prove internal CDP/Playwright/Blink native objects were reclaimed or exclude detached-image retention."
+  },
+  "limitations": [
+    "These are actual Game D A/2a16 +SDK14 main diagnostics, not later HUD B/48dff evidence or a source-matched SDK14-to-future-runtime performance comparison.",
+    "No FPS acceptance, leak-free or GC-free result is claimed. The observed image reloads and linear CDP node growth require follow-up.",
+    "Natural page heap used/capacity and a flat10-second tail cannot distinguish pending collection from live/native retention. CDP Nodes is not an attached-DOM-only or reachability metric.",
+    "Page-main V8 trace observations omit Luau collector activity, worker isolates and GPU driver allocations. WASM capacity is not Luau live bytes.",
+    "Cached renderer/broker reports can lag; decoded-image estimates are not exact GPU/native memory. Active and scene sets overlap; cumulative operations are not live-owner counts.",
+    "The user authorized concurrent project load. Trace/GC wall durations and instrumented pacing can be load affected; no machine-exclusive claim is made.",
+    "The raw publication/trace/fixture files remain at their original cache locations. This compact neither suppresses failed checks nor synthesizes zeros for unavailable metrics."
+  ]
+}
