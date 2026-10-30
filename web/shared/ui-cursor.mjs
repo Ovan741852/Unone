@@ -77,7 +77,12 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  target.addEventListener('pointermove',move,{passive:true});target.addEventListener('pointerenter',move,{passive:true});
  target.addEventListener('pointerleave',leave,{passive:true});focus?.addEventListener('blur',leave);
  return {
-  update(value){const next=validateCursor(value);for(const [asset,entry]of images)if(entry.broker&&(next.kind!=='image'||asset!==next.asset))retire(asset,entry);spec=next;if(spec.kind==='image')resource(spec.asset);return renderAndNotify();},render:renderAndNotify,
+  update(value){const next=validateCursor(value);spec=next;
+   // Pin the incoming cursor before retiring the outgoing lease can sweep it
+   // from the shared idle cache. Retire old ownership even if onError throws.
+   try{if(spec.kind==='image')resource(spec.asset);}
+   finally{for(const [asset,entry]of images)if(entry.broker&&(spec.kind!=='image'||asset!==spec.asset))retire(asset,entry);}
+   return renderAndNotify();},render:renderAndNotify,
   ready(){const value=readiness();if(value===DRAW_COMPLETED)return Promise.resolve();if(value!==DRAW_SKIPPED.cursor_assets_pending)return Promise.reject(Error(disposed?'UI_CURSOR_DISPOSED':'UI_CURSOR_ASSET_FAILED'));return new Promise((resolve,reject)=>readyWaiters.add({resolve,reject}));},
   report(){let leases=0;for(const entry of images.values())if(entry.lease)leases++;return {mode:spec.kind,asset:spec.asset??null,visible,rect:rect?{...rect}:null,shared_image_leases:leases,units:'drawing_buffer_pixels',input:'passive real pointer; no event injection'};},
   invalidateAssets(){for(const [asset,entry]of images)retire(asset,entry);if(!disposed&&spec.kind==='image')resource(spec.asset);return renderAndNotify();},
