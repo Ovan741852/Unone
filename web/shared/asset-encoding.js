@@ -155,8 +155,9 @@ const imageError = (code, detail = '') => new Error(`${code}${detail ? ': ' + de
 function abortImageError() { const error = imageError('IMAGE_ASSET_CANCELLED'); error.name = 'AbortError'; return error; }
 function closeDecodedImage(image) {
   if (!image) return;
+  // Completed HTML images have no explicit close operation. Drop ownership
+  // instead of resetting src, which can create browser broken-image state.
   if (typeof image.close === 'function') image.close();
-  else image.removeAttribute?.('src');
 }
 function imageDimensions(image) {
   const width = image?.naturalWidth ?? image?.width, height = image?.naturalHeight ?? image?.height;
@@ -166,11 +167,12 @@ function imageDimensions(image) {
 function loadDecodedImage(url, { signal } = {}) {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) { reject(abortImageError()); return; }
-    const image = new Image(); let settled = false;
+    const image = new Image(); let settled = false, loaded = false;
     const cleanup = () => { image.onload = image.onerror = null; signal?.removeEventListener('abort', abort); };
-    const fail = error => { if (settled) return; settled = true; cleanup(); closeDecodedImage(image); reject(error); };
-    const abort = () => fail(abortImageError());
+    const fail = (error, cancelPending = false) => { if (settled) return; settled = true; cleanup(); if (cancelPending && !loaded) image.removeAttribute?.('src'); closeDecodedImage(image); reject(error); };
+    const abort = () => fail(abortImageError(), true);
     image.onload = () => {
+      if (settled) return; loaded = true;
       let decoded; try { imageDimensions(image); decoded = image.decode?.(); } catch (error) { fail(error); return; }
       Promise.resolve(decoded).then(() => { if (settled) return; settled = true; cleanup(); resolve(image); }, fail);
     };
@@ -332,7 +334,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     report() {
       let residentBytes = 0, activeBytes = 0, sceneBytes = 0, unusedBytes = 0, activeEntries = 0, sceneEntries = 0, unusedEntries = 0, loading = 0;
       for (const entry of entries.values()) { residentBytes += entry.bytes; if (entry.state === 'loading') loading++; if (entry.external) { activeEntries++; activeBytes += entry.bytes; } if (entry.scene) { sceneEntries++; sceneBytes += entry.bytes; } if (!entry.external && !entry.scene) { unusedEntries++; unusedBytes += entry.bytes; } }
-      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted.' };
+      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
     },
     dispose() { if (disposed) return; disposed = true; planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
   });
