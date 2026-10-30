@@ -100,40 +100,55 @@ end
 -- Only private, transitively frozen portable values can be borrowed. Weak keys
 -- do not keep retired views alive; metadata contains numbers, never table refs.
 type OwnedStats = {work: number, height: number}
-local immutableOwned: {[any]: OwnedStats} = setmetatable({}, {__mode="k"}) :: any
+type OwnedGrant = number | OwnedStats
+local immutableOwned: {[any]: OwnedGrant} = setmetatable({}, {__mode="k"}) :: any
+-- Eight low bits hold height; common grants need no allocation of their own.
+-- Keep the original numeric record fallback rather than add an admission bound
+-- if future generated nodes exceed this private representation's exact range.
+local function statsGrant(work: number, height: number): OwnedGrant
+    if height<256 and work<=35184372088831 then return work*256+height end
+    return {work=work,height=height}
+end
 
 -- Clone borrowed author data with the original expanded depth/work accounting.
 -- A shared immutable DAG still charges every occurrence, not just unique nodes.
 -- Registered virtual nodes keep their separate mutable, engine-owned identity.
-local function copy(value: any, mutableRoot: boolean?): any
+local function copy(value: any, mutableRoot: boolean?, sealChildren: boolean?): any
     local active: {[any]: boolean} = {}
     local remaining = 131072
-    local function visit(item: any, depth: number): any
+    local function visit(item: any, depth: number): (any, number, boolean)
         remaining -= 1
         assert(remaining>=0 and depth<=64, "UI_COMPONENT_COPY: data exceeds copy limits")
+        local startRemaining = remaining
         local kind = type(item)
         if kind~="table" then
             assert(kind=="nil" or kind=="string" or kind=="number" or kind=="boolean",
                 "UI_COMPONENT_COPY: only portable UI data can be copied")
-            return item
+            return item,0,false
         end
         local grant = immutableOwned[item]
         if grant~=nil then
-            remaining -= grant.work-1
-            assert(remaining>=0 and depth+grant.height<=64, "UI_COMPONENT_COPY: data exceeds copy limits")
-            return if depth==0 and mutableRoot then table.clone(item) else item
+            local work,height
+            if type(grant)=="number" then height=grant%256;work=(grant-height)/256
+            else work=grant.work;height=grant.height end
+            remaining -= work-1
+            assert(remaining>=0 and depth+height<=64, "UI_COMPONENT_COPY: data exceeds copy limits")
+            return if depth==0 and mutableRoot then table.clone(item) else item,height,false
         end
-        if isManagedNode(item) then return item end
+        if isManagedNode(item) then return item,0,true end
         assert(not active[item], "UI_COMPONENT_COPY: cyclic UI data")
         active[item] = true
         local result: any = {}
         local childDepth = depth+1
+        local height,managed = 0,false
         for key, child in pairs(item) do
             assert(type(key)=="string" or type(key)=="number", "UI_COMPONENT_COPY: invalid table key")
             if key=="children" then dense(child,"children") end
             local childKind = type(child)
             if childKind=="table" then
-                result[key] = visit(child,childDepth)
+                local copied,childHeight,childManaged = visit(child,childDepth)
+                result[key] = copied
+                height=math.max(height,childHeight+1);managed=managed or childManaged
             else
                 -- Scalars need validation and one work unit, not another Lua
                 -- call. Allocate only visited entries so sparse source-table
@@ -143,12 +158,21 @@ local function copy(value: any, mutableRoot: boolean?): any
                 assert(childKind=="nil" or childKind=="string" or childKind=="number" or childKind=="boolean",
                     "UI_COMPONENT_COPY: only portable UI data can be copied")
                 result[key] = child
+                height=math.max(height,1)
             end
         end
         active[item] = nil
-        return result
+        -- Detachment already visited and validated every raw descendant. Seal
+        -- pure children here so finish only visits the still-mutable envelope
+        -- and generated fields. Managed-containing branches stay mutable until
+        -- finish; the actual managed handle is never frozen or granted.
+        if depth>0 and sealChildren~=false and not managed then
+            table.freeze(result)
+            immutableOwned[result]=statsGrant(startRemaining-remaining+1,height)
+        end
+        return result,height,managed
     end
-    return visit(value,0)
+    return (visit(value,0))
 end
 
 -- Finalize only detached construction results, after all kind/style/drag and
@@ -159,7 +183,13 @@ local function finish(value: any): any
     local function visit(item: any): (number, number, boolean)
         if type(item)~="table" then return 1,0,false end
         local grant=immutableOwned[item]
-        if grant~=nil then return grant.work,grant.height,false end
+        if grant~=nil then
+            if type(grant)=="number" then
+                local height=grant%256
+                return (grant-height)/256,height,false
+            end
+            return grant.work,grant.height,false
+        end
         if isManagedNode(item) then return 1,0,true end
         local work,height,managed=1,0,false
         for _,child in pairs(item) do
@@ -169,7 +199,7 @@ local function finish(value: any): any
         table.freeze(item)
         -- A frozen envelope containing a mutable virtual handle is not a pure
         -- immutable subtree. Revisit that branch when composing future views.
-        if not managed then immutableOwned[item]={work=work,height=height} end
+        if not managed then immutableOwned[item]=statsGrant(work,height) end
         return work,height,managed
     end
     visit(value)
@@ -746,7 +776,7 @@ end
 -- Building this kit does not bypass declaration guards on its methods.
 local components = makeKit(nil)
 components.info = function(): any
-    local result = copy(metadata)
+    local result = copy(metadata,nil,false)
     result.declared = declared
     return result
 end

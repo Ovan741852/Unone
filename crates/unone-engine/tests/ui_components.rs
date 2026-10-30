@@ -589,6 +589,47 @@ api.observation.set('leaf_copy_bounds',true)
 }
 
 #[test]
+fn copied_child_grants_preserve_expanded_bounds_and_mutable_metadata() {
+    let values=observed(r#"
+local c=api.ui.components
+local info=c.info()
+local changed=false
+local function mutate(value)
+ for _,child in pairs(value) do if type(child)=='table' then mutate(child) end end
+ assert(not table.isfrozen(value),'metadata remains a mutable detached copy')
+ value.__probe=true;changed=true
+end
+mutate(info)
+assert(changed and c.info().__probe==nil)
+local owned=c.composeStyle({color=table.create(65536,true)})
+assert(table.isfrozen(owned.color))
+local ok,message=pcall(function()c.composeStyle({color={owned.color,owned.color}})end)
+assert(not ok and string.find(tostring(message),'data exceeds copy limits',1,true),tostring(message))
+local deep={};local cursor=deep
+for _=1,63 do cursor[1]={};cursor=cursor[1] end
+local tall=c.composeStyle({color=deep})
+assert(c.composeStyle(tall).color==tall.color)
+ok,message=pcall(function()c.composeStyle({color={tall.color}})end)
+assert(not ok and string.find(tostring(message),'data exceeds copy limits',1,true),tostring(message))
+local handle=c.virtualList({id='live',viewport={left=10,top=10,width=40,height=20},
+ items={{id='a'}},key='id',rowHeight=10,renderItem=function(item)
+  return {c.text({id=item.id,text=item.id,rect={x=0,y=0,width=20,height=8}})}
+ end})
+local authored={handle}
+local card=c.component({id='card',component='test.card',rect={x=0,y=0,width=100,height=100},
+ surface={kind='panel'},children=authored})
+assert(card.children[2]==handle and not table.isfrozen(handle))
+assert(#authored==1 and not table.isfrozen(authored))
+assert(table.isfrozen(card) and table.isfrozen(card.children))
+local outer=c.component({id='outer',component='test.outer',rect={x=0,y=0,width=100,height=100},children={card}})
+assert(outer.children[1]~=card and outer.children[1].children[2]==handle)
+api.ui.setRoot(c.screen({id='screen',node='test',children={outer}}))
+api.observation.set('copied_child_grants',true)
+"#);
+    assert_eq!(values["copied_child_grants"],true);
+}
+
+#[test]
 fn immutable_package_matches_0_5_canonical_worlds_across_changed_views() {
     let current=include_str!("../../../packages/unone-ui/src/components.luau");
     // Frozen historical 0.5 source, not a second implementation of the new

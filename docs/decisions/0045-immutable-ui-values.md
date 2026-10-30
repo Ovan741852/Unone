@@ -38,8 +38,10 @@ and the [canonical Luau declarations](../../crates/unone-engine/src/engine.d.lua
 - Previously proven immutable package values can be shared. Sharing a frozen
   child or style across results is intentional; returning a borrowed mutable
   table through that path is an ownership defect.
-- Finish construction before recursively freezing new owned records. In
-  particular, slider `drag` metadata is installed before finalization. Adding a
+- Seal detached pure descendants while copying borrowed input, using the same
+  admission traversal to compute expanded work and height. Keep each construction
+  envelope mutable until its generated fields are installed. In particular,
+  slider `drag` metadata is installed before finalization. Adding a
   component surface requires a fresh child-array envelope, and padding overrides
   require a fresh padding record. Unchanged frozen descendants remain shared.
 - Snapshot theme defaults once per kit. Merging styles uses copy-on-write for
@@ -53,6 +55,15 @@ keys do not make such value back-references harmless: registry values are still
 marked strongly. Keeping a kit alive must not retain all its retired views.
 The registry belongs to its package instance and VM, and is discarded with that
 VM on successful replacement or unload.
+
+The common registry value packs expanded work and height into one exactly
+representable number (`work * 256 + height`), avoiding an allocation for every
+ownership record. A numeric-field record remains the fallback outside that
+private representation's exact range; this optimization adds no input limit.
+Pure copied descendants are frozen and granted during detachment, so finalization
+can skip them instead of traversing the raw graph a second time. Branches with a
+managed handle remain mutable until finalization and receive no pure grant.
+The public `info()` metadata copy opts out and remains recursively mutable.
 
 Reuse is an allocation optimization, not a budget exemption. Each occurrence of
 a reused subtree consumes its complete cached expanded work and contributes its
