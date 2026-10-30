@@ -101,13 +101,21 @@ test('a failed speculative decode does not poison the next required acquisition'
 });
 
 function pngHeader(width=2,height=2){const bytes=new Uint8Array(24),view=new DataView(bytes.buffer);bytes.set([137,80,78,71,13,10,26,10]);view.setUint32(8,13);view.setUint32(12,0x49484452);view.setUint32(16,width);view.setUint32(20,height);return bytes;}
-test('default PNG header preflight cancels ignored-Range body and awaits HTMLImage decode',async()=>{
- const priorImage=globalThis.Image,priorFetch=globalThis.fetch,decode=deferred();let cancelled=0,decodeCalls=0,request;
+test('default PNG preflight drains ignored-Range response, retains its header and awaits HTMLImage decode',async()=>{
+ const priorImage=globalThis.Image,priorFetch=globalThis.fetch,decode=deferred();let cancelled=0,decodeCalls=0,request,reads=0,released=0;
  class FakeImage{naturalWidth=2;naturalHeight=2;removeAttribute(){};set src(value){this.value=value;queueMicrotask(()=>this.onload?.());}decode(){decodeCalls++;return decode.promise;}}
- globalThis.Image=FakeImage;globalThis.fetch=async(url,options)=>{request={url,options};return new Response(new ReadableStream({start(controller){controller.enqueue(pngHeader());},cancel(){cancelled++;}}));};
+ const chunks=[pngHeader().subarray(0,9),pngHeader().subarray(9),...Array.from({length:32},()=>new Uint8Array(65536).fill(255))];
+ globalThis.Image=FakeImage;globalThis.fetch=async(url,options)=>{request={url,options};return {ok:true,status:200,body:{getReader(){let index=0;return{async read(){reads++;return index<chunks.length?{done:false,value:chunks[index++]}:{done:true};},async cancel(){cancelled++;},releaseLock(){released++;}};}}};};
  let broker;
- try{broker=createImageAssetBroker(createAssetCatalog({assets:[spec('a')]}),{resolveAssetUrl:asset=>asset.source});const preparing=broker.prepareScene(scene(['a']));await tick();assert.equal(request.options.headers.Range,'bytes=0-23');assert.equal(cancelled,1);assert.equal(decodeCalls,1);const lease=broker.acquire('a');assert.equal(lease.state,'loading');decode.resolve();assert.equal((await preparing).ready_entries,1);assert.equal(lease.state,'ready');assert(lease.image instanceof FakeImage);assert.equal(lease.image.onload,null);assert.equal(lease.image.onerror,null);lease.release();}
+ try{broker=createImageAssetBroker(createAssetCatalog({assets:[spec('a')]}),{resolveAssetUrl:asset=>asset.source});const preparing=broker.prepareScene(scene(['a']));await tick();assert.equal(request.options.headers.Range,'bytes=0-23');assert.equal(reads,chunks.length+1);assert.equal(cancelled,0);assert.equal(released,1);assert.equal(decodeCalls,1);const lease=broker.acquire('a');assert.equal(lease.state,'loading');decode.resolve();const result=await preparing;assert.equal(result.ready_entries,1);assert.equal(result.reserved_bytes,16,'The 2MiB body must not overwrite or expand the retained24B PNG header');assert.equal(lease.state,'ready');assert(lease.image instanceof FakeImage);assert.equal(lease.image.onload,null);assert.equal(lease.image.onerror,null);lease.release();}
  finally{broker?.dispose();globalThis.Image=priorImage;globalThis.fetch=priorFetch;}
+});
+
+test('failed header reads propagate the error and cancel/release the reader instead of claiming success',async()=>{
+ const priorFetch=globalThis.fetch;let cancelled=0,released=0,reads=0;globalThis.fetch=async()=>({ok:true,body:{getReader:()=>({async read(){if(++reads===1)return{done:false,value:pngHeader()};throw Error('network-stream-failed');},async cancel(){cancelled++;},releaseLock(){released++;}})}});
+ let broker;
+ try{broker=createImageAssetBroker(createAssetCatalog({assets:[spec('a')]}),{resolveAssetUrl:a=>a.source,loadImage:async()=>{throw Error('Must not decode a failed header response');}});const result=await broker.prepareScene(scene(['a']));assert.equal(result.partial,true);assert.match(result.errors[0].message,/network-stream-failed/);assert.equal(result.ready_entries,0);assert.equal(cancelled,1);assert.equal(released,1);}
+ finally{broker?.dispose();globalThis.fetch=priorFetch;}
 });
 
 test('default loader abort clears image handlers/source and unknown headers do not decode',async()=>{

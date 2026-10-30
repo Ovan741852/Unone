@@ -117,15 +117,19 @@ function loadDecodedImage(url, { signal } = {}) {
   });
 }
 async function inspectPngImage(url, { signal } = {}) {
-  // Read only the PNG header. A server may ignore Range; cancel its body after
-  // the first 24 bytes instead of retaining/decoding the full response.
+  // Retain only the PNG header. A server may ignore Range; drain a successful
+  // response to EOF rather than turning speculative inspection into an aborted
+  // network request. The encoded body is never accumulated or decoded here.
   const response = await fetch(url, { signal, headers: { Range: 'bytes=0-23' } });
   if (!response.ok) throw imageError('IMAGE_ASSET_HEADER_FAILED', String(response.status));
   if (!response.body?.getReader) return null;
-  const reader = response.body.getReader(), header = new Uint8Array(24); let length = 0;
+  const reader = response.body.getReader(), header = new Uint8Array(24); let length = 0, complete = false;
   try {
-    while (length < header.length) { const next = await reader.read(); if (next.done) break; const take = Math.min(next.value.byteLength, header.length - length); header.set(next.value.subarray(0, take), length); length += take; }
-  } finally { try { await reader.cancel(); } catch {} }
+    while (true) {
+      const next = await reader.read(); if (next.done) { complete = true; break; }
+      if (length < header.length) { const take = Math.min(next.value.byteLength, header.length - length); header.set(next.value.subarray(0, take), length); length += take; }
+    }
+  } finally { if (!complete) { try { await reader.cancel(); } catch {} } reader.releaseLock(); }
   if (length < 24 || [137,80,78,71,13,10,26,10].some((value, i) => header[i] !== value)) return null;
   const view = new DataView(header.buffer); if (view.getUint32(8) !== 13 || view.getUint32(12) !== 0x49484452) throw imageError('IMAGE_ASSET_PNG_HEADER');
   return { format: 'png', width: view.getUint32(16), height: view.getUint32(20) };
