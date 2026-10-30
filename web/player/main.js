@@ -10,10 +10,10 @@ import {createOrderedPhysicalQueue} from '../shared/ordered-physical-queue.mjs';
 import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
 import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
-import {playerSeed} from '../shared/player-seed.mjs';
+import {playerSeed} from '../shared/load-project.js';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
-import {requireAssetEncoding,createAssetCatalog} from '../shared/asset-encoding.js';
+import {requireAssetEncoding,createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
 import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.js';
 import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileOptions} from '../shared/raster-diagnostics.mjs';
 import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from '../shared/startup-presentation.mjs';
@@ -22,9 +22,9 @@ import {serializedSavePayload} from '../shared/save-publication.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
-let uiAssetManifest=null;
+let uiAssetManifest=null,imageAssets=null;
 const uiCanvas=document.createElement('canvas');Object.assign(uiCanvas.style,{width:'100%',height:'100%',pointerEvents:'none'});document.querySelector('#ui-layer').replaceChildren(uiCanvas);
-const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{getImageBatchPresenter:()=>renderer?.uiImageBatchPrefix,onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),resolveAsset:assetId=>{
+const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{getImageBatchPresenter:()=>renderer?.uiImageBatchPrefix,onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),acquireAsset:assetId=>imageAssets.acquire(assetId),resolveAsset:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
  if(!asset)throw Error(`UI asset ${assetId} is not declared in the active asset manifest`);
  requireAssetEncoding(asset,'image');
@@ -36,7 +36,7 @@ const textInputs=createUiTextInputHost({canvas,onInteraction:event=>input.queueT
  releaseKeyboard:()=>input.releaseKeyboard(),requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
 const renderUi=snapshot=>uiRenderer.draw(textInputs.draw(uiScroll.draw(snapshot)));
 const cursorCanvas=document.createElement('canvas');document.querySelector('#ui-layer').append(cursorCanvas);
-const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fail,loadImage:assetId=>{
+const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fail,getImageAssets:()=>imageAssets,loadImage:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
  if(!asset)throw Error(`UI_CURSOR_ASSET_MISSING: ${assetId}`);requireAssetEncoding(asset,'image');
  return loadCursorImage(new URL(`content/${asset.source}`,document.baseURI).href);
@@ -56,7 +56,7 @@ let profiler=null,profileFlight=null,profileLastSource=null;
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){profiler?.publish();startupAbort.abort();cursorHost.dispose();textInputs.dispose();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+function fail(error){profiler?.publish();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
  textInputs.setExternalInput(Boolean(physicalProfile));
@@ -96,7 +96,7 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  const uiOutcome=renderUi(snapshot);if(pd)profiler.mark(pd,'ui_draw');const submittedAt=performance.now();renderMs=submittedAt-began;
  const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
  const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
- if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
+ if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
  document.body.dataset.playerFrame=String(snapshot.world.frame);
  publishPhysical();
  if(pd)profiler.mark(pd,'host_publish');
@@ -137,7 +137,7 @@ function tickOnce(){if(tickFlight){if(profiler)profiler.record('update_request',
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed()}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed()}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
@@ -178,28 +178,39 @@ async function start(){
  const profileOptions=playerProfileOptions(location.search);
  if(profileOptions){profiler=createPlayerProfiler({limit:profileOptions.limit,publishTarget:document.body});document.body.dataset.playerProfileEnabled='1';
   window.unonePlayerProfile=Object.freeze({report:()=>profiler.report(),clear:()=>profiler.clear(),publish:()=>profiler.publish()});}
- const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);projectPayload=project;uiAssetManifest=assets;
+ const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);
+ if(startupAbort.signal.aborted)throw startupCancelled();
+ projectPayload=project;uiAssetManifest=assets;
  // One immutable presentation index per fetched manifest. The player owns this JSON and adopts it,
  // so the renderer never rebuilds the asset index per draw and in-place edits fail instead of drifting.
  const assetCatalog=createAssetCatalog(assets,{adopt:true});
+ imageAssets=createImageAssetBroker(assetCatalog,{resolveAssetUrl:asset=>new URL('content/'+asset.source,document.baseURI).href});
+ // Scene declarations own future render dependencies, including hidden sprites.
+ // Prepare an explicitly bounded plan before simulation and the READY barrier.
+ await imageAssets.prepareScene(project.scene);
+ if(startupAbort.signal.aborted)throw startupCancelled();
  physicalProfile=presentation.physical_input;
  if(physicalProfile!==undefined&&(physicalProfile!=='ordered_physical_v1'||(presentation.renderer_mode??'official')!=='official'))throw Error('INPUT_PHYSICAL_PROFILE_UNSUPPORTED: official Web ordered_physical_v1 only');
  configurePhysical();
  await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI));
+ if(startupAbort.signal.aborted)throw startupCancelled();
  if(presentation.ui?.font_family??presentation.ui?.fonts?.[0]?.family)uiRenderer.setFont(presentation.ui.font_family??presentation.ui.fonts[0].family);
  const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,document.baseURI).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  const requirePhysicalViewport=presentation.physical_input!==undefined||presentation.projected_raster==='upper_left_checked'||presentation.projected_material_profile!==undefined;
- backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,...(profiler?{profiler}:{})});metrics.runtime_ready_ms=performance.now()-window.playerBoot;
+ backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,...(profiler?{profiler}:{})});
+ if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
+ metrics.runtime_ready_ms=performance.now()-window.playerBoot;
  document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
  try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
  project.viewport_size=physicalViewport();
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:sessionSeed()}),{reset:true,newSession:true});
- renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
+ renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
+ if(startupAbort.signal.aborted){const retiringAudio=audio;audio=null;retiringAudio?.dispose();throw startupCancelled();}
  await finishStartup(presentation,kind);
 }
 function pointer(event,down,kind){const sample=pointerSample(event,down);if(!sample)return;input.updatePointer(sample,kind);hasWorldPointer=true;}
@@ -214,6 +225,6 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();});
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removePerformanceAccessor();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}backend?.close();});
+window.addEventListener('pagehide',()=>{removePerformanceAccessor();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

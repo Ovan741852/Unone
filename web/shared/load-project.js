@@ -1,6 +1,20 @@
 import {retainImageResource} from './retained-image-generation.mjs';
 import {createSavePublication,attachSavePublication} from './save-publication.mjs';
 import {createUiTreePublication,UI_TREE_MAX_ENCODED_BYTES} from './ui-tree-publication.mjs';
+// Session selection belongs to the host load boundary; deterministic callers
+// continue passing their explicit seeds directly to loadProject.
+const MAX_SESSION_SEED = (1n << 64n) - 1n;
+export function playerSeed(search, random = globalThis.crypto) {
+  const requested = new URLSearchParams(search).get('seed');
+  if (requested !== null) {
+    if (!/^(0|[1-9][0-9]{0,19})$/.test(requested) || BigInt(requested) > MAX_SESSION_SEED) {
+      throw new Error(`PLAYER_SEED_INVALID: ?seed= must be a decimal integer in 0..${MAX_SESSION_SEED}`);
+    }
+    return {seed: requested, source: 'url'};
+  }
+  const words = random.getRandomValues(new Uint32Array(2));
+  return {seed: ((BigInt(words[0]) << 32n) | BigInt(words[1])).toString(), source: 'random'};
+}
 // One config contract: never pick individual ProjectConfig declarations here.
 export async function assembleProject(config, readText, readJson) {
   const job_sources=Object.fromEntries(await Promise.all(Object.entries(config.job_scripts??{}).map(async([id,path])=>[id,await readText(path)])));

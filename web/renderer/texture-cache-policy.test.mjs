@@ -52,3 +52,7 @@ test('texture accounting includes mip estimate, without claiming driver bytes',(
   assert.equal(textureBytes({image:{width:3,height:3},generateMipmaps:true}),48);
   assert.equal(textureBytes(null),0);
 });
+test('decoded lease is released once even when local GPU disposal throws',()=>{
+ let released=0;const failure=Error('GPU dispose'),entry={state:'ready',texture:{dispose(){throw failure;}},imageLease:{release(){released++;}}},records=new Map([['shared',entry]]),cache=createTextureCachePolicy(records,undefined);
+ assert.throws(()=>cache.clear(),error=>error===failure);assert.equal(released,1);assert.equal(entry.texture,null);assert.equal(entry.imageLease,null);assert.equal(records.size,0);cache.clear();assert.equal(released,1);
+});

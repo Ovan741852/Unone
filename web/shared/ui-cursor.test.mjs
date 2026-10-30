@@ -77,3 +77,24 @@ test('cursor readiness waits for current visible artwork, ignores retired loads 
  loads.get('texture://new')({width:17,height:19});await waiting;assert.equal(settled,true);
  host.update({...image,asset:'texture://pending'});const cancelled=assert.rejects(host.ready(),/UI_CURSOR_DISPOSED/);host.dispose();await cancelled;
 });
+test('broker-ready cursor paints synchronously and unchanged declarations reuse one lease',()=>{
+ const f=surface(),bitmap={width:17,height:19,close(){throw Error('shared image closed');}};let acquired=0,released=0;
+ const broker={acquire(id){assert.equal(id,image.asset);acquired++;return{state:'ready',image:bitmap,error:null,promise:Promise.resolve(bitmap),release(){released++;}};}};
+ const host=createUiCursorHost({...f,getImageAssets:()=>broker,loadImage(){throw Error('duplicate legacy loader');},onError:error=>{throw error;}});f.emit(74,60);
+ assert.equal(host.update(image).status,'completed');assert.equal(f.calls.filter(c=>c[0]==='draw').at(-1)[1],bitmap);host.update({...image,filter:'linear'});assert.equal(acquired,1);assert.equal(host.report().shared_image_leases,1);
+ assert.throws(()=>host.update({...image,width:0}),/UI_CURSOR_INVALID/);assert.equal(released,0,'invalid declaration must not retire the current owner');host.update({kind:'default'});assert.equal(released,1);host.dispose();assert.equal(released,1);
+});
+test('broker cursor changes/invalidation/disposal release their generations and ignore late completions',async()=>{
+ const f=surface(),entries=new Map(),leases=[],errors=[];
+ const broker={acquire(asset){let state=entries.get(asset);if(!state){let resolve;const promise=new Promise(done=>{resolve=done;});state={state:'loading',image:null,promise,resolve};entries.set(asset,state);}let released=false;const lease={get state(){return released?'error':state.state;},get image(){return released?null:state.image;},get error(){return released?Error('released'):null;},promise:state.promise,releases:0,release(){if(released)return;released=true;lease.releases++;}};leases.push(lease);return lease;}};
+ const host=createUiCursorHost({...f,getImageAssets:()=>broker,onError:e=>errors.push(e)});f.emit(74,60);assert.equal(host.update(image).reason,'cursor_assets_pending');
+ host.update({...image,asset:'texture://new'});assert.equal(leases[0].releases,1);const old=entries.get(image.asset);old.image={};old.state='ready';old.resolve(old.image);await Promise.resolve();await Promise.resolve();assert.equal(f.calls.filter(c=>c[0]==='draw').length,0,'retired image cannot paint current cursor');
+ const next=entries.get('texture://new'),bitmap={width:17,height:19,close(){throw Error('shared close');}};next.image=bitmap;next.state='ready';next.resolve(bitmap);await Promise.resolve();assert.equal(host.render().status,'completed');
+ assert.equal(host.invalidateAssets().status,'completed','broker cached ready generation reattaches synchronously');assert.equal(leases[1].releases,1);assert.equal(leases.length,3);host.dispose();host.dispose();assert.equal(leases[2].releases,1);assert.deepEqual(errors,[]);
+});
+test('broker errors are synchronous diagnostics and disposed pending leases cannot revive the cursor',async()=>{
+ const f=surface(),errors=[],error=Error('cursor shared failure');let released=0;
+ const failedBroker={acquire(){return{state:'error',image:null,error,promise:Promise.reject(error),release(){released++;}};}};
+ const host=createUiCursorHost({...f,getImageAssets:()=>failedBroker,onError:e=>errors.push(e)});f.emit(74,60);assert.equal(host.update(image).reason,'cursor_diagnostics');await assert.rejects(host.ready(),/UI_CURSOR_ASSET_FAILED/);assert.equal(errors.length,1);host.dispose();assert.equal(released,1);
+ const g=surface();let resolve;const pending=new Promise(done=>{resolve=done;}),lease={state:'loading',image:null,promise:pending,release(){released++;}},pendingBroker={acquire:()=>lease},other=createUiCursorHost({...g,getImageAssets:()=>pendingBroker,onError:e=>errors.push(e)});g.emit(74,60);other.update(image);other.dispose();resolve({width:17,height:19});await Promise.resolve();await Promise.resolve();assert.equal(g.calls.filter(c=>c[0]==='draw').length,0);assert.equal(released,2);
+});

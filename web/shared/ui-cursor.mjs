@@ -23,19 +23,31 @@ export function loadCursorImage(url){
   image.onerror=()=>reject(Error('UI_CURSOR_ASSET_FAILED: '+url));image.src=url;});
 }
 
-export function createUiCursorHost({target,layer,focus=globalThis.window,loadImage,onError=error=>{throw error;}}){
+export function createUiCursorHost({target,layer,focus=globalThis.window,loadImage,getImageAssets,onError=error=>{throw error;}}){
+ if(getImageAssets!==undefined&&typeof getImageAssets!=='function')throw Error('UI_CURSOR_IMAGE_PROVIDER_INVALID');
  const context=layer.getContext('2d');if(!context)throw Error('UI_CURSOR_CANVAS_UNAVAILABLE');
  const previous=target.style.cursor,images=new Map(),readyWaiters=new Set();let spec={kind:'default'},pointer=null,disposed=false,visible=false,rect=null;
  Object.assign(layer.style,{position:'fixed',pointerEvents:'none',zIndex:'2147483000'});
  function restore(){if(target.style.cursor==='none')target.style.cursor=previous;}
  function clear(){context.clearRect(0,0,layer.width,layer.height);visible=false;rect=null;restore();}
+ function retire(asset,entry){entry.retired=true;entry.lease?.release();entry.lease=null;entry.image=null;if(images.get(asset)===entry)images.delete(asset);}
  function resource(asset){
-  let entry=images.get(asset);if(entry)return entry;
-  entry={image:null,error:false};images.set(asset,entry);
+  const broker=getImageAssets?.()??null;
+  let entry=images.get(asset);if(entry&&entry.broker===broker)return entry;if(entry)retire(asset,entry);
+  entry={image:null,error:false,broker,retired:false,lease:null};images.set(asset,entry);
+  const current=()=>!disposed&&!entry.retired&&images.get(asset)===entry;
+  const failed=error=>{if(!current()||entry.error)return;entry.error=true;try{if(spec.kind==='image'&&spec.asset===asset){clear();onError(error);}}finally{notifyReady();}};
+  if(broker){
+   const adopt=()=>{if(!current())return;const lease=entry.lease;if(lease.state==='error')throw lease.error??Error('UI_CURSOR_ASSET_FAILED: '+asset);if(lease.state!=='ready'||!lease.image)throw Error('UI_CURSOR_ASSET_NOT_READY: '+asset);entry.image=lease.image;if(spec.kind==='image'&&spec.asset===asset)renderAndNotify();};
+   try{entry.lease=broker.acquire(asset);if(entry.lease.state==='ready'){if(!entry.lease.image)throw Error('UI_CURSOR_ASSET_NOT_READY: '+asset);entry.image=entry.lease.image;}
+    else if(entry.lease.state==='error'){entry.lease.promise.catch(()=>{});failed(entry.lease.error??Error('UI_CURSOR_ASSET_FAILED: '+asset));}
+    else entry.lease.promise.then(adopt).catch(failed);
+   }catch(error){failed(error);}return entry;
+  }
   let loading;try{loading=loadImage(asset);}catch(error){entry.error=true;clear();onError(error);return entry;}
   Promise.resolve(loading).then(image=>{
-   entry.image=image;if(!disposed&&spec.kind==='image'&&spec.asset===asset)renderAndNotify();
-  }).catch(error=>{entry.error=true;try{if(!disposed&&spec.kind==='image'&&spec.asset===asset){clear();onError(error);}}finally{notifyReady();}});
+   if(!current())return;entry.image=image;if(spec.kind==='image'&&spec.asset===asset)renderAndNotify();
+  }).catch(failed);
   return entry;
  }
  function render(){
@@ -65,10 +77,11 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  target.addEventListener('pointermove',move,{passive:true});target.addEventListener('pointerenter',move,{passive:true});
  target.addEventListener('pointerleave',leave,{passive:true});focus?.addEventListener('blur',leave);
  return {
-  update(value){const next=validateCursor(value);spec=next;if(spec.kind==='image')resource(spec.asset);return renderAndNotify();},render:renderAndNotify,
+  update(value){const next=validateCursor(value);for(const [asset,entry]of images)if(entry.broker&&(next.kind!=='image'||asset!==next.asset))retire(asset,entry);spec=next;if(spec.kind==='image')resource(spec.asset);return renderAndNotify();},render:renderAndNotify,
   ready(){const value=readiness();if(value===DRAW_COMPLETED)return Promise.resolve();if(value!==DRAW_SKIPPED.cursor_assets_pending)return Promise.reject(Error(disposed?'UI_CURSOR_DISPOSED':'UI_CURSOR_ASSET_FAILED'));return new Promise((resolve,reject)=>readyWaiters.add({resolve,reject}));},
-  report(){return {mode:spec.kind,asset:spec.asset??null,visible,rect:rect?{...rect}:null,units:'drawing_buffer_pixels',input:'passive real pointer; no event injection'};},
-  dispose(){if(disposed)return;disposed=true;clear();images.clear();notifyReady();target.removeEventListener('pointermove',move);
+  report(){let leases=0;for(const entry of images.values())if(entry.lease)leases++;return {mode:spec.kind,asset:spec.asset??null,visible,rect:rect?{...rect}:null,shared_image_leases:leases,units:'drawing_buffer_pixels',input:'passive real pointer; no event injection'};},
+  invalidateAssets(){for(const [asset,entry]of images)retire(asset,entry);if(!disposed&&spec.kind==='image')resource(spec.asset);return renderAndNotify();},
+  dispose(){if(disposed)return;disposed=true;clear();for(const [asset,entry]of images)retire(asset,entry);notifyReady();target.removeEventListener('pointermove',move);
    target.removeEventListener('pointerenter',move);target.removeEventListener('pointerleave',leave);focus?.removeEventListener('blur',leave);},
  };
 }

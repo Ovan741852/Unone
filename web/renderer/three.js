@@ -67,6 +67,7 @@ async function loadThree(url) {
  */
 export async function createThreeRenderer(canvas, options = {}) {
   parseTextureCache(options.textureCache);
+  if(options.getImageAssets!==undefined&&typeof options.getImageAssets!=='function')throw Error('IMAGE_ASSET_PROVIDER_INVALID: getImageAssets must be a function');
   const antialias=normalizeAntialias(options.antialias);
   const rasterPolicy=parseProjectedRaster(options.projectedRaster),checkedRaster=rasterPolicy.requested==='upper_left_checked';
   const frameProfile=parseFrameProfile(options.projectedMaterialProfile);let framePublication=null,framePublicationIdentity=null;
@@ -221,11 +222,36 @@ export async function createThreeRenderer(canvas, options = {}) {
 
   function textureFor(asset,owner='persistent') {
     const id = String(asset?.id ?? "");
-    if (!id || typeof options.loadAssetUrl !== "function") {assetRequestPending=true;return null;}
+    const imageAssets=options.getImageAssets?.();
+    if (!id || (!imageAssets&&typeof options.loadAssetUrl !== "function")) {assetRequestPending=true;return null;}
     const existing = textureRecords.get(id);
     if (existing) {if(existing.state!=='ready')assetRequestPending=true;textureCache.touch(id,existing,{persistent:owner!=='sprite'});return existing;}
-    assetRequestPending=true;
     const record = { state: "loading", texture: null, error: null };
+    if(imageAssets){
+      textureRecords.set(id,record);textureCache.touch(id,record,{persistent:owner!=='sprite'});
+      const current=()=>!record.discarded&&textureRecords.get(id)===record;
+      const fail=error=>{if(current()){record.state='error';record.error=error;}};
+      const attach=()=>{
+        if(!current())return;
+        const lease=record.imageLease;
+        if(lease.state==='error')throw lease.error??Error('IMAGE_ASSET_FAILED: '+id);
+        if(lease.state!=='ready'||!lease.image)throw Error('IMAGE_ASSET_NOT_READY: '+id);
+        // GPU sampler/color ownership remains local; the immutable CPU image
+        // is kept leased across context restoration and never closed here.
+        const texture=new THREE.Texture(lease.image);
+        try{record.texture=configureTexture(THREE,texture);}catch(error){texture.dispose();throw error;}
+        record.state='ready';
+      };
+      try{
+        record.imageLease=imageAssets.acquire(id);
+        if(record.imageLease.state==='ready'){attach();record.promise=Promise.resolve();}
+        else if(record.imageLease.state==='error'){fail(record.imageLease.error??Error('IMAGE_ASSET_FAILED: '+id));record.promise=record.imageLease.promise.catch(fail);}
+        else record.promise=record.imageLease.promise.then(attach).catch(fail);
+      }catch(error){fail(error);record.promise=Promise.resolve();}
+      if(record.state!=='ready')assetRequestPending=true;
+      return record;
+    }
+    assetRequestPending=true;
     record.promise = options.loadAssetUrl(asset)
       .then((url) => new Promise((resolve, reject) => {
         const loader = new THREE.TextureLoader();
@@ -240,8 +266,7 @@ export async function createThreeRenderer(canvas, options = {}) {
         record.state = "error";
         record.error = error;
       });
-    textureRecords.set(id, record);
-    textureCache.touch(id,record,{persistent:owner!=='sprite'});
+    textureRecords.set(id,record);textureCache.touch(id,record,{persistent:owner!=='sprite'});
     return record;
   }
 
@@ -519,7 +544,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-      metrics: () => ({texture_cache:textureCache.metrics(),raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),...heightfields.metrics(),...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),...heightfields.metrics(),...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

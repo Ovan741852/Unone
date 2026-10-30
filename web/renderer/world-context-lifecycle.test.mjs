@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import * as THREE from '../vendor/three/three.player.min.js';
 import {createRasterCapability} from './projected-raster-capability.js';
+import {createTextureCachePolicy} from './texture-cache-policy.js';
 const source=await readFile(new URL('./three.js',import.meta.url),'utf8');
 const section=(start,end)=>source.slice(source.indexOf(`  function ${start}(`),source.indexOf(end,source.indexOf(`  function ${start}(`)));
 test('actual disabled-particle export stub implements the ordinary world owner lifecycle without GPU work',async()=>{
@@ -19,7 +20,7 @@ test('ordinary world loss retires unique engine GPU bindings once per epoch whil
  const geometries=[geometry,assetGeometry,primitive.geometry,particleGeometry,terrainGeometry,bloomGeometry],arrays=geometries.map(g=>g.attributes.position.array),matrices=[instance.instanceMatrix.array,particleMesh.instanceMatrix.array];
  const owned=[...geometries,base,assetMaterial,primitive.material,texture,shader,instance,particleMaterial,particleTexture,particleMesh,terrainMaterial,bloomMaterial,bloomTarget],disposes=new Map(owned.map(o=>[o,0]));
  let lost=false;const bind=()=>{for(const object of owned){function onDispose(){assert.equal(lost,true,'GPU bindings retire before restore');object.removeEventListener('dispose',onDispose);disposes.set(object,disposes.get(object)+1);}object.addEventListener('dispose',onDispose);}};
- const capability=createRasterCapability({policy:{requested:'host'}}),records=new Map([['sprite',{material:base}]]),meshAssets=new Map([['asset',{geometry:assetGeometry,material:assetMaterial}]]),textureRecords=new Map([['texture',{texture,state:'ready'}]]);
+ let leaseReleases=0;const capability=createRasterCapability({policy:{requested:'host'}}),records=new Map([['sprite',{material:base}]]),meshAssets=new Map([['asset',{geometry:assetGeometry,material:assetMaterial}]]),textureRecords=new Map([['texture',{texture,state:'ready',imageLease:{release(){leaseReleases++;}}}]]);
  const hook=objects=>({contextLost(retire){for(const value of objects)retire(value);}}),noop=()=>{};
  const context={geometry,records,meshAssets,textureRecords,meshes3d:new Map([['primitive',primitive],['shared',{userData:{asset:'mesh://qa'},geometry:assetGeometry,material:assetMaterial}]]),
   shaderMaterials:hook([shader,texture]),instances:hook([instance]),particles:hook([particleGeometry,particleMaterial,particleTexture,particleMesh]),heightfields:hook([terrainGeometry,terrainMaterial]),bloom:hook([bloomGeometry,bloomMaterial,bloomTarget]),
@@ -31,4 +32,5 @@ test('ordinary world loss retires unique engine GPU bindings once per epoch whil
   assert.equal(records.size,1);assert.equal(meshAssets.size,1);assert.equal(textureRecords.get('texture').texture,texture);assert.equal(textureRecords.get('texture').state,'ready');geometries.forEach((g,i)=>assert.equal(g.attributes.position.array,arrays[i]));assert.equal(instance.instanceMatrix.array,matrices[0]);assert.equal(particleMesh.instanceMatrix.array,matrices[1]);
   lost=false;context.rasterRestored();context.rasterRestored();
  }
+ assert.equal(leaseReleases,0,'context restore retains the decoded CPU image lease');createTextureCachePolicy(textureRecords,undefined).clear();assert.equal(leaseReleases,1,'final GPU owner retirement releases its image lease');
 });

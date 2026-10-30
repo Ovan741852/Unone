@@ -16,7 +16,10 @@ export function createTextureCachePolicy(records,value,{dispose=texture=>texture
   const policy=parseTextureCache(value),active=new Set();let frame=0,evicted=0,releasedBytes=0;
   function drop(id,entry){
     records.delete(id);entry.discarded=true;
-    releasedBytes+=textureBytes(entry.texture);dispose(entry.texture);entry.texture=null;evicted++;
+    releasedBytes+=textureBytes(entry.texture);
+    // The GPU texture and decoded image have different owners. Only release
+    // this record's broker lease; the shared image may still serve UI/cursors.
+    try{dispose(entry.texture);}finally{entry.texture=null;const lease=entry.imageLease;entry.imageLease=null;evicted++;lease?.release();}
   }
   function totals(){
     let bytes=0,pinnedBytes=0,loading=0;

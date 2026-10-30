@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {createTextureCachePolicy} from './texture-cache-policy.js';
 import {createThreeRenderer} from './three.js';
 import {createProjectedFrameDecoder} from '../shared/projected-frame.mjs';
+import {configureTexture as configureSharedTexture} from './presentation3d.js';
 
 // Exercise the production closures, not a copied lifetime implementation.
 const source=await readFile(new URL('./three.js',import.meta.url),'utf8');
@@ -17,19 +18,20 @@ const functions=[section('  function textureFor(', '  function recordFor('),
   section('  function clearTextures(', '  function dispose(')].join('\n');
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
 const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
-function fixture(policy={max_bytes:16,max_entries:1,idle_frames:2}){
+function fixture(policy={max_bytes:16,max_entries:1,idle_frames:2},imageAssets=null){
   const textureRecords=new Map(),meshAssets=new Map(),records=new Map(),meshes3d=new Map();
   const textureCache=createTextureCachePolicy(textureRecords,policy),loads=[],fetches=[],allocated=[];
   const disposable=kind=>{const result={kind,disposed:0,dispose(){this.disposed++;}};allocated.push(result);return result;};
   const THREE={TextureLoader:class {load(url,resolve,_progress,reject){loads.push({url,resolve,reject});}},
+    Texture:class {constructor(image){this.image=image;this.disposed=0;allocated.push(this);}dispose(){this.disposed++;}},SRGBColorSpace:'srgb',NearestFilter:'nearest',ClampToEdgeWrapping:'clamp',
     MeshBasicMaterial:class {constructor(value){Object.assign(this,value);Object.assign(this,disposable('material'));}},DoubleSide:2};
   const environment={uiImageBatchPrefix:{clear(){}},assetRequestPending:false,textureRecords,textureCache,meshAssets,records,meshes3d,THREE,
-    options:{loadAssetUrl:async asset=>asset.id},configureTexture:(_three,texture)=>texture,
+    options:{loadAssetUrl:async asset=>asset.id,...(imageAssets?{getImageAssets:()=>imageAssets}:{})},configureTexture:imageAssets?configureSharedTexture:(_three,texture)=>texture,
     fetch:async url=>{const data=deferred();fetches.push({url,...data});return {ok:true,json:()=>data.promise};},
     validateMesh:raw=>raw,meshGeometry:()=>disposable('geometry'),frameProfile:null,
     startupPresentation:null,frameDecoder:createProjectedFrameDecoder(),frameDraws:null,shaderMaterials:{clear(){}},instances:{clear(){}},
     projected:{clear(){}},heightfields:{clear(){}},scene:{remove(){}}};
-  const api=new Function(...Object.keys(environment),`${functions}\nreturn {textureFor,meshAssetFor,clearTextures};`)(...Object.values(environment));
+  const api=new Function(...Object.keys(environment),`${functions}\nreturn {textureFor,meshAssetFor,clearTextures,pending:()=>assetRequestPending};`)(...Object.values(environment));
   const texture=id=>({id,image:{width:2,height:2},generateMipmaps:false,disposed:0,dispose(){this.disposed++;}});
   return {...api,textureRecords,textureCache,meshAssets,records,meshes3d,loads,fetches,allocated,texture};
 }
@@ -39,6 +41,7 @@ const specs=new Map([['mesh',{id:'mesh',kind:'mesh3d',source:'actor.mesh.json'}]
 test('direct production constructor rejects malformed cache policy before any browser/GPU dependency',async()=>{
   for(const textureCache of [null,{}, {max_bytes:0,max_entries:1,idle_frames:1}])
     await assert.rejects(()=>createThreeRenderer(null,{textureCache}),/TEXTURE_CACHE_INVALID/);
+  for(const getImageAssets of [null,{},true])await assert.rejects(()=>createThreeRenderer(null,{getImageAssets}),/IMAGE_ASSET_PROVIDER_INVALID/);
 });
 
 test('real textureFor deduplicates sprite owners and protects current-frame pressure',async()=>{
@@ -112,4 +115,23 @@ test('production hidden sprite path detaches maps before sweep',()=>{
   assert.equal(visible.mesh.visible,true);assert.equal(visible.material.map.id,'shared');
   assert.equal(hiddenRecord.mesh.visible,false);assert.equal(hiddenRecord.material.map,null);
   assert(source.indexOf(hidden)<source.indexOf('    textureCache.sweep();'));
+});
+test('shared decoded ready image creates the local sampler synchronously without a pending frame or second loader',()=>{
+ let acquired=0,released=0,closed=0;const image={width:2,height:2,close(){closed++;}},lease={state:'ready',image,error:null,promise:Promise.resolve(image),release(){released++;}};
+ const f=fixture(undefined,{acquire(id){assert.equal(id,'atlas');acquired++;return lease;}});f.textureCache.begin();const r=f.textureFor(asset,'sprite');
+ assert.equal(r.state,'ready');assert.equal(f.pending(),false);assert.equal(r.texture.image,image);assert.equal(f.loads.length,0);assert.equal(acquired,1);
+ assert.equal(r.texture.colorSpace,'srgb');assert.equal(r.texture.magFilter,'nearest');assert.equal(r.texture.flipY,true);assert.equal(r.texture.generateMipmaps,false);
+ assert.equal(f.textureFor(asset),r);assert.equal(acquired,1);const texture=r.texture;f.clearTextures();f.clearTextures();assert.equal(texture.disposed,1);assert.equal(released,1);assert.equal(closed,0);
+});
+test('shared pending generation releases on eviction and never adopts a late image into its replacement',async()=>{
+ const leases=[];let closed=0;const broker={acquire(){const wait=deferred(),state={state:'loading',image:null,released:0};const lease={get state(){return state.released?'error':state.state;},get image(){return state.released?null:state.image;},error:null,promise:wait.promise,release(){state.released++;}};leases.push({state,wait,lease});return lease;}};
+ const f=fixture(undefined,broker);f.textureCache.begin();const old=f.textureFor(asset,'sprite');assert.equal(f.pending(),true);
+ for(let i=0;i<2;i++){f.textureCache.begin();f.textureCache.sweep();}assert.equal(leases[0].state.released,1);const newer=f.textureFor(asset,'sprite');
+ const image={width:2,height:2,close(){closed++;}};leases[1].state.image=image;leases[1].state.state='ready';leases[1].wait.resolve(image);await newer.promise;
+ leases[0].state.image=image;leases[0].state.state='ready';leases[0].wait.resolve(image);await old.promise;
+ assert.equal(f.textureRecords.get('atlas'),newer);assert.equal(newer.state,'ready');assert.equal(f.allocated.length,1,'late retired lease cannot allocate a GPU texture');assert.equal(closed,0);f.clearTextures();assert.equal(leases[1].state.released,1);
+});
+test('shared acquisition and decoded-image failures remain explicit and release only the failed owner',async()=>{
+ const error=Error('missing decoded asset'),f=fixture(undefined,{acquire(){throw error;}});const r=f.textureFor(asset,'sprite');assert.equal(r.state,'error');assert.equal(r.error,error);assert.equal(f.allocated.length,0);f.clearTextures();
+ let released=0;const bad=fixture(undefined,{acquire(){return{state:'error',image:null,error,promise:Promise.reject(error),release(){released++;}};}}),failed=bad.textureFor(asset,'sprite');assert.equal(failed.state,'error');await failed.promise;bad.clearTextures();assert.equal(released,1);
 });

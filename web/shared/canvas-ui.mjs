@@ -95,7 +95,7 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
   try{for(const face of presentationFontFaces(ui))loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));return loaded;}
   catch(error){for(const font of loaded)document.fonts.delete(font);throw error;}
 }
-export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null}={}){
+export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireAsset,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null}={}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
   const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets};
@@ -114,8 +114,35 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
       if(error){readyWaiters.delete(check);reject(error);}else if(!loadingAssets){readyWaiters.delete(check);resolve();}
     };readyWaiters.add(check);check();});
   }
+  function releaseAsset(entry){if(entry.lease)entry.lease.release();else entry.image?.close?.();}
   function ensureAsset(id){if(assets.has(id))return assets.get(id);
-    const entry={image:null,state:'loading'};assets.set(id,entry);loadingAssets++;const ticket=generation;
+    const entry={image:null,state:'loading',lease:null};assets.set(id,entry);const ticket=generation;
+    if(acquireAsset){
+      const failed=error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}};
+      try{
+        entry.lease=acquireAsset(id);
+        // A prepared image is usable in this draw. Scheduling another Promise
+        // turn here would manufacture an assets-pending frame on a cache hit.
+        if(entry.lease.state==='ready'){
+          const image=entry.lease.image;
+          if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');
+          entry.image=image;entry.state='ready';return entry;
+        }
+        loadingAssets++;
+        if(entry.lease.state==='error'){failed(entry.lease.error);return entry;}
+        entry.lease.promise.then(image=>{
+          if(disposed||ticket!==generation||assets.get(id)!==entry){entry.lease.release();return;}
+          if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');
+          entry.image=image;entry.state='ready';loadingAssets--;dirty=true;try{requestRender();}finally{notifyReady();}
+        }).catch(failed);
+      }catch(error){
+        // Synchronous acquire/validation failures did not enter loadingAssets.
+        if(entry.state==='loading')entry.state='failed';entry.lease?.release();
+        try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}
+      }
+      return entry;
+    }
+    loadingAssets++;
     Promise.resolve().then(()=>{if(!resolveAsset)throw Error('UI_ASSET_RESOLVER_REQUIRED');return resolveAsset(id);}).then(value=>typeof value==='string'||value instanceof URL?loadImage(value):value)
       .then(image=>{if(disposed||ticket!==generation||assets.get(id)!==entry){image?.close?.();return;}if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');entry.image=image;entry.state='ready';loadingAssets--;dirty=true;try{requestRender();}finally{notifyReady();}})
       .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}});
@@ -200,7 +227,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
         for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets)used.add(id);}
           else if(node.kind==='image')used.add(node.asset);if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
         if([...assets.keys()].some(id=>!used.has(id)))retireGpu();
-        for(const [id,e]of assets)if(!used.has(id)){if(e.state==='loading')loadingAssets--;e.image?.close?.();assets.delete(id);diagnostics.delete(id);}
+        for(const [id,e]of assets)if(!used.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
         requiredAssets=used;for(const id of used)ensureAsset(id);batchResolver.prune(nodes);}
       prefixContext.width=bw;prefixContext.height=bh;
       const presenter=getImageBatchPresenter(),presented=presenter?.drawPrefix(prefix,prefixContext)??0;
@@ -241,8 +268,8 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,onAction
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,
     setFont(family){fontFamily=family;dirty=true;},
-    invalidateAssets(){retireGpu();generation++;for(const e of assets.values())e.image?.close?.();assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
+    invalidateAssets(){retireGpu();generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
     report(){return {backend:'canvas2d',nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
-    dispose(){if(disposed)return;retireGpu();router.dispose();disposed=true;generation++;for(const e of assets.values())e.image?.close?.();assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();},
+    dispose(){if(disposed)return;retireGpu();router.dispose();disposed=true;generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();},
   };
 }
