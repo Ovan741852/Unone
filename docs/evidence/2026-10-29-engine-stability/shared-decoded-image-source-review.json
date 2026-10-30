@@ -1,0 +1,215 @@
+{
+  "schema": "unone.shared-decoded-image-source-review.v1",
+  "date": "2026-10-30",
+  "base_revision": "5fd9f6c7950f72d021e9be529f2d5f8b03632c01",
+  "reviewed_commit": "4deaa440495f9bba0fb45655a8ef8ede3e3e5ca9",
+  "scope": "Fixed production JS diff plus ADR0047 and the image ownership contract. Existing verified SDK10 Core/WASM is reused; no fused-copy runtime execution is established.",
+  "supplied_external_scope": {
+    "production_js_files": 8,
+    "documentation_files": 2,
+    "test_diff_supplied": false,
+    "paths": [
+      {
+        "path": "docs/decisions/0047-shared-decoded-image-ownership.md",
+        "bytes": 2409,
+        "sha256": "1c19b43f975b1333461aec1a7e6b217bfa7e5670ba0fb1e567e432c5a453ac8a"
+      },
+      {
+        "path": "docs/web-image-assets.md",
+        "bytes": 7052,
+        "sha256": "f55c5e61f3801442ab3c8e75ee09c3882bcdc8fe6ff240a7994b9f47e91f94d3"
+      },
+      {
+        "path": "web/player/main.js",
+        "bytes": 25377,
+        "sha256": "6cde06016a8b83622cc778c96fa408503fb9a6b82bae338e4544dd3cefb7baaa"
+      },
+      {
+        "path": "web/renderer/texture-cache-policy.js",
+        "bytes": 3212,
+        "sha256": "78952f0e8932008dfdd3787b3e1b6eada6211028d856ec9f6f3a2223efe9077a"
+      },
+      {
+        "path": "web/renderer/three.js",
+        "bytes": 32531,
+        "sha256": "2cde9d128ee2fd993c36cfed81e898e1936759e91b59d8eb9e70c66b69ae2cc6"
+      },
+      {
+        "path": "web/shared/asset-encoding.js",
+        "bytes": 19923,
+        "sha256": "ac44a36efdb8b26f5f814b041248ddbe18294d8978bf2ca7bc6dd74afe09c89a"
+      },
+      {
+        "path": "web/shared/canvas-ui.mjs",
+        "bytes": 25096,
+        "sha256": "06c71b43c6d47be31235f375ffbc8bd4b0091190989080f5055acabb8e3e3aca"
+      },
+      {
+        "path": "web/shared/load-project.js",
+        "bytes": 9155,
+        "sha256": "422397275f5454bb40125623afc7897d33f561e48241afd19511f05b691301e8"
+      },
+      {
+        "path": "web/shared/player-seed.mjs",
+        "bytes": 46,
+        "sha256": "97098d2ad05bbc626c2b9fbf44d49072c32b744f6ed848dd7fc45ab007b670b2"
+      },
+      {
+        "path": "web/shared/ui-cursor.mjs",
+        "bytes": 7653,
+        "sha256": "3ed90fa6781b87dfb68a4d71bc10d0cdb82b2ebf5026cc40a8a18d54fce15fdd"
+      }
+    ],
+    "fixed_diff_sha256": "edc9b486e07a21317607a03f7e7ef2e90bb15f34b96c13a12df0107e9463373b"
+  },
+  "independent_codex_review": {
+    "reviewer": "Runtime audit agent, independent of the broker, Canvas/player and Three/cursor implementation authors",
+    "status": "completed-bounded-source-review",
+    "remaining_concrete_p1_p2_findings": [],
+    "checked": [
+      "Exact immutable catalog authority, single-flight decoded image identity and synchronous ready lease adoption",
+      "Declared hidden sprite preparation, deterministic entry/byte admission, partial fallback and separate unused LRU bounds",
+      "Scene/external lease lifetimes, errors/retry, superseded preparation, queued cancellation and late-image retirement",
+      "Canvas prune/invalidate/dispose and cursor replacement/provider changes preserve other consumers",
+      "GPU texture eviction/final disposal releases only its lease; context-loss retirement preserves CPU pixels for restoration",
+      "Initial manifest/font/startup cancellation, late backend/audio adoption and pagehide/failure cleanup",
+      "Truthful pending/completed frame outcomes and unchanged seed selection after helper relocation"
+    ],
+    "corrected_before_freeze": [
+      {
+        "finding": "Late initial manifest completion could construct and pin a new broker after pagehide cleanup had already run.",
+        "correction": "Abort guard before catalog/broker construction, plus later async adoption guards.",
+        "regression": "actual player start cannot create a late image broker after pagehide while manifests are pending"
+      },
+      {
+        "finding": "Unconditional Canvas dispose in failure cleanup did not match the existing exporter UI-disabled stub.",
+        "correction": "Optional dispose call; regression evaluates the exact current Rust-produced stub with actual player fail().",
+        "regression": "actual failure cleanup accepts the exported UI-disabled stub and retires the broker/backend"
+      }
+    ],
+    "additional_source_hardening_checked": "Audio is taken/nullified before disposal so later pagehide does not repeat ownership cleanup. Author fixes for speculative-failure retry and immediate queued-abort removal were independently read."
+  },
+  "validation": {
+    "final_full_web_suite": {
+      "status": "passed",
+      "tests": 597,
+      "passed": 594,
+      "failed": 0,
+      "skipped": 3,
+      "cancelled": 0,
+      "todo": 0,
+      "executed_by": "Root",
+      "raw": {
+        "path": ".cache/shared-image-full-web-tests-r3.log",
+        "sha256": "cce007bc5ad71b3061d6c4cd0aebe49081f2b80ca563b67e42bad1257fd7fcf1"
+      },
+      "raw_summary_read_by_reviewer": true
+    },
+    "skipped_cases": [
+      "Installed shader plugin: no navigator.gpu profile (requires UNONE_SHADER_ROOT)",
+      "Installed shader plugin: CPU-only profile (requires UNONE_SHADER_ROOT)",
+      "Real adjacent normal-World packet fixture (packets missing)"
+    ],
+    "new_independent_integration_cases": {
+      "cases": 6,
+      "status": "all included in the passing final full Web suite",
+      "coverage": [
+        "Warm hidden scene artwork enters Canvas/cursor synchronously with one decode",
+        "Delayed real Canvas readiness blocks startup without polling RAF or fake completion",
+        "Retired pending Canvas callbacks preserve another image owner",
+        "Canvas invalidation reacquires prepared images synchronously",
+        "Actual start rejects late manifest completion after pagehide",
+        "Actual fail accepts the exact UI-disabled exporter stub and retires resources"
+      ]
+    },
+    "focused_logs_for_traceability_not_additive": [
+      {
+        "path": ".cache/image-asset-broker-final-focused-r2.log",
+        "sha256": "a07346fb67910f9ab34a0e6d912fb2d3a256e87d8e81f9bc2eae7204d44e3d32",
+        "passed": 24,
+        "scope": "16 broker +4 catalog +the original4 integration cases"
+      },
+      {
+        "path": ".cache/shared-image-consumers-focused-tests.log",
+        "sha256": "b77ae968f9f6ceb9851dd72fdad36feb3661a491d3c018a381db4572d05f06d3",
+        "passed": 35,
+        "scope": "Three/texture/cursor/context consumer Node regressions"
+      },
+      {
+        "path": ".cache/shared-image-root-consumer-tests-run3.log",
+        "sha256": "69619c3304984be94e0df75ce8a402eae0ef3209ef7f08f2d5e6f034070d8737",
+        "passed": 33,
+        "scope": "Root seed/startup/Canvas checks including integration case5, before final optional-dispose/audio hardening"
+      }
+    ]
+  },
+  "claude_cli_attempt": {
+    "status": "timed-out-incomplete",
+    "review_completed": false,
+    "findings": null,
+    "version": "2.1.308 (Claude Code)",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version_exit_code": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "read_only": true,
+    "tool_access": "none",
+    "stdin": ".cache/shared-image-claude-review-20261030-r1/prompt.txt",
+    "prompt_sha256": "b0308bc8c659117772718578624f573e7d64a4fe3196d2485a8927dbfa6f838a",
+    "prompt_bytes": 219989,
+    "started_utc": "2026-10-30T07:13:04.904Z",
+    "finished_utc": "2026-10-30T07:14:05.237Z",
+    "timeout_deadline_ms": 60000,
+    "elapsed_including_process_shutdown_ms": 60330.376,
+    "exit_code": 1,
+    "signal": null,
+    "timed_out": true,
+    "launch_error": null,
+    "termination": {
+      "command": [
+        "taskkill.exe",
+        "/PID",
+        "49916",
+        "/T",
+        "/F"
+      ],
+      "exit": 0,
+      "stdout": "���\\: PID �� 17896 (PID �� 49916 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n���\\: PID �� 49916 (PID �� 66712 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n",
+      "stderr": "",
+      "error": null
+    },
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "raw_directory": ".cache/shared-image-claude-review-20261030-r1",
+    "raw_command": ".cache/shared-image-claude-review-20261030-r1/command.json",
+    "raw_result": ".cache/shared-image-claude-review-20261030-r1/result.json",
+    "raw_stdout": ".cache/shared-image-claude-review-20261030-r1/review.stdout.json",
+    "raw_stderr": ".cache/shared-image-claude-review-20261030-r1/review.stderr.txt",
+    "disposition": "The actual CLI attempt did not yield a completed review. This is not a zero-findings external review and does not satisfy completed Claude acceptance."
+  },
+  "limits": [
+    "Source review and Node host tests do not establish rendered pixels, exported main/worker behavior, GPU performance, natural GC frequency, a leak-free engine or stable FPS.",
+    "The separately implemented fused Luau-copy SDK11 WASM build remains blocked by App Control4551 and emitted no runtime. This review does not turn reused SDK10 WASM into that artifact.",
+    "Packaged-player and long-running FPS/memory validation of the new shared-image host remain separate tasks.",
+    "No Rust/native/build/browser/Product execution or Product file writes were performed for this review. Product guards from the old baseline are not authorization to overwrite the owner-rebased Product."
+  ]
+}
