@@ -626,156 +626,172 @@ impl Rasterizer {
         Ok(())
     }
 
+    // The whole surface in one raster, as the tile path composes it; raster
+    // fixtures compare against this.
+    #[cfg(test)]
     fn draw(&self, tree: &UiTree, width: u32, height: u32) -> R<Vec<u8>> {
         ensure_retained_images_supported(tree)?;
-        let mut svg = format!(
-            "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='{width}' height='{height}'>"
-        );
-        let mut defined_images = BTreeMap::new();
+        let mut svg = String::new();
         for (index, node) in leaves(tree).into_iter().enumerate() {
             if matches!(node,UiNode::InputRegion{..}) {continue;}
-            let r = node.rect();
-            let x = r.x * width as f64 / 100.;
-            let y = (100. - r.y - r.height) * height as f64 / 100.;
-            let w = r.width * width as f64 / 100.;
-            let h = r.height * height as f64 / 100.;
-            let unit = height as f64 / 100.;
-            let style = node.style();
-            let opacity = style.and_then(|s| s.opacity).unwrap_or(1.);
-            let radius =
-                (style.and_then(|s| s.border_radius).unwrap_or(0.) * unit).min(w.min(h) / 2.);
+            svg += &self.node_markup(index, node, width, height)?;
+        }
+        self.rasterize(&svg, [0, 0], [width, height])
+    }
+    /// One leaf's markup in surface pixels: its clip groups, background,
+    /// content and border, with image definitions local to the markup.
+    fn node_markup(&self, index: usize, node: &UiNode, width: u32, height: u32) -> R<String> {
+        let mut svg = String::new();
+        let mut defined_images = BTreeMap::new();
+        let r = node.rect();
+        let x = r.x * width as f64 / 100.;
+        let y = (100. - r.y - r.height) * height as f64 / 100.;
+        let w = r.width * width as f64 / 100.;
+        let h = r.height * height as f64 / 100.;
+        let unit = height as f64 / 100.;
+        let style = node.style();
+        let opacity = style.and_then(|s| s.opacity).unwrap_or(1.);
+        let radius =
+            (style.and_then(|s| s.border_radius).unwrap_or(0.) * unit).min(w.min(h) / 2.);
+        svg += &format!(
+            "<defs><clipPath id='c{index}'><rect x='{x}' y='{y}' width='{w}' height='{h}' rx='{radius}'/></clipPath></defs><g opacity='{opacity}' clip-path='url(#c{index})'>"
+        );
+        if let Some(color) = style.and_then(|s| s.background) {
             svg += &format!(
-                "<defs><clipPath id='c{index}'><rect x='{x}' y='{y}' width='{w}' height='{h}' rx='{radius}'/></clipPath></defs><g opacity='{opacity}' clip-path='url(#c{index})'>"
+                "<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='{radius}' fill='{}' fill-opacity='{}'/>",
+                rgba(color),
+                color[3]
             );
-            if let Some(color) = style.and_then(|s| s.background) {
-                svg += &format!(
-                    "<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='{radius}' fill='{}' fill-opacity='{}'/>",
-                    rgba(color),
-                    color[3]
-                );
+        }
+        let padding = style.and_then(|s| s.padding).unwrap_or_default();
+        let (cx, cy) = (x + padding.left * unit, y + padding.top * unit);
+        let (cw, ch) = (
+            (w - (padding.left + padding.right) * unit).max(0.),
+            (h - (padding.top + padding.bottom) * unit).max(0.),
+        );
+        svg += &format!(
+            "<defs><clipPath id='t{index}'><rect x='{cx}' y='{cy}' width='{cw}' height='{ch}'/></clipPath></defs><g clip-path='url(#t{index})'>"
+        );
+        match node {
+            UiNode::ImageBatch { id, quads, .. } => {
+                self.draw_image_batch(&mut svg, quads, width, height, &mut defined_images)
+                    .map_err(|e| format!("{e}; batch={id}"))?;
             }
-            let padding = style.and_then(|s| s.padding).unwrap_or_default();
-            let (cx, cy) = (x + padding.left * unit, y + padding.top * unit);
-            let (cw, ch) = (
-                (w - (padding.left + padding.right) * unit).max(0.),
-                (h - (padding.top + padding.bottom) * unit).max(0.),
-            );
-            svg += &format!(
-                "<defs><clipPath id='t{index}'><rect x='{cx}' y='{cy}' width='{cw}' height='{ch}'/></clipPath></defs><g clip-path='url(#t{index})'>"
-            );
-            match node {
-                UiNode::ImageBatch { id, quads, .. } => {
-                    self.draw_image_batch(&mut svg, quads, width, height, &mut defined_images)
-                        .map_err(|e| format!("{e}; batch={id}"))?;
-                }
-                UiNode::Image {
-                    asset,
-                    fit,
-                    slice,
-                    id,
-                    ..
-                } => {
-                    let uri=self.images.get(asset).ok_or_else(||format!("UI_IMAGE_UNAVAILABLE: {asset}; native UI accepts PNG or self-contained static SVG"))?;
-                    if let Some(slice) = slice {
-                        let (iw, ih) = self.image_sizes[asset];
-                        let patches = slice
-                            .patches(
-                                iw,
-                                ih,
-                                cw.max(f64::EPSILON),
-                                ch.max(f64::EPSILON),
-                                height as f64,
-                            )
-                            .map_err(|e| format!("{e}; node={id}; asset={asset}"))?;
-                        let image_id = if let Some(index) = defined_images.get(asset) {
-                            *index
-                        } else {
-                            let index = defined_images.len();
-                            defined_images.insert(asset.clone(), index);
-                            svg += &format!(
-                                "<defs><image id='slice{index}' width='{iw}' height='{ih}' xlink:href='{uri}'/></defs>"
-                            );
-                            index
-                        };
-                        for (s, d) in patches {
-                            svg += &format!(
-                                "<svg x='{}' y='{}' width='{}' height='{}' viewBox='{} {} {} {}' preserveAspectRatio='none' overflow='hidden'><use xlink:href='#slice{image_id}'/></svg>",
-                                cx + d.x,
-                                cy + d.y,
-                                d.width,
-                                d.height,
-                                s.x,
-                                s.y,
-                                s.width,
-                                s.height
-                            );
-                        }
+            UiNode::Image {
+                asset,
+                fit,
+                slice,
+                id,
+                ..
+            } => {
+                let uri=self.images.get(asset).ok_or_else(||format!("UI_IMAGE_UNAVAILABLE: {asset}; native UI accepts PNG or self-contained static SVG"))?;
+                if let Some(slice) = slice {
+                    let (iw, ih) = self.image_sizes[asset];
+                    let patches = slice
+                        .patches(
+                            iw,
+                            ih,
+                            cw.max(f64::EPSILON),
+                            ch.max(f64::EPSILON),
+                            height as f64,
+                        )
+                        .map_err(|e| format!("{e}; node={id}; asset={asset}"))?;
+                    let image_id = if let Some(index) = defined_images.get(asset) {
+                        *index
                     } else {
-                        let aspect = match fit {
-                            unone_engine::UiImageFit::Stretch => "none",
-                            unone_engine::UiImageFit::Cover => "xMidYMid slice",
-                            _ => "xMidYMid meet",
-                        };
+                        let index = defined_images.len();
+                        defined_images.insert(asset.clone(), index);
                         svg += &format!(
-                            "<image x='{cx}' y='{cy}' width='{cw}' height='{ch}' preserveAspectRatio='{aspect}' xlink:href='{uri}'/>"
+                            "<defs><image id='slice{index}' width='{iw}' height='{ih}' xlink:href='{uri}'/></defs>"
+                        );
+                        index
+                    };
+                    for (s, d) in patches {
+                        svg += &format!(
+                            "<svg x='{}' y='{}' width='{}' height='{}' viewBox='{} {} {} {}' preserveAspectRatio='none' overflow='hidden'><use xlink:href='#slice{image_id}'/></svg>",
+                            cx + d.x,
+                            cy + d.y,
+                            d.width,
+                            d.height,
+                            s.x,
+                            s.y,
+                            s.width,
+                            s.height
+                        );
+                    }
+                } else {
+                    let aspect = match fit {
+                        unone_engine::UiImageFit::Stretch => "none",
+                        unone_engine::UiImageFit::Cover => "xMidYMid slice",
+                        _ => "xMidYMid meet",
+                    };
+                    svg += &format!(
+                        "<image x='{cx}' y='{cy}' width='{cw}' height='{ch}' preserveAspectRatio='{aspect}' xlink:href='{uri}'/>"
+                    );
+                }
+            }
+            UiNode::TextInput { text, .. } | UiNode::Text { text, .. } | UiNode::Button { text, .. } => {
+                if let Some(style) = style {
+                    self.styled_text(&mut svg, text, style, [cx, cy, cw, ch], unit)?;
+                } else if !text.is_empty() {
+                    if self.options.fontdb.faces().next().is_none() {
+                        return Err("UI_FONT_UNAVAILABLE: package a licensed font via presentation.ui.font_source".into());
+                    }
+                    let lines: Vec<_> = text.lines().collect();
+                    let size = (h / (lines.len().max(1) as f64 * 1.2)).min(h * 0.72);
+                    for (i, line) in lines.iter().enumerate() {
+                        let cy = y
+                            + h / 2.
+                            + (i as f64 - (lines.len() - 1) as f64 / 2.) * size * 1.2;
+                        svg += &format!(
+                            "<text x='{}' y='{cy}' text-anchor='middle' dominant-baseline='central' font-family='{}' font-size='{size}' fill='white'>{}</text>",
+                            x + w / 2.,
+                            escape(&self.family),
+                            escape(line)
                         );
                     }
                 }
-                UiNode::TextInput { text, .. } | UiNode::Text { text, .. } | UiNode::Button { text, .. } => {
-                    if let Some(style) = style {
-                        self.styled_text(&mut svg, text, style, [cx, cy, cw, ch], unit)?;
-                    } else if !text.is_empty() {
-                        if self.options.fontdb.faces().next().is_none() {
-                            return Err("UI_FONT_UNAVAILABLE: package a licensed font via presentation.ui.font_source".into());
-                        }
-                        let lines: Vec<_> = text.lines().collect();
-                        let size = (h / (lines.len().max(1) as f64 * 1.2)).min(h * 0.72);
-                        for (i, line) in lines.iter().enumerate() {
-                            let cy = y
-                                + h / 2.
-                                + (i as f64 - (lines.len() - 1) as f64 / 2.) * size * 1.2;
-                            svg += &format!(
-                                "<text x='{}' y='{cy}' text-anchor='middle' dominant-baseline='central' font-family='{}' font-size='{size}' fill='white'>{}</text>",
-                                x + w / 2.,
-                                escape(&self.family),
-                                escape(line)
-                            );
-                        }
-                    }
-                }
-                UiNode::Slider { text, .. } | UiNode::ComboBox { text, .. } => {
-                    if let Some(style) = style {
-                        self.styled_text(&mut svg, text, style, [cx, cy, cw, ch], unit)?;
-                    }
-                }
-                _ => {}
             }
-            svg += "</g>";
-            let border_width =
-                (style.and_then(|s| s.border_width).unwrap_or(0.) * unit).min(w.min(h));
-            if border_width > 0. {
-                let color = style
-                    .and_then(|s| s.border_color)
-                    .unwrap_or([1., 1., 1., 1.]);
-                let inset = border_width / 2.;
-                svg += &format!(
-                    "<rect x='{}' y='{}' width='{}' height='{}' rx='{}' fill='none' stroke='{}' stroke-opacity='{}' stroke-width='{border_width}'/>",
-                    x + inset,
-                    y + inset,
-                    w - border_width,
-                    h - border_width,
-                    (radius - inset).max(0.),
-                    rgba(color),
-                    color[3]
-                );
+            UiNode::Slider { text, .. } | UiNode::ComboBox { text, .. } => {
+                if let Some(style) = style {
+                    self.styled_text(&mut svg, text, style, [cx, cy, cw, ch], unit)?;
+                }
             }
-            svg += "</g>";
+            _ => {}
         }
-        svg += "</svg>";
+        svg += "</g>";
+        let border_width =
+            (style.and_then(|s| s.border_width).unwrap_or(0.) * unit).min(w.min(h));
+        if border_width > 0. {
+            let color = style
+                .and_then(|s| s.border_color)
+                .unwrap_or([1., 1., 1., 1.]);
+            let inset = border_width / 2.;
+            svg += &format!(
+                "<rect x='{}' y='{}' width='{}' height='{}' rx='{}' fill='none' stroke='{}' stroke-opacity='{}' stroke-width='{border_width}'/>",
+                x + inset,
+                y + inset,
+                w - border_width,
+                h - border_width,
+                (radius - inset).max(0.),
+                rgba(color),
+                color[3]
+            );
+        }
+        svg += "</g>";
+        Ok(svg)
+    }
+    /// Rasterizes surface-pixel markup over the window [origin, origin + size)
+    /// into straight-alpha RGBA rows.
+    fn rasterize(&self, markup: &str, origin: [u32; 2], size: [u32; 2]) -> R<Vec<u8>> {
+        let svg = format!(
+            "<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='{}' height='{}'><g transform='translate({} {})'>{markup}</g></svg>",
+            size[0], size[1], -f64::from(origin[0]), -f64::from(origin[1])
+        );
         let tree = resvg::usvg::Tree::from_str(&svg, &self.options)
             .map_err(|e| format!("UI_RASTER_FAILED: {e}"))?;
         let mut pixmap =
-            resvg::tiny_skia::Pixmap::new(width, height).ok_or("UI_SURFACE_SIZE_INVALID")?;
+            resvg::tiny_skia::Pixmap::new(size[0], size[1]).ok_or("UI_SURFACE_SIZE_INVALID")?;
         resvg::render(
             &tree,
             resvg::tiny_skia::Transform::identity(),
@@ -793,18 +809,51 @@ impl Rasterizer {
         Ok(pixels)
     }
 }
+// Native UI surface: each leaf rasterizes into its own tile of a GPU atlas,
+// only when that leaf's content or the surface size changes, and the tiles
+// draw in leaf order with one instanced call per texture. A changing label
+// re-rasterizes and uploads its own small tile, not the whole screen.
+struct Texture {
+    texture: wgpu::Texture,
+    group: wgpu::BindGroup,
+}
+struct Tile {
+    // None: a window of the shared atlas at `at`; Some: a texture of its own,
+    // for a leaf too large for the atlas.
+    own: Option<Texture>,
+    at: [u32; 2],
+    capacity: [u32; 2],
+    content: Vec<u8>,
+}
+struct Live<'a> {
+    slot: String,
+    index: usize,
+    node: &'a UiNode,
+    origin: [u32; 2],
+    size: [u32; 2],
+    content: Vec<u8>,
+}
 pub struct Surface {
     raster: Rasterizer,
     pipeline: wgpu::RenderPipeline,
     layout: wgpu::BindGroupLayout,
     sampler: wgpu::Sampler,
-    image: Option<(wgpu::Texture, wgpu::BindGroup)>,
+    atlas: Option<(Texture, u32)>,
+    shelves: Vec<[u32; 3]>,
+    top: u32,
+    wasted: bool,
+    tiles: BTreeMap<String, Tile>,
+    instances: Option<wgpu::Buffer>,
+    instance_bytes: u64,
+    // (slot of an own-texture tile, or None for the atlas; first instance; count)
+    runs: Vec<(Option<String>, u32, u32)>,
     key: Vec<u8>,
     size: [u32; 2],
     visible: bool,
     pub raster_ms: f64,
     pub upload_bytes: u64,
 }
+const INSTANCE_BYTES: u64 = 32;
 impl Surface {
     pub fn new(device: &wgpu::Device, format: wgpu::TextureFormat, package: &Package) -> R<Self> {
         let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
@@ -833,7 +882,7 @@ impl Surface {
             source: wgpu::ShaderSource::Wgsl(include_str!("ui.wgsl").into()),
         });
         let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-            label: Some("ui overlay"),
+            label: Some("ui tiles"),
             layout: Some(
                 &device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
                     label: None,
@@ -844,7 +893,11 @@ impl Surface {
             vertex: wgpu::VertexState {
                 module: &shader,
                 entry_point: Some("vs"),
-                buffers: &[],
+                buffers: &[Some(wgpu::VertexBufferLayout {
+                    array_stride: INSTANCE_BYTES,
+                    step_mode: wgpu::VertexStepMode::Instance,
+                    attributes: &wgpu::vertex_attr_array![0 => Float32x4, 1 => Float32x4],
+                })],
                 compilation_options: Default::default(),
             },
             fragment: Some(wgpu::FragmentState {
@@ -873,13 +926,116 @@ impl Surface {
             pipeline,
             layout,
             sampler,
-            image: None,
+            atlas: None,
+            shelves: Vec::new(),
+            top: 0,
+            wasted: false,
+            tiles: BTreeMap::new(),
+            instances: None,
+            instance_bytes: 0,
+            runs: Vec::new(),
             key: Vec::new(),
             size: [0, 0],
             visible: false,
             raster_ms: 0.,
             upload_bytes: 0,
         })
+    }
+    fn texture(&self, device: &wgpu::Device, size: [u32; 2]) -> Texture {
+        let texture = device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("ui tiles"),
+            size: wgpu::Extent3d { width: size[0], height: size[1], depth_or_array_layers: 1 },
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8UnormSrgb,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            view_formats: &[],
+        });
+        let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("ui tiles"),
+            layout: &self.layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::TextureView(&texture.create_view(&Default::default())),
+                },
+                wgpu::BindGroupEntry { binding: 1, resource: wgpu::BindingResource::Sampler(&self.sampler) },
+            ],
+        });
+        Texture { texture, group }
+    }
+    // Shelf packing with a one-pixel gutter; None when the atlas is full.
+    fn allocate(&mut self, size: [u32; 2]) -> Option<[u32; 2]> {
+        let side = self.atlas.as_ref()?.1;
+        if size[0] > side || size[1] > side {
+            return None;
+        }
+        for shelf in &mut self.shelves {
+            if size[1] <= shelf[1] && shelf[1] <= size[1] * 3 / 2 + 8 && shelf[2] + size[0] <= side {
+                let at = [shelf[2], shelf[0]];
+                shelf[2] += size[0] + 1;
+                return Some(at);
+            }
+        }
+        let height = size[1].div_ceil(4) * 4;
+        if self.top + height > side {
+            return None;
+        }
+        self.shelves.push([self.top, height, size[0] + 1]);
+        let at = [0, self.top];
+        self.top += height + 1;
+        Some(at)
+    }
+    // Every live leaf gets a tile window. Unchanged leaves keep theirs and a
+    // changed leaf reuses its window when large enough. A full atlas is
+    // repacked with only the live leaves; what still does not fit, or is larger
+    // than the atlas, gets a texture of its own. Returns the leaves to raster.
+    fn place(&mut self, device: &wgpu::Device, live: &[Live]) -> Vec<usize> {
+        let mut overflow = false;
+        for item in live {
+            if let Some(tile) = self.tiles.get(&item.slot) {
+                let fits = tile.capacity[0] >= item.size[0] && tile.capacity[1] >= item.size[1];
+                if tile.content == item.content || (tile.own.is_none() && fits) {
+                    continue;
+                }
+                self.wasted |= tile.own.is_none();
+            }
+            match self.allocate(item.size) {
+                Some(at) => {
+                    self.tiles.insert(item.slot.clone(), Tile { own: None, at, capacity: item.size, content: Vec::new() });
+                }
+                None => overflow = true,
+            }
+        }
+        if overflow && self.wasted {
+            self.shelves.clear();
+            self.top = 0;
+            self.wasted = false;
+            self.tiles.retain(|_, tile| tile.own.is_some());
+            for item in live {
+                if !self.tiles.contains_key(&item.slot) {
+                    if let Some(at) = self.allocate(item.size) {
+                        self.tiles.insert(item.slot.clone(), Tile { own: None, at, capacity: item.size, content: Vec::new() });
+                    }
+                }
+            }
+        }
+        let mut dirty = Vec::new();
+        for (i, item) in live.iter().enumerate() {
+            let usable = self.tiles.get(&item.slot).is_some_and(|tile| match tile.own {
+                Some(_) => tile.capacity == item.size,
+                None => tile.capacity[0] >= item.size[0] && tile.capacity[1] >= item.size[1],
+            });
+            if !usable {
+                let own = self.texture(device, item.size);
+                self.tiles.insert(item.slot.clone(), Tile { own: Some(own), at: [0, 0], capacity: item.size, content: Vec::new() });
+            }
+            if self.tiles[&item.slot].content != item.content {
+                dirty.push(i);
+            }
+        }
+        dirty
     }
     pub fn prepare(
         &mut self,
@@ -896,10 +1052,8 @@ impl Surface {
             return Ok(());
         };
         ensure_retained_images_supported(tree)?;
-        if leaves(tree)
-            .iter()
-            .any(|n| matches!(n, UiNode::ScrollView { .. }))
-        {
+        let leaves = leaves(tree);
+        if leaves.iter().any(|n| matches!(n, UiNode::ScrollView { .. })) {
             return Err("UI_HOST_CAPABILITY_UNSUPPORTED: scroll_view currently requires the Web scroll host; native scrolling is not implemented".into());
         }
         let limit = 8192.min(device.limits().max_texture_dimension_2d);
@@ -910,70 +1064,108 @@ impl Surface {
             return Ok(());
         }
         let start = std::time::Instant::now();
-        let pixels = self.raster.draw(tree, width, height)?;
-        self.raster_ms = start.elapsed().as_secs_f64() * 1000.;
-        if self.size != [width, height] {
-            let texture = device.create_texture(&wgpu::TextureDescriptor {
-                label: Some("ui surface"),
-                size: wgpu::Extent3d {
-                    width,
-                    height,
-                    depth_or_array_layers: 1,
-                },
-                mip_level_count: 1,
-                sample_count: 1,
-                dimension: wgpu::TextureDimension::D2,
-                format: wgpu::TextureFormat::Rgba8UnormSrgb,
-                usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
-                view_formats: &[],
-            });
-            let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-                label: Some("ui surface"),
-                layout: &self.layout,
-                entries: &[
-                    wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: wgpu::BindingResource::TextureView(
-                            &texture.create_view(&Default::default()),
-                        ),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 1,
-                        resource: wgpu::BindingResource::Sampler(&self.sampler),
-                    },
-                ],
-            });
-            self.image = Some((texture, group));
+        let side = width.max(height).next_power_of_two().clamp(1024, 4096.min(limit));
+        if self.atlas.as_ref().is_none_or(|atlas| atlas.1 != side) {
+            self.atlas = Some((self.texture(device, [side, side]), side));
+            self.shelves.clear();
+            self.top = 0;
+            self.wasted = false;
+            self.tiles.clear();
         }
-        queue.write_texture(
-            wgpu::TexelCopyTextureInfo {
-                texture: &self.image.as_ref().unwrap().0,
-                mip_level: 0,
-                origin: wgpu::Origin3d::ZERO,
-                aspect: wgpu::TextureAspect::All,
-            },
-            &pixels,
-            wgpu::TexelCopyBufferLayout {
-                offset: 0,
-                bytes_per_row: Some(width * 4),
-                rows_per_image: Some(height),
-            },
-            wgpu::Extent3d {
-                width,
-                height,
-                depth_or_array_layers: 1,
-            },
-        );
-        self.upload_bytes = pixels.len() as u64;
+        let (fw, fh) = (f64::from(width), f64::from(height));
+        let mut live = Vec::with_capacity(leaves.len());
+        let mut seen: BTreeMap<&str, u32> = BTreeMap::new();
+        for (index, node) in leaves.into_iter().enumerate() {
+            if matches!(node, UiNode::InputRegion { .. }) {
+                continue;
+            }
+            let r = node.rect();
+            let x0 = (r.x * fw / 100.).floor().clamp(0., fw) as u32;
+            let y0 = ((100. - r.y - r.height) * fh / 100.).floor().clamp(0., fh) as u32;
+            let x1 = ((r.x + r.width) * fw / 100.).ceil().clamp(0., fw) as u32;
+            let y1 = ((100. - r.y) * fh / 100.).ceil().clamp(0., fh) as u32;
+            if x1 <= x0 || y1 <= y0 {
+                continue;
+            }
+            let n = seen.entry(node.id()).or_insert(0);
+            *n += 1;
+            let slot = if *n == 1 { node.id().to_string() } else { format!("{}\u{0}{n}", node.id()) };
+            let mut content = serde_json::to_vec(node).map_err(|e| e.to_string())?;
+            content.extend_from_slice(&width.to_le_bytes());
+            content.extend_from_slice(&height.to_le_bytes());
+            live.push(Live { slot, index, node, origin: [x0, y0], size: [x1 - x0, y1 - y0], content });
+        }
+        let slots: std::collections::BTreeSet<&str> = live.iter().map(|item| item.slot.as_str()).collect();
+        let before = self.tiles.len();
+        self.tiles.retain(|slot, _| slots.contains(slot.as_str()));
+        self.wasted |= self.tiles.len() != before;
+        for i in self.place(device, &live) {
+            let item = &live[i];
+            let markup = self.raster.node_markup(item.index, item.node, width, height)?;
+            let pixels = self.raster.rasterize(&markup, item.origin, item.size)?;
+            let tile = self.tiles.get_mut(&item.slot).expect("placed tile");
+            let target = tile.own.as_ref().map_or(&self.atlas.as_ref().expect("atlas").0.texture, |own| &own.texture);
+            queue.write_texture(
+                wgpu::TexelCopyTextureInfo {
+                    texture: target,
+                    mip_level: 0,
+                    origin: wgpu::Origin3d { x: tile.at[0], y: tile.at[1], z: 0 },
+                    aspect: wgpu::TextureAspect::All,
+                },
+                &pixels,
+                wgpu::TexelCopyBufferLayout { offset: 0, bytes_per_row: Some(item.size[0] * 4), rows_per_image: Some(item.size[1]) },
+                wgpu::Extent3d { width: item.size[0], height: item.size[1], depth_or_array_layers: 1 },
+            );
+            self.upload_bytes += pixels.len() as u64;
+            tile.content = item.content.clone();
+        }
+        // Instances in leaf order: clip-space rectangle, then texture window.
+        let mut data: Vec<f32> = Vec::with_capacity(live.len() * 8);
+        self.runs.clear();
+        for item in &live {
+            let tile = &self.tiles[&item.slot];
+            let (texture_size, at) = match &tile.own {
+                Some(_) => (tile.capacity, [0, 0]),
+                None => ([side, side], tile.at),
+            };
+            let key = tile.own.as_ref().map(|_| item.slot.clone());
+            match self.runs.last_mut() {
+                Some(run) if run.0.is_none() && key.is_none() => run.2 += 1,
+                _ => self.runs.push((key, (data.len() / 8) as u32, 1)),
+            }
+            let [x, y] = item.origin.map(|v| v as f32);
+            let [w, h] = item.size.map(|v| v as f32);
+            let [tw, th] = texture_size.map(|v| v as f32);
+            let [u, v] = at.map(|v| v as f32);
+            data.extend_from_slice(&[
+                x / fw as f32 * 2. - 1., 1. - y / fh as f32 * 2., (x + w) / fw as f32 * 2. - 1., 1. - (y + h) / fh as f32 * 2.,
+                u / tw, v / th, (u + w) / tw, (v + h) / th,
+            ]);
+        }
+        let bytes: &[u8] = bytemuck::cast_slice(&data);
+        if !bytes.is_empty() {
+            if self.instances.is_none() || self.instance_bytes < bytes.len() as u64 {
+                self.instance_bytes = (bytes.len() as u64).next_power_of_two().max(INSTANCE_BYTES * 64);
+                self.instances = Some(device.create_buffer(&wgpu::BufferDescriptor {
+                    label: Some("ui tile instances"),
+                    size: self.instance_bytes,
+                    usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+                    mapped_at_creation: false,
+                }));
+            }
+            queue.write_buffer(self.instances.as_ref().unwrap(), 0, bytes);
+            self.upload_bytes += bytes.len() as u64;
+        }
+        self.raster_ms = start.elapsed().as_secs_f64() * 1000.;
         self.key = key;
         self.size = [width, height];
         Ok(())
     }
     pub fn draw(&self, encoder: &mut wgpu::CommandEncoder, view: &wgpu::TextureView) -> bool {
-        if !self.visible {
+        if !self.visible || self.runs.is_empty() {
             return false;
         }
-        let Some((_, group)) = &self.image else {
+        let (Some(buffer), Some((atlas, _))) = (&self.instances, &self.atlas) else {
             return false;
         };
         let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
@@ -993,8 +1185,18 @@ impl Surface {
             multiview_mask: None,
         });
         pass.set_pipeline(&self.pipeline);
-        pass.set_bind_group(0, group, &[]);
-        pass.draw(0..6, 0..1);
+        pass.set_vertex_buffer(0, buffer.slice(..));
+        for (slot, first, count) in &self.runs {
+            let group = match slot {
+                Some(slot) => match self.tiles.get(slot).and_then(|tile| tile.own.as_ref()) {
+                    Some(own) => &own.group,
+                    None => continue,
+                },
+                None => &atlas.group,
+            };
+            pass.set_bind_group(0, group, &[]);
+            pass.draw(0..6, *first..*first + *count);
+        }
         true
     }
 }

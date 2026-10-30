@@ -137,7 +137,7 @@ impl Bloom {
             layout: Some(&pipeline_layout),
             vertex: wgpu::VertexState {
                 module: shader,
-                entry_point: Some("vs"),
+                entry_point: Some(if entry == "composite" { "vs" } else { "vs_texel" }),
                 buffers: &[],
                 compilation_options: Default::default(),
             },

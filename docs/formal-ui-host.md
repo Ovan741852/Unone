@@ -7,8 +7,8 @@ Ownership: Core supplies the reusable resolved UI tree, semantic input and layou
 Since UI contract v2 (2026-09-20), all three projections (Canvas, developer DOM,
 native) support one-image/one-node nine-slice. The fixed 256-node gate is replaced
 by a shared configurable budget. See [authoring, diagnostics and verification](ui-slice-and-budget.md).
-Native still CPU-rasterizes changed UI before GPU composition; a larger capacity
-is not a guarantee that thousands of changing panels redraw at 60 FPS.
+Native CPU-rasterizes each changed leaf into its own GPU atlas tile; a larger
+capacity is not a guarantee that thousands of changing panels redraw at 60 FPS.
 
 The official Web player draws text, buttons, image skins, semantic controls,
 decorative panels, image batches and nested `component` leaves with three.js in
@@ -21,8 +21,10 @@ geometry is rebuilt only when the composition changes. Leaf `opacity` multiplies
 each of the leaf's quads rather than compositing the leaf offscreen.
 `web/shared/canvas-ui.mjs` owns layout, validation, pointer routing, assets and
 diagnostics for that pass, and still paints Canvas2D for tool and preview hosts
-that pass it a 2D canvas. It creates no DOM game controls. Native draws the same
-supported leaves into a CPU-rasterized texture composited by wgpu after the world. Rectangles are resolved
+that pass it a 2D canvas. It creates no DOM game controls. Native rasterizes each
+supported leaf into its own tile of a GPU atlas, only when that leaf or the
+surface size changes, and wgpu draws the tiles in leaf order after the world
+with one instanced call per texture; a changing label re-rasterizes one tile. Rectangles are resolved
 screen coordinates, 0–100, y-up; component wrappers do not transform them again.
 The [shared typography and box style contract](ui-styling.md) extends these
 existing leaves; game/SDK component functions remain the composition boundary.

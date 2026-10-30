@@ -8,8 +8,7 @@ struct VsOut {
 @group(0) @binding(2) var linear_sampler: sampler;
 @group(0) @binding(3) var<uniform> params: vec4<f32>;
 
-@vertex
-fn vs(@builtin(vertex_index) index: u32) -> VsOut {
+fn fullscreen(index: u32) -> VsOut {
     var positions = array<vec2<f32>, 3>(
         vec2<f32>(-1.0, -1.0),
         vec2<f32>( 3.0, -1.0),
@@ -19,6 +18,21 @@ fn vs(@builtin(vertex_index) index: u32) -> VsOut {
     var out: VsOut;
     out.position = vec4<f32>(position, 0.0, 1.0);
     out.uv = position * 0.5 + vec2<f32>(0.5);
+    return out;
+}
+
+@vertex
+fn vs(@builtin(vertex_index) index: u32) -> VsOut {
+    return fullscreen(index);
+}
+
+// Texture-to-texture passes sample in framebuffer row order, so every bloom
+// texture keeps the scene texture's orientation and the composite maps scene
+// and glow identically.
+@vertex
+fn vs_texel(@builtin(vertex_index) index: u32) -> VsOut {
+    var out = fullscreen(index);
+    out.uv.y = 1.0 - out.uv.y;
     return out;
 }
 
