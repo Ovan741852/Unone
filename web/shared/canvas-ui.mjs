@@ -226,9 +226,12 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
         references=[];prefix=[];let leading=true;const used=new Set();
         for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets)used.add(id);}
           else if(node.kind==='image')used.add(node.asset);if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
+        // Pin the complete incoming set before outgoing releases can sweep
+        // the shared idle cache and evict an image needed by this very draw.
+        requiredAssets=used;for(const id of used)ensureAsset(id);
         if([...assets.keys()].some(id=>!used.has(id)))retireGpu();
         for(const [id,e]of assets)if(!used.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
-        requiredAssets=used;for(const id of used)ensureAsset(id);batchResolver.prune(nodes);}
+        batchResolver.prune(nodes);}
       prefixContext.width=bw;prefixContext.height=bh;
       const presenter=getImageBatchPresenter(),presented=presenter?.drawPrefix(prefix,prefixContext)??0;
       if(!Number.isInteger(presented)||presented<0||presented>prefix.length)throw Error('UI_IMAGE_PREFIX_RESULT_INVALID');
