@@ -31,6 +31,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/player-completion.mjs",
         "shared/retained-image-generation.mjs",
         "shared/save-publication.mjs",
+        "shared/player-seed.mjs",
         "shared/ui-tree-publication.mjs",
         "renderer/presentation3d.js",
         "shared/projected-geometry.js",

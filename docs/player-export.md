@@ -16,6 +16,14 @@ default features disabled. A compile-time assertion rejects an engine built with
 sessions and script reload are unavailable in that build. The Web bridge shares
 input, save, viewport, ticking and observation with the developer host.
 
+Shipped players seed `api.random` per session. The official Web player draws a
+fresh 64-bit seed on every load and restart and publishes it as
+`document.body.dataset.playerSeed`; open the page with `?seed=<u64>` to reproduce a
+reported session. The native player does the same for interactive play and writes
+the seed to its report (`measurement.seed`); `--seed` overrides it. Native tool runs
+(replay, headless, `--frames`/`--seconds` measurement, capture) and development
+hosts keep the fixed seed 42 unless one is given, so digests stay comparable.
+
 `player.presentation.json` includes the **web-wasm** overlay (bloom, worker backend,
 interpolation) and shared UI/font settings. Native wgpu packages the UI/font
 settings and fails closed on web-only keys. Host identities and capability tables live in `game sdk inspect --json`;

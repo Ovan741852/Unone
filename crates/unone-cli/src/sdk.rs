@@ -894,7 +894,8 @@ fn native_export_staged(
     )?;
     fs::write(
         output.join("native-player.json"),
-        br#"{"seed":42,"frames":0,"warmup":60,"headless":false,"fixed_tick":false}"#,
+        // No seed: shipped native play draws one per launch (see the player's resolve_seed).
+        br#"{"frames":0,"warmup":60,"headless":false,"fixed_tick":false}"#,
     )?;
     if host.packager == "native-activity-apk" {
         let script = safe(sdk, "scripts/pack-native-android.ps1")?;

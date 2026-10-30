@@ -163,6 +163,50 @@ impl Package {
         Ok(runtime)
     }
 }
+/// Interactive play draws a fresh seed per launch, like the official Web player,
+/// so shipped games do not repeat the same api.random rolls. Tool runs (replay,
+/// headless, frame- or time-limited measurement, capture) keep the fixed seed 42
+/// so reports and digests stay comparable. An explicit seed always wins.
+fn resolve_seed(settings: &Settings) -> u64 {
+    if let Some(seed) = settings.seed {
+        return seed;
+    }
+    let tool_run = settings.input_sequence.is_some() || settings.headless || settings.frames > 0
+        || settings.measure_seconds > 0. || settings.capture_dir.is_some();
+    if tool_run {
+        return 42;
+    }
+    use std::hash::{BuildHasher, Hasher};
+    // RandomState is keyed from OS randomness per process; no extra dependency.
+    let mut hasher = std::collections::hash_map::RandomState::new().build_hasher();
+    hasher.write_u128(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos()));
+    hasher.finish()
+}
+
+#[cfg(test)]
+mod seed_tests {
+    use super::{Settings, resolve_seed};
+
+    #[test]
+    fn play_draws_a_session_seed_while_tool_runs_and_explicit_seeds_are_fixed() {
+        let play = Settings::default();
+        assert_ne!(resolve_seed(&play), resolve_seed(&play));
+        assert_eq!(resolve_seed(&Settings { seed: Some(7), headless: true, ..Default::default() }), 7);
+        for tool in [
+            Settings { headless: true, ..Default::default() },
+            Settings { frames: 180, ..Default::default() },
+            Settings { measure_seconds: 5., ..Default::default() },
+            Settings { input_sequence: Some("inputs.json".into()), ..Default::default() },
+            Settings { capture_dir: Some("captures".into()), ..Default::default() },
+        ] {
+            assert_eq!(resolve_seed(&tool), 42);
+        }
+        // Exported packages no longer pin a seed, so shipped play is random.
+        let exported: Settings = serde_json::from_str(r#"{"frames":0,"warmup":60,"headless":false,"fixed_tick":false}"#).unwrap();
+        assert_eq!(exported.seed, None);
+    }
+}
+
 #[derive(Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct Settings {
@@ -172,7 +216,8 @@ struct Settings {
     height: Option<u32>,
     frames: u64,
     warmup: u64,
-    seed: u64,
+    /// Explicit RNG seed; see `resolve_seed` for the default.
+    seed: Option<u64>,
     headless: bool,
     fixed_tick: bool,
     prewarm_ticks: u64,
@@ -379,13 +424,15 @@ impl App {
     }
     fn new(
         package: Package,
-        settings: Settings,
+        mut settings: Settings,
         report: Option<PathBuf>,
         boot: Instant,
     ) -> R<Self> {
         if !settings.measure_seconds.is_finite() || settings.measure_seconds < 0. {
             return Err("INVALID_MEASUREMENT_DURATION".into());
         }
+        let seed = resolve_seed(&settings);
+        settings.seed = Some(seed);
         let presentation: Value = package.files.get("content/presentation.json")
             .map(|bytes| serde_json::from_slice(bytes)).transpose()
             .map_err(|e| e.to_string())?.unwrap_or_else(|| json!({}));
@@ -397,7 +444,7 @@ impl App {
                 settings.freeze_simulation, settings.frames, settings.measure_seconds)?;
             Some(replay::InputSequence::load(path)?)
         } else { None };
-        let mut runtime = package.runtime_with_viewport(settings.seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]))?;
+        let mut runtime = package.runtime_with_viewport(seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]))?;
         match spatial_backend {
             "cpu" => {},
             "gpu" => runtime.set_spatial_executor(Box::new(unone_spatial_gpu::SpatialGpuExecutor::new()?))?,
@@ -825,7 +872,6 @@ pub fn desktop() -> R<()> {
         .unwrap()
         .to_path_buf();
     let mut settings = Settings {
-        seed: 42,
         warmup: 60,
         ..Default::default()
     };
@@ -864,7 +910,7 @@ pub fn desktop() -> R<()> {
                     }
                     "--frames" => settings.frames = v.parse().map_err(|_| "INVALID_FRAMES")?,
                     "--warmup" => settings.warmup = v.parse().map_err(|_| "INVALID_WARMUP")?,
-                    _ => settings.seed = v.parse().map_err(|_| "INVALID_SEED")?,
+                    _ => settings.seed = Some(v.parse().map_err(|_| "INVALID_SEED")?),
                 }
             }
             _ => return Err(format!("NATIVE_ARGUMENT_UNKNOWN: {}", args[i])),
