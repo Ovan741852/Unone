@@ -910,6 +910,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Registration does not advance simulation. Callback invocation is between ticks and is not a Lua-heap transaction.",
             vec![
                 "DEVELOPMENT_ONLY",
+                "DEBUG_UNGUARDED",
                 "duplicate/unknown ID",
                 "invalid callback/value",
             ],
@@ -939,10 +940,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Registration does not advance simulation. Callback invocation is between ticks and is not a Lua-heap transaction.",
             vec![
                 "DEVELOPMENT_ONLY",
+                "DEBUG_UNGUARDED",
                 "duplicate/unknown ID",
                 "invalid callback/value",
             ],
-            "api.debug.register({id=\"qa.fire\",tab=\"qa\",kind=\"button\",label=\"Fire\"},function() pendingShot=true end)",
+            "if api.debug.enabled then api.debug.register({id=\"qa.fire\",tab=\"qa\",kind=\"button\",label=\"Fire\"},function() pendingShot=true end) end",
             vec!["debug.registerTab", "debug.register", "debug.set"],
         ),
         descriptor(
@@ -964,10 +966,11 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "Registration does not advance simulation. Callback invocation is between ticks and is not a Lua-heap transaction.",
             vec![
                 "DEVELOPMENT_ONLY",
+                "DEBUG_UNGUARDED",
                 "duplicate/unknown ID",
                 "invalid callback/value",
             ],
-            "api.debug.set(\"qa.status\",\"Ready\")",
+            "if api.debug.enabled then api.debug.set(\"qa.status\",\"Ready\") end",
             vec!["debug.registerTab", "debug.register", "debug.set"],
         ),
         descriptor(
@@ -2566,7 +2569,7 @@ fn spatial_descriptors() -> Vec<ApiDescriptor> {
         ("cancel", "Cancel a batch ticket and ignore its late host completion.", vec![parameter("ticket", "number", "Live ticket")], "nil", "api.spatial.cancel(ticket)"),
         ("info", "Report the selected spatial executor, typed capacities and current usage.", vec![], "SpatialInfo", "local info: SpatialInfo = api.spatial.info(); local capacity: number = info.limits.queries_per_batch; api.observation.set(\"spatial_info\", info)"),
         ("lastDiagnostic", "Read the latest structured spatial error with field path, actual/expected values, machine-readable code/recovery.retry and human-readable recovery.action guidance (結構化診斷、錯誤修復).", vec![], "EngineDiagnostic?", "local ok = pcall(function() api.spatial.take(ticket) end); if not ok then local diagnostic = api.spatial.lastDiagnostic(); if diagnostic then api.observation.set(\"spatial_error\", diagnostic) end end"),
-        ("profile", "Locate spatial batch cost with measured CPU/GPU host-wall phase timings, work counts and transfer bytes (效能定位、批次查詢耗時).", vec![], "SpatialProfile", "local profile = api.spatial.profile(); api.observation.set(\"spatial_profile\", profile)"),
+        ("profile", "Locate spatial batch cost with measured CPU/GPU host-wall phase timings, work counts and transfer bytes (效能定位、批次查詢耗時).", vec![], "SpatialProfile", "local profile = api.spatial.profile(); api.observation.set(\"spatial_batches\", profile.totals.completed_batches) -- timings are wall-clock: publishing the whole profile makes observation digests nondeterministic"),
     ].into_iter().map(|(name, purpose, parameters, returns, example)| descriptor(
         &format!("spatial.{name}"), "spatial", purpose,
         "Reusable batch collision and spatial queries (空間查詢、批次碰撞查詢) on CPU or host-owned GPU compute; gameplay policy remains in Luau. Read docs/spatial-batches.md and examples/spatial-diagnostics/README.md (bundled in the portable SDK) for the complete query, result, diagnostic, lifecycle, limits and host contracts; game api typings provides canonical SpatialBody, SpatialQuery, SpatialBatchResult, SpatialInfo and EngineDiagnostic types.",
@@ -3346,22 +3349,128 @@ mod tests {
         );
     }
 
-    /// Every documented API must have a Luau type, or `check --types` silently
-    /// stops covering it.
-    #[test]
-    fn the_type_contract_covers_every_documented_api() {
-        let types = typings();
-        let mut missing = Vec::new();
-        for descriptor in descriptors() {
-            let member = descriptor
-                .name
-                .rsplit_once('.')
-                .map(|(_, member)| member.to_string())
-                .unwrap_or_else(|| descriptor.name.clone());
-            if !types.contains(&format!("{member}:")) {
-                missing.push(descriptor.name);
+    /// Top-level fields of every `export type Name = {` table in the typings.
+    fn luau_type_fields(types: &str) -> std::collections::BTreeMap<String, std::collections::BTreeMap<String, String>> {
+        let mut out = std::collections::BTreeMap::<String, std::collections::BTreeMap<String, String>>::new();
+        let mut bases = Vec::<(String, String)>::new();
+        let mut current: Option<String> = None;
+        for line in types.lines() {
+            if let Some(rest) = line.strip_prefix("export type ") {
+                // `Name = {` or an intersection `Name = Base & {`.
+                current = rest.split_once(" = ").and_then(|(name, body)| {
+                    let base = body.strip_suffix('{')?.trim().strip_suffix('&').map(str::trim);
+                    if base.is_none() && !body.trim().eq("{") {
+                        return None;
+                    }
+                    let name = name.split('<').next().unwrap().trim().to_string();
+                    if let Some(base) = base {
+                        bases.push((name.clone(), base.to_string()));
+                    }
+                    out.entry(name.clone()).or_default();
+                    Some(name)
+                });
+                continue;
+            }
+            if line.starts_with('}') {
+                current = None;
+                continue;
+            }
+            let (Some(name), Some(field)) = (&current, line.strip_prefix("    ")) else { continue };
+            if field.starts_with(' ') || field.starts_with("--") {
+                continue;
+            }
+            if let Some((key, ty)) = field.split_once(':')
+                && !key.is_empty()
+                && key.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
+            {
+                out.get_mut(name).unwrap().insert(key.to_string(), ty.trim().trim_end_matches(',').to_string());
             }
         }
-        assert!(missing.is_empty(), "APIs with no Luau type: {missing:?}");
+        for (name, base) in bases {
+            let inherited = out.get(&base).cloned().unwrap_or_default();
+            let own = out.get_mut(&name).unwrap();
+            for (key, ty) in inherited {
+                own.entry(key).or_insert(ty);
+            }
+        }
+        out
+    }
+
+    /// Resolve `a.b.c` through EngineApi's typed fields to the member's type.
+    fn resolve_typed_path<'a>(
+        fields: &'a std::collections::BTreeMap<String, std::collections::BTreeMap<String, String>>,
+        path: &str,
+    ) -> Option<&'a String> {
+        let mut owner = fields.get("EngineApi")?;
+        let mut segments = path.split('.').peekable();
+        while let Some(segment) = segments.next() {
+            let ty = owner.get(segment)?;
+            if segments.peek().is_none() {
+                return Some(ty);
+            }
+            let name: String = ty.trim_start_matches('(').chars().take_while(|c| c.is_ascii_alphanumeric() || *c == '_').collect();
+            owner = fields.get(&name)?;
+        }
+        None
+    }
+
+    /// Every documented API must resolve to a field of its own namespace type,
+    /// or `check --types` silently stops covering it. A bare member-name match
+    /// anywhere in the file (e.g. `set:` in another namespace) is not enough.
+    #[test]
+    fn the_type_contract_covers_every_documented_api() {
+        let fields = luau_type_fields(typings());
+        let missing: Vec<_> = descriptors()
+            .into_iter()
+            .map(|descriptor| descriptor.name)
+            .filter(|name| resolve_typed_path(&fields, name).is_none())
+            .collect();
+        assert!(missing.is_empty(), "APIs with no Luau type in their namespace: {missing:?}");
+    }
+
+    /// The live Luau API, the catalog and the typings must name the same
+    /// functions, so `api describe` and `check --types` never drift from what
+    /// a game can actually call.
+    #[test]
+    fn live_api_functions_match_typings_and_catalog() {
+        let source = r#"
+local Game = {}
+function Game.start(api)
+    local found = {}
+    local seen = {}
+    local function walk(prefix, value)
+        if seen[value] then return end
+        seen[value] = true
+        local keys = {}
+        for key in value do table.insert(keys, key) end
+        table.sort(keys)
+        for _, key in keys do
+            local child = value[key]
+            local path = if prefix == "" then key else prefix .. "." .. key
+            if type(child) == "function" then table.insert(found, path)
+            elseif type(child) == "table" then walk(path, child) end
+        end
+    end
+    walk("", api)
+    api.observation.set("surface", found)
+end
+function Game.update(api) end
+return Game
+"#;
+        let runtime = crate::EngineRuntime::load_source("surface", "main.luau", source, None).unwrap();
+        let live: std::collections::BTreeSet<String> = runtime.semantic_observations()["surface"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|value| value.as_str().unwrap().to_string())
+            // Engine-internal helpers that games must not call.
+            .filter(|path| !path.split('.').any(|segment| segment.starts_with('_')))
+            .collect();
+        let fields = luau_type_fields(typings());
+        let untyped: Vec<_> = live.iter().filter(|path| resolve_typed_path(&fields, path).is_none()).collect();
+        assert!(untyped.is_empty(), "callable APIs missing from engine.d.luau: {untyped:?}");
+        let catalog: std::collections::BTreeSet<String> = descriptors().into_iter().map(|descriptor| descriptor.name).collect();
+        let phantom: Vec<_> = catalog.iter().filter(|name| !live.contains(*name)).collect();
+        assert!(phantom.is_empty(), "catalog entries that are not callable at runtime: {phantom:?}");
     }
 }

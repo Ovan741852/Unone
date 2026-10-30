@@ -104,15 +104,21 @@ pub(super) fn random(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let random = Rc::clone(&state.random);
     let random_api = lua.create_table()?;
     let next_float_random = Rc::clone(&random);
+    let view = Rc::clone(&state.pure_view);
     random_api.set(
         "nextFloat",
-        lua.create_function(move |_, _: ()| Ok(next_float_random.borrow_mut().next_float()))?,
+        lua.create_function(move |_, _: ()| {
+            super::ensure_not_view(&view, "random.nextFloat")?;
+            Ok(next_float_random.borrow_mut().next_float())
+        })?,
     )?;
 
     let next_int_random = Rc::clone(&random);
+    let view = Rc::clone(&state.pure_view);
     random_api.set(
         "nextInt",
         lua.create_function(move |_, (min, max): (i64, i64)| {
+            super::ensure_not_view(&view, "random.nextInt")?;
             next_int_random
                 .borrow_mut()
                 .next_int(min, max)

@@ -129,6 +129,46 @@ pub(super) fn build_api(
     Ok(api)
 }
 
+/// Reject option-table keys a binding does not read.
+///
+/// Hand-parsed Luau option tables otherwise ignore typos (`{loop=true}` for
+/// `looping`, snake_case copies of camelCase fields) and silently use defaults,
+/// unlike serde DTOs, which deny unknown fields.
+pub(super) fn reject_unknown_keys(table: &Table, allowed: &[&str], context: &str) -> mlua::Result<()> {
+    for pair in table.pairs::<Value, Value>() {
+        let (key, _) = pair?;
+        let found = match &key {
+            Value::String(name) => {
+                let name = name.to_str()?;
+                if allowed.contains(&&*name) {
+                    continue;
+                }
+                format!("'{}'", &*name)
+            }
+            other => format!("a {} key", other.type_name()),
+        };
+        return Err(mlua::Error::RuntimeError(format!(
+            "OPTION_UNKNOWN_FIELD: {context} does not accept {found}; allowed fields: {}",
+            allowed.join(", ")
+        )));
+    }
+    Ok(())
+}
+
+/// Refuse a simulation mutation from a host-driven UI view callback.
+///
+/// Hosts run virtual renderItem between fixed ticks (Web scroll requests), so
+/// RNG draws, observations, saves or world edits there would happen on one host
+/// and not in replay or on another host.
+pub(super) fn ensure_not_view(depth: &std::cell::Cell<usize>, name: &str) -> mlua::Result<()> {
+    if depth.get() == 0 {
+        return Ok(());
+    }
+    Err(mlua::Error::RuntimeError(format!(
+        "UI_PURE_VIEW: api.{name} changes simulation state and cannot run inside renderItem; do it in Game.update and pass the result to the view"
+    )))
+}
+
 /// Keep a disabled system's API shape, but make every call say why it failed.
 ///
 /// Removing the table would surface as "attempt to index nil", which tells a

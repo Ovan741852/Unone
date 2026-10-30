@@ -6,9 +6,13 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let entity = lua.create_table()?;
     let spawn_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     entity.set(
         "spawn",
-        lua.create_function(move |_, name: String| Ok(spawn_world.borrow_mut().spawn(&name)))?,
+        lua.create_function(move |_, name: String| {
+            super::ensure_not_view(&view, "entity.spawn")?;
+            Ok(spawn_world.borrow_mut().spawn(&name))
+        })?,
     )?;
 
     let get_world = Rc::clone(&world);
@@ -25,9 +29,11 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     )?;
 
     let set_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     entity.set(
         "setPosition",
         lua.create_function(move |_, (id, position): (String, Table)| {
+            super::ensure_not_view(&view, "entity.setPosition")?;
             let x: f64 = position.get("x")?;
             let y: f64 = position.get("y")?;
             set_world
@@ -60,9 +66,11 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     )?;
 
     let set_transform2d_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     entity.set(
         "setTransform2D",
         lua.create_function(move |_, (id, value): (String, Table)| {
+            super::ensure_not_view(&view, "entity.setTransform2D")?;
             let position: Table = value.get("position")?;
             let scale: Table = value.get("scale")?;
             let transform = Transform2DData {
@@ -112,9 +120,11 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     )?;
 
     let set_transform3d_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     entity.set(
         "setTransform3D",
         lua.create_function(move |_, (id, value): (String, Table)| {
+            super::ensure_not_view(&view, "entity.setTransform3D")?;
             let position: Table = value.get("position")?;
             let rotation: Table = value.get("rotation")?;
             let scale: Table = value.get("scale")?;
@@ -158,9 +168,11 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     )?;
 
     let set_velocity_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     entity.set(
         "setVelocity",
         lua.create_function(move |_, (id, velocity): (String, Table)| {
+            super::ensure_not_view(&view, "entity.setVelocity")?;
             let velocity = Vec2 {
                 x: velocity.get("x")?,
                 y: velocity.get("y")?,
@@ -172,9 +184,11 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
     let despawn_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     entity.set(
         "despawn",
         lua.create_function(move |_, id: String| {
+            super::ensure_not_view(&view, "entity.despawn")?;
             despawn_world
                 .borrow_mut()
                 .despawn(&id)
@@ -182,9 +196,11 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
     let visibility_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     entity.set(
         "setSpriteVisible",
         lua.create_function(move |_, (id, visible): (String, bool)| {
+            super::ensure_not_view(&view, "entity.setSpriteVisible")?;
             visibility_world
                 .borrow_mut()
                 .set_sprite_visible(&id, visible)

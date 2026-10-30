@@ -7,10 +7,15 @@ pub(super) fn animation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let animation_api = lua.create_table()?;
     let play_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     animation_api.set(
         "play",
         lua.create_function(
             move |_, (id, name, options): (String, String, Option<Table>)| {
+                super::ensure_not_view(&view, "animation.play")?;
+                if let Some(options) = &options {
+                    super::reject_unknown_keys(options, &["asset", "loop", "speed"], "animation.play options")?;
+                }
                 let (asset, looping, speed) = match options {
                     Some(options) => (
                         options.get::<Option<String>>("asset")?,
@@ -27,9 +32,11 @@ pub(super) fn animation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         )?,
     )?;
     let stop_animation_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     animation_api.set(
         "stop",
         lua.create_function(move |_, id: String| {
+            super::ensure_not_view(&view, "animation.stop")?;
             stop_animation_world
                 .borrow_mut()
                 .stop_animation(&id)
@@ -44,10 +51,12 @@ pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let particle_api = lua.create_table()?;
     let particle_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     particle_api.set(
         "play",
         lua.create_function(
             move |_, (effect, position, seed): (String, Table, Option<u64>)| {
+                super::ensure_not_view(&view, "particle.play")?;
                 let position = Vec3 {
                     x: position.get("x")?,
                     y: position.get("y")?,
@@ -63,9 +72,11 @@ pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         )?,
     )?;
     let particle_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     particle_api.set(
         "move",
         lua.create_function(move |_, (handle, position): (String, Table)| {
+            super::ensure_not_view(&view, "particle.move")?;
             let position = Vec3 {
                 x: position.get("x")?,
                 y: position.get("y")?,
@@ -77,26 +88,32 @@ pub(super) fn particle(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
     let particle_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     particle_api.set(
         "finish",
         lua.create_function(move |_, handle: String| {
+            super::ensure_not_view(&view, "particle.finish")?;
             let mut world = particle_world.borrow_mut();
             let frame = world.frame;
             Ok(world.particles.finish(&handle, frame))
         })?,
     )?;
     let particle_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     particle_api.set(
         "stop",
         lua.create_function(move |_, handle: String| {
+            super::ensure_not_view(&view, "particle.stop")?;
             Ok(particle_world.borrow_mut().particles.stop(&handle))
         })?,
     )?;
     let particle_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     particle_api.set(
         "play_batch",
         lua.create_function(
             move |_, (effect, positions, seed): (String, mlua::Buffer, Option<u64>)| {
+                super::ensure_not_view(&view, "particle.play_batch")?;
                 if positions.is_empty() || positions.len() % 12 != 0 || positions.len() > 4096 * 12
                 {
                     return Err(mlua::Error::RuntimeError(
@@ -147,9 +164,14 @@ pub(super) fn effect(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let world = Rc::clone(&state.world);
     let effect_api = lua.create_table()?;
     let spawn_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     effect_api.set(
         "spawn",
         lua.create_function(move |_, (asset, options): (String, Option<Table>)| {
+            super::ensure_not_view(&view, "effect.spawn")?;
+            if let Some(options) = &options {
+                super::reject_unknown_keys(options, &["x", "y", "scale", "rotation"], "effect.spawn options")?;
+            }
             let (position, scale, rotation) = match options {
                 Some(options) => (
                     Vec2 {
@@ -168,9 +190,11 @@ pub(super) fn effect(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
     let stop_effect_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
     effect_api.set(
         "stop",
         lua.create_function(move |_, handle: String| {
+            super::ensure_not_view(&view, "effect.stop")?;
             stop_effect_world
                 .borrow_mut()
                 .stop_effect(&handle)

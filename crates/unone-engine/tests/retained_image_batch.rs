@@ -155,6 +155,25 @@ end,update=function()end}}"#));
 }
 
 #[test]
+fn pure_virtual_callbacks_cannot_mutate_simulation_state() {
+    let game=game(r#"
+return {start=function(api)
+ local list=api.ui.virtualList({id='list',viewport={left=0,top=0,width=50,height=50},items={{id='one'}},key='id',rowHeight=10,
+  renderItem=function()
+   for _,call in {function()return api.random.nextInt(1,6)end,function()api.observation.set('x',1)end,
+     function()api.entity.spawn('e')end,function()api.save.set({})end} do
+    local ok,err=pcall(call);assert(not ok and string.find(tostring(err),'UI_PURE_VIEW',1,true),tostring(err))
+   end
+   return {{kind='panel',id='p',rect={x=0,y=0,width=10,height=10}}}
+  end})
+ api.ui.setRoot({kind='screen',id='s',node='s',children={list}})
+ -- Outside renderItem the same calls are allowed again.
+ api.observation.set('after',api.random.nextInt(1,1))
+end,update=function()end}"#);
+    assert_eq!(game.observe().observations["after"],json!(1));
+}
+
+#[test]
 fn retained_content_is_explicitly_stage_only_and_inline_serialization_is_unchanged() {
     let runtime=game(&format!(r#"{FIXTURE}
 return {{start=function(api)

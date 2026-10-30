@@ -298,6 +298,7 @@ mod tests {
         EngineRuntime::load_source("tools","main.luau",r#"
 local Game={}
 function Game.start(api)
+ assert(api.debug.enabled)
  api.debug.registerTab({id="qa",label="QA"})
  api.debug.register({id="qa.label",tab="qa",kind="label",text="ready"})
  api.debug.register({id="qa.button",tab="qa",kind="button",label="Run"},function()

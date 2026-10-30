@@ -13,6 +13,7 @@ return {
  start=function(api)
   api.ui.imageBatch.define('start-only',definition())
   api.ui.setRoot(root('start-only'))
+  assert(api.debug.enabled)
   api.debug.registerTab({id='qa',label='QA'})
   api.debug.register({id='qa.repaint',tab='qa',kind='button',label='Repaint'},function()api.ui.setRoot(root(n==0 and 'start-only' or 'tick-art'))end)
  end,

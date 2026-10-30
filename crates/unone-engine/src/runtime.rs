@@ -230,6 +230,9 @@ struct ApiState {
     ui: Rc<RefCell<Option<UiTree>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
+    /// Depth of host-driven UI view callbacks (virtual renderItem). Simulation
+    /// mutators refuse to run while it is nonzero.
+    pure_view: Rc<std::cell::Cell<usize>>,
 }
 
 #[derive(Debug, Clone)]
@@ -660,6 +663,7 @@ impl EngineRuntime {
             ui: Rc::clone(&ui),
             viewport_aspect: Rc::clone(&viewport_aspect),
             save_payload: Rc::clone(&save_payload),
+            pure_view: Rc::new(std::cell::Cell::new(0)),
         };
         let systems = SystemSettings::from_config(&config)?;
         systems.validate_compiled()?;
@@ -1640,6 +1644,7 @@ impl EngineRuntime {
             ui: Rc::clone(&self.ui),
             viewport_aspect: Rc::clone(&self.viewport_aspect),
             save_payload: Rc::clone(&self.save_payload),
+            pure_view: Rc::new(std::cell::Cell::new(0)),
         };
         let candidate_api = match build_api(&candidate_lua, &candidate_api_state, &self.systems) {
             Ok(api) => api,
@@ -1765,13 +1770,38 @@ fn evaluate_script(
         .eval::<Value>()
         .map_err(|err| Box::new(script_diagnostic(paths, err.to_string())))?;
     match value {
-        Value::Table(table) => Ok(table),
+        Value::Table(table) => {
+            reject_misspelled_hooks(&table)?;
+            Ok(table)
+        }
         _ => Err(Box::new(Diagnostic::error(
             "SCRIPT_ENTRY_INVALID",
             "Entry script must return a Game table",
             "The entry script must return a table containing start and update functions.",
         ))),
     }
+}
+
+/// Optional hooks are looked up by exact name, so `Game.onreload` or
+/// `Game.on_reload` would never run and never fail. Other helper keys on the
+/// Game table remain allowed.
+fn reject_misspelled_hooks(table: &Table) -> Result<(), Box<Diagnostic>> {
+    const HOOKS: [&str; 4] = ["start", "update", "onReload", "replay"];
+    for pair in table.pairs::<Value, Value>() {
+        let Ok((Value::String(key), _)) = pair else { continue };
+        let Ok(key) = key.to_str() else { continue };
+        let normalized: String = key.chars().filter(|c| *c != '_').flat_map(char::to_lowercase).collect();
+        if let Some(hook) = HOOKS.iter().find(|hook| hook.to_lowercase() == normalized)
+            && *hook != &*key
+        {
+            return Err(Box::new(Diagnostic::error(
+                "GAME_HOOK_MISSPELLED",
+                "Game table declares a misspelled engine hook",
+                format!("Game.{} is never called; the engine hook is Game.{hook}.", &*key),
+            )));
+        }
+    }
+    Ok(())
 }
 
 fn script_entrypoint(

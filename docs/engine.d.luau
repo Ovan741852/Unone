@@ -818,7 +818,19 @@ export type EngineApi = {
 }
 
 
+-- Optional diagnostics adapter read from the returned Game table; see docs/diagnostics-replay.md.
+export type GameReplayAdapter = {
+    id: string,
+    version: string,
+    restore: ((capture: ObservationValue, api: EngineApi) -> boolean)?,
+    inspect: ((context: { tick: number }, api: EngineApi) -> ObservationValue)?,
+    compatible: ((versions: ObservationValue, api: EngineApi) -> boolean)?,
+}
+
 export type Game = {
     start: (api: EngineApi) -> (),
     update: (api: EngineApi, dt: number) -> (),
+    -- Called on a successful hot reload with the candidate API; may update the world.
+    onReload: ((api: EngineApi) -> ())?,
+    replay: GameReplayAdapter?,
 }

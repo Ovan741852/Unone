@@ -156,6 +156,9 @@ pub(super) fn camera(
     camera.set(
         "setTransform",
         lua.create_function(move |_, transform: Table| {
+            // Scene JSON spells these orthographic_size/fov_degrees; a copied
+            // snake_case key must fail instead of leaving the camera unchanged.
+            super::reject_unknown_keys(&transform, &["projection", "position", "target", "orthographicSize", "fovDegrees"], "camera.setTransform")?;
             let projection = match transform.get::<Option<String>>("projection")? {
                 Some(projection) => projection,
                 None => camera_set_transform_world.borrow().camera_projection().to_string(),

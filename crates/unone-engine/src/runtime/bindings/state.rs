@@ -11,9 +11,11 @@ pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let observation_api = lua.create_table()?;
     observation_api.set("array", lua.create_function(observation_array)?)?;
     let array_observations = Rc::clone(&observations);
+    let view = Rc::clone(&state.pure_view);
     observation_api.set(
         "setArray",
         lua.create_function(move |lua, (key, values): (String, Option<Table>)| {
+            super::ensure_not_view(&view, "observation.setArray")?;
             if key.trim().is_empty() {
                 return Err(mlua::Error::RuntimeError(
                     "observation key must not be empty".to_string(),
@@ -27,9 +29,11 @@ pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?,
     )?;
     let observation_state = Rc::clone(&observations);
+    let view = Rc::clone(&state.pure_view);
     observation_api.set(
         "set",
         lua.create_function(move |lua, (key, value): (String, Value)| {
+            super::ensure_not_view(&view, "observation.set")?;
             if key.trim().is_empty() {
                 return Err(mlua::Error::RuntimeError(
                     "observation key must not be empty".to_string(),
@@ -48,7 +52,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let ui = Rc::clone(&state.ui);
     let viewport_aspect = Rc::clone(&state.viewport_aspect);
     let ui_api = lua.create_table()?;
-    let pure_depth=Rc::new(std::cell::Cell::new(0usize));
+    let pure_depth=Rc::clone(&state.pure_view);
     let resources=lua.create_table()?;
     let define_world=Rc::clone(&state.world);
     let define_ui=Rc::clone(&ui);
@@ -156,9 +160,11 @@ pub(super) fn save(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let save_payload = Rc::clone(&state.save_payload);
     let save_api = lua.create_table()?;
     let save_state = Rc::clone(&save_payload);
+    let view = Rc::clone(&state.pure_view);
     save_api.set(
         "set",
         lua.create_function(move |lua, value: Value| {
+            super::ensure_not_view(&view, "save.set")?;
             let value = portable_value_to_json(lua, value).map_err(mlua::Error::RuntimeError)?;
             save_state.borrow_mut().replace(Some(value));
             Ok(())

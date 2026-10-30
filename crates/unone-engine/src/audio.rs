@@ -567,6 +567,17 @@ impl AudioBus {
         if asset.trim().is_empty() {
             return Err("Audio asset must not be empty.".to_string());
         }
+        // An undeclared category would silently use default rules, so a typo
+        // ("sfX", "music" vs "bgm") must fail rather than lose its volume/fades.
+        if let Some(name) = &options.category
+            && !self.config.categories.contains_key(name)
+        {
+            let declared: Vec<&str> = self.config.categories.keys().map(String::as_str).collect();
+            return Err(format!(
+                "AUDIO_CATEGORY_UNKNOWN: '{name}' is not declared in project audio.categories (declared: [{}]).",
+                declared.join(", ")
+            ));
+        }
         options.resolve()
     }
 }
