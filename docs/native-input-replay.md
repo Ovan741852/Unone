@@ -71,6 +71,11 @@ also permits at most 256 actions and 1024 UTF-8 bytes per action name; the
 kernel's pointer, nonblank action and slider validators remain authoritative.
 Errors use `NATIVE_INPUT_SEQUENCE_*` codes and are never treated as empty input.
 
+Replay never reads or writes the player's save file, so `Game.start` sees no
+restored save and the digest does not depend on earlier play. The report shows
+`save.disabled_reason: "input_replay"`; `--save` is rejected with
+`NATIVE_SAVE_REPLAY_CONFLICT`.
+
 The final `input_replay` report includes the SHA-256 of the exact file bytes,
 `frame_count`, `applied_frames` (actual sequence entries consumed),
 `simulation_ticks`, `empty_frames_after_sequence`, `exhausted`, and successful

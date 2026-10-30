@@ -45,3 +45,15 @@ a surface exists, when surface acquisition returns `Ok(false)`, or when
 renderer/runtime setup fails.
 The existing final `UNONE_NATIVE_REPORT` line remains unchanged and is not the
 readiness handshake.
+
+## Save persistence
+
+Readiness does not wait for storage. The save file is read before `Game.start`,
+so an unavailable per-user data directory, an unreadable file or invalid JSON
+fails startup (`NATIVE_SAVE_LOCATION_UNAVAILABLE`, `NATIVE_SAVE_READ_FAILED`,
+`NATIVE_SAVE_CORRUPT`) before any surface exists, and no readiness line is
+emitted. A failed write (`NATIVE_SAVE_WRITE_FAILED`) stops the player like any
+other tick failure. `--describe` declares the `unone.native-save.v1` contract
+under `save`, and the final report's `save` object carries the resolved `path`.
+Replay, headless and measurement runs keep persistence off unless a test passes
+`--save <path>`; see [player export](player-export.md) for locations and rules.

@@ -24,6 +24,31 @@ the seed to its report (`measurement.seed`); `--seed` overrides it. Native tool 
 (replay, headless, `--frames`/`--seconds` measurement, capture) and development
 hosts keep the fixed seed 42 unless one is given, so digests stay comparable.
 
+Shipped players also persist `api.save`. The Web player keeps the payload in
+`localStorage`; the native player keeps it in one JSON file, per user on Windows
+(`%APPDATA%/Unone/<project name>/save.json`) and in the activity's internal data
+directory on Android (`save.json`, removed with the app). Other desktops use
+`$XDG_DATA_HOME` (or `~/.local/share`)`/Unone/<project name>/save.json`. Project
+name characters that are not portable in a path (`% < > : " / \ | ? *`, controls,
+a trailing dot or space, device names such as `CON`) are written as `%XX`.
+Both players restore the payload before `Game.start` and write it again only when
+the committed encoding changes: after `Game.start` and after each successful tick,
+never on every frame. Native writes a synced `save.json.tmp` sibling and renames it
+over the file, so an interrupted write leaves the previous or the new save. A save
+that cannot be read or is not JSON stops startup with `NATIVE_SAVE_READ_FAILED` or
+`NATIVE_SAVE_CORRUPT` and leaves the file untouched; the player never starts fresh
+silently. An absent file means no save. The native report's `save` object records
+the path, its source, whether a save was restored and how many writes happened;
+`--describe` declares the contract under `save`.
+
+Native tool runs neither read nor write the save, so replays and measurements
+cannot depend on earlier play: `--input-sequence`, `--headless`, `--frames N>0`,
+`--seconds S>0`, `--freeze-simulation`, `--prewarm-ticks N>0` and `--capture-dir`
+report `save.enabled: false` with a `disabled_reason`. `--save <path>` selects an
+explicit file and enables persistence for headless and bounded test runs; it is
+rejected with `NATIVE_SAVE_REPLAY_CONFLICT` under `--input-sequence`. Projects that
+disable the `save` system persist nothing on either player.
+
 `player.presentation.json` includes the **web-wasm** overlay (bloom, worker backend,
 interpolation) and shared UI/font settings. Native wgpu packages the UI/font
 settings and fails closed on web-only keys. Host identities and capability tables live in `game sdk inspect --json`;

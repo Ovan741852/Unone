@@ -37,7 +37,8 @@ Core: fixed timestep, seeded random, deterministic replay/digest, 2D gravity,
 damping, ground friction/restitution and circle contacts; Camera2D with declared
 view_height; host-wired 2D transforms and painter order; Camera3D, static meshes
 and Rapier 3D bodies/queries/sensors; anchored/absolute UI trees and the official
-`@unone/ui` package; opaque game-owned save transport; optional demand-sampled
+`@unone/ui` package; opaque game-owned save transport persisted by the Web and
+native players; optional demand-sampled
 monotonic host time; batched spatial queries and ordered physical-input records;
 Spine/Effekseer semantic states; verified asset archives and bundle
 cache/generation; checked Luau type contracts. See the bounded
@@ -91,7 +92,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 | 10 | Multiple pointers | [Ordered physical input](ordered-physical-input.md) carries pointer identities and multiple-pointer records. Legacy semantic input remains one pointer; native live routing and touch/device acceptance need explicit host work. Engine owns identities; game owns gestures. |
 | 21 | Reliable authoring start | Init/scene/API changes are candidates, not finished game acceptance. See [work package](work-packages/2026-09-06-ai-authoring.md). |
 | 22 | Sprite frame animation | Spine is not ordinary sprite frame/UV animation. Add fixed-tick states and host UV rendering when needed, not a timeline editor first. |
-| 23 | Native save persistence | Core transports opaque save JSON and Web persists it; native currently supplies no durable save read/write adapter. Restore before Game.start and persist committed payloads through a reusable host contract. |
+| 23 | Native save persistence | Web (localStorage) and the native player persist `api.save`: Windows `%APPDATA%/Unone/<project>/save.json`, Android NativeActivity internal data `save.json`. Restore precedes Game.start; changed encodings are written atomically; replay/measurement runs stay off and corrupt saves fail startup. See [player export](player-export.md). Remaining: an Android build and on-device restart evidence, plus any slot/cloud/export story a game concretely needs. |
 | 24 | Wall-clock time / offline progress | [Host time](host-time.md) is runtime-relative monotonic elapsed time, not a UTC/wall clock. Offline progress needs an explicit host wall-clock input and persistence contract; reward calculations stay in Luau. |
 | 25 | Shipping random seed policy | Official Web player loads/restarts with seed 42; native defaults to 42 unless explicitly configured. Define a host entropy/default-seed policy while retaining explicit seeds for replay. This is not a randomness-quality or gambling-security guarantee. |
 | 26 | Modules and data loading | Game scripts have no supported general `require` or packaged structured-data module loader. Add a bounded package-relative contract for reusable code and authored data; do not make every game inline its tables. |

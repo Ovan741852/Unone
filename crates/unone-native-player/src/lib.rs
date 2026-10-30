@@ -4,6 +4,7 @@ mod application;
 mod keyboard;
 mod mouse;
 mod replay;
+mod save;
 mod audio;
 mod particles;
 mod render;
@@ -152,10 +153,12 @@ impl Package {
     }
     #[cfg(test)]
     fn runtime(&self, seed: u64) -> R<EngineRuntime> {
-        self.runtime_with_viewport(seed,None)
+        Self::start(self.host_project()?,seed,None)
     }
-    fn runtime_with_viewport(&self, seed:u64, viewport:Option<[u32;2]>)->R<EngineRuntime> {
-        let mut project=HostProject::parse(self.get("content/project.json")?).map_err(|e|e.explanation)?;
+    fn host_project(&self) -> R<HostProject> {
+        HostProject::parse(self.get("content/project.json")?).map_err(|e|e.explanation)
+    }
+    fn start(mut project:HostProject, seed:u64, viewport:Option<[u32;2]>)->R<EngineRuntime> {
         if let Some(size)=viewport {project.viewport_size=Some(size);}
         let runtime=project.into_runtime(seed)
             .map_err(|e| e.explanation)?;
@@ -225,6 +228,9 @@ struct Settings {
     freeze_simulation: bool,
     disable_lod: bool,
     measure_seconds: f64,
+    /// Explicit `--save` file; packaged Android settings cannot redirect saves.
+    #[serde(skip)]
+    save: Option<PathBuf>,
 }
 // Keep development observation bounded during indefinitely running players.
 #[derive(Default, Serialize)]
@@ -321,6 +327,7 @@ fn emit_ready(package_sha256: &str, renderer: &render::Renderer) {
 
 struct App {
     input_replay: Option<replay::InputSequence>,
+    save: save::SaveFile,
     replay_pending_presentation: bool,
     host_input: unone_engine::InputFrame,
     keyboard_input: keyboard::ActionQueue,
@@ -388,7 +395,7 @@ impl App {
         };
         self.snapshot = self.runtime.tick_with_input(&input).map_err(|error| error.explanation)?;
         if let Some(replay) = &mut self.input_replay { replay.applied(); }
-        Ok(())
+        self.save.persist(&self.runtime)
     }
 
     fn reset_input(&mut self) {
@@ -427,6 +434,7 @@ impl App {
         mut settings: Settings,
         report: Option<PathBuf>,
         boot: Instant,
+        store: save::Store,
     ) -> R<Self> {
         if !settings.measure_seconds.is_finite() || settings.measure_seconds < 0. {
             return Err("INVALID_MEASUREMENT_DURATION".into());
@@ -444,7 +452,10 @@ impl App {
                 settings.freeze_simulation, settings.frames, settings.measure_seconds)?;
             Some(replay::InputSequence::load(path)?)
         } else { None };
-        let mut runtime = package.runtime_with_viewport(seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]))?;
+        let mut project = package.host_project()?;
+        let mut save = save::SaveFile::open(&settings, store, &project)?;
+        project.restored_save = save.take_restored();
+        let mut runtime = Package::start(project,seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]))?;
         match spatial_backend {
             "cpu" => {},
             "gpu" => runtime.set_spatial_executor(Box::new(unone_spatial_gpu::SpatialGpuExecutor::new()?))?,
@@ -460,9 +471,12 @@ impl App {
             if snapshot.application.quit_requested { break; }
             snapshot = runtime.tick().map_err(|e| e.explanation)?;
         }
+        // Game.start may already have replaced the restored payload.
+        save.persist(&runtime)?;
         let audio = audio::NativeAudio::new(&package);
         Ok(Self {
             input_replay,
+            save,
             replay_pending_presentation: false,
             package,
             ui_input: Default::default(),
@@ -543,6 +557,7 @@ impl App {
         value["application"] = json!(self.snapshot.application);
         value["quit_request_presented"] = json!(self.quit_request_presented);
         value["spatial"] = self.runtime.spatial_report();
+        value["save"] = self.save.report();
         if let Some(replay) = &self.input_replay {
             value["input_replay"] = replay.report();
             value["input_replay"]["successful_presentations"] = json!(self.drawn);
@@ -851,6 +866,7 @@ pub fn desktop() -> R<()> {
             json!({"compiled_systems":unone_engine::compiled_systems(),"runtime_packages":unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default()),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","heightfield","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","retained_image_batch":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"image_batch_pixel_snap":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"nodes":["text","button","image","panel","slider","combobox","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported","styles":"typed leaf typography and box styles; vertical design units; explicit font size never shrinks","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
         ;
         descriptor["input_replay"] = replay::declaration();
+        descriptor["save"] = save::declaration();
         descriptor["input_replay"]["ordered_physical"]=json!({"live":"unsupported","normalized_core_replay":true,"text_ime":false});
         descriptor["projected_geometry"]=json!({"format":unone_engine::PROJECTED_FORMAT,"vertex_stride":40,"depth":"0..W","uv":"official mesh,bottom-left","color_mode":["linear","encoded"],"filter":["nearest","linear"],"sampling_space":["linear","encoded"],"address_mode":["clamp","repeat"],"alpha_cutoff":"0..1(default0.05);strict less-than discards","material_defaults":{"color_mode":"linear","filter":"nearest","sampling_space":"linear","address_mode":"clamp","alpha_cutoff":0.05},"blend":"opaque/cutout only; no blendlist","projection":"clip-space passthrough;no camera,culling,lighting or fog","world3d_visibility":true,"viewport":"physical pixels with revision"});
         descriptor["presentation"].as_array_mut().unwrap().push(json!("projected_geometry"));
@@ -885,7 +901,8 @@ pub fn desktop() -> R<()> {
             "--headless" => settings.headless = true,
             "--fixed-tick" => settings.fixed_tick = true,
             "--seconds" | "--capture-dir" | "--root" | "--frames" | "--warmup" | "--seed"
-            | "--report" | "--prewarm-ticks" | "--width" | "--height" | "--input-sequence" | "--spatial-backend" => {
+            | "--report" | "--prewarm-ticks" | "--width" | "--height" | "--input-sequence" | "--spatial-backend"
+            | "--save" => {
                 let key = &args[i];
                 i += 1;
                 let v = args.get(i).ok_or("NATIVE_ARGUMENT_VALUE_REQUIRED")?;
@@ -893,6 +910,7 @@ pub fn desktop() -> R<()> {
                     "--spatial-backend" => settings.spatial_backend = Some(v.clone()),
                     "--root" => root = v.into(),
                     "--report" => report = Some(PathBuf::from(v)),
+                    "--save" => settings.save = Some(PathBuf::from(v)),
                     "--input-sequence" => settings.input_sequence = Some(PathBuf::from(v)),
                     "--width" | "--height" => {
                         let pixels: u32 = v.parse().map_err(|_| "INVALID_WINDOW_SIZE")?;
@@ -931,7 +949,7 @@ pub fn desktop() -> R<()> {
         }
         std::fs::read(path).map_err(|e| e.to_string())
     })?;
-    let mut app = App::new(package, settings, report, boot)?;
+    let mut app = App::new(package, settings, report, boot, save::Store::desktop())?;
     if app.settings.headless {
         app.boot_ms = boot.elapsed().as_secs_f64() * 1000.;
         for i in 0..app.settings.frames + app.settings.warmup {
@@ -979,7 +997,12 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
             .ok_or("ANDROID_REPORT_DIRECTORY_UNAVAILABLE")?;
         std::fs::create_dir_all(&report_dir).map_err(|e| e.to_string())?;
         let report = Some(report_dir.join("benchmark.json"));
-        let mut app = App::new(package, settings, report, boot)?;
+        // App-private storage: uninstalling the app removes the save with it.
+        let store = match android.internal_data_path() {
+            Some(dir) => save::Store::App(dir),
+            None => save::Store::Unavailable("the activity has no internal data path".into()),
+        };
+        let mut app = App::new(package, settings, report, boot, store)?;
         let event_loop = EventLoop::builder()
             .with_android_app(android)
             .build()
@@ -1122,8 +1145,60 @@ mod telemetry_tests {
         for (configured,override_backend) in [("auto",None),("cpu",Some("auto".to_owned()))] {
             let settings=super::Settings {input_sequence:Some("absent-input-sequence.json".into()),
                 spatial_backend:override_backend,fixed_tick:true,frames:1,..Default::default()};
-            let error=super::App::new(make(serde_json::json!({"spatial_backend":configured})),settings,None,std::time::Instant::now()).err().unwrap();
+            let error=super::App::new(make(serde_json::json!({"spatial_backend":configured})),settings,None,std::time::Instant::now(),
+                super::save::Store::Unavailable("replay never resolves storage".into())).err().unwrap();
             assert!(error.contains("NATIVE_INPUT_SEQUENCE_SPATIAL_BACKEND"),"{error}");
         }
+    }
+
+    #[test]
+    fn native_save_is_written_restored_on_the_next_boot_and_untouched_by_replay() {
+        let dir=std::env::temp_dir().join(format!("unone-native-save-boot-{}",std::process::id()));
+        let _=std::fs::remove_dir_all(&dir);
+        let package=||super::Package {digest:"fixture".into(),files:std::collections::BTreeMap::from([("content/project.json".into(),serde_json::to_vec(&serde_json::json!({
+            "config":{"name":"native-save","entry_script":"main.luau","systems":{"physics2d":false,"physics3d":false}},
+            "scene":{"entities":[]},
+            "script":r#"
+local base,ticks=0,0
+return {start=function(api)
+    local saved=api.save.get()
+    base=saved and saved.count or 0
+    api.observation.set('restored',base)
+end,update=function(api)
+    ticks+=1
+    -- From the third tick on, an identical payload is set again every tick.
+    api.save.set({count=base+math.min(ticks,2)})
+end}"#})).unwrap())])};
+        let boot=|settings:super::Settings,store|{
+            let mut app=super::App::new(package(),settings,None,std::time::Instant::now(),store).unwrap();
+            for _ in 0..5 {app.advance_tick().unwrap();}
+            (app.snapshot.observations["restored"].clone(),app.save.report())
+        };
+        let file=dir.join("nested/save.json");
+        let explicit=||super::Settings {headless:true,frames:5,save:Some(file.clone()),..Default::default()};
+        let no_store=||super::save::Store::Unavailable("--save is explicit".into());
+        let (restored,report)=boot(explicit(),no_store());
+        assert_eq!((restored,&report["restored"],&report["writes"]),(serde_json::json!(0),&serde_json::json!(false),&serde_json::json!(2)),"{report}");
+        assert_eq!(std::fs::read_to_string(&file).unwrap(),r#"{"count":2}"#);
+        assert!(!dir.join("nested/save.json.tmp").exists());
+        let (restored,report)=boot(explicit(),no_store());
+        assert_eq!((restored,&report["restored"],&report["writes"]),(serde_json::json!(2),&serde_json::json!(true),&serde_json::json!(2)),"{report}");
+        assert_eq!(std::fs::read_to_string(&file).unwrap(),r#"{"count":4}"#);
+
+        // Replay must ignore a save at the platform location ordinary play uses.
+        let default_file=dir.join("Unone/native-save/save.json");
+        std::fs::create_dir_all(default_file.parent().unwrap()).unwrap();
+        std::fs::copy(&file,&default_file).unwrap();
+        let inputs=dir.join("inputs.json");
+        std::fs::write(&inputs,"[]").unwrap();
+        let replay=super::Settings {input_sequence:Some(inputs),fixed_tick:true,frames:5,..Default::default()};
+        let (restored,report)=boot(replay,super::save::Store::PerProject(dir.join("Unone")));
+        assert_eq!((restored,&report["enabled"],&report["disabled_reason"]),(serde_json::json!(0),&serde_json::json!(false),&serde_json::json!("input_replay")),"{report}");
+        assert_eq!(std::fs::read_to_string(&default_file).unwrap(),r#"{"count":4}"#);
+        // Ordinary play restores that same file.
+        let (restored,report)=boot(Default::default(),super::save::Store::PerProject(dir.join("Unone")));
+        assert_eq!((restored,&report["source"]),(serde_json::json!(4),&serde_json::json!("platform_default")),"{report}");
+        assert_eq!(std::fs::read_to_string(&default_file).unwrap(),r#"{"count":6}"#);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 }
