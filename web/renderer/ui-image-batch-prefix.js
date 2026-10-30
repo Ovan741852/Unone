@@ -31,13 +31,24 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
  const size=new THREE.Vector2(),viewport=new THREE.Vector4(),scissor=new THREE.Vector4();
  let geometryBuilds=0,geometryDisposes=0,geometryUpdates=0,materialBuilds=0,materialDisposes=0,textureBuilds=0,textureDisposes=0,meshBuilds=0,meshDisposes=0,draws=0,lastNodes=0,lastQuads=0,lastReason='empty';
  const freeGeometry=g=>{g.dispose();geometryDisposes++;},freeMaterial=m=>{m.dispose();materialDisposes++;},freeTexture=t=>{t.dispose();textureDisposes++;};
+ const freeImage=r=>{try{freeTexture(r.value);}finally{const lease=r.lease;r.lease=null;lease?.release();}};
  const freeInstance=r=>{scene.remove(r.mesh);meshDisposes++;};
  const freeResource=r=>freeGeometry(r.geometry);
- function texture(image){
-  const width=imageWidth(image),height=imageHeight(image);let entry=images.get(image);
-  if(!entry){const value=new THREE.Texture(image);value.colorSpace=THREE.SRGBColorSpace;value.flipY=true;value.premultiplyAlpha=false;
-   value.minFilter=value.magFilter=THREE.LinearFilter;value.generateMipmaps=false;entry={value,width,height};images.set(image,entry);textureBuilds++;value.needsUpdate=true;textureWrites++;}
-  else if(entry.width!==width||entry.height!==height){entry.width=width;entry.height=height;entry.value.needsUpdate=true;textureWrites++;}
+ function texture(image,asset,acquireAsset,stagedImages){
+  const width=imageWidth(image),height=imageHeight(image);let entry=images.get(image),lease=null;
+  // GPU textures keep their own decoded-pixel ownership. Removing a Canvas
+  // consumer must not close pixels still used by this frame's GPU resources.
+  if(typeof acquireAsset==='function'&&!entry?.lease){
+   lease=acquireAsset(asset);
+   try{if(lease.state!=='ready')throw Error(`UI_IMAGE_PREFIX_ASSET_NOT_READY: ${asset}`);if(lease.image!==image)throw Error(`UI_IMAGE_PREFIX_ASSET_IDENTITY: ${asset}`);}
+   catch(error){lease.release();throw error;}
+  }
+  if(!entry){let value;
+   try{value=new THREE.Texture(image);value.colorSpace=THREE.SRGBColorSpace;value.flipY=true;value.premultiplyAlpha=false;
+    value.minFilter=value.magFilter=THREE.LinearFilter;value.generateMipmaps=false;entry={value,width,height,lease};value.needsUpdate=true;images.set(image,entry);stagedImages.push({image,entry,created:true});textureBuilds++;textureWrites++;}
+   catch(error){try{value?.dispose();}finally{lease?.release();}throw error;}}
+  else if(lease){entry.lease=lease;stagedImages.push({image,entry,lease,created:false});}
+  if(entry.width!==width||entry.height!==height){entry.width=width;entry.height=height;entry.value.needsUpdate=true;textureWrites++;}
   return entry.value;
  }
  function sourceReady(instance,assets){
@@ -55,10 +66,11 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
    geometry.setIndex(new THREE.BufferAttribute(indices,1));const old=data.geometry;data.geometry=geometry;data.buffer=buffer;data.capacity=capacity;data.shrinkFrames=0;if(old)freeGeometry(old);
   }catch(error){freeGeometry(geometry);throw error;}
  }
- function writeResource(data,definition,assets){
-  const count=definition.quads.length;if(!data.geometry||data.capacity<count)allocate(data,capacityFor(count));
-  const values=data.buffer.array,groups=data.geometry.groups,sources=[],byAsset=new Map(),ox=definition.originX,oy=definition.originY;
-  for(const asset of definition.assets){const image=assets.get(asset).image,source={asset,image,width:imageWidth(image),height:imageHeight(image),texture:texture(image)};sources.push(source);byAsset.set(asset,source);}
+ function writeResource(data,definition,assets,acquireAsset,stagedImages){
+  const count=definition.quads.length,sources=[],byAsset=new Map(),ox=definition.originX,oy=definition.originY;
+  for(const asset of definition.assets){const image=assets.get(asset).image,source={asset,image,width:imageWidth(image),height:imageHeight(image),texture:texture(image,asset,acquireAsset,stagedImages)};sources.push(source);byAsset.set(asset,source);}
+  if(!data.geometry||data.capacity<count)allocate(data,capacityFor(count));
+  const values=data.buffer.array,groups=data.geometry.groups;
   let offset=0,changed=false,groupCount=0,group=null;
   const value=n=>{n=Math.fround(n);if(values[offset]!==n){values[offset]=n;changed=true;}offset++;};
   const vertex=(x,y,u,v,a)=>{value(x);value(y);value(0);value(u);value(v);value(a);};
@@ -72,23 +84,23 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
   if(changed){data.buffer.clearUpdateRanges();data.buffer.addUpdateRange(0,count*24);data.buffer.needsUpdate=true;geometryUpdates++;}
   data.definition=definition;data.sources=sources;data.ox=ox;data.oy=oy;data.count=count;
  }
- function resource(instance,assets,activeTokens){
-  const definition=instance.definition;let data=resources.get(definition.token);
-  if(data&&data.sources.every(s=>{const image=assets.get(s.asset)?.image;return image===s.image&&imageWidth(image)===s.width&&imageHeight(image)===s.height;}))return data;
+ function resource(instance,assets,activeTokens,acquireAsset,stagedImages,touchedResources){
+  const definition=instance.definition;let data=resources.get(definition.token),priorToken=null;
+  if(data&&data.sources.every(s=>{const image=assets.get(s.asset)?.image,entry=images.get(image);return image===s.image&&imageWidth(image)===s.width&&imageHeight(image)===s.height&&entry?.value===s.texture&&(typeof acquireAsset!=='function'||entry.lease);}))return data;
   if(!data){const candidate=instances.get(instance.node.id)?.data;
    // A generation can be shared by several instances. Reuse its storage only
    // after every selected instance has stopped referencing that generation.
-   if(candidate&&!activeTokens.has(candidate.definition.token)){data=candidate;resources.delete(candidate.definition.token);}
+   if(candidate&&!activeTokens.has(candidate.definition.token)){data=candidate;priorToken=candidate.definition.token;}
    else data={geometry:null,capacity:0,shrinkFrames:0};
   }
-  writeResource(data,definition,assets);resources.set(definition.token,data);return data;
+  writeResource(data,definition,assets,acquireAsset,stagedImages);touchedResources.add(data);if(priorToken)resources.delete(priorToken);resources.set(definition.token,data);return data;
  }
- function compact(activeTokens,assets){
+ function compact(activeTokens,assets,acquireAsset,stagedImages,touchedResources){
   let capacity=0,used=0;for(const token of activeTokens){const data=resources.get(token);capacity+=data.capacity;used+=data.count;}
   const budget=Math.max(256,used*4);
   for(const token of activeTokens){const data=resources.get(token),target=capacityFor(data.count);
    data.shrinkFrames=data.capacity>Math.max(16,target*4)?data.shrinkFrames+1:0;
-   if(data.capacity>target&&(capacity>budget||data.shrinkFrames>=60)){const old=data.capacity;allocate(data,target);writeResource(data,data.definition,assets);capacity+=target-old;}
+   if(data.capacity>target&&(capacity>budget||data.shrinkFrames>=60)){const old=data.capacity;allocate(data,target);writeResource(data,data.definition,assets,acquireAsset,stagedImages);touchedResources.add(data);capacity+=target-old;}
   }
  }
  function sharedMaterial(){
@@ -109,9 +121,9 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
  }
  function sweep(activeTokens,activeImages){
   for(const [token,r]of resources)if(!activeTokens.has(token)){freeResource(r);resources.delete(token);}
-  for(const [image,t]of images)if(!activeImages.has(image)){freeTexture(t.value);images.delete(image);}
+  for(const [image,t]of images)if(!activeImages.has(image)){freeImage(t);images.delete(image);}
  }
- function clear(){for(const r of instances.values())freeInstance(r);instances.clear();for(const r of resources.values())freeResource(r);resources.clear();for(const t of images.values())freeTexture(t.value);images.clear();if(material){freeMaterial(material);material=null;}lastNodes=lastQuads=0;}
+ function clear(){for(const r of instances.values())freeInstance(r);instances.clear();for(const r of resources.values())freeResource(r);resources.clear();for(const t of images.values())freeImage(t);images.clear();if(material){freeMaterial(material);material=null;}lastNodes=lastQuads=0;}
  function drawPrefix(prefix,context){
   lastNodes=lastQuads=0;targetUnavailable=false;if(disposed)return 0;
   if(!prefix.length){clear();lastReason='empty';return 0;}
@@ -123,8 +135,8 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
   for(const p of prefix){const box=clipBox(p,width,height);if(!box||!eligible(p,width,height)){lastReason='canvas_coverage';break;}if(!sourceReady(p,context.images)){lastReason='images_pending_or_bounds';break;}boxes.push(box);count++;}
   if(!count){clear();return 0;}
   const activeTokens=new Set(),activeImages=new Set();for(let i=0;i<count;i++){const p=prefix[i];activeTokens.add(p.definition.token);for(const id of p.definition.assets)activeImages.add(context.images.get(id).image);}
-  const staged=[],next=new Map(),selected=[];let rank=0;
-  try{for(let i=0;i<count;i++)selected.push(resource(prefix[i],context.images,activeTokens));compact(activeTokens,context.images);
+  const staged=[],stagedImages=[],touchedResources=new Set(),next=new Map(),selected=[];let rank=0;
+  try{for(let i=0;i<count;i++)selected.push(resource(prefix[i],context.images,activeTokens,context.acquireAsset,stagedImages,touchedResources));compact(activeTokens,context.images,context.acquireAsset,stagedImages,touchedResources);
    for(let i=0;i<count;i++){
     const p=prefix[i],data=selected[i],old=instances.get(p.node.id),record=old??makeInstance(data);
     if(record!==old)staged.push(record);record.data=data;record.pixelSnap=p.pixelSnap===true;record.mesh.geometry=data.geometry;const t=p.transform;
@@ -133,7 +145,14 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
     record.matrix.set(t.a*width/100,t.c*width/100,(t.a*data.ox+t.c*data.oy+t.tx)*width/100,t.b*height/100,t.d*height/100,(t.b*data.ox+t.d*data.oy+t.ty)*height/100,0,0,1);record.box=boxes[i];record.clip.set(record.box.left,record.box.bottom,record.box.right,record.box.top);record.height=height;record.ratio=renderer.getPixelRatio();
     record.mesh.renderOrder=rank++;record.mesh.visible=boxVisible(record.box);next.set(p.node.id,record);
    }
-  }catch(error){for(const r of staged)freeInstance(r);throw error;}
+  }catch(error){for(const r of staged)freeInstance(r);
+   // A later resource can fail after earlier writes succeeded. Retire only
+   // those touched resources; untouched committed owners remain reusable.
+   for(const [id,r]of instances)if(touchedResources.has(r.data)){freeInstance(r);instances.delete(id);}
+   for(const [token,r]of resources)if(touchedResources.has(r))resources.delete(token);
+   for(const r of touchedResources){freeResource(r);r.sources=[];r.geometry.groups.length=0;}
+   for(let i=stagedImages.length-1;i>=0;i--){const r=stagedImages[i];if(r.created){if(images.get(r.image)===r.entry){images.delete(r.image);freeImage(r.entry);}}else if(r.entry.lease===r.lease){r.entry.lease=null;r.lease.release();}}
+   throw error;}
   for(const [id,r]of instances)if(next.get(id)!==r)freeInstance(r);
   for(const r of staged)scene.add(r.mesh);instances=next;sweep(activeTokens,activeImages);
   const autoClear=renderer.autoClear,sort=renderer.sortObjects,test=renderer.getScissorTest(),gl=renderer.getContext(),upload=uploadedTextureWrites!==textureWrites,
@@ -144,6 +163,6 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
   draws++;lastNodes=count;for(let i=0;i<count;i++)lastQuads+=prefix[i].definition.quads.length;lastReason=count===prefix.length?'accelerated':lastReason;return count;
  }
  const boxVisible=b=>b.width>0&&b.height>0;
- return {drawPrefix,clear,completion:()=>targetUnavailable?DRAW_SKIPPED.ui_target_unavailable:DRAW_COMPLETED,dispose(){if(disposed)return;clear();disposed=true;},metrics:()=>({draws,prefix_nodes:lastNodes,prefix_quads:lastQuads,coverage:'pixel_center',fallback_reason:lastReason,
+ return {ownsImageLeases:true,drawPrefix,clear,completion:()=>targetUnavailable?DRAW_SKIPPED.ui_target_unavailable:DRAW_COMPLETED,dispose(){if(disposed)return;clear();disposed=true;},metrics:()=>({draws,prefix_nodes:lastNodes,prefix_quads:lastQuads,coverage:'pixel_center',fallback_reason:lastReason,image_leases:[...images.values()].filter(r=>r.lease).length,
   geometry_builds:geometryBuilds,geometry_disposes:geometryDisposes,geometry_updates:geometryUpdates,live_geometries:geometryBuilds-geometryDisposes,buffer_capacity_quads:[...resources.values()].reduce((n,r)=>n+r.capacity,0),active_resource_quads:[...resources.values()].reduce((n,r)=>n+r.count,0),material_builds:materialBuilds,material_disposes:materialDisposes,live_materials:materialBuilds-materialDisposes,mesh_builds:meshBuilds,mesh_disposes:meshDisposes,live_meshes:meshBuilds-meshDisposes,texture_builds:textureBuilds,texture_disposes:textureDisposes,live_textures:textureBuilds-textureDisposes})};
 }

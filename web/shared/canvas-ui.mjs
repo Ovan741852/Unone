@@ -98,7 +98,7 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
 export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireAsset,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>canvas.ownerDocument?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null}={}){
   const ctx=canvas.getContext('2d');if(!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
-  const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets};
+  const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets,acquireAsset};
   const readyWaiters=new Set();let requiredAssets=new Set();
   let previous=null,paintKey=null,paintDefinitions=[],dirty=true,disposed=false,nodes=[],generation=0,batches=new Map(),prefix=[],references=[],gpuPrefix=0,loadingAssets=0;
   const diagnostics=new Map(),quadDiagnosticKeys=new Map();let usage=null,renderMs=null,renderRegions=0;
@@ -233,7 +233,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
         finally{if(!disposed){
           // Callbacks may throw or replace this composition synchronously.
           // Retire against the latest required set, after its incoming pins.
-          if([...assets.keys()].some(id=>!requiredAssets.has(id)))retireGpu();
+          if([...assets.keys()].some(id=>!requiredAssets.has(id))&&!(typeof acquireAsset==='function'&&getImageBatchPresenter()?.ownsImageLeases===true))retireGpu();
           for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
           batchResolver.prune(nodes);}}
         if(disposed)throw Error('UI_DISPOSED');}
