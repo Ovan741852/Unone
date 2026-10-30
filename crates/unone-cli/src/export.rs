@@ -298,12 +298,12 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             if !settings.is_enabled("save") {
                 text = replace_required(
                     text,
-                    "const next=JSON.stringify(snapshot.save_payload);if(next!==saved){localStorage.setItem(key,next);saved=next;}",
+                    "const next=serializedSavePayload(snapshot);if(next!==saved){localStorage.setItem(key,next);saved=next;}",
                     "",
                 )?;
                 text = replace_required(
                     text,
-                    "try{project.restored_save=JSON.parse(localStorage.getItem(key)??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}",
+                    "try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}",
                     "project.restored_save=null;",
                 )?;
             }
@@ -532,7 +532,7 @@ mod tests {
         fs::write(runtime.join("runtime.json"),serde_json::to_vec(&descriptor).unwrap()).unwrap();
         fs::write(dir.path().join("main.luau"),"return {start=function()end,update=function()end}").unwrap();
         for minimal in [false,true] {
-            let systems=if minimal {json!({"ui":false,"particle":false,"effekseer":false,"audio":false})}else{json!({})};
+            let systems=if minimal {json!({"ui":false,"particle":false,"effekseer":false,"audio":false,"save":false})}else{json!({})};
             fs::write(dir.path().join("project.unone.json"),serde_json::to_vec(&json!({"name":"dependency closure","entry_script":"main.luau","systems":systems})).unwrap()).unwrap();
             let output=dir.path().join(if minimal {"minimal"}else{"full"});
             let report=web_with_templates(dir.path(),&output,Some(&runtime),false,&repo).unwrap();
@@ -546,6 +546,9 @@ mod tests {
                 assert!(output.join("web/shared").join(name).is_file(),
                     "always-imported host dependency {name} survives the UI-disabled export");
             }
+            let player=fs::read_to_string(output.join("web/player/main.js")).unwrap();
+            assert_eq!(player.contains("localStorage.setItem"), !minimal,
+                "a save-disabled export neither persists nor restores saves");
             let renderer=fs::read_to_string(output.join("web/renderer/three.js")).unwrap();
             assert!(renderer.contains("particles.contextLost(retire);"),
                 "actual renderer retains its explicit particle owner lifecycle consumer");
