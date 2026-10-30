@@ -217,3 +217,31 @@ resource revision, immutable content and the published tree. Candidate 2
 remains an immutable historical artifact; no game workaround or relaxed bounds
 contract was introduced. Exact source-test execution status is recorded in the
 [review follow-up](../reviews/2026-10-29-engine-stability.md).
+
+### Long-running UI0.6 and scalar-query evidence — 2026-10-30
+
+The SDK10 60-second inventory windows still fail the target: the original Game
+measured 32.017 RAF callbacks/s with 71 dropped steps; an isolated scalar-query
+variant measured 40.930 with four dropped steps. Cross-project CPU competition
+was present or possible, so these remain observed failures rather than isolated
+engine attribution. The variant changes bounded geography access in a cache-owned
+Game copy; the original Game Product files were not replaced. Two actual
+Sampler9 WASM modules compared complete world/UI/entities/shaders/observations
+and save JSON bytes plus the authoritative Core digest at all 3,619 checkpoints,
+with an empty allowlist. Its late repeated geography decode samples disappeared;
+allocation-growth requests fell about 33.4% and incremental GC callback wall time
+about 25.5% in that instrumented pair. Maximum GC callback step rose slightly.
+
+Natural SDK10 V8 tracing under explicitly permitted concurrent load still
+observed canonical `MinorGC`/`MajorGC` duration events: idle had 22/65 over
+45.004 seconds; inventory had 11/39 over 45.012 seconds. These event names and
+coalesced trace phases are not whole collector cycles or OS pause counts, and do
+not measure Luau or worker live heaps. Twenty inventory open/close cycles plus
+a ten-second tail kept WASM capacity, geometry/material owners and the decoded
+texture cache bounded. Final texture owners, DOM nodes and listeners remained
+one, one and two above the warm-world baseline, respectively; the tail was
+stable but did not prove exact retirement or leak-free behavior. Raw traces and
+full Game worlds remain cache-only. Exact identities, failures, counts and scope
+are retained in [the compact validation record](../evidence/2026-10-29-engine-stability/ui06-scalar-sdk10-long-validation.json).
+The browser result combines the scalar Game variant and SDK10; the same-Game
+SDK9/SDK10 comparator deliberately rejects their differing script hashes.

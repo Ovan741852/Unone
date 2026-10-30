@@ -1,0 +1,2491 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "status": "performance-target-open",
+  "target": "Official Web main backend, 1600x900, interpolation=false",
+  "game_product_source_modified": false,
+  "artifact_scope": "Isolated cache-owned Game scalar-query variant and immutable SDK10 exports; Product files/saves/server were not replaced",
+  "artifact_identity": {
+    "loopback_url_during_diagnostics": "http://127.0.0.1:8291/",
+    "export_manifest": "artifacts/jy-ui06-scalar-sdk10-production-20261030-r3/export.json",
+    "export_manifest_sha256": "8da4cdd0043456b2ccdd1a88cd8dc392451335a2063b0369e47fa3f8528a8661",
+    "release_root": "releases/10b8aabbc4896b5c767f5cb2028c2751c39170e1315b99ec9ab20ada8d393b63/",
+    "runtime_manifest": "artifacts/core-sdk-web-retained-20261030-candidate10/runtimes/web-production-0/runtime.json",
+    "runtime_manifest_sha256": "16387ed980f3d3597fae27bf35459e5ff8719b7afe8772bac6e418c113ea708c",
+    "project_file_sha256": "3e409bffdbabceec514594b5716d560ef0ff858b9646e72f64af1e3e3a7d7290",
+    "presentation_file_sha256": "14143be37553f8880500a00143bb55720e79cf85037f477d1ba0b6a423d58ac1",
+    "memory_parameters": {"cases": ["idle", "inventory"], "seconds_each": 45, "warmup_seconds_each": 5},
+    "cycle_parameters": {"warmup_seconds": 3, "warmup_cycles": 2, "measured_cycles": 20, "settled_tail_seconds": 10}
+  },
+  "selected_sdk10": {
+    "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "bytecode_optimization_level": 2,
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+    "runtime_package": "@unone/ui 0.6.0"
+  },
+  "game_sources": {
+    "scalar_variant": "fe919c41c04383fedb494f7a0afd83cdd6a599a62504ddc3e4d90b741a598ebe",
+    "variant_path": ".cache/jy-ui06-acceptance-scalar/scripts/main.luau",
+    "change": "Bounded immutable scalar geography queries avoid repeatedly decoding/evicting ordinary WorldCell pages; gameplay/data sources remain covered by complete-state comparison",
+    "baseline": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0"
+  },
+  "strict_long_pair": {
+    "totals": {
+      "old": {
+        "allocation_growth_bytes": 8962561376,
+        "allocation_growth_events": 80456308,
+        "incremental_gc_steps": 4833027,
+        "incremental_gc_ms": 10669.455408000002,
+        "incremental_gc_max_step_ms": 1.0891989999999998
+      },
+      "candidate": {
+        "allocation_growth_bytes": 5967625138,
+        "allocation_growth_events": 71877025,
+        "incremental_gc_steps": 3015261,
+        "incremental_gc_ms": 7952.744919999997,
+        "incremental_gc_max_step_ms": 1.1646
+      }
+    },
+    "raw_cache": ".cache/jy-ui06-scalar-long-pair-run1",
+    "limits": [
+      "Actual matching opt2 sampling WASM functional/allocation diagnostic, not official browser/renderer/FPS or GC-frequency acceptance.",
+      "Wall time includes VM diagnostics/publication but excludes each tick setter, observation decoding/comparison/hash and file IO. Two modules share Node; execution order alternates perblock.",
+      "Current luau_memory_bytes is allocated memory at stop-query boundary, not reachability/live heap/windowpeak. Cumulative positive allocator-growth counters are not live bytes.",
+      "Natural incremental GC wall/steps are diagnostic callback work, not complete collector cycles, V8 GC or OS pauses.",
+      "No Game observation exception is pre-authorized. Any fullstate/digest mismatch stops and preserves complete raw worlds.",
+      "Both modules use Sampler9 ABI/publication, not SDK10 whole-UI wire or official player. Later production SDK10 browser validation remains required.",
+      "Game lines shift after repository replacement; repository attribution matches semantic function names, while package line labels remain the identical UI0.6 source.",
+      "A higher but bounded candidate Lua allocation baseline is consistent with intentionally retaining at most1.5MiB scalar bytes; it is not a reachability or leak proof."
+    ],
+    "canonical": {
+      "complete_world_save_bytes_and_core_digests_exact": true,
+      "checkpoints": 3619,
+      "first_frame": 0,
+      "last_frame": 3618,
+      "total_measured_ticks": 3600,
+      "checkpoints_sha256": "81f2fcfe20451e452499dcc05228258f5685b9d19c1adc058636683fa4f62473"
+    },
+    "boundary_current_luau_allocated_range": {
+      "old": {
+        "min": 14413707,
+        "max": 17385447,
+        "last": 15506848
+      },
+      "candidate": {
+        "min": 16420240,
+        "max": 17429810,
+        "last": 16686622
+      }
+    },
+    "windows": [
+      {
+        "block": 1,
+        "frames": [
+          19,
+          318
+        ],
+        "simulation_time_seconds": 5.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 11.589500000000044,
+          "median_ms": 17.309800000000905,
+          "p95_ms": 23.558899999999994,
+          "p99_ms": 48.77810000000045,
+          "max_ms": 50.621799999999894,
+          "mean_ms": 17.834306333333345,
+          "total_ms": 5350.291900000003
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 11.290700000000015,
+          "median_ms": 17.398599999999533,
+          "p95_ms": 23.648400000000038,
+          "p99_ms": 45.084100000000035,
+          "max_ms": 48.96399999999994,
+          "mean_ms": 17.668259666666682,
+          "total_ms": 5300.477900000004
+        },
+        "old_boundary_current_luau_allocated_bytes": 17385447,
+        "candidate_boundary_current_luau_allocated_bytes": 16619827,
+        "old_vm": {
+          "allocation_growth_bytes": 492406089,
+          "allocation_growth_events": 5729699,
+          "incremental_gc_steps": 244615,
+          "incremental_gc_ms": 619.3786669999993,
+          "incremental_gc_max_step_ms": 0.924499
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 490532923,
+          "allocation_growth_events": 5704057,
+          "incremental_gc_steps": 249709,
+          "incremental_gc_ms": 609.7919759999996,
+          "incremental_gc_max_step_ms": 1.031799
+        },
+        "old_self_samples": {
+          "package": 2023,
+          "package_copy_visit": 765,
+          "package_finalize_visit": 729,
+          "repository_components": 2,
+          "repository_letters": 0
+        },
+        "candidate_self_samples": {
+          "package": 2031,
+          "package_copy_visit": 699,
+          "package_finalize_visit": 809,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 2,
+        "frames": [
+          319,
+          618
+        ],
+        "simulation_time_seconds": 10.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 12.342899999999645,
+          "median_ms": 18.045200000000477,
+          "p95_ms": 23.728699999999662,
+          "p99_ms": 31.013200000001234,
+          "max_ms": 41.152099999999336,
+          "mean_ms": 18.31406799999998,
+          "total_ms": 5494.220399999995
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 11.565199999999095,
+          "median_ms": 18.28660000000309,
+          "p95_ms": 24.174599999998463,
+          "p99_ms": 29.40859999999884,
+          "max_ms": 34.585000000002765,
+          "mean_ms": 18.60911566666671,
+          "total_ms": 5582.734700000014
+        },
+        "old_boundary_current_luau_allocated_bytes": 17341845,
+        "candidate_boundary_current_luau_allocated_bytes": 16573959,
+        "old_vm": {
+          "allocation_growth_bytes": 474536003,
+          "allocation_growth_events": 5647671,
+          "incremental_gc_steps": 232421,
+          "incremental_gc_ms": 640.661947,
+          "incremental_gc_max_step_ms": 1.0215999999999998
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 468170561,
+          "allocation_growth_events": 5586272,
+          "incremental_gc_steps": 232756,
+          "incremental_gc_ms": 656.6306440000001,
+          "incremental_gc_max_step_ms": 0.996301
+        },
+        "old_self_samples": {
+          "package": 2154,
+          "package_copy_visit": 767,
+          "package_finalize_visit": 807,
+          "repository_components": 1,
+          "repository_letters": 1
+        },
+        "candidate_self_samples": {
+          "package": 2177,
+          "package_copy_visit": 819,
+          "package_finalize_visit": 804,
+          "repository_components": 0,
+          "repository_letters": 2
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 3,
+        "frames": [
+          619,
+          918
+        ],
+        "simulation_time_seconds": 15.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 12.537600000003295,
+          "median_ms": 18.602000000006228,
+          "p95_ms": 24.306900000003225,
+          "p99_ms": 37.42349999999715,
+          "max_ms": 39.75940000000264,
+          "mean_ms": 19.186121333333066,
+          "total_ms": 5755.83639999992
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 12.747699999999895,
+          "median_ms": 18.60859999999957,
+          "p95_ms": 23.83430000000226,
+          "p99_ms": 31.97389999999723,
+          "max_ms": 36.02890000000116,
+          "mean_ms": 18.903419333333343,
+          "total_ms": 5671.025800000003
+        },
+        "old_boundary_current_luau_allocated_bytes": 16111590,
+        "candidate_boundary_current_luau_allocated_bytes": 17194434,
+        "old_vm": {
+          "allocation_growth_bytes": 484974687,
+          "allocation_growth_events": 5787952,
+          "incremental_gc_steps": 238432,
+          "incremental_gc_ms": 686.5188820000001,
+          "incremental_gc_max_step_ms": 1.0891989999999998
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 475733367,
+          "allocation_growth_events": 5682157,
+          "incremental_gc_steps": 238387,
+          "incremental_gc_ms": 682.4100609999997,
+          "incremental_gc_max_step_ms": 1.1646
+        },
+        "old_self_samples": {
+          "package": 2203,
+          "package_copy_visit": 776,
+          "package_finalize_visit": 810,
+          "repository_components": 8,
+          "repository_letters": 8
+        },
+        "candidate_self_samples": {
+          "package": 2209,
+          "package_copy_visit": 782,
+          "package_finalize_visit": 836,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 4,
+        "frames": [
+          919,
+          1218
+        ],
+        "simulation_time_seconds": 20.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 13.653100000003178,
+          "median_ms": 24.43850000000384,
+          "p95_ms": 31.61420000000362,
+          "p99_ms": 36.34870000000228,
+          "max_ms": 47.96949999999924,
+          "mean_ms": 24.42687433333301,
+          "total_ms": 7328.062299999903
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 12.597900000000664,
+          "median_ms": 18.856999999996333,
+          "p95_ms": 24.66610000000219,
+          "p99_ms": 28.324100000005274,
+          "max_ms": 42.43590000000404,
+          "mean_ms": 19.071516000000216,
+          "total_ms": 5721.454800000065
+        },
+        "old_boundary_current_luau_allocated_bytes": 15420655,
+        "candidate_boundary_current_luau_allocated_bytes": 17429810,
+        "old_vm": {
+          "allocation_growth_bytes": 650068876,
+          "allocation_growth_events": 6306020,
+          "incremental_gc_steps": 343320,
+          "incremental_gc_ms": 782.9354629999998,
+          "incremental_gc_max_step_ms": 0.8695
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 488153752,
+          "allocation_growth_events": 5834082,
+          "incremental_gc_steps": 245462,
+          "incremental_gc_ms": 647.8173039999998,
+          "incremental_gc_max_step_ms": 0.9822
+        },
+        "old_self_samples": {
+          "package": 2186,
+          "package_copy_visit": 800,
+          "package_finalize_visit": 788,
+          "repository_components": 598,
+          "repository_letters": 253
+        },
+        "candidate_self_samples": {
+          "package": 2198,
+          "package_copy_visit": 809,
+          "package_finalize_visit": 798,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 5,
+        "frames": [
+          1219,
+          1518
+        ],
+        "simulation_time_seconds": 25.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 19.876500000005763,
+          "median_ms": 27.839199999987613,
+          "p95_ms": 33.60460000000603,
+          "p99_ms": 40.189400000002934,
+          "max_ms": 42.08879999999772,
+          "mean_ms": 28.083263333333136,
+          "total_ms": 8424.978999999941
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 12.738899999996647,
+          "median_ms": 18.500899999999092,
+          "p95_ms": 23.155500000008033,
+          "p99_ms": 27.49369999999908,
+          "max_ms": 33.00319999999192,
+          "mean_ms": 18.674608999999908,
+          "total_ms": 5602.382699999973
+        },
+        "old_boundary_current_luau_allocated_bytes": 14413707,
+        "candidate_boundary_current_luau_allocated_bytes": 16834572,
+        "old_vm": {
+          "allocation_growth_bytes": 766160953,
+          "allocation_growth_events": 6735096,
+          "incremental_gc_steps": 415805,
+          "incremental_gc_ms": 852.5850790000001,
+          "incremental_gc_max_step_ms": 0.600301
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 495223532,
+          "allocation_growth_events": 5957704,
+          "incremental_gc_steps": 249442,
+          "incremental_gc_ms": 627.4431629999997,
+          "incremental_gc_max_step_ms": 0.826599
+        },
+        "old_self_samples": {
+          "package": 2067,
+          "package_copy_visit": 716,
+          "package_finalize_visit": 809,
+          "repository_components": 1077,
+          "repository_letters": 395
+        },
+        "candidate_self_samples": {
+          "package": 2171,
+          "package_copy_visit": 795,
+          "package_finalize_visit": 821,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 6,
+        "frames": [
+          1519,
+          1818
+        ],
+        "simulation_time_seconds": 30.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 22.43949999999313,
+          "median_ms": 31.896899999992456,
+          "p95_ms": 38.23630000000412,
+          "p99_ms": 41.856400000004214,
+          "max_ms": 50.30139999999665,
+          "mean_ms": 32.15097166666615,
+          "total_ms": 9645.291499999847
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 13.299400000003516,
+          "median_ms": 19.86699999999837,
+          "p95_ms": 24.988000000012107,
+          "p99_ms": 27.663300000000163,
+          "max_ms": 30.83839999999327,
+          "mean_ms": 20.159250666666775,
+          "total_ms": 6047.775200000033
+        },
+        "old_boundary_current_luau_allocated_bytes": 14670101,
+        "candidate_boundary_current_luau_allocated_bytes": 16643355,
+        "old_vm": {
+          "allocation_growth_bytes": 836911379,
+          "allocation_growth_events": 7023172,
+          "incremental_gc_steps": 458593,
+          "incremental_gc_ms": 1030.7502050000003,
+          "incremental_gc_max_step_ms": 0.710701
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 502659576,
+          "allocation_growth_events": 6067320,
+          "incremental_gc_steps": 254761,
+          "incremental_gc_ms": 704.3902609999999,
+          "incremental_gc_max_step_ms": 0.9917000000000001
+        },
+        "old_self_samples": {
+          "package": 2198,
+          "package_copy_visit": 771,
+          "package_finalize_visit": 817,
+          "repository_components": 1332,
+          "repository_letters": 532
+        },
+        "candidate_self_samples": {
+          "package": 2276,
+          "package_copy_visit": 835,
+          "package_finalize_visit": 817,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 7,
+        "frames": [
+          1819,
+          2118
+        ],
+        "simulation_time_seconds": 35.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 24.07730000000447,
+          "median_ms": 35.28070000000298,
+          "p95_ms": 41.88390000000072,
+          "p99_ms": 51.13499999999476,
+          "max_ms": 55.739300000001094,
+          "mean_ms": 35.45223299999974,
+          "total_ms": 10635.66989999992
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 13.082299999994575,
+          "median_ms": 20.218800000002375,
+          "p95_ms": 25.50449999999546,
+          "p99_ms": 31.617599999997765,
+          "max_ms": 34.36469999999099,
+          "mean_ms": 20.426892333333964,
+          "total_ms": 6128.067700000189
+        },
+        "old_boundary_current_luau_allocated_bytes": 16630345,
+        "candidate_boundary_current_luau_allocated_bytes": 16784889,
+        "old_vm": {
+          "allocation_growth_bytes": 921782962,
+          "allocation_growth_events": 7385388,
+          "incremental_gc_steps": 510231,
+          "incremental_gc_ms": 1170.9309050000004,
+          "incremental_gc_max_step_ms": 0.7435
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 512736035,
+          "allocation_growth_events": 6207945,
+          "incremental_gc_steps": 260750,
+          "incremental_gc_ms": 733.7902969999996,
+          "incremental_gc_max_step_ms": 1.064
+        },
+        "old_self_samples": {
+          "package": 2195,
+          "package_copy_visit": 790,
+          "package_finalize_visit": 756,
+          "repository_components": 1651,
+          "repository_letters": 651
+        },
+        "candidate_self_samples": {
+          "package": 2278,
+          "package_copy_visit": 842,
+          "package_finalize_visit": 829,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 8,
+        "frames": [
+          2119,
+          2418
+        ],
+        "simulation_time_seconds": 40.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 24.682099999990896,
+          "median_ms": 34.97179999999935,
+          "p95_ms": 40.25569999999425,
+          "p99_ms": 45.45219999999972,
+          "max_ms": 56.99460000000545,
+          "mean_ms": 34.915229999999866,
+          "total_ms": 10474.56899999996
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 13.32029999999213,
+          "median_ms": 19.607600000003004,
+          "p95_ms": 23.826700000005076,
+          "p99_ms": 29.097200000003795,
+          "max_ms": 31.56489999999758,
+          "mean_ms": 19.79920299999964,
+          "total_ms": 5939.760899999892
+        },
+        "old_boundary_current_luau_allocated_bytes": 16664103,
+        "candidate_boundary_current_luau_allocated_bytes": 16833800,
+        "old_vm": {
+          "allocation_growth_bytes": 914029680,
+          "allocation_growth_events": 7295925,
+          "incremental_gc_steps": 506395,
+          "incremental_gc_ms": 1094.560524,
+          "incremental_gc_max_step_ms": 0.4896
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 508239951,
+          "allocation_growth_events": 6170864,
+          "incremental_gc_steps": 258472,
+          "incremental_gc_ms": 706.7680579999993,
+          "incremental_gc_max_step_ms": 1.106401
+        },
+        "old_self_samples": {
+          "package": 2162,
+          "package_copy_visit": 739,
+          "package_finalize_visit": 783,
+          "repository_components": 1674,
+          "repository_letters": 648
+        },
+        "candidate_self_samples": {
+          "package": 2230,
+          "package_copy_visit": 763,
+          "package_finalize_visit": 804,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 9,
+        "frames": [
+          2419,
+          2718
+        ],
+        "simulation_time_seconds": 45.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 24.812599999975646,
+          "median_ms": 34.31889999998384,
+          "p95_ms": 38.38719999999739,
+          "p99_ms": 42.181500000006054,
+          "max_ms": 45.07270000001881,
+          "mean_ms": 33.785209333332894,
+          "total_ms": 10135.562799999869
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 13.94550000000163,
+          "median_ms": 19.384600000019418,
+          "p95_ms": 22.93609999999171,
+          "p99_ms": 23.870799999975134,
+          "max_ms": 26.77190000002156,
+          "mean_ms": 19.325483333333008,
+          "total_ms": 5797.644999999902
+        },
+        "old_boundary_current_luau_allocated_bytes": 15277624,
+        "candidate_boundary_current_luau_allocated_bytes": 16420240,
+        "old_vm": {
+          "allocation_growth_bytes": 885558069,
+          "allocation_growth_events": 7194383,
+          "incremental_gc_steps": 488760,
+          "incremental_gc_ms": 1002.2142520000002,
+          "incremental_gc_max_step_ms": 0.603101
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 505264251,
+          "allocation_growth_events": 6150922,
+          "incremental_gc_steps": 255829,
+          "incremental_gc_ms": 667.7234540000001,
+          "incremental_gc_max_step_ms": 0.7901009999999999
+        },
+        "old_self_samples": {
+          "package": 2115,
+          "package_copy_visit": 733,
+          "package_finalize_visit": 767,
+          "repository_components": 1483,
+          "repository_letters": 673
+        },
+        "candidate_self_samples": {
+          "package": 2152,
+          "package_copy_visit": 804,
+          "package_finalize_visit": 804,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 10,
+        "frames": [
+          2719,
+          3018
+        ],
+        "simulation_time_seconds": 50.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 23.314800000021933,
+          "median_ms": 32.53450000000885,
+          "p95_ms": 37.34049999999115,
+          "p99_ms": 40.24749999999767,
+          "max_ms": 44.310900000011316,
+          "mean_ms": 32.05297233333549,
+          "total_ms": 9615.891700000648
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 13.611999999993714,
+          "median_ms": 18.955600000015693,
+          "p95_ms": 22.119999999995343,
+          "p99_ms": 23.755299999989802,
+          "max_ms": 29.46369999999297,
+          "mean_ms": 18.90490333333301,
+          "total_ms": 5671.470999999903
+        },
+        "old_boundary_current_luau_allocated_bytes": 15033737,
+        "candidate_boundary_current_luau_allocated_bytes": 16500856,
+        "old_vm": {
+          "allocation_growth_bytes": 864825033,
+          "allocation_growth_events": 7174104,
+          "incremental_gc_steps": 476673,
+          "incremental_gc_ms": 956.2359420000004,
+          "incremental_gc_max_step_ms": 0.5213
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 507402908,
+          "allocation_growth_events": 6175937,
+          "incremental_gc_steps": 256690,
+          "incremental_gc_ms": 645.5069690000001,
+          "incremental_gc_max_step_ms": 1.1247010000000002
+        },
+        "old_self_samples": {
+          "package": 2088,
+          "package_copy_visit": 730,
+          "package_finalize_visit": 801,
+          "repository_components": 1455,
+          "repository_letters": 606
+        },
+        "candidate_self_samples": {
+          "package": 2148,
+          "package_copy_visit": 726,
+          "package_finalize_visit": 797,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 11,
+        "frames": [
+          3019,
+          3318
+        ],
+        "simulation_time_seconds": 55.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 22.18499999999767,
+          "median_ms": 31.009900000004563,
+          "p95_ms": 36.30259999999544,
+          "p99_ms": 41.26009999998496,
+          "max_ms": 43.74559999999474,
+          "mean_ms": 30.624409666665304,
+          "total_ms": 9187.322899999592
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 13.19519999998738,
+          "median_ms": 18.60449999998673,
+          "p95_ms": 21.775600000022678,
+          "p99_ms": 24.791299999982584,
+          "max_ms": 29.17840000000433,
+          "mean_ms": 18.567834999999615,
+          "total_ms": 5570.350499999884
+        },
+        "old_boundary_current_luau_allocated_bytes": 15319146,
+        "candidate_boundary_current_luau_allocated_bytes": 17034874,
+        "old_vm": {
+          "allocation_growth_bytes": 827983606,
+          "allocation_growth_events": 7045594,
+          "incremental_gc_steps": 453783,
+          "incremental_gc_ms": 917.8442770000004,
+          "incremental_gc_max_step_ms": 0.554201
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 504625056,
+          "allocation_growth_events": 6155472,
+          "incremental_gc_steps": 255480,
+          "incremental_gc_ms": 636.9497699999997,
+          "incremental_gc_max_step_ms": 0.9845999999999999
+        },
+        "old_self_samples": {
+          "package": 2068,
+          "package_copy_visit": 753,
+          "package_finalize_visit": 771,
+          "repository_components": 1251,
+          "repository_letters": 564
+        },
+        "candidate_self_samples": {
+          "package": 2097,
+          "package_copy_visit": 723,
+          "package_finalize_visit": 819,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      },
+      {
+        "block": 12,
+        "frames": [
+          3319,
+          3618
+        ],
+        "simulation_time_seconds": 60.3,
+        "old_tickwall": {
+          "n": 300,
+          "min_ms": 22.35940000001574,
+          "median_ms": 31.063799999974435,
+          "p95_ms": 35.672099999996135,
+          "p99_ms": 42.39430000001448,
+          "max_ms": 47.85579999999027,
+          "mean_ms": 30.87224433333254,
+          "total_ms": 9261.673299999762
+        },
+        "candidate_tickwall": {
+          "n": 300,
+          "min_ms": 13.126699999993434,
+          "median_ms": 18.700400000001537,
+          "p95_ms": 22.874099999986356,
+          "p99_ms": 27.283400000014808,
+          "max_ms": 37.01060000000871,
+          "mean_ms": 18.75373100000026,
+          "total_ms": 5626.1193000000785
+        },
+        "old_boundary_current_luau_allocated_bytes": 15506848,
+        "candidate_boundary_current_luau_allocated_bytes": 16686622,
+        "old_vm": {
+          "allocation_growth_bytes": 843324039,
+          "allocation_growth_events": 7131304,
+          "incremental_gc_steps": 463999,
+          "incremental_gc_ms": 914.8392649999997,
+          "incremental_gc_max_step_ms": 0.409799
+        },
+        "candidate_vm": {
+          "allocation_growth_bytes": 508883226,
+          "allocation_growth_events": 6184293,
+          "incremental_gc_steps": 257523,
+          "incremental_gc_ms": 633.5229629999995,
+          "incremental_gc_max_step_ms": 0.9005000000000001
+        },
+        "old_self_samples": {
+          "package": 2088,
+          "package_copy_visit": 780,
+          "package_finalize_visit": 776,
+          "repository_components": 1276,
+          "repository_letters": 551
+        },
+        "candidate_self_samples": {
+          "package": 2169,
+          "package_copy_visit": 767,
+          "package_finalize_visit": 811,
+          "repository_components": 0,
+          "repository_letters": 0
+        },
+        "old_dropped_samples": 0,
+        "candidate_dropped_samples": 0
+      }
+    ],
+    "scope": "Two independent actual matching Sampler9 WASM modules; identical config/scene/fixture/seed42/1600x900, only isolated candidate script differs. Full world (UI/entities/shaders/ALL observations), complete save JSON bytes and Core observation_digest must match every initial/prefix/3600 fixed-empty tick. EMPTY allowlist. Twelve300tick sampling=true windows; no forcedGC/browser/Game-disk/clock changes.",
+    "allowlist": [],
+    "sampler9_wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60"
+  },
+  "official_browser_60s_soaks": {
+    "rows": [
+      {
+        "name": "SDK10 original726",
+        "raw_cache_path": ".cache/jy-ui06-sdk10-inventory-soak-run1/result.json",
+        "source_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+        "seconds": 60,
+        "target60Passed": false,
+        "measuredSuccessfully": true,
+        "rates": {
+          "wallSeconds": 60.03039999997616,
+          "rafCallbacks": 1922,
+          "rafFps": 32.01711133027205,
+          "simulationFrames": 3530,
+          "simulationFps": 58.80353953998977,
+          "simulationSeconds": 58.83333333333333,
+          "simulationToWall": 0.9800589923331627,
+          "battleElapsedDelta": null
+        },
+        "raf_interval_ms": {
+          "n": 1921,
+          "p50": 16.700000000000728,
+          "p95": 83.40000000000146,
+          "p99": 100,
+          "min": 16.5,
+          "max": 100.10000000000582,
+          "mean": 31.23461738677775
+        },
+        "dropped_steps_delta": 71,
+        "sparse_published_cpu_ms": {
+          "bridgePublished": {
+            "n": 64,
+            "p50": 14.899999976158142,
+            "p95": 17.800000071525574,
+            "p99": 19,
+            "min": 10.200000047683716,
+            "max": 19,
+            "mean": 14.426562508568168
+          },
+          "renderPublished": {
+            "n": 64,
+            "p50": 0.7999999523162842,
+            "p95": 1,
+            "p99": 1.100000023841858,
+            "min": 0.5999999046325684,
+            "max": 1.100000023841858,
+            "mean": 0.7906249929219484
+          },
+          "uiPublished": {
+            "n": 64,
+            "p50": 34.5,
+            "p95": 34.5,
+            "p99": 34.5,
+            "min": 34.5,
+            "max": 34.5,
+            "mean": 34.5
+          },
+          "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+          "phases": {}
+        },
+        "instrumentation": {
+          "profiling": false,
+          "readOnlySnapshots": "Only two full boundary decodes; none on each RAF.",
+          "completionQuery": "Official additive v1 paired RAF report every 1000ms with a 1500ms overlapping evidence window; all cadence/legacy gates use reconstructed fixed 1000ms windows. Query cost retained; no per-frame full world decode.",
+          "rafObserver": "Clocks, visibility/playerError transitions and changed official metrics publications. No renderer monkeypatch.",
+          "renderer": "Unmodified official player; no simulation/input/clock/animation alterations."
+        }
+      },
+      {
+        "name": "SDK10 scalarfe919",
+        "raw_cache_path": ".cache/jy-ui06-scalar-sdk10-inventory-soak-run1/result.json",
+        "source_sha256": "fe919c41c04383fedb494f7a0afd83cdd6a599a62504ddc3e4d90b741a598ebe",
+        "seconds": 60,
+        "target60Passed": false,
+        "measuredSuccessfully": true,
+        "rates": {
+          "wallSeconds": 60.02939999997616,
+          "rafCallbacks": 2457,
+          "rafFps": 40.92994432729589,
+          "simulationFrames": 3598,
+          "simulationFps": 59.93729739096891,
+          "simulationSeconds": 59.96666666666667,
+          "simulationToWall": 0.9989549565161485,
+          "battleElapsedDelta": null
+        },
+        "raf_interval_ms": {
+          "n": 2456,
+          "p50": 16.700000000000728,
+          "p95": 50.10000000000218,
+          "p99": 83.29999999999927,
+          "min": 16.39999999999418,
+          "max": 100,
+          "mean": 24.43745928338766
+        },
+        "dropped_steps_delta": 4,
+        "sparse_published_cpu_ms": {
+          "bridgePublished": {
+            "n": 82,
+            "p50": 15.200000047683716,
+            "p95": 18.40000009536743,
+            "p99": 22.100000023841858,
+            "min": 10.600000023841858,
+            "max": 22.100000023841858,
+            "mean": 15.185365858601362
+          },
+          "renderPublished": {
+            "n": 82,
+            "p50": 0.8999999761581421,
+            "p95": 1.100000023841858,
+            "p99": 1.1999999284744263,
+            "min": 0.5,
+            "max": 1.1999999284744263,
+            "mean": 0.8878048774672718
+          },
+          "uiPublished": {
+            "n": 82,
+            "p50": 37.800000071525574,
+            "p95": 37.800000071525574,
+            "p99": 37.800000071525574,
+            "min": 37.800000071525574,
+            "max": 37.800000071525574,
+            "mean": 37.800000071525574
+          },
+          "uiPublicationSemantics": "Last dirty UI redraw can be historical. Published metrics are sparse, not per-frame CPU-tail measurements; use official profile phases for measured CPU p50/p95/p99.",
+          "phases": {}
+        },
+        "instrumentation": {
+          "profiling": false,
+          "readOnlySnapshots": "Only two full boundary decodes; none on each RAF.",
+          "completionQuery": "Official additive v1 paired RAF report every 1000ms with a 1500ms overlapping evidence window; all cadence/legacy gates use reconstructed fixed 1000ms windows. Query cost retained; no per-frame full world decode.",
+          "rafObserver": "Clocks, visibility/playerError transitions and changed official metrics publications. No renderer monkeypatch.",
+          "renderer": "Unmodified official player; no simulation/input/clock/animation alterations."
+        }
+      }
+    ],
+    "remaining_target": "Both60second windows fail stable60; short7case passes do not supersede them",
+    "scope": "Observed acceptance failures retained under possible/confirmed cross-project CPU competition; neither is a clean engine-only experiment"
+  },
+  "natural_memory": {
+    "raw_cache": ".cache/jy-ui06-scalar-sdk10-memory-run1",
+    "runner_sha256": "1e0919bc084e29e2c861585ba9bb61374ef4b7ef4db8682544ab4e9eeec4cd7a",
+    "instrumentation_unchanged": true,
+    "profiling": false,
+    "execution_scope": "Concurrent machine load explicitly permitted; not FPS acceptance or isolated wall-time attribution",
+    "browser_closed": true,
+    "forced_gc": false,
+    "limits": [
+      "Instrumented exclusive-window 45-second idle and inventory cases; do not use observed frame progression as FPS acceptance.",
+      "GC names and coalesced Minor/Major/Incremental episodes are trace events/phases, not guaranteed whole collector cycles or OS stop-the-world pauses.",
+      "Canonical MinorGC/MajorGC event-name durations are counted separately from all family phase episodes; neither defines Luau GC.",
+      "Only page-main V8 trace coverage; Luau WASM GC and worker isolate totals remain unavailable.",
+      "Natural heap sawtooth and higher reserved JS/WASM capacity do not prove a leak; stable owners and this short tail do not prove leak-free behavior.",
+      "Renderer counters are cached coarse counts and decoded-image estimates, not direct GPU bytes.",
+      "Metadata identity uses selected local/served runtime manifests and their advertised WASM hash, without a duplicate served WASM byte fetch."
+    ],
+    "results": [
+      {
+        "case": "idle",
+        "backend": {
+          "renderer": "official",
+          "presentationBackend": "main",
+          "interpolation": false
+        },
+        "source_sha256": "fe919c41c04383fedb494f7a0afd83cdd6a599a62504ddc3e4d90b741a598ebe",
+        "window_seconds": 45.004122,
+        "samples": 46,
+        "trace_quality": {
+          "status": "observed-partial",
+          "bytes": 21906588,
+          "truncated": false,
+          "data_loss": false,
+          "max_buffer_usage": 0.03831148520112038,
+          "category_session": "browser",
+          "category_attempts": [
+            {
+              "attempt": 1,
+              "status": "enumerated-insufficient",
+              "count": 0,
+              "error": null
+            },
+            {
+              "attempt": 2,
+              "status": "enumerated-sufficient",
+              "count": 289,
+              "error": null
+            }
+          ],
+          "failure": null
+        },
+        "canonical_gc_name_duration_events": {
+          "MinorGC": {
+            "duration_events": 22,
+            "events_per_second": 0.4888441107683425,
+            "duration_p95_ms": 2.917,
+            "duration_max_ms": 3.224
+          },
+          "MajorGC": {
+            "duration_events": 65,
+            "events_per_second": 1.444312145451921,
+            "duration_p95_ms": 2.534,
+            "duration_max_ms": 2.759
+          }
+        },
+        "classified_gc_trace_phase_episodes": {
+          "Minor": {
+            "availability": "observed",
+            "observed_duration_intervals": 373,
+            "root_trace_intervals": 22,
+            "intervals_per_s": 0.4888441107683425,
+            "wall_union_ms": 42.734,
+            "interval_p95_ms": 2.917,
+            "interval_max_ms": 3.224
+          },
+          "Major": {
+            "availability": "observed",
+            "observed_duration_intervals": 4774,
+            "root_trace_intervals": 130,
+            "intervals_per_s": 2.888624290903842,
+            "wall_union_ms": 149.585,
+            "interval_p95_ms": 2.406,
+            "interval_max_ms": 2.759
+          },
+          "Incremental": {
+            "availability": "observed",
+            "observed_duration_intervals": 5491,
+            "root_trace_intervals": 1833,
+            "intervals_per_s": 40.72960250174417,
+            "wall_union_ms": 95.881,
+            "interval_p95_ms": 0.175,
+            "interval_max_ms": 0.425
+          }
+        },
+        "main_gc_trace_phase_wall_union_ms": 288.2,
+        "js_heap_used_bytes": {
+          "available": true,
+          "n": 46,
+          "first": 15284076,
+          "last": 22495232,
+          "min": 12437916,
+          "max": 38597836,
+          "delta": 7211156,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 12682172,
+            "max": 37699452,
+            "median": 22495232,
+            "p95": 37699452,
+            "slope_units_per_s": -1017003.6527038636
+          }
+        },
+        "js_heap_capacity_bytes": {
+          "available": true,
+          "n": 46,
+          "first": 40972288,
+          "last": 69283840,
+          "min": 40972288,
+          "max": 69808128,
+          "delta": 28311552,
+          "tail_last_10s": {
+            "n": 11,
+            "min": 68759552,
+            "max": 69808128,
+            "median": 69283840,
+            "p95": 69808128,
+            "slope_units_per_s": 49387.84223142215
+          }
+        },
+        "cached_owner_and_capacity_counters": {
+          "backend.wasm_linear_bytes": {
+            "available": true,
+            "n": 46,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 29097984,
+              "max": 29097984,
+              "median": 29097984,
+              "p95": 29097984,
+              "slope_units_per_s": 0
+            }
+          },
+          "textures": {
+            "available": true,
+            "n": 46,
+            "first": 37,
+            "last": 37,
+            "min": 37,
+            "max": 38,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 37,
+              "max": 38,
+              "median": 38,
+              "p95": 38,
+              "slope_units_per_s": -0.10925831781748249
+            }
+          },
+          "shader_materials": {
+            "available": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_geometries": {
+            "available": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_materials": {
+            "available": true,
+            "n": 46,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_geometries": {
+            "available": true,
+            "n": 46,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 4,
+              "max": 4,
+              "median": 4,
+              "p95": 4,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_materials": {
+            "available": true,
+            "n": 46,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_meshes": {
+            "available": true,
+            "n": 46,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 4,
+              "max": 4,
+              "median": 4,
+              "p95": 4,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_textures": {
+            "available": true,
+            "n": 46,
+            "first": 18,
+            "last": 18,
+            "min": 18,
+            "max": 19,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 18,
+              "max": 19,
+              "median": 19,
+              "p95": 19,
+              "slope_units_per_s": -0.10925831781748249
+            }
+          },
+          "ui_image_batches.buffer_capacity_quads": {
+            "available": true,
+            "n": 46,
+            "first": 960,
+            "last": 960,
+            "min": 960,
+            "max": 960,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 960,
+              "max": 960,
+              "median": 960,
+              "p95": 960,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.entries": {
+            "available": true,
+            "n": 46,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 14,
+              "max": 14,
+              "median": 14,
+              "p95": 14,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.decoded_texture_bytes_estimate": {
+            "available": true,
+            "n": 46,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 28627248,
+              "max": 28627248,
+              "median": 28627248,
+              "p95": 28627248,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui.usage.logical_nodes": {
+            "available": true,
+            "n": 46,
+            "first": 732,
+            "last": 732,
+            "min": 732,
+            "max": 736,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 11,
+              "min": 732,
+              "max": 736,
+              "median": 734,
+              "p95": 736,
+              "slope_units_per_s": -0.4792267526592293
+            }
+          }
+        },
+        "page_cdp_duration_deltas_seconds": {
+          "TaskDuration": 25.976037,
+          "ScriptDuration": 0.13633299999999998,
+          "scope": "Available page CDP counter differences; ScriptDuration is a reported sub-scope, not a complete JavaScript/WASM CPU accounting or a subtraction-based residual"
+        },
+        "scene_before": {
+          "frame": 363,
+          "values": {
+            "screen": {
+              "available": true,
+              "value": "world"
+            },
+            "travelling": {
+              "available": true,
+              "value": false
+            },
+            "travel_paused": {
+              "available": true,
+              "value": false
+            },
+            "ui_window": {
+              "available": true,
+              "value": "none"
+            },
+            "window_blocks_scene_input": {
+              "available": true,
+              "value": false
+            },
+            "map_view_mode": {
+              "available": true,
+              "value": "detail"
+            },
+            "map_zoom": {
+              "available": true,
+              "value": 14
+            },
+            "world_version": {
+              "available": true,
+              "value": 4
+            },
+            "world_count": {
+              "available": true,
+              "value": 262144
+            },
+            "map_detail_budget": {
+              "available": true,
+              "value": 760
+            },
+            "map_detail_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_attempted_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_budget_fallback": {
+              "available": true,
+              "value": false
+            },
+            "map_image_batches": {
+              "available": true,
+              "value": 4
+            },
+            "map_image_quads": {
+              "available": true,
+              "value": 675
+            },
+            "map_ground_images": {
+              "available": true,
+              "value": 119
+            },
+            "map_ground_tiles": {
+              "available": true,
+              "value": 573
+            },
+            "map_resident_chunks": {
+              "available": true,
+              "value": 16
+            },
+            "map_visible_chunks": {
+              "available": true,
+              "value": 4
+            },
+            "map_cached_tile_descriptors": {
+              "available": true,
+              "value": 0
+            },
+            "map_input_candidate_count": {
+              "available": true,
+              "value": 670
+            },
+            "ui_published_this_tick": {
+              "available": true,
+              "value": false
+            },
+            "world_ui_reused": {
+              "available": true,
+              "value": true
+            }
+          }
+        },
+        "scene_after": {
+          "frame": 3135,
+          "values": {
+            "screen": {
+              "available": true,
+              "value": "world"
+            },
+            "travelling": {
+              "available": true,
+              "value": false
+            },
+            "travel_paused": {
+              "available": true,
+              "value": false
+            },
+            "ui_window": {
+              "available": true,
+              "value": "none"
+            },
+            "window_blocks_scene_input": {
+              "available": true,
+              "value": false
+            },
+            "map_view_mode": {
+              "available": true,
+              "value": "detail"
+            },
+            "map_zoom": {
+              "available": true,
+              "value": 14
+            },
+            "world_version": {
+              "available": true,
+              "value": 4
+            },
+            "world_count": {
+              "available": true,
+              "value": 262144
+            },
+            "map_detail_budget": {
+              "available": true,
+              "value": 760
+            },
+            "map_detail_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_attempted_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_budget_fallback": {
+              "available": true,
+              "value": false
+            },
+            "map_image_batches": {
+              "available": true,
+              "value": 4
+            },
+            "map_image_quads": {
+              "available": true,
+              "value": 675
+            },
+            "map_ground_images": {
+              "available": true,
+              "value": 119
+            },
+            "map_ground_tiles": {
+              "available": true,
+              "value": 573
+            },
+            "map_resident_chunks": {
+              "available": true,
+              "value": 16
+            },
+            "map_visible_chunks": {
+              "available": true,
+              "value": 4
+            },
+            "map_cached_tile_descriptors": {
+              "available": true,
+              "value": 717
+            },
+            "map_input_candidate_count": {
+              "available": true,
+              "value": 670
+            },
+            "ui_published_this_tick": {
+              "available": true,
+              "value": false
+            },
+            "world_ui_reused": {
+              "available": true,
+              "value": true
+            }
+          }
+        },
+        "errors": {
+          "hidden_samples": 0,
+          "player_errors": [],
+          "engine_profiler_samples": 0,
+          "sampler": []
+        }
+      },
+      {
+        "case": "inventory",
+        "backend": {
+          "renderer": "official",
+          "presentationBackend": "main",
+          "interpolation": false
+        },
+        "source_sha256": "fe919c41c04383fedb494f7a0afd83cdd6a599a62504ddc3e4d90b741a598ebe",
+        "window_seconds": 45.012013,
+        "samples": 45,
+        "trace_quality": {
+          "status": "observed-partial",
+          "bytes": 15551164,
+          "truncated": false,
+          "data_loss": false,
+          "max_buffer_usage": 0.02768024429678917,
+          "category_session": "browser",
+          "category_attempts": [
+            {
+              "attempt": 1,
+              "status": "enumerated-sufficient",
+              "count": 289,
+              "error": null
+            }
+          ],
+          "failure": null
+        },
+        "canonical_gc_name_duration_events": {
+          "MinorGC": {
+            "duration_events": 11,
+            "events_per_second": 0.24437920605772506,
+            "duration_p95_ms": 1.38,
+            "duration_max_ms": 1.38
+          },
+          "MajorGC": {
+            "duration_events": 39,
+            "events_per_second": 0.8664353669319343,
+            "duration_p95_ms": 3.211,
+            "duration_max_ms": 3.811
+          }
+        },
+        "classified_gc_trace_phase_episodes": {
+          "Minor": {
+            "availability": "observed",
+            "observed_duration_intervals": 188,
+            "root_trace_intervals": 11,
+            "intervals_per_s": 0.24437920605772506,
+            "wall_union_ms": 11.035,
+            "interval_p95_ms": 1.38,
+            "interval_max_ms": 1.38
+          },
+          "Major": {
+            "availability": "observed",
+            "observed_duration_intervals": 2412,
+            "root_trace_intervals": 78,
+            "intervals_per_s": 1.7328707338638687,
+            "wall_union_ms": 108.84,
+            "interval_p95_ms": 3.096,
+            "interval_max_ms": 3.811
+          },
+          "Incremental": {
+            "availability": "observed",
+            "observed_duration_intervals": 2343,
+            "root_trace_intervals": 750,
+            "intervals_per_s": 16.66221859484489,
+            "wall_union_ms": 47.178,
+            "interval_p95_ms": 0.216,
+            "interval_max_ms": 0.373
+          }
+        },
+        "main_gc_trace_phase_wall_union_ms": 167.053,
+        "js_heap_used_bytes": {
+          "available": true,
+          "n": 45,
+          "first": 16984796,
+          "last": 23548724,
+          "min": 12871088,
+          "max": 39766176,
+          "delta": 6563928,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 13803764,
+            "max": 26136836,
+            "median": 21247684,
+            "p95": 26136836,
+            "slope_units_per_s": 395931.66488229536
+          }
+        },
+        "js_heap_capacity_bytes": {
+          "available": true,
+          "n": 45,
+          "first": 46739456,
+          "last": 69545984,
+          "min": 46739456,
+          "max": 70070272,
+          "delta": 22806528,
+          "tail_last_10s": {
+            "n": 10,
+            "min": 68235264,
+            "max": 70070272,
+            "median": 68497408,
+            "p95": 70070272,
+            "slope_units_per_s": 51214.86093365841
+          }
+        },
+        "cached_owner_and_capacity_counters": {
+          "backend.wasm_linear_bytes": {
+            "available": true,
+            "n": 45,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 29097984,
+              "max": 29097984,
+              "median": 29097984,
+              "p95": 29097984,
+              "slope_units_per_s": 0
+            }
+          },
+          "textures": {
+            "available": true,
+            "n": 45,
+            "first": 25,
+            "last": 25,
+            "min": 25,
+            "max": 25,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 25,
+              "max": 25,
+              "median": 25,
+              "p95": 25,
+              "slope_units_per_s": 0
+            }
+          },
+          "shader_materials": {
+            "available": true,
+            "n": 45,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_geometries": {
+            "available": true,
+            "n": 45,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "projected_live_materials": {
+            "available": true,
+            "n": 45,
+            "first": 0,
+            "last": 0,
+            "min": 0,
+            "max": 0,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 0,
+              "max": 0,
+              "median": 0,
+              "p95": 0,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_geometries": {
+            "available": true,
+            "n": 45,
+            "first": 5,
+            "last": 5,
+            "min": 5,
+            "max": 5,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 5,
+              "max": 5,
+              "median": 5,
+              "p95": 5,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_materials": {
+            "available": true,
+            "n": 45,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 1,
+              "max": 1,
+              "median": 1,
+              "p95": 1,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_meshes": {
+            "available": true,
+            "n": 45,
+            "first": 5,
+            "last": 5,
+            "min": 5,
+            "max": 5,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 5,
+              "max": 5,
+              "median": 5,
+              "p95": 5,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.live_textures": {
+            "available": true,
+            "n": 45,
+            "first": 6,
+            "last": 6,
+            "min": 6,
+            "max": 6,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 6,
+              "max": 6,
+              "median": 6,
+              "p95": 6,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui_image_batches.buffer_capacity_quads": {
+            "available": true,
+            "n": 45,
+            "first": 920,
+            "last": 920,
+            "min": 920,
+            "max": 920,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 920,
+              "max": 920,
+              "median": 920,
+              "p95": 920,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.entries": {
+            "available": true,
+            "n": 45,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 14,
+              "max": 14,
+              "median": 14,
+              "p95": 14,
+              "slope_units_per_s": 0
+            }
+          },
+          "texture_cache.decoded_texture_bytes_estimate": {
+            "available": true,
+            "n": 45,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 28627248,
+              "max": 28627248,
+              "median": 28627248,
+              "p95": 28627248,
+              "slope_units_per_s": 0
+            }
+          },
+          "ui.usage.logical_nodes": {
+            "available": true,
+            "n": 45,
+            "first": 838,
+            "last": 838,
+            "min": 838,
+            "max": 838,
+            "delta": 0,
+            "tail_last_10s": {
+              "n": 10,
+              "min": 838,
+              "max": 838,
+              "median": 838,
+              "p95": 838,
+              "slope_units_per_s": 0
+            }
+          }
+        },
+        "page_cdp_duration_deltas_seconds": {
+          "TaskDuration": 43.75083,
+          "ScriptDuration": 0.087993,
+          "scope": "Available page CDP counter differences; ScriptDuration is a reported sub-scope, not a complete JavaScript/WASM CPU accounting or a subtraction-based residual"
+        },
+        "scene_before": {
+          "frame": 408,
+          "values": {
+            "screen": {
+              "available": true,
+              "value": "world"
+            },
+            "travelling": {
+              "available": true,
+              "value": false
+            },
+            "travel_paused": {
+              "available": true,
+              "value": false
+            },
+            "ui_window": {
+              "available": true,
+              "value": "inventory"
+            },
+            "window_blocks_scene_input": {
+              "available": true,
+              "value": true
+            },
+            "map_view_mode": {
+              "available": true,
+              "value": "detail"
+            },
+            "map_zoom": {
+              "available": true,
+              "value": 14
+            },
+            "world_version": {
+              "available": true,
+              "value": 4
+            },
+            "world_count": {
+              "available": true,
+              "value": 262144
+            },
+            "map_detail_budget": {
+              "available": true,
+              "value": 760
+            },
+            "map_detail_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_attempted_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_budget_fallback": {
+              "available": true,
+              "value": false
+            },
+            "map_image_batches": {
+              "available": true,
+              "value": 4
+            },
+            "map_image_quads": {
+              "available": true,
+              "value": 675
+            },
+            "map_ground_images": {
+              "available": true,
+              "value": 119
+            },
+            "map_ground_tiles": {
+              "available": true,
+              "value": 573
+            },
+            "map_resident_chunks": {
+              "available": true,
+              "value": 16
+            },
+            "map_visible_chunks": {
+              "available": true,
+              "value": 4
+            },
+            "map_cached_tile_descriptors": {
+              "available": true,
+              "value": 717
+            },
+            "map_input_candidate_count": {
+              "available": true,
+              "value": 670
+            },
+            "ui_published_this_tick": {
+              "available": true,
+              "value": true
+            },
+            "world_ui_reused": {
+              "available": true,
+              "value": false
+            }
+          }
+        },
+        "scene_after": {
+          "frame": 3166,
+          "values": {
+            "screen": {
+              "available": true,
+              "value": "world"
+            },
+            "travelling": {
+              "available": true,
+              "value": false
+            },
+            "travel_paused": {
+              "available": true,
+              "value": false
+            },
+            "ui_window": {
+              "available": true,
+              "value": "inventory"
+            },
+            "window_blocks_scene_input": {
+              "available": true,
+              "value": true
+            },
+            "map_view_mode": {
+              "available": true,
+              "value": "detail"
+            },
+            "map_zoom": {
+              "available": true,
+              "value": 14
+            },
+            "world_version": {
+              "available": true,
+              "value": 4
+            },
+            "world_count": {
+              "available": true,
+              "value": 262144
+            },
+            "map_detail_budget": {
+              "available": true,
+              "value": 760
+            },
+            "map_detail_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_attempted_cost": {
+              "available": true,
+              "value": 679
+            },
+            "map_detail_budget_fallback": {
+              "available": true,
+              "value": false
+            },
+            "map_image_batches": {
+              "available": true,
+              "value": 4
+            },
+            "map_image_quads": {
+              "available": true,
+              "value": 675
+            },
+            "map_ground_images": {
+              "available": true,
+              "value": 119
+            },
+            "map_ground_tiles": {
+              "available": true,
+              "value": 573
+            },
+            "map_resident_chunks": {
+              "available": true,
+              "value": 16
+            },
+            "map_visible_chunks": {
+              "available": true,
+              "value": 4
+            },
+            "map_cached_tile_descriptors": {
+              "available": true,
+              "value": 717
+            },
+            "map_input_candidate_count": {
+              "available": true,
+              "value": 670
+            },
+            "ui_published_this_tick": {
+              "available": true,
+              "value": true
+            },
+            "world_ui_reused": {
+              "available": true,
+              "value": false
+            }
+          }
+        },
+        "errors": {
+          "hidden_samples": 0,
+          "player_errors": [],
+          "engine_profiler_samples": 0,
+          "sampler": []
+        }
+      }
+    ]
+  },
+  "resource_cycles": {
+    "raw_cache": ".cache/jy-ui06-scalar-sdk10-cycles-run1",
+    "status": "completed-instrumented-diagnostic",
+    "warmup_cycles": 2,
+    "execution_scope": {
+      "schema_version": 1,
+      "scope": "Natural resource/lifecycle diagnostic under explicitly permitted concurrent machine load",
+      "exclusive_cpu_reserved": false,
+      "fps_acceptance": false,
+      "external_cpu_pressure": "Not independently sampled; other-agent/project work may run under Root authorization",
+      "measurement_runner_unchanged_sha256": "f271e415f5a24d5aadc613af1e6abd6fa8a04bdacdd9753994e26aab2d56d7cd",
+      "game_source_sha256": "fe919c41c04383fedb494f7a0afd83cdd6a599a62504ddc3e4d90b741a598ebe",
+      "selected_wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "execution_session": 10955,
+      "browser_closed": true,
+      "comparison_scope": "Combined isolated Game scalar-query change plus SDK10; no engine-only same-Game comparison with SDK9/726",
+      "natural_gc": true,
+      "forced_gc": false,
+      "profiling": false
+    },
+    "runner_sha256": "f271e415f5a24d5aadc613af1e6abd6fa8a04bdacdd9753994e26aab2d56d7cd",
+    "native_toggles": 44,
+    "limitations": [
+      "Natural GC only; no force-GC, profiling, extra Core commands, renderer calls or fake clocks.",
+      "Native input transitions await observable inventory/world state and actual official completed snapshot frame before the next toggle. This is synchronous submission evidence, not OS display acknowledgement.",
+      "Every fifth closed cycle and a 10-second one-Hz tail read cached official resource reports, actual available WASM buffer capacity and page CDP metrics. Cached resource publications can lag; missing counters remain unavailable.",
+      "Page JS heap and DOM listener counts omit worker isolates and do not measure Luau live bytes or GPU-driver allocations.",
+      "Twenty cycles and a short heap low-water tail cannot prove leak-free or unbounded-growth absence. Higher endpoints/capacity or pending natural garbage alone are not leaks."
+    ],
+    "final": {
+      "frame": 2716,
+      "time_seconds": 45.266666666666666,
+      "screen": "world",
+      "ui_window": {
+        "available": true,
+        "value": "none"
+      },
+      "window_blocks_scene_input": {
+        "available": true,
+        "value": false
+      },
+      "logical_retained_registry": {
+        "available": true,
+        "entries": 3,
+        "declared_quads": 623
+      },
+      "authored_budget": {
+        "available": true,
+        "value": 760
+      },
+      "authored_cost": {
+        "available": true,
+        "value": 683
+      }
+    },
+    "initial": {
+      "frame": 240,
+      "time_seconds": 4,
+      "screen": "world",
+      "ui_window": {
+        "available": true,
+        "value": "none"
+      },
+      "window_blocks_scene_input": {
+        "available": true,
+        "value": false
+      },
+      "logical_retained_registry": {
+        "available": true,
+        "entries": 3,
+        "declared_quads": 623
+      },
+      "authored_budget": {
+        "available": true,
+        "value": 760
+      },
+      "authored_cost": {
+        "available": true,
+        "value": 679
+      }
+    },
+    "resource_summary": {
+      "owners": {
+        "textures": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 37,
+            "last": 38,
+            "min": 25,
+            "max": 38
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 38,
+            "last": 38,
+            "min": 38,
+            "max": 38
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "shader_materials": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_geometries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 5
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_materials": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 1,
+            "last": 1,
+            "min": 1,
+            "max": 1
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_meshes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 5
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 4,
+            "last": 4,
+            "min": 4,
+            "max": 4
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "ui_image_batches.live_textures": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 18,
+            "last": 19,
+            "min": 6,
+            "max": 19
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 19,
+            "last": 19,
+            "min": 19,
+            "max": 19
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": false,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "texture_cache.entries": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 14,
+            "last": 14,
+            "min": 14,
+            "max": 14
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Cached owner/cache count; stability is bounded evidence only"
+        },
+        "texture_cache.decoded_texture_bytes_estimate": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 28627248,
+            "last": 28627248,
+            "min": 28627248,
+            "max": 28627248
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "ui_image_batches.buffer_capacity_quads": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 960,
+            "last": 960,
+            "min": 920,
+            "max": 960
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 960,
+            "last": 960,
+            "min": 960,
+            "max": 960
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "backend.direct_wasm_linear_bytes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        },
+        "backend.wasm_linear_bytes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 29097984,
+            "last": 29097984,
+            "min": 29097984,
+            "max": 29097984
+          },
+          "strictly_increasing_closed_checkpoints": false,
+          "tail_last_three_stable": true,
+          "tail_final_at_or_below_warm_world_baseline": true,
+          "semantics": "Reserved/cache capacity, not live-byte reachability"
+        }
+      },
+      "logical_retained_registry": {
+        "entries": {
+          "available": true,
+          "samples": 5,
+          "first": 3,
+          "last": 3,
+          "min": 3,
+          "max": 3
+        },
+        "declared_quads": {
+          "available": true,
+          "samples": 5,
+          "first": 623,
+          "last": 623,
+          "min": 623,
+          "max": 623
+        }
+      },
+      "dom": {
+        "Nodes": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 76,
+            "last": 77,
+            "min": 76,
+            "max": 94
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 77,
+            "last": 77,
+            "min": 77,
+            "max": 77
+          }
+        },
+        "JSEventListeners": {
+          "closed_checkpoints": {
+            "available": true,
+            "samples": 5,
+            "first": 132,
+            "last": 134,
+            "min": 132,
+            "max": 168
+          },
+          "tail": {
+            "available": true,
+            "samples": 10,
+            "first": 134,
+            "last": 134,
+            "min": 134,
+            "max": 134
+          }
+        }
+      },
+      "unavailable_owner_metrics": [],
+      "renderer_scene_container_count": {
+        "available": false,
+        "reason": "No dedicated cached official counter is exposed; DOM Nodes is recorded separately"
+      },
+      "renderer_listener_owner_count": {
+        "available": false,
+        "reason": "No dedicated cached official owner counter; CDP JSEventListeners is page-wide and not renderer ownership"
+      },
+      "interpretation": "Strictly rising closed checkpoints or a higher settled tail are follow-up signals, never an automatic leak verdict. Capacity/cache growth and GC-delayed objects are not interchangeable with live leaks."
+    },
+    "cycles": 20,
+    "heap": {
+      "availability": "observed",
+      "n": 15,
+      "first": 28251928,
+      "last": 14167400,
+      "delta": -14084528,
+      "min": 14167400,
+      "max": 39938276,
+      "median": 25243440,
+      "p95": 39938276,
+      "slope_units_per_s": -91432.90898306861,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 14167400,
+        "max": 39938276,
+        "median": 24764676,
+        "p95": 39938276,
+        "slope_units_per_s": -844090.8807777101
+      }
+    },
+    "samples": 15,
+    "context_loss": {
+      "executed": false,
+      "reason": "The pinned native scenario harness has no context-loss primitive; this probe adds no renderer API. Existing independent official context recovery evidence remains separate."
+    },
+    "errors": [],
+    "follow_up_signals": [
+      "Final cached world texture owners +1, DOM nodes +1 and page listeners +2 versus warm-world baseline; all10tail rows stable, but not a return-to-exact-baseline or leak-free verdict.",
+      "Resource report is cached; transient closed checkpoints can still describe previous inventory presentation."
+    ],
+    "heap_capacity": {
+      "availability": "observed",
+      "n": 15,
+      "first": 48312320,
+      "last": 81342464,
+      "delta": 33030144,
+      "min": 48312320,
+      "max": 89468928,
+      "median": 82915328,
+      "p95": 89468928,
+      "slope_units_per_s": 377166.86956459493,
+      "tail_last_10s": {
+        "n": 10,
+        "min": 81342464,
+        "max": 83177472,
+        "median": 82653184,
+        "p95": 83177472,
+        "slope_units_per_s": -163572.64375667815
+      }
+    }
+  },
+  "interpretation": [
+    "The3619strictcheckpoints establish complete world/save bytes and authoritative Core digest equality for the fixed named fixture/seed42/input/viewport; they are not renderer or broad gameplay acceptance.",
+    "The pair isolates the Game scalar-query change within the sameSampler9 runtime. Final browser/memory scope combines that Game change and SDK10; strict same-Game SDK9-to-SDK10 comparator deliberately rejects726 versusfe919.",
+    "Canonical MinorGC/MajorGC name durations and grouped Minor/Major/Incremental trace phases are not guaranteed whole collector cycles or OS stop-the-world pauses. Natural V8 GC remains observed.",
+    "No Luau live/reachable heap, worker isolate total or GPU-driver leak verdict follows from these CDP traces. Sampled current Luau allocated bytes in the separate diagnostic include dead-not-collected data and table capacity.",
+    "WASM capacity and cached owner counts remain bounded in these windows; final+1texture/+1DOM/+2listeners are retained follow-up signals, not exact return-to-baseline or leak-free proof.",
+    "Raw traces/full Game worlds remain cache-only. This compact record does not assert SDK11 source/runtime validation or performance."
+  ]
+}
