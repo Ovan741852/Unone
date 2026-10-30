@@ -823,14 +823,19 @@ export type HostTimeApi = {
 }
 
 -- Immutable bytes are ordinary buffers made read-only: read them with
--- buffer.read* at full speed and pass a span as (buffer, offset, length).
--- Every write to a frozen buffer fails, through any reference to it.
+-- buffer.read*. A span is itself a frozen buffer with independent logical bounds.
+-- Writes through any guest alias or supported safe host buffer writer fail.
 export type BytesApi = {
     -- Make the buffer read-only in place, for good; returns it.
     freeze: (data: buffer) -> buffer,
     isFrozen: (data: buffer) -> boolean,
     -- A frozen copy of a range; a whole frozen buffer is returned as is.
     snapshot: (data: buffer, offset: number?, length: number?) -> buffer,
+    -- Zero-copy bounded view; data must already be frozen. Pins the whole backing.
+    span: (data: buffer, offset: number, length: number) -> buffer,
+    -- Direct content comparisons; no temporary payload/string/view or positive memo.
+    equals: (left: buffer, right: buffer) -> boolean,
+    equalsRange: (left: buffer, leftOffset: number, right: buffer, rightOffset: number, length: number) -> boolean,
 }
 
 -- Data assets are manifest entries of kind "data". encoding.decoder names the

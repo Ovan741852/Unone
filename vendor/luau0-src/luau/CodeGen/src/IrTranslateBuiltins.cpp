@@ -985,6 +985,7 @@ static void translateBufferArgsAndCheckBounds(
     IrOp arg3,
     int size,
     int pcpos,
+    IrOp fallback,
     IrOp& buf,
     IrOp& intIndex
 )
@@ -999,6 +1000,13 @@ static void translateBufferArgsAndCheckBounds(
 
     IrOp numIndex = builtinLoadDouble(build, args);
     intIndex = build.inst(IrCmd::NUM_TO_INT, numIndex);
+    IrOp exactInteger = build.block(IrBlockKind::Internal);
+    IrOp roundtrip = build.inst(IrCmd::INT_TO_NUM, intIndex);
+    // NotEqual includes unordered comparisons on both targets, rejecting NaN.
+    // NUM_TO_INT uses defined machine conversion; constant folding separately
+    // range-checks its C++ cast in IrUtils.cpp.
+    build.inst(IrCmd::JUMP_CMP_NUM, numIndex, roundtrip, build.cond(IrCondition::NotEqual), fallback, exactInteger);
+    build.beginBlock(exactInteger);
 
     if (FFlag::LuauCodegenBufferRangeMerge3)
         build.inst(IrCmd::CHECK_BUFFER_LEN, buf, intIndex, build.constInt(0), build.constInt(size), build.undef(), build.vmExit(pcpos));
@@ -1014,6 +1022,7 @@ static BuiltinImplResult translateBuiltinBufferRead(
     IrOp args,
     IrOp arg3,
     int nresults,
+    IrOp fallback,
     int pcpos,
     IrCmd readCmd,
     int size,
@@ -1024,13 +1033,13 @@ static BuiltinImplResult translateBuiltinBufferRead(
         return {BuiltinImplType::None, -1};
 
     IrOp buf, intIndex;
-    translateBufferArgsAndCheckBounds(build, nparams, arg, args, arg3, size, pcpos, buf, intIndex);
+    translateBufferArgsAndCheckBounds(build, nparams, arg, args, arg3, size, pcpos, fallback, buf, intIndex);
 
     IrOp result = build.inst(readCmd, buf, intIndex);
     build.inst(IrCmd::STORE_DOUBLE, build.vmReg(ra), convCmd == IrCmd::NOP ? result : build.inst(convCmd, result));
     build.inst(IrCmd::STORE_TAG, build.vmReg(ra), build.constTag(LUA_TNUMBER));
 
-    return {BuiltinImplType::Full, 1};
+    return {BuiltinImplType::UsesFallback, 1};
 }
 
 static BuiltinImplResult translateBuiltinBufferWrite(
@@ -1047,19 +1056,8 @@ static BuiltinImplResult translateBuiltinBufferWrite(
     IrCmd convCmd
 )
 {
-    // UNONE: a readonly buffer is rejected by the luauF_write* fastcall, so a
-    // write is never inlined; reads stay inline. nparams is never negative: the
-    // inline path below stays compiled to keep upstream merges small.
-    if (nparams >= 0)
-        return {BuiltinImplType::None, -1};
-
-    IrOp buf, intIndex;
-    translateBufferArgsAndCheckBounds(build, nparams, arg, args, arg3, size, pcpos, buf, intIndex);
-
-    IrOp numValue = builtinLoadDouble(build, arg3);
-    build.inst(writeCmd, buf, intIndex, convCmd == IrCmd::NOP ? numValue : build.inst(convCmd, numValue));
-
-    return {BuiltinImplType::Full, 0};
+    // Readonly and range checks remain in the checked VM fastcall/C path.
+    return {BuiltinImplType::None, -1};
 }
 
 static BuiltinImplResult translateBuiltinVectorMagnitude(
@@ -1487,29 +1485,29 @@ BuiltinImplResult translateBuiltin(
     case LBF_BIT32_BYTESWAP:
         return translateBuiltinBit32Unary(build, IrCmd::BYTESWAP_UINT, nparams, ra, arg, args, nresults, pcpos);
     case LBF_BUFFER_READI8:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI8, 1, IrCmd::INT_TO_NUM);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI8, 1, IrCmd::INT_TO_NUM);
     case LBF_BUFFER_READU8:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READU8, 1, IrCmd::INT_TO_NUM);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READU8, 1, IrCmd::INT_TO_NUM);
     case LBF_BUFFER_WRITEU8:
         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEI8, 1, IrCmd::NUM_TO_UINT);
     case LBF_BUFFER_READI16:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI16, 2, IrCmd::INT_TO_NUM);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI16, 2, IrCmd::INT_TO_NUM);
     case LBF_BUFFER_READU16:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READU16, 2, IrCmd::INT_TO_NUM);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READU16, 2, IrCmd::INT_TO_NUM);
     case LBF_BUFFER_WRITEU16:
         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEI16, 2, IrCmd::NUM_TO_UINT);
     case LBF_BUFFER_READI32:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::INT_TO_NUM);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::INT_TO_NUM);
     case LBF_BUFFER_READU32:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::UINT_TO_NUM);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READI32, 4, IrCmd::UINT_TO_NUM);
     case LBF_BUFFER_WRITEU32:
         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEI32, 4, IrCmd::NUM_TO_UINT);
     case LBF_BUFFER_READF32:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READF32, 4, IrCmd::FLOAT_TO_NUM);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READF32, 4, IrCmd::FLOAT_TO_NUM);
     case LBF_BUFFER_WRITEF32:
         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEF32, 4, IrCmd::NUM_TO_FLOAT);
     case LBF_BUFFER_READF64:
-        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_READF64, 8, IrCmd::NOP);
+        return translateBuiltinBufferRead(build, nparams, ra, arg, args, arg3, nresults, fallback, pcpos, IrCmd::BUFFER_READF64, 8, IrCmd::NOP);
     case LBF_BUFFER_WRITEF64:
         return translateBuiltinBufferWrite(build, nparams, ra, arg, args, arg3, nresults, pcpos, IrCmd::BUFFER_WRITEF64, 8, IrCmd::NOP);
     case LBF_VECTOR_MAGNITUDE:

@@ -1348,6 +1348,15 @@ static int luauF_byteswap(lua_State* L, StkId res, TValue* arg0, int nresults, S
 // because offset is limited to an integer, a single 64bit comparison can be used and will not overflow
 #define checkoutofbounds(offset, len, accessize) (uint64_t(unsigned(offset)) + (accessize - 1) >= uint64_t(len))
 
+static bool checkedbufferoffset(double value, unsigned length, int& offset)
+{
+    // Ordered bounds reject NaN/infinities before the C++ integer cast.
+    if (!(value >= 0 && value <= length))
+        return false;
+    offset = int(value);
+    return double(offset) == value;
+}
+
 template<typename T>
 static int luauF_readinteger(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
 {
@@ -1355,7 +1364,8 @@ static int luauF_readinteger(lua_State* L, StkId res, TValue* arg0, int nresults
     if (nparams >= 2 && nresults <= 1 && ttisbuffer(arg0) && ttisnumber(args))
     {
         int offset;
-        luai_num2int(offset, nvalue(args));
+        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
+            return -1;
         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
             return -1;
 
@@ -1376,7 +1386,8 @@ static int luauF_writeinteger(lua_State* L, StkId res, TValue* arg0, int nresult
     if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && !bufvalue(arg0)->readonly && ttisnumber(args) && ttisnumber(args + 1))
     {
         int offset;
-        luai_num2int(offset, nvalue(args));
+        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
+            return -1;
         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
             return -1;
 
@@ -1400,7 +1411,8 @@ static int luauF_readfp(lua_State* L, StkId res, TValue* arg0, int nresults, Stk
     if (nparams >= 2 && nresults <= 1 && ttisbuffer(arg0) && ttisnumber(args))
     {
         int offset;
-        luai_num2int(offset, nvalue(args));
+        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
+            return -1;
         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
             return -1;
 
@@ -1426,7 +1438,8 @@ static int luauF_writefp(lua_State* L, StkId res, TValue* arg0, int nresults, St
     if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && !bufvalue(arg0)->readonly && ttisnumber(args) && ttisnumber(args + 1))
     {
         int offset;
-        luai_num2int(offset, nvalue(args));
+        if (!checkedbufferoffset(nvalue(args), bufvalue(arg0)->len, offset))
+            return -1;
         if (checkoutofbounds(offset, bufvalue(arg0)->len, sizeof(T)))
             return -1;
 

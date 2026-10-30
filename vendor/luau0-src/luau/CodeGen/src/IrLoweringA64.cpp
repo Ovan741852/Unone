@@ -3649,14 +3649,21 @@ AddressA64 IrLoweringA64::tempAddr(IrOp op, int offset, RegisterA64 tempStorage)
 AddressA64 IrLoweringA64::tempAddrBuffer(IrOp bufferOp, IrOp indexOp, uint8_t tag)
 {
     CODEGEN_ASSERT(tag == LUA_TUSERDATA || tag == LUA_TBUFFER);
-    int dataOffset = tag == LUA_TBUFFER ? offsetof(Buffer, data) : offsetof(Udata, data);
+    int dataOffset = tag == LUA_TBUFFER ? 0 : offsetof(Udata, data);
+    RegisterA64 base = regOp(bufferOp);
+    if (tag == LUA_TBUFFER)
+    {
+        RegisterA64 data = regs.allocTemp(KindA64::x);
+        build.ldr(data, mem(base, offsetof(Buffer, data)));
+        base = data;
+    }
 
     if (indexOp.kind == IrOpKind::Inst)
     {
         CODEGEN_ASSERT(!producesDirtyHighRegisterBits(function.instOp(indexOp).cmd));
 
         RegisterA64 temp = regs.allocTemp(KindA64::x);
-        build.add(temp, regOp(bufferOp), regOp(indexOp)); // implicit uxtw
+        build.add(temp, base, regOp(indexOp)); // implicit uxtw
         return mem(temp, dataOffset);
     }
     else if (indexOp.kind == IrOpKind::Constant)
@@ -3664,14 +3671,14 @@ AddressA64 IrLoweringA64::tempAddrBuffer(IrOp bufferOp, IrOp indexOp, uint8_t ta
         // Since the resulting address may be used to load any size, including 1 byte, from an unaligned offset, we are limited by unscaled
         // encoding
         if (unsigned(intOp(indexOp)) + dataOffset <= 255)
-            return mem(regOp(bufferOp), int(intOp(indexOp) + dataOffset));
+            return mem(base, int(intOp(indexOp) + dataOffset));
 
         // indexOp can only be negative in dead code (since offsets are checked); this avoids assertion in emitAddOffset
         if (intOp(indexOp) < 0)
-            return mem(regOp(bufferOp), dataOffset);
+            return mem(base, dataOffset);
 
         RegisterA64 temp = regs.allocTemp(KindA64::x);
-        emitAddOffset(build, temp, regOp(bufferOp), size_t(intOp(indexOp)));
+        emitAddOffset(build, temp, base, size_t(intOp(indexOp)));
         return mem(temp, dataOffset);
     }
     else

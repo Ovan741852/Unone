@@ -1,0 +1,17 @@
+{
+  "name": "mlua",
+  "version": "0.11.6",
+  "license": "MIT",
+  "upstream_git_revision": "e7fa8d75bb3947648605562694d03c1ce4c82b20",
+  "crates_io_checksum": "ccd36acfa49ce6ee56d1307a061dd302c564eee757e6e4cd67eb4f7204846fab",
+  "source_scope": "Exact locally cached0.11.6 source including registry metadata; no dependency upgrades.",
+  "upstream_files": 173,
+  "upstream_bytes": 1253322,
+  "upstream_inventory_sha256": "010ab50f0f083af6f7fa885e889c574ef054a35081c43cced1f3bc879ac7092b",
+  "changed_upstream_files": [
+    "src/buffer.rs",
+    "tests/buffer.rs"
+  ],
+  "patch_sha256": "939e280faeb812e6af3e9a286c3351cfdcf5131dbe1ff4bf32d486b291517899",
+  "tests": "Source prepared only. Initial normal Cargo regression compiled but execution was blocked by4551; no observed RED/GREEN is inferred."
+}

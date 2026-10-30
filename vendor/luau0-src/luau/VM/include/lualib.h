@@ -136,6 +136,9 @@ LUALIB_API int luaopen_buffer(lua_State* L);
 LUALIB_API int unone_buffer_freeze(lua_State* L);
 LUALIB_API int unone_buffer_isfrozen(lua_State* L);
 LUALIB_API int unone_buffer_snapshot(lua_State* L);
+LUALIB_API int unone_buffer_span(lua_State* L);
+LUALIB_API int unone_buffer_equals(lua_State* L);
+LUALIB_API int unone_buffer_equalsrange(lua_State* L);
 
 #define LUA_UTF8LIBNAME "utf8"
 LUALIB_API int luaopen_utf8(lua_State* L);

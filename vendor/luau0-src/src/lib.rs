@@ -109,6 +109,10 @@ impl Build {
         let build_dir = out_dir.join("luau-build");
 
         let source_base_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+        // cc metadata is disabled below, so explicitly watch the entire C++
+        // source/header tree. Cargo tracks directory contents recursively;
+        // otherwise an edited VM can silently reuse an older native archive.
+        println!("cargo:rerun-if-changed={}", source_base_dir.join("luau").display());
         let common_include_dir = source_base_dir.join("luau").join("Common").join("include");
         let vm_source_dir = source_base_dir.join("luau").join("VM").join("src");
         let vm_include_dir = source_base_dir.join("luau").join("VM").join("include");
@@ -137,7 +141,7 @@ impl Build {
         config.define("LUA_VECTOR_SIZE", &*self.vector_size.to_string());
         config.define("LUA_API", "extern \"C\"");
         // Unone read-only buffer patch revision (see UNONE.md).
-        config.define("UNONE_READONLY_BUFFERS", "1");
+        config.define("UNONE_READONLY_BUFFERS", "2");
 
         if self.use_longjmp {
             config.define("LUA_USE_LONGJMP", "1");

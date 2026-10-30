@@ -57,6 +57,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
     regs.currInstIdx = index;
 
     valueTracker.beforeInstLowering(inst);
+    ScopedRegX64 bufferData{regs};
 
     switch (inst.cmd)
     {
@@ -2808,7 +2809,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             byte[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
             )]
         );
         break;
@@ -2821,7 +2822,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             byte[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
             )]
         );
         break;
@@ -2834,7 +2835,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             byte[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
             )],
             value
         );
@@ -2849,7 +2850,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             word[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
             )]
         );
         break;
@@ -2862,7 +2863,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             word[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
             )]
         );
         break;
@@ -2875,7 +2876,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             word[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
             )],
             value
         );
@@ -2890,7 +2891,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             dword[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
             )]
         );
         break;
@@ -2903,7 +2904,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             dword[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
             )],
             value
         );
@@ -2918,7 +2919,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             dword[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
             )]
         );
         break;
@@ -2928,7 +2929,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             dword[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
             )],
             OP_C(inst)
         );
@@ -2942,7 +2943,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
             qword[bufferAddrOp(
                 OP_A(inst),
                 OP_B(inst),
-                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst))
+                (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_C(inst) : OP_C(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_C(inst)), bufferData
             )]
         );
         break;
@@ -2956,7 +2957,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
                 qword[bufferAddrOp(
                     OP_A(inst),
                     OP_B(inst),
-                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
+                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
                 )],
                 tmp.reg
             );
@@ -2967,7 +2968,7 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
                 qword[bufferAddrOp(
                     OP_A(inst),
                     OP_B(inst),
-                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst))
+                    (FFlag::LuauCodegenOpReadOnly ? !HAS_OP_D(inst) : OP_D(inst).kind == IrOpKind::None) ? LUA_TBUFFER : tagOp(OP_D(inst)), bufferData
                 )],
                 regOp(OP_C(inst))
             );
@@ -2985,6 +2986,8 @@ void IrLoweringX64::lowerInst(IrInst& inst, uint32_t index, const IrBlock& next)
         break;
     }
 
+    if (bufferData.reg != noreg)
+        bufferData.free();
     valueTracker.afterInstLowering(inst, index);
 
     regs.currInstIdx = kInvalidInstIdx;
@@ -3293,20 +3296,29 @@ RegisterX64 IrLoweringX64::regOp(IrOp op)
     return inst.regX64;
 }
 
-OperandX64 IrLoweringX64::bufferAddrOp(IrOp bufferOp, IrOp indexOp, uint8_t tag)
+OperandX64 IrLoweringX64::bufferAddrOp(IrOp bufferOp, IrOp indexOp, uint8_t tag, ScopedRegX64& data)
 {
     CODEGEN_ASSERT(tag == LUA_TUSERDATA || tag == LUA_TBUFFER);
-    int dataOffset = tag == LUA_TBUFFER ? offsetof(Buffer, data) : offsetof(Udata, data);
+    int dataOffset = tag == LUA_TBUFFER ? 0 : offsetof(Udata, data);
+    RegisterX64 base;
+    if (tag == LUA_TBUFFER)
+    {
+        data.alloc(SizeX64::qword);
+        build.mov(data.reg, qword[regOp(bufferOp) + offsetof(Buffer, data)]);
+        base = data.reg;
+    }
+    else
+        base = regOp(bufferOp);
 
     if (indexOp.kind == IrOpKind::Inst)
     {
         CODEGEN_ASSERT(!producesDirtyHighRegisterBits(function.instOp(indexOp).cmd)); // Ensure that high register bits are cleared
 
-        return regOp(bufferOp) + qwordReg(regOp(indexOp)) + dataOffset;
+        return base + qwordReg(regOp(indexOp)) + dataOffset;
     }
     else if (indexOp.kind == IrOpKind::Constant)
     {
-        return regOp(bufferOp) + intOp(indexOp) + dataOffset;
+        return base + intOp(indexOp) + dataOffset;
     }
 
     CODEGEN_ASSERT(!"Unsupported instruction form");

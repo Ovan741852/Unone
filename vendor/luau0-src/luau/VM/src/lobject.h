@@ -274,13 +274,16 @@ typedef struct LuauBuffer
 {
     CommonHeader;
 
-    // UNONE: set once by lua_setreadonly and never cleared by the engine. It
-    // occupies the header padding, so the layout and data offset are unchanged.
+    // UNONE: readonly applies to every alias; views can only refer to readonly roots.
     uint8_t readonly;
 
     unsigned int len;
 
-    alignas(8) char data[1];
+    // Both roots and views expose their logical payload through this pointer.
+    // A view owns a strong GC reference directly to the ultimate root.
+    char* data;
+    struct LuauBuffer* owner;
+    alignas(8) char inlineData[1];
 } Buffer;
 
 /*

@@ -1,0 +1,105 @@
+diff --git a/src/buffer.rs b/src/buffer.rs
+index f0977cc..d3cc5ad 100644
+--- a/src/buffer.rs
++++ b/src/buffer.rs
+@@ -47,20 +47,29 @@ impl Buffer {
+     }
+ 
+     /// Writes given bytes to the buffer at the given offset.
+     ///
+-    /// Offset is 0-based.
++    /// Offset is 0-based. Returns an error for a read-only buffer or an
++    /// out-of-bounds range, without modifying any bytes.
+     #[track_caller]
+-    pub fn write_bytes(&self, offset: usize, bytes: &[u8]) {
++    pub fn write_bytes(&self, offset: usize, bytes: &[u8]) -> crate::Result<()> {
+         let lua = self.0.lua.lock();
+-        let data = self.as_slice_mut(&lua);
+-        data[offset..offset + bytes.len()].copy_from_slice(bytes);
++        let data = self.as_slice_mut(&lua)?;
++        let end = offset.checked_add(bytes.len()).ok_or_else(|| {
++            crate::Error::RuntimeError("buffer write range out of bounds".into())
++        })?;
++        let target = data.get_mut(offset..end).ok_or_else(|| {
++            crate::Error::RuntimeError("buffer write range out of bounds".into())
++        })?;
++        target.copy_from_slice(bytes);
++        Ok(())
+     }
+ 
+     /// Returns an adaptor implementing [`io::Read`], [`io::Write`] and [`io::Seek`] over the
+     /// buffer.
+     ///
+-    /// Buffer operations are infallible, none of the read/write functions will return a Err.
++    /// Reading a frozen buffer remains valid. Writing one returns
++    /// [`io::ErrorKind::PermissionDenied`] before obtaining a mutable slice.
+     pub fn cursor(self) -> impl io::Read + io::Write + io::Seek {
+         BufferCursor(self, 0)
+     }
+ 
+@@ -71,12 +80,20 @@ impl Buffer {
+         }
+     }
+ 
+     #[allow(clippy::mut_from_ref)]
+-    fn as_slice_mut(&self, lua: &RawLua) -> &mut [u8] {
++    fn as_slice_mut(&self, lua: &RawLua) -> crate::Result<&mut [u8]> {
++        // The VM flag applies to every alias, including safe Rust handles.
++        // Check under the same Lua lock before creating any mutable reference.
++        #[cfg(feature = "luau")]
++        if unsafe { ffi::lua_getreadonly(lua.ref_thread(), self.0.index) } != 0 {
++            return Err(crate::Error::RuntimeError(
++                "attempt to modify a readonly buffer".into(),
++            ));
++        }
+         unsafe {
+             let (buf, size) = self.as_raw_parts(lua);
+-            std::slice::from_raw_parts_mut(buf, size)
++            Ok(std::slice::from_raw_parts_mut(buf, size))
+         }
+     }
+ 
+     #[cfg(feature = "luau")]
+@@ -111,9 +128,10 @@ impl io::Read for BufferCursor {
+ 
+ impl io::Write for BufferCursor {
+     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+         let lua = self.0 .0.lua.lock();
+-        let data = self.0.as_slice_mut(&lua);
++        let data = self.0.as_slice_mut(&lua)
++            .map_err(|error| io::Error::new(io::ErrorKind::PermissionDenied, error.to_string()))?;
+         if self.1 == data.len() {
+             return Ok(0);
+         }
+         let len = buf.len().min(data.len() - self.1);
+diff --git a/tests/buffer.rs b/tests/buffer.rs
+index 3f07569..ddfda1c 100644
+--- a/tests/buffer.rs
++++ b/tests/buffer.rs
+@@ -31,9 +31,9 @@ fn test_buffer() -> Result<()> {
+     // Check buffer methods
+     assert_eq!(buf1.len(), 5);
+     assert_eq!(buf1.to_vec(), b"hello");
+     assert_eq!(buf1.read_bytes::<3>(1), [b'e', b'l', b'l']);
+-    buf1.write_bytes(1, b"i");
++    buf1.write_bytes(1, b"i")?;
+     assert_eq!(buf1.to_vec(), b"hillo");
+ 
+     let buf3 = lua.create_buffer(b"")?;
+     assert!(buf3.is_empty());
+@@ -50,13 +50,13 @@ fn test_buffer_out_of_bounds_read() {
+     _ = buf.read_bytes::<1>(13);
+ }
+ 
+ #[test]
+-#[should_panic(expected = "out of range for slice of length 13")]
+ fn test_buffer_out_of_bounds_write() {
+     let lua = Lua::new();
+     let buf = lua.create_buffer(b"hello, world!").unwrap();
+-    buf.write_bytes(14, b"!!");
++    assert!(buf.write_bytes(14, b"!!").is_err());
++    assert_eq!(buf.to_vec(), b"hello, world!");
+ }
+ 
+ #[test]
+ fn create_large_buffer() {

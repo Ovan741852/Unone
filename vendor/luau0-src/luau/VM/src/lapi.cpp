@@ -12,6 +12,7 @@
 #include "lvm.h"
 #include "lnumutils.h"
 #include "lbuffer.h"
+#include "Luau/Bytecode.h"
 
 #include <string.h>
 
@@ -818,6 +819,8 @@ void lua_setreadonly(lua_State* L, int objindex, int enabled)
     const TValue* o = index2addr(L, objindex);
     if (ttisbuffer(o))
     {
+        if (!enabled && bufvalue(o)->readonly)
+            luaG_runerror(L, "attempt to unfreeze a readonly buffer");
         bufvalue(o)->readonly = bool(enabled);
         return;
     }
@@ -1432,6 +1435,31 @@ void* lua_newbuffer(lua_State* L, size_t sz)
     setbufvalue(L, L->top, b);
     api_incr_top(L);
     return b->data;
+}
+
+void* lua_newbufferview(lua_State* L, int idx, size_t offset, size_t sz)
+{
+    const TValue* value = index2addr(L, idx);
+    api_check(L, ttisbuffer(value));
+    Buffer* source = bufvalue(value);
+    api_check(L, source->readonly && offset <= source->len && sz <= source->len - offset);
+    luaC_checkGC(L);
+    luaC_threadbarrier(L);
+    Buffer* b = luaB_newbufferview(L, source, offset, sz);
+    setbufvalue(L, L->top, b);
+    api_incr_top(L);
+    return b->data;
+}
+
+// Private host-test probe. No Lua binding, pointer result or WASM ABI export.
+extern "C" int unone_bytes_nativecompiled(lua_State* L, int idx)
+{
+    const TValue* value = index2addr(L, idx);
+    if (!isLfunction(value))
+        return 0;
+    const Proto* proto = clvalue(value)->l.p;
+    return proto->execdata && proto->exectarget && proto->codeentry && proto->codeentry != proto->code &&
+        LUAU_INSN_OP(*proto->codeentry) == LOP_NATIVECALL;
 }
 
 static const char* aux_upvalue(StkId fi, int n, TValue** val)

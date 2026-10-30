@@ -8,7 +8,7 @@ members = [
     "crates/unone-mobile-android-smoke",
 ]
 resolver = "2"
-exclude = ["crates/unone-player", "crates/unone-native-player"]
+exclude = ["crates/unone-player", "crates/unone-native-player", "vendor/mlua", "vendor/luau0-src"]
 
 [workspace.package]
 edition = "2024"
@@ -18,3 +18,4 @@ version = "0.2.0"
 # Luau with read-only buffers (api.bytes.freeze); see vendor/luau0-src/UNONE.md.
 [patch.crates-io]
 luau0-src = { path = "vendor/luau0-src" }
+mlua = { path = "vendor/mlua" }

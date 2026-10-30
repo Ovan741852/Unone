@@ -278,7 +278,10 @@ static void reallymarkobject(global_State* g, GCObject* o)
     }
     case LUA_TBUFFER:
     {
-        gray2black(o); // buffers are never gray
+        gray2black(o);
+        Buffer* owner = gco2buf(o)->owner;
+        if (owner)
+            markobject(g, owner);
         return;
     }
     case LUA_TPROTO:

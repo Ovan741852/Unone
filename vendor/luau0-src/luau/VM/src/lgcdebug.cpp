@@ -168,6 +168,14 @@ static void validateobj(global_State* g, GCObject* o)
         break;
 
     case LUA_TBUFFER:
+        if (gco2buf(o)->owner)
+        {
+            Buffer* b = gco2buf(o);
+            validateobjref(g, o, obj2gco(b->owner));
+            LUAU_ASSERT(b->readonly && b->owner->readonly && !b->owner->owner);
+            LUAU_ASSERT(b->data >= b->owner->data && size_t(b->data - b->owner->data) <= b->owner->len);
+            LUAU_ASSERT(b->len <= b->owner->len - size_t(b->data - b->owner->data));
+        }
         break;
 
     case LUA_TPROTO:
@@ -480,7 +488,13 @@ static void dumpthread(FILE* f, lua_State* th)
 
 static void dumpbuffer(FILE* f, Buffer* b)
 {
-    fprintf(f, "{\"type\":\"buffer\",\"cat\":%d,\"size\":%d}", b->memcat, int(sizebuffer(b->len)));
+    fprintf(f, "{\"type\":\"buffer\",\"cat\":%d,\"size\":%d", b->memcat, int(sizebufferobject(b)));
+    if (b->owner)
+    {
+        fprintf(f, ",\"owner\":");
+        dumpref(f, obj2gco(b->owner));
+    }
+    fprintf(f, "}");
 }
 
 static void dumpproto(FILE* f, Proto* p)
@@ -817,7 +831,9 @@ static void enumthread(EnumContext* ctx, lua_State* th)
 
 static void enumbuffer(EnumContext* ctx, Buffer* b)
 {
-    enumnode(ctx, obj2gco(b), sizebuffer(b->len), NULL);
+    enumnode(ctx, obj2gco(b), sizebufferobject(b), NULL);
+    if (b->owner)
+        enumedge(ctx, obj2gco(b), obj2gco(b->owner), "owner");
 }
 
 static void enumproto(EnumContext* ctx, Proto* p)

@@ -198,6 +198,8 @@ LUA_API void* lua_newuserdatataggedwithmetatable(lua_State* L, size_t sz, int ta
 LUA_API void* lua_newuserdatadtor(lua_State* L, size_t sz, lua_Destructor dtor);
 
 LUA_API void* lua_newbuffer(lua_State* L, size_t sz);
+// UNONE: a readonly, independently bounded view retaining its ultimate root.
+LUA_API void* lua_newbufferview(lua_State* L, int idx, size_t offset, size_t sz);
 
 /*
 ** get functions (Lua -> stack)

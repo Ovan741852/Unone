@@ -889,7 +889,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "bytes.snapshot", "bytes",
             "Copy a buffer range into a new read-only buffer, so the source can keep changing.",
             "When handing out data that its owner keeps writing, or keeping a stable copy of part of a buffer.",
-            "To make data immutable without a copy, use bytes.freeze. For a sub-range of frozen data, passing (buffer, offset, length) avoids any copy.",
+            "To make data immutable without a copy, use bytes.freeze. To share a bounded range of frozen data without copying its payload, use bytes.span.",
             vec![
                 parameter("data", "buffer", "The source buffer"),
                 parameter("offset", "number?", "Start byte; defaults to 0"),
@@ -898,9 +898,9 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "buffer: a frozen buffer with the copied bytes.",
             vec!["Allocate a new buffer unless the whole source is already frozen"],
             "A whole frozen buffer is returned as is, since nothing can change it. Later writes to a writable source do not affect the snapshot.",
-            vec!["BYTES_BUFFER_REQUIRED for a non-buffer", "BYTES_RANGE_INVALID for a negative or out-of-range offset or length"],
+            vec!["BYTES_BUFFER_REQUIRED for a non-buffer", "BYTES_ARGUMENTS_INVALID for nonfinite, fractional, coercive or extra arguments", "BYTES_RANGE_INVALID for a negative or out-of-range offset or length"],
             "local stable = api.bytes.snapshot(scratch, 0, 64)",
-            vec!["bytes.freeze", "bytes.isFrozen"],
+            vec!["bytes.freeze", "bytes.isFrozen", "bytes.span", "bytes.equalsRange"],
         ),
         descriptor(
             "hostTime.sample", "host time",
@@ -2615,6 +2615,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
     ];
     result.extend(ui_component_descriptors());
+    result.extend(byte_view_descriptors());
     result.extend(heightfield_descriptors());
     result.extend(projected_descriptors());
     result.extend(spatial_descriptors());
@@ -2816,6 +2817,41 @@ fn projected_descriptors() -> Vec<ApiDescriptor> {
         args,result,vec!["Bounded presentation state only"],
         "Same canonical payload preserves revision; updates validate before mutation. Scene load clears presentation. Legacy set retains opaque/cutout defaults and omits default blend from canonical snapshots; explicit source_over is revision-bearing. Canvas sampling/crop/pixel equivalence requires actual GPU evidence. setFrame atomically replaces ordered draws and rebuilds caller-known encoded RGB/depth each redraw, with explicit alpha/test/RGB blend/depth/sampler. New Frame indexed W1/Z0..1 and constant triangle RGBA; no original GPU equivalence. Viewport defaults1280x720 headless and hosts report physical size.",
         vec!["PROJECTED_INVALID","PROJECTED_LIMIT","PROJECTED_MISSING","PROJECTED_BACKEND_UNSUPPORTED","PROJECTED_BLEND_UNSUPPORTED"],example,vec!["camera.setTransform"])).collect()
+}
+
+fn byte_view_descriptors() -> Vec<ApiDescriptor> {
+    vec![
+        descriptor(
+            "bytes.span", "bytes", "Create a bounded zero-copy readonly byte span over a frozen buffer (immutable bytes, 唯讀範圍).",
+            "Share a subrange of binary data with independent read bounds and a safe lifetime, without copying its payload.",
+            "A tiny span retains the whole backing. Use bytes.snapshot to detach a small copy; freeze or snapshot a mutable source first.",
+            vec![parameter("data", "buffer", "Frozen root or span"), parameter("offset", "number", "Zero-based finite nonnegative integer byte offset"), parameter("length", "number", "Finite nonnegative integer byte count within this source's logical bounds")],
+            "buffer: a frozen view whose buffer.len/read* bounds are exactly length.", vec!["Allocate a small VM-accounted view descriptor; retain the immutable backing"],
+            "No payload copy. Nested spans retain the ultimate backing directly. Parent collection does not invalidate a child. Empty end spans are valid. No explicit disposal or writable alias is exposed.",
+            vec!["BYTES_FROZEN_REQUIRED", "BYTES_BUFFER_REQUIRED", "BYTES_ARGUMENTS_INVALID", "BYTES_RANGE_INVALID"],
+            "local header = api.bytes.span(rom, 16, 32)\nlocal word = buffer.readu32(header, 0)", vec!["bytes.freeze", "bytes.snapshot", "bytes.equalsRange"],
+        ),
+        descriptor(
+            "bytes.equals", "bytes", "Compare two binary buffers or spans by their current contents without a temporary string.",
+            "Validate immutable data or compare current mutable scratch bytes without buffer.readstring conversion.",
+            "This is content equality, not identity, hashing, a positive memo or proof that mutable input will stay unchanged.",
+            vec![parameter("left", "buffer", "First buffer or span; frozen or mutable"), parameter("right", "buffer", "Second buffer or span; frozen or mutable")],
+            "boolean", vec!["No retained input, payload copy, temporary string or temporary span"],
+            "Lengths and bytes are compared on every call. Mutable inputs may produce different results after a write. No simulation state is changed.",
+            vec!["BYTES_BUFFER_REQUIRED", "BYTES_ARGUMENTS_INVALID"],
+            "assert(api.bytes.equals(header, expected))", vec!["bytes.equalsRange", "bytes.span"],
+        ),
+        descriptor(
+            "bytes.equalsRange", "bytes", "Compare two checked byte ranges directly, without copying or constructing a span.",
+            "Perform repeated binary guards or parsers' range comparisons without buffer-to-string conversion.",
+            "No cached success or caller readonly label replaces the current comparison. Freeze or snapshot data when callers need immutable ownership.",
+            vec![parameter("left", "buffer", "First buffer or span"), parameter("leftOffset", "number", "Zero-based integer offset in left"), parameter("right", "buffer", "Second buffer or span"), parameter("rightOffset", "number", "Zero-based integer offset in right"), parameter("length", "number", "Integer byte count fitting both logical ranges")],
+            "boolean", vec!["No retained input or temporary payload/view allocation"],
+            "All offsets/counts validate before comparison. Exact-end zero-length comparisons are valid. Direct comparison observes current mutable contents on each invocation.",
+            vec!["BYTES_BUFFER_REQUIRED", "BYTES_ARGUMENTS_INVALID", "BYTES_RANGE_INVALID"],
+            "assert(api.bytes.equalsRange(rom, offset, expected, 0, buffer.len(expected)))", vec!["bytes.equals", "bytes.span", "bytes.snapshot"],
+        ),
+    ]
 }
 
 fn heightfield_descriptors() -> Vec<ApiDescriptor> {

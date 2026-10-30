@@ -9,6 +9,7 @@
 #endif
 
 #include <string.h>
+#include <cmath>
 
 // while C API returns 'size_t' for binary compatibility in case of future extensions,
 // in the current implementation, length and offset are limited to 31 bits
@@ -16,6 +17,33 @@
 #define isoutofbounds(offset, len, accessize) (uint64_t(unsigned(offset)) + (accessize) > uint64_t(len))
 
 static_assert(MAX_BUFFER_SIZE <= INT_MAX, "current implementation can't handle a larger limit");
+
+// Range arguments never use Luau's coercing/truncating integer conversion.
+static uint64_t checkbufferrangeinteger(lua_State* L, int argument)
+{
+    if (lua_type(L, argument) != LUA_TNUMBER)
+        luaL_error(L, "BUFFER_RANGE_INVALID: buffer range offsets and counts must be numbers");
+    double value = lua_tonumber(L, argument);
+    if (!std::isfinite(value) || value < 0 || std::floor(value) != value || value > 9007199254740991.0)
+        luaL_error(L, "BUFFER_RANGE_INVALID: buffer range offsets and counts must be nonnegative finite safe integers");
+    return uint64_t(value);
+}
+
+static size_t checkbufferposition(lua_State* L, int argument, size_t length)
+{
+    uint64_t value = checkbufferrangeinteger(L, argument);
+    if (value > length)
+        luaL_error(L, "buffer access out of bounds");
+    return size_t(value);
+}
+
+static size_t optbuffercount(lua_State* L, int argument, size_t defaultValue, size_t available)
+{
+    uint64_t count = lua_isnoneornil(L, argument) ? defaultValue : checkbufferrangeinteger(L, argument);
+    if (count > available)
+        luaL_error(L, "buffer access out of bounds");
+    return size_t(count);
+}
 
 // UNONE: every buffer write goes through this check; a readonly buffer stays
 // immutable for every reference to it, so no writable alias can exist.
@@ -44,10 +72,7 @@ inline T buffer_swapbe(T v)
 
 static int buffer_create(lua_State* L)
 {
-    int size = luaL_checkinteger(L, 1);
-
-    luaL_argcheck(L, size >= 0, 1, "size");
-
+    size_t size = checkbufferposition(L, 1, MAX_BUFFER_SIZE);
     lua_newbuffer(L, size);
     return 1;
 }
@@ -76,7 +101,7 @@ static int buffer_readinteger(lua_State* L)
 {
     size_t len = 0;
     void* buf = luaL_checkbuffer(L, 1, &len);
-    int offset = luaL_checkinteger(L, 2);
+    size_t offset = checkbufferposition(L, 2, len);
 
     if (isoutofbounds(offset, len, sizeof(T)))
         luaL_error(L, "buffer access out of bounds");
@@ -97,7 +122,7 @@ static int buffer_writeinteger(lua_State* L)
 {
     size_t len = 0;
     void* buf = checkwritablebuffer(L, 1, &len);
-    int offset = luaL_checkinteger(L, 2);
+    size_t offset = checkbufferposition(L, 2, len);
     int value = luaL_checkunsigned(L, 3);
 
     if (isoutofbounds(offset, len, sizeof(T)))
@@ -118,7 +143,7 @@ static int buffer_readfp(lua_State* L)
 {
     size_t len = 0;
     void* buf = luaL_checkbuffer(L, 1, &len);
-    int offset = luaL_checkinteger(L, 2);
+    size_t offset = checkbufferposition(L, 2, len);
 
     if (isoutofbounds(offset, len, sizeof(T)))
         luaL_error(L, "buffer access out of bounds");
@@ -145,7 +170,7 @@ static int buffer_writefp(lua_State* L)
 {
     size_t len = 0;
     void* buf = checkwritablebuffer(L, 1, &len);
-    int offset = luaL_checkinteger(L, 2);
+    size_t offset = checkbufferposition(L, 2, len);
     double value = luaL_checknumber(L, 3);
 
     if (isoutofbounds(offset, len, sizeof(T)))
@@ -171,10 +196,8 @@ static int buffer_readstring(lua_State* L)
 {
     size_t len = 0;
     void* buf = luaL_checkbuffer(L, 1, &len);
-    int offset = luaL_checkinteger(L, 2);
-    int size = luaL_checkinteger(L, 3);
-
-    luaL_argcheck(L, size >= 0, 3, "size");
+    size_t offset = checkbufferposition(L, 2, len);
+    size_t size = checkbufferposition(L, 3, len - offset);
 
     if (isoutofbounds(offset, len, unsigned(size)))
         luaL_error(L, "buffer access out of bounds");
@@ -187,21 +210,17 @@ static int buffer_writestring(lua_State* L)
 {
     size_t len = 0;
     void* buf = checkwritablebuffer(L, 1, &len);
-    int offset = luaL_checkinteger(L, 2);
+    size_t offset = checkbufferposition(L, 2, len);
     size_t size = 0;
     const char* val = luaL_checklstring(L, 3, &size);
-    int count = luaL_optinteger(L, 4, int(size));
-
-    luaL_argcheck(L, count >= 0, 4, "count");
-
-    if (size_t(count) > size)
+    uint64_t count = lua_isnoneornil(L, 4) ? size : checkbufferrangeinteger(L, 4);
+    if (count > size)
         luaL_error(L, "string length overflow");
 
-    // string size can't exceed INT_MAX at this point
-    if (isoutofbounds(offset, len, unsigned(count)))
+    if (count > len - offset)
         luaL_error(L, "buffer access out of bounds");
 
-    memcpy((char*)buf + offset, val, count);
+    memcpy((char*)buf + offset, val, size_t(count));
     return 0;
 }
 
@@ -218,21 +237,13 @@ static int buffer_copy(lua_State* L)
 {
     size_t tlen = 0;
     void* tbuf = checkwritablebuffer(L, 1, &tlen);
-    int toffset = luaL_checkinteger(L, 2);
+    size_t toffset = checkbufferposition(L, 2, tlen);
 
     size_t slen = 0;
     void* sbuf = luaL_checkbuffer(L, 3, &slen);
-    int soffset = luaL_optinteger(L, 4, 0);
-
-    int size = luaL_optinteger(L, 5, int(slen) - soffset);
-
-    if (size < 0)
-        luaL_error(L, "buffer access out of bounds");
-
-    if (isoutofbounds(soffset, slen, unsigned(size)))
-        luaL_error(L, "buffer access out of bounds");
-
-    if (isoutofbounds(toffset, tlen, unsigned(size)))
+    size_t soffset = lua_isnoneornil(L, 4) ? 0 : checkbufferposition(L, 4, slen);
+    size_t size = optbuffercount(L, 5, slen - soffset, slen - soffset);
+    if (size > tlen - toffset)
         luaL_error(L, "buffer access out of bounds");
 
     memmove((char*)tbuf + toffset, (char*)sbuf + soffset, size);
@@ -243,15 +254,9 @@ static int buffer_fill(lua_State* L)
 {
     size_t len = 0;
     void* buf = checkwritablebuffer(L, 1, &len);
-    int offset = luaL_checkinteger(L, 2);
+    size_t offset = checkbufferposition(L, 2, len);
     unsigned value = luaL_checkunsigned(L, 3);
-    int size = luaL_optinteger(L, 4, int(len) - offset);
-
-    if (size < 0)
-        luaL_error(L, "buffer access out of bounds");
-
-    if (isoutofbounds(offset, len, unsigned(size)))
-        luaL_error(L, "buffer access out of bounds");
+    size_t size = optbuffercount(L, 4, len - offset, len - offset);
 
     memset((char*)buf + offset, value & 0xff, size);
     return 0;
@@ -261,16 +266,12 @@ static int buffer_readbits(lua_State* L)
 {
     size_t len = 0;
     void* buf = luaL_checkbuffer(L, 1, &len);
-    int64_t bitoffset = (int64_t)luaL_checknumber(L, 2);
-    int bitcount = luaL_checkinteger(L, 3);
-
-    if (bitoffset < 0)
-        luaL_error(L, "buffer access out of bounds");
-
-    if (unsigned(bitcount) > 32)
+    uint64_t bitoffset = checkbufferrangeinteger(L, 2);
+    uint64_t bitcount = checkbufferrangeinteger(L, 3);
+    if (bitcount > 32)
         luaL_error(L, "bit count is out of range of [0; 32]");
 
-    if (uint64_t(bitoffset + bitcount) > uint64_t(len) * 8)
+    if (bitoffset > uint64_t(len) * 8 || bitcount > uint64_t(len) * 8 - bitoffset)
         luaL_error(L, "buffer access out of bounds");
 
     unsigned startbyte = unsigned(bitoffset / 8);
@@ -296,17 +297,14 @@ static int buffer_writebits(lua_State* L)
 {
     size_t len = 0;
     void* buf = checkwritablebuffer(L, 1, &len);
-    int64_t bitoffset = (int64_t)luaL_checknumber(L, 2);
-    int bitcount = luaL_checkinteger(L, 3);
+    uint64_t bitoffset = checkbufferrangeinteger(L, 2);
+    uint64_t bitcount = checkbufferrangeinteger(L, 3);
     unsigned value = luaL_checkunsigned(L, 4);
 
-    if (bitoffset < 0)
-        luaL_error(L, "buffer access out of bounds");
-
-    if (unsigned(bitcount) > 32)
+    if (bitcount > 32)
         luaL_error(L, "bit count is out of range of [0; 32]");
 
-    if (uint64_t(bitoffset + bitcount) > uint64_t(len) * 8)
+    if (bitoffset > uint64_t(len) * 8 || bitcount > uint64_t(len) * 8 - bitoffset)
         luaL_error(L, "buffer access out of bounds");
 
     unsigned startbyte = unsigned(bitoffset / 8);
@@ -339,19 +337,62 @@ static int buffer_writebits(lua_State* L)
 }
 
 // UNONE: called directly by the VM, so errors never cross host frames.
-static void* checkbufferargument(lua_State* L, const char* operation, size_t* len)
+static void checkbytesarity(lua_State* L, const char* operation, int minimum, int maximum)
 {
-    void* buf = lua_tobuffer(L, 1, len);
+    int count = lua_gettop(L);
+    if (count < minimum || count > maximum)
+        luaL_error(L, "BYTES_ARGUMENTS_INVALID: api.bytes.%s expects %d..%d arguments", operation, minimum, maximum);
+}
+
+static void* checkbufferargument(lua_State* L, int argument, const char* operation, size_t* len)
+{
+    void* buf = lua_tobuffer(L, argument, len);
     if (!buf)
-        luaL_error(L, "BYTES_BUFFER_REQUIRED: api.bytes.%s expects a buffer, got %s", operation, luaL_typename(L, 1));
+        luaL_error(L, "BYTES_BUFFER_REQUIRED: api.bytes.%s expects a buffer, got %s", operation, luaL_typename(L, argument));
     return buf;
+}
+
+static uint64_t checkbytesinteger(lua_State* L, int argument, const char* operation)
+{
+    if (lua_type(L, argument) != LUA_TNUMBER)
+        luaL_error(L, "BYTES_ARGUMENTS_INVALID: api.bytes.%s offsets and lengths must be numbers", operation);
+    double value = lua_tonumber(L, argument);
+    if (!std::isfinite(value) || std::floor(value) != value || std::fabs(value) > 9007199254740991.0)
+        luaL_error(L, "BYTES_ARGUMENTS_INVALID: api.bytes.%s offsets and lengths must be finite safe integers", operation);
+    if (value < 0)
+        luaL_error(L, "BYTES_RANGE_INVALID: api.bytes.%s range is outside the buffer", operation);
+    return uint64_t(value);
+}
+
+struct ByteRange
+{
+    size_t offset;
+    size_t length;
+};
+
+static ByteRange checkbytesrange(lua_State* L, const char* operation, size_t total, uint64_t offset, uint64_t length)
+{
+    if (offset > total || length > uint64_t(total) - offset)
+        luaL_error(L, "BYTES_RANGE_INVALID: api.bytes.%s range is outside the buffer", operation);
+    return {size_t(offset), size_t(length)};
+}
+
+static ByteRange checkbytessnapshotrange(lua_State* L, size_t total)
+{
+    uint64_t offset = lua_isnoneornil(L, 2) ? 0 : checkbytesinteger(L, 2, "snapshot");
+    // Validate offset before evaluating a default length; never subtract an
+    // unchecked signed value or narrow a binary64 value to a host-sized int.
+    checkbytesrange(L, "snapshot", total, offset, 0);
+    uint64_t length = lua_isnoneornil(L, 3) ? uint64_t(total) - offset : checkbytesinteger(L, 3, "snapshot");
+    return checkbytesrange(L, "snapshot", total, offset, length);
 }
 
 // Make the buffer immutable for every reference to it, in place and in O(1).
 // Readonly is permanent: there is no operation that clears it.
 int unone_buffer_freeze(lua_State* L)
 {
-    checkbufferargument(L, "freeze", NULL);
+    checkbytesarity(L, "freeze", 1, 1);
+    checkbufferargument(L, 1, "freeze", NULL);
     lua_setreadonly(L, 1, 1);
     lua_settop(L, 1);
     return 1;
@@ -359,7 +400,8 @@ int unone_buffer_freeze(lua_State* L)
 
 int unone_buffer_isfrozen(lua_State* L)
 {
-    checkbufferargument(L, "isFrozen", NULL);
+    checkbytesarity(L, "isFrozen", 1, 1);
+    checkbufferargument(L, 1, "isFrozen", NULL);
     lua_pushboolean(L, lua_getreadonly(L, 1));
     return 1;
 }
@@ -368,15 +410,12 @@ int unone_buffer_isfrozen(lua_State* L)
 // reference to it can change it.
 int unone_buffer_snapshot(lua_State* L)
 {
+    checkbytesarity(L, "snapshot", 1, 3);
     size_t len = 0;
-    void* source = checkbufferargument(L, "snapshot", &len);
-    int offset = luaL_optinteger(L, 2, 0);
-    int size = luaL_optinteger(L, 3, int(len) - offset);
+    void* source = checkbufferargument(L, 1, "snapshot", &len);
+    ByteRange range = checkbytessnapshotrange(L, len);
 
-    if (offset < 0 || size < 0 || isoutofbounds(offset, len, unsigned(size)))
-        luaL_error(L, "BYTES_RANGE_INVALID: api.bytes.snapshot range is outside the buffer");
-
-    if (lua_getreadonly(L, 1) && offset == 0 && size_t(size) == len)
+    if (lua_getreadonly(L, 1) && range.offset == 0 && range.length == len)
     {
         lua_settop(L, 1);
         return 1;
@@ -384,9 +423,48 @@ int unone_buffer_snapshot(lua_State* L)
 
     // The source stays on the stack, so a collection here cannot free it, and
     // buffers never move.
-    void* copy = lua_newbuffer(L, size_t(size));
-    memcpy(copy, (char*)source + offset, size_t(size));
+    void* copy = lua_newbuffer(L, range.length);
+    memcpy(copy, (char*)source + range.offset, range.length);
     lua_setreadonly(L, -1, 1);
+    return 1;
+}
+
+int unone_buffer_span(lua_State* L)
+{
+    checkbytesarity(L, "span", 3, 3);
+    size_t len = 0;
+    checkbufferargument(L, 1, "span", &len);
+    if (!lua_getreadonly(L, 1))
+        luaL_error(L, "BYTES_FROZEN_REQUIRED: api.bytes.span requires a frozen buffer");
+    uint64_t offset = checkbytesinteger(L, 2, "span");
+    uint64_t length = checkbytesinteger(L, 3, "span");
+    ByteRange range = checkbytesrange(L, "span", len, offset, length);
+    lua_newbufferview(L, 1, range.offset, range.length);
+    return 1;
+}
+
+int unone_buffer_equals(lua_State* L)
+{
+    checkbytesarity(L, "equals", 2, 2);
+    size_t aLen = 0, bLen = 0;
+    void* a = checkbufferargument(L, 1, "equals", &aLen);
+    void* b = checkbufferargument(L, 2, "equals", &bLen);
+    lua_pushboolean(L, aLen == bLen && memcmp(a, b, aLen) == 0);
+    return 1;
+}
+
+int unone_buffer_equalsrange(lua_State* L)
+{
+    checkbytesarity(L, "equalsRange", 5, 5);
+    size_t aLen = 0, bLen = 0;
+    void* a = checkbufferargument(L, 1, "equalsRange", &aLen);
+    void* b = checkbufferargument(L, 3, "equalsRange", &bLen);
+    uint64_t aOffset = checkbytesinteger(L, 2, "equalsRange");
+    uint64_t bOffset = checkbytesinteger(L, 4, "equalsRange");
+    uint64_t length = checkbytesinteger(L, 5, "equalsRange");
+    ByteRange ar = checkbytesrange(L, "equalsRange", aLen, aOffset, length);
+    ByteRange br = checkbytesrange(L, "equalsRange", bLen, bOffset, length);
+    lua_pushboolean(L, memcmp((char*)a + ar.offset, (char*)b + br.offset, ar.length) == 0);
     return 1;
 }
 
