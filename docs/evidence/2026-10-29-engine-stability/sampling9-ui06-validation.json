@@ -1,0 +1,740 @@
+{
+  "ok": true,
+  "scope": "Actual emitted opt2 WASM in Node only; small synthetic escaping-call fixture, no browser/GPU/game workload or FPS/overhead claim.",
+  "runtime": {
+    "source_dirty": false,
+    "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "save",
+      "ui",
+      "world"
+    ],
+    "preview_tools": true,
+    "profile": "release",
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "particle",
+      "random",
+      "save",
+      "ui",
+      "sampling-profile"
+    ],
+    "wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60",
+    "source_commit": "aaf4cb09c2bdc2c76d2dbcc2f41e1e44c443e412",
+    "bytecode_optimization_level": 2,
+    "profile_mode": "opt2-sampling",
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "wasm": "unone_player.wasm",
+    "exports": [
+      "init",
+      "alloc",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "developer_request",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "dev_tools": false,
+    "javascript": "unone-player.js",
+    "sampling_profile": true,
+    "wasm_bytes": 3609231,
+    "phase_profile": false
+  },
+  "wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60",
+  "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+  "source_sha256": "9e9a3b7f8814525bb8af35747dca2e43b2919022ee0f197d80db42eadb767461",
+  "started_utc": "2026-10-30T01:03:34.309Z",
+  "warmup": 2,
+  "frames": 8,
+  "post_stop_ticks": 3,
+  "compared_frames_per_mode": 13,
+  "initial_digest": "sha256:ae32a1fe28d422237b1aff1cc67fde57cc13299b916546ec8db9a4e80f7825b2",
+  "checkpoints": [
+    "sha256:c438522685292a825839effadecd1385ea10e6d7d97eae611056990c45a46c80",
+    "sha256:b9ad109ccf1405816facd1e15461c6dc8d6c0ce9deacb5c60221def5463c00f9",
+    "sha256:159ce5d0437e3766c765fd66d5661a853b2c66a302bcc92102675958a5758ae6",
+    "sha256:229a72d9c67fcb851b3adea4e0682a2867ffd62db67b2fb2901870c941f0062d",
+    "sha256:d49f6dc824255f5357f0a5fe25819e80aeec02206247e9ad492c6e1559e994ed",
+    "sha256:242e7ee91e5bdd48ffb05fd7b097375f129f565a66030aabf11e2fabb0432c30",
+    "sha256:7ca03014fe83e207cfec90bd11c66e4b9d10ccbb4d07a45e4d49d88afc35d9cb",
+    "sha256:7091437ca9ec362fe1845f8bd37d4a5816d9ed73b2db7a0ede154c897ace18ac",
+    "sha256:a6cb56857eee1d82077081ef064583dc58143f9d45edb04f0cdda19bdddf4825",
+    "sha256:15f50304fee08c87ddae6ce5a3690761e1e19207a9897652e0d59c4bea26f96d",
+    "sha256:24f564359d3bb98eac05e21f441406192ca7dd071ea7983e6a6f7d1d411141df",
+    "sha256:e4234a0cf57579c6509787b7045e6a632f2d7e3fab5081dc1443b639aa3462f6",
+    "sha256:0ee6e3e47df2874b8820a4b85fbd29e733265f661dd3e51bed4895d1795ed094"
+  ],
+  "windows": [
+    {
+      "sampling": false,
+      "canonical_digests_equal": true,
+      "stop_frozen_after_ticks": 3,
+      "execution": {
+        "build_intent": "sampling-diagnostic",
+        "bytecode_optimization_level": 2,
+        "bytecode_type_info_level": 0,
+        "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+        "host_binding": "rust-mlua",
+        "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        "luau_execution": "interpreter",
+        "native_codegen_compiled": false,
+        "native_codegen_fallback": "interpreter",
+        "native_codegen_requested": false,
+        "native_codegen_supported": false,
+        "phase_profile": false,
+        "preview_tools": true,
+        "runtime": "luau",
+        "rust_profile": "release",
+        "sampling_profile": true,
+        "schema_version": 2,
+        "target_arch": "wasm32",
+        "target_os": "emscripten",
+        "vm_implementation": "luau-upstream-vendored",
+        "wasm_host_compilation": "host-managed-not-probed"
+      },
+      "window": {
+        "active": false,
+        "core_phases": null,
+        "dropped_samples": 0,
+        "first_frame": 2,
+        "functions": {},
+        "id": 1,
+        "last_frame": 10,
+        "limits": {
+          "depth": 32,
+          "functions": 1024,
+          "minimum_interval_ms": 1,
+          "stacks": 4096
+        },
+        "samples": 0,
+        "sampling": false,
+        "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled.",
+        "stacks": [],
+        "truncated_stacks": 0,
+        "vm": {
+          "allocation_growth_bytes": 4104192,
+          "allocation_growth_events": 512,
+          "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+          "availability": {
+            "allocation_growth": "measured",
+            "full_gc_wall_time": "unsupported",
+            "incremental_gc_wall_time": "measured",
+            "js_gc": "not-applicable",
+            "rust_allocations": "not-collected"
+          },
+          "boundary_metrics": {
+            "api_calls": {
+              "scope": "Rust binding wrapper calls, not gameplay function calls",
+              "status": "not-collected"
+            },
+            "rust_allocations": {
+              "scope": "Rust allocator traffic outside Luau onallocate",
+              "status": "not-collected"
+            },
+            "table_conversion": {
+              "scope": "Luau/Rust value conversion object and byte counts",
+              "status": "not-collected"
+            }
+          },
+          "capabilities": {
+            "allocation_growth": true,
+            "full_gc_wall_time": false,
+            "incremental_gc_wall_time": true,
+            "js_gc": false,
+            "rust_allocations": false
+          },
+          "frames": [
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 3,
+              "incremental_gc_max_step_ms": 0.0073,
+              "incremental_gc_ms": 0.06510200000000001,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 4,
+              "incremental_gc_max_step_ms": 0.005599,
+              "incremental_gc_ms": 0.049498,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 5,
+              "incremental_gc_max_step_ms": 0.041100000000000005,
+              "incremental_gc_ms": 0.07890200000000003,
+              "incremental_gc_steps": 35
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 6,
+              "incremental_gc_max_step_ms": 0.0066,
+              "incremental_gc_ms": 0.04440000000000001,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 7,
+              "incremental_gc_max_step_ms": 0.004799,
+              "incremental_gc_ms": 0.035497,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 8,
+              "incremental_gc_max_step_ms": 0.0013,
+              "incremental_gc_ms": 0.023307000000000005,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 9,
+              "incremental_gc_max_step_ms": 0.0031,
+              "incremental_gc_ms": 0.031201,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 10,
+              "incremental_gc_max_step_ms": 0.0039009999999999995,
+              "incremental_gc_ms": 0.03229699999999999,
+              "incremental_gc_steps": 36
+            }
+          ],
+          "full_gc_ms": null,
+          "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
+          "incremental_gc_max_step_ms": 0.041100000000000005,
+          "incremental_gc_ms": 0.3602040000000001,
+          "incremental_gc_steps": 287,
+          "js_gc_ms": null,
+          "measurement_overhead": "includes VM allocation and interrupt instrumentation; compare with sampling disabled",
+          "retained_limit": 1024,
+          "rust_allocation_bytes": null,
+          "schema_version": 2,
+          "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+          "tick_count": 8,
+          "unavailable_values_are_null": true
+        }
+      },
+      "publication": {
+        "active": false,
+        "frame_join": "Completed world frame; successful publications only, multiple host publications can share a simulation frame.",
+        "frames": [
+          {
+            "frame": 3,
+            "path": "retained",
+            "phases_ms": [
+              0.0143,
+              0.0323,
+              0.0017000000000000001,
+              0.008999
+            ]
+          },
+          {
+            "frame": 4,
+            "path": "retained",
+            "phases_ms": [
+              0.011600000000000001,
+              0.0342,
+              0.000999,
+              0.007399
+            ]
+          },
+          {
+            "frame": 5,
+            "path": "retained",
+            "phases_ms": [
+              0.0085,
+              0.0315,
+              0.0007999999999999999,
+              0.007700000000000001
+            ]
+          },
+          {
+            "frame": 6,
+            "path": "retained",
+            "phases_ms": [
+              0.0101,
+              0.0282,
+              0.0022,
+              0.0061
+            ]
+          },
+          {
+            "frame": 7,
+            "path": "retained",
+            "phases_ms": [
+              0.007599,
+              0.0301,
+              0.001,
+              0.007
+            ]
+          },
+          {
+            "frame": 8,
+            "path": "retained",
+            "phases_ms": [
+              0.006299,
+              0.0421,
+              0.0009,
+              0.0073
+            ]
+          },
+          {
+            "frame": 9,
+            "path": "retained",
+            "phases_ms": [
+              0.008298999999999999,
+              0.0074,
+              0.001499,
+              0.0067
+            ]
+          },
+          {
+            "frame": 10,
+            "path": "retained",
+            "phases_ms": [
+              0.0069,
+              0.004701,
+              0.0007,
+              0.005501000000000001
+            ]
+          }
+        ],
+        "hash_work": {
+          "cache_hit_publications": 0,
+          "hashed_bytes": 4164,
+          "input_bytes": 4164,
+          "last_cache_storage_bytes": 0,
+          "max_retained_prefix_bytes": 4194304,
+          "reused_bytes": 0
+        },
+        "id": 1,
+        "limit": 1024,
+        "note": "Disjoint successful world-publication CPU spans. Excludes simulation and initial world capture; includes extra timing/collection overhead. Totals span the window; p95 uses retained samples. Not GPU or browser decode time.",
+        "phase_order": [
+          "canonical_encode_ms",
+          "canonical_hash_ms",
+          "presentation_ms",
+          "envelope_ms"
+        ],
+        "phases": {
+          "canonical_encode_ms": {
+            "mean_ms": 0.009199625,
+            "p50_ms": 0.008298999999999999,
+            "p95_ms": 0.0143,
+            "p99_ms": 0.0143,
+            "total_ms": 0.073597
+          },
+          "canonical_hash_ms": {
+            "mean_ms": 0.026312625,
+            "p50_ms": 0.0301,
+            "p95_ms": 0.0421,
+            "p99_ms": 0.0421,
+            "total_ms": 0.210501
+          },
+          "envelope_ms": {
+            "mean_ms": 0.007087375,
+            "p50_ms": 0.007,
+            "p95_ms": 0.008999,
+            "p99_ms": 0.008999,
+            "total_ms": 0.056699
+          },
+          "presentation_ms": {
+            "mean_ms": 0.00122475,
+            "p50_ms": 0.000999,
+            "p95_ms": 0.0022,
+            "p99_ms": 0.0022,
+            "total_ms": 0.009798
+          }
+        },
+        "publications": 8,
+        "retained": 8
+      }
+    },
+    {
+      "sampling": true,
+      "canonical_digests_equal": true,
+      "stop_frozen_after_ticks": 3,
+      "execution": {
+        "build_intent": "sampling-diagnostic",
+        "bytecode_optimization_level": 2,
+        "bytecode_type_info_level": 0,
+        "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+        "host_binding": "rust-mlua",
+        "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        "luau_execution": "interpreter",
+        "native_codegen_compiled": false,
+        "native_codegen_fallback": "interpreter",
+        "native_codegen_requested": false,
+        "native_codegen_supported": false,
+        "phase_profile": false,
+        "preview_tools": true,
+        "runtime": "luau",
+        "rust_profile": "release",
+        "sampling_profile": true,
+        "schema_version": 2,
+        "target_arch": "wasm32",
+        "target_os": "emscripten",
+        "vm_implementation": "luau-upstream-vendored",
+        "wasm_host_compilation": "host-managed-not-probed"
+      },
+      "window": {
+        "active": false,
+        "core_phases": null,
+        "dropped_samples": 0,
+        "first_frame": 2,
+        "functions": {
+          "=[C]:0:pcall": {
+            "inclusive_samples": 80,
+            "line": null,
+            "name": "pcall",
+            "self_samples": 0,
+            "source": "=[C]"
+          },
+          "opt2-sampling-runtime.luau:13:update": {
+            "inclusive_samples": 82,
+            "line": 13,
+            "name": "update",
+            "self_samples": 2,
+            "source": "opt2-sampling-runtime.luau"
+          },
+          "opt2-sampling-runtime.luau:2:escapingHot": {
+            "inclusive_samples": 80,
+            "line": 2,
+            "name": "escapingHot",
+            "self_samples": 80,
+            "source": "opt2-sampling-runtime.luau"
+          }
+        },
+        "id": 1,
+        "last_frame": 10,
+        "limits": {
+          "depth": 32,
+          "functions": 1024,
+          "minimum_interval_ms": 1,
+          "stacks": 4096
+        },
+        "samples": 82,
+        "sampling": true,
+        "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled.",
+        "stacks": [
+          {
+            "leaf_first": [
+              "opt2-sampling-runtime.luau:13:update"
+            ],
+            "samples": 2
+          },
+          {
+            "leaf_first": [
+              "opt2-sampling-runtime.luau:2:escapingHot",
+              "=[C]:0:pcall",
+              "opt2-sampling-runtime.luau:13:update"
+            ],
+            "samples": 80
+          }
+        ],
+        "truncated_stacks": 0,
+        "vm": {
+          "allocation_growth_bytes": 4104192,
+          "allocation_growth_events": 512,
+          "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+          "availability": {
+            "allocation_growth": "measured",
+            "full_gc_wall_time": "unsupported",
+            "incremental_gc_wall_time": "measured",
+            "js_gc": "not-applicable",
+            "rust_allocations": "not-collected"
+          },
+          "boundary_metrics": {
+            "api_calls": {
+              "scope": "Rust binding wrapper calls, not gameplay function calls",
+              "status": "not-collected"
+            },
+            "rust_allocations": {
+              "scope": "Rust allocator traffic outside Luau onallocate",
+              "status": "not-collected"
+            },
+            "table_conversion": {
+              "scope": "Luau/Rust value conversion object and byte counts",
+              "status": "not-collected"
+            }
+          },
+          "capabilities": {
+            "allocation_growth": true,
+            "full_gc_wall_time": false,
+            "incremental_gc_wall_time": true,
+            "js_gc": false,
+            "rust_allocations": false
+          },
+          "frames": [
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 3,
+              "incremental_gc_max_step_ms": 0.0041010000000000005,
+              "incremental_gc_ms": 0.040702,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 4,
+              "incremental_gc_max_step_ms": 0.0062,
+              "incremental_gc_ms": 0.055898,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 5,
+              "incremental_gc_max_step_ms": 0.0033,
+              "incremental_gc_ms": 0.050505,
+              "incremental_gc_steps": 35
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 6,
+              "incremental_gc_max_step_ms": 0.0059,
+              "incremental_gc_ms": 0.0441,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 7,
+              "incremental_gc_max_step_ms": 0.003199,
+              "incremental_gc_ms": 0.033398000000000004,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 8,
+              "incremental_gc_max_step_ms": 0.0024,
+              "incremental_gc_ms": 0.03950100000000001,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 9,
+              "incremental_gc_max_step_ms": 0.005699999999999999,
+              "incremental_gc_ms": 0.03729700000000001,
+              "incremental_gc_steps": 36
+            },
+            {
+              "allocation_growth_bytes": 513024,
+              "allocation_growth_events": 64,
+              "completed": true,
+              "frame": 10,
+              "incremental_gc_max_step_ms": 0.005098999999999999,
+              "incremental_gc_ms": 0.03870199999999999,
+              "incremental_gc_steps": 36
+            }
+          ],
+          "full_gc_ms": null,
+          "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead",
+          "incremental_gc_max_step_ms": 0.0062,
+          "incremental_gc_ms": 0.34010300000000004,
+          "incremental_gc_steps": 287,
+          "js_gc_ms": null,
+          "measurement_overhead": "includes VM allocation and interrupt instrumentation; compare with sampling disabled",
+          "retained_limit": 1024,
+          "rust_allocation_bytes": null,
+          "schema_version": 2,
+          "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+          "tick_count": 8,
+          "unavailable_values_are_null": true
+        }
+      },
+      "publication": {
+        "active": false,
+        "frame_join": "Completed world frame; successful publications only, multiple host publications can share a simulation frame.",
+        "frames": [
+          {
+            "frame": 3,
+            "path": "retained",
+            "phases_ms": [
+              0.0108,
+              0.008201,
+              0.001701,
+              0.007801000000000001
+            ]
+          },
+          {
+            "frame": 4,
+            "path": "retained",
+            "phases_ms": [
+              0.0106,
+              0.0086,
+              0.0013,
+              0.008
+            ]
+          },
+          {
+            "frame": 5,
+            "path": "retained",
+            "phases_ms": [
+              0.009301,
+              0.0072,
+              0.0008010000000000001,
+              0.0070999999999999995
+            ]
+          },
+          {
+            "frame": 6,
+            "path": "retained",
+            "phases_ms": [
+              0.008,
+              0.0073,
+              0.000701,
+              0.007
+            ]
+          },
+          {
+            "frame": 7,
+            "path": "retained",
+            "phases_ms": [
+              0.014199999999999999,
+              0.0081,
+              0.0023,
+              0.007999000000000001
+            ]
+          },
+          {
+            "frame": 8,
+            "path": "retained",
+            "phases_ms": [
+              0.01,
+              0.0076,
+              0.0007,
+              0.0074
+            ]
+          },
+          {
+            "frame": 9,
+            "path": "retained",
+            "phases_ms": [
+              0.009299,
+              0.0078,
+              0.0006,
+              0.0069
+            ]
+          },
+          {
+            "frame": 10,
+            "path": "retained",
+            "phases_ms": [
+              0.0101,
+              0.0084,
+              0.0013009999999999999,
+              0.0079
+            ]
+          }
+        ],
+        "hash_work": {
+          "cache_hit_publications": 0,
+          "hashed_bytes": 4164,
+          "input_bytes": 4164,
+          "last_cache_storage_bytes": 0,
+          "max_retained_prefix_bytes": 4194304,
+          "reused_bytes": 0
+        },
+        "id": 1,
+        "limit": 1024,
+        "note": "Disjoint successful world-publication CPU spans. Excludes simulation and initial world capture; includes extra timing/collection overhead. Totals span the window; p95 uses retained samples. Not GPU or browser decode time.",
+        "phase_order": [
+          "canonical_encode_ms",
+          "canonical_hash_ms",
+          "presentation_ms",
+          "envelope_ms"
+        ],
+        "phases": {
+          "canonical_encode_ms": {
+            "mean_ms": 0.0102875,
+            "p50_ms": 0.01,
+            "p95_ms": 0.014199999999999999,
+            "p99_ms": 0.014199999999999999,
+            "total_ms": 0.0823
+          },
+          "canonical_hash_ms": {
+            "mean_ms": 0.007900125000000001,
+            "p50_ms": 0.0078,
+            "p95_ms": 0.0086,
+            "p99_ms": 0.0086,
+            "total_ms": 0.06320100000000001
+          },
+          "envelope_ms": {
+            "mean_ms": 0.007512500000000002,
+            "p50_ms": 0.0074,
+            "p95_ms": 0.008,
+            "p99_ms": 0.008,
+            "total_ms": 0.060100000000000015
+          },
+          "presentation_ms": {
+            "mean_ms": 0.0011755000000000001,
+            "p50_ms": 0.0008010000000000001,
+            "p95_ms": 0.0023,
+            "p99_ms": 0.0023,
+            "total_ms": 0.009404000000000001
+          }
+        },
+        "publications": 8,
+        "retained": 8
+      }
+    }
+  ],
+  "finished_utc": "2026-10-30T01:03:34.624Z"
+}

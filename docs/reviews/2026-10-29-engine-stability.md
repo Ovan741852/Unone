@@ -947,3 +947,37 @@ with zero stdout/stderr bytes. This independent review remains incomplete;
 its exact command and file hashes are preserved in ui06-claude-review.json.
 Independent Codex source review and the reproduced authority regression are
 separate evidence. SDK9 and actual seven-scene Web acceptance are still pending.
+
+## SDK9 emitted-runtime and official-player follow-up
+
+The standard release CLI and production WASM were rebuilt from clean aaf4cb0,
+engine 0.2.0 with exact @unone/ui 0.6.0. All 142 SDK inventory entries and 99
+unchanged Web-template fingerprints match. The matching CLI refreshed canonical
+types and passed the actual stock Luau 0.734 fixture check. Actual bundled
+production WASM passed 17 ownership/authority/budget/managed-lifecycle checks.
+A first cache-only probe incorrectly expected an offscreen scroll-local x to
+fail; that fixture expectation was corrected to negative width. Its original
+failure remains preserved locally and is not an engine defect.
+
+Official main and worker players each passed all nine functional phases,
+including actual input, replacement/removal/recreation and context restoration.
+The independent agent viewed all four initial/restored screenshots; Root also
+viewed the main restored result. The matching opt2 sampling diagnostic was
+separately rebuilt and executed with 13 canonical checkpoints per mode, named
+escaping-call samples, VM counters and frozen post-stop reports. These checks
+are functional evidence, never actual Game FPS or leak/GC acceptance.
+
+A fresh isolated export of the frozen UI0.5 Game kept its original script,
+renderer and existing wheel/stage postprocess. Its initial canonical state
+matches the frozen export; JSON integer-versus-float lexeme normalization is
+recorded separately. The unprofiled inventory control measured 10.69 RAF/s,
+53.23 simulation frames/s and 68 dropped steps in this particular run, so it
+fails. A distinct instrumented SDK8 inventory window recorded 5,372 safe-point
+samples: recursive package copy visit has 2,342 self samples (about 43.6%).
+That identifies a concrete hot path, not exact CPU time or UI0.6 improvement.
+The new Game ownership migration, paired canonical check, seven-scene FPS and
+natural memory/GC checks are still pending. No Game product files, clocks,
+strict layout gates or resource budgets were changed for these results.
+See retained-web-sdk-candidate9-validation.json for pinned artifacts and raw
+local evidence locations. The current SDK8 handoff is not silently replaced
+with an unaccepted Game/UI0.6 migration.

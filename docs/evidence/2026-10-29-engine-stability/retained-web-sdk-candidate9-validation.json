@@ -1,0 +1,312 @@
+{
+  "schema": "unone.retained-sdk9-functional-validation.v1",
+  "date": "2026-10-30",
+  "status": "Functional SDK9/UI0.6 validated; actual migrated Game seven-scene FPS and memory/GC acceptance pending.",
+  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate9",
+  "sdk_manifest_sha256": "a473a06b9d4bf0852b253f93dd9cd2f961e1c9ad99247b20703696b4d5bc098f",
+  "cli_sha256": "b19bd7dba249daf87144cc099389ca386e90361e6ef35f73b1edd0ce4c894fbc",
+  "runtime": {
+    "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+    "exports": [
+      "init",
+      "alloc",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "save",
+      "ui",
+      "world"
+    ],
+    "wasm_bytes": 3281490,
+    "source_commit": "aaf4cb09c2bdc2c76d2dbcc2f41e1e44c443e412",
+    "wasm_sha256": "dd01e4fec0049f46dd78c2504b6c6986d2c78c919bb84f03fbb8ce28262f7b20",
+    "phase_profile": false,
+    "profile_mode": "none",
+    "source_dirty": false,
+    "profile": "release",
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "particle",
+      "random",
+      "save",
+      "ui"
+    ],
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "wasm": "unone_player.wasm",
+    "dev_tools": false,
+    "bytecode_optimization_level": 2,
+    "sampling_profile": false,
+    "preview_tools": false,
+    "javascript": "unone-player.js"
+  },
+  "verification": {
+    "indexed_files": 142,
+    "template_fingerprints": 99,
+    "actual_production_wasm_checks": 17,
+    "official_player_backends": [
+      {
+        "backend": "main",
+        "ok": true,
+        "phases": 9
+      },
+      {
+        "backend": "worker",
+        "ok": true,
+        "phases": 9
+      }
+    ],
+    "screenshots": "Independent agent viewed initial/restored for both main and worker (four screenshots). Root viewed actual SDK8 inventory control screenshot.",
+    "fixture_typecheck": "Matching SDK9 CLI, canonical types, actual stock Luau0.734 passed with zero errors.",
+    "focused_native": "33 package/ownership/control,17 API discovery,2 runtime-package,11 version-sensitive tests passed before SDK9 build; synthetic allocation-pair evidence is separate."
+  },
+  "diagnostics": {
+    "matching_sampling_runtime": "D:/Projects/Unone/artifacts/web-retained-20261030-sampling-profile-candidate9",
+    "wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60",
+    "mode": "opt2 sampling diagnostic; UI0.6; no performance-acceptance claim",
+    "compared_checkpoints_per_mode": 13,
+    "scope": "Actual emitted opt2 WASM in Node only; small synthetic escaping-call fixture, no browser/GPU/game workload or FPS/overhead claim."
+  },
+  "migration": "Breaking immutable UI values require builders/copy-on-write before mutation. Old Game code mutates constructor outputs and has not yet been accepted against SDK9. Original Product Game files remain untouched; migration is in an isolated copy.",
+  "old_sdk8_control": {
+    "scope": "Fresh reconstructed frozen bb2 Game, exact UI0.5 source/runtime, existing wheel adapter and fixed16:9 host postprocess; official renderer. Distinct run, not a migrated paired A/B.",
+    "raw_result": "D:/Projects/Unone/.cache/jy-ui06-sdk8-control-inventory-run1/result.json",
+    "raw_sha256": "937e025012019530fba35b67aa595d794834d3a9e29f3111d78b984156bd6c47",
+    "rates": {
+      "wallSeconds": 10.107200000047683,
+      "rafCallbacks": 108,
+      "rafFps": 10.685451954991539,
+      "simulationFrames": 538,
+      "simulationFps": 53.229381035050444,
+      "simulationSeconds": 8.966666666666667,
+      "simulationToWall": 0.8871563505841741,
+      "battleElapsedDelta": null
+    },
+    "dropped": {
+      "before": 19,
+      "after": 87,
+      "delta": 68,
+      "exact": true,
+      "precision": "Synchronous v1 query boundaries within the same session/time origin."
+    },
+    "bridge_ms": {
+      "n": 4,
+      "p50": 17.800000071525574,
+      "p95": 19.100000023841858,
+      "p99": 19.100000023841858,
+      "min": 15.600000023841858,
+      "max": 19.100000023841858,
+      "mean": 17.700000047683716
+    },
+    "render_ms": {
+      "n": 4,
+      "p50": 1.1999999284744263,
+      "p95": 1.2999999523162842,
+      "p99": 1.2999999523162842,
+      "min": 0.8999999761581421,
+      "max": 1.2999999523162842,
+      "mean": 1.1499999463558197
+    },
+    "behavior_passed": true,
+    "target60": {
+      "scope": "Successful fresh scheduler-RAF submission cadence plus simulation/behavior checks; not physical scanout, absence of perceived stutter or release readiness.",
+      "criteria": {
+        "minimumRafFps": 59,
+        "minimumSimulationFps": 59,
+        "rafP95Ms": 18.5,
+        "rafP99Ms": 25,
+        "reportedDroppedDelta": 0,
+        "minimumOneSecondSimulationFrames": 58,
+        "maximumPresentedFrameGapMs": 50,
+        "minimumPresentedSnapshotFps": 58,
+        "battleClockToleranceSeconds": 0.05,
+        "minimumTravelTiles": 0.05,
+        "minimumViewportPanPixels": 8
+      },
+      "raf": false,
+      "simulation": false,
+      "rafTail": false,
+      "noReportedDropped": false,
+      "scenarioMaintained": true,
+      "behaviorProgress": true,
+      "visible": true,
+      "errorsClean": false,
+      "temporalEvidence": false,
+      "evidenceComplete": false,
+      "throughputOnlyPassed": false,
+      "passed": false,
+      "status": "fail"
+    }
+  },
+  "old_sdk8_function_diagnostic": {
+    "scope": "Instrumented actual SDK8/UI0.5 Game inventory; function samples are safe-point samples, not exact CPU time. Allocation growth is positive Lua allocation/reallocation growth, not live heap/frees. Incremental steps are not full GC cycles. No FPS acceptance.",
+    "raw_profile": "D:/Projects/Unone/.cache/jy-ui06-sdk8-sampling-inventory-run1/inventory/core-phase-profile.json",
+    "raw_sha256": "8ce52d452635e980a6b3d758f65999136f83beabe4f37e77ca60de9f6b02ca33",
+    "samples": 5372,
+    "top_self_samples": [
+      {
+        "id": "@packages/unone-ui:101:visit",
+        "inclusive_samples": 2671,
+        "line": 101,
+        "name": "visit",
+        "self_samples": 2342,
+        "source": "@packages/unone-ui"
+      },
+      {
+        "id": "@packages/unone-ui:56:fields",
+        "inclusive_samples": 275,
+        "line": 56,
+        "name": "fields",
+        "self_samples": 275,
+        "source": "@packages/unone-ui"
+      },
+      {
+        "id": "@engine/ui-scroll:139:isManagedNode",
+        "inclusive_samples": 240,
+        "line": 139,
+        "name": "isManagedNode",
+        "self_samples": 240,
+        "source": "@engine/ui-scroll"
+      },
+      {
+        "id": "scripts/main.luau:13119:collectMapCell",
+        "inclusive_samples": 471,
+        "line": 13119,
+        "name": "collectMapCell",
+        "self_samples": 190,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "scripts/main.luau:5653:assistCandidates",
+        "inclusive_samples": 200,
+        "line": 5653,
+        "name": "assistCandidates",
+        "self_samples": 190,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "scripts/main.luau:15635:input",
+        "inclusive_samples": 137,
+        "line": 15635,
+        "name": "input",
+        "self_samples": 137,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "@packages/unone-ui:82:dense",
+        "inclusive_samples": 116,
+        "line": 82,
+        "name": "dense",
+        "self_samples": 116,
+        "source": "@packages/unone-ui"
+      },
+      {
+        "id": "scripts/main.luau:5696:passable",
+        "inclusive_samples": 128,
+        "line": 5696,
+        "name": "passable",
+        "self_samples": 114,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "@packages/unone-ui:644:<anonymous>",
+        "inclusive_samples": 2470,
+        "line": 644,
+        "name": "<anonymous>",
+        "self_samples": 98,
+        "source": "@packages/unone-ui"
+      },
+      {
+        "id": "scripts/main.luau:2708:chunkAt",
+        "inclusive_samples": 117,
+        "line": 2708,
+        "name": "chunkAt",
+        "self_samples": 82,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "scripts/main.luau:13139:appendMapTerrain",
+        "inclusive_samples": 569,
+        "line": 13139,
+        "name": "appendMapTerrain",
+        "self_samples": 81,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "scripts/main.luau:11558:tile",
+        "inclusive_samples": 186,
+        "line": 11558,
+        "name": "tile",
+        "self_samples": 69,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "@packages/unone-ui:166:mergeOwnedStyle",
+        "inclusive_samples": 210,
+        "line": 166,
+        "name": "mergeOwnedStyle",
+        "self_samples": 63,
+        "source": "@packages/unone-ui"
+      },
+      {
+        "id": "scripts/main.luau:16733:exploration",
+        "inclusive_samples": 210,
+        "line": 16733,
+        "name": "exploration",
+        "self_samples": 62,
+        "source": "scripts/main.luau"
+      },
+      {
+        "id": "=[C]:0:gsub",
+        "inclusive_samples": 60,
+        "line": null,
+        "name": "gsub",
+        "self_samples": 60,
+        "source": "=[C]"
+      }
+    ],
+    "vm": {
+      "tick_count": 310,
+      "allocation_growth_bytes": 689357036,
+      "allocation_growth_events": 8707466,
+      "incremental_gc_steps": 342003,
+      "incremental_gc_ms": 633.399943,
+      "incremental_gc_max_step_ms": 0.20000099999999998
+    }
+  },
+  "limitations": [
+    "No actual UI0.6 Game FPS yet.",
+    "No leak-freedom/no frequent-GC conclusion from native allocation pair or WASM ownership tests.",
+    "No original deadline, clock, budget, or strict UI gate relaxed.",
+    "Stock0.734 cannot solve the large Game source; original project analyzer workflow must be preserved and explicitly identified."
+  ]
+}

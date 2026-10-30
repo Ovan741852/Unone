@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "runtime": "D:\\Projects\\Unone\\artifacts\\core-sdk-web-retained-20261030-candidate9\\runtimes\\web-production-0",
+  "source_commit": "aaf4cb09c2bdc2c76d2dbcc2f41e1e44c443e412",
+  "wasm_sha256": "dd01e4fec0049f46dd78c2504b6c6986d2c78c919bb84f03fbb8ce28262f7b20",
+  "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+  "manifest_sha256": "e1af53ad38dfb677f156c7a727234dcacd5f40e329e325fbeaef02b4e859f868",
+  "package_version": "0.6.0",
+  "checks": [
+    "Actual selected production ABI has no developer entry",
+    "Actual WASM ordinary deep freeze/detach/COW/granted bounds and shared DAG assertions execute",
+    "Actual WASM publishes unchanged canonical child data",
+    "Actual bundled package executes through normal fixed tick",
+    "Bundled WASM package resists global/getfenv/setfenv shadowing and cached-cost/depth/cycle bypass",
+    "Managed __eq impostor assertions pass through actual public composer",
+    "Actual WASM counts shared leaves and retained quads against original screen budget",
+    "UI-only request does not run Game.update or advance simulation",
+    "Actual WASM managed handle materializes requested range through frozen ancestors",
+    "Old detached published snapshot remains unchanged",
+    "Malformed virtual materialization fails publication",
+    "Actual WASM live private contents and published UI roll back after failed materialization",
+    "Managed request resumes after failure without an extra tick",
+    "Actual WASM retires handle and revalidates stale mutable descendants",
+    "Stale retired UI request cannot resurrect old content",
+    "Actual WASM unload clears publication",
+    "Fresh runtime after unload rebuilds valid private ownership state"
+  ],
+  "cases": [
+    {
+      "name": "ordinary",
+      "script_sha256": "9ab119b0986ef814d2e13a0a26bf2a422ebae48dc942d3634d8823c647f0a1a1",
+      "initial_digest": "sha256:2c89f2a4e3bde4c81c53db4746c7c5192ad6aa277a436d66037eaf3bb82567a6"
+    },
+    {
+      "name": "authority",
+      "script_sha256": "6e608e3c6cfc8963582cff91409fd16dd5591a567ab49804c82c23b634236780",
+      "initial_digest": "sha256:557db70d72b3e4fdb44cdb38bd056e5cb968c99f8f81ec64dbfbec7f56694031"
+    },
+    {
+      "name": "budget",
+      "script_sha256": "7a3375959c69f448b91d55b92a90b229301a279a42279d7b270c7c9a2b603282",
+      "initial_digest": "sha256:0646bdf158076f6a7d3718644f1daaa050e7416a1a46b1b72886013e25e00b89"
+    },
+    {
+      "name": "managed",
+      "script_sha256": "b6998cc354db7c8489004af3ce9bedf803903939bf2731d3682aceebc482a8ac",
+      "initial_digest": "sha256:9662b83f2a3822fc13b69536214fff5df7356b2e284273bf0c3eba3a8be598b3"
+    },
+    {
+      "name": "fresh-after-unload",
+      "script_sha256": "f609477ccfb40e84dfda546d1c15668af400989205ff4fbd15917593d6feb1f3",
+      "initial_digest": "sha256:d57bee5077c726d43de0413c159c9dfdd6ee33c320fe6103a9dcf661771d380a"
+    }
+  ],
+  "limitations": [
+    "Functional actual emitted production WASM/Luau execution only; no official-player rendering, FPS, OS presentation, leak-free or GC-frequency conclusion.",
+    "No force-GC or profiler is used; weak-registry reachability is covered by separate native unit evidence, not inferred from WASM capacity.",
+    "Positive ownership and authority cases call the bundled runtime package, never an injected replacement package."
+  ],
+  "final_digest": "sha256:d57bee5077c726d43de0413c159c9dfdd6ee33c320fe6103a9dcf661771d380a"
+}

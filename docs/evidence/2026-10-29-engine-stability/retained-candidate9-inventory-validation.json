@@ -1,0 +1,674 @@
+{
+  "ok": true,
+  "scope": "Complete SDK9 file inventory, exact source-template fingerprints, embedded canonical types/package/runtime metadata; not player execution or FPS acceptance.",
+  "sdk_root": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate9",
+  "sdk_manifest_sha256": "a473a06b9d4bf0852b253f93dd9cd2f961e1c9ad99247b20703696b4d5bc098f",
+  "engine_version": "0.2.0",
+  "ui_package_version": "0.6.0",
+  "inventory_files": 142,
+  "inventory_bytes": 57302981,
+  "template_fingerprints": 99,
+  "templates": [
+    {
+      "path": "templates/web/developer/api.js",
+      "source": "web/developer/api.js",
+      "bytes": 12009,
+      "sha256": "4fc9b22b19392da4b479aea2917adddb79b83154bc9151578cf2732cc2c8da5d"
+    },
+    {
+      "path": "templates/web/developer/asset-usages.js",
+      "source": "web/developer/asset-usages.js",
+      "bytes": 4281,
+      "sha256": "c52863a82ea3b7046d692bf386e6e1df8134616e9666c5d79815706104d4548b"
+    },
+    {
+      "path": "templates/web/developer/main.js",
+      "source": "web/developer/main.js",
+      "bytes": 3479,
+      "sha256": "af5fd4b1e7b43bd557ffb381ba9fa33725d5a0338deca9ad17425836aa347aa3"
+    },
+    {
+      "path": "templates/web/developer/panel.css",
+      "source": "web/developer/panel.css",
+      "bytes": 9580,
+      "sha256": "21d3cb0544dc27a2b4bc96405cac4cef6427b484e89aa39bf74b06639d3b29aa"
+    },
+    {
+      "path": "templates/web/developer/panel.js",
+      "source": "web/developer/panel.js",
+      "bytes": 36998,
+      "sha256": "ad8522ffee08cd0479aac9856f7ec0b9c227e8b257e647df87b5f39917e564a8"
+    },
+    {
+      "path": "templates/web/player/index.html",
+      "source": "web/player/index.html",
+      "bytes": 1083,
+      "sha256": "1b836256177d6cd8495c839dbcf251585a71bee5082d023a59f89a235cf681a3"
+    },
+    {
+      "path": "templates/web/player/main.js",
+      "source": "web/player/main.js",
+      "bytes": 23997,
+      "sha256": "6af6020b66377f124ab256402b2a9383ca3afe2e3b20d56bff4ce79a2f190463"
+    },
+    {
+      "path": "templates/web/renderer/bloom-timer.js",
+      "source": "web/renderer/bloom-timer.js",
+      "bytes": 3073,
+      "sha256": "6b37c24b42fdca38ed31663c2dceadc864eb78997742984663060b59c3878ac6"
+    },
+    {
+      "path": "templates/web/renderer/bloom.js",
+      "source": "web/renderer/bloom.js",
+      "bytes": 8739,
+      "sha256": "1c81a677953fcf0477974476b6a189b58146f400d45002e5a9fa9612f1a56921"
+    },
+    {
+      "path": "templates/web/renderer/effekseer.js",
+      "source": "web/renderer/effekseer.js",
+      "bytes": 2546,
+      "sha256": "a9129aabc2794e0c15c580ddfde7dd2b90fea95c712e827e33de1e32af6afe4c"
+    },
+    {
+      "path": "templates/web/renderer/instances3d.js",
+      "source": "web/renderer/instances3d.js",
+      "bytes": 5565,
+      "sha256": "587903c5cd11dafac0ff5a61e8c17a298cbc661b8263dd32c6f4d2077d500020"
+    },
+    {
+      "path": "templates/web/renderer/mesh.js",
+      "source": "web/renderer/mesh.js",
+      "bytes": 1348,
+      "sha256": "089a44cada12849bc43efb7f3c71f11deed5b763c466e18e1dbf85ff85a5538a"
+    },
+    {
+      "path": "templates/web/renderer/particles.js",
+      "source": "web/renderer/particles.js",
+      "bytes": 8871,
+      "sha256": "65367b9ddce209913bd1a62580b3a2445bba62df92f20725b3cb40a90bdcbeb4"
+    },
+    {
+      "path": "templates/web/renderer/presentation3d.js",
+      "source": "web/renderer/presentation3d.js",
+      "bytes": 778,
+      "sha256": "d0570a41d7448d59a3860e7e54b63c89ddd22ab8e1b304619ee0efaa5aa8e54c"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-draws.js",
+      "source": "web/renderer/projected-frame-draws.js",
+      "bytes": 11767,
+      "sha256": "081c5dca1bf1f173ce53275d7297acd8476ae8265055a9eaefd3de6bc5d50492"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-gouraud-profile.js",
+      "source": "web/renderer/projected-frame-gouraud-profile.js",
+      "bytes": 2600,
+      "sha256": "9677be967f8de70a72af7359708ec47d01559288c50ba9103b8c7acba1964cef"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-material.js",
+      "source": "web/renderer/projected-frame-material.js",
+      "bytes": 1960,
+      "sha256": "0b9c478591736fffd373bd3cbe15209a6a7fa28851e967e3a2eb6ecf1c74aef5"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-pass.js",
+      "source": "web/renderer/projected-frame-pass.js",
+      "bytes": 2155,
+      "sha256": "bdbb097d9ec882ab094257127c42768d5621eeba33526877446fbc35c30637f6"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-policy.js",
+      "source": "web/renderer/projected-frame-policy.js",
+      "bytes": 1275,
+      "sha256": "77a7547ae9b6d7226865b4ad8f3c95b9c0fc649b3c6b15cd747721527e8d943d"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-profile.js",
+      "source": "web/renderer/projected-frame-profile.js",
+      "bytes": 6402,
+      "sha256": "b2bceb626022167a9b871eac6bbf0a206245866a5e8e843e0a244d019f33e7ca"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-publication.js",
+      "source": "web/renderer/projected-frame-publication.js",
+      "bytes": 1200,
+      "sha256": "e13060f0ee4ae67be5278f630ab931f4b6c1010f72da3caa3930cb7cb3ea1830"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-shaders.js",
+      "source": "web/renderer/projected-frame-shaders.js",
+      "bytes": 2026,
+      "sha256": "a59d39ea4d56079ff3ec88831991b7d65b6c4a5dc7b8defe5ef3eb4f0870cb35"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-target-query.js",
+      "source": "web/renderer/projected-frame-target-query.js",
+      "bytes": 4003,
+      "sha256": "ae69fc5d89cb89854d0cb47956ea5d18fc1ae68c5e613fdd05e7cffb3ede9454"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-target.js",
+      "source": "web/renderer/projected-frame-target.js",
+      "bytes": 3735,
+      "sha256": "17eacd367ad147d9d58574c0625bc5beedb916d13183e4abccf13b66b7282895"
+    },
+    {
+      "path": "templates/web/renderer/projected-frame-validator.js",
+      "source": "web/renderer/projected-frame-validator.js",
+      "bytes": 3986,
+      "sha256": "74f7edb71b1b10adc0539e14f923d26058221663ba00be30caf153f55d5bd77a"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster-capability.js",
+      "source": "web/renderer/projected-raster-capability.js",
+      "bytes": 2900,
+      "sha256": "82d11ba0ae36ad683d87fbffc90361d2794cdcc94497edc79e340aaea79d608a"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster-policy.js",
+      "source": "web/renderer/projected-raster-policy.js",
+      "bytes": 1287,
+      "sha256": "f34b7bbc9e33eb7df8f4c31874a306bc7d41e571c88237833d4a6cee63b5935e"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster-profile-expected.js",
+      "source": "web/renderer/projected-raster-profile-expected.js",
+      "bytes": 41220,
+      "sha256": "725c6db29d74a508e3b467e99cb9ed0f7048c7b4c240b93761f118a0cf1359fe"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster-profile.js",
+      "source": "web/renderer/projected-raster-profile.js",
+      "bytes": 4998,
+      "sha256": "e3029de6c27046d3055a9871397d1ea352a61b5eb2570cf34735cf13fdbe2e21"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster-shaders.js",
+      "source": "web/renderer/projected-raster-shaders.js",
+      "bytes": 4312,
+      "sha256": "f914020f10a3c65eb6e1ca98da597d1003a5f22f1d1e8828105109bf4b25b6b5"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster-target.js",
+      "source": "web/renderer/projected-raster-target.js",
+      "bytes": 3199,
+      "sha256": "112258f308e362b7a404b34472168cc7dabf4030d2a2d20e6248f1cb4527b9be"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster-validator.js",
+      "source": "web/renderer/projected-raster-validator.js",
+      "bytes": 4070,
+      "sha256": "13a29779b6de9da3767f79c30830e496000b92100b026ab8f65fc7de2d820537"
+    },
+    {
+      "path": "templates/web/renderer/projected-raster.js",
+      "source": "web/renderer/projected-raster.js",
+      "bytes": 1647,
+      "sha256": "ab11d16f7ef0618415e4249d001e5d77bf058f26a93c116baf30db9341564681"
+    },
+    {
+      "path": "templates/web/renderer/projected.js",
+      "source": "web/renderer/projected.js",
+      "bytes": 10327,
+      "sha256": "c608f429e3c2d90a9faf8998e64f4e199bfcac90b21340c2d7eef12961578318"
+    },
+    {
+      "path": "templates/web/renderer/renderer-clear-lifecycle.js",
+      "source": "web/renderer/renderer-clear-lifecycle.js",
+      "bytes": 1207,
+      "sha256": "12358857bb0a990b7682f1012efe3c76b1dd1052c192553bd2385aea957ff615"
+    },
+    {
+      "path": "templates/web/renderer/shader-materials.js",
+      "source": "web/renderer/shader-materials.js",
+      "bytes": 4895,
+      "sha256": "2ae6f8f2d0a12ecdf90ab5ff85697e08e89258e5bd507d50e766258f3a061cbf"
+    },
+    {
+      "path": "templates/web/renderer/startup-presentation-state.js",
+      "source": "web/renderer/startup-presentation-state.js",
+      "bytes": 2340,
+      "sha256": "539a4f983df39c389fe1a92b4a820c402bb35e0ca77c8a4d6f49a005e1af991b"
+    },
+    {
+      "path": "templates/web/renderer/texture-cache-policy.js",
+      "source": "web/renderer/texture-cache-policy.js",
+      "bytes": 2968,
+      "sha256": "c2902d2fc06225b904ea86740eb6713de848ac5c60e4b59f03b08ea93c62c38d"
+    },
+    {
+      "path": "templates/web/renderer/three.js",
+      "source": "web/renderer/three.js",
+      "bytes": 31254,
+      "sha256": "7c1e305722575e3ac04d43a9de4affb65426839b10f9952e853f67c6e04545d1"
+    },
+    {
+      "path": "templates/web/renderer/ui-image-batch-prefix.js",
+      "source": "web/renderer/ui-image-batch-prefix.js",
+      "bytes": 14979,
+      "sha256": "1b45068c4e77b578f6d5f6f30d626de05d4e9d9e0823d91ff2687170822219b3"
+    },
+    {
+      "path": "templates/web/renderer/vfx-batch.js",
+      "source": "web/renderer/vfx-batch.js",
+      "bytes": 12250,
+      "sha256": "0784fefae276ce4cf16188c2828873add3646e41cb853cb0765c64b35324020d"
+    },
+    {
+      "path": "templates/web/renderer/vfx-contract.js",
+      "source": "web/renderer/vfx-contract.js",
+      "bytes": 10230,
+      "sha256": "cba98d0fa03f6b5a64ae9f09969e687854c0608af18264a5413dd79bc7004719"
+    },
+    {
+      "path": "templates/web/renderer/vfx-native.js",
+      "source": "web/renderer/vfx-native.js",
+      "bytes": 6299,
+      "sha256": "55c6ff9bb589b0d404ee90aae997eb49c03a5cd51a6effa7fe84a7111c15c33b"
+    },
+    {
+      "path": "templates/web/renderer/vfx-player.js",
+      "source": "web/renderer/vfx-player.js",
+      "bytes": 4195,
+      "sha256": "345189b2a8214d2cb3582fd89f731d575242c1de3a5ce6a9ce302c79bd25eb0f"
+    },
+    {
+      "path": "templates/web/renderer/vfx.js",
+      "source": "web/renderer/vfx.js",
+      "bytes": 1347,
+      "sha256": "3f2085052182804cbffb90425a0bb4430f1b2df4da06834305fc564b10fbd931"
+    },
+    {
+      "path": "templates/web/shared/asset-encoding.js",
+      "source": "web/shared/asset-encoding.js",
+      "bytes": 4954,
+      "sha256": "0dbbe66f47b1b990558db92ba957c4eaf34f1be0bfc95aa4470a88d65325feb7"
+    },
+    {
+      "path": "templates/web/shared/async-scheduler.mjs",
+      "source": "web/shared/async-scheduler.mjs",
+      "bytes": 4038,
+      "sha256": "0f743b61721c20052707fa15d0e5d52b596ce53d1b904c3bd7ff6286cdcfe6e7"
+    },
+    {
+      "path": "templates/web/shared/audio-playback.js",
+      "source": "web/shared/audio-playback.js",
+      "bytes": 9726,
+      "sha256": "299e6ae5aac03e14883fd86bd07654e85447ed23b308ace68d6b0c0e32dce618"
+    },
+    {
+      "path": "templates/web/shared/canvas-ui.mjs",
+      "source": "web/shared/canvas-ui.mjs",
+      "bytes": 23602,
+      "sha256": "7f762be070cd22d7002d2402b8fc0b294ea1a2ca97ecc904797b35c00dc726b2"
+    },
+    {
+      "path": "templates/web/shared/fixed-step-scheduler.mjs",
+      "source": "web/shared/fixed-step-scheduler.mjs",
+      "bytes": 11767,
+      "sha256": "9cb386c06867b94af8f0f8656685ab963e128aa77ebd5965dd6a047397a38fcc"
+    },
+    {
+      "path": "templates/web/shared/heightfields.js",
+      "source": "web/shared/heightfields.js",
+      "bytes": 5358,
+      "sha256": "656bc0c7e98f5aa0a38f63a0dbbde4643f9c2203d00d8b29c707f2dd4106c857"
+    },
+    {
+      "path": "templates/web/shared/host-input.js",
+      "source": "web/shared/host-input.js",
+      "bytes": 9125,
+      "sha256": "224ce913df63232cdd67ac0e46be2d656d54450e035b4f2b5869ccabaf94630c"
+    },
+    {
+      "path": "templates/web/shared/instance-transfer.mjs",
+      "source": "web/shared/instance-transfer.mjs",
+      "bytes": 9409,
+      "sha256": "a26d753629cf9637e93618e94084cb7a8ee3c39963c3284cfddcc5a2a0b74006"
+    },
+    {
+      "path": "templates/web/shared/job-binary.mjs",
+      "source": "web/shared/job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "templates/web/shared/job-pool.mjs",
+      "source": "web/shared/job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "templates/web/shared/job-worker.js",
+      "source": "web/shared/job-worker.js",
+      "bytes": 771,
+      "sha256": "3285feb54939d1b23bdc054de1989812720763bac973f70bb27804260c7b95b8"
+    },
+    {
+      "path": "templates/web/shared/load-project.js",
+      "source": "web/shared/load-project.js",
+      "bytes": 6165,
+      "sha256": "2d446e73423d701fe9a113e07af14cdd787cf274862e45570aa1d6b175d3da58"
+    },
+    {
+      "path": "templates/web/shared/ordered-physical-events.mjs",
+      "source": "web/shared/ordered-physical-events.mjs",
+      "bytes": 3792,
+      "sha256": "9cbd7f3a581b844e3e2e59e420826025c682d60a03147605e49475c07c7d145d"
+    },
+    {
+      "path": "templates/web/shared/ordered-physical-queue.mjs",
+      "source": "web/shared/ordered-physical-queue.mjs",
+      "bytes": 3201,
+      "sha256": "454ff00fa46c5ca9eeb5c526d4b03356987bf1d45a0bbb13e915c1bdab6ba958"
+    },
+    {
+      "path": "templates/web/shared/ordered-physical-router.mjs",
+      "source": "web/shared/ordered-physical-router.mjs",
+      "bytes": 8165,
+      "sha256": "30407bbd3f44a3fb6631428c57859a24100936c5c7b72e4e567403505060c110"
+    },
+    {
+      "path": "templates/web/shared/physical-input.js",
+      "source": "web/shared/physical-input.js",
+      "bytes": 1269,
+      "sha256": "3d9af8d3a6c9a555cdd26135108263302364efa5e3f12cbc966fe79ff527403a"
+    },
+    {
+      "path": "templates/web/shared/player-completion.mjs",
+      "source": "web/shared/player-completion.mjs",
+      "bytes": 15567,
+      "sha256": "be4339501cfd5c93c20e19869d31f630c190dcb17f371b549c8341905ae06996"
+    },
+    {
+      "path": "templates/web/shared/player-input.js",
+      "source": "web/shared/player-input.js",
+      "bytes": 2965,
+      "sha256": "fe13264b5df22edc2d80e580d4e78073ec66daceaa0ca82226c583c677a3adc8"
+    },
+    {
+      "path": "templates/web/shared/presentation-interpolation.mjs",
+      "source": "web/shared/presentation-interpolation.mjs",
+      "bytes": 3700,
+      "sha256": "746172181576cdabc2eee85a5c0980ee7db1aafd3b5137a2e3cad0ff4211a59a"
+    },
+    {
+      "path": "templates/web/shared/profile-window.js",
+      "source": "web/shared/profile-window.js",
+      "bytes": 3162,
+      "sha256": "0c014e50f1450e63fe6a237e32eac0bcf95721d22b21c1415fa217100093c21e"
+    },
+    {
+      "path": "templates/web/shared/projected-base64.js",
+      "source": "web/shared/projected-base64.js",
+      "bytes": 497,
+      "sha256": "003dbaa7539c61740aca637561f4cfe0600267c7d0457f279d794345100c0bc2"
+    },
+    {
+      "path": "templates/web/shared/projected-frame-material.mjs",
+      "source": "web/shared/projected-frame-material.mjs",
+      "bytes": 3469,
+      "sha256": "59a8a471a834d8f0d6d956337d87fc15a97366a8400086bf04d3649a5ccbfdf5"
+    },
+    {
+      "path": "templates/web/shared/projected-frame.mjs",
+      "source": "web/shared/projected-frame.mjs",
+      "bytes": 5152,
+      "sha256": "b53af29699f10862a014e29c95d5662b11e5b7de6ffabe958da21ea3f7cdb6e1"
+    },
+    {
+      "path": "templates/web/shared/projected-geometry.js",
+      "source": "web/shared/projected-geometry.js",
+      "bytes": 9005,
+      "sha256": "b31c5169eb275a5dbdf90a2d50675c023d856fe8a9daed7fff1f73f6da2a03de"
+    },
+    {
+      "path": "templates/web/shared/raster-diagnostics.mjs",
+      "source": "web/shared/raster-diagnostics.mjs",
+      "bytes": 8000,
+      "sha256": "66920522be36283367fb62aa354ed01754c0c11b672f00aadf7e9b24cbacb033"
+    },
+    {
+      "path": "templates/web/shared/renderer-selection.mjs",
+      "source": "web/shared/renderer-selection.mjs",
+      "bytes": 4472,
+      "sha256": "8b389a4c5ec421565fddcdd33df75de7a5599b1ec310171225a8e5cfe00852dc"
+    },
+    {
+      "path": "templates/web/shared/retained-image-generation.mjs",
+      "source": "web/shared/retained-image-generation.mjs",
+      "bytes": 1452,
+      "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c"
+    },
+    {
+      "path": "templates/web/shared/runtime-backend.mjs",
+      "source": "web/shared/runtime-backend.mjs",
+      "bytes": 5808,
+      "sha256": "b62585d5cf122bcd7c0c6c131712d5b3fae10d92406da65c6961946b40782538"
+    },
+    {
+      "path": "templates/web/shared/runtime-core.mjs",
+      "source": "web/shared/runtime-core.mjs",
+      "bytes": 8660,
+      "sha256": "2ddc08007a4cf8460c67d5929a9d524cc4a764980bb0e86a1e3727635dbe6c87"
+    },
+    {
+      "path": "templates/web/shared/runtime-worker.js",
+      "source": "web/shared/runtime-worker.js",
+      "bytes": 2212,
+      "sha256": "a6fe784f21693eedbecd2c4b08c9196e4da9d1f1cb48d838b7fdadd260e62216"
+    },
+    {
+      "path": "templates/web/shared/save-publication.mjs",
+      "source": "web/shared/save-publication.mjs",
+      "bytes": 1266,
+      "sha256": "f559315d6ec4e75134ddda340db40e34a554b2b04bf57a1016a3c3578dcb0f66"
+    },
+    {
+      "path": "templates/web/shared/spatial-gpu.mjs",
+      "source": "web/shared/spatial-gpu.mjs",
+      "bytes": 11537,
+      "sha256": "79d630684148b94024cf3424472ac39801ba9cea14039f85183f88df353b760d"
+    },
+    {
+      "path": "templates/web/shared/spatial-host.mjs",
+      "source": "web/shared/spatial-host.mjs",
+      "bytes": 5312,
+      "sha256": "4ae64136e03f490e967dad3d4eca0721e03172a5be30865b52c837b24e100e05"
+    },
+    {
+      "path": "templates/web/shared/spatial-metrics.mjs",
+      "source": "web/shared/spatial-metrics.mjs",
+      "bytes": 1939,
+      "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+    },
+    {
+      "path": "templates/web/shared/spatial.wgsl",
+      "source": "web/shared/spatial.wgsl",
+      "bytes": 7595,
+      "sha256": "336b06b68b0f10eeed66ad71c95842fb9af6963745ed53ade3f0a367fa0e059a"
+    },
+    {
+      "path": "templates/web/shared/startup-presentation.mjs",
+      "source": "web/shared/startup-presentation.mjs",
+      "bytes": 3957,
+      "sha256": "930554c590587bca5e08064a47bbe99dc17e68968b32322b7177b210b51cefc9"
+    },
+    {
+      "path": "templates/web/shared/ui-contract.mjs",
+      "source": "web/shared/ui-contract.mjs",
+      "bytes": 315,
+      "sha256": "2a6efb88fa9c2d08b7f1350bde15e589c2e3fca5920c1505b21cfcff53528cc3"
+    },
+    {
+      "path": "templates/web/shared/ui-cursor.mjs",
+      "source": "web/shared/ui-cursor.mjs",
+      "bytes": 5938,
+      "sha256": "1d48485fe01c43b34a80c6aa80578c1d9b7441de289782ab3c5854805a3c70f3"
+    },
+    {
+      "path": "templates/web/shared/ui-geometry.mjs",
+      "source": "web/shared/ui-geometry.mjs",
+      "bytes": 5590,
+      "sha256": "a2bfab9f88f3272299ed68e8b3b14db95c4efff13c143bae760a5075726b0e0d"
+    },
+    {
+      "path": "templates/web/shared/ui-image-batch.mjs",
+      "source": "web/shared/ui-image-batch.mjs",
+      "bytes": 7263,
+      "sha256": "63df9a53a2f8bb1555ea63233190f9223b48f4b6c3147ec747623a656b7c2e26"
+    },
+    {
+      "path": "templates/web/shared/ui-presentation.mjs",
+      "source": "web/shared/ui-presentation.mjs",
+      "bytes": 1465,
+      "sha256": "a5b024a84933351cf9ff74d4e4f7e7ad80dd1867da430a8c9919df0d4f59c487"
+    },
+    {
+      "path": "templates/web/shared/ui-scroll.mjs",
+      "source": "web/shared/ui-scroll.mjs",
+      "bytes": 19133,
+      "sha256": "c080c247f544213b549104bb8e658fd39501316962c358c5123c23264cfba76d"
+    },
+    {
+      "path": "templates/web/shared/ui-style.mjs",
+      "source": "web/shared/ui-style.mjs",
+      "bytes": 10619,
+      "sha256": "c3f22bf97b655bba42787c69c516bc253c89e22c6ed80c4949804ada4407bea0"
+    },
+    {
+      "path": "templates/web/shared/ui-text-input.mjs",
+      "source": "web/shared/ui-text-input.mjs",
+      "bytes": 10060,
+      "sha256": "8ae898c6861a7e3f5e2474a6d61c3623322137b7a21b7c680a76a7d5605cbe29"
+    },
+    {
+      "path": "templates/web/shared/ui-tree.js",
+      "source": "web/shared/ui-tree.js",
+      "bytes": 8417,
+      "sha256": "5c6624619fa18ee56dbc75b17d48d08eca51b37eb6d71e182b1e2754d0112d76"
+    },
+    {
+      "path": "templates/web/shared/webgpu-snapshot.js",
+      "source": "web/shared/webgpu-snapshot.js",
+      "bytes": 20370,
+      "sha256": "d4483146ef4503e1f9fe3ce69164c86aa03ce0cbaaa01f246bd5e2c25f4417c0"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/LICENSE",
+      "source": "web/vendor/effekseer/LICENSE",
+      "bytes": 1104,
+      "sha256": "3bb9a8e1207233813ef7727bb39e4142494cb62e852d73e43390cbe81c45c149"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/effekseer.js",
+      "source": "web/vendor/effekseer/effekseer.js",
+      "bytes": 199689,
+      "sha256": "592327d692ea681a731efc7ddc874a3e86aaf0f4b719a0f66767d233c2fd867b"
+    },
+    {
+      "path": "templates/web/vendor/effekseer/effekseer.wasm",
+      "source": "web/vendor/effekseer/effekseer.wasm",
+      "bytes": 1089618,
+      "sha256": "f9689b3721fc815e2d4b0fbcd6daedf9e0b307038d40a6c5b17c0037508ad686"
+    },
+    {
+      "path": "templates/web/vendor/rapier/LICENSE",
+      "source": "web/vendor/rapier/LICENSE",
+      "bytes": 11548,
+      "sha256": "86ae51c591e742d80ce56823d35e2e176b53e38a99bd8499c85dae31ef4fe1f7"
+    },
+    {
+      "path": "templates/web/vendor/three/LICENSE",
+      "source": "web/vendor/three/LICENSE",
+      "bytes": 1102,
+      "sha256": "df2a91696186fe58c92518a25d48bc59c8ee2edc7cac9ca6d19a5a0d599a2a05"
+    },
+    {
+      "path": "templates/web/vendor/three/three.core.js",
+      "source": "web/vendor/three/three.core.js",
+      "bytes": 1460002,
+      "sha256": "58018be79ec42c8e683e13abe7ff4de9095b5d49d8424dbcc57e09ef153633ce"
+    },
+    {
+      "path": "templates/web/vendor/three/three.player.min.js",
+      "source": "web/vendor/three/three.player.min.js",
+      "bytes": 494261,
+      "sha256": "48d1fa041eb6969ce4c396558d15aa774e9b43699010c80a740d2442213cbdc0"
+    },
+    {
+      "path": "templates/web/vendor/three/three.webgpu.js",
+      "source": "web/vendor/three/three.webgpu.js",
+      "bytes": 1900340,
+      "sha256": "d1695e30a7fc1047ec160424c33a28c5a8543fa8f838a1cf33348ed903b9ac54"
+    }
+  ],
+  "types_sha256": "5c92b7d058fb75cf9b063e39ac57e3c6790e8ebc1bfb50219b7e13bb4db12196",
+  "runtime": {
+    "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+    "exports": [
+      "init",
+      "alloc",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "save",
+      "ui",
+      "world"
+    ],
+    "wasm_bytes": 3281490,
+    "source_commit": "aaf4cb09c2bdc2c76d2dbcc2f41e1e44c443e412",
+    "wasm_sha256": "dd01e4fec0049f46dd78c2504b6c6986d2c78c919bb84f03fbb8ce28262f7b20",
+    "phase_profile": false,
+    "profile_mode": "none",
+    "source_dirty": false,
+    "profile": "release",
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "particle",
+      "random",
+      "save",
+      "ui"
+    ],
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "wasm": "unone_player.wasm",
+    "dev_tools": false,
+    "bytecode_optimization_level": 2,
+    "sampling_profile": false,
+    "preview_tools": false,
+    "javascript": "unone-player.js"
+  },
+  "fixture_behavior_unchanged_except_erased_type_annotations": true,
+  "fixture_script_sha256": "d3eb7e77f73f8efcca40a7d12dc195c7825ed7325821063d6ee6c1ac5b141fca"
+}
