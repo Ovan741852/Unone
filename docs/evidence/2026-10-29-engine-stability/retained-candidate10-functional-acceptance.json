@@ -1,0 +1,118 @@
+{
+  "ok": true,
+  "scope": "Actual matching SDK10 inventory/types/official export and main/worker nine-phase functional/visual lifecycle smoke. No FPS, GC, natural memory-soak or universal leak-free claim.",
+  "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+  "source_dirty": false,
+  "sdk_root": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10",
+  "sdk_manifest_sha256": "2c8c09b65214802fb023eb97821f2198e0f9776bee5daf65cc397848acab8f64",
+  "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+  "ui_package_version": "0.6.0",
+  "inventory_files": 146,
+  "template_fingerprints": 100,
+  "types_sha256": "84ff3ff998bc5669fa0efaaed10ca7cf6d6df3a33ee93d8036e8eb022b6425b7",
+  "runtimes": [
+    {
+      "id": "web-production-0",
+      "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "profile_mode": "none",
+      "bytecode_optimization_level": 2,
+      "preview_tools": false,
+      "dev_tools": false
+    },
+    {
+      "id": "web-development-1",
+      "wasm_sha256": "ed3656d06378a4e150999ac6f9819c069a56aa40ba3d14a26bfe6e205d717319",
+      "javascript_sha256": "ca1987c14e9dbc724a47a3fe38f4a74f4a1e7ec3a0603588ee7cdcfa7e5c9e49",
+      "profile_mode": "development-vm",
+      "bytecode_optimization_level": 1,
+      "preview_tools": true,
+      "dev_tools": false
+    }
+  ],
+  "fixture_entry_sha256": "73f85519ce972c0fde76a028bf76267fa157a1bb5be563ac44350e1c5eef85c3",
+  "fixture_game_behavior_unchanged": true,
+  "packed_cli_type_refresh": {
+    "script": "scripts/main.luau",
+    "path": "\\\\?\\D:\\Projects\\Unone\\.cache\\sdk10-official-fixture\\scripts\\main.luau",
+    "changed": false,
+    "bytes_before": 46244,
+    "bytes_after": 46244,
+    "begin_marker": "-- BEGIN UNONE API TYPES",
+    "end_marker": "-- END UNONE API TYPES"
+  },
+  "packed_cli_typecheck": {
+    "tool": "D:/Projects/Unone/.toolcache/luau-0.734/luau-analyze.exe",
+    "files": [
+      "D:\\Projects\\Unone\\.cache\\sdk10-official-fixture\\scripts\\main.luau"
+    ],
+    "passed": true,
+    "output": ""
+  },
+  "release_root": "releases/fdefc9f4a53f03bca881203ac1c28781c9e460090a322300d53911df0a76d4d5/",
+  "export_root": "D:\\Projects\\Unone\\artifacts\\retained-official-web-20261030-candidate10",
+  "smoke_report": "artifacts/retained-official-web-smoke-candidate10/report.json",
+  "smoke_report_sha256": "3467901b0f02c9038e01c93c609556cb8720ade48af3291815553f5ee32ba052",
+  "backends": [
+    {
+      "backend": "main",
+      "ok": true,
+      "phases": [
+        "initial",
+        "moving-camera",
+        "save-replacement",
+        "official-button-hit",
+        "replace-live-resource",
+        "remove-after-tree-replacement",
+        "recreate-id",
+        "context-lost",
+        "context-restored"
+      ],
+      "errors": 0,
+      "warnings": 0,
+      "failed_requests": 0
+    },
+    {
+      "backend": "worker",
+      "ok": true,
+      "phases": [
+        "initial",
+        "moving-camera",
+        "save-replacement",
+        "official-button-hit",
+        "replace-live-resource",
+        "remove-after-tree-replacement",
+        "recreate-id",
+        "context-lost",
+        "context-restored"
+      ],
+      "errors": 0,
+      "warnings": 0,
+      "failed_requests": 0
+    }
+  ],
+  "screenshot_review": {
+    "actually_viewed": true,
+    "files": [
+      "main/initial.png",
+      "main/restored.png",
+      "worker/initial.png",
+      "worker/restored.png"
+    ],
+    "observations": "Both main and worker show expected ordered cropped/alpha artwork, Canvas HUD and official camera button. Restored views show recreated artwork and Resume camera state; no missing content or error overlay observed."
+  },
+  "observer_migration": {
+    "scope": "Passive observer only; exact exported official readObservation and InstanceReceiver restore leased UI. No private codec, additional Core commands, renderer or nine-phase/assertion/stimulus changes.",
+    "before_sha256": "8bc458d22b318229a0dd601696c7bb30c9a875aea098005e5932f970ec27d7a5",
+    "after_sha256": "12e8cff322221f952c780d4c8f1b1ff37dc8dbc4bdc0b6772d3eb04767baff47",
+    "diff": ".cache/sdk10-smoke-observer-migration/diff.patch",
+    "syntax_check_passed": true,
+    "functional_phase_source_unchanged": true
+  },
+  "cleanup": {
+    "contexts_closed": true,
+    "browser_closed": true,
+    "server_closed": true,
+    "evidence": "Runner exit0 after awaited context.close/browser.close/server.close finally blocks."
+  }
+}

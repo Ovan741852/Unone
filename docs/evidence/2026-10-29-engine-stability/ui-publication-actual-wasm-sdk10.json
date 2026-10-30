@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "scope": "Actual emitted production10 WASM and official synchronous decoder correctness; no browser/FPS/GC measurement",
+  "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+  "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+  "runtime": "D:\\Projects\\Unone\\artifacts\\web-retained-20261030-runtime-candidate10",
+  "wire": {
+    "check_names": [
+      "Actual module exports optional UI transport",
+      "Ordinary UI without image registry uses leased wire",
+      "Leased ordinary UI preserves full canonical state and digest",
+      "Actual WASM lease decodes to private deeply immutable owned UI",
+      "120 unchanged ticks preserve UI object identity, generation, pointer and revision",
+      "Changed UI creates a new owned generation while old snapshots remain unchanged",
+      "Changed encoded UI advances revision in the same epoch",
+      "Disabled transport publishes complete inline UI with unchanged digest",
+      "Re-enable retains epoch and never reuses a retired revision",
+      "UI, artwork, save and encoded instances coexist without digest changes",
+      "UI lease coexists with memory instances and full canonical digest",
+      "Equal UI bytes retain UI generation while fresh resource definitions and private logical usage update",
+      "Removing the final artwork retires its registry while keeping current UI, save and instance leases",
+      "No-UI world preserves absent canonical UI and direct publication",
+      "New runtime uses a distinct epoch even when initial UI bytes are identical",
+      "Unload clears the current publication and decoder ownership cache"
+    ],
+    "unchanged_tick_identity_count": 120,
+    "failed": 0,
+    "original_failure": "Cache-only fixture used key/value save.set instead of canonical whole-payload save.set. Production code unchanged; failed raw report preserved.",
+    "preserved_intermediate": [
+      ".cache/ui-tree-publication-wasm-sdk10-run1/report.json",
+      ".cache/ui-tree-publication-wasm-sdk10-run2/report.json"
+    ],
+    "raw": ".cache/ui-tree-publication-wasm-sdk10-run3/report.json",
+    "passed": 16
+  },
+  "ownership": {
+    "check_names": [
+      "Actual selected production ABI has no developer entry",
+      "Actual WASM ordinary deep freeze/detach/COW/granted bounds and shared DAG assertions execute",
+      "Actual WASM publishes unchanged canonical child data",
+      "Actual bundled package executes through normal fixed tick",
+      "Bundled WASM package resists global/getfenv/setfenv shadowing and cached-cost/depth/cycle bypass",
+      "Managed __eq impostor assertions pass through actual public composer",
+      "Actual WASM counts shared leaves and retained quads against original screen budget",
+      "UI-only request does not run Game.update or advance simulation",
+      "Actual WASM managed handle materializes requested range through frozen ancestors",
+      "Old detached published snapshot remains unchanged",
+      "Malformed virtual materialization fails publication",
+      "Actual WASM live private contents and published UI roll back after failed materialization",
+      "Managed request resumes after failure without an extra tick",
+      "Actual WASM retires handle and revalidates stale mutable descendants",
+      "Stale retired UI request cannot resurrect old content",
+      "Actual WASM unload clears publication",
+      "Fresh runtime after unload rebuilds valid private ownership state"
+    ],
+    "passed": 17,
+    "raw": ".cache/ui06-wasm-ownership-sdk10-run1/report.json",
+    "failed": 0
+  },
+  "limitations": [
+    "Actual emitted production WASM/Luau + synchronous official decoder only. No browser, GPU, worker scheduling, FPS, GC-frequency or leak-free verdict.",
+    "Escaped >64MiB fallback, developer reload rollback and canonical scratch retirement are native ABI gates; this small actual-WASM fixture does not allocate a >64MiB UI."
+  ]
+}

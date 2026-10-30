@@ -1,0 +1,2373 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "source_sha256": "726a375ada32b069c33cd6ab43a24b848116d111c8a5a47270357ef1e6753af0",
+  "wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60",
+  "scope": "Actual matching Sampler9 opt2 WASM, same unmodified Game726, named fixture/seed42/1600x900; inventory at frame18 then3600 sequential fixed empty-input ticks in12 independent300-tick sampling=true windows. Tickwall brackets only unone_web_tick, excluding setter, Node decoding, profile requests and file IO. Instrumented diagnosis, not realtime FPS.",
+  "total_ticks": 3600,
+  "blocks": [
+    {
+      "block": 1,
+      "frames": [
+        19,
+        318
+      ],
+      "simulation_time_seconds": 5.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 10.103999999999814,
+        "median_ms": 11.169999999999959,
+        "p95_ms": 17.24890000000005,
+        "p99_ms": 31.37299999999982,
+        "max_ms": 32.039999999999964,
+        "mean_ms": 12.077171000000002,
+        "total_ms": 3623.1513000000004
+      },
+      "boundary_current_luau_allocated_bytes": 16849119,
+      "vm_totals": {
+        "allocation_growth_bytes": 492576362,
+        "allocation_growth_events": 5727871,
+        "incremental_gc_steps": 246954,
+        "incremental_gc_ms": 397.5442320000003,
+        "incremental_gc_max_step_ms": 0.869999
+      },
+      "samples": 2995,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1431,
+        "package_copy_visit": 520,
+        "package_finalize_visit": 552,
+        "world_components": 0,
+        "world_letters": 0,
+        "c_anonymous": 1
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 4
+        }
+      ],
+      "top_self": [
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 552,
+          "inclusive_samples": 575
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 520,
+          "inclusive_samples": 586
+        },
+        {
+          "key": "scripts/main.luau:5853:passable",
+          "self_samples": 173,
+          "inclusive_samples": 193
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 156,
+          "inclusive_samples": 156
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 133,
+          "inclusive_samples": 133
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 112,
+          "inclusive_samples": 275
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 75,
+          "inclusive_samples": 75
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 73,
+          "inclusive_samples": 206
+        },
+        {
+          "key": "scripts/main.luau:11813:release",
+          "self_samples": 55,
+          "inclusive_samples": 55
+        },
+        {
+          "key": "@packages/unone-ui:209:mergeOwnedStyle",
+          "self_samples": 54,
+          "inclusive_samples": 54
+        },
+        {
+          "key": "scripts/main.luau:13473:<anonymous>",
+          "self_samples": 48,
+          "inclusive_samples": 53
+        },
+        {
+          "key": "scripts/main.luau:2865:chunkAt",
+          "self_samples": 48,
+          "inclusive_samples": 61
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2771:biome",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 2
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 1
+      },
+      "save_bytes": 111836,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 2,
+      "frames": [
+        319,
+        618
+      ],
+      "simulation_time_seconds": 10.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 9.966199999999844,
+        "median_ms": 11.242400000000089,
+        "p95_ms": 15.35189999999966,
+        "p99_ms": 22.606399999999667,
+        "max_ms": 24.96520000000055,
+        "mean_ms": 11.760152333333323,
+        "total_ms": 3528.045699999997
+      },
+      "boundary_current_luau_allocated_bytes": 16966925,
+      "vm_totals": {
+        "allocation_growth_bytes": 473940440,
+        "allocation_growth_events": 5648315,
+        "incremental_gc_steps": 231980,
+        "incremental_gc_ms": 386.44042099999984,
+        "incremental_gc_max_step_ms": 0.7613
+      },
+      "samples": 2895,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1415,
+        "package_copy_visit": 517,
+        "package_finalize_visit": 538,
+        "world_components": 2,
+        "world_letters": 1,
+        "c_anonymous": 1
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 7
+        }
+      ],
+      "top_self": [
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 538,
+          "inclusive_samples": 563
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 517,
+          "inclusive_samples": 604
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 134,
+          "inclusive_samples": 134
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 133,
+          "inclusive_samples": 133
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 113,
+          "inclusive_samples": 277
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 88,
+          "inclusive_samples": 88
+        },
+        {
+          "key": "scripts/main.luau:5853:passable",
+          "self_samples": 77,
+          "inclusive_samples": 83
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 73,
+          "inclusive_samples": 197
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 55,
+          "inclusive_samples": 803
+        },
+        {
+          "key": "scripts/main.luau:11813:release",
+          "self_samples": 55,
+          "inclusive_samples": 55
+        },
+        {
+          "key": "@packages/unone-ui:209:mergeOwnedStyle",
+          "self_samples": 53,
+          "inclusive_samples": 53
+        },
+        {
+          "key": "scripts/main.luau:13473:<anonymous>",
+          "self_samples": 50,
+          "inclusive_samples": 59
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 2
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 2
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2810:kind",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 2
+      },
+      "save_bytes": 119928,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 3,
+      "frames": [
+        619,
+        918
+      ],
+      "simulation_time_seconds": 15.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 10.369599999999991,
+        "median_ms": 11.399799999999232,
+        "p95_ms": 15.936299999999392,
+        "p99_ms": 22.475099999999657,
+        "max_ms": 25.917999999999665,
+        "mean_ms": 12.053002999999984,
+        "total_ms": 3615.900899999995
+      },
+      "boundary_current_luau_allocated_bytes": 18214815,
+      "vm_totals": {
+        "allocation_growth_bytes": 484967553,
+        "allocation_growth_events": 5787720,
+        "incremental_gc_steps": 238692,
+        "incremental_gc_ms": 400.5024259999997,
+        "incremental_gc_max_step_ms": 0.777001
+      },
+      "samples": 2962,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1452,
+        "package_copy_visit": 518,
+        "package_finalize_visit": 566,
+        "world_components": 4,
+        "world_letters": 2,
+        "c_anonymous": 5
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 16
+        }
+      ],
+      "top_self": [
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 566,
+          "inclusive_samples": 598
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 518,
+          "inclusive_samples": 598
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 155,
+          "inclusive_samples": 155
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 136,
+          "inclusive_samples": 136
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 119,
+          "inclusive_samples": 290
+        },
+        {
+          "key": "scripts/main.luau:5853:passable",
+          "self_samples": 90,
+          "inclusive_samples": 96
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 88,
+          "inclusive_samples": 88
+        },
+        {
+          "key": "scripts/main.luau:11813:release",
+          "self_samples": 70,
+          "inclusive_samples": 70
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 67,
+          "inclusive_samples": 186
+        },
+        {
+          "key": "@packages/unone-ui:209:mergeOwnedStyle",
+          "self_samples": 53,
+          "inclusive_samples": 53
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 52,
+          "inclusive_samples": 834
+        },
+        {
+          "key": "scripts/main.luau:11721:tile",
+          "self_samples": 42,
+          "inclusive_samples": 102
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 3
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 3
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 2
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 2
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2774:road",
+            "scripts/main.luau:2781:passable",
+            "scripts/main.luau:6458:sbWorldPath",
+            "scripts/main.luau:6515:sbBeginOuting",
+            "scripts/main.luau:6535:sbAgentStep",
+            "scripts/main.luau:6897:update",
+            "scripts/main.luau:17550:updateSettlement",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 2
+      },
+      "save_bytes": 119928,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 4,
+      "frames": [
+        919,
+        1218
+      ],
+      "simulation_time_seconds": 20.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 10.106999999999971,
+        "median_ms": 15.889799999999013,
+        "p95_ms": 21.415999999999258,
+        "p99_ms": 24.553100000000995,
+        "max_ms": 30.093900000001668,
+        "mean_ms": 16.046201000000075,
+        "total_ms": 4813.860300000022
+      },
+      "boundary_current_luau_allocated_bytes": 14775007,
+      "vm_totals": {
+        "allocation_growth_bytes": 650236881,
+        "allocation_growth_events": 6310615,
+        "incremental_gc_steps": 342993,
+        "incremental_gc_ms": 496.0169449999995,
+        "incremental_gc_max_step_ms": 0.424001
+      },
+      "samples": 4120,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1414,
+        "package_copy_visit": 514,
+        "package_finalize_visit": 535,
+        "world_components": 400,
+        "world_letters": 172,
+        "c_anonymous": 524
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 1114
+        }
+      ],
+      "top_self": [
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 535,
+          "inclusive_samples": 560
+        },
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 524,
+          "inclusive_samples": 524
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 514,
+          "inclusive_samples": 611
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 400,
+          "inclusive_samples": 607
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 172,
+          "inclusive_samples": 489
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 146,
+          "inclusive_samples": 146
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 129,
+          "inclusive_samples": 129
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 105,
+          "inclusive_samples": 275
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 101,
+          "inclusive_samples": 101
+        },
+        {
+          "key": "scripts/main.luau:5853:passable",
+          "self_samples": 74,
+          "inclusive_samples": 77
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 66,
+          "inclusive_samples": 204
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 63,
+          "inclusive_samples": 846
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 395
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 312
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 204
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 172
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 10
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 2
+      },
+      "save_bytes": 125197,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 5,
+      "frames": [
+        1219,
+        1518
+      ],
+      "simulation_time_seconds": 25.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 16.13300000000163,
+        "median_ms": 19.053899999998976,
+        "p95_ms": 23.890599999998813,
+        "p99_ms": 26.672699999999168,
+        "max_ms": 33.50630000000092,
+        "mean_ms": 19.398099333333395,
+        "total_ms": 5819.429800000018
+      },
+      "boundary_current_luau_allocated_bytes": 16276443,
+      "vm_totals": {
+        "allocation_growth_bytes": 765038184,
+        "allocation_growth_events": 6736202,
+        "incremental_gc_steps": 416600,
+        "incremental_gc_ms": 589.6302879999997,
+        "incremental_gc_max_step_ms": 0.4749
+      },
+      "samples": 5047,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1430,
+        "package_copy_visit": 509,
+        "package_finalize_visit": 536,
+        "world_components": 726,
+        "world_letters": 276,
+        "c_anonymous": 917
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 1963
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 917,
+          "inclusive_samples": 917
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 726,
+          "inclusive_samples": 1116
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 536,
+          "inclusive_samples": 562
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 509,
+          "inclusive_samples": 582
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 276,
+          "inclusive_samples": 803
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 144,
+          "inclusive_samples": 144
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 134,
+          "inclusive_samples": 134
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 116,
+          "inclusive_samples": 280
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 81,
+          "inclusive_samples": 81
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 68,
+          "inclusive_samples": 815
+        },
+        {
+          "key": "scripts/main.luau:11813:release",
+          "self_samples": 62,
+          "inclusive_samples": 62
+        },
+        {
+          "key": "@packages/unone-ui:209:mergeOwnedStyle",
+          "self_samples": 60,
+          "inclusive_samples": 60
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 724
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 523
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 387
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 273
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 29
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 2
+      },
+      "save_bytes": 125198,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 6,
+      "frames": [
+        1519,
+        1818
+      ],
+      "simulation_time_seconds": 30.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 18.592899999999645,
+        "median_ms": 20.610199999999168,
+        "p95_ms": 24.448300000000017,
+        "p99_ms": 28.09349999999904,
+        "max_ms": 30.397200000003068,
+        "mean_ms": 21.01811533333353,
+        "total_ms": 6305.434600000059
+      },
+      "boundary_current_luau_allocated_bytes": 14754968,
+      "vm_totals": {
+        "allocation_growth_bytes": 837271403,
+        "allocation_growth_events": 7021500,
+        "incremental_gc_steps": 458155,
+        "incremental_gc_ms": 624.8561359999998,
+        "incremental_gc_max_step_ms": 0.395799
+      },
+      "samples": 5538,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1408,
+        "package_copy_visit": 510,
+        "package_finalize_visit": 556,
+        "world_components": 855,
+        "world_letters": 390,
+        "c_anonymous": 1198
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 2491
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 1198,
+          "inclusive_samples": 1198
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 855,
+          "inclusive_samples": 1309
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 556,
+          "inclusive_samples": 586
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 510,
+          "inclusive_samples": 593
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 390,
+          "inclusive_samples": 1134
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 131,
+          "inclusive_samples": 131
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 130,
+          "inclusive_samples": 130
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 110,
+          "inclusive_samples": 276
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 87,
+          "inclusive_samples": 87
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 67,
+          "inclusive_samples": 197
+        },
+        {
+          "key": "scripts/main.luau:996:code",
+          "self_samples": 66,
+          "inclusive_samples": 2623
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 60,
+          "inclusive_samples": 803
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 818
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 710
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 432
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 376
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 37
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 2
+      },
+      "save_bytes": 126621,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 7,
+      "frames": [
+        1819,
+        2118
+      ],
+      "simulation_time_seconds": 35.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 19.779499999996915,
+        "median_ms": 22.391599999999016,
+        "p95_ms": 25.79070000000138,
+        "p99_ms": 32.36849999999686,
+        "max_ms": 34.19380000000092,
+        "mean_ms": 22.81751366666676,
+        "total_ms": 6845.254100000027
+      },
+      "boundary_current_luau_allocated_bytes": 14408468,
+      "vm_totals": {
+        "allocation_growth_bytes": 921558265,
+        "allocation_growth_events": 7387348,
+        "incremental_gc_steps": 510417,
+        "incremental_gc_ms": 675.3993749999992,
+        "incremental_gc_max_step_ms": 0.255
+      },
+      "samples": 6092,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1387,
+        "package_copy_visit": 500,
+        "package_finalize_visit": 541,
+        "world_components": 1087,
+        "world_letters": 444,
+        "c_anonymous": 1397
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 2994
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 1397,
+          "inclusive_samples": 1397
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 1087,
+          "inclusive_samples": 1664
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 541,
+          "inclusive_samples": 565
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 500,
+          "inclusive_samples": 571
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 444,
+          "inclusive_samples": 1264
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 139,
+          "inclusive_samples": 139
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 134,
+          "inclusive_samples": 134
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 106,
+          "inclusive_samples": 271
+        },
+        {
+          "key": "scripts/main.luau:1039:locate",
+          "self_samples": 86,
+          "inclusive_samples": 115
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 73,
+          "inclusive_samples": 73
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 72,
+          "inclusive_samples": 213
+        },
+        {
+          "key": "scripts/main.luau:996:code",
+          "self_samples": 67,
+          "inclusive_samples": 3176
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1055
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 782
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 549
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 424
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 41
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 2
+      },
+      "save_bytes": 126621,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 8,
+      "frames": [
+        2119,
+        2418
+      ],
+      "simulation_time_seconds": 40.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 21.028999999994994,
+        "median_ms": 22.799599999998463,
+        "p95_ms": 25.784300000006624,
+        "p99_ms": 30.83929999999964,
+        "max_ms": 32.64299999999639,
+        "mean_ms": 23.09189633333318,
+        "total_ms": 6927.568899999955
+      },
+      "boundary_current_luau_allocated_bytes": 14632802,
+      "vm_totals": {
+        "allocation_growth_bytes": 913435004,
+        "allocation_growth_events": 7296249,
+        "incremental_gc_steps": 506042,
+        "incremental_gc_ms": 680.3422860000004,
+        "incremental_gc_max_step_ms": 0.5243990000000001
+      },
+      "samples": 6156,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1395,
+        "package_copy_visit": 498,
+        "package_finalize_visit": 529,
+        "world_components": 1094,
+        "world_letters": 431,
+        "c_anonymous": 1447
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 3033
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 1447,
+          "inclusive_samples": 1447
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 1094,
+          "inclusive_samples": 1704
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 529,
+          "inclusive_samples": 560
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 498,
+          "inclusive_samples": 586
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 431,
+          "inclusive_samples": 1268
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 151,
+          "inclusive_samples": 151
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 124,
+          "inclusive_samples": 124
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 119,
+          "inclusive_samples": 276
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 96,
+          "inclusive_samples": 96
+        },
+        {
+          "key": "scripts/main.luau:996:code",
+          "self_samples": 70,
+          "inclusive_samples": 3177
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 63,
+          "inclusive_samples": 811
+        },
+        {
+          "key": "scripts/main.luau:1023:load",
+          "self_samples": 61,
+          "inclusive_samples": 3033
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 1066
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 804
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 588
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 414
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 48
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 19
+      },
+      "save_bytes": 128288,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 9,
+      "frames": [
+        2419,
+        2718
+      ],
+      "simulation_time_seconds": 45.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 20.841099999997823,
+        "median_ms": 22.302700000000186,
+        "p95_ms": 24.833099999996193,
+        "p99_ms": 26.892500000001746,
+        "max_ms": 28.850899999997637,
+        "mean_ms": 22.569257000000388,
+        "total_ms": 6770.777100000116
+      },
+      "boundary_current_luau_allocated_bytes": 15331696,
+      "vm_totals": {
+        "allocation_growth_bytes": 885715991,
+        "allocation_growth_events": 7194929,
+        "incremental_gc_steps": 489132,
+        "incremental_gc_ms": 650.8092520000002,
+        "incremental_gc_max_step_ms": 0.42139899999999997
+      },
+      "samples": 6022,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1382,
+        "package_copy_visit": 501,
+        "package_finalize_visit": 514,
+        "world_components": 983,
+        "world_letters": 471,
+        "c_anonymous": 1452
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 2976
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 1452,
+          "inclusive_samples": 1452
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 983,
+          "inclusive_samples": 1538
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 514,
+          "inclusive_samples": 545
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 501,
+          "inclusive_samples": 568
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 471,
+          "inclusive_samples": 1368
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 155,
+          "inclusive_samples": 155
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 124,
+          "inclusive_samples": 124
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 101,
+          "inclusive_samples": 273
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 84,
+          "inclusive_samples": 84
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 70,
+          "inclusive_samples": 801
+        },
+        {
+          "key": "scripts/main.luau:1023:load",
+          "self_samples": 69,
+          "inclusive_samples": 2976
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 67,
+          "inclusive_samples": 211
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 948
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 846
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 530
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 456
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 57
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 2
+      },
+      "save_bytes": 128289,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 10,
+      "frames": [
+        2719,
+        3018
+      ],
+      "simulation_time_seconds": 50.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 20.041400000001886,
+        "median_ms": 21.59889999999723,
+        "p95_ms": 24.08729999999923,
+        "p99_ms": 25.806700000001,
+        "max_ms": 28.497299999995448,
+        "mean_ms": 21.86078666666661,
+        "total_ms": 6558.235999999983
+      },
+      "boundary_current_luau_allocated_bytes": 14707076,
+      "vm_totals": {
+        "allocation_growth_bytes": 865135061,
+        "allocation_growth_events": 7170026,
+        "incremental_gc_steps": 476989,
+        "incremental_gc_ms": 639.1432100000004,
+        "incremental_gc_max_step_ms": 1.056901
+      },
+      "samples": 5802,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1391,
+        "package_copy_visit": 494,
+        "package_finalize_visit": 541,
+        "world_components": 873,
+        "world_letters": 418,
+        "c_anonymous": 1380
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 2744
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 1380,
+          "inclusive_samples": 1380
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 873,
+          "inclusive_samples": 1426
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 541,
+          "inclusive_samples": 574
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 494,
+          "inclusive_samples": 558
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 418,
+          "inclusive_samples": 1245
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 151,
+          "inclusive_samples": 151
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 140,
+          "inclusive_samples": 140
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 107,
+          "inclusive_samples": 276
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 75,
+          "inclusive_samples": 75
+        },
+        {
+          "key": "scripts/main.luau:1023:load",
+          "self_samples": 72,
+          "inclusive_samples": 2744
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 71,
+          "inclusive_samples": 205
+        },
+        {
+          "key": "scripts/main.luau:996:code",
+          "self_samples": 67,
+          "inclusive_samples": 2890
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 837
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 795
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 525
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 398
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 54
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 0
+      },
+      "save_bytes": 128203,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 11,
+      "frames": [
+        3019,
+        3318
+      ],
+      "simulation_time_seconds": 55.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 19.014100000000326,
+        "median_ms": 20.639400000000023,
+        "p95_ms": 23.62369999999646,
+        "p99_ms": 26.71310000000085,
+        "max_ms": 28.45350000000326,
+        "mean_ms": 20.971142000000302,
+        "total_ms": 6291.342600000091
+      },
+      "boundary_current_luau_allocated_bytes": 16401395,
+      "vm_totals": {
+        "allocation_growth_bytes": 828599186,
+        "allocation_growth_events": 7048675,
+        "incremental_gc_steps": 453301,
+        "incremental_gc_ms": 618.8993550000004,
+        "incremental_gc_max_step_ms": 0.28259999999999996
+      },
+      "samples": 5538,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1398,
+        "package_copy_visit": 494,
+        "package_finalize_visit": 534,
+        "world_components": 863,
+        "world_letters": 319,
+        "c_anonymous": 1261
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 2504
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 1261,
+          "inclusive_samples": 1261
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 863,
+          "inclusive_samples": 1414
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 534,
+          "inclusive_samples": 563
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 494,
+          "inclusive_samples": 571
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 319,
+          "inclusive_samples": 1029
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 163,
+          "inclusive_samples": 163
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 129,
+          "inclusive_samples": 129
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 113,
+          "inclusive_samples": 286
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 90,
+          "inclusive_samples": 90
+        },
+        {
+          "key": "scripts/main.luau:16913:exploration",
+          "self_samples": 73,
+          "inclusive_samples": 209
+        },
+        {
+          "key": "scripts/main.luau:1023:load",
+          "self_samples": 60,
+          "inclusive_samples": 2504
+        },
+        {
+          "key": "scripts/main.luau:996:code",
+          "self_samples": 59,
+          "inclusive_samples": 2623
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 835
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 679
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 524
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 301
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 46
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 1
+      },
+      "save_bytes": 128203,
+      "ui_bytes": 74794
+    },
+    {
+      "block": 12,
+      "frames": [
+        3319,
+        3618
+      ],
+      "simulation_time_seconds": 60.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 18.951900000000023,
+        "median_ms": 20.949500000002445,
+        "p95_ms": 24.288399999997637,
+        "p99_ms": 28.69289999999455,
+        "max_ms": 35.80689999999595,
+        "mean_ms": 21.341149333332964,
+        "total_ms": 6402.34479999989
+      },
+      "boundary_current_luau_allocated_bytes": 15406447,
+      "vm_totals": {
+        "allocation_growth_bytes": 843712582,
+        "allocation_growth_events": 7131135,
+        "incremental_gc_steps": 463844,
+        "incremental_gc_ms": 636.6693219999997,
+        "incremental_gc_max_step_ms": 0.5211
+      },
+      "samples": 5627,
+      "dropped_samples": 0,
+      "source_self_samples": {
+        "package": 1384,
+        "package_copy_visit": 474,
+        "package_finalize_visit": 517,
+        "world_components": 871,
+        "world_letters": 343,
+        "c_anonymous": 1234
+      },
+      "world_load_caller_stacks": [
+        {
+          "caller": "scripts/main.luau:996:code",
+          "samples": 2517
+        }
+      ],
+      "top_self": [
+        {
+          "key": "=[C]:0:<anonymous>",
+          "self_samples": 1234,
+          "inclusive_samples": 1234
+        },
+        {
+          "key": "scripts/main.luau:987:components",
+          "self_samples": 871,
+          "inclusive_samples": 1377
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 517,
+          "inclusive_samples": 550
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 474,
+          "inclusive_samples": 558
+        },
+        {
+          "key": "scripts/main.luau:982:letters",
+          "self_samples": 343,
+          "inclusive_samples": 1071
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 144,
+          "inclusive_samples": 144
+        },
+        {
+          "key": "scripts/main.luau:15811:input",
+          "self_samples": 134,
+          "inclusive_samples": 134
+        },
+        {
+          "key": "scripts/main.luau:13282:collectMapCell",
+          "self_samples": 94,
+          "inclusive_samples": 282
+        },
+        {
+          "key": "@engine/ui-scroll:144:isManagedNode",
+          "self_samples": 91,
+          "inclusive_samples": 91
+        },
+        {
+          "key": "scripts/main.luau:1039:locate",
+          "self_samples": 74,
+          "inclusive_samples": 85
+        },
+        {
+          "key": "@packages/unone-ui:690:<anonymous>",
+          "self_samples": 67,
+          "inclusive_samples": 817
+        },
+        {
+          "key": "scripts/main.luau:1023:load",
+          "self_samples": 67,
+          "inclusive_samples": 2517
+        }
+      ],
+      "top_world_load_stacks": [
+        {
+          "leaf_first": [
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 828
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 684
+        },
+        {
+          "leaf_first": [
+            "=[C]:0:<anonymous>",
+            "scripts/main.luau:987:components",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 494
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:982:letters",
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 318
+        },
+        {
+          "leaf_first": [
+            "scripts/main.luau:1023:load",
+            "scripts/main.luau:996:code",
+            "scripts/main.luau:2775:crossing",
+            "scripts/main.luau:2817:terrain",
+            "scripts/main.luau:5972:worldPeople",
+            "scripts/main.luau:15077:mapView",
+            "scripts/main.luau:15183:worldHud",
+            "scripts/main.luau:15401:append",
+            "scripts/main.luau:17058:publish",
+            "scripts/main.luau:17624:update"
+          ],
+          "samples": 48
+        }
+      ],
+      "observed_repository_scalars": {
+        "map_cached_tile_descriptors": 717,
+        "map_chunk_created": 0,
+        "map_chunk_removed": 0,
+        "map_fog_field_cache_hit": true,
+        "map_minimap_survey_chunks": 2,
+        "map_resident_chunks": 16,
+        "map_visible_chunks": 4,
+        "npc_agent_steps": 1
+      },
+      "save_bytes": 129538,
+      "ui_bytes": 74794
+    }
+  ],
+  "limits": [
+    "Sampling=true opt2 diagnostic instrumentation changes wall time; no production FPS, renderer or browser evidence.",
+    "luau_memory_bytes is passive current allocated bytes queried at each stop boundary, not reachable/live heap or a window peak; includes dead pending-GC data, stacks, bytecode and table capacities.",
+    "VM allocation growth is cumulative positive allocator-growth requests/events; performance netpositiveheapdelta is not equivalent and is retained without treating it as total traffic.",
+    "Natural incremental GC callback wall/step counters are not V8 events, complete collector cycles or OS stop-the-world pauses.",
+    "Tickwall includes actual existing ABI publication/save work but excludes setter, Node observation decoding, developer commands and file IO. No forced GC, Game edits or clock/scheduler patches.",
+    "Stack callers and source samples are attribution evidence, not exact call/decode/miss counts. Existing scalar observations do not expose repository hit/miss/decode totals; none are invented.",
+    "Different per-block sampled totals can reflect longer work; absolute samples and same300tick denominator are preserved."
+  ]
+}

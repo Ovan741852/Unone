@@ -60,7 +60,18 @@ try{
             await page.addInitScript(()=>{
                 const probe={kind:null,latest:null,snapshotInspections:0,workerDefinitionUpdates:0,workerSaveUpdates:0,saveMainRevision:null,saveBytes:0,storageWrites:0,workerPackets:0,observerErrors:[]};
                 const setItem=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(String(key).startsWith('unone-player:'))probe.storageWrites++;return setItem.call(this,key,value);};
-                const mainResources=new Map();let mainEpoch=null,wasm=null;
+                const mainResources=new Map();let mainEpoch=null,wasm=null,facade=null,officialRead=null,observedPointer=0,observedLength=0;
+                // Import the decoder/receiver from this exact exported release
+                // after its real base element exists. The probe never copies a
+                // private UI codec or issues an additional Core command.
+                const observerModules=new Promise((resolve,reject)=>{
+                    const initialize=async()=>{
+                        try{const [reader,transfer]=await Promise.all([import(new URL('web/shared/load-project.js',document.baseURI)),import(new URL('web/shared/instance-transfer.mjs',document.baseURI))]);officialRead=reader.readObservation;resolve(transfer.InstanceReceiver);}
+                        catch(error){reject(error);}
+                    };
+                    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});else void initialize();
+                });
+                observerModules.catch(error=>probe.observerErrors.push(String(error.message??error)));
                 const metadata=definition=>({revision:definition.revision,bounds:definition.bounds,quads:definition.quads.length,assets:definition.quads.map(quad=>quad.asset)});
                 function adopt(value,resources,transport){
                     if(!value?.world)return;
@@ -71,11 +82,15 @@ try{
                     probe.latest={frame:value.world.frame,observations:{...value.world.observations},resources:Object.fromEntries(resources),nodes,transport};probe.snapshotInspections++;
                 }
                 function mainRead(){
-                    if(!wasm)return;
+                    if(!wasm||!officialRead)return;
                     const pointer=wasm.unone_web_observation_ptr(),length=wasm.unone_web_observation_len();
+                    observedPointer=pointer;observedLength=length;
                     const heap=new Uint8Array(wasm.memory.buffer),decode=bytes=>new TextDecoder().decode(bytes);
                     const value=JSON.parse(decode(heap.subarray(pointer,pointer+length)));
                     if(!value?.world)return;
+                    // The official reader restores all generation leases. Its
+                    // facade reuses the two pointer values already read above.
+                    const restored=officialRead(facade);if(Object.hasOwn(restored.world,'ui'))value.world.ui=restored.world.ui;
                     const transport=value.ui_transport;
                     if(transport){
                         if(transport.epoch!==mainEpoch){mainResources.clear();mainEpoch=transport.epoch;}
@@ -88,7 +103,7 @@ try{
                         adopt(value,[...mainResources].map(([id,entry])=>[id,entry.metadata]),{format:transport.format,epoch:transport.epoch,observationBytes:length,definitionBytes:Object.values(transport.resources).reduce((sum,entry)=>sum+entry.memory.byte_length,0)});
                     }else adopt(value,Object.entries(value.world.ui_image_batches??{}).map(([id,definition])=>[id,metadata(definition)]),{format:'full-json',observationBytes:length});
                 }
-                const capture=result=>{const exports=result?.instance?.exports??result?.exports;if(exports?.unone_web_observation_ptr&&exports.memory){wasm=exports;probe.kind='main-wasm-read';}return result;};
+                const capture=result=>{const exports=result?.instance?.exports??result?.exports;if(exports?.unone_web_observation_ptr&&exports.memory){wasm=exports;facade={get HEAPU8(){return new Uint8Array(exports.memory.buffer);},_unone_web_observation_ptr:()=>observedPointer,_unone_web_observation_len:()=>observedLength};probe.kind='main-wasm-read';}return result;};
                 for(const name of ['instantiate','instantiateStreaming']){
                     const original=WebAssembly[name];WebAssembly[name]=async function(...args){return capture(await original.apply(WebAssembly,args));};
                 }
@@ -97,10 +112,14 @@ try{
                     constructor(...args){
                         super(...args);
                         if(String(args[0]).includes('runtime-worker.js')){
-                            const resources=new Map();probe.kind='worker-message-observer';
+                            const resources=new Map(),receiverReady=observerModules.then(Receiver=>new Receiver());let pending=0,accepting=true;probe.kind='worker-message-observer';
+                            receiverReady.catch(()=>{}); // observerModules records initialization failure.
                             this.addEventListener('message',event=>{
+                                const data=event.data,packet=data?.packet;if(!accepting||!data?.ok||!packet?.value?.world)return;
+                                if(++pending>128){pending--;accepting=false;probe.observerErrors.push('Observer module initialization exceeded128 pending packets');return;}
+                                void receiverReady.then(receiver=>{
                                 try{
-                                    const data=event.data,packet=data?.packet;if(!data?.ok||!packet?.value?.world)return;
+                                    const decoded=receiver.accept(packet);receiver.takeRecycled();
                                     const images=packet.ui_images;if(typeof packet.save?.json==='string'){probe.workerSaveUpdates++;probe.saveBytes=packet.save.json.length;}
                                     if(images){
                                         const candidates=new Map(resources);
@@ -108,8 +127,9 @@ try{
                                         resources.clear();for(const active of images.active){const definition=candidates.get(active.id);if(!definition)throw Error('Observer missing transferred definition');resources.set(active.id,definition);}
                                     }else resources.clear();
                                     probe.workerPackets++;
-                                    adopt(packet.value,resources,{format:images?.format??null,updates:images?.updates.length??0,transfer:data.metrics?.transfer??null});
-                                }catch(error){probe.observerErrors.push(String(error.message??error));}
+                                    adopt(decoded,resources,{format:images?.format??null,updates:images?.updates.length??0,transfer:data.metrics?.transfer??null});
+                                }catch(error){accepting=false;probe.observerErrors.push(String(error.message??error));}
+                                }).catch(error=>{accepting=false;probe.observerErrors.push(String(error.message??error));}).finally(()=>pending--);
                             });
                         }
                     }
