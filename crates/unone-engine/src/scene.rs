@@ -6,7 +6,7 @@ use serde_json::{Map, Value};
 
 use crate::{
     diagnostics::{Diagnostic, SourceLocation},
-    world::{SceneFile, validate_scale3d, validate_transform2d, validate_vec3},
+    world::{SceneEntity, SceneFile, validate_scale3d, validate_transform2d, validate_vec3},
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -210,89 +210,102 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
             return Err(diagnostic);
         }
 
-        if let Err(diagnostic) = validate_transform2d(
-            entity.transform,
-            entity.rotation,
-            entity.scale,
-            &format!("Entity '{}' Transform2D", entity.id),
-        ) {
+        validate_entity(entity, source)?;
+    }
+
+    Ok(())
+}
+
+/// Rules for one entity declaration, shared by scene loading and runtime
+/// `entity.spawn` components so both paths accept exactly the same data.
+fn validate_entity(entity: &SceneEntity, source: SceneSource<'_>) -> Result<(), Box<Diagnostic>> {
+    if let Err(diagnostic) = validate_transform2d(
+        entity.transform,
+        entity.rotation,
+        entity.scale,
+        &format!("Entity '{}' Transform2D", entity.id),
+    ) {
+        return Err(with_scene_context(diagnostic, source, None, None, None));
+    }
+    if let Some(transform3d) = &entity.transform3d {
+        if let Err(diagnostic) = validate_vec3(transform3d.position, "Transform3D position") {
             return Err(with_scene_context(diagnostic, source, None, None, None));
         }
-        if let Some(transform3d) = &entity.transform3d {
-            if let Err(diagnostic) = validate_vec3(transform3d.position, "Transform3D position") {
-                return Err(with_scene_context(diagnostic, source, None, None, None));
-            }
-            if let Err(diagnostic) = validate_vec3(transform3d.rotation, "Transform3D rotation") {
-                return Err(with_scene_context(diagnostic, source, None, None, None));
-            }
-            if let Err(diagnostic) = validate_scale3d(transform3d.scale) {
-                return Err(with_scene_context(diagnostic, source, None, None, None));
-            }
+        if let Err(diagnostic) = validate_vec3(transform3d.rotation, "Transform3D rotation") {
+            return Err(with_scene_context(diagnostic, source, None, None, None));
         }
-        if let Some(mesh3d) = &entity.mesh3d
-            && mesh3d.asset.trim().is_empty()
-        {
+        if let Err(diagnostic) = validate_scale3d(transform3d.scale) {
+            return Err(with_scene_context(diagnostic, source, None, None, None));
+        }
+    }
+    if let Some(mesh3d) = &entity.mesh3d
+        && mesh3d.asset.trim().is_empty()
+    {
+        return Err(scene_error(
+            source,
+            "SCENE_MESH3D_INVALID",
+            "Mesh3D asset is invalid",
+            format!("Entity '{}' must provide a Mesh3D asset.", entity.id),
+        ));
+    }
+    if let Some(sprite) = &entity.sprite
+        && !sprite_size_valid(sprite)
+    {
+        return Err(scene_error(
+            source,
+            "SCENE_SPRITE_INVALID",
+            "Sprite size is invalid",
+            format!(
+                "Entity '{}' Sprite size must have finite x and y values greater than 0.",
+                entity.id
+            ),
+        ));
+    }
+    if let Some(body) = &entity.rigidbody {
+        if body.mass <= 0.0 || !body.mass.is_finite() {
             return Err(scene_error(
                 source,
-                "SCENE_MESH3D_INVALID",
-                "Mesh3D asset is invalid",
-                format!("Entity '{}' must provide a Mesh3D asset.", entity.id),
-            ));
-        }
-        if let Some(sprite) = &entity.sprite
-            && (sprite.size.x <= 0.0
-                || sprite.size.y <= 0.0
-                || !sprite.size.x.is_finite()
-                || !sprite.size.y.is_finite())
-        {
-            return Err(scene_error(
-                source,
-                "SCENE_SPRITE_INVALID",
-                "Sprite size is invalid",
+                "SCENE_PHYSICS_INVALID",
+                "RigidBody2D mass is invalid",
                 format!(
-                    "Entity '{}' Sprite size must have finite x and y values greater than 0.",
+                    "Entity '{}' mass must be a finite number greater than 0.",
                     entity.id
                 ),
             ));
         }
-        if let Some(body) = &entity.rigidbody {
-            if body.mass <= 0.0 || !body.mass.is_finite() {
-                return Err(scene_error(
-                    source,
-                    "SCENE_PHYSICS_INVALID",
-                    "RigidBody2D mass is invalid",
-                    format!(
-                        "Entity '{}' mass must be a finite number greater than 0.",
-                        entity.id
-                    ),
-                ));
-            }
-            if body.radius <= 0.0 || !body.radius.is_finite() {
-                return Err(scene_error(
-                    source,
-                    "SCENE_PHYSICS_INVALID",
-                    "RigidBody2D radius is invalid",
-                    format!(
-                        "Entity '{}' radius must be a finite number greater than 0.",
-                        entity.id
-                    ),
-                ));
-            }
-            if !body.restitution.is_finite() || !(0.0..=1.0).contains(&body.restitution) {
-                return Err(scene_error(
-                    source,
-                    "SCENE_PHYSICS_INVALID",
-                    "RigidBody2D restitution is invalid",
-                    format!(
-                        "Entity '{}' restitution must be between 0 and 1.",
-                        entity.id
-                    ),
-                ));
-            }
+        if body.radius <= 0.0 || !body.radius.is_finite() {
+            return Err(scene_error(
+                source,
+                "SCENE_PHYSICS_INVALID",
+                "RigidBody2D radius is invalid",
+                format!(
+                    "Entity '{}' radius must be a finite number greater than 0.",
+                    entity.id
+                ),
+            ));
+        }
+        if !body.restitution.is_finite() || !(0.0..=1.0).contains(&body.restitution) {
+            return Err(scene_error(
+                source,
+                "SCENE_PHYSICS_INVALID",
+                "RigidBody2D restitution is invalid",
+                format!(
+                    "Entity '{}' restitution must be between 0 and 1.",
+                    entity.id
+                ),
+            ));
         }
     }
-
     Ok(())
+}
+
+pub(crate) fn validate_runtime_entity(entity: &SceneEntity) -> Result<(), Box<Diagnostic>> {
+    validate_entity(entity, SceneSource::typed())
+}
+
+/// Sprite size rule shared with `entity.setSprite`.
+pub(crate) fn sprite_size_valid(sprite: &crate::world::SpriteData) -> bool {
+    sprite.size.x > 0.0 && sprite.size.y > 0.0 && sprite.size.x.is_finite() && sprite.size.y.is_finite()
 }
 
 fn scene_error(

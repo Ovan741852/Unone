@@ -1,5 +1,6 @@
 use super::{ApiState, Lua, Table};
-use crate::world::{Transform2DData, Transform3DData, Vec2, Vec3};
+use super::value::lua_value_to_json;
+use crate::world::{SpriteData, Transform2DData, Transform3DData, Vec2, Vec3};
 use std::rc::Rc;
 
 pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
@@ -9,9 +10,13 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let view = Rc::clone(&state.pure_view);
     entity.set(
         "spawn",
-        lua.create_function(move |_, name: String| {
+        lua.create_function(move |_, (name, components): (String, Option<mlua::Value>)| {
             super::ensure_not_view(&view, "entity.spawn")?;
-            Ok(spawn_world.borrow_mut().spawn(&name))
+            let Some(components) = components else {
+                return Ok(spawn_world.borrow_mut().spawn(&name));
+            };
+            let components = lua_value_to_json(components).map_err(mlua::Error::RuntimeError)?;
+            spawn_world.borrow_mut().spawn_with(&name, components).map_err(mlua::Error::RuntimeError)
         })?,
     )?;
 
@@ -205,6 +210,22 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                 .borrow_mut()
                 .set_sprite_visible(&id, visible)
                 .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let sprite_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
+    entity.set(
+        "setSprite",
+        lua.create_function(move |_, (id, sprite): (String, Option<mlua::Value>)| {
+            super::ensure_not_view(&view, "entity.setSprite")?;
+            let sprite = sprite
+                .map(|value| {
+                    let value = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+                    serde_json::from_value::<SpriteData>(value)
+                        .map_err(|error| mlua::Error::RuntimeError(format!("ENTITY_SPRITE_INVALID: {error}")))
+                })
+                .transpose()?;
+            sprite_world.borrow_mut().set_sprite(&id, sprite).map_err(mlua::Error::RuntimeError)
         })?,
     )?;
     Ok(entity)

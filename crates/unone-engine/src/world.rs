@@ -970,35 +970,7 @@ impl World {
             None => CameraState::from_orthographic(scene.camera),
         };
         for entity in scene.entities {
-            let rigidbody = entity.rigidbody.map(|body| RigidBodyState {
-                body_type: body.body_type,
-                mass: body.mass,
-                radius: body.radius,
-                velocity: body.velocity,
-                restitution: body.restitution,
-            });
-            self.entities.insert(
-                entity.id.clone(),
-                EntityState {
-                    id: entity.id,
-                    name: entity.name,
-                    transform: entity.transform,
-                    rotation: entity.rotation,
-                    scale: entity.scale,
-                    transform3d: entity.transform3d,
-                    sprite: entity.sprite,
-                    shader_material: entity.shader_material,
-                    mesh3d: entity.mesh3d,
-                    animation: entity.animation.map(|animation| AnimationState {
-                        asset: animation.asset,
-                        animation: animation.animation,
-                        looping: animation.looping,
-                        speed: animation.speed,
-                        started_frame: self.frame,
-                    }),
-                    rigidbody,
-                },
-            );
+            self.entities.insert(entity.id.clone(), Self::entity_state(entity, self.frame));
         }
         #[cfg(feature = "physics3d")]
         {
@@ -1028,7 +1000,35 @@ impl World {
         }
     }
 
-    pub(crate) fn spawn(&mut self, name: &str) -> String {
+    fn entity_state(entity: SceneEntity, frame: u64) -> EntityState {
+        EntityState {
+            rigidbody: entity.rigidbody.map(|body| RigidBodyState {
+                body_type: body.body_type,
+                mass: body.mass,
+                radius: body.radius,
+                velocity: body.velocity,
+                restitution: body.restitution,
+            }),
+            id: entity.id,
+            name: entity.name,
+            transform: entity.transform,
+            rotation: entity.rotation,
+            scale: entity.scale,
+            transform3d: entity.transform3d,
+            sprite: entity.sprite,
+            shader_material: entity.shader_material,
+            mesh3d: entity.mesh3d,
+            animation: entity.animation.map(|animation| AnimationState {
+                asset: animation.asset,
+                animation: animation.animation,
+                looping: animation.looping,
+                speed: animation.speed,
+                started_frame: frame,
+            }),
+        }
+    }
+
+    fn unique_entity_id(&self, name: &str) -> String {
         let base = if name.is_empty() { "entity" } else { name };
         let mut id = base.to_string();
         let mut index = 2;
@@ -1036,6 +1036,58 @@ impl World {
             id = format!("{base}_{index}");
             index += 1;
         }
+        id
+    }
+
+    /// Create an entity from the same component fields a scene entity declares
+    /// (sprite, mesh3d, transform, transform3d, rigidbody, animation, ...).
+    /// spawn assigns `id` and `name`; unknown fields and invalid values fail
+    /// exactly as they would in scene JSON, and nothing is created on failure.
+    pub(crate) fn spawn_with(&mut self, name: &str, components: serde_json::Value) -> Result<String, String> {
+        let mut fields = match components {
+            serde_json::Value::Object(fields) => fields,
+            serde_json::Value::Array(values) if values.is_empty() => serde_json::Map::new(),
+            _ => return Err("ENTITY_COMPONENTS_INVALID: components must be a table of scene entity fields".into()),
+        };
+        for reserved in ["id", "name"] {
+            if fields.contains_key(reserved) {
+                return Err(format!("ENTITY_COMPONENTS_INVALID: '{reserved}' is assigned by entity.spawn; pass the name as its first argument"));
+            }
+        }
+        let id = self.unique_entity_id(name);
+        fields.insert("id".into(), serde_json::Value::String(id.clone()));
+        fields.insert("name".into(), serde_json::Value::String(name.to_string()));
+        let entity: SceneEntity = serde_json::from_value(serde_json::Value::Object(fields))
+            .map_err(|error| format!("ENTITY_COMPONENTS_INVALID: {error}"))?;
+        crate::scene::validate_runtime_entity(&entity)
+            .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))?;
+        if let Some(material) = &entity.shader_material
+            && (entity.sprite.is_none() || !self.shader_materials.contains_key(material))
+        {
+            return Err(format!("SHADER_MATERIAL_REFERENCE_INVALID: Entity '{id}' needs a sprite and a declared shader material '{material}'"));
+        }
+        let state = Self::entity_state(entity, self.frame);
+        self.entities.insert(id.clone(), state);
+        Ok(id)
+    }
+
+    /// Replace (or with None remove) an entity's sprite, e.g. to swap its asset.
+    pub(crate) fn set_sprite(&mut self, id: &str, sprite: Option<SpriteData>) -> Result<(), String> {
+        if let Some(sprite) = &sprite
+            && !crate::scene::sprite_size_valid(sprite)
+        {
+            return Err(format!("SCENE_SPRITE_INVALID: Entity '{id}' Sprite size must have finite x and y values greater than 0."));
+        }
+        let entity = self.entities.get_mut(id).ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        if sprite.is_none() && entity.shader_material.is_some() {
+            return Err(format!("SHADER_MATERIAL_REFERENCE_INVALID: Entity '{id}' has a shader material, which needs a sprite"));
+        }
+        entity.sprite = sprite;
+        Ok(())
+    }
+
+    pub(crate) fn spawn(&mut self, name: &str) -> String {
+        let id = self.unique_entity_id(name);
         self.entities.insert(
             id.clone(),
             EntityState {

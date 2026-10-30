@@ -28,10 +28,28 @@ export type ObservationValue =
     | {[string]: ObservationValue}
     | {ObservationValue}
 
+-- Runtime entity components use the scene entity fields, names and defaults.
+export type SpriteData = { asset: string, size: Vec2?, visible: boolean?, layer: number? }
+export type Mesh3DData = { asset: string, visible: boolean? }
+export type RigidBody2DData = {
+    body_type: ("dynamic" | "static")?, mass: number?, radius: number?,
+    velocity: Vec2?, restitution: number?,
+}
+export type EntityAnimationData = { asset: string, animation: string, loop: boolean?, speed: number? }
+export type EntityComponents = {
+    transform: Vec2?, rotation: number?, scale: Vec2?, transform3d: Transform3D?,
+    sprite: SpriteData?, shader_material: string?, mesh3d: Mesh3DData?,
+    rigidbody: RigidBody2DData?, animation: EntityAnimationData?,
+}
+
 export type EntityApi = {
-    spawn: (name: string) -> string,
+    -- Without components this creates a bare entity; with them, a rendered or
+    -- physical object validated exactly like a scene entity.
+    spawn: (name: string, components: EntityComponents?) -> string,
     despawn: (id: string) -> (),
     setSpriteVisible: (id: string, visible: boolean) -> (),
+    -- Replace the sprite (e.g. swap its asset); nil removes it.
+    setSprite: (id: string, sprite: SpriteData?) -> (),
     getPosition: (id: string) -> Vec2,
     setPosition: (id: string, position: Vec2) -> (),
     getVelocity: (id: string) -> Vec2,
