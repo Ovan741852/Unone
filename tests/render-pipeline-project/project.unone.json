@@ -1,0 +1,16 @@
+{
+  "name": "RenderPipeline",
+  "entry_script": "main.luau",
+  "main_scene": "scene.json",
+  "systems": {"audio": false, "particle": false, "ui": false, "physics2d": false, "physics3d": false, "camera3d": true},
+  "render_pipeline": {
+    "version": 1,
+    "passes": [
+      {"id": "world", "kind": "scene"},
+      {"id": "glow", "kind": "bloom", "params": {"threshold": 0.6, "strength": 1.2}},
+      {"id": "tone", "kind": "tonemap", "params": {"mode": "aces", "exposure": 1.0}},
+      {"id": "tint", "kind": "studio.tint", "params": {"r": 1.0, "g": 0.55, "b": 0.35, "amount": 0.0}},
+      {"id": "hud", "kind": "ui"}
+    ]
+  }
+}

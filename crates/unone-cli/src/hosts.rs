@@ -53,6 +53,7 @@ const NATIVE_EXPORT_BLOCKED: &[&str] = &["spine", "effekseer"];
 const NATIVE_RUNTIME_BLOCKED: &[&str] = &["spine", "effekseer"];
 const WEB_PRESENTATION_KEYS: &[&str] = &[
     "texture_cache",
+    "render_extensions",
     "renderer_mode",
     "renderer_module",
     "renderer_files",
@@ -258,6 +259,23 @@ pub struct PresentationSettings {
     pub job_policy: JobPolicy,
     pub interpolation: bool,
     pub interpolate_instances: Vec<String>,
+    /// Render pass kinds the official Web renderer loads for render_pipeline
+    /// (ADR 0048). Each module exports createPass; TypeScript is compiled by
+    /// the project's own build before export.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub render_extensions: Vec<RenderExtension>,
+}
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct RenderExtension {
+    /// Namespaced pass kind, such as "studio.vignette".
+    pub kind: String,
+    /// Project-relative .js/.mjs ES module exporting createPass.
+    pub module: String,
+    /// Further project-relative files the module imports or loads.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub files: Vec<String>,
 }
 #[derive(Debug, Default, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -294,6 +312,7 @@ impl PresentationSettings {
                 "RENDERER_REPLACEMENT_NOT_DECLARED: renderer_module/renderer_files require explicit renderer_mode: custom; use engine particle and shader APIs with the official renderer by default"
             ),
             RendererMode::Custom => {
+                ensure!(self.render_extensions.is_empty(), "RENDER_EXTENSIONS_OFFICIAL_ONLY: render_extensions add passes to the official renderer; a custom renderer owns its own passes");
                 ensure!(self.antialias.is_none(), "ANTIALIAS_OFFICIAL_ONLY: antialias is an official renderer construction option; omit it for a custom renderer");
                 let module = self.renderer_module.as_deref().filter(|v| !v.trim().is_empty())
                     .context("RENDERER_MODULE_REQUIRED: renderer_mode custom requires a project-relative .js/.mjs renderer_module")?;
@@ -304,6 +323,16 @@ impl PresentationSettings {
                 let unique: std::collections::BTreeSet<_> = self.renderer_files.iter().collect();
                 ensure!(unique.len() == self.renderer_files.len(), "RENDERER_FILES_DUPLICATE: renderer_files must contain unique project-relative paths");
             }
+        }
+        let mut kinds = std::collections::BTreeSet::new();
+        for extension in &self.render_extensions {
+            let kind_ok = (1..=64).contains(&extension.kind.len()) && extension.kind.contains('.')
+                && extension.kind.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || matches!(b, b'.' | b'_' | b'-'));
+            ensure!(kind_ok, "RENDER_EXTENSION_INVALID: kind '{}' must be namespaced (such as studio.vignette) with a-z, 0-9, '.', '_' or '-'", extension.kind);
+            ensure!(!unone_engine::BUILTIN_RENDER_PASSES.contains(&extension.kind.as_str()), "RENDER_EXTENSION_INVALID: '{}' is a built-in pass kind", extension.kind);
+            ensure!(kinds.insert(extension.kind.as_str()), "RENDER_EXTENSION_DUPLICATE: kind '{}' is declared twice", extension.kind);
+            ensure!(extension.module.ends_with(".js") || extension.module.ends_with(".mjs"),
+                "RENDER_EXTENSION_INVALID: module '{}' must be a .js/.mjs ES module exporting createPass", extension.module);
         }
         Ok(())
     }
@@ -442,6 +471,8 @@ pub fn native_wgpu_export_gate(
     presentation.validate_renderer()?;
     ensure!(presentation.renderer_mode == RendererMode::Official,
         "HOST_RENDERER_UNSUPPORTED: renderer_mode custom is a Web-only extension; native wgpu requires the official renderer");
+    ensure!(presentation.render_extensions.is_empty(),
+        "HOST_RENDER_EXTENSIONS_UNSUPPORTED: render_extensions are JavaScript passes for the official Web renderer; native wgpu has no pass registry yet");
     projected_frame::native_gate(presentation.projected_material_profile)?;
     physical_input::native_gate(presentation.physical_input)?;
     projected_raster::native_gate(presentation.projected_raster)?;
@@ -477,6 +508,27 @@ pub fn native_wgpu_export_gate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn render_extensions_are_namespaced_official_web_modules(){
+        let declared=|value:serde_json::Value|serde_json::from_value::<PresentationSettings>(value).unwrap();
+        let tint=declared(json!({"render_extensions":[{"kind":"studio.tint","module":"render/tint.js","files":["render/lut.png"]}]}));
+        tint.validate_renderer().unwrap();
+        assert!(serde_json::to_value(PresentationSettings::default()).unwrap().get("render_extensions").is_none(), "undeclared keeps presentation.json bytes");
+        for (value,code) in [
+            (json!({"render_extensions":[{"kind":"tint","module":"t.js"}]}),"RENDER_EXTENSION_INVALID"),
+            (json!({"render_extensions":[{"kind":"Studio.Tint","module":"t.js"}]}),"RENDER_EXTENSION_INVALID"),
+            (json!({"render_extensions":[{"kind":"a.b","module":"t.ts"}]}),"RENDER_EXTENSION_INVALID"),
+            (json!({"render_extensions":[{"kind":"a.b","module":"t.js"},{"kind":"a.b","module":"u.js"}]}),"RENDER_EXTENSION_DUPLICATE"),
+            (json!({"renderer_mode":"custom","renderer_module":"r.mjs","renderer_files":["r.mjs"],"render_extensions":[{"kind":"a.b","module":"t.js"}]}),"RENDER_EXTENSIONS_OFFICIAL_ONLY"),
+        ] {
+            let error=declared(value.clone()).validate_renderer().unwrap_err().to_string();
+            assert!(error.contains(code),"{value}: {error}");
+        }
+        assert!(serde_json::from_value::<PresentationSettings>(json!({"render_extensions":[{"kind":"a.b","module":"t.js","entry":"x"}]})).is_err());
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        assert!(native_wgpu_export_gate(&quiet,Some(&tint)).unwrap_err().to_string().contains("HOST_RENDER_EXTENSIONS_UNSUPPORTED"));
+    }
 
     #[test]
     fn ordered_physical_input_is_optional_strict_and_official_web_only(){

@@ -177,6 +177,70 @@
       ],
       "type": "object"
     },
+    "RenderParam": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "format": "double",
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "RenderPass": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "id": {
+          "description": "Stable name game code uses with api.render.setPass.",
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "params": {
+          "additionalProperties": {
+            "$ref": "#/$defs/RenderParam"
+          },
+          "description": "Kind-specific settings; absent ones use the host default.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "kind"
+      ],
+      "type": "object"
+    },
+    "RenderPipeline": {
+      "additionalProperties": false,
+      "properties": {
+        "passes": {
+          "items": {
+            "$ref": "#/$defs/RenderPass"
+          },
+          "type": "array"
+        },
+        "version": {
+          "description": "Contract version; 1 is the only one.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "version",
+        "passes"
+      ],
+      "type": "object"
+    },
     "UiPreviewSpec": {
       "additionalProperties": false,
       "description": "One reachable screen the layout gate should inspect.",
@@ -334,6 +398,17 @@
     },
     "name": {
       "type": "string"
+    },
+    "render_pipeline": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RenderPipeline"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Ordered render passes the official hosts execute (ADR 0048). Undeclared\nkeeps each host's built-in order."
     },
     "runtime_packages": {
       "additionalProperties": {

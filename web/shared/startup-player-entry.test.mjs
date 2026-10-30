@@ -56,7 +56,7 @@ test('actual production startup entry pagehide cancellation prevents late READY 
 test('actual production factory assignment disposes a late resolved renderer after pagehide',async()=>{
  const source=fs.readFileSync(process.env.UNONE_STARTUP_MAIN_SOURCE??new URL('../player/main.js',import.meta.url),'utf8');
  const assignment=source.split('\n').find(line=>line.trimStart().startsWith('renderer=await '));let release,disposed=0;
- const context={adoptStartupRenderer,createPlayerRenderer:()=>new Promise(r=>release=r),canvas:{},presentation:{},createThreeRenderer(){},
+ const context={adoptStartupRenderer,renderPasses:{},createPlayerRenderer:()=>new Promise(r=>release=r),canvas:{},presentation:{},createThreeRenderer(){},
   startupAbort:new AbortController(),disposeRenderer:()=>disposed++,profiler:null};vm.createContext(context);
  vm.runInContext('async function construct(){'+assignment+'}',context);const promise=context.construct();
  context.startupAbort.abort();release({});await assert.rejects(promise,{name:'AbortError'});assert.equal(disposed,1);assert.equal(context.renderer,undefined);

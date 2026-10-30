@@ -39,6 +39,9 @@ pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
     if snapshot.projected_geometry.values().any(|batch|batch.blend==unone_engine::ProjectedBlend::SourceOver) {
         return Err("PROJECTED_BLEND_UNSUPPORTED: source_over requires the official WebGL projected renderer; native sRGB hardware blending does not implement the encoded-color contract".into());
     }
+    if snapshot.render_pipeline.is_some() {
+        return Err("NATIVE_RENDER_PIPELINE_UNSUPPORTED: render_pipeline (ADR 0048) runs on the official Web renderer; native wgpu keeps its built-in passes until it executes declared ones".into());
+    }
     if !snapshot.shader_materials.is_empty() {
         return Err("SHADER_BACKEND_UNSUPPORTED: GLSL sprite shader materials require the official WebGL player; native wgpu does not implement this contract".into());
     }
@@ -1093,6 +1096,19 @@ mod telemetry_tests {
             "fragment":"vec4 unoneShade(vec2 uv,vec4 color){return color;}"
         }}})).runtime(42).err().expect("native shader gate");
         assert!(error.contains("SHADER_BACKEND_UNSUPPORTED"));
+    }
+
+    #[test]
+    fn native_runtime_rejects_a_declared_render_pipeline() {
+        let package = super::Package {
+            files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&serde_json::json!({
+                "config":{"name":"native-pipeline-gate","entry_script":"main.luau",
+                    "render_pipeline":{"version":1,"passes":[{"id":"world","kind":"scene"},{"id":"glow","kind":"bloom"}]}},
+                "script":"return {start=function(api) end,update=function(api,dt) end}"
+            })).unwrap())]),
+            digest: "fixture".into(),
+        };
+        assert!(package.runtime(42).err().expect("native pipeline gate").contains("NATIVE_RENDER_PIPELINE_UNSUPPORTED"));
     }
 
     #[test]

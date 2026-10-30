@@ -933,6 +933,9 @@ pub struct WorldSnapshot {
     /// default. A game that never touches the mix observes what it always did.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub audio_mix: Option<AudioMix>,
+    /// Present only when the project declares a render pipeline.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub render_pipeline: Option<crate::RenderPipeline>,
 }
 
 #[derive(Debug, Clone)]
@@ -1034,6 +1037,8 @@ pub(crate) struct World {
     pub contacts: Vec<Contact>,
     pub ground_contacts: Vec<String>,
     pub audio: AudioBus,
+    /// The declared render pipeline as api.render.setPass last left it.
+    pub render_pipeline: Option<crate::RenderPipeline>,
 }
 
 impl World {
@@ -1351,6 +1356,7 @@ impl World {
             }
         });
         WorldSnapshot {
+            render_pipeline: self.render_pipeline.clone(),
             physical_input_receipt:None,
             projected_geometry:self.projected_geometry.clone(),
             projected_frame:self.projected_frame.clone(),
@@ -2231,6 +2237,7 @@ mod tests {
             ground_contacts: Vec::new(),
             audio: AudioBus::default(),
             particles: crate::particle::ParticleWorld::default(),
+            render_pipeline: None,
         }
     }
 

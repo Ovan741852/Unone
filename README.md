@@ -275,7 +275,8 @@ Generic packed geometry, fixed-tick query APIs and CPU/native wgpu/WebGPU backen
 
 Immutable binary data as read-only buffers that read at native speed:
 [immutable bytes](docs/immutable-bytes.md). Game data files through manifest loaders:
-[data assets](docs/data-assets.md).
+[data assets](docs/data-assets.md). Declared, runtime-tunable render passes with JS/TS
+extensions: [render pipeline](docs/render-pipeline.md).
 
 [Actual Web Worker / BlueStacks comparison](docs/legion-fall-worker.md) · [20-second emulator recording](docs/media/legion-fall-worker-bluestacks.mp4). Earlier experimental measurement. The exported player now supports [optional simulation/compute Workers](docs/player-workers.md); main-thread simulation remains the default.
 Game-owned WASM extensions: [proposed ABI and AI implementation contract](docs/proposals/wasm-compute-v1.md) (design only; no module loader yet).

@@ -1,7 +1,7 @@
 # Decision 0048: Declared, adjustable and extensible render pipeline
 
 - Date: 2026-10-30
-- Status: proposed; not implemented
+- Status: implemented on the official Web player (2026-10-30); native wgpu rejects declared pipelines until it executes them. Guide: [render pipeline](../render-pipeline.md)
 - Scope: official Web and native renderers, presentation config, Engine API
 
 ## Problem
@@ -26,11 +26,14 @@ differ silently between hosts: Bloom thresholds, particles in 2D, sprites in
 A render pipeline is an ordered list of named passes that the project declares
 and both hosts execute.
 
-1. **Declaration.** `player.presentation.json` gains `render_pipeline`:
-   `{"version":1,"passes":[{"id","kind","enabled"?,"params"?}]}`. Pass kinds in
-   v1 are the ones a host already draws: `world`, `sprites`, `particles`,
-   `bloom` (`threshold`, `strength`), `tonemap` (`mode`, `exposure`), `ao`
-   (`strength`), `projected` and `ui`. Without a declaration each host keeps
+1. **Declaration.** `project.unone.json` gains `render_pipeline`:
+   `{"version":1,"passes":[{"id","kind","enabled"?,"params"?}]}`. It lives in the
+   project rather than in presentation config so the engine validates it,
+   serves `api.render` and publishes it in the snapshot. Pass kinds in v1 are
+   the ones the hosts already draw as units: `scene` (the whole world scene),
+   `ao` (`strength`), `bloom` (`threshold`, `strength`), `tonemap` (`mode`,
+   `exposure`), `projected` and `ui`. Splitting `scene` into world, sprites and
+   particles is left for a later version. Without a declaration each host keeps
    its current order, so existing games render unchanged.
 2. **One validator.** A Rust DTO and generated schema define kinds and
    parameter ranges. Each host advertises the kinds it implements, and

@@ -747,6 +747,12 @@ pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)
         validate_renderer_file_path(path)?;
         push_unique_content_file(files, format!("content/{path}"), fs::read(inside(project, path)?)?)?;
     }
+    for extension in &presentation.render_extensions {
+        for path in std::iter::once(&extension.module).chain(&extension.files) {
+            validate_renderer_file_path(path)?;
+            push_unique_content_file(files, format!("content/{path}"), fs::read(inside(project, path)?)?)?;
+        }
+    }
     ensure!(presentation.job_policy.max_workers<=4 && presentation.job_policy.memory_budget_mb<=1024,"JOB_POLICY_INVALID: max_workers must be 0..4 and memory_budget_mb 0..1024");
     if let Some(path)=&presentation.ui.font_source {
         append_font(project, path, files)?;

@@ -850,8 +850,20 @@ export type AssetsApi = {
     registerLoader: (name: string, loader: AssetLoader) -> (),
 }
 
+-- Passes declared in project.unone.json render_pipeline (scene, ao, bloom,
+-- tonemap, namespaced extensions, projected, ui). Order is fixed by the
+-- declaration; switches and params change at runtime.
+export type RenderParam = number | boolean | string
+export type RenderPassState = { id: string, kind: string, enabled: boolean, params: {[string]: RenderParam} }
+export type RenderApi = {
+    -- Merge params into a declared pass and/or switch it; invalid changes leave it as it was.
+    setPass: (id: string, change: { enabled: boolean?, params: {[string]: RenderParam}? }) -> (),
+    getPass: (id: string) -> RenderPassState,
+}
+
 export type EngineApi = {
     assets: AssetsApi,
+    render: RenderApi,
     bytes: BytesApi,
     hostTime: HostTimeApi,
     application: ApplicationApi,

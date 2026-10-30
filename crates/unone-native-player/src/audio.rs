@@ -33,6 +33,7 @@ mod tests {
     #[test]
     fn fade_gain_is_frame_deterministic() {
         let snapshot = unone_engine::WorldSnapshot {
+            render_pipeline: None,
             ui_image_batches:Default::default(),
             projected_frame:None,
             ui_cursor:None,

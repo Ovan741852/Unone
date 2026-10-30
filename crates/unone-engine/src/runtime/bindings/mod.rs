@@ -4,6 +4,7 @@ use crate::systems::SystemSettings;
 use mlua::{Lua, Table, Value};
 mod application;
 mod assets;
+mod render;
 mod audio;
 mod bytes;
 mod camera;
@@ -32,6 +33,7 @@ pub(super) fn build_api(
     let api = lua.create_table()?;
     api.set("bytes", bytes::bind(lua)?)?;
     api.set("assets", assets::bind(lua, state)?)?;
+    api.set("render", render::bind(lua, state)?)?;
     api.set("hostTime", host_time::bind(lua, state)?)?;
     api.set("application", application::bind(lua, state)?)?;
     api.set("heightfield", heightfield::bind(lua, state)?)?;

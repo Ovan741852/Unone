@@ -12,7 +12,7 @@ const catalogLine=pick(l=>l.includes('createAssetCatalog(')&&!l.trimStart().star
 const rendererLine=pick(l=>l.trimStart().startsWith('renderer=await adoptStartupRenderer('));
 async function start(assets){
  let options=null;
- const context={...encoding,json:async path=>path==='content/assets.json'?assets:{config:{}},uiAssetManifest:null,projectPayload:null,profiler:null,canvas:{},metrics:{},document:{body:{}},
+ const context={...encoding,renderPasses:{},json:async path=>path==='content/assets.json'?assets:{config:{}},uiAssetManifest:null,projectPayload:null,profiler:null,canvas:{},metrics:{},document:{body:{}},
   publishRasterState(){},console,backend:{memory(){}},presentationMemory:null,requireAssetEncoding:encoding.requireAssetEncoding,URL,
   createPlayerRenderer:(canvas,o)=>{options=o;return {};},adoptStartupRenderer:async factory=>factory(),createThreeRenderer(){},startupAbort:new AbortController(),disposeRenderer(){},renderer:null};
  vm.createContext(context);vm.runInContext(`async function start(){${fetchLine}\n${catalogLine}\n${rendererLine}\n}`,context);await context.start();

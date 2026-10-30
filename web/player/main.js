@@ -34,7 +34,7 @@ const uiScroll=createUiScrollHost({canvas,stage:document.querySelector('#ui-laye
  requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));draw();},requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
 const textInputs=createUiTextInputHost({canvas,onInteraction:event=>input.queueTextInputInteraction(event),
  releaseKeyboard:()=>input.releaseKeyboard(),requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
-const renderUi=snapshot=>uiRenderer.draw(textInputs.draw(uiScroll.draw(snapshot)));
+const renderUi=snapshot=>uiRenderer.draw(textInputs.draw(uiScroll.draw(uiPassHidden(snapshot)?{...snapshot,world:{...snapshot.world,ui:null}}:snapshot)));
 const cursorCanvas=document.createElement('canvas');document.querySelector('#ui-layer').append(cursorCanvas);
 const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fail,getImageAssets:()=>imageAssets,loadImage:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
@@ -71,6 +71,11 @@ function configurePhysical(){
  uiScroll.setExternalInput(true);publishPhysical();
 }
 async function json(path){const r=await fetch(new URL(path,document.baseURI),{cache:'no-store'});if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${path} (${r.status})`);return r.json();}
+// Render pass kinds from presentation render_extensions (ADR 0048): each
+// module exports createPass({THREE, renderer, id, params}) -> {draw, dispose?}.
+async function renderExtensions(list=[]){const kinds={};for(const {kind,module} of list){const loaded=await import(new URL('content/'+module,document.baseURI).href);if(typeof loaded.createPass!=='function')throw Error(`RENDER_EXTENSION_INVALID: ${module} must export createPass`);kinds[kind]=loaded.createPass;}return kinds;}
+// A disabled "ui" pass draws no UI; input routing is unchanged.
+function uiPassHidden(snapshot){return Boolean(snapshot.world?.render_pipeline?.passes?.some(pass=>pass.kind==='ui'&&!pass.enabled));}
 // Declared data assets are fetched as bytes for the core's api.assets loaders.
 function dataAssets(project){return Promise.all((project.data_assets??[]).map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);return {id:asset.id,bytes:new Uint8Array(await r.arrayBuffer())};}));}
 function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
@@ -244,7 +249,8 @@ async function start(){
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  const data=await dataLoad;if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:sessionSeed(),data}),{reset:true,newSession:true});
- renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
+ const renderPasses=await renderExtensions(presentation.render_extensions);
+ renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,renderPasses,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
  if(startupAbort.signal.aborted){const retiringAudio=audio;audio=null;retiringAudio?.dispose();throw startupCancelled();}

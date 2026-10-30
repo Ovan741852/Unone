@@ -56,6 +56,10 @@ pub struct ProjectConfig {
     /// *between* sounds, which is the part the engine owns.
     #[serde(default)]
     pub audio: Option<crate::audio::AudioConfig>,
+    /// Ordered render passes the official hosts execute (ADR 0048). Undeclared
+    /// keeps each host's built-in order.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub render_pipeline: Option<crate::RenderPipeline>,
 }
 
 fn default_entry_script() -> String {

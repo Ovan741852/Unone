@@ -795,13 +795,14 @@ mod schema_pack_tests {
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 23] {
+fn authoring_files() -> [(&'static str, &'static str); 24] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/profiling.md", include_str!("../../../docs/profiling.md")),
         ("docs/spatial-batches.md", include_str!("../../../docs/spatial-batches.md")),
         ("docs/immutable-bytes.md", include_str!("../../../docs/immutable-bytes.md")),
         ("docs/data-assets.md", include_str!("../../../docs/data-assets.md")),
+        ("docs/render-pipeline.md", include_str!("../../../docs/render-pipeline.md")),
         ("docs/projected-geometry.md", include_str!("../../../docs/projected-geometry.md")),
         ("docs/projected-raster.md", include_str!("../../../docs/projected-raster.md")),
         ("docs/projected-frame.md", include_str!("../../../docs/projected-frame.md")),

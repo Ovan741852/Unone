@@ -683,6 +683,12 @@ impl EngineRuntime {
         };
         let systems = SystemSettings::from_config(&config)?;
         systems.validate_compiled()?;
+        if let Some(pipeline) = &config.render_pipeline {
+            pipeline.validate().map_err(|error| {
+                Box::new(Diagnostic::error("RENDER_PIPELINE_INVALID", "Invalid render pipeline", error))
+            })?;
+            world.borrow_mut().render_pipeline = Some(pipeline.clone());
+        }
         crate::runtime_packages::validate_runtime_packages(&config.runtime_packages, &systems)?;
         #[cfg(feature = "physics3d")]
         if world.borrow().physics3d.is_some() && !systems.is_enabled("physics3d") {

@@ -31,6 +31,8 @@ mod asset_workflow;
 mod asset_usage;
 mod audio;
 mod data_assets;
+mod render_pipeline;
+pub use render_pipeline::{BUILTIN_RENDER_PASSES, RenderParam, RenderPass, RenderPipeline};
 pub use data_assets::{BUILTIN_DATA_LOADERS, DataAssetDecl};
 #[cfg(feature = "dev-tools")]
 pub use data_assets::decl_for as data_asset_decl;

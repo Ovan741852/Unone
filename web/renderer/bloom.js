@@ -19,10 +19,10 @@ export function normalizePostProcessing(value) {
 export function createBloom(THREE,renderer,settings) {
   const postprocessing=normalizePostProcessing(settings);
   const gl=renderer.getContext(),timer=createBloomTimer(gl,renderer.domElement??gl.canvas);
-  let enabled=true, aoEnabled=false,width=0,height=0,disposed=false;
+  let enabled=true, aoEnabled=false,width=0,height=0,disposed=false,lastPipeline=null;
   const hdr=Boolean(gl.getExtension('EXT_color_buffer_float'));
   const target=()=>new THREE.WebGLRenderTarget(1,1,{type:hdr?THREE.HalfFloatType:THREE.UnsignedByteType,depthBuffer:false});
-  const base=target(),a=target(),b=target();base.depthBuffer=true;
+  const base=target(),a=target(),b=target(),chain=[target(),target()];base.depthBuffer=true;
   base.depthTexture=new THREE.DepthTexture(1,1,THREE.UnsignedIntType);
   base.depthTexture.minFilter=base.depthTexture.magFilter=THREE.NearestFilter;
   const scene=new THREE.Scene(),camera=new THREE.Camera();
@@ -61,55 +61,74 @@ export function createBloom(THREE,renderer,settings) {
   combine.toneMapped=postprocessing!==null;
   const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),bright);scene.add(quad);
   const pass=(mat,destination)=>{quad.material=mat;renderer.setRenderTarget(destination);renderer.render(scene,camera);};
-  function output() {
-    if(!postprocessing){pass(combine,null);return;}
+  const configuredTone=postprocessing?{mode:postprocessing.toneMapping,exposure:postprocessing.exposure}:null;
+  // A declared pipeline switches tone mapping per frame; the shader is rebuilt
+  // only when it actually toggles.
+  function output(tone,destination) {
+    if(combine.toneMapped!==Boolean(tone)){combine.toneMapped=Boolean(tone);combine.needsUpdate=true;}
+    if(!tone){pass(combine,destination);return;}
     const previousTone=renderer.toneMapping,previousExposure=renderer.toneMappingExposure;
     try{
       // Three keeps offscreen scene targets linear. Apply exposure/tone mapping
       // only here, then colorspace_fragment encodes the screen exactly once.
       // "none" applies linear exposure without a nonlinear highlight curve.
-      renderer.toneMapping=postprocessing.toneMapping==='aces'?THREE.ACESFilmicToneMapping:THREE.LinearToneMapping;
-      renderer.toneMappingExposure=postprocessing.exposure;
-      pass(combine,null);
+      renderer.toneMapping=tone.mode==='aces'?THREE.ACESFilmicToneMapping:THREE.LinearToneMapping;
+      renderer.toneMappingExposure=tone.exposure;
+      pass(combine,destination);
     }finally{renderer.toneMapping=previousTone;renderer.toneMappingExposure=previousExposure;}
   }
+  // Extension passes read the previous result and write the next target; the
+  // last one writes the screen. They get a full-screen helper and their params.
+  function extensions(list) {
+    for(let index=0;index<list.length;index++){
+      const input=chain[index%2],output=index===list.length-1?null:chain[(index+1)%2];
+      list[index].runner.draw({THREE,renderer,input:input.texture,output,width,height,params:list[index].params,fullscreen:(material,destination)=>pass(material,destination)});
+    }
+  }
   return {
-    contextLost(retire){retire(base);retire(a);retire(b);retire(bright);retire(blur);retire(combine);retire(quad.geometry);},
+    contextLost(retire){retire(base);retire(a);retire(b);retire(chain[0]);retire(chain[1]);retire(bright);retire(blur);retire(combine);retire(quad.geometry);},
     resetMeasurements(){timer.reset();},
     setEnabled(value){enabled=Boolean(value);},
     setAO(value){aoEnabled=Boolean(value);},
     get enabled(){return enabled;},
-    draw(worldScene,worldCamera,overlay) {
+    // pipeline: per-frame settings from a declared render pipeline (ADR 0048).
+    // Without it the creation settings and setEnabled/setAO apply as before.
+    draw(worldScene,worldCamera,overlay,pipeline) {
       if(disposed)throw Error('POSTPROCESSING_DISPOSED');
-      const bloomOn=enabled,aoOn=aoEnabled;
+      const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled;
+      const tone=pipeline?pipeline.tone:configuredTone,post=pipeline?.extensions??[];
+      const world=()=>{if(pipeline&&!pipeline.scene){renderer.clear();return;}renderer.render(worldScene,worldCamera);overlay?.();};
+      lastPipeline=pipeline?pipeline.ids:null;
       const query=timer.begin(bloomMeasurementMode(bloomOn,aoOn));
       try{
-      if(bloomOn||aoOn||postprocessing) {
+      if(bloomOn||aoOn||tone||post.length) {
         const size=renderer.getDrawingBufferSize(new THREE.Vector2());
         size.x=Math.max(1,size.x);size.y=Math.max(1,size.y);
-        if(width!==size.x||height!==size.y){width=size.x;height=size.y;base.setSize(width,height);a.setSize(Math.max(1,Math.ceil(width/4)),Math.max(1,Math.ceil(height/4)));b.setSize(a.width,a.height);}
-        renderer.setRenderTarget(base);renderer.render(worldScene,worldCamera);overlay?.();
+        if(width!==size.x||height!==size.y){width=size.x;height=size.y;base.setSize(width,height);a.setSize(Math.max(1,Math.ceil(width/4)),Math.max(1,Math.ceil(height/4)));b.setSize(a.width,a.height);chain[0].setSize(width,height);chain[1].setSize(width,height);}
+        renderer.setRenderTarget(base);world();
         combine.uniforms.inverseProjection.value=worldCamera.projectionMatrixInverse;
         combine.uniforms.pixels.value.set(1/width,1/height);
-        combine.uniforms.aoStrength.value=aoOn?(postprocessing?.aoStrength??1.7):0;
-        combine.uniforms.strength.value=bloomOn?(postprocessing?.bloomStrength??.75):0;
+        combine.uniforms.aoStrength.value=aoOn?(pipeline?.ao.strength??postprocessing?.aoStrength??1.7):0;
+        combine.uniforms.strength.value=bloomOn?(pipeline?.bloom.strength??postprocessing?.bloomStrength??.75):0;
+        bright.uniforms.threshold.value=pipeline?.bloom.threshold??postprocessing?.bloomThreshold??.55;
         if(bloomOn){
           pass(bright,a);
           blur.uniforms.image.value=a.texture;blur.uniforms.direction.value.set(1/a.width,0);pass(blur,b);
           blur.uniforms.image.value=b.texture;blur.uniforms.direction.value.set(0,1/a.height);pass(blur,a);
         }
-        output();
-      } else {renderer.setRenderTarget(null);renderer.render(worldScene,worldCamera);overlay?.();}
+        output(tone,post.length?chain[0]:null);
+        if(post.length)extensions(post);
+      } else {renderer.setRenderTarget(null);world();}
       }finally{timer.end(query);}
     },
     metrics(){
       const timing=timer.metrics(),gpu=timing.samples;
-      return {bloom:enabled,ao:aoEnabled,ao_method:'depth-ssao-12',postprocessing:postprocessing?{...postprocessing}:null,output_pipeline:postprocessing?'linear-tone-srgb':'legacy',bloom_resolution:[a.width,a.height],hdr,gpu_timer_available:timing.available,gpu_timer_context:timing.context,gpu_on:gpu.bloom_on_ao_off,gpu_off:gpu.bloom_off_ao_off,gpu_ao_only:gpu.bloom_off_ao_on,gpu_bloom_with_ao:gpu.bloom_on_ao_on,gpu_samples_by_mode:gpu,gpu_comparison:{gpu_on_off_same_ao_only:true,active_mode:bloomMeasurementMode(enabled,aoEnabled)}};
+      return {render_pipeline:lastPipeline,bloom:enabled,ao:aoEnabled,ao_method:'depth-ssao-12',postprocessing:postprocessing?{...postprocessing}:null,output_pipeline:postprocessing?'linear-tone-srgb':'legacy',bloom_resolution:[a.width,a.height],hdr,gpu_timer_available:timing.available,gpu_timer_context:timing.context,gpu_on:gpu.bloom_on_ao_off,gpu_off:gpu.bloom_off_ao_off,gpu_ao_only:gpu.bloom_off_ao_on,gpu_bloom_with_ao:gpu.bloom_on_ao_on,gpu_samples_by_mode:gpu,gpu_comparison:{gpu_on_off_same_ao_only:true,active_mode:bloomMeasurementMode(enabled,aoEnabled)}};
     },
     dispose(){
       if(disposed)return;disposed=true;
       timer.dispose();
-      base.depthTexture.dispose();base.dispose();a.dispose();b.dispose();
+      base.depthTexture.dispose();base.dispose();a.dispose();b.dispose();chain[0].dispose();chain[1].dispose();
       bright.dispose();blur.dispose();combine.dispose();quad.geometry.dispose();scene.remove(quad);
     },
   };

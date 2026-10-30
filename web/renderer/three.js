@@ -110,6 +110,40 @@ export async function createThreeRenderer(canvas, options = {}) {
   bloom?.setEnabled(options.bloom??false);
   bloom?.setAO(options.ao??false);
   let bloomEnabled=options.bloom??false,aoEnabled=options.ao??false;
+  // Extension pass kinds a host registered (render_extensions), and one
+  // instance per declared pass id, created on first use.
+  const passKinds=options.renderPasses??{};
+  if(typeof passKinds!=='object'||Array.isArray(passKinds)||Object.values(passKinds).some(create=>typeof create!=='function'))throw Error('RENDER_PASSES_INVALID: expected {kind: createPass}');
+  const passInstances=new Map();
+  function extensionRunner(pass){
+    let instance=passInstances.get(pass.id);
+    if(instance&&instance.kind!==pass.kind){instance.runner.dispose?.();passInstances.delete(pass.id);instance=null;}
+    if(!instance){
+      const create=passKinds[pass.kind];
+      if(!create)throw Error(`RENDER_PASS_KIND_UNAVAILABLE: pass '${pass.id}' needs kind '${pass.kind}'; declare it in render_extensions`);
+      const runner=create({THREE,renderer,id:pass.id,params:pass.params??{}});
+      if(typeof runner?.draw!=='function')throw Error(`RENDER_PASS_INVALID: '${pass.kind}' createPass must return {draw, dispose?}`);
+      instance={kind:pass.kind,runner};passInstances.set(pass.id,instance);
+    }
+    return instance.runner;
+  }
+  // Per-frame settings for a declared pipeline (ADR 0048); absent params use
+  // the same defaults as presentation Bloom.
+  function pipelineFrame(pipeline){
+    const passes=pipeline.passes,find=kind=>passes.find(pass=>pass.kind===kind),on=pass=>Boolean(pass&&pass.enabled);
+    const number=(pass,key,fallback)=>typeof pass?.params?.[key]==='number'?pass.params[key]:fallback;
+    const ao=find('ao'),glow=find('bloom'),tone=find('tonemap'),projectedPass=find('projected');
+    return {
+      ids:passes.filter(pass=>pass.enabled).map(pass=>pass.id),
+      scene:on(find('scene')),
+      ao:{on:on(ao),strength:number(ao,'strength',1.7)},
+      bloom:{on:on(glow),threshold:number(glow,'threshold',.55),strength:number(glow,'strength',.75)},
+      tone:on(tone)?{mode:tone.params?.mode==='aces'?'aces':'none',exposure:number(tone,'exposure',1)}:null,
+      extensions:passes.filter(pass=>!['scene','ao','bloom','tonemap','projected','ui'].includes(pass.kind)&&pass.enabled)
+        .map(pass=>({id:pass.id,params:pass.params??{},runner:extensionRunner(pass)})),
+      projected:!projectedPass||projectedPass.enabled,
+    };
+  }
   const effects=await createEffects(renderer.getContext?.(),options.getAssetManifest?.()?.assets??[],options.loadAssetUrl);
 
   const scene = new THREE.Scene();
@@ -465,12 +499,14 @@ export async function createThreeRenderer(canvas, options = {}) {
     if(!prepared){profile?.outcome('pending_frame_resources');return DRAW_SKIPPED.frame_resources_pending;}
     if(frameProfile)assertFrameGpuError(renderer.getContext(),'official.prepare');
     const overlay=worldVisible&&effects?()=>{effects.draw(world,activeCamera);renderer.resetState();}:null;
-    if(bloom) bloom.draw(scene,activeCamera,overlay);
+    const pipeline=world.render_pipeline?pipelineFrame(world.render_pipeline):null;
+    if(pipeline&&!bloom)throw Error('RENDER_PIPELINE_BACKEND_UNSUPPORTED: render_pipeline needs the official WebGL renderer');
+    if(bloom) bloom.draw(scene,activeCamera,overlay,pipeline);
     else {renderer.render(scene,activeCamera);overlay?.();}
     if(frameProfile)assertFrameGpuError(renderer.getContext(),'official.ordinary-render');
     profile?.mark('ordinary_render_submit');
     if(frameProfile){const passed=framePass.draw(frameDraws,activeCamera,frame);profile?.mark('frame_pass_submit');if(!passed){profile?.outcome('incomplete_frame_pass');return DRAW_SKIPPED.frame_pass_incomplete;}}
-    else{if(rasterPass){if(projectedBatches.length)rasterPass.draw(projected,activeCamera);}
+    else if(!pipeline||pipeline.projected){if(rasterPass){if(projectedBatches.length)rasterPass.draw(projected,activeCamera);}
     else projected.draw(renderer,activeCamera,!worldVisible);profile?.mark('projected_pass_submit');}
     if(!rasterAvailable()){startupPresentation?.invalidate();profile?.outcome('skipped_raster_unavailable');return DRAW_SKIPPED.raster_unavailable;}
     if(assetRequestPending){profile?.outcome('pending_world_assets');return DRAW_SKIPPED.world_assets_pending;}
@@ -513,6 +549,8 @@ export async function createThreeRenderer(canvas, options = {}) {
     disposeHooks.length = 0;
     presentationHooks.clear();
     particles.dispose();
+    for(const {runner} of passInstances.values()){try{runner.dispose?.();}catch{/* teardown continues */}}
+    passInstances.clear();
     bloom?.dispose();
     shaderMaterials.dispose();
     clearTextures();
