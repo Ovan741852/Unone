@@ -13,6 +13,8 @@ _Games/**/dist/
 _Games/**/assets/reference/
 crates/unone-player/target/
 crates/unone-native-player/target/
+# Local build/test logs and scratch outputs from verification runs.
+/.cache/
 
 # Local game authoring backups and caches.
 _Games/**/*.blend[0-9]*
