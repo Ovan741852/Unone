@@ -20,6 +20,8 @@ pub struct HostProject {
     #[serde(default)]
     pub restored_save: Option<serde_json::Value>,
     /// UI viewport aspect, supplied before Game.start; defaults to 16:9.
+    /// Ignored when viewport_size is present: the physical size then defines
+    /// the aspect exactly, so hosts may send a rounded CSS aspect alongside it.
     #[serde(default)]
     pub viewport_aspect: Option<f64>,
     /// Physical render-target pixels, supplied before Game.start when known.
@@ -127,7 +129,19 @@ impl HostInputState {
 
     pub fn release_all(&mut self) {
         self.actions.clear();
-        self.queued = None;
+        // Held state is released, but an accepted physical batch is a sequenced
+        // transaction: dropping it here would leave the producer's cursor ahead
+        // of the receipt and fail every later batch with INPUT_PHYSICAL_CURSOR.
+        // Semantic UI edits (text submit, slider end) are likewise one-shot.
+        if let Some(frame) = &mut self.queued {
+            frame.actions.clear();
+            if let Some(pointer) = &mut frame.pointer {
+                pointer.down = false;
+            }
+            if frame.physical.is_none() && frame.ui_sliders.is_empty() && frame.ui_text_inputs.is_empty() {
+                self.queued = None;
+            }
+        }
         if let Some(pointer) = &mut self.pointer {
             pointer.down = false;
         }
@@ -191,6 +205,19 @@ mod tests {
         input.set_action("tap".into(), true);
         input.release_all();
         assert!(input.consume_frame().actions.is_empty());
+    }
+
+    #[test]
+    fn release_all_keeps_an_accepted_physical_batch_and_releases_held_state() {
+        let mut input = HostInputState::default();
+        input.queue_frame(parse_input_frame(br#"{"actions":{"Fire":true},"pointer":{"position":{"x":1,"y":2},"down":true},
+            "physical":{"profile":"ordered_physical_v1","epoch":1,"after_sequence":0,"through_sequence":1,
+            "events":[{"sequence":1,"received_us":5,"origin":"fixture","route":"control","kind":"reset","scope":"all","reason":"load"}]}}"#).unwrap()).unwrap();
+        input.release_all();
+        let frame = input.consume_frame();
+        assert_eq!(frame.physical.unwrap().through_sequence, 1);
+        assert!(frame.actions.is_empty());
+        assert!(!frame.pointer.unwrap().down);
     }
 
     #[test]

@@ -1438,7 +1438,7 @@
     },
     "viewport_aspect": {
       "default": null,
-      "description": "UI viewport aspect, supplied before Game.start; defaults to 16:9.",
+      "description": "UI viewport aspect, supplied before Game.start; defaults to 16:9.\nIgnored when viewport_size is present: the physical size then defines\nthe aspect exactly, so hosts may send a rounded CSS aspect alongside it.",
       "format": "double",
       "type": [
         "number",

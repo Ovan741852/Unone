@@ -55,7 +55,7 @@ fn text_validation_is_bounded_and_does_not_submit_ime_candidates() {
     for value in [json!({"phase":"submit","text":"候選","composing":true}),json!({"phase":"change","text":"a\nb","composing":false}),json!({"phase":"change","text":"x".repeat(65537),"composing":false})] {
         let frame:InputFrame=serde_json::from_value(json!({"ui_text_inputs":{"name":value}})).unwrap();assert!(frame.validate().is_err());
     }
-    for extra in [json!({"max_length":0}),json!({"max_length":16385}),json!({"text":"a\nb"}),json!({"action":"invented"})] {
+    for extra in [json!({"max_length":0}),json!({"max_length":16385}),json!({"text":"a\nb"}),json!({"action":"invented"}),json!({"text":"稱呼稱呼","max_length":3})] {
         let mut node=json!({"kind":"text_input","id":"field","rect":{"x":0,"y":0,"width":20,"height":8},"text":""});
         for (k,v) in extra.as_object().unwrap() {node[k]=v.clone();}
         assert!(UiTree::from_json(json!({"kind":"screen","id":"screen","node":"name","children":[node]})).is_err());

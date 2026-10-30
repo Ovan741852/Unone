@@ -1340,6 +1340,12 @@ fn parse_node(
                 || placeholder.len()>65536 || text.contains(['\n','\r']) || placeholder.contains(['\n','\r']) {
                 return Err(format!("UI_TEXT_INPUT_VALUE: '{id}' requires single-line text, max_length 1..16384 Unicode scalars and ID <=1024 UTF-8 bytes"));
             }
+            // Hosts clamp edits to max_length; an authored value beyond it would
+            // be silently truncated by the first edit instead of failing here.
+            let length=text.chars().count();
+            if length>max_length as usize {
+                return Err(format!("UI_TEXT_INPUT_VALUE: '{id}' text has {length} Unicode scalars, more than max_length {max_length}"));
+            }
             Ok(UiNode::TextInput {id,rect,text,placeholder,max_length,
                 focused:raw_node.focused.unwrap_or(false),enabled:raw_node.enabled.unwrap_or(true),style:raw_node.style})
         }

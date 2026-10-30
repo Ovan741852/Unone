@@ -107,6 +107,8 @@ impl Heightfield {
     /// Generate local-space geometry only when a host's (id, revision) cache changes.
     /// Apply definition.origin separately. UVs cover [0,1], with one fixed diagonal
     /// and upward-facing winding per cell. This does not create collision geometry.
+    /// Unlike imported static meshes, v=0 is the texture image's top row (sample
+    /// row z=0); hosts must not apply their generic static-mesh V flip to it.
     pub fn mesh(&self) -> MeshAsset {
         let d = &self.definition;
         let mut positions = Vec::with_capacity(d.sample_count() * 3);
