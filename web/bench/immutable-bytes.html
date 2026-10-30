@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Immutable bytes bench</title>
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; margin: 16px; background: #111827; color: #e5e7eb; }
+  pre { white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Immutable bytes in the Web player</h1>
+<p>Serve the repository root, build the release player, then open
+<code>/web/bench/immutable-bytes.html</code>. Optional <code>?runtime=</code> points at another
+<code>unone-player.js</code>; <code>?rounds=</code> and <code>?ticks=</code> set the sampling. The result
+is also in <code>document.body.dataset.result</code>.</p>
+<pre id="result">Running…</pre>
+<script type="module">
+import {loadRuntime} from '../shared/runtime-core.mjs';
+import {loadProject, readObservation} from '../shared/load-project.js';
+import {measureReads, verifyFixture} from './immutable-bytes.mjs';
+
+const output = document.getElementById('result');
+try {
+  const query = new URLSearchParams(location.search);
+  const runtime = new URL(query.get('runtime')
+    ?? '../../target/player/wasm32-unknown-emscripten/release/unone-player.js', location.href).href;
+  const module = await loadRuntime(runtime);
+  const text = async path => (await fetch(new URL(`../../crates/unone-engine/tests/fixtures/${path}`, location.href))).text();
+  const host = {module, loadProject, readObservation, now: () => performance.now()};
+  const fixture = verifyFixture(host, await text('immutable-bytes.luau'));
+  // Let the page paint once before the long measurement.
+  await new Promise(resolve => setTimeout(resolve, 0));
+  const reads = measureReads(host, await text('populous-readonly-bytes.luau'),
+    {rounds: Number(query.get('rounds') ?? 3), ticks: Number(query.get('ticks') ?? 40)});
+  const result = {ok: true, host: navigator.userAgent, runtime, fixture, ...reads};
+  output.textContent = JSON.stringify(result, null, 2);
+  document.body.dataset.result = JSON.stringify(result);
+} catch (error) {
+  output.textContent = String(error?.stack ?? error);
+  document.body.dataset.result = JSON.stringify({ok: false, error: String(error)});
+}
+</script>
+</body>
+</html>

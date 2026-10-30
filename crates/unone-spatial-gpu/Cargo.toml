@@ -15,3 +15,7 @@ serde_json = "1"
 naga = { version = "30", features = ["wgsl-in"] }
 
 [workspace]
+
+# Luau with read-only buffers (api.bytes.freeze); see vendor/luau0-src/UNONE.md.
+[patch.crates-io]
+luau0-src = { path = "../../vendor/luau0-src" }

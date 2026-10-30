@@ -72,6 +72,10 @@ authors semantic groups, thresholds and typed style values. Read
 [the responsive guide](docs/ui-responsive.md) for defaults, coordinates and a
 complete strict example. Components never lay out their children implicitly.
 
+For immutable binary data (loaded tables, maps, palettes, original game images),
+freeze an ordinary buffer with `api.bytes.freeze` and read it with `buffer.read*`;
+see the bundled [immutable bytes guide](docs/immutable-bytes.md).
+
 For generic batched geometry, search `spatial` / `batch collision` / `空間查詢`
 and describe `spatial.create`, `spatial.submit` and `spatial.take`. Read the bundled
 [spatial batches guide](docs/spatial-batches.md) for sphere records, nearest/overlap/

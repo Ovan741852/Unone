@@ -36,3 +36,7 @@ winit = {version = "0.30.12", features = ["android-native-activity"]}
 [profile.release]
 opt-level = 3
 strip = "debuginfo"
+
+# Luau with read-only buffers (api.bytes.freeze); see vendor/luau0-src/UNONE.md.
+[patch.crates-io]
+luau0-src = { path = "../../vendor/luau0-src" }

@@ -1,0 +1,237 @@
+--- a/luau/CodeGen/src/IrTranslateBuiltins.cpp
++++ b/luau/CodeGen/src/IrTranslateBuiltins.cpp
+@@ -1047,7 +1047,10 @@
+     IrCmd convCmd
+ )
+ {
+-    if (nparams < 3 || nresults > 0)
++    // UNONE: a readonly buffer is rejected by the luauF_write* fastcall, so a
++    // write is never inlined; reads stay inline. nparams is never negative: the
++    // inline path below stays compiled to keep upstream merges small.
++    if (nparams >= 0)
+         return {BuiltinImplType::None, -1};
+ 
+     IrOp buf, intIndex;
+--- a/luau/VM/include/lualib.h
++++ b/luau/VM/include/lualib.h
+@@ -132,6 +132,11 @@
+ #define LUA_BUFFERLIBNAME "buffer"
+ LUALIB_API int luaopen_buffer(lua_State* L);
+ 
++// UNONE: immutable buffer operations the engine registers as api.bytes.*.
++LUALIB_API int unone_buffer_freeze(lua_State* L);
++LUALIB_API int unone_buffer_isfrozen(lua_State* L);
++LUALIB_API int unone_buffer_snapshot(lua_State* L);
++
+ #define LUA_UTF8LIBNAME "utf8"
+ LUALIB_API int luaopen_utf8(lua_State* L);
+ 
+--- a/luau/VM/src/lapi.cpp
++++ b/luau/VM/src/lapi.cpp
+@@ -816,6 +816,11 @@
+ void lua_setreadonly(lua_State* L, int objindex, int enabled)
+ {
+     const TValue* o = index2addr(L, objindex);
++    if (ttisbuffer(o))
++    {
++        bufvalue(o)->readonly = bool(enabled);
++        return;
++    }
+     api_check(L, ttistable(o));
+     LuaTable* t = hvalue(o);
+     api_check(L, t != hvalue(registry(L)));
+@@ -825,6 +830,8 @@
+ int lua_getreadonly(lua_State* L, int objindex)
+ {
+     const TValue* o = index2addr(L, objindex);
++    if (ttisbuffer(o))
++        return bufvalue(o)->readonly;
+     api_check(L, ttistable(o));
+     LuaTable* t = hvalue(o);
+     int res = t->readonly;
+--- a/luau/VM/src/lbuffer.cpp
++++ b/luau/VM/src/lbuffer.cpp
+@@ -14,6 +14,7 @@
+     Buffer* b = luaM_newgco(L, Buffer, sizebuffer(s), L->activememcat);
+     luaC_init(L, b, LUA_TBUFFER);
+     b->len = unsigned(s);
++    b->readonly = 0;
+     memset(b->data, 0, b->len);
+     return b;
+ }
+--- a/luau/VM/src/lbuflib.cpp
++++ b/luau/VM/src/lbuflib.cpp
+@@ -17,6 +17,16 @@
+ 
+ static_assert(MAX_BUFFER_SIZE <= INT_MAX, "current implementation can't handle a larger limit");
+ 
++// UNONE: every buffer write goes through this check; a readonly buffer stays
++// immutable for every reference to it, so no writable alias can exist.
++static void* checkwritablebuffer(lua_State* L, int narg, size_t* len)
++{
++    void* buf = luaL_checkbuffer(L, narg, len);
++    if (lua_getreadonly(L, narg))
++        luaL_error(L, "attempt to modify a readonly buffer");
++    return buf;
++}
++
+ #if defined(LUAU_BIG_ENDIAN)
+ template<typename T>
+ inline T buffer_swapbe(T v)
+@@ -86,7 +96,7 @@
+ static int buffer_writeinteger(lua_State* L)
+ {
+     size_t len = 0;
+-    void* buf = luaL_checkbuffer(L, 1, &len);
++    void* buf = checkwritablebuffer(L, 1, &len);
+     int offset = luaL_checkinteger(L, 2);
+     int value = luaL_checkunsigned(L, 3);
+ 
+@@ -134,7 +144,7 @@
+ static int buffer_writefp(lua_State* L)
+ {
+     size_t len = 0;
+-    void* buf = luaL_checkbuffer(L, 1, &len);
++    void* buf = checkwritablebuffer(L, 1, &len);
+     int offset = luaL_checkinteger(L, 2);
+     double value = luaL_checknumber(L, 3);
+ 
+@@ -176,7 +186,7 @@
+ static int buffer_writestring(lua_State* L)
+ {
+     size_t len = 0;
+-    void* buf = luaL_checkbuffer(L, 1, &len);
++    void* buf = checkwritablebuffer(L, 1, &len);
+     int offset = luaL_checkinteger(L, 2);
+     size_t size = 0;
+     const char* val = luaL_checklstring(L, 3, &size);
+@@ -207,7 +217,7 @@
+ static int buffer_copy(lua_State* L)
+ {
+     size_t tlen = 0;
+-    void* tbuf = luaL_checkbuffer(L, 1, &tlen);
++    void* tbuf = checkwritablebuffer(L, 1, &tlen);
+     int toffset = luaL_checkinteger(L, 2);
+ 
+     size_t slen = 0;
+@@ -232,7 +242,7 @@
+ static int buffer_fill(lua_State* L)
+ {
+     size_t len = 0;
+-    void* buf = luaL_checkbuffer(L, 1, &len);
++    void* buf = checkwritablebuffer(L, 1, &len);
+     int offset = luaL_checkinteger(L, 2);
+     unsigned value = luaL_checkunsigned(L, 3);
+     int size = luaL_optinteger(L, 4, int(len) - offset);
+@@ -285,7 +295,7 @@
+ static int buffer_writebits(lua_State* L)
+ {
+     size_t len = 0;
+-    void* buf = luaL_checkbuffer(L, 1, &len);
++    void* buf = checkwritablebuffer(L, 1, &len);
+     int64_t bitoffset = (int64_t)luaL_checknumber(L, 2);
+     int bitcount = luaL_checkinteger(L, 3);
+     unsigned value = luaL_checkunsigned(L, 4);
+@@ -328,6 +338,58 @@
+     return 0;
+ }
+ 
++// UNONE: called directly by the VM, so errors never cross host frames.
++static void* checkbufferargument(lua_State* L, const char* operation, size_t* len)
++{
++    void* buf = lua_tobuffer(L, 1, len);
++    if (!buf)
++        luaL_error(L, "BYTES_BUFFER_REQUIRED: api.bytes.%s expects a buffer, got %s", operation, luaL_typename(L, 1));
++    return buf;
++}
++
++// Make the buffer immutable for every reference to it, in place and in O(1).
++// Readonly is permanent: there is no operation that clears it.
++int unone_buffer_freeze(lua_State* L)
++{
++    checkbufferargument(L, "freeze", NULL);
++    lua_setreadonly(L, 1, 1);
++    lua_settop(L, 1);
++    return 1;
++}
++
++int unone_buffer_isfrozen(lua_State* L)
++{
++    checkbufferargument(L, "isFrozen", NULL);
++    lua_pushboolean(L, lua_getreadonly(L, 1));
++    return 1;
++}
++
++// A frozen copy of a range. A whole frozen buffer is returned as is, since no
++// reference to it can change it.
++int unone_buffer_snapshot(lua_State* L)
++{
++    size_t len = 0;
++    void* source = checkbufferargument(L, "snapshot", &len);
++    int offset = luaL_optinteger(L, 2, 0);
++    int size = luaL_optinteger(L, 3, int(len) - offset);
++
++    if (offset < 0 || size < 0 || isoutofbounds(offset, len, unsigned(size)))
++        luaL_error(L, "BYTES_RANGE_INVALID: api.bytes.snapshot range is outside the buffer");
++
++    if (lua_getreadonly(L, 1) && offset == 0 && size_t(size) == len)
++    {
++        lua_settop(L, 1);
++        return 1;
++    }
++
++    // The source stays on the stack, so a collection here cannot free it, and
++    // buffers never move.
++    void* copy = lua_newbuffer(L, size_t(size));
++    memcpy(copy, (char*)source + offset, size_t(size));
++    lua_setreadonly(L, -1, 1);
++    return 1;
++}
++
+ static const luaL_Reg bufferlib[] = {
+     {"create", buffer_create},
+     {"fromstring", buffer_fromstring},
+--- a/luau/VM/src/lbuiltins.cpp
++++ b/luau/VM/src/lbuiltins.cpp
+@@ -1373,7 +1373,7 @@
+ static int luauF_writeinteger(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
+ {
+ #if !defined(LUAU_BIG_ENDIAN)
+-    if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && ttisnumber(args) && ttisnumber(args + 1))
++    if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && !bufvalue(arg0)->readonly && ttisnumber(args) && ttisnumber(args + 1))
+     {
+         int offset;
+         luai_num2int(offset, nvalue(args));
+@@ -1423,7 +1423,7 @@
+ static int luauF_writefp(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
+ {
+ #if !defined(LUAU_BIG_ENDIAN)
+-    if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && ttisnumber(args) && ttisnumber(args + 1))
++    if (nparams >= 3 && nresults <= 0 && ttisbuffer(arg0) && !bufvalue(arg0)->readonly && ttisnumber(args) && ttisnumber(args + 1))
+     {
+         int offset;
+         luai_num2int(offset, nvalue(args));
+--- a/luau/VM/src/lobject.h
++++ b/luau/VM/src/lobject.h
+@@ -274,6 +274,10 @@
+ {
+     CommonHeader;
+ 
++    // UNONE: set once by lua_setreadonly and never cleared by the engine. It
++    // occupies the header padding, so the layout and data offset are unchanged.
++    uint8_t readonly;
++
+     unsigned int len;
+ 
+     alignas(8) char data[1];
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -136,6 +136,8 @@
+         config.define("LUAI_MAXCSTACK", &*self.max_cstack_size.to_string());
+         config.define("LUA_VECTOR_SIZE", &*self.vector_size.to_string());
+         config.define("LUA_API", "extern \"C\"");
++        // Unone read-only buffer patch revision (see UNONE.md).
++        config.define("UNONE_READONLY_BUFFERS", "1");
+ 
+         if self.use_longjmp {
+             config.define("LUA_USE_LONGJMP", "1");

@@ -822,7 +822,19 @@ export type HostTimeApi = {
     sample: (tag: string) -> number,
 }
 
+-- Immutable bytes are ordinary buffers made read-only: read them with
+-- buffer.read* at full speed and pass a span as (buffer, offset, length).
+-- Every write to a frozen buffer fails, through any reference to it.
+export type BytesApi = {
+    -- Make the buffer read-only in place, for good; returns it.
+    freeze: (data: buffer) -> buffer,
+    isFrozen: (data: buffer) -> boolean,
+    -- A frozen copy of a range; a whole frozen buffer is returned as is.
+    snapshot: (data: buffer, offset: number?, length: number?) -> buffer,
+}
+
 export type EngineApi = {
+    bytes: BytesApi,
     hostTime: HostTimeApi,
     application: ApplicationApi,
     spatial: SpatialApi,
