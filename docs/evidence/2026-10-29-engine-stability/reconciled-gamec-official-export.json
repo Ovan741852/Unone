@@ -1,0 +1,325 @@
+{
+  "schema": "jy.reconciled-r2b-sdk10-final-export-validation.v1",
+  "ok": true,
+  "project": "D:/Projects/Unone/.cache/jy-ui06-reconciled-r2b-sdk10-project-r2",
+  "output": "D:/Projects/Unone/artifacts/jy-ui06-reconciled-r2b-sdk10-production-20261030-r2",
+  "source_sha256": "d45704216392564a7e8d815ee529b67bfed125528a5e46e4987fdfdb97e089f7",
+  "not_prior_measured_fe919_source": true,
+  "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10",
+  "cli_sha256": "0e45be26f9ebc94cc37e664e44f85fa4b8fb6c4506faf9b7fec3b8be06469b78",
+  "export_manifest_sha256": "9ba63b00980934f5000c6bbac893dee7bef42fbbe1705042121752095e7cbaf7",
+  "release_root": "releases/53494f3f55a1e2f625d3898e40074a9d549740868b4f2e1976786f5a23f7a138/",
+  "inventory_files": 605,
+  "inventory_bytes": 192240468,
+  "complete_inventory_verified": true,
+  "runtime": {
+    "bytecode_optimization_level": 2,
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "particle",
+      "random",
+      "save",
+      "ui"
+    ],
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "save",
+      "ui",
+      "world"
+    ],
+    "dev_tools": false,
+    "exports": [
+      "init",
+      "alloc",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "javascript": "unone-player.js",
+    "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+    "phase_profile": false,
+    "preview_tools": false,
+    "profile": "release",
+    "profile_mode": "none",
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "sampling_profile": false,
+    "source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+    "source_dirty": false,
+    "wasm": "unone_player.wasm",
+    "wasm_bytes": 3371104,
+    "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c"
+  },
+  "runtime_manifest_sha256": "933540c4ae8aba0f94d492df14b8f4be1845124d8349b54ceb288e8ce24cee51",
+  "exact_authoring_config_sha256": "f1d00c9061fda8d759f329f20ac1d0cd47b565251a0f79c0e1fed89b88314657",
+  "payload_exact_authoring_config_after_documented_schema_normalization": true,
+  "tool_only_save_fixtures_omitted_by_official_export": [
+    {
+      "name": "world",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "heroes",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "recruit",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "journal",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "pets",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "bag",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "status",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "inventory",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "settings",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training-foundations",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training-attributes",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training-detail",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training-basic-detail",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training-category-internal",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training-learned",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "training-empty-special",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "inventory-literature",
+      "save_fixture": "tests/ui-fixtures/river-dock.save.json"
+    },
+    {
+      "name": "heroes-detail",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "recruit-results",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "recruit-detail",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "pets-detail",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "workshop-forge",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "workshop-smelter",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "workshop-appraisal",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "workshop-repair",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-location",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-travel-card",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "battle",
+      "save_fixture": "tests/ui-fixtures/field.save.json"
+    },
+    {
+      "name": "battle-paused",
+      "save_fixture": "tests/ui-fixtures/field.save.json"
+    },
+    {
+      "name": "world-zoom-out",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-zoom-in",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-player-offscreen",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-player-returned",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-travel",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-scout",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-path-pending",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-explored-eight-steps",
+      "save_fixture": "evidence/map-page-legal/eight-steps.save.json"
+    },
+    {
+      "name": "world-explored-sixteen-steps",
+      "save_fixture": "evidence/map-page-legal/sixteen-steps.save.json"
+    },
+    {
+      "name": "world-explored-arrival",
+      "save_fixture": "evidence/map-page-legal/bamboo-arrived.save.json"
+    },
+    {
+      "name": "world-mixed-stress",
+      "save_fixture": "tests/ui-fixtures/mixed-school-stress.save.json"
+    },
+    {
+      "name": "town-interior",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "town-npc",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "town-journal",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "town-people",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "town-chat",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "town-robbery",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "world-atlas",
+      "save_fixture": "tests/ui-fixtures/named-fresh.save.json"
+    },
+    {
+      "name": "school-interior",
+      "save_fixture": "tests/ui-fixtures/school.save.json"
+    },
+    {
+      "name": "school-master",
+      "save_fixture": "tests/ui-fixtures/school.save.json"
+    },
+    {
+      "name": "teacher-lessons",
+      "save_fixture": "tests/ui-fixtures/school.save.json"
+    },
+    {
+      "name": "teacher-detail",
+      "save_fixture": "tests/ui-fixtures/school.save.json"
+    }
+  ],
+  "reference_files": 204,
+  "reference_files_missing": [],
+  "strict_typecheck_evidence": "D:/Projects/Unone/.cache/jy-ui06-complete-handoff-reconciled-r2b/C-strict-r2b.json",
+  "postprocess_changed_files": [
+    "index.html",
+    "releases/53494f3f55a1e2f625d3898e40074a9d549740868b4f2e1976786f5a23f7a138/web/player/jy-wheel-input.mjs",
+    "releases/53494f3f55a1e2f625d3898e40074a9d549740868b4f2e1976786f5a23f7a138/web/player/main.js",
+    "web/player/jy-wheel-input.mjs",
+    "web/player/main.js"
+  ],
+  "renderer": "three-webgl",
+  "renderer_mode": "official",
+  "host_layer": "Exact existing Game wheel semantic-input adapter and fixed16:9 CSS; no new renderer or manual WASM/main replacement.",
+  "product_guard_count": 103,
+  "product_writes": false,
+  "browser_executed": false,
+  "performance_acceptance": "not-assessed",
+  "prior_attempts": [
+    {
+      "path": "D:/Projects/Unone/.cache/jy-ui06-reconciled-r2b-sdk10-export/failure.json",
+      "reason": "Pre-CLI comparison of normalized reconstructed config to authored config failed closed."
+    },
+    {
+      "path": "D:/Projects/Unone/.cache/jy-ui06-reconciled-r2b-sdk10-export-r2/failure.json",
+      "reason": "Export+postprocessor succeeded; verifier incorrectly expected tool-only save_fixture in runtime payload. Corrected here using the existing official serializer contract."
+    }
+  ],
+  "limitations": [
+    "SDK11 build blocked by AppControl; this uses existing verified SDK10 unchanged.",
+    "This reconciled source preserves uncompiled Product work and differs from historical measured fe919.",
+    "No full referenced test suite, browser/FPS/GC or memory acceptance is claimed by this export validation.",
+    "release_root retains pre-postprocess name; final identity is manifest SHA plus complete verified inventory."
+  ]
+}

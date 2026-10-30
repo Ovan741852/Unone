@@ -1,0 +1,110 @@
+{
+  "schema": "unone.current-authoring-r2b-threeway-validation.v1",
+  "status": "passed-actual-production-wasm",
+  "started_utc": "2026-10-30T05:20:26.300Z",
+  "finished_utc": "2026-10-30T05:24:14.461Z",
+  "scope": "Seven fixed semantic input scenarios compare the current authored Game plus common reader wiring, its necessary UI0.6 copy-on-write migration, and the scalar repository change. This is semantic equivalence evidence, not performance or visual acceptance.",
+  "comparison": {
+    "checkpoints": 4163,
+    "ticks_per_variant": 4156,
+    "variants": 3,
+    "allowlist": [],
+    "all_complete_world_and_save_values_deep_strict_equal": true,
+    "all_sorted_full_observer_json_bytes_equal": true,
+    "all_authoritative_observation_digest_strings_exact": true,
+    "world_scope": "The entire world object, including UI, entities, shaders, every observation and all other present fields. No key or value is omitted from comparison.",
+    "byte_scope": "Complete {world,save_payload} JSON with object keys recursively sorted. Arrays, values and property presence remain exact. These observer bytes are not called Core canonical serialization.",
+    "digest_scope": "The unmodified observation_digest returned by each production WASM is compared exactly at every initial snapshot and successful tick. It is not replaced by a diagnostic sorted hash.",
+    "raw_object_key_order_normalized_only_for_observer_bytes": true
+  },
+  "load_contract": {
+    "seed": 42,
+    "viewport": [1600, 900],
+    "fresh_project_load_per_scenario": true,
+    "all_modules_unloaded_after_execution": true,
+    "frozen_payload_override": "Only script and config.runtime_packages['@unone/ui'] differ by variant. The runner deep-compares all other frozen payload values before execution.",
+    "executed_config_identity": "The exact frozen project payload hashes below pin the executed config/scene/assets. The authored project.unone.json hashes additionally pin each selected source project; tool-only project fields are not substituted into the frozen runtime payload.",
+    "runtime_policy": {
+      "bytecode_optimization_level": 2,
+      "profile_mode": "none",
+      "source_dirty": false,
+      "dev_tools": false,
+      "preview_tools": false,
+      "phase_profile": false,
+      "sampling_profile": false,
+      "developer_request_export_present": false
+    },
+    "named_save_sha256": "098d5f27cc79f1750327dcbe163708ea4567e8fc4cfa857ffc3abad92f732deb",
+    "travel_plan_sha256": "e051da0e7361f2bea5425d7689448e6c3ed45a3555fa30fad5b240ff8c0fe1e7",
+    "battle_plan_sha256": "24e0b54e582ef75d4f08135c76733def67b37001140beba21a5ae11e17b87097"
+  },
+  "variants": [
+    {
+      "name": "A-authored-wiring-ui05",
+      "change": "Current authored Game and common reader wiring, before ownership migration.",
+      "project": ".cache/jy-ui06-complete-handoff-reconciled-r2b/baseline-sandbox/game",
+      "script_sha256": "128ed5c93bef3499415f95a81d21628cfc60c88e417b171f7ec39b94161cbca1",
+      "authored_project_json_sha256": "4eea9f7fadaa3d30c6aeb5dbc617007a1ed02422aca58f938d0639ab7594ae33",
+      "ui_version": "0.5.0",
+      "runtime_source_commit": "ff617f581357cb03d71ffd9fc8a6b8e059081bd0",
+      "wasm_sha256": "167456acc192215d1812fb8e3f08bbd47487b5ff18aabb9e385622b88081c625",
+      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "runtime_manifest_sha256": "365f9621b2bee460d022e8c61961361261b367186dbc476f839f0732855453f2",
+      "host_loader_sha256": "2d446e73423d701fe9a113e07af14cdd787cf274862e45570aa1d6b175d3da58",
+      "frozen_project_payload_sha256": "0e0c682926729a44e486879fe9e1d354f6c79efe895cc953ed24f1ab7059b6bf"
+    },
+    {
+      "name": "B-authored-wiring-cow-oldrepo-ui06",
+      "change": "A plus necessary shallow copy-on-write ownership migration, retaining the old repository.",
+      "project": ".cache/jy-ui06-complete-handoff-reconciled-r2b/cow-control-sandbox/game",
+      "script_sha256": "91c14eb93c08b3c3c7d12fff9c1bf5abaf9b7f6df57531537f93652579d83e98",
+      "authored_project_json_sha256": "f1d00c9061fda8d759f329f20ac1d0cd47b565251a0f79c0e1fed89b88314657",
+      "ui_version": "0.6.0",
+      "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+      "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "runtime_manifest_sha256": "933540c4ae8aba0f94d492df14b8f4be1845124d8349b54ceb288e8ce24cee51",
+      "host_loader_sha256": "a20b5c7ce34fd33dde437f96808271f5a7755b7da1c54de3bb36850fff92750b",
+      "frozen_project_payload_sha256": "fa1aa543a0f6a95e533ab9ecb60a435901f4688adbe664ce139d7b47d9eba399"
+    },
+    {
+      "name": "C-authored-wiring-cow-scalar-ui06",
+      "change": "B plus the scalar world repository representation/query change, using exactly the same SDK10 runtime and frozen payload.",
+      "project": ".cache/jy-ui06-complete-handoff-reconciled-r2b/compose-sandbox/game",
+      "script_sha256": "d45704216392564a7e8d815ee529b67bfed125528a5e46e4987fdfdb97e089f7",
+      "authored_project_json_sha256": "f1d00c9061fda8d759f329f20ac1d0cd47b565251a0f79c0e1fed89b88314657",
+      "ui_version": "0.6.0",
+      "runtime_source_commit": "eb2459c91c0998eac3c75fca066638a647300fec",
+      "wasm_sha256": "7510d5016b72fe8d31947caf9097c2c3b2f72df7e0a6176a3ec78f506092503c",
+      "javascript_sha256": "a0977327f0a69b294ed32bc5f34f17b4b94275439aed60640d60e3a1fede676a",
+      "runtime_manifest_sha256": "933540c4ae8aba0f94d492df14b8f4be1845124d8349b54ceb288e8ce24cee51",
+      "host_loader_sha256": "a20b5c7ce34fd33dde437f96808271f5a7755b7da1c54de3bb36850fff92750b",
+      "frozen_project_payload_sha256": "fa1aa543a0f6a95e533ab9ecb60a435901f4688adbe664ce139d7b47d9eba399"
+    }
+  ],
+  "cases": [
+    {"case": "idle", "ticks_per_variant": 115, "checkpoints": 116, "passed": true, "rows_sha256": "c7818c9deaf041d9e42a9ed109dd25961c439c33db6ea46c7ecebed81c477a2b"},
+    {"case": "drag", "ticks_per_variant": 60, "checkpoints": 61, "passed": true, "viewport_change_asserted": true, "rows_sha256": "e9452e9eb69df517d139669b785ad398eff18c198615185cbd4b4fec3622aded"},
+    {"case": "travel", "ticks_per_variant": 103, "checkpoints": 104, "passed": true, "rows_sha256": "ee51b01f07e04f8eea4bfafabadc13f85c4f93aa24644ec7c54a20e9a06f03a5"},
+    {"case": "travel-card", "ticks_per_variant": 101, "checkpoints": 102, "passed": true, "rows_sha256": "7261a5be9f4081d4d9efdf5676f797cff9233e3bc050199ceb58716da424c69e"},
+    {"case": "atlas", "ticks_per_variant": 82, "checkpoints": 83, "passed": true, "rows_sha256": "e3aa58311a09d837a78adc575a052cc4881b9d9030f1bf7e88014f7fb9c10f27"},
+    {"case": "battle", "ticks_per_variant": 77, "checkpoints": 78, "passed": true, "rows_sha256": "2fcd427d1ac76c4c51b96fb4d5404483cde2281d61eaf1a3f6bda18510059a49"},
+    {"case": "inventory", "ticks_per_variant": 3618, "checkpoints": 3619, "passed": true, "prefix_ticks": 18, "late_ticks": 3600, "final_frame": 3618, "rows_sha256": "8edece6e2593735c289c0056580784562e626c390a15cb45381c12c83f3634d9"}
+  ],
+  "raw": {
+    "directory": ".cache/jy-ui06-r2b-threeway-canonical-run1",
+    "runner_sha256": "9d318de220cf217dfc3fc8934991ee1383133b4e0e47a60e40a72d54011b6581",
+    "result_sha256": "1746e31b04f4724d90ab5554208f4fd1af8ae11ddea867f9fc4b22be2b83482b",
+    "source_metadata_sha256": "48dab37ee67dd52b42260cd8e761837dc87e7574d6494c9dfbeec97146720145",
+    "per_case_files": "<case>-plan.json contains the exact inputs/save; <case>-checkpoints.json contains every complete-value digest checkpoint. Raw Core digest strings are retained in each row.",
+    "wiring_metadata": ".cache/jy-ui06-complete-handoff-reconciled-r2b/wiring-r2.json"
+  },
+  "limits": [
+    "No browser, server, GPU, profiler, forced GC or performance measurement ran in this comparison. No Product files were written.",
+    "Headless semantic replay does not prove native input picking, browser wheel routing, rendered pixels, FPS stability, natural GC frequency or absence of memory leaks.",
+    "Battle reuses the copied benchmark save with its Blackwind position/exploration setup rather than natural travel progression.",
+    "A-to-B includes both the matching runtime/package upgrade and the necessary ownership migration; it is not an engine-only performance comparison. B-to-C uses identical SDK10 production WASM.",
+    "Common authored UI caches and reader wiring are preserved in all three variants. Equality alone does not prove every common cache invalidation policy correct.",
+    "SDK11 fused-copy runtime was not used: its build was blocked by Windows App Control4551 before Cargo build-script execution and emitted no runtime. See ui-fused-copy-source-review.json for the build addendum."
+  ]
+}

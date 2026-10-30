@@ -1,7 +1,7 @@
 {
   "schema": "unone.retained-web-sdk-handoff.v4",
   "date": "2026-10-30",
-  "status": "SDK10_functionally_validated; long_Game_inventory_acceptance_FAILED; confirmed_Game_geography_redecode_fixed_in_isolated_candidate_but_remaining_FPS_cause_unresolved; GC_acceptance_in_progress",
+  "status": "SDK10 functional validation passed; prior60s inventory variants FAILED; reconciled GameC canonical validation passed; current Web FPS/memory acceptance awaits authorized local server",
   "sdk": "D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10",
   "sdk_manifest_sha256": "2c8c09b65214802fb023eb97821f2198e0f9776bee5daf65cc397848acab8f64",
   "engine_version": "0.2.0",
@@ -240,13 +240,66 @@
     "matching_sdk10_phase_runtime": null,
     "development": "web-development-1 is opt1 authoring/preview support, not a production performance diagnostic.",
     "historical_sampler9": "Frozen opt2 UI0.6 Lua package diagnostic was used to identify Game RLE work and fixed-state allocation; it lacks SDK10 whole-UI wire and is not matching presentation/GC acceptance.",
-    "production_gc": "SDK10 natural-GC and resource-cycle measurements pending after the confirmed long-soak Game fix."
+    "production_gc": "Historical scalarfe919 SDK10 natural-GC/20cycle measurements completed under concurrent load; current authored GameC still requires its own production browser diagnostic."
   },
   "remaining_acceptance": [
-    "Fix bounded Game point-query versus materialized-cell residency, preserve all full Game state/UI/save/digests in long fixed replay.",
-    "Rerun actual official seven cases and60s inventory after fix, preserve clocks/drops/nominal and legacy timing diagnostics.",
-    "Measure natural V8 GC and repeated open/close resources separately; zero GC/universal leak freedom is not established.",
-    "Review and integrate caller source/compiler/type/package/SDK-selection migration without overwriting other Product changes."
+    "Obtain authorization to retry the rejected localhost server startup, then run actual official seven cases and60s inventory for exact GameC source; preserve clocks, drops and timing gates.",
+    "Measure natural V8 GC and100open/close resources for exact GameC; retain finite asset/cache ownership and all missing-counter limits.",
+    "Apply the complete guarded authoring/compiler/type/package/SDK migration without overwriting other Product changes, after actual-player acceptance.",
+    "SDK11 fused-copy runtime cannot be claimed built or measured while Windows App Control blocks necessary build scripts."
   ],
-  "prior_handoff": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-web-sdk-handoff-candidate8.json"
+  "prior_handoff": "D:/Projects/Unone/docs/evidence/2026-10-29-engine-stability/retained-web-sdk-handoff-candidate8.json",
+  "current_authored_candidate": {
+    "source_sha256": "d45704216392564a7e8d815ee529b67bfed125528a5e46e4987fdfdb97e089f7",
+    "product_modified": false,
+    "source_bundle": ".cache/jy-ui06-complete-handoff-reconciled-r2b",
+    "patch_files": 21,
+    "product_sha_guards": 103,
+    "preserves_current_uncompiled_authoring": true,
+    "canonical": {
+      "passed": true,
+      "cases": 7,
+      "checkpoints": 4163,
+      "allowlist": [],
+      "full_values_save_and_core_digests_equal": true,
+      "raw": ".cache/jy-ui06-r2b-threeway-canonical-run1/result.json"
+    },
+    "export": {
+      "directory": "D:/Projects/Unone/artifacts/jy-ui06-reconciled-r2b-sdk10-production-20261030-r2",
+      "manifest_sha256": "9ba63b00980934f5000c6bbac893dee7bef42fbbe1705042121752095e7cbaf7",
+      "release": "releases/53494f3f55a1e2f625d3898e40074a9d549740868b4f2e1976786f5a23f7a138/",
+      "inventory_files": 605,
+      "all_inventory_hashes_verified": true,
+      "renderer": "official",
+      "runtime": "SDK10 production7510d501"
+    },
+    "server": {
+      "status": "not-started-automatic-review-rejected",
+      "intended_url": "http://127.0.0.1:8293/?seed=42",
+      "reason": "blocked by policy; no substantive explanation supplied",
+      "human_authorization": "pending"
+    },
+    "production_fps": "not-measured-for-this-source",
+    "natural_gc_and_cycles": "not-measured-for-this-source",
+    "lua_diagnostic": ".cache/jy-gamec-sampler9-fixed3600-run1/compact.json",
+    "lua_diagnostic_scope": "Existing older Sampler9 ABI with actual current GameC/UI0.6,3600fixedticks; not matching SDK10 wire, browser FPS or V8 GC acceptance"
+  },
+  "fused_copy_followup": {
+    "source_commit": "f689df482b44456119821e5ce1fa11bf60761e5c",
+    "status": "source-implemented; SDK11 build blocked; no new runtime emitted",
+    "implementation_commit": "680088118d2ea15865b6650ddcc42799d92356c0",
+    "focused_native_tests": {
+      "passed": 22,
+      "immutable_and_responsive": "not-executed-AppControl4551"
+    },
+    "package_strict_analyzer": "Luau0.734 passed",
+    "build": {
+      "log": ".cache/sdk11-production-build.log",
+      "exit_code": 1,
+      "reason": "Windows application control4551 blocked quote/getrandom/generic-array build scripts before execution",
+      "runtime_manifest_exists": false
+    },
+    "source_review": "ui-fused-copy-source-review.json",
+    "external_claude_review": "incomplete60s timeout with no output; not a completed review"
+  }
 }

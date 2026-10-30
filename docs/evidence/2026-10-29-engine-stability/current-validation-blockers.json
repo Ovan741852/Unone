@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Concrete local validation blockers; not a claim of completed SDK11 or current-Game browser acceptance",
+  "sdk11": {
+    "source_commit": "f689df482b44456119821e5ce1fa11bf60761e5c",
+    "clean_build_snapshot": "C:/Users/liNao/.codex/worktrees/ui-fused-build/Unone",
+    "command": "scripts/build-web-live.ps1 -Player -Project D:/Projects/Unone/.cache/sdk11-runtime-project -Cli D:/Projects/Unone/artifacts/core-sdk-web-retained-20261030-candidate10/bin/game.exe -OutputRoot D:/Projects/Unone/artifacts/web-retained-20261030-runtime-candidate11 -EmsdkRoot D:/Projects/Unone/.toolcache/emsdk/unone-layout -BinaryenRoot D:/Projects/Unone/.toolcache/binaryen-version_131",
+    "session": 33746,
+    "exit_code": 1,
+    "status": "failed-before-runtime-output",
+    "reason": "Windows application control error4551 prevented required quote/getrandom/generic-array build scripts from executing",
+    "log": ".cache/sdk11-production-build.log",
+    "log_sha256": "bb602cba3c3a5e4718fbcf15e1417669d8fe183b19bdcec13369c5397b6c5c2f",
+    "runtime_manifest_created": false,
+    "blocked_executables_retried_moved_or_bypassed": false,
+    "human_response": "pending"
+  },
+  "server": {
+    "status": "not-started-automatic-review-rejected",
+    "export_directory": "artifacts/jy-ui06-reconciled-r2b-sdk10-production-20261030-r2",
+    "intended_url": "http://127.0.0.1:8293/?seed=42",
+    "bind": "127.0.0.1",
+    "window_style": "Hidden",
+    "reason": "blocked by policy; no substantive explanation supplied",
+    "process_started": false,
+    "retried": false,
+    "human_authorization": "pending"
+  },
+  "independent_work_completed": [
+    "Engine fused-copy source and strict typing changes committed on main",
+    "Existing SDK10 GameC605-file official export inventory verified",
+    "Three-way seven-case4163-checkpoint full state/save/Core digest comparisons passed with empty allowlist",
+    "Actual existing Sampler9 GameC3600tick Lua allocation/GC diagnostic completed and VM unloaded"
+  ],
+  "dependent_work_pending": [
+    "Current GameC official Web seven-case and60s inventory FPS acceptance",
+    "Current GameC natural V8 GC and100open/close resource observations",
+    "Guarded Product integration after actual official-player acceptance"
+  ],
+  "limits": [
+    "Historical Game726 andfe919 FPS/GC observations are not acceptance of new GameC source d457042.",
+    "Native source tests/static analysis/NodeWASM replay are not browser or scanout proof.",
+    "No new SDK11 WASM was emitted or measured; frozen SDK10 remains unchanged."
+  ]
+}

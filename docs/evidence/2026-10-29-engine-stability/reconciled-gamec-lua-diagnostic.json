@@ -1,0 +1,1408 @@
+{
+  "schema_version": 1,
+  "ok": true,
+  "scope": "Actual existing Sampler9 opt2 WASM with frozen current GameC payload/config, named fixture/seed42/1600x900; inventory at frame18 then3600 sequential fixed empty-input ticks in12 independent300-tick sampling=true windows. Tickwall brackets only unone_web_tick, excluding setter, Node decoding, profile requests and file IO. Same published UI0.6 Lua package, older publication ABI: not a matching SDK10 host-wire/production performance control. No equality assertion against the priorfe919 cache policy. Instrumented diagnosis, not realtime FPS.",
+  "source_sha256": "d45704216392564a7e8d815ee529b67bfed125528a5e46e4987fdfdb97e089f7",
+  "wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60",
+  "project_file_sha256": "c2e7d7a4384cc6544428a5b1bd70ca581791cde610ca868f857a74ff2e2ad790",
+  "fixture_sha256": "098d5f27cc79f1750327dcbe163708ea4567e8fc4cfa857ffc3abad92f732deb",
+  "source_project_path": "D:\\Projects\\Unone\\artifacts\\jy-ui06-reconciled-r2b-sdk10-production-20261030-r2\\content\\project.json",
+  "total_fixed_ticks": 3600,
+  "profile_windows": 12,
+  "ticks_per_window": 300,
+  "sampling": true,
+  "browser_used": false,
+  "totals": {
+    "allocation_growth_bytes": 2140695368,
+    "allocation_growth_events": 23291763,
+    "incremental_gc_steps": 1371556,
+    "incremental_gc_ms": 2145.220854999999,
+    "incremental_gc_max_step_ms": 1.6470989999999999
+  },
+  "boundary_current_luau_allocated_bytes": {
+    "min": 11429347,
+    "max": 14051180,
+    "last": 13272454
+  },
+  "blocks": [
+    {
+      "block": 1,
+      "frames": [
+        19,
+        318
+      ],
+      "simulation_time_seconds": 5.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 1.9419000000000324,
+        "median_ms": 2.214300000000094,
+        "p95_ms": 8.159799999999905,
+        "p99_ms": 21.663400000000024,
+        "max_ms": 24.17450000000008,
+        "mean_ms": 3.151133999999999,
+        "total_ms": 945.3401999999996
+      },
+      "boundary_current_luau_allocated_bytes": 11429347,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 88372702,
+        "allocation_growth_events": 739622,
+        "incremental_gc_steps": 60902,
+        "incremental_gc_ms": 81.28137499999987,
+        "incremental_gc_max_step_ms": 0.343899
+      },
+      "samples": 622,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 0,
+        "ui_copy_visit": 0,
+        "ui_finalize_visit": 0,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 175,
+          "inclusive_samples": 200
+        },
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 128,
+          "inclusive_samples": 128
+        },
+        {
+          "key": "scripts/main.luau:5855:assistCandidates",
+          "self_samples": 67,
+          "inclusive_samples": 69
+        },
+        {
+          "key": "scripts/main.luau:5496:update",
+          "self_samples": 33,
+          "inclusive_samples": 72
+        },
+        {
+          "key": "scripts/main.luau:16963:process",
+          "self_samples": 24,
+          "inclusive_samples": 178
+        },
+        {
+          "key": "scripts/main.luau:7063:observe",
+          "self_samples": 23,
+          "inclusive_samples": 93
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 18,
+          "inclusive_samples": 622
+        },
+        {
+          "key": "scripts/main.luau:17581:processActions",
+          "self_samples": 16,
+          "inclusive_samples": 194
+        },
+        {
+          "key": "scripts/main.luau:16900:controls",
+          "self_samples": 13,
+          "inclusive_samples": 13
+        },
+        {
+          "key": "scripts/main.luau:4227:routeLength",
+          "self_samples": 10,
+          "inclusive_samples": 10
+        },
+        {
+          "key": "scripts/main.luau:4511:origin",
+          "self_samples": 10,
+          "inclusive_samples": 17
+        },
+        {
+          "key": "scripts/main.luau:5895:buildings",
+          "self_samples": 9,
+          "inclusive_samples": 14
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:f55d972fe64b18e06d97f68d7ab266c9200272603ef40508a86820ce6942fde5",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "ea71e6ee50d6ac0f5c8aed024d1675a3d1649e95b09d800ce86c0d9ef845ef09",
+        "observations_sha256": "16c5c730a8e100d97ff40d5b04bf6eebb26bd42fc5fa1cf9a94dc3ad61d13cbe",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 111836
+    },
+    {
+      "block": 2,
+      "frames": [
+        319,
+        618
+      ],
+      "simulation_time_seconds": 10.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 1.9537000000000262,
+        "median_ms": 2.227200000000039,
+        "p95_ms": 9.459800000000087,
+        "p99_ms": 14.637000000000171,
+        "max_ms": 16.81659999999988,
+        "mean_ms": 3.3525636666666734,
+        "total_ms": 1005.769100000002
+      },
+      "boundary_current_luau_allocated_bytes": 13072199,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 86217180,
+        "allocation_growth_events": 834077,
+        "incremental_gc_steps": 57520,
+        "incremental_gc_ms": 82.491203,
+        "incremental_gc_max_step_ms": 0.894899
+      },
+      "samples": 655,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 44,
+        "ui_copy_visit": 13,
+        "ui_finalize_visit": 14,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 130,
+          "inclusive_samples": 130
+        },
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 80,
+          "inclusive_samples": 89
+        },
+        {
+          "key": "scripts/main.luau:5855:assistCandidates",
+          "self_samples": 59,
+          "inclusive_samples": 61
+        },
+        {
+          "key": "scripts/main.luau:5496:update",
+          "self_samples": 26,
+          "inclusive_samples": 68
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 24,
+          "inclusive_samples": 655
+        },
+        {
+          "key": "scripts/main.luau:16963:process",
+          "self_samples": 19,
+          "inclusive_samples": 179
+        },
+        {
+          "key": "scripts/main.luau:17581:processActions",
+          "self_samples": 19,
+          "inclusive_samples": 198
+        },
+        {
+          "key": "scripts/main.luau:7063:observe",
+          "self_samples": 17,
+          "inclusive_samples": 80
+        },
+        {
+          "key": "scripts/main.luau:9651:current",
+          "self_samples": 16,
+          "inclusive_samples": 16
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 14,
+          "inclusive_samples": 14
+        },
+        {
+          "key": "scripts/main.luau:4511:origin",
+          "self_samples": 14,
+          "inclusive_samples": 18
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 13,
+          "inclusive_samples": 14
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:5373b91a196842ad2e90f99d2473f09fcf797ea73e182a2814e16a59208acff8",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "0596d5ebef0df0d525f61ace7efe0ea42e8bcd562c46727d7a05ce94059159df",
+        "observations_sha256": "a4848b0a98b24468f70b6ad29247eb796bea7002a260b9816f3bf3231da2b4ba",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 119928
+    },
+    {
+      "block": 3,
+      "frames": [
+        619,
+        918
+      ],
+      "simulation_time_seconds": 15.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 6.907900000000154,
+        "median_ms": 8.345000000000255,
+        "p95_ms": 14.083000000000538,
+        "p99_ms": 19.271899999999732,
+        "max_ms": 20.74619999999959,
+        "mean_ms": 8.974950333333311,
+        "total_ms": 2692.485099999993
+      },
+      "boundary_current_luau_allocated_bytes": 12783411,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 262737213,
+        "allocation_growth_events": 2866185,
+        "incremental_gc_steps": 162412,
+        "incremental_gc_ms": 262.47305099999994,
+        "incremental_gc_max_step_ms": 0.36279999999999996
+      },
+      "samples": 1994,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 392,
+        "ui_copy_visit": 138,
+        "ui_finalize_visit": 132,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 138,
+          "inclusive_samples": 161
+        },
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 133,
+          "inclusive_samples": 133
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 132,
+          "inclusive_samples": 144
+        },
+        {
+          "key": "scripts/main.luau:13327:collectMapCell",
+          "self_samples": 110,
+          "inclusive_samples": 282
+        },
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 98,
+          "inclusive_samples": 103
+        },
+        {
+          "key": "scripts/main.luau:13347:appendMapTerrain",
+          "self_samples": 61,
+          "inclusive_samples": 376
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 60,
+          "inclusive_samples": 195
+        },
+        {
+          "key": "scripts/main.luau:11858:release",
+          "self_samples": 56,
+          "inclusive_samples": 56
+        },
+        {
+          "key": "scripts/main.luau:11766:tile",
+          "self_samples": 45,
+          "inclusive_samples": 112
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 45,
+          "inclusive_samples": 1994
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 45,
+          "inclusive_samples": 45
+        },
+        {
+          "key": "@packages/unone-ui:61:fields",
+          "self_samples": 43,
+          "inclusive_samples": 43
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:fcdbaa7f54bfbb475871d36d2a6589d11ea617289c7ef1ad86b24ad1a76f8642",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "f47e4a2a8395b6f971039a14bdf6a4c551d2028fa121e9880cd4cef1c2fe7d1d",
+        "observations_sha256": "004af18971517b2ba109e669fec144be85b412733555b0bd74952063f52b465b",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 119928
+    },
+    {
+      "block": 4,
+      "frames": [
+        919,
+        1218
+      ],
+      "simulation_time_seconds": 20.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 7.258700000000317,
+        "median_ms": 8.747099999999591,
+        "p95_ms": 13.65350000000035,
+        "p99_ms": 16.5636999999997,
+        "max_ms": 23.952699999999822,
+        "mean_ms": 9.284795666666648,
+        "total_ms": 2785.4386999999942
+      },
+      "boundary_current_luau_allocated_bytes": 13544690,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 283185101,
+        "allocation_growth_events": 3116439,
+        "incremental_gc_steps": 176677,
+        "incremental_gc_ms": 276.4624649999996,
+        "incremental_gc_max_step_ms": 1.1461
+      },
+      "samples": 2049,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 456,
+        "ui_copy_visit": 117,
+        "ui_finalize_visit": 167,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 167,
+          "inclusive_samples": 183
+        },
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 140,
+          "inclusive_samples": 140
+        },
+        {
+          "key": "scripts/main.luau:13327:collectMapCell",
+          "self_samples": 119,
+          "inclusive_samples": 283
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 117,
+          "inclusive_samples": 145
+        },
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 81,
+          "inclusive_samples": 87
+        },
+        {
+          "key": "@packages/unone-ui:435:solve",
+          "self_samples": 64,
+          "inclusive_samples": 64
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 61,
+          "inclusive_samples": 192
+        },
+        {
+          "key": "scripts/main.luau:2910:chunkAt",
+          "self_samples": 51,
+          "inclusive_samples": 71
+        },
+        {
+          "key": "scripts/main.luau:11858:release",
+          "self_samples": 49,
+          "inclusive_samples": 49
+        },
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 47,
+          "inclusive_samples": 70
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 42,
+          "inclusive_samples": 2049
+        },
+        {
+          "key": "scripts/main.luau:11766:tile",
+          "self_samples": 40,
+          "inclusive_samples": 111
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:184704deae7931a686f4c63ce31a2ebe169da026fb40c31b480863d5c42662dd",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "bd03f0d555c41731197341f7d89ee96c733d986364fe1ec03d5baa4000aac78f",
+        "observations_sha256": "0146a201343c3654332ae550fdf1cb9e1c0ed3ee42445986a14744d705f39639",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 125197
+    },
+    {
+      "block": 5,
+      "frames": [
+        1219,
+        1518
+      ],
+      "simulation_time_seconds": 25.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 2.550599999998667,
+        "median_ms": 8.290000000000873,
+        "p95_ms": 11.678099999999176,
+        "p99_ms": 16.184699999999793,
+        "max_ms": 24.247800000000097,
+        "mean_ms": 6.893167666666607,
+        "total_ms": 2067.9502999999822
+      },
+      "boundary_current_luau_allocated_bytes": 14051180,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 204225434,
+        "allocation_growth_events": 2242359,
+        "incremental_gc_steps": 129232,
+        "incremental_gc_ms": 208.03636099999986,
+        "incremental_gc_max_step_ms": 0.190501
+      },
+      "samples": 1534,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 280,
+        "ui_copy_visit": 67,
+        "ui_finalize_visit": 81,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 134,
+          "inclusive_samples": 134
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 81,
+          "inclusive_samples": 82
+        },
+        {
+          "key": "scripts/main.luau:13327:collectMapCell",
+          "self_samples": 77,
+          "inclusive_samples": 180
+        },
+        {
+          "key": "@packages/unone-ui:435:solve",
+          "self_samples": 75,
+          "inclusive_samples": 75
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 67,
+          "inclusive_samples": 78
+        },
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 61,
+          "inclusive_samples": 76
+        },
+        {
+          "key": "scripts/main.luau:7063:observe",
+          "self_samples": 60,
+          "inclusive_samples": 87
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 35,
+          "inclusive_samples": 122
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 33,
+          "inclusive_samples": 1534
+        },
+        {
+          "key": "scripts/main.luau:5496:update",
+          "self_samples": 33,
+          "inclusive_samples": 72
+        },
+        {
+          "key": "scripts/main.luau:11766:tile",
+          "self_samples": 32,
+          "inclusive_samples": 77
+        },
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 29,
+          "inclusive_samples": 49
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:a935a11d1178bce8e4d15e71c86bbf42b6125b66b12a05adefcb9420c869b61a",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "d91176082bb2c3702e600bd7986a8b20f28c369795855f0880f36dac187a27dc",
+        "observations_sha256": "a61ecb5fcd700ddb908a7f8fdf8fb5f6efa26d64beff222eaafcc3f46a1ef93c",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 125198
+    },
+    {
+      "block": 6,
+      "frames": [
+        1519,
+        1818
+      ],
+      "simulation_time_seconds": 30.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 2.5705999999991036,
+        "median_ms": 2.9429999999993015,
+        "p95_ms": 6.012300000000323,
+        "p99_ms": 9.817000000000917,
+        "max_ms": 13.56420000000071,
+        "mean_ms": 3.3826496666667176,
+        "total_ms": 1014.7949000000153
+      },
+      "boundary_current_luau_allocated_bytes": 13342875,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 96809089,
+        "allocation_growth_events": 999823,
+        "incremental_gc_steps": 63947,
+        "incremental_gc_ms": 101.74760700000003,
+        "incremental_gc_max_step_ms": 0.1094
+      },
+      "samples": 727,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 0,
+        "ui_copy_visit": 0,
+        "ui_finalize_visit": 0,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 146,
+          "inclusive_samples": 146
+        },
+        {
+          "key": "scripts/main.luau:7063:observe",
+          "self_samples": 61,
+          "inclusive_samples": 85
+        },
+        {
+          "key": "scripts/main.luau:17077:martial",
+          "self_samples": 58,
+          "inclusive_samples": 61
+        },
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 53,
+          "inclusive_samples": 58
+        },
+        {
+          "key": "scripts/main.luau:2847:surveyed",
+          "self_samples": 35,
+          "inclusive_samples": 58
+        },
+        {
+          "key": "scripts/main.luau:5496:update",
+          "self_samples": 34,
+          "inclusive_samples": 69
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 29,
+          "inclusive_samples": 29
+        },
+        {
+          "key": "scripts/main.luau:16963:process",
+          "self_samples": 28,
+          "inclusive_samples": 191
+        },
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 24,
+          "inclusive_samples": 39
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 18,
+          "inclusive_samples": 727
+        },
+        {
+          "key": "scripts/main.luau:5855:assistCandidates",
+          "self_samples": 18,
+          "inclusive_samples": 21
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 16,
+          "inclusive_samples": 18
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:50ddd3e86b7a4a65d08bd3bd58361658189fc4523a70f06036c45d9607938f04",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "e09453eb5e559e802675ea144418407210b62d6e3c4cc9b1e07b35a8183a4d09",
+        "observations_sha256": "06b0ce1180bbcabf97effca65bc466678a057ce2c33728eaa28f3575821a508b",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 126621
+    },
+    {
+      "block": 7,
+      "frames": [
+        1819,
+        2118
+      ],
+      "simulation_time_seconds": 35.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 2.8017999999992753,
+        "median_ms": 3.10779999999977,
+        "p95_ms": 5.632300000001123,
+        "p99_ms": 11.307099999999991,
+        "max_ms": 15.402500000000146,
+        "mean_ms": 3.616338000000002,
+        "total_ms": 1084.9014000000006
+      },
+      "boundary_current_luau_allocated_bytes": 13221025,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 105240397,
+        "allocation_growth_events": 1116704,
+        "incremental_gc_steps": 70168,
+        "incremental_gc_ms": 113.40016000000001,
+        "incremental_gc_max_step_ms": 0.09280000000000001
+      },
+      "samples": 763,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 0,
+        "ui_copy_visit": 0,
+        "ui_finalize_visit": 0,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 121,
+          "inclusive_samples": 121
+        },
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 65,
+          "inclusive_samples": 104
+        },
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 57,
+          "inclusive_samples": 60
+        },
+        {
+          "key": "scripts/main.luau:2847:surveyed",
+          "self_samples": 55,
+          "inclusive_samples": 88
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 42,
+          "inclusive_samples": 42
+        },
+        {
+          "key": "scripts/main.luau:14367:visiblePeople",
+          "self_samples": 34,
+          "inclusive_samples": 123
+        },
+        {
+          "key": "scripts/main.luau:5496:update",
+          "self_samples": 34,
+          "inclusive_samples": 70
+        },
+        {
+          "key": "scripts/main.luau:5855:assistCandidates",
+          "self_samples": 31,
+          "inclusive_samples": 32
+        },
+        {
+          "key": "scripts/main.luau:16963:process",
+          "self_samples": 30,
+          "inclusive_samples": 173
+        },
+        {
+          "key": "scripts/main.luau:1051:scalar",
+          "self_samples": 24,
+          "inclusive_samples": 24
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 23,
+          "inclusive_samples": 763
+        },
+        {
+          "key": "scripts/main.luau:7063:observe",
+          "self_samples": 22,
+          "inclusive_samples": 56
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:4f34914a37813ff4798c679711e26d49fb1f5aa48f486247d6b63d300d316f9a",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "3114ff6ab4fa890b72504a91e071181e3d32b96e4856e6537c1fe69745271d50",
+        "observations_sha256": "9747b1ee85c72b843fcc1d1975b5e2c131cc0a85480ad10dce612a877146f25e",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 126621
+    },
+    {
+      "block": 8,
+      "frames": [
+        2119,
+        2418
+      ],
+      "simulation_time_seconds": 40.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 2.88169999999991,
+        "median_ms": 9.417299999999159,
+        "p95_ms": 12.397899999999936,
+        "p99_ms": 14.218199999999342,
+        "max_ms": 22.524100000000544,
+        "mean_ms": 8.240324666666663,
+        "total_ms": 2472.0973999999987
+      },
+      "boundary_current_luau_allocated_bytes": 13591104,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 253432227,
+        "allocation_growth_events": 2858178,
+        "incremental_gc_steps": 161477,
+        "incremental_gc_ms": 262.20588499999985,
+        "incremental_gc_max_step_ms": 0.3948
+      },
+      "samples": 1840,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 257,
+        "ui_copy_visit": 64,
+        "ui_finalize_visit": 103,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 141,
+          "inclusive_samples": 236
+        },
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 127,
+          "inclusive_samples": 127
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 103,
+          "inclusive_samples": 106
+        },
+        {
+          "key": "scripts/main.luau:13327:collectMapCell",
+          "self_samples": 73,
+          "inclusive_samples": 201
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 64,
+          "inclusive_samples": 78
+        },
+        {
+          "key": "scripts/main.luau:2820:crossing",
+          "self_samples": 54,
+          "inclusive_samples": 288
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 53,
+          "inclusive_samples": 53
+        },
+        {
+          "key": "scripts/main.luau:1078:locate",
+          "self_samples": 51,
+          "inclusive_samples": 51
+        },
+        {
+          "key": "scripts/main.luau:2847:surveyed",
+          "self_samples": 47,
+          "inclusive_samples": 76
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 46,
+          "inclusive_samples": 1840
+        },
+        {
+          "key": "scripts/main.luau:1051:scalar",
+          "self_samples": 44,
+          "inclusive_samples": 44
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 41,
+          "inclusive_samples": 138
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:178b7bb4a40a5585264579e5b799851c1745cad72b81692b75fa5f623fed2151",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "a35c75f42785589c0785235927ab613bc52a1603021c944262839733f0faa16a",
+        "observations_sha256": "1a4019b4ba1a9e0368cb6d8ee70f6f156279b8f9a855b3f10c7a34c0129bd055",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 128288
+    },
+    {
+      "block": 9,
+      "frames": [
+        2419,
+        2718
+      ],
+      "simulation_time_seconds": 45.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 8.2450000000008,
+        "median_ms": 9.981200000000172,
+        "p95_ms": 12.653599999999642,
+        "p99_ms": 14.994200000001001,
+        "max_ms": 15.565699999999197,
+        "mean_ms": 10.285242666666647,
+        "total_ms": 3085.5727999999945
+      },
+      "boundary_current_luau_allocated_bytes": 13579000,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 325569339,
+        "allocation_growth_events": 3716156,
+        "incremental_gc_steps": 206108,
+        "incremental_gc_ms": 330.36815199999984,
+        "incremental_gc_max_step_ms": 0.34059999999999996
+      },
+      "samples": 2320,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 363,
+        "ui_copy_visit": 123,
+        "ui_finalize_visit": 141,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 163,
+          "inclusive_samples": 255
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 141,
+          "inclusive_samples": 148
+        },
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 135,
+          "inclusive_samples": 135
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 123,
+          "inclusive_samples": 149
+        },
+        {
+          "key": "scripts/main.luau:13327:collectMapCell",
+          "self_samples": 101,
+          "inclusive_samples": 291
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 83,
+          "inclusive_samples": 83
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 73,
+          "inclusive_samples": 197
+        },
+        {
+          "key": "scripts/main.luau:2820:crossing",
+          "self_samples": 72,
+          "inclusive_samples": 327
+        },
+        {
+          "key": "scripts/main.luau:11858:release",
+          "self_samples": 53,
+          "inclusive_samples": 53
+        },
+        {
+          "key": "scripts/main.luau:2847:surveyed",
+          "self_samples": 53,
+          "inclusive_samples": 107
+        },
+        {
+          "key": "scripts/main.luau:6017:worldPeople",
+          "self_samples": 52,
+          "inclusive_samples": 495
+        },
+        {
+          "key": "scripts/main.luau:1051:scalar",
+          "self_samples": 51,
+          "inclusive_samples": 51
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:13b33f82a09f2f2551ccb767a570ed5d8450b8c938ab022057e779d4e41cc76d",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "b71c3c76cbf8b34ef7317c207171f7ae1440464a3f07d0de2bbdc80d1c049bf8",
+        "observations_sha256": "e2d181a04180eac2daa48222d009622bfadee50c1202ea60359d02c2d6ad8786",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 128289
+    },
+    {
+      "block": 10,
+      "frames": [
+        2719,
+        3018
+      ],
+      "simulation_time_seconds": 50.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 2.715700000000652,
+        "median_ms": 9.052099999997154,
+        "p95_ms": 11.785399999997026,
+        "p99_ms": 13.613600000000588,
+        "max_ms": 16.890800000001036,
+        "mean_ms": 7.212381666666733,
+        "total_ms": 2163.71450000002
+      },
+      "boundary_current_luau_allocated_bytes": 12964488,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 233522173,
+        "allocation_growth_events": 2636968,
+        "incremental_gc_steps": 148991,
+        "incremental_gc_ms": 230.72123999999988,
+        "incremental_gc_max_step_ms": 0.241599
+      },
+      "samples": 1606,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 205,
+        "ui_copy_visit": 71,
+        "ui_finalize_visit": 77,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 142,
+          "inclusive_samples": 142
+        },
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 101,
+          "inclusive_samples": 167
+        },
+        {
+          "key": "@packages/unone-ui:159:visit",
+          "self_samples": 77,
+          "inclusive_samples": 84
+        },
+        {
+          "key": "@packages/unone-ui:111:visit",
+          "self_samples": 71,
+          "inclusive_samples": 82
+        },
+        {
+          "key": "scripts/main.luau:13327:collectMapCell",
+          "self_samples": 60,
+          "inclusive_samples": 167
+        },
+        {
+          "key": "scripts/main.luau:2847:surveyed",
+          "self_samples": 59,
+          "inclusive_samples": 88
+        },
+        {
+          "key": "scripts/main.luau:2820:crossing",
+          "self_samples": 45,
+          "inclusive_samples": 221
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 44,
+          "inclusive_samples": 125
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 44,
+          "inclusive_samples": 44
+        },
+        {
+          "key": "scripts/main.luau:6017:worldPeople",
+          "self_samples": 39,
+          "inclusive_samples": 326
+        },
+        {
+          "key": "scripts/main.luau:1078:locate",
+          "self_samples": 35,
+          "inclusive_samples": 35
+        },
+        {
+          "key": "scripts/main.luau:2819:road",
+          "self_samples": 35,
+          "inclusive_samples": 95
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:3590c8004092a117310bef3aa85822ecc18345ea11036f669e369e9f62d52c1d",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "08a95e3376462228aba763095d61eac1cba2d228ea7e716a1d843113a087963b",
+        "observations_sha256": "d516b80dc1b6a00b183e1882c28db3e70be3a2512d73b87283b14651b93ca2a2",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 128203
+    },
+    {
+      "block": 11,
+      "frames": [
+        3019,
+        3318
+      ],
+      "simulation_time_seconds": 55.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 2.6278999999994994,
+        "median_ms": 3.003000000000611,
+        "p95_ms": 4.521100000001752,
+        "p99_ms": 5.627200000002631,
+        "max_ms": 8.573599999999715,
+        "mean_ms": 3.261832666666742,
+        "total_ms": 978.5498000000225
+      },
+      "boundary_current_luau_allocated_bytes": 13495242,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 98272216,
+        "allocation_growth_events": 1064488,
+        "incremental_gc_steps": 65697,
+        "incremental_gc_ms": 98.91771700000007,
+        "incremental_gc_max_step_ms": 1.6470989999999999
+      },
+      "samples": 685,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 0,
+        "ui_copy_visit": 0,
+        "ui_finalize_visit": 0,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 126,
+          "inclusive_samples": 126
+        },
+        {
+          "key": "scripts/main.luau:2847:surveyed",
+          "self_samples": 47,
+          "inclusive_samples": 73
+        },
+        {
+          "key": "scripts/main.luau:5496:update",
+          "self_samples": 36,
+          "inclusive_samples": 72
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 35,
+          "inclusive_samples": 35
+        },
+        {
+          "key": "scripts/main.luau:17077:martial",
+          "self_samples": 28,
+          "inclusive_samples": 31
+        },
+        {
+          "key": "scripts/main.luau:1014:code",
+          "self_samples": 27,
+          "inclusive_samples": 54
+        },
+        {
+          "key": "scripts/main.luau:14367:visiblePeople",
+          "self_samples": 27,
+          "inclusive_samples": 100
+        },
+        {
+          "key": "scripts/main.luau:5855:assistCandidates",
+          "self_samples": 25,
+          "inclusive_samples": 27
+        },
+        {
+          "key": "scripts/main.luau:7063:observe",
+          "self_samples": 24,
+          "inclusive_samples": 58
+        },
+        {
+          "key": "scripts/main.luau:16963:process",
+          "self_samples": 23,
+          "inclusive_samples": 174
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 21,
+          "inclusive_samples": 685
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 18,
+          "inclusive_samples": 26
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:fa77dde4537cd76b3b8bdbf2e9dca3e15a70623d2ad4826222caa0c271a49e2d",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "a7a771fa3082a120c605b744a99fba22914f7cfadfd73dee89246cda7a0bd61a",
+        "observations_sha256": "1408b4e6c2ac427faaf2d9153ba1bf2565a72925acff9ce2ce9be4e8a2d7ad3b",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 128203
+    },
+    {
+      "block": 12,
+      "frames": [
+        3319,
+        3618
+      ],
+      "simulation_time_seconds": 60.3,
+      "tickwall": {
+        "n": 300,
+        "min_ms": 2.671200000000681,
+        "median_ms": 2.908100000000559,
+        "p95_ms": 4.427800000001298,
+        "p99_ms": 9.410899999998946,
+        "max_ms": 13.075600000000122,
+        "mean_ms": 3.238075999999928,
+        "total_ms": 971.4227999999785
+      },
+      "boundary_current_luau_allocated_bytes": 13272454,
+      "vm_availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "vm_totals": {
+        "allocation_growth_bytes": 103112297,
+        "allocation_growth_events": 1100764,
+        "incremental_gc_steps": 68425,
+        "incremental_gc_ms": 97.11563899999996,
+        "incremental_gc_max_step_ms": 0.261601
+      },
+      "samples": 691,
+      "dropped_samples": 0,
+      "self_sample_buckets": {
+        "ui_package": 0,
+        "ui_copy_visit": 0,
+        "ui_finalize_visit": 0,
+        "repository_components": 0,
+        "repository_letters": 0
+      },
+      "top_self": [
+        {
+          "key": "scripts/main.luau:15893:input",
+          "self_samples": 128,
+          "inclusive_samples": 128
+        },
+        {
+          "key": "scripts/main.luau:2847:surveyed",
+          "self_samples": 50,
+          "inclusive_samples": 83
+        },
+        {
+          "key": "scripts/main.luau:2772:position",
+          "self_samples": 40,
+          "inclusive_samples": 40
+        },
+        {
+          "key": "scripts/main.luau:5496:update",
+          "self_samples": 30,
+          "inclusive_samples": 68
+        },
+        {
+          "key": "scripts/main.luau:17733:update",
+          "self_samples": 29,
+          "inclusive_samples": 691
+        },
+        {
+          "key": "scripts/main.luau:16963:process",
+          "self_samples": 28,
+          "inclusive_samples": 173
+        },
+        {
+          "key": "scripts/main.luau:14367:visiblePeople",
+          "self_samples": 27,
+          "inclusive_samples": 110
+        },
+        {
+          "key": "scripts/main.luau:17021:exploration",
+          "self_samples": 26,
+          "inclusive_samples": 36
+        },
+        {
+          "key": "scripts/main.luau:5898:passable",
+          "self_samples": 24,
+          "inclusive_samples": 26
+        },
+        {
+          "key": "scripts/main.luau:5855:assistCandidates",
+          "self_samples": 23,
+          "inclusive_samples": 23
+        },
+        {
+          "key": "scripts/main.luau:7455:bonus",
+          "self_samples": 23,
+          "inclusive_samples": 23
+        },
+        {
+          "key": "scripts/main.luau:17077:martial",
+          "self_samples": 21,
+          "inclusive_samples": 22
+        }
+      ],
+      "boundary": {
+        "digest": "sha256:6d10657bc41ae80744149aacc5c91e81faffd14a32cf072148df75c8b22afee5",
+        "ui_sha256": "e8f5cfaa0ed57c5606717d212c0b1019e641007901dd4e780ec10de72db1c1f9",
+        "save_sha256": "49f780e5533a432e7c14bb86c06ae81bf44e972caa98f688fe08887853f326c0",
+        "observations_sha256": "dabad483bc90ec8d27f201ccfc04c555c0c649a343bbd08d184e5b1b2b17bd2c",
+        "ui_window": "inventory"
+      },
+      "ui_bytes": 74794,
+      "save_bytes": 129538
+    }
+  ],
+  "limitations": [
+    "Single-runtime GameC diagnosis with existing actualSampler9, not a matching SDK10 host wire; no SDK11 artifact is available or assumed. Same shipped UI0.6 Lua package does not make their publication paths identical.",
+    "CurrentC authored/cache policy is supplied intact. No fullstate equivalence tofe919 is asserted by this diagnostic.",
+    "Sampling=true opt2 diagnostic instrumentation changes wall time; no production FPS, renderer or browser evidence.",
+    "luau_memory_bytes is passive current allocated bytes queried at each stop boundary, not reachable/live heap or a window peak; includes dead pending-GC data, stacks, bytecode and table capacities.",
+    "VM allocation growth is cumulative positive allocator-growth requests/events; performance netpositiveheapdelta is not equivalent and is retained without treating it as total traffic.",
+    "Natural incremental GC callback wall/step counters are not V8 events, complete collector cycles or OS stop-the-world pauses.",
+    "Tickwall includes actual existing ABI publication/save work but excludes setter, Node observation decoding, developer commands and file IO. No forced GC, Game edits or clock/scheduler patches."
+  ],
+  "execution_scope": {
+    "schema_version": 1,
+    "scope": "Actual Sampler9 fixed-input GameC Lua diagnostic; not production/browser FPS",
+    "exclusive_machine_verified": false,
+    "concurrent_work": "Core three-way canonical task was still reported active during this diagnostic; exact CPU contention was not independently sampled",
+    "execution_session": 72421,
+    "process_exit_code": 0,
+    "wasm_unloaded": true,
+    "browser_used": false,
+    "game_source_sha256": "d45704216392564a7e8d815ee529b67bfed125528a5e46e4987fdfdb97e089f7",
+    "sampler9_wasm_sha256": "977e1be51402a5e066d51b556f5b2d10a83340e3428e2a5187ba84488ebd9e60",
+    "publication_scope": "Older Sampler9 ABI; not matching SDK10 whole-UI transport",
+    "raw_data_untouched": true
+  }
+}

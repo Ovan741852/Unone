@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-30",
+  "scope": "Fixed three-file source review of fused immutable UI copy/finalization and exact numeric ownership grants. No seed or unrelated source changes included.",
+  "base_revision": "704b53b6622df6d5457aab23b29a29f03bdea167",
+  "reviewed_commit": "680088118d2ea15865b6650ddcc42799d92356c0",
+  "captured_head": "680088118d2ea15865b6650ddcc42799d92356c0",
+  "postimages_match_reviewed_commit_ignoring_line_endings": true,
+  "files": [
+    {
+      "path": "packages/unone-ui/src/components.luau",
+      "bytes": 44967,
+      "sha256": "6ddd329a1a976ed68355eaf5de191d1b629fd72ae18300b69b7c12972e66fa9d"
+    },
+    {
+      "path": "crates/unone-engine/tests/ui_components.rs",
+      "bytes": 37253,
+      "sha256": "ba152c52747089aba1cefe5f7aaea60f65207d74bb1bf7abd9e2afcf011a69ec"
+    },
+    {
+      "path": "docs/decisions/0045-immutable-ui-values.md",
+      "bytes": 12591,
+      "sha256": "e187564e0aaae5a733f5dbd5cada12eeb43a4544fd7db05d93c8c196e884cdc9"
+    }
+  ],
+  "fixed_diff_sha256": "08eaf24a3cd801994973e21831c4aefebfcb97a5095b827afe8e72345897baa2",
+  "independent_source_review": {
+    "reviewer": "Codex runtime audit agent, independent of the implementation author",
+    "status": "completed-bounded-source-review",
+    "concrete_p1_p2_findings": [],
+    "checked": [
+      "Expanded copy work and depth including repeated immutable DAG occurrences",
+      "Detached pure descendants sealed during copy; mutable construction envelopes and exact managed handles preserved",
+      "Theme/style/padding/surface/slider edits remain on mutable owned records",
+      "Metadata info() recursively opts out of sealing",
+      "Exact binary64 work*256+height packing with numeric-record fallback and no new admission limit",
+      "Captured intrinsics and private weak ownership authority"
+    ]
+  },
+  "claude_cli_attempt": {
+    "status": "timed-out-incomplete",
+    "review_completed": false,
+    "findings": null,
+    "version": "2.1.308 (Claude Code)",
+    "version_exit_code": 0,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": ".cache/ui-fused-copy-source-review-20261030/prompt.txt",
+    "started_utc": "2026-10-30T05:05:40.189Z",
+    "finished_utc": "2026-10-30T05:06:40.541Z",
+    "timeout_deadline_ms": 60000,
+    "elapsed_including_process_tree_shutdown_ms": 60299.399999999994,
+    "exit_code": 1,
+    "signal": null,
+    "timed_out": true,
+    "process_tree_termination_exit_code": 0,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "raw_directory": ".cache/ui-fused-copy-source-review-20261030",
+    "raw_stdout": ".cache/ui-fused-copy-source-review-20261030/review.stdout.json",
+    "raw_stderr": ".cache/ui-fused-copy-source-review-20261030/review.stderr.txt",
+    "raw_version_stdout": ".cache/ui-fused-copy-source-review-20261030/version.stdout.txt",
+    "raw_command": ".cache/ui-fused-copy-source-review-20261030/command.json",
+    "raw_result": ".cache/ui-fused-copy-source-review-20261030/result.json",
+    "disposition": "The 60-second deadline expired without stdout or stderr. The process tree was terminated successfully. This is an incomplete external review, not a no-findings result."
+  },
+  "validation": {
+    "executed_by": "Root; raw logs independently read by reviewer, not rerun",
+    "ui_components": {
+      "status": "passed",
+      "passed": 20,
+      "failed": 0,
+      "log": ".cache/ui-fused-copy-tests-run4.log"
+    },
+    "ui_image_batch_package": {
+      "status": "passed",
+      "passed": 2,
+      "failed": 0,
+      "log": ".cache/ui-fused-copy-related-tests.log"
+    },
+    "ui_immutable": {
+      "status": "blocked-never-executed",
+      "reason": "Windows application control error4551",
+      "log": ".cache/ui-fused-copy-related-tests.log"
+    },
+    "ui_responsive": {
+      "status": "blocked-never-executed",
+      "reason": "Windows application control error4551",
+      "log": ".cache/ui-fused-copy-controls-layout-tests.log"
+    },
+    "initial_failed_feature_configurations_preserved": [
+      ".cache/ui-fused-copy-tests-run1.log",
+      ".cache/ui-fused-copy-tests-run2.log",
+      ".cache/ui-fused-copy-tests-run3.log"
+    ],
+    "blocked_executables_not_retried_renamed_or_bypassed": true
+  },
+  "limits": [
+    "Source review and focused source tests are not emitted WASM, official-player, FPS, memory or GC-frequency acceptance.",
+    "Matching SDK11 ownership/functional and same-Game allocation/canonical validation was not executed: its runtime build was subsequently blocked by App Control4551 and emitted no runtime. The separate SDK8/SDK10 three-way comparison does not validate fused-copy execution.",
+    "The incomplete Claude attempt does not satisfy a completed independent external CLI review.",
+    "Unrelated concurrent seed changes remain outside this fixed review scope and were not edited or reverted."
+  ],
+  "typing_followup": {
+    "commit": "f689df482b44456119821e5ce1fa11bf60761e5c",
+    "scope": "Explicit number/OwnedStats aliases and padding-map casts for stock Luau0.734 analysis. Existing branches, values, mutations and ownership policy are unchanged.",
+    "package_source_sha256_lf": "dd96d7521b0cb308a46c46b8836aa1554f57b83b84559bb7f8f8ca56604be4d2",
+    "source_review_status": "completed-bounded-source-review-no-concrete-P1-P2",
+    "analyzer": {
+      "status": "root-reported-zero-errors",
+      "version": "0.734",
+      "log": ".cache/ui-fused-copy-package-analyzer-r4.log",
+      "log_bytes": 0,
+      "rerun_by_reviewer": false
+    },
+    "original_claude_attempt_unchanged": true,
+    "original_680_postimages_preserved": true
+  },
+  "sdk11_coherent_startup_validation": {
+    "commit": "f689df482b44456119821e5ce1fa11bf60761e5c",
+    "status": "passed",
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "executed_by": "Root",
+    "raw_log": ".cache/sdk11-seed-startup-tests.log",
+    "log_read_by_reviewer": true,
+    "rerun_by_reviewer": false,
+    "scope": "Separate seed/startup integration tests; not a source review of the independently committed native persistence or all seed implementation.",
+    "build_contains_separate_committed_work": {
+      "seed_commit": "a6ee0f5",
+      "native_persistence_commit": "ad8690b"
+    },
+    "earlier_uncommitted_exclusion_description": "Point-in-time fixed three-file review scope; these separate changes were later committed by their owner and are outside that original diff."
+  },
+  "sdk11_artifact_build": {
+    "status": "blocked-environment",
+    "source_commit": "f689df482b44456119821e5ce1fa11bf60761e5c",
+    "source_root": "C:/Users/liNao/.codex/worktrees/ui-fused-build/Unone",
+    "runtime_emitted": false,
+    "blocking_error": "Windows application control error4551 prevented Cargo build-script executables from running",
+    "never_executed_build_scripts": [
+      "quote",
+      "getrandom",
+      "generic-array"
+    ],
+    "raw_log": ".cache/sdk11-production-build.log",
+    "raw_log_sha256": "bb602cba3c3a5e4718fbcf15e1417669d8fe183b19bdcec13369c5397b6c5c2f",
+    "log_read_by_reviewer": true,
+    "no_rebuild_rename_or_policy_bypass_attempted_by_reviewer": true,
+    "acceptance": "No SDK11 WASM or official-player ownership/performance acceptance is claimed. Existing verified SDK10 remains a separate artifact with pre-fusion package implementation.",
+    "blocked_build_script_versions": {
+      "quote": "1.0.47",
+      "getrandom": "0.4.3",
+      "generic-array": "0.14.7"
+    },
+    "separate_sdk10_comparison": "ui06-current-authoring-r2b-threeway-validation.json records actual production SDK8/SDK10 semantic equivalence; it does not claim an emitted SDK11 artifact or execute the fused-copy implementation."
+  }
+}
