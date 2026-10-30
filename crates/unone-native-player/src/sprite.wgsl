@@ -12,6 +12,8 @@ struct Out { @builtin(position) clip: vec4f, @location(0) uv: vec2f };
   @location(3) size: vec2f,
   @location(4) rotation: f32,
   @location(5) layer: f32,
+  // Sheet cell in image space: origin and extent, v pointing down.
+  @location(6) uv_rect: vec4f,
 ) -> Out {
   let c = cos(rotation);
   let s = sin(rotation);
@@ -28,7 +30,7 @@ struct Out { @builtin(position) clip: vec4f, @location(0) uv: vec2f };
     clamp(layer / 100000.0, -0.99, 0.99),
     1.0,
   );
-  out.uv = uv;
+  out.uv = uv_rect.xy + uv * uv_rect.zw;
   return out;
 }
 

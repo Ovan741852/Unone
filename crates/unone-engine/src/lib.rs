@@ -152,7 +152,8 @@ pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, ver
 pub use world::{
     AnimationData, AnimationSnapshot, Camera2DData, Camera3DData, Contact, EffectInstance,
     EntitySnapshot, Mesh3DData, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType,
-    SceneFile, Transform2DData, Transform3DData, Vec2, Vec3, WorldSnapshot,
+    SceneFile, SpriteAnimationData, SpriteData, SpriteSheet, Transform2DData, Transform3DData, Vec2,
+    Vec3, WorldSnapshot,
 };
 
 #[cfg(feature = "dev-tools")]

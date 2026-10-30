@@ -41,7 +41,8 @@ of existing art; it is not a substitute for requested image assets.
 
 `fragment` is a bounded GLSL ES 1.00 source defining
 `vec4 unoneShade(vec2 uv, vec4 color)`. `uv` is the sprite's
-texture coordinate and `color` is its input texture/tint color. Return the shaded
+texture coordinate (on a [sheet sprite](sprite-animation.md), within the drawn
+cell) and `color` is its input texture/tint color. Return the shaded
 RGBA color. Uniform defaults are numbers or arrays of two to four numbers,
 corresponding to GLSL `float`, `vec2`, `vec3` and `vec4`. The host supplies
 `unone_frame` and `unone_time` (seconds) from the fixed simulation frame; visual animation

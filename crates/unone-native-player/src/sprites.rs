@@ -3,6 +3,9 @@
 use std::collections::BTreeMap;
 use unone_engine::EntitySnapshot;
 
+/// Center, size, rotation, layer, then the sheet cell as u, v, du, dv.
+pub type Instance = [f32; 10];
+
 pub struct Run {
     pub asset: String,
     pub start: u32,
@@ -11,7 +14,7 @@ pub struct Run {
 
 #[derive(Default)]
 pub struct Frame {
-    pub instances: Vec<[f32; 6]>,
+    pub instances: Vec<Instance>,
     pub runs: Vec<Run>,
 }
 
@@ -33,6 +36,7 @@ impl Frame {
         let mut run_count = 0;
         for (_, entity, sprite) in ordered {
             let start = self.instances.len() as u32;
+            let [u, v, du, dv] = sprite.cell_rect();
             self.instances.push([
                 entity.transform.x as f32,
                 entity.transform.y as f32,
@@ -40,6 +44,10 @@ impl Frame {
                 (sprite.size.y * entity.scale.y).abs() as f32,
                 entity.rotation as f32,
                 sprite.layer as f32,
+                u,
+                v,
+                du,
+                dv,
             ]);
             if run_count > 0 && self.runs[run_count - 1].asset == sprite.asset {
                 self.runs[run_count - 1].count += 1;
@@ -120,5 +128,32 @@ mod tests {
         assert_eq!(frame.instances.len(), 1000);
         assert_eq!(frame.runs.len(), 1);
         assert_eq!(frame.runs[0].count, 1000);
+    }
+
+    #[test]
+    fn instances_carry_the_observed_sheet_cell() {
+        let scene = serde_json::from_value(serde_json::json!({"entities": [
+            {"id":"plain", "sprite":{"asset":"a"}},
+            {"id":"still", "sprite":{"asset":"a","layer":1,"sheet":{"columns":4,"rows":2},"frame":6}},
+            {"id":"walk", "sprite":{"asset":"a","layer":2,"sheet":{"columns":4,"rows":2}},
+             "sprite_animation":{"frames":[0,5],"fps":60}}
+        ]}))
+        .unwrap();
+        let mut runtime = EngineRuntime::load_source(
+            "sheet",
+            "main.luau",
+            "return {start=function(api) end,update=function(api,dt) end}",
+            Some(scene),
+        )
+        .unwrap();
+        let mut frame = Frame::default();
+        frame.prepare(&runtime.observe().entities);
+        let cells: Vec<_> = frame.instances.iter().map(|v| v[6..].to_vec()).collect();
+        assert_eq!(
+            cells,
+            [[0., 0., 1., 1.], [0.5, 0.5, 0.25, 0.5], [0., 0., 0.25, 0.5]]
+        );
+        frame.prepare(&runtime.tick().unwrap().entities);
+        assert_eq!(frame.instances[2][6..], [0.25, 0.5, 0.25, 0.5]);
     }
 }

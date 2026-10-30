@@ -261,6 +261,26 @@ fn validate_entity(entity: &SceneEntity, source: SceneSource<'_>) -> Result<(), 
             ),
         ));
     }
+    if let Some(problem) = entity.sprite.as_ref().and_then(sprite_frame_problem) {
+        return Err(scene_error(
+            source,
+            "SCENE_SPRITE_INVALID",
+            "Sprite sheet is invalid",
+            format!("Entity '{}' {problem}", entity.id),
+        ));
+    }
+    if let Some(problem) = entity
+        .sprite_animation
+        .as_ref()
+        .and_then(|clip| sprite_animation_problem(entity.sprite.as_ref(), clip))
+    {
+        return Err(scene_error(
+            source,
+            "SCENE_SPRITE_ANIMATION_INVALID",
+            "Sprite animation is invalid",
+            format!("Entity '{}' {problem}", entity.id),
+        ));
+    }
     if let Some(body) = &entity.rigidbody {
         if body.mass <= 0.0 || !body.mass.is_finite() {
             return Err(scene_error(
@@ -306,6 +326,56 @@ pub(crate) fn validate_runtime_entity(entity: &SceneEntity) -> Result<(), Box<Di
 /// Sprite size rule shared with `entity.setSprite`.
 pub(crate) fn sprite_size_valid(sprite: &crate::world::SpriteData) -> bool {
     sprite.size.x > 0.0 && sprite.size.y > 0.0 && sprite.size.x.is_finite() && sprite.size.y.is_finite()
+}
+
+/// Bounds a sheet so cell numbers and host texture coordinates stay exact.
+const MAX_SHEET_CELLS: u64 = 65_536;
+/// Bounds a clip, which is copied into every entity that plays it.
+const MAX_ANIMATION_FRAMES: usize = 1_024;
+
+/// Sheet and frame rule shared by scenes, `entity.spawn` and `entity.setSprite`.
+pub(crate) fn sprite_frame_problem(sprite: &crate::world::SpriteData) -> Option<String> {
+    let Some(sheet) = sprite.sheet else {
+        return (sprite.frame != 0).then(|| {
+            format!("Sprite frame {} needs a sheet; add sheet = {{columns, rows}}.", sprite.frame)
+        });
+    };
+    if sheet.columns == 0 || sheet.rows == 0 || sheet.cells() > MAX_SHEET_CELLS {
+        return Some(format!(
+            "Sprite sheet must have at least 1 column and 1 row and at most {MAX_SHEET_CELLS} cells, got {}x{}.",
+            sheet.columns, sheet.rows
+        ));
+    }
+    (u64::from(sprite.frame) >= sheet.cells()).then(|| {
+        format!(
+            "Sprite frame {} is outside its {}x{} sheet (cells 0..{}).",
+            sprite.frame, sheet.columns, sheet.rows, sheet.cells() - 1
+        )
+    })
+}
+
+/// Clip rule shared by scenes, `entity.spawn` and `entity.playSpriteAnimation`.
+pub(crate) fn sprite_animation_problem(
+    sprite: Option<&crate::world::SpriteData>,
+    clip: &crate::world::SpriteAnimationData,
+) -> Option<String> {
+    let Some(sheet) = sprite.and_then(|sprite| sprite.sheet) else {
+        return Some("needs a Sprite with a sheet = {columns, rows} to animate.".to_string());
+    };
+    if clip.frames.is_empty() || clip.frames.len() > MAX_ANIMATION_FRAMES {
+        return Some(format!(
+            "sprite animation frames must list 1 to {MAX_ANIMATION_FRAMES} sheet cells, got {}.",
+            clip.frames.len()
+        ));
+    }
+    if let Some(frame) = clip.frames.iter().find(|frame| u64::from(**frame) >= sheet.cells()) {
+        return Some(format!(
+            "sprite animation frame {frame} is outside its {}x{} sheet (cells 0..{}).",
+            sheet.columns, sheet.rows, sheet.cells() - 1
+        ));
+    }
+    (!clip.fps.is_finite() || clip.fps <= 0.0)
+        .then(|| format!("sprite animation fps must be a finite number greater than 0, got {}.", clip.fps))
 }
 
 fn scene_error(

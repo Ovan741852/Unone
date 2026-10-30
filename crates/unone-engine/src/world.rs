@@ -688,6 +688,26 @@ pub struct SceneEntity {
     pub rigidbody: Option<RigidBody2DData>,
     #[serde(default)]
     pub animation: Option<AnimationData>,
+    /// Fixed-tick frame animation over the sprite's sheet cells.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sprite_animation: Option<SpriteAnimationData>,
+}
+
+/// A clip of sprite sheet cells the engine steps on the fixed tick.
+///
+/// The engine resolves the current cell into `sprite.frame` every observation,
+/// so hosts only map a cell to texture coordinates and replays stay exact.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct SpriteAnimationData {
+    /// Sheet cells in play order, numbered from 0 left to right, then top to
+    /// bottom. A cell may repeat to hold it longer.
+    pub frames: Vec<u32>,
+    /// Cells per second of fixed-tick time.
+    pub fps: f64,
+    #[serde(default = "default_true", rename = "loop")]
+    pub looping: bool,
 }
 
 /// Skeletal animation state an entity publishes for a host to play.
@@ -758,6 +778,52 @@ pub struct SpriteData {
     /// ascending entity id, which is the portable tie-break used by hosts.
     #[serde(default)]
     pub layer: i32,
+    /// Splits the texture into equal cells so the sprite draws one of them.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sheet: Option<SpriteSheet>,
+    /// Sheet cell to draw, numbered from 0 left to right, then top to bottom.
+    /// While a sprite animation plays, observations carry its current cell.
+    #[serde(default, skip_serializing_if = "is_zero_u32")]
+    pub frame: u32,
+}
+
+/// A grid of equally sized cells covering the whole texture.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct SpriteSheet {
+    pub columns: u32,
+    pub rows: u32,
+}
+
+impl SpriteSheet {
+    pub fn cells(self) -> u64 {
+        u64::from(self.columns) * u64::from(self.rows)
+    }
+}
+
+impl SpriteData {
+    /// The drawn cell in image space (origin top-left, v down) as
+    /// `[u, v, du, dv]`; the whole texture without a sheet. Native hosts sample
+    /// this rectangle; the Web twin is `spriteCellRect`, and
+    /// `docs/fixtures/sprite-cells.json` keeps the two in step.
+    pub fn cell_rect(&self) -> [f32; 4] {
+        let Some(sheet) = self.sheet else {
+            return [0., 0., 1., 1.];
+        };
+        let (columns, rows) = (sheet.columns.max(1), sheet.rows.max(1));
+        let (column, row) = (self.frame % columns, self.frame / columns);
+        [
+            column as f32 / columns as f32,
+            row as f32 / rows as f32,
+            1. / columns as f32,
+            1. / rows as f32,
+        ]
+    }
+}
+
+fn is_zero_u32(value: &u32) -> bool {
+    *value == 0
 }
 
 fn default_sprite_size() -> Vec2 {
@@ -882,7 +948,38 @@ pub(crate) struct EntityState {
     pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodyState>,
     pub animation: Option<AnimationState>,
+    pub sprite_animation: Option<SpriteAnimationState>,
 }
+
+#[derive(Debug, Clone)]
+pub(crate) struct SpriteAnimationState {
+    pub clip: SpriteAnimationData,
+    /// First frame whose observation shows the clip's first cell.
+    pub started_frame: u64,
+}
+
+impl SpriteAnimationState {
+    /// The cell shown at `frame` and whether a non-looping clip has completed.
+    ///
+    /// Integer ticks times fps is exact in f64 for any realistic run length, so
+    /// every host and replay steps the same cell on the same tick.
+    pub fn at(&self, frame: u64) -> (u32, bool) {
+        let elapsed = frame.saturating_sub(self.started_frame) as f64;
+        let step = (elapsed * self.clip.fps / TICKS_PER_SECOND).floor() as u64;
+        let frames = &self.clip.frames;
+        let count = frames.len() as u64;
+        if self.clip.looping {
+            (frames[(step % count) as usize], false)
+        } else if step >= count {
+            (frames[frames.len() - 1], true)
+        } else {
+            (frames[step as usize], false)
+        }
+    }
+}
+
+/// The fixed simulation rate; `World::frame` advances once per tick.
+const TICKS_PER_SECOND: f64 = 60.0;
 
 #[derive(Debug, Clone)]
 pub(crate) struct AnimationState {
@@ -922,6 +1019,9 @@ pub(crate) struct World {
     pub physics3d: Option<crate::rigid3d::PhysicsWorld3D>,
     pub particles: crate::particle::ParticleWorld,
     pub frame: u64,
+    /// True while a tick's script and physics run, before `frame` advances.
+    /// Clips started then first appear in the next observation, not this one.
+    pub ticking: bool,
     pub time_seconds: f64,
     pub entities: BTreeMap<String, EntityState>,
     pub physics: PhysicsSettings,
@@ -970,7 +1070,7 @@ impl World {
             None => CameraState::from_orthographic(scene.camera),
         };
         for entity in scene.entities {
-            self.entities.insert(entity.id.clone(), Self::entity_state(entity, self.frame));
+            self.entities.insert(entity.id.clone(), Self::entity_state(entity, self.frame, self.clip_start()));
         }
         #[cfg(feature = "physics3d")]
         {
@@ -1000,7 +1100,7 @@ impl World {
         }
     }
 
-    fn entity_state(entity: SceneEntity, frame: u64) -> EntityState {
+    fn entity_state(entity: SceneEntity, frame: u64, clip_start: u64) -> EntityState {
         EntityState {
             rigidbody: entity.rigidbody.map(|body| RigidBodyState {
                 body_type: body.body_type,
@@ -1025,7 +1125,16 @@ impl World {
                 speed: animation.speed,
                 started_frame: frame,
             }),
+            sprite_animation: entity.sprite_animation.map(|clip| SpriteAnimationState {
+                clip,
+                started_frame: clip_start,
+            }),
         }
+    }
+
+    /// The first frame whose observation can show a clip started now.
+    fn clip_start(&self) -> u64 {
+        self.frame + u64::from(self.ticking)
     }
 
     fn unique_entity_id(&self, name: &str) -> String {
@@ -1066,24 +1175,85 @@ impl World {
         {
             return Err(format!("SHADER_MATERIAL_REFERENCE_INVALID: Entity '{id}' needs a sprite and a declared shader material '{material}'"));
         }
-        let state = Self::entity_state(entity, self.frame);
+        let state = Self::entity_state(entity, self.frame, self.clip_start());
         self.entities.insert(id.clone(), state);
         Ok(id)
     }
 
     /// Replace (or with None remove) an entity's sprite, e.g. to swap its asset.
+    ///
+    /// A playing sprite animation keeps its timing across the swap when its
+    /// cells exist in the new sheet; a sprite without a sheet, or none, stops
+    /// it. A new sheet that lacks the clip's cells fails instead of guessing.
     pub(crate) fn set_sprite(&mut self, id: &str, sprite: Option<SpriteData>) -> Result<(), String> {
-        if let Some(sprite) = &sprite
-            && !crate::scene::sprite_size_valid(sprite)
-        {
-            return Err(format!("SCENE_SPRITE_INVALID: Entity '{id}' Sprite size must have finite x and y values greater than 0."));
+        if let Some(sprite) = &sprite {
+            if !crate::scene::sprite_size_valid(sprite) {
+                return Err(format!("SCENE_SPRITE_INVALID: Entity '{id}' Sprite size must have finite x and y values greater than 0."));
+            }
+            if let Some(problem) = crate::scene::sprite_frame_problem(sprite) {
+                return Err(format!("SCENE_SPRITE_INVALID: Entity '{id}' {problem}"));
+            }
         }
         let entity = self.entities.get_mut(id).ok_or_else(|| format!("Entity '{id}' does not exist."))?;
         if sprite.is_none() && entity.shader_material.is_some() {
             return Err(format!("SHADER_MATERIAL_REFERENCE_INVALID: Entity '{id}' has a shader material, which needs a sprite"));
         }
+        let has_sheet = sprite.as_ref().is_some_and(|sprite| sprite.sheet.is_some());
+        if let (true, Some(playing)) = (has_sheet, &entity.sprite_animation)
+            && let Some(problem) = crate::scene::sprite_animation_problem(sprite.as_ref(), &playing.clip)
+        {
+            return Err(format!("SPRITE_ANIMATION_INVALID: Entity '{id}' is playing a sprite animation the new sheet cannot show: {problem} Call setSpriteFrame or play another animation first."));
+        }
+        if !has_sheet {
+            entity.sprite_animation = None;
+        }
         entity.sprite = sprite;
         Ok(())
+    }
+
+    /// Draw one sheet cell and stop any sprite animation.
+    pub(crate) fn set_sprite_frame(&mut self, id: &str, frame: u32) -> Result<(), String> {
+        let entity = self.entities.get_mut(id).ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        let Some(sprite) = &mut entity.sprite else {
+            return Err(format!("SPRITE_FRAME_INVALID: Entity '{id}' has no Sprite; give it one with a sheet first."));
+        };
+        let Some(sheet) = sprite.sheet else {
+            return Err(format!("SPRITE_FRAME_INVALID: Entity '{id}' Sprite has no sheet; set sprite.sheet = {{columns=..., rows=...}} first."));
+        };
+        if u64::from(frame) >= sheet.cells() {
+            return Err(format!("SPRITE_FRAME_INVALID: Entity '{id}' frame {frame} is outside its {}x{} sheet (cells 0..{}).", sheet.columns, sheet.rows, sheet.cells() - 1));
+        }
+        sprite.frame = frame;
+        entity.sprite_animation = None;
+        Ok(())
+    }
+
+    /// Start a fixed-tick sprite animation. Playing the clip that is already
+    /// playing (even one that finished) changes nothing, so a game may call
+    /// this every update for the state it is in.
+    pub(crate) fn play_sprite_animation(&mut self, id: &str, clip: SpriteAnimationData) -> Result<(), String> {
+        let started_frame = self.clip_start();
+        let entity = self.entities.get_mut(id).ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        if let Some(problem) = crate::scene::sprite_animation_problem(entity.sprite.as_ref(), &clip) {
+            return Err(format!("SPRITE_ANIMATION_INVALID: Entity '{id}' {problem}"));
+        }
+        if entity.sprite_animation.as_ref().is_some_and(|playing| playing.clip == clip) {
+            return Ok(());
+        }
+        entity.sprite_animation = Some(SpriteAnimationState { clip, started_frame });
+        Ok(())
+    }
+
+    /// The cell currently drawn and whether a non-looping clip has completed.
+    pub(crate) fn sprite_frame(&self, id: &str) -> Result<(u32, bool), String> {
+        let entity = self.entities.get(id).ok_or_else(|| format!("Entity '{id}' does not exist."))?;
+        let Some(sprite) = &entity.sprite else {
+            return Err(format!("Entity '{id}' has no Sprite."));
+        };
+        Ok(match &entity.sprite_animation {
+            Some(playing) => playing.at(self.frame),
+            None => (sprite.frame, false),
+        })
     }
 
     pub(crate) fn spawn(&mut self, name: &str) -> String {
@@ -1102,6 +1272,7 @@ impl World {
                 mesh3d: None,
                 rigidbody: None,
                 animation: None,
+                sprite_animation: None,
             },
         );
         id
@@ -1130,7 +1301,13 @@ impl World {
                                     scale: quantize_vec3(transform.scale),
                                 }
                             }),
-                            sprite: entity.sprite.clone(),
+                            sprite: entity.sprite.as_ref().map(|sprite| {
+                                let mut sprite = sprite.clone();
+                                if let Some(playing) = &entity.sprite_animation {
+                                    sprite.frame = playing.at(self.frame).0;
+                                }
+                                sprite
+                            }),
                             shader_material: entity.shader_material.clone(),
                             mesh3d: entity.mesh3d.clone(),
                             rigidbody: entity.rigidbody.as_ref().map(|body| RigidBodySnapshot {
@@ -2022,6 +2199,7 @@ mod tests {
             mesh3d: None,
             rigidbody: Some(rigidbody),
             animation: None,
+            sprite_animation: None,
         }
     }
 
@@ -2037,6 +2215,7 @@ mod tests {
             instances3d: BTreeMap::new(),
             physics3d: None,
             frame: 0,
+            ticking: false,
             time_seconds: 0.0,
             entities,
             physics: PhysicsSettings {

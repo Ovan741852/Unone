@@ -265,6 +265,7 @@ The broader acceptance matrix belongs to the separate validation suite and is no
 Release player/export: [build and measurements](docs/player-export.md).
 Native 3D particle JSON, API and preview: [particle v1](docs/native-particles.md).
 Custom WebGL sprite shaders through scene declarations and Luau: [shader materials](docs/shader-materials.md).
+Sprite sheets and fixed-tick frame animation: [sprite animation](docs/sprite-animation.md).
 Reference-game capability probe: [_Games/dragon-tycoon3](_Games/dragon-tycoon3/README.md).
 
 AI-directed optimization: [measured results](docs/legion-fall-optimization.md), [profiling API](docs/profiling.md), [instance memory transport](docs/instance-memory-transport.md), [optional Luau jobs](docs/jobs.md).

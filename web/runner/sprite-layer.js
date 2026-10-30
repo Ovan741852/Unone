@@ -1,6 +1,7 @@
 import {
   compareSpriteEntities,
   compareUtf8Ids,
+  spriteCellRect,
   worldOf,
   worldSizeToView,
   worldToView,
@@ -121,6 +122,7 @@ export function createSpriteLayer({ element, loadAssetUrl, onAssetErrors = () =>
       entity,
       asset: null,
       wrapper,
+      image: null,
       error: null,
       loadStarted: false,
       loadPending: false,
@@ -142,7 +144,24 @@ export function createSpriteLayer({ element, loadAssetUrl, onAssetErrors = () =>
     record.wrapper.dataset.assetId = record.assetId ?? "";
   };
 
+  // A sheet sprite shows one cell: the image is scaled to the whole sheet and
+  // shifted so that cell fills the clipped wrapper.
+  const setCell = (record, sprite) => {
+    const cell = sprite.sheet ? spriteCellRect(sprite) : null;
+    record.wrapper.style.overflow = cell ? "hidden" : "";
+    const style = record.image?.style;
+    if (!style) return;
+    style.position = cell ? "absolute" : "";
+    style.width = cell ? `${cell.columns * 100}%` : "";
+    style.height = cell ? `${cell.rows * 100}%` : "";
+    style.left = cell ? `${-cell.column * 100}%` : "";
+    style.top = cell ? `${-cell.row * 100}%` : "";
+    style.maxWidth = cell ? "none" : "";
+    style.objectFit = cell ? "fill" : "";
+  };
+
   const showFallback = (record, entity, message = "") => {
+    record.image = null;
     record.wrapper.replaceChildren(fallbackElement(entity, message));
   };
 
@@ -166,6 +185,8 @@ export function createSpriteLayer({ element, loadAssetUrl, onAssetErrors = () =>
         image.draggable = false;
         image.alt = labelOf(entity);
         image.src = url;
+        record.image = image;
+        setCell(record, record.entity.sprite);
         record.wrapper.replaceChildren(image);
         setError(record, null);
       })
@@ -225,6 +246,7 @@ export function createSpriteLayer({ element, loadAssetUrl, onAssetErrors = () =>
       record.entity = entity;
       record.asset = asset;
       setGeometry(record, entity, camera, aspect);
+      setCell(record, entity.sprite);
       if (!asset) {
         const nextError = missingAssetError(entity, assetId);
         showFallback(record, entity, nextError.message);

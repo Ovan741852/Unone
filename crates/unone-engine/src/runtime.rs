@@ -1057,6 +1057,7 @@ impl EngineRuntime {
         let allocated_before = self.lua.used_memory();
         {
             let mut world = self.world.borrow_mut();
+            world.ticking = true;
             let frame = world.frame;
             #[cfg(feature = "audio")]
             if self.systems.is_enabled("audio") {
@@ -1161,6 +1162,7 @@ impl EngineRuntime {
                 world.follow_audio_entities();
             }
             world.frame += 1;
+            world.ticking = false;
             world.time_seconds = world.frame as f64 / 60.0;
         }
         {

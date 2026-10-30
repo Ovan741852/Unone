@@ -584,6 +584,17 @@
           ],
           "default": null
         },
+        "sprite_animation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SpriteAnimationData"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Fixed-tick frame animation over the sprite's sheet cells."
+        },
         "transform": {
           "$ref": "#/$defs/Vec2",
           "default": {
@@ -779,17 +790,63 @@
         }
       ]
     },
+    "SpriteAnimationData": {
+      "additionalProperties": false,
+      "description": "A clip of sprite sheet cells the engine steps on the fixed tick.\n\nThe engine resolves the current cell into `sprite.frame` every observation,\nso hosts only map a cell to texture coordinates and replays stay exact.",
+      "properties": {
+        "fps": {
+          "description": "Cells per second of fixed-tick time.",
+          "format": "double",
+          "type": "number"
+        },
+        "frames": {
+          "description": "Sheet cells in play order, numbered from 0 left to right, then top to\nbottom. A cell may repeat to hold it longer.",
+          "items": {
+            "format": "uint32",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "loop": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "frames",
+        "fps"
+      ],
+      "type": "object"
+    },
     "SpriteData": {
       "additionalProperties": false,
       "properties": {
         "asset": {
           "type": "string"
         },
+        "frame": {
+          "description": "Sheet cell to draw, numbered from 0 left to right, then top to bottom.\nWhile a sprite animation plays, observations carry its current cell.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
         "layer": {
           "default": 0,
           "description": "Painter layer. Lower layers are drawn first; same-layer order is the\nascending entity id, which is the portable tie-break used by hosts.",
           "format": "int32",
           "type": "integer"
+        },
+        "sheet": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SpriteSheet"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Splits the texture into equal cells so the sprite draws one of them."
         },
         "size": {
           "$ref": "#/$defs/Vec2",
@@ -805,6 +862,27 @@
       },
       "required": [
         "asset"
+      ],
+      "type": "object"
+    },
+    "SpriteSheet": {
+      "additionalProperties": false,
+      "description": "A grid of equally sized cells covering the whole texture.",
+      "properties": {
+        "columns": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "rows": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "columns",
+        "rows"
       ],
       "type": "object"
     },

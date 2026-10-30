@@ -47,6 +47,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/vfx-player.js",
         "renderer/vfx-native.js",
         "renderer/shader-materials.js",
+        "renderer/sprite-cells.js",
         "renderer/texture-cache-policy.js",
         "shared/ui-tree.js",
         "shared/canvas-ui.mjs",

@@ -1,0 +1,13 @@
+{
+  "description": "Sheet cell rectangles in image space (origin top-left, v down) as [u, v, du, dv]. SpriteData::cell_rect (Rust) and spriteCellRect (web/shared/webgpu-snapshot.js) must both produce these.",
+  "cases": [
+    { "sprite": { "asset": "a" }, "rect": [0, 0, 1, 1] },
+    { "sprite": { "asset": "a", "sheet": { "columns": 1, "rows": 1 } }, "rect": [0, 0, 1, 1] },
+    { "sprite": { "asset": "a", "sheet": { "columns": 4, "rows": 2 } }, "rect": [0, 0, 0.25, 0.5] },
+    { "sprite": { "asset": "a", "sheet": { "columns": 4, "rows": 2 }, "frame": 3 }, "rect": [0.75, 0, 0.25, 0.5] },
+    { "sprite": { "asset": "a", "sheet": { "columns": 4, "rows": 2 }, "frame": 6 }, "rect": [0.5, 0.5, 0.25, 0.5] },
+    { "sprite": { "asset": "a", "sheet": { "columns": 3, "rows": 3 }, "frame": 7 }, "rect": [0.3333333333, 0.6666666667, 0.3333333333, 0.3333333333] },
+    { "sprite": { "asset": "a", "sheet": { "columns": 1, "rows": 8 }, "frame": 5 }, "rect": [0, 0.625, 1, 0.125] },
+    { "sprite": { "asset": "a", "sheet": { "columns": 256, "rows": 256 }, "frame": 65535 }, "rect": [0.99609375, 0.99609375, 0.00390625, 0.00390625] }
+  ]
+}

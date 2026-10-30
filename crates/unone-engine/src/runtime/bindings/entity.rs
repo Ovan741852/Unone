@@ -1,6 +1,6 @@
 use super::{ApiState, Lua, Table};
 use super::value::lua_value_to_json;
-use crate::world::{SpriteData, Transform2DData, Transform3DData, Vec2, Vec3};
+use crate::world::{SpriteAnimationData, SpriteData, Transform2DData, Transform3DData, Vec2, Vec3};
 use std::rc::Rc;
 
 pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
@@ -228,5 +228,94 @@ pub(super) fn entity(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             sprite_world.borrow_mut().set_sprite(&id, sprite).map_err(mlua::Error::RuntimeError)
         })?,
     )?;
+    let frame_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
+    entity.set(
+        "setSpriteFrame",
+        lua.create_function(move |_, (id, frame): (String, f64)| {
+            super::ensure_not_view(&view, "entity.setSpriteFrame")?;
+            if frame.fract() != 0.0 || !(0.0..=f64::from(u32::MAX)).contains(&frame) {
+                return Err(mlua::Error::RuntimeError(format!(
+                    "SPRITE_FRAME_INVALID: frame must be a whole sheet cell number from 0, got {frame}"
+                )));
+            }
+            frame_world
+                .borrow_mut()
+                .set_sprite_frame(&id, frame as u32)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let play_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
+    entity.set(
+        "playSpriteAnimation",
+        lua.create_function(move |_, (id, clip): (String, mlua::Value)| {
+            super::ensure_not_view(&view, "entity.playSpriteAnimation")?;
+            let clip = sprite_clip(clip)?;
+            play_world
+                .borrow_mut()
+                .play_sprite_animation(&id, clip)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let read_world = Rc::clone(&world);
+    entity.set(
+        "getSpriteFrame",
+        lua.create_function(move |_, id: String| {
+            read_world.borrow().sprite_frame(&id).map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
     Ok(entity)
+}
+
+/// Read a clip straight from its Lua table. Games are told to call
+/// playSpriteAnimation every update for their current state, and a JSON round
+/// trip there cost about 1 µs per call.
+fn sprite_clip(clip: mlua::Value) -> mlua::Result<SpriteAnimationData> {
+    let invalid = |detail: String| {
+        mlua::Error::RuntimeError(format!(
+            "SPRITE_ANIMATION_INVALID: expected {{frames={{0,1,...}}, fps=12, loop=true}}: {detail}"
+        ))
+    };
+    let mlua::Value::Table(clip) = clip else {
+        return Err(invalid(format!("got a {}", clip.type_name())));
+    };
+    // One walk collects the known fields; a misspelled one stops it and is
+    // reported with the shared OPTION_UNKNOWN_FIELD wording.
+    let (mut list, mut fps, mut looping, mut misspelled) = (None, None, true, false);
+    for pair in clip.pairs::<mlua::Value, mlua::Value>() {
+        let (key, value) = pair?;
+        let mlua::Value::String(name) = &key else {
+            misspelled = true;
+            break;
+        };
+        let name = name.as_bytes();
+        match (&*name, value) {
+            (b"frames", mlua::Value::Table(cells)) => list = Some(cells),
+            (b"fps", mlua::Value::Number(value)) => fps = Some(value),
+            (b"fps", mlua::Value::Integer(value)) => fps = Some(value as f64),
+            (b"loop", mlua::Value::Boolean(value)) => looping = value,
+            (b"frames" | b"fps" | b"loop", other) => {
+                return Err(invalid(format!("{} must not be a {}", String::from_utf8_lossy(&name), other.type_name())));
+            }
+            _ => {
+                misspelled = true;
+                break;
+            }
+        }
+    }
+    if misspelled {
+        super::reject_unknown_keys(&clip, &["frames", "fps", "loop"], "entity.playSpriteAnimation clip")?;
+    }
+    let list = list.ok_or_else(|| invalid("missing field `frames` (a list of sheet cells)".into()))?;
+    let fps = fps.ok_or_else(|| invalid("missing field `fps`".into()))?;
+    let mut frames = Vec::with_capacity(list.raw_len());
+    for cell in list.sequence_values::<mlua::Value>() {
+        frames.push(match cell? {
+            mlua::Value::Integer(cell) if (0..=i64::from(u32::MAX)).contains(&i64::from(cell)) => cell as u32,
+            mlua::Value::Number(cell) if cell.fract() == 0.0 && (0.0..=f64::from(u32::MAX)).contains(&cell) => cell as u32,
+            other => return Err(invalid(format!("frames must be whole sheet cell numbers from 0, got {other:?}"))),
+        });
+    }
+    Ok(SpriteAnimationData { frames, fps, looping })
 }

@@ -6,6 +6,7 @@ import {createInstanceRenderer} from './instances3d.js';
 import {createBloom,normalizePostProcessing} from './bloom.js';
 import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
+import { syncSpriteCell } from "./sprite-cells.js";
 import {heightfieldEntries,createHeightfieldRenderer} from '../shared/heightfields.js';
 import {configureTexture,createPerspectiveCamera} from './presentation3d.js';
 import {createProjectedRenderer,assertProjectedBackend} from './projected.js';
@@ -316,7 +317,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     // Only explicit engine resources participate; presentation hooks own theirs.
     const seen=new Set(),retire=value=>{if(value&&!seen.has(value)){seen.add(value);value.dispose();}};
     retire(geometry);
-    for(const record of records.values())retire(record.material);
+    for(const record of records.values()){retire(record.material);retire(record.cellGeometry);}
     for(const mesh of meshes3d.values())if(mesh.userData.asset.startsWith('mesh://primitive/')){retire(mesh.geometry);retire(mesh.material);}
     for(const record of meshAssets.values()){retire(record.geometry);retire(record.material);}
     for(const record of textureRecords.values())retire(record.texture);
@@ -383,6 +384,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       record.mesh.position.set(entity.transform.x, entity.transform.y, (sprite.layer ?? 0) / 1000);
       record.mesh.scale.set((sprite.size?.x ?? 1) * (scale.x ?? 1), (sprite.size?.y ?? 1) * (scale.y ?? 1), 1);
       record.mesh.rotation.z = entity.rotation ?? 0;
+      syncSpriteCell(record, sprite, geometry);
       record.mesh.visible = true;
       record.assetId = String(sprite.asset ?? "");
       const texture = textureFor(specs.get(record.assetId),'sprite');
@@ -404,7 +406,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       record.mesh.visible = false;
       record.material.map = null;
       if (!world.entities?.[id]?.sprite) {
-        root.remove(record.mesh);record.material.dispose();records.delete(id);
+        root.remove(record.mesh);record.material.dispose();record.cellGeometry?.dispose();records.delete(id);
       }
     }
     shaderMaterials.retain(new Set([...alive].filter(id => Boolean(world.entities[id]?.shader_material))));
@@ -514,7 +516,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     bloom?.dispose();
     shaderMaterials.dispose();
     clearTextures();
-    for (const record of records.values()) { root.remove(record.mesh); record.material.dispose(); }
+    for (const record of records.values()) { root.remove(record.mesh); record.material.dispose(); record.cellGeometry?.dispose(); }
     records.clear();
     geometry.dispose();
     window.removeEventListener("resize", resize);

@@ -29,7 +29,15 @@ export type ObservationValue =
     | {ObservationValue}
 
 -- Runtime entity components use the scene entity fields, names and defaults.
-export type SpriteData = { asset: string, size: Vec2?, visible: boolean?, layer: number? }
+-- sheet splits the texture into equal cells; frame picks one, numbered from 0
+-- left to right, then top to bottom.
+export type SpriteSheet = { columns: number, rows: number }
+export type SpriteData = {
+    asset: string, size: Vec2?, visible: boolean?, layer: number?,
+    sheet: SpriteSheet?, frame: number?,
+}
+-- Sheet cells stepped on the fixed tick; loop defaults to true.
+export type SpriteAnimationData = { frames: {number}, fps: number, loop: boolean? }
 export type Mesh3DData = { asset: string, visible: boolean? }
 export type RigidBody2DData = {
     body_type: ("dynamic" | "static")?, mass: number?, radius: number?,
@@ -40,6 +48,7 @@ export type EntityComponents = {
     transform: Vec2?, rotation: number?, scale: Vec2?, transform3d: Transform3D?,
     sprite: SpriteData?, shader_material: string?, mesh3d: Mesh3DData?,
     rigidbody: RigidBody2DData?, animation: EntityAnimationData?,
+    sprite_animation: SpriteAnimationData?,
 }
 
 export type EntityApi = {
@@ -50,6 +59,12 @@ export type EntityApi = {
     setSpriteVisible: (id: string, visible: boolean) -> (),
     -- Replace the sprite (e.g. swap its asset); nil removes it.
     setSprite: (id: string, sprite: SpriteData?) -> (),
+    -- Draw one sheet cell and stop any sprite animation.
+    setSpriteFrame: (id: string, frame: number) -> (),
+    -- Replaying the clip already playing, even a finished one, changes nothing.
+    playSpriteAnimation: (id: string, clip: SpriteAnimationData) -> (),
+    -- The cell drawn now, and whether a non-looping clip has completed.
+    getSpriteFrame: (id: string) -> (number, boolean),
     getPosition: (id: string) -> Vec2,
     setPosition: (id: string, position: Vec2) -> (),
     getVelocity: (id: string) -> Vec2,

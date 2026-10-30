@@ -30,6 +30,35 @@ export function compareUtf8Ids(left, right) {
   return leftBytes.length - rightBytes.length;
 }
 
+/**
+ * The sheet cell a sprite draws: its grid position (`column`, `row` of
+ * `columns` x `rows`; one 1x1 cell without a sheet) and its image-space
+ * rectangle `u`, `v`, `du`, `dv` (origin top-left, v pointing down). Cells
+ * count from 0 left to right, then top to bottom; the engine resolves clips
+ * into `sprite.frame`, so hosts never step them. Every Web sprite path uses
+ * this; the native twin is `SpriteData::cell_rect`, kept in step by
+ * docs/fixtures/sprite-cells.json. Pass `out` to reuse one object per frame.
+ */
+export function spriteCellRect(sprite, out = {}) {
+  const sheet = sprite?.sheet;
+  const columns = sheet ? sheet.columns : 1;
+  const rows = sheet ? sheet.rows : 1;
+  const frame = sheet ? (sprite.frame ?? 0) : 0;
+  if (!Number.isInteger(columns) || !Number.isInteger(rows) || columns < 1 || rows < 1
+    || !Number.isInteger(frame) || frame < 0 || frame >= columns * rows) {
+    throw new Error(`SPRITE_SHEET_INVALID: frame ${frame} in a ${columns}x${rows} sheet`);
+  }
+  out.columns = columns;
+  out.rows = rows;
+  out.column = frame % columns;
+  out.row = Math.floor(frame / columns);
+  out.u = out.column / columns;
+  out.v = out.row / rows;
+  out.du = 1 / columns;
+  out.dv = 1 / rows;
+  return out;
+}
+
 /** Sort ordinary sprites by the shared signed layer and UTF-8 id contract. */
 export function compareSpriteEntities(left, right) {
   const layerDifference = spriteLayer(left) - spriteLayer(right);
@@ -200,17 +229,18 @@ function spriteVerticesFor(snapshot, aspect, predicate = () => true) {
   return new Float32Array(vertices);
 }
 
-function texturedSpriteVertices(entity, world, aspect) {
+export function texturedSpriteVertices(entity, world, aspect) {
   const corners = worldSpriteCorners(entity).map((point) => worldToView(point, world.camera, aspect));
   const clipCorners = corners.map((point) => ({ x: point.x / 50 - 1, y: point.y / 50 - 1 }));
   const uvs = [
     [0, 1], [1, 1], [1, 0],
     [0, 1], [1, 0], [0, 0],
   ];
+  const cell = spriteCellRect(entity.sprite);
   const vertices = [];
   for (let index = 0; index < 6; index += 1) {
     const point = clipCorners[[0, 1, 2, 0, 2, 3][index]];
-    vertices.push(point.x, point.y, uvs[index][0], uvs[index][1], 1, 1, 1, 1);
+    vertices.push(point.x, point.y, cell.u + uvs[index][0] * cell.du, cell.v + uvs[index][1] * cell.dv, 1, 1, 1, 1);
   }
   return new Float32Array(vertices);
 }
