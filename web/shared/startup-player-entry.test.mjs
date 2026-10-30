@@ -124,9 +124,10 @@ test('restarting while paused persists new Game.start contents without waiting f
  const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8'),writes=[],prepared=[];
  const context={serializedSavePayload,saved:'{"coins":1}',key:'restart-save',frozen:true,snapshot:{world:{frame:0},save_payload:{coins:1}},
   localStorage:{setItem:(key,text)=>writes.push({key,text})},canvas:{clientWidth:100,clientHeight:100},physicalViewport:()=>[100,100],json:async()=>({config:{}}),
-  startupAbort:new AbortController(),imageAssets:{prepareScene:async scene=>prepared.push(scene)},
+  startupAbort:new AbortController(),imagePreloadPlan:null,imageAssets:{prepareScene:async scene=>prepared.push(scene)},
   setPaused:async value=>{context.frozen=value;},sessionSeed:()=>'7',backend:{request:async command=>{assert.equal(prepared.length,1,'scene image preparation completes before the restarted Core load');assert.equal(command.kind,'load');assert.equal(command.seed,'7','restart starts a new session seed');assert.equal(command.payload.restored_save.coins,1);return{world:{frame:0},save_payload:{coins:2}};}},
   acceptSnapshot:value=>context.snapshot=value,configurePhysical(){},orderedRouter:null,audio:null,scheduler:{resetClock(){}},draw(){}};
- vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+source.slice(source.indexOf('async function restart(){'),source.indexOf('async function finishStartup(')),context);
+ const requiredSource=source.slice(source.indexOf('function assertRequiredImagePreparation('),source.indexOf('async function readImagePreloadPlan('));
+ vm.createContext(context);vm.runInContext(requiredSource+source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+source.slice(source.indexOf('async function restart(){'),source.indexOf('async function finishStartup(')),context);
  await context.restart();assert.deepEqual(writes,[{key:'restart-save',text:'{"coins":2}'}]);assert.equal(context.saved,'{"coins":2}');assert.equal(context.frozen,true);
 });

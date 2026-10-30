@@ -34,6 +34,12 @@ test('unused decoded images use an aggregate LRU bound while active images remai
  const c=f.broker.acquire('c');await c.promise;assert.equal(f.broker.report().unused_bytes_estimate,16);assert.equal(f.broker.report().active_bytes_estimate,16);assert.equal(f.broker.report().pressure_bytes,16);assert.equal(f.images.get('c').closed,0);c.release();assert.equal(f.images.get('b').closed,1);assert.equal(f.broker.report().unused_entries,1);f.broker.dispose();assert.equal(f.images.get('c').closed,1);
 });
 
+test('an oversized retired image is rejected before it can flush useful small unused images',async()=>{
+ const images=new Map(),f=fixture(['a','b','large'],{unusedMaxBytes:32,unusedMaxEntries:2,loadImage:async(url,{asset})=>{const value=image(asset.id,asset.id==='large'?4:2,asset.id==='large'?4:2);images.set(asset.id,value);return value;}});
+ for(const id of ['a','b']){const lease=f.broker.acquire(id);await lease.promise;lease.release();}
+ const large=f.broker.acquire('large');await large.promise;assert.equal(images.get('large').closed,0);assert.equal(images.get('a').closed,0);assert.equal(images.get('b').closed,0);large.release();assert.equal(images.get('large').closed,1);assert.equal(images.get('a').closed,0);assert.equal(images.get('b').closed,0);assert.equal(f.broker.report().unused_entries,2);assert.equal(f.broker.report().unused_bytes_estimate,32);const reused=f.broker.acquire('a');assert.equal(reused.state,'ready');reused.release();f.broker.dispose();
+});
+
 test('hidden scene sprites are unique dependencies, with no unrelated manifest scan',async()=>{
  const f=fixture(['a','b','unrelated'],{unusedMaxBytes:0,unusedMaxEntries:0});
  const result=await f.broker.prepareScene(scene(['a','b','a']));assert.equal(result.partial,false);assert.equal(result.declared_entries,2);assert.equal(result.ready_entries,2);assert.equal(result.reserved_bytes,32);assert.deepEqual(f.inspections.sort(),['a','b']);assert.deepEqual(f.loads.sort(),['a','b']);assert(Object.isFrozen(result));assert(Object.isFrozen(result.errors));

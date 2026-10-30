@@ -89,6 +89,68 @@ export function assetCatalogSpecs(catalog) {
   return catalog.specs;
 }
 
+export const IMAGE_PRELOAD_PLAN_VERSION = 1;
+export const IMAGE_PRELOAD_PLAN_MAX_BYTES = 1048576;
+function preloadInvalid(detail) { throw new Error(`IMAGE_PRELOAD_PLAN_INVALID: ${detail}`); }
+function utf8Length(text) {
+  let bytes = 0;
+  for (let i = 0; i < text.length; i++) { const code = text.charCodeAt(i); if (code < 128) bytes++; else if (code < 2048) bytes += 2;
+    else if (code >= 0xd800 && code <= 0xdbff && i + 1 < text.length && text.charCodeAt(i + 1) >= 0xdc00 && text.charCodeAt(i + 1) <= 0xdfff) { bytes += 4; i++; } else bytes += 3;
+  }
+  return bytes;
+}
+function preloadRecord(value, label, allowed = null) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) || ![Object.prototype, null].includes(Object.getPrototypeOf(value))) preloadInvalid(`${label} must be a plain JSON object`);
+  for (const key of Reflect.ownKeys(value)) { const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (typeof key !== 'string' || !descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || allowed && !allowed.includes(key)) preloadInvalid(`${label} has an unknown or non-JSON field`);
+  }
+}
+function preloadArray(value, label, maximum) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype || value.length > maximum) preloadInvalid(`${label} must be a bounded JSON array`);
+  for (const key of Reflect.ownKeys(value)) { if (key === 'length') continue; const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (typeof key !== 'string' || !/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= value.length || !descriptor.enumerable || !Object.hasOwn(descriptor, 'value')) preloadInvalid(`${label} has a non-JSON field`);
+  }
+  for (let i = 0; i < value.length; i++) if (!Object.hasOwn(value, i)) preloadInvalid(`${label} contains a hole`);
+}
+function preloadString(value, label, maximum) {
+  if (typeof value !== 'string' || !value.length || value.length > maximum || utf8Length(value) > maximum) preloadInvalid(`${label} exceeds its UTF-8 string bound`);
+}
+function quotedUtf8Length(text) {
+  let bytes = 2;
+  for (let i = 0; i < text.length; i++) { const code = text.charCodeAt(i);
+    if (code === 34 || code === 92) bytes += 2;
+    else if (code < 32) bytes += code === 8 || code === 9 || code === 10 || code === 12 || code === 13 ? 2 : 6;
+    else if (code < 128) bytes++;
+    else if (code < 2048) bytes += 2;
+    else if (code >= 0xd800 && code <= 0xdbff && i + 1 < text.length && text.charCodeAt(i + 1) >= 0xdc00 && text.charCodeAt(i + 1) <= 0xdfff) { bytes += 4; i++; }
+    else bytes += code >= 0xd800 && code <= 0xdfff ? 6 : 3;
+  }
+  return bytes;
+}
+export function validateImagePreloadPlan(value, catalog) {
+  const specs = assetCatalogSpecs(catalog); preloadRecord(value, 'plan', ['version','groups','startup','budget']);
+  if (!Object.hasOwn(value, 'version') || !Object.hasOwn(value, 'groups') || !Object.hasOwn(value, 'startup') || value.version !== IMAGE_PRELOAD_PLAN_VERSION) preloadInvalid('version1, groups and startup are required');
+  const budget = Object.hasOwn(value, 'budget') ? value.budget : null;
+  if (Object.hasOwn(value, 'budget')) preloadRecord(budget, 'budget', ['max_bytes','max_entries']);
+  const maxBytes = budget && Object.hasOwn(budget, 'max_bytes') ? budget.max_bytes : 64 * 1024 * 1024, maxEntries = budget && Object.hasOwn(budget, 'max_entries') ? budget.max_entries : 128;
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1 || maxBytes > 1073741824 || !Number.isSafeInteger(maxEntries) || maxEntries < 1 || maxEntries > 65536) preloadInvalid('budget must contain positive bounded integers');
+  const canonicalBudget = Object.freeze({ max_bytes: maxBytes, max_entries: maxEntries });
+  let encodedBytes = utf8Length(JSON.stringify({ version: IMAGE_PRELOAD_PLAN_VERSION, groups: {}, startup: [], budget: canonicalBudget }));
+  const reserve = bytes => { encodedBytes += bytes; if (encodedBytes > IMAGE_PRELOAD_PLAN_MAX_BYTES) preloadInvalid('canonical encoded plan exceeds1MiB'); };
+  preloadRecord(value.groups, 'groups'); const names = Object.keys(value.groups); if (names.length > 128) preloadInvalid('groups exceeds128');
+  const groups = {}; let references = 0, groupIndex = 0;
+  for (const name of names) { preloadString(name, 'group name', 128); const authored = value.groups[name]; preloadArray(authored, 'group references', 4096); references += authored.length; if (references > 16384) preloadInvalid('total references exceeds16384');
+    reserve(quotedUtf8Length(name) + 3 + (groupIndex++ ? 1 : 0)); const ids = [];
+    for (const id of authored) { preloadString(id, 'asset ID', 2048); reserve(quotedUtf8Length(id) + (ids.length ? 1 : 0)); const asset = specs.get(id); if (!asset || asset.kind !== 'texture2d') preloadInvalid(`group asset must be a declared texture2d: ${id}`); requireAssetEncoding(asset, 'image'); ids.push(id); }
+    Object.defineProperty(groups, name, { value: Object.freeze(ids), enumerable: true });
+  }
+  preloadArray(value.startup, 'startup', 128); const startup = [], seen = new Set();
+  for (const name of value.startup) { preloadString(name, 'startup group', 128); if (!Object.hasOwn(groups, name) || seen.has(name)) preloadInvalid('startup groups must exist and be unique'); reserve(quotedUtf8Length(name) + (startup.length ? 1 : 0)); seen.add(name); startup.push(name); }
+  const canonical = { version: IMAGE_PRELOAD_PLAN_VERSION, groups: Object.freeze(groups), startup: Object.freeze(startup), budget: canonicalBudget };
+  if (utf8Length(JSON.stringify(canonical)) > IMAGE_PRELOAD_PLAN_MAX_BYTES) preloadInvalid('canonical encoded plan exceeds1MiB');
+  return Object.freeze(canonical);
+}
+
 const imageError = (code, detail = '') => new Error(`${code}${detail ? ': ' + detail : ''}`);
 function abortImageError() { const error = imageError('IMAGE_ASSET_CANCELLED'); error.name = 'AbortError'; return error; }
 function closeDecodedImage(image) {
@@ -138,10 +200,13 @@ async function inspectPngImage(url, { signal } = {}) {
 // Presentation-owned decoded pixels. GPU textures/samplers remain owned by
 // their renderer. Only exact immutable catalog membership authorizes id reuse.
 export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = loadDecodedImage, inspectImage = inspectPngImage,
-  sceneMaxBytes = 64 * 1024 * 1024, sceneMaxEntries = 128, unusedMaxBytes = 16 * 1024 * 1024, unusedMaxEntries = 128 } = {}) {
+  sceneMaxBytes = 64 * 1024 * 1024, sceneMaxEntries = 128, unusedMaxBytes = 16 * 1024 * 1024, unusedMaxEntries = 128, preloadPlan = null } = {}) {
   const specs = assetCatalogSpecs(catalog);
   if (typeof resolveAssetUrl !== 'function' || typeof loadImage !== 'function' || typeof inspectImage !== 'function') throw imageError('IMAGE_ASSET_BROKER_OPTIONS');
   for (const [key, value] of Object.entries({ sceneMaxBytes, sceneMaxEntries, unusedMaxBytes, unusedMaxEntries })) if (!Number.isSafeInteger(value) || value < 0) throw imageError('IMAGE_ASSET_BUDGET', key);
+  const plan = preloadPlan === null ? null : validateImagePreloadPlan(preloadPlan, catalog);
+  if (plan) { sceneMaxBytes = plan.budget.max_bytes; sceneMaxEntries = plan.budget.max_entries; }
+  const planSummary = plan ? Object.freeze({ version: plan.version, groups: Object.keys(plan.groups).length, startup_groups: plan.startup, budget: plan.budget }) : null;
   const entries = new Map(), imageOwners = new Map(), queue = []; let running = 0, stamp = 0, disposed = false, planEpoch = 0, planController = null, sceneLeases = new Map(), preparation = null;
   let loads = 0, reuses = 0, evictions = 0, closedImages = 0, releasedBytes = 0;
   const limits = Object.freeze({ sceneMaxBytes, sceneMaxEntries, unusedMaxBytes, unusedMaxEntries });
@@ -172,10 +237,16 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     evictions++;
   }
   function sweep() {
-    const unused = [...entries.values()].filter(entry => !entry.external && !entry.scene);
+    const unused = [];
+    for (const entry of entries.values()) if (!entry.external && !entry.scene) {
+      // A single image that cannot fit is not an LRU candidate. Retire it
+      // before considering older small images, preserving the useful cache.
+      if (disposed || entry.state !== 'ready' || entry.bytes > unusedMaxBytes || unusedMaxEntries === 0) forget(entry);
+      else unused.push(entry);
+    }
     let bytes = unused.reduce((sum, entry) => sum + entry.bytes, 0), count = unused.length;
     unused.sort((a, b) => a.stamp - b.stamp);
-    for (const entry of unused) { if (!disposed && entry.state === 'ready' && bytes <= unusedMaxBytes && count <= unusedMaxEntries) continue; bytes -= entry.bytes; count--; forget(entry); }
+    for (const entry of unused) { if (bytes <= unusedMaxBytes && count <= unusedMaxEntries) break; bytes -= entry.bytes; count--; forget(entry); }
   }
   function entryFor(id, reservation = null) {
     const asset = specFor(id); let entry = entries.get(id);
@@ -215,10 +286,11 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
   async function prepareScene(scene) {
     if (disposed) throw imageError('IMAGE_ASSET_BROKER_DISPOSED');
     planController?.abort(); const controller = new AbortController(); planController = controller; const epoch = ++planEpoch;
-    const entities = scene?.entities ?? [], ids = [...new Set((Array.isArray(entities) ? entities : Object.values(entities)).flatMap(entity => typeof entity?.sprite?.asset === 'string' ? [entity.sprite.asset] : []))];
+    const entities = scene?.entities ?? [], sceneIds = (Array.isArray(entities) ? entities : Object.values(entities)).flatMap(entity => typeof entity?.sprite?.asset === 'string' ? [entity.sprite.asset] : []);
+    const startupIds = plan ? plan.startup.flatMap(name => plan.groups[name]) : [], requiredIds = new Set(startupIds), ids = [...new Set([...startupIds, ...sceneIds])];
     const previous = sceneLeases, next = new Map(); sceneLeases = next;
     for (const [id, lease] of previous) { if (ids.includes(id)) next.set(id, lease); else lease.release(); }
-    const result = { declared_entries: ids.length, admitted_entries: 0, ready_entries: 0, reserved_bytes: 0, partial: false, unsupported: [], budget_skipped: [], errors: [], cancelled: false };
+    const result = { declared_entries: ids.length, scene_declared_entries: new Set(sceneIds).size, startup_entries: requiredIds.size, required_entries: requiredIds.size, required_ready_entries: 0, startup_groups: plan?.startup ?? Object.freeze([]), duplicate_references: startupIds.length + sceneIds.length - ids.length, admitted_entries: 0, ready_entries: 0, reserved_bytes: 0, partial: false, unsupported: [], budget_skipped: [], errors: [], cancelled: false };
     const candidates = ids.slice(0, sceneMaxEntries), inspected = new Array(candidates.length); let position = 0;
     for (const id of ids.slice(sceneMaxEntries)) result.budget_skipped.push({ id, reason: 'scene_entry_budget' });
     const worker = async work => { while (!controller.signal.aborted && position < candidates.length) { const index = position++; await work(candidates[index], index); } };
@@ -240,7 +312,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     const selectedIds = new Set(selected.map(item => item.id)); for (const [id, lease] of next) if (!selectedIds.has(id)) { next.delete(id); lease.release(); }
     result.admitted_entries = selected.length; position = 0;
     const decode = async () => { while (!controller.signal.aborted && position < selected.length) { const item = selected[position++]; let lease;
-      try { lease = next.get(item.id); if (!lease) { lease = leaseFor(item.id, 'scene', item); next.set(item.id, lease); } await lease.promise; if (lease.state === 'ready') result.ready_entries++; else throw lease.error;
+      try { lease = next.get(item.id); if (!lease) { lease = leaseFor(item.id, 'scene', item); next.set(item.id, lease); } await lease.promise; if (lease.state === 'ready') { result.ready_entries++; if (requiredIds.has(item.id)) result.required_ready_entries++; } else throw lease.error;
       } catch (error) {
         result.errors.push({ id: item.id, message: String(error?.message ?? error) });
         // A speculative failure must not poison the later required load. A
@@ -260,7 +332,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     report() {
       let residentBytes = 0, activeBytes = 0, sceneBytes = 0, unusedBytes = 0, activeEntries = 0, sceneEntries = 0, unusedEntries = 0, loading = 0;
       for (const entry of entries.values()) { residentBytes += entry.bytes; if (entry.state === 'loading') loading++; if (entry.external) { activeEntries++; activeBytes += entry.bytes; } if (entry.scene) { sceneEntries++; sceneBytes += entry.bytes; } if (!entry.external && !entry.scene) { unusedEntries++; unusedBytes += entry.bytes; } }
-      return { catalog_generation: catalog.generation, disposed, limits, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted.' };
+      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted.' };
     },
     dispose() { if (disposed) return; disposed = true; planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
   });

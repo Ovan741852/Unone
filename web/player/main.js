@@ -13,7 +13,7 @@ import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
 import {playerSeed} from '../shared/load-project.js';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
-import {requireAssetEncoding,createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
+import {requireAssetEncoding,createAssetCatalog,createImageAssetBroker,validateImagePreloadPlan,IMAGE_PRELOAD_PLAN_MAX_BYTES} from '../shared/asset-encoding.js';
 import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.js';
 import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileOptions} from '../shared/raster-diagnostics.mjs';
 import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from '../shared/startup-presentation.mjs';
@@ -22,7 +22,7 @@ import {serializedSavePayload} from '../shared/save-publication.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
-let uiAssetManifest=null,imageAssets=null;
+let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null;
 const uiCanvas=document.createElement('canvas');Object.assign(uiCanvas.style,{width:'100%',height:'100%',pointerEvents:'none'});document.querySelector('#ui-layer').replaceChildren(uiCanvas);
 const input=createHostInput(),uiRenderer=createCanvasUi(uiCanvas,{getImageBatchPresenter:()=>renderer?.uiImageBatchPrefix,onAction:({action,phase})=>input.queueActionTransition(action,phase==='down'),onSlider:event=>input.queueSliderInteraction(event),acquireAsset:assetId=>imageAssets.acquire(assetId),resolveAsset:assetId=>{
  const asset=uiAssetManifest?.assets?.find(candidate=>candidate.id===assetId);
@@ -137,7 +137,7 @@ function tickOnce(){if(tickFlight){if(profiler)profiler.record('update_request',
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed()}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=await json('content/project.json');projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed()}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
@@ -174,6 +174,35 @@ async function finishStartup(presentation,kind){
     document.body.dataset.playerMetrics=JSON.stringify(metrics);document.body.dataset.playerStartupPresentation=JSON.stringify(state);}});
  }finally{canvas.removeEventListener('webglcontextlost',lost);canvas.removeEventListener('webglcontextrestored',restored);listeners.clear();}
 }
+function assertRequiredImagePreparation(plan,result){
+ if(result?.cancelled)throw startupCancelled();
+ if(!plan)return;
+ const required=new Set(plan.startup.flatMap(group=>plan.groups[group]));
+ if(required.size===0)return;
+ if(result?.required_entries===required.size&&result?.required_ready_entries===required.size)return;
+ const failed=[...(result?.unsupported??[]),...(result?.budget_skipped??[]),...(result?.errors??[])].filter(row=>required.has(row.id));
+ const examples=failed.slice(0,8).map(row=>String(row.id).slice(0,256)).join(', ');
+ throw Error(`IMAGE_PRELOAD_REQUIRED_NOT_READY: prepared ${result?.required_ready_entries??0}/${required.size} required images${examples?'; '+examples:''}`);
+}
+async function readImagePreloadPlan(catalog){
+ const declarations=document.querySelectorAll('meta[name="unone-image-assets"]');
+ if(declarations.length===0)return null;
+ if(declarations.length!==1||declarations[0].getAttribute('content')!=='content/image-assets.json')throw Error('IMAGE_PRELOAD_PLAN_META_INVALID');
+ if(startupAbort.signal.aborted)throw startupCancelled();
+ const response=await fetch(new URL('content/image-assets.json',document.baseURI),{cache:'no-store',signal:startupAbort.signal});
+ if(!response.ok)throw Error(`IMAGE_PRELOAD_PLAN_LOAD_FAILED: ${response.status}`);
+ if(!response.body?.getReader)throw Error('IMAGE_PRELOAD_PLAN_STREAM_REQUIRED');
+ const reader=response.body.getReader(),bytes=new Uint8Array(IMAGE_PRELOAD_PLAN_MAX_BYTES);let size=0,complete=false;
+ try{
+  for(;;){const next=await reader.read();if(next.done){complete=true;break;}
+   const nextSize=size+next.value.byteLength;if(nextSize>IMAGE_PRELOAD_PLAN_MAX_BYTES)throw Error('IMAGE_PRELOAD_PLAN_TOO_LARGE');
+   // One bounded buffer also bounds metadata when a stream uses tiny chunks.
+   bytes.set(next.value,size);size=nextSize;}
+ }finally{if(!complete)try{await reader.cancel();}catch{}reader.releaseLock?.();}
+ if(startupAbort.signal.aborted)throw startupCancelled();
+ let plan;try{plan=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,size)));}catch(error){throw Error(`IMAGE_PRELOAD_PLAN_JSON_INVALID: ${String(error.message??error)}`);}
+ return validateImagePreloadPlan(plan,catalog);
+}
 async function start(){
  const profileOptions=playerProfileOptions(location.search);
  if(profileOptions){profiler=createPlayerProfiler({limit:profileOptions.limit,publishTarget:document.body});document.body.dataset.playerProfileEnabled='1';
@@ -184,11 +213,15 @@ async function start(){
  // One immutable presentation index per fetched manifest. The player owns this JSON and adopts it,
  // so the renderer never rebuilds the asset index per draw and in-place edits fail instead of drifting.
  const assetCatalog=createAssetCatalog(assets,{adopt:true});
- imageAssets=createImageAssetBroker(assetCatalog,{resolveAssetUrl:asset=>new URL('content/'+asset.source,document.baseURI).href});
+ const preloadPlan=await readImagePreloadPlan(assetCatalog);
+ if(startupAbort.signal.aborted)throw startupCancelled();
+ imagePreloadPlan=preloadPlan;
+ imageAssets=createImageAssetBroker(assetCatalog,{resolveAssetUrl:asset=>new URL('content/'+asset.source,document.baseURI).href,preloadPlan});
  // Scene declarations own future render dependencies, including hidden sprites.
  // Prepare an explicitly bounded plan before simulation and the READY barrier.
- await imageAssets.prepareScene(project.scene);
+ const preparation=await imageAssets.prepareScene(project.scene);
  if(startupAbort.signal.aborted)throw startupCancelled();
+ assertRequiredImagePreparation(preloadPlan,preparation);
  physicalProfile=presentation.physical_input;
  if(physicalProfile!==undefined&&(physicalProfile!=='ordered_physical_v1'||(presentation.renderer_mode??'official')!=='official'))throw Error('INPUT_PHYSICAL_PROFILE_UNSUPPORTED: official Web ordered_physical_v1 only');
  configurePhysical();
