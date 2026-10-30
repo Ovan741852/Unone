@@ -90,7 +90,8 @@
             "mesh3d",
             "spine",
             "effekseer",
-            "audio"
+            "audio",
+            "data"
           ],
           "type": "string"
         },

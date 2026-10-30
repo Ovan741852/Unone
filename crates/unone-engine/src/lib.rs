@@ -30,6 +30,10 @@ mod asset_workflow;
 #[cfg(feature = "dev-tools")]
 mod asset_usage;
 mod audio;
+mod data_assets;
+pub use data_assets::{BUILTIN_DATA_LOADERS, DataAssetDecl};
+#[cfg(feature = "dev-tools")]
+pub use data_assets::decl_for as data_asset_decl;
 #[cfg(feature = "physics2d")]
 mod broadphase;
 #[cfg(feature = "dev-tools")]

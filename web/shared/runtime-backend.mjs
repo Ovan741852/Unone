@@ -21,7 +21,7 @@ export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobP
   };
  }else core=createRuntimeCore(await loadRuntime(url),{url,jobPolicy,device,spatialBackend,requirePhysicalViewport,...(profiler?{profile:true}:{})});
  async function dispatch(command,event=null){if(closed)throw Error('RUNTIME_CLOSED');if(core){const at=performance.now();if(event)profiler.span(event,'queue_wait',event.start_ms,at);let value;try{value=await core.execute(command);}finally{if(event)coreSpans(event,at,profiler.now());}metrics={backend:'main',jobs:core.report(),viewport:core.report().viewport,execute_ms:performance.now()-at,wasm_linear_bytes:core.module.HEAPU8.buffer.byteLength};return value;}
-  return new Promise((resolve,reject)=>{const id=++serial,recycled=receiver.takeRecycled();const timer=setTimeout(()=>shutdown(Error('WORKER_REQUEST_TIMEOUT')),timeoutMs);current={id,resolve,reject,timer,...(event?{event,posted:profiler.now()}:{})};try{worker.postMessage({id,command,recycled},recycled);}catch(error){shutdown(error);}});
+  return new Promise((resolve,reject)=>{const id=++serial,recycled=receiver.takeRecycled();const timer=setTimeout(()=>shutdown(Error('WORKER_REQUEST_TIMEOUT')),timeoutMs);current={id,resolve,reject,timer,...(event?{event,posted:profiler.now()}:{})};try{worker.postMessage({id,command,recycled},command.kind==='load'&&command.data?[...recycled,...command.data.map(asset=>asset.bytes.buffer)]:recycled);}catch(error){shutdown(error);}});
  }
  // Opt-in profiling helpers. Core marks are consecutive, so children of one parent never overlap.
  function traceSpans(event,trace,parent,toHost){

@@ -153,14 +153,23 @@ impl Package {
     }
     #[cfg(test)]
     fn runtime(&self, seed: u64) -> R<EngineRuntime> {
-        Self::start(self.host_project()?,seed,None)
+        let project=self.host_project()?;
+        let data=self.data_assets(&project)?;
+        Self::start(project,seed,None,data)
     }
     fn host_project(&self) -> R<HostProject> {
         HostProject::parse(self.get("content/project.json")?).map_err(|e|e.explanation)
     }
-    fn start(mut project:HostProject, seed:u64, viewport:Option<[u32;2]>)->R<EngineRuntime> {
+    /// The verified package already holds every content file; hand the
+    /// declared data assets to the runtime by id.
+    fn data_assets(&self, project:&HostProject) -> R<BTreeMap<String,Vec<u8>>> {
+        project.data_assets.iter()
+            .map(|asset| Ok((asset.id.clone(), self.get(&format!("content/{}", asset.source))?.to_vec())))
+            .collect()
+    }
+    fn start(mut project:HostProject, seed:u64, viewport:Option<[u32;2]>, data:BTreeMap<String,Vec<u8>>)->R<EngineRuntime> {
         if let Some(size)=viewport {project.viewport_size=Some(size);}
-        let runtime=project.into_runtime(seed)
+        let runtime=project.into_runtime_with_data(seed, data)
             .map_err(|e| e.explanation)?;
         ensure_shader_backend(&runtime.observe())?;
         Ok(runtime)
@@ -455,7 +464,8 @@ impl App {
         let mut project = package.host_project()?;
         let mut save = save::SaveFile::open(&settings, store, &project)?;
         project.restored_save = save.take_restored();
-        let mut runtime = Package::start(project,seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]))?;
+        let data = package.data_assets(&project)?;
+        let mut runtime = Package::start(project,seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]),data)?;
         match spatial_backend {
             "cpu" => {},
             "gpu" => runtime.set_spatial_executor(Box::new(unone_spatial_gpu::SpatialGpuExecutor::new()?))?,

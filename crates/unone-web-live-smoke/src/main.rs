@@ -18,6 +18,8 @@ thread_local! {
     static INPUT: RefCell<HostInputState> = RefCell::new(HostInputState::default());
     static OUTPUT: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
     static INPUT_BUFFER: RefCell<Vec<u8>> = const { RefCell::new(Vec::new()) };
+    /// Data asset bytes the host staged for the next unone_web_load_project.
+    static STAGED_DATA: RefCell<std::collections::BTreeMap<String, Vec<u8>>> = const { RefCell::new(std::collections::BTreeMap::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
     static CANONICAL_HASHER: RefCell<unone_engine::CanonicalHasher> = RefCell::new(unone_engine::CanonicalHasher::default());
     static INSTANCE_MEMORY: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
@@ -93,7 +95,10 @@ impl PublicationProfile {
 thread_local! { static PUBLICATION_PROFILE: RefCell<PublicationProfile> = RefCell::new(PublicationProfile::default()); }
 
 fn create_runtime(project: HostProject, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
-    project.into_runtime(seed)
+    // Every load consumes what was staged, so a failed load never leaks bytes
+    // into the next attempt.
+    let data = STAGED_DATA.with(|staged| std::mem::take(&mut *staged.borrow_mut()));
+    project.into_runtime_with_data(seed, data)
 }
 
 #[derive(Serialize)]
@@ -472,6 +477,28 @@ pub extern "C" fn unone_web_alloc(length: usize) -> *mut u8 {
         let mut buffer = buffer.borrow_mut();
         buffer.resize(length, 0);
         buffer.as_mut_ptr()
+    })
+}
+
+/// Reserve `length` bytes for the data asset whose UTF-8 id the host just
+/// wrote with unone_web_alloc (`id_length` bytes), and return where the host
+/// copies the asset. The next unone_web_load_project consumes every staged
+/// asset. Null when the id is not valid UTF-8; the error is the observation.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_stage_data(id_length: usize, length: usize) -> *mut u8 {
+    let id = INPUT_BUFFER.with(|buffer| {
+        let buffer = buffer.borrow();
+        buffer.get(..id_length).and_then(|id| std::str::from_utf8(id).ok()).map(str::to_owned)
+    });
+    let Some(id) = id else {
+        write_error("DATA_ASSET_ID_INVALID: staged data asset id is not UTF-8 in the input buffer");
+        return std::ptr::null_mut();
+    };
+    STAGED_DATA.with(|staged| {
+        let mut staged = staged.borrow_mut();
+        let bytes = staged.entry(id).or_default();
+        *bytes = vec![0; length];
+        bytes.as_mut_ptr()
     })
 }
 

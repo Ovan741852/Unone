@@ -30,7 +30,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  return {module,trace:()=>lastTrace,close(){if(closed)return;closed=true;loaded=false;latest=undefined;pending=[];pool?.close();pool=null;spatial.close();releaseObservationResources(module);module._unone_web_unload_project?.();},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),fault:fault?String(fault):null};},async execute(command){
   if(closed)throw Error('RUNTIME_CLOSED');
   if(profile)lastTrace={kind:String(command?.kind),start_ms:performance.now(),marks:[]};
-  const allowed={load:['payload','seed'],tick:['input'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
+  const allowed={load:['payload','seed','data'],tick:['input'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
   if(!command||!Object.hasOwn(allowed,command.kind)||Object.keys(command).some(k=>k!=='kind'&&!allowed[command.kind].includes(k)))throw Error('RUNTIME_COMMAND_INVALID');
   if(command.kind!=='load'&&!loaded)throw Error('RUNTIME_NOT_LOADED');
   switch(command.kind){
@@ -38,7 +38,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
     loaded=false;
     // Retire the previous executor epoch; captured promises cannot inject late replies.
     pool?.close();pool=null;pending=[];fault=null;
-    latest=loadProject(module,loadPayload(command.payload),BigInt(command.seed??'42'));
+    latest=loadProject(module,loadPayload(command.payload),BigInt(command.seed??'42'),command.data);
     await spatial.load();
     if(closed)throw Error('RUNTIME_CLOSED');
     instanceTransport=1;if(module._unone_web_set_instance_transport?.(instanceTransport)!==0)throw Error('INSTANCE_TRANSPORT_UNAVAILABLE');latest=read();

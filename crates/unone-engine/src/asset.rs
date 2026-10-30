@@ -14,7 +14,7 @@ use crate::{
 };
 
 pub const SUPPORTED_ASSET_MANIFEST_VERSION: u32 = 1;
-pub const SUPPORTED_ASSET_KINDS: &[&str] = &["texture2d", "mesh3d", "spine", "effekseer", "audio"];
+pub const SUPPORTED_ASSET_KINDS: &[&str] = &["texture2d", "mesh3d", "spine", "effekseer", "audio", "data"];
 const ACTIVE_ASSET_MANIFEST_BUNDLE_ID: &str = "asset-manifest";
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -1104,7 +1104,7 @@ pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnosti
             "ASSET_SPEC_INVALID",
             "Invalid asset spec kind or bundle",
             format!(
-                "Asset '{}' must have kind texture2d, mesh3d, spine, effekseer, or audio, and bundle must not be empty.",
+                "Asset '{}' must have kind texture2d, mesh3d, spine, effekseer, audio, or data, and bundle must not be empty.",
                 asset.id
             ),
         )));

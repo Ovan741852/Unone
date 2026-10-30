@@ -27,6 +27,10 @@ pub struct HostProject {
     /// Physical render-target pixels, supplied before Game.start when known.
     #[serde(default)]
     pub viewport_size: Option<[u32;2]>,
+    /// Data assets the game reads with api.assets.load. The host delivers their
+    /// bytes beside this JSON (into_runtime_with_data), never inside it.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub data_assets: Vec<crate::DataAssetDecl>,
 }
 
 impl HostProject {
@@ -41,6 +45,15 @@ impl HostProject {
     }
 
     pub fn into_runtime(self, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
+        self.into_runtime_with_data(seed, BTreeMap::new())
+    }
+
+    /// Start the runtime with the bytes of every declared data asset, keyed by id.
+    pub fn into_runtime_with_data(
+        self,
+        seed: u64,
+        data: BTreeMap<String, Vec<u8>>,
+    ) -> Result<EngineRuntime, Box<Diagnostic>> {
         let scene = self
             .scene
             .as_deref()
@@ -55,6 +68,8 @@ impl HostProject {
             restored_save: self.restored_save,
             viewport_aspect: self.viewport_aspect,
             viewport_size: self.viewport_size,
+            data_assets: self.data_assets,
+            data,
         })
     }
 }

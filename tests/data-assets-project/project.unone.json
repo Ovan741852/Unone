@@ -1,0 +1,6 @@
+{
+  "name": "DataAssets",
+  "entry_script": "main.luau",
+  "asset_manifest": "assets.json",
+  "systems": {"audio": false, "particle": false, "ui": false}
+}

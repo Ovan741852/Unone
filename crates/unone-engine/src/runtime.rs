@@ -77,6 +77,9 @@ pub struct SourceProject {
     pub restored_save: Option<serde_json::Value>,
     pub viewport_aspect: Option<f64>,
     pub viewport_size: Option<[u32;2]>,
+    /// Declared data assets and the bytes the host delivered for each.
+    pub data_assets: Vec<crate::DataAssetDecl>,
+    pub data: BTreeMap<String, Vec<u8>>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -230,6 +233,7 @@ struct ApiState {
     ui: Rc<RefCell<Option<UiTree>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
+    data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
     /// Depth of host-driven UI view callbacks (virtual renderItem). Simulation
     /// mutators refuse to run while it is nonzero.
     pure_view: Rc<std::cell::Cell<usize>>,
@@ -320,6 +324,9 @@ pub struct EngineRuntime {
     ui: Rc<RefCell<Option<UiTree>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
+    /// Shared with a hot-reloaded VM, which decodes data assets afresh.
+    #[cfg(feature = "preview-tools")]
+    data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
     #[cfg(feature = "dev-tools")]
     generation: u64,
     #[cfg(feature = "dev-tools")]
@@ -484,7 +491,9 @@ impl EngineRuntime {
         if let Some(scene) = &paths.main_scene {
             world.borrow_mut().load_scene(scene)?;
         }
-        Self::with_world(config, paths, world, None, seed, restored_save, None, None)
+        let (decls, data) = crate::data_assets::read_from_project(&paths)?;
+        let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
+        Self::with_world(config, paths, world, None, seed, restored_save, None, None, data_assets)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -584,7 +593,10 @@ impl EngineRuntime {
             restored_save,
             viewport_aspect,
             viewport_size,
+            data_assets,
+            data,
         } = project;
+        let data_assets = crate::data_assets::DataAssets::new(data_assets, data)?;
         let script_name = if config.entry_script.is_empty() {
             "main.luau".to_string()
         } else {
@@ -617,6 +629,7 @@ impl EngineRuntime {
             restored_save,
             viewport_aspect,
             Some(job_sources),
+            data_assets,
         )
     }
 
@@ -630,7 +643,9 @@ impl EngineRuntime {
         restored_save: Option<serde_json::Value>,
         initial_viewport_aspect: Option<f64>,
         job_sources: Option<BTreeMap<String, String>>,
+        data_assets: crate::data_assets::DataAssets,
     ) -> Result<Self, Box<Diagnostic>> {
+        let data_assets = Rc::new(RefCell::new(data_assets));
         let host_time = Rc::new(RefCell::new(crate::host_time::HostTime::new(config.host_time.clone())
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
         let input = Rc::new(RefCell::new(InputState::default()));
@@ -663,6 +678,7 @@ impl EngineRuntime {
             ui: Rc::clone(&ui),
             viewport_aspect: Rc::clone(&viewport_aspect),
             save_payload: Rc::clone(&save_payload),
+            data_assets: Rc::clone(&data_assets),
             pure_view: Rc::new(std::cell::Cell::new(0)),
         };
         let systems = SystemSettings::from_config(&config)?;
@@ -726,6 +742,8 @@ impl EngineRuntime {
             ui,
             viewport_aspect,
             save_payload,
+            #[cfg(feature = "preview-tools")]
+            data_assets,
             #[cfg(feature = "dev-tools")]
             generation: 0,
             #[cfg(feature = "dev-tools")]
@@ -1646,6 +1664,7 @@ impl EngineRuntime {
             ui: Rc::clone(&self.ui),
             viewport_aspect: Rc::clone(&self.viewport_aspect),
             save_payload: Rc::clone(&self.save_payload),
+            data_assets: Rc::clone(&self.data_assets),
             pure_view: Rc::new(std::cell::Cell::new(0)),
         };
         let candidate_api = match build_api(&candidate_lua, &candidate_api_state, &self.systems) {

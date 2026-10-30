@@ -123,7 +123,7 @@ test('a startup storage failure preserves the persisted marker and prevents READ
 test('restarting while paused persists new Game.start contents without waiting for a tick',async()=>{
  const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8'),writes=[],prepared=[];
  const context={serializedSavePayload,saved:'{"coins":1}',key:'restart-save',frozen:true,snapshot:{world:{frame:0},save_payload:{coins:1}},
-  localStorage:{setItem:(key,text)=>writes.push({key,text})},canvas:{clientWidth:100,clientHeight:100},physicalViewport:()=>[100,100],json:async()=>({config:{}}),
+  localStorage:{setItem:(key,text)=>writes.push({key,text})},canvas:{clientWidth:100,clientHeight:100},physicalViewport:()=>[100,100],json:async()=>({config:{}}),dataAssets:async()=>[],
   startupAbort:new AbortController(),imagePreloadPlan:null,imageAssets:{prepareScene:async scene=>prepared.push(scene)},
   setPaused:async value=>{context.frozen=value;},sessionSeed:()=>'7',backend:{request:async command=>{assert.equal(prepared.length,1,'scene image preparation completes before the restarted Core load');assert.equal(command.kind,'load');assert.equal(command.seed,'7','restart starts a new session seed');assert.equal(command.payload.restored_save.coins,1);return{world:{frame:0},save_payload:{coins:2}};}},
   acceptSnapshot:value=>context.snapshot=value,configurePhysical(){},orderedRouter:null,audio:null,scheduler:{resetClock(){}},draw(){}};

@@ -23,3 +23,15 @@ pub(super) fn bind(lua: &Lua) -> mlua::Result<Table> {
     }
     Ok(api)
 }
+
+/// Freeze a buffer from Rust, as api.bytes.freeze does.
+pub(super) fn freeze(lua: &Lua, buffer: &mlua::Buffer) -> mlua::Result<()> {
+    // SAFETY: exec_raw pushes the buffer as the only argument; lua_setreadonly
+    // flips its readonly byte, and the pop leaves the stack as it found it.
+    unsafe {
+        lua.exec_raw::<()>(buffer.clone(), |state| {
+            ffi::lua_setreadonly(state, -1, 1);
+            ffi::lua_pop(state, 1);
+        })
+    }
+}

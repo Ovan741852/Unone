@@ -32,9 +32,11 @@ const module=await new Promise((resolveReady,reject)=>{
   vm.runInNewContext(readFileSync(js,'utf8'),context,{filename:js});
 });
 const payload=exported?JSON.parse(readFileSync(join(exported,'content/project.json'),'utf8')):await assembleProject(config,async path=>readFileSync(join(fixture,path),'utf8'),async path=>JSON.parse(readFileSync(join(fixture,path),'utf8')));
+// Data assets come from the export's content files, as the official player fetches them.
+const dataAssets=(payload.data_assets??[]).map(asset=>({id:asset.id,bytes:new Uint8Array(readFileSync(exported?join(exported,'content',asset.source):join(fixture,asset.source)))}));
 let compared=0;
 function replay(data,spec){
-  let result=loadProject(module,{...data,restored_save:spec.load_save??null},BigInt(spec.seed??42));
+  let result=loadProject(module,{...data,restored_save:spec.load_save??null},BigInt(spec.seed??42),dataAssets);
   for(let frame=0;frame<(spec.frames??60);frame++){
     const bytes=new TextEncoder().encode(JSON.stringify(spec.input_sequence?.length?(spec.input_sequence[frame]??{actions:{}}):{actions:spec.input??{}}));
     const address=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,address);

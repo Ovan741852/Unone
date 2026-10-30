@@ -1187,7 +1187,7 @@ impl Renderer {
         let mut lods = BTreeMap::new();
         for asset in assets {
             let kind = asset["kind"].as_str().unwrap_or("");
-            if matches!(kind, "audio" | "spine" | "effekseer") {
+            if matches!(kind, "audio" | "spine" | "effekseer" | "data") {
                 // These assets are host adapters, not GPU mesh inputs. Keep
                 // them in the verified package so the player can report a
                 // precise presentation warning instead of rejecting the

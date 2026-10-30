@@ -222,6 +222,29 @@
       },
       "type": "object"
     },
+    "DataAssetDecl": {
+      "additionalProperties": false,
+      "description": "One data asset a project declares: where the host finds its bytes and which\nloader turns them into a Luau value.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "loader": {
+          "description": "The manifest's `encoding.decoder`, or \"bytes\" without an encoding.",
+          "type": "string"
+        },
+        "source": {
+          "description": "Project-relative path; exports serve it under `content/`.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "loader"
+      ],
+      "type": "object"
+    },
     "HostTimeConfig": {
       "oneOf": [
         {
@@ -1488,6 +1511,13 @@
   "properties": {
     "config": {
       "$ref": "#/$defs/ProjectConfig"
+    },
+    "data_assets": {
+      "description": "Data assets the game reads with api.assets.load. The host delivers their\nbytes beside this JSON (into_runtime_with_data), never inside it.",
+      "items": {
+        "$ref": "#/$defs/DataAssetDecl"
+      },
+      "type": "array"
     },
     "job_sources": {
       "additionalProperties": {

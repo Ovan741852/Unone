@@ -849,18 +849,30 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
         Value::Null
     };
     let job_sources: std::collections::BTreeMap<_,_>=config.job_scripts.iter().map(|(id,path)|Ok((id.clone(),fs::read_to_string(inside(project,path)?)?))).collect::<Result<_>>()?;
-    let payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
+    let mut payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
+    // Data assets travel as content files; the payload only declares them.
+    let data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {
+        Some(path) => serde_json::from_slice::<unone_engine::AssetManifest>(&fs::read(inside(project, path)?)?)?
+            .assets.iter().filter(|asset| asset.kind == "data").map(unone_engine::data_asset_decl).collect(),
+        None => Vec::new(),
+    };
+    let data = data_assets.iter()
+        .map(|asset| Ok((asset.id.clone(), fs::read(inside(project, &asset.source)?)?)))
+        .collect::<Result<std::collections::BTreeMap<_, _>>>()?;
+    if !data_assets.is_empty() {
+        payload["data_assets"] = serde_json::to_value(&data_assets)?;
+    }
     // Exercise the exact player ingestion contract before creating any output.
     unone_engine::HostProject::parse(&serde_json::to_vec(&payload)?)
         .map_err(|e| anyhow::anyhow!(e.explanation))?
-        .into_runtime(42)
+        .into_runtime_with_data(42, data)
         .map_err(|e| anyhow::anyhow!(e.explanation))?;
     let assets = if let Some(path) = &config.asset_manifest {
         let assets: unone_engine::AssetManifest =
             serde_json::from_slice(&fs::read(inside(project, path)?)?)?;
         ensure!(assets.version == 1, "unsupported asset manifest version");
         for asset in &assets.assets {
-            if !["texture2d", "audio", "mesh3d", "effekseer"].contains(&asset.kind.as_str()) {
+            if !["texture2d", "audio", "mesh3d", "effekseer", "data"].contains(&asset.kind.as_str()) {
                 bail!("PLAYER_DECODER_UNAVAILABLE: {} ({})", asset.id, asset.kind);
             }
             if asset.kind == "effekseer" {

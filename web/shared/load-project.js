@@ -109,7 +109,20 @@ export function readObservation(module,mark) {
   if(Object.hasOwn(staged,'save')){if(staged.save)saves.set(module,staged.save);else saves.delete(module);}
   return restored;
 }
-export function loadProject(module,payload,seed=42n) {
+// Data assets travel beside the JSON payload: each is copied once into a
+// buffer the core reserves, and the next load consumes them all.
+export function stageDataAssets(module,data=[]) {
+  if(data.length&&typeof module._unone_web_stage_data!=='function')throw Error('RUNTIME_DATA_ASSETS_UNSUPPORTED: rebuild the player runtime');
+  for(const {id,bytes} of data){
+    const name=projectEncoder.encode(id),view=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);
+    module.HEAPU8.set(name,module._unone_web_alloc(name.length));
+    const target=module._unone_web_stage_data(name.length,view.length);
+    if(!target)throw Error(`DATA_ASSET_STAGE_FAILED: ${id}: ${JSON.stringify(readObservation(module))}`);
+    module.HEAPU8.set(view,target);
+  }
+}
+export function loadProject(module,payload,seed=42n,data=[]) {
+  stageDataAssets(module,data);
   const bytes=projectEncoder.encode(JSON.stringify(payload));
   const address=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,address);
   const status=module._unone_web_load_project(address,bytes.length,seed);

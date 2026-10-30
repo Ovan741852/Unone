@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "assets": [
+    {"id": "data://level", "kind": "data", "source": "data/level.json", "bundle": "content",
+     "encoding": {"format": "json", "mime": "application/json", "decoder": "json"}},
+    {"id": "data://rom", "kind": "data", "source": "data/rom.bin", "bundle": "content"},
+    {"id": "data://notes", "kind": "data", "source": "data/notes.txt", "bundle": "content",
+     "encoding": {"format": "utf-8", "mime": "text/plain", "decoder": "text"}},
+    {"id": "data://grid", "kind": "data", "source": "data/grid.csv", "bundle": "content",
+     "encoding": {"format": "csv", "mime": "text/csv", "decoder": "csv"}}
+  ]
+}

@@ -5,3 +5,5 @@ docs/evidence/2026-10-16-slider-controls-inertia/* -text -whitespace
 docs/evidence/2026-10-16-ui-responsive/* -text -whitespace
 docs/evidence/2026-10-16-voidwake-responsive-fx/* -text -whitespace
 docs/evidence/2026-10-16-json-float-roundtrip/* -text -whitespace
+# Data asset fixtures are byte-exact inputs; never convert their line endings.
+tests/data-assets-project/data/* -text -whitespace

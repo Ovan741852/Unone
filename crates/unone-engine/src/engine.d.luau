@@ -833,7 +833,20 @@ export type BytesApi = {
     snapshot: (data: buffer, offset: number?, length: number?) -> buffer,
 }
 
+-- Data assets are manifest entries of kind "data". encoding.decoder names the
+-- loader: built-in "bytes" (frozen buffer, the default), "text" or "json"
+-- (deep-frozen tables), or one registered at runtime.
+export type AssetLoader = (data: buffer, id: string) -> any
+export type AssetsApi = {
+    -- Decode once with the manifest's loader; later calls return the same
+    -- frozen value.
+    load: (id: string) -> any,
+    -- Add or replace a loader; values it decoded are decoded again on next load.
+    registerLoader: (name: string, loader: AssetLoader) -> (),
+}
+
 export type EngineApi = {
+    assets: AssetsApi,
     bytes: BytesApi,
     hostTime: HostTimeApi,
     application: ApplicationApi,

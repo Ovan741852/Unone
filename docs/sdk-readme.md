@@ -74,7 +74,9 @@ complete strict example. Components never lay out their children implicitly.
 
 For immutable binary data (loaded tables, maps, palettes, original game images),
 freeze an ordinary buffer with `api.bytes.freeze` and read it with `buffer.read*`;
-see the bundled [immutable bytes guide](docs/immutable-bytes.md).
+see the bundled [immutable bytes guide](docs/immutable-bytes.md). Declare level, table and
+binary files as `kind: "data"` assets and read them with `api.assets.load`; see the bundled
+[data assets guide](docs/data-assets.md).
 
 For generic batched geometry, search `spatial` / `batch collision` / `空間查詢`
 and describe `spatial.create`, `spatial.submit` and `spatial.take`. Read the bundled

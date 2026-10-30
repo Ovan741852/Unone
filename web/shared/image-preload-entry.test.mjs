@@ -29,6 +29,7 @@ function host({metas=[meta('content/image-assets.json')],reply=response([encoder
       querySelector:()=>({content:'https://player.invalid/runtime.js'})},
     fetch:async(url,options)=>{fetches.push({url:String(url),options});return typeof reply==='function'?reply(context):reply.value;},
     playerProfileOptions:()=>null,location:{search:''},profiler:null,projectPayload:null,uiAssetManifest:null,imageAssets:null,imagePreloadPlan:null,
+    dataAssets:async()=>[],
     json:async url=>url==='content/project.json'?{config:{name:'preload-entry'},scene:{entities:[]}}:url==='content/assets.json'?{assets:[{id:ID,kind:'texture2d',source:'shared.png'}]}:{},
     createAssetCatalog:value=>{counts.catalogs++;return images.createAssetCatalog(value);},
     createImageAssetBroker(){counts.brokers++;return {async prepareScene(){counts.preparations++;return preparation;}};},
