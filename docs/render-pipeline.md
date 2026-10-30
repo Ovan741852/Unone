@@ -81,10 +81,21 @@ player. Kinds must be namespaced and not built in. A custom renderer
 ## Hosts
 
 - **Official Web player:** runs every kind above on WebGL.
-- **Native wgpu player:** keeps its built-in passes. It rejects a project that
-  declares `render_pipeline` (`NATIVE_RENDER_PIPELINE_UNSUPPORTED`) or
-  `render_extensions` (`HOST_RENDER_EXTENSIONS_UNSUPPORTED`) instead of
-  drawing it differently.
+- **Native wgpu player:** runs `scene`, `bloom`, `tonemap`, `projected` and
+  `ui`, with the same parameters and formulas. Bloom uses the same threshold
+  window and strength; the tone curves are ported from three.js (ACES with
+  `exposure / 0.6`, and linear). It builds the post chain the first time a
+  declared bloom or tonemap pass is enabled. It rejects `ao` and extension
+  kinds (`NATIVE_RENDER_PASS_UNSUPPORTED`) and `render_extensions`
+  (`HOST_RENDER_EXTENSIONS_UNSUPPORTED`) instead of drawing them differently.
+- **Known difference:** native renders the scene into an 8-bit target, so tone
+  mapping sees values clamped at 1, while Web keeps half-float HDR.
+
+The hosts already shade some content differently, primitive meshes for
+example, so their pixels are not identical. A pipeline change moves both the
+same way. On `tests/render-pipeline-native` (2026-10-31), turning bloom off
+scaled average brightness by 0.82 on Web (Chromium) and 0.75 on native
+(RTX 5080). Exposure 0.4 with stronger bloom scaled it by 0.85 and 0.76.
 
 Design and alternatives: ADR 0048, `docs/decisions/0048-declared-render-pipeline.md` in the source repository.
 
@@ -97,3 +108,5 @@ Checked by:
 - the `tests/render-pipeline-project` fixture, whose exported Web player
   measurably changed bloom, an extension's tint and tone exposure at runtime in
   Chromium.
+- the native player's pass gate test, plus `tests/render-pipeline-native`,
+  captured in the native player and in Chromium (numbers above).

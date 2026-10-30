@@ -74,6 +74,8 @@ struct Bloom {
     extract_pipeline: wgpu::RenderPipeline,
     blur_pipeline: wgpu::RenderPipeline,
     composite_pipeline: wgpu::RenderPipeline,
+    /// Settings last written by configure; None keeps the creation defaults.
+    settings: Option<PostSettings>,
     surface_format: wgpu::TextureFormat,
     width: u32,
     height: u32,
@@ -112,7 +114,8 @@ impl Bloom {
         device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
             label: Some(label),
             contents: bytemuck::cast_slice(&values),
-            usage: wgpu::BufferUsages::UNIFORM,
+            // COPY_DST: a declared render pipeline rewrites params per frame.
+            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
         })
     }
 
@@ -356,6 +359,7 @@ impl Bloom {
             extract_pipeline,
             blur_pipeline,
             composite_pipeline,
+            settings: None,
             surface_format,
             width,
             height,
@@ -437,7 +441,24 @@ impl Bloom {
         self.height = height;
     }
 
+    /// Write this frame's settings; unchanged values cost no upload.
+    fn configure(&mut self, queue: &wgpu::Queue, post: PostSettings) {
+        if self.settings == Some(post) {
+            return;
+        }
+        let threshold = post.bloom.map_or(0.55, |bloom| bloom.0);
+        queue.write_buffer(&self.params_extract, 0, bytemuck::cast_slice(&[threshold, threshold + 0.4, 0., 0.]));
+        let (mode, exposure) = post.tone.map_or((0., 1.), |(aces, exposure)| (if aces { 2. } else { 1. }, exposure));
+        let strength = post.bloom.map_or(0., |bloom| bloom.1);
+        queue.write_buffer(&self.params_composite, 0, bytemuck::cast_slice(&[strength, exposure, mode, 0.]));
+        self.settings = Some(post);
+    }
+
     fn encode(&self, encoder: &mut wgpu::CommandEncoder, target: &wgpu::TextureView) {
+        if self.settings.is_some_and(|post| post.bloom.is_none()) {
+            self.composite(encoder, target);
+            return;
+        }
         let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: Some("native-bloom-extract"),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
@@ -502,7 +523,10 @@ impl Bloom {
         pass.set_bind_group(0, &self.blur_v_group, &[]);
         pass.draw(0..3, 0..1);
         drop(pass);
+        self.composite(encoder, target);
+    }
 
+    fn composite(&self, encoder: &mut wgpu::CommandEncoder, target: &wgpu::TextureView) {
         let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: Some("native-bloom-composite"),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {
@@ -524,9 +548,48 @@ impl Bloom {
         pass.draw(0..3, 0..1);
     }
 }
+/// One frame of a declared render pipeline (ADR 0048), or None to keep the
+/// built-in passes. Bloom is (threshold, strength); tone is (aces, exposure).
+#[derive(Clone, Copy, PartialEq, Debug)]
+struct PostSettings {
+    bloom: Option<(f32, f32)>,
+    tone: Option<(bool, f32)>,
+}
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+struct PipelineFrame {
+    scene: bool,
+    post: PostSettings,
+    projected: bool,
+    ui: bool,
+}
+
+impl PipelineFrame {
+    /// The kinds native executes; render() rejects others before this runs.
+    fn from_snapshot(pipeline: &unone_engine::RenderPipeline) -> Self {
+        let pass = |kind: &str| pipeline.passes.iter().find(|pass| pass.kind == kind);
+        let enabled = |kind: &str| pass(kind).is_some_and(|pass| pass.enabled);
+        let number = |kind: &str, key: &str, fallback: f32| match pass(kind).and_then(|pass| pass.params.get(key)) {
+            Some(unone_engine::RenderParam::Number(value)) => *value as f32,
+            _ => fallback,
+        };
+        let aces = matches!(pass("tonemap").and_then(|pass| pass.params.get("mode")), Some(unone_engine::RenderParam::Text(mode)) if mode == "aces");
+        Self {
+            scene: enabled("scene"),
+            post: PostSettings {
+                bloom: enabled("bloom").then(|| (number("bloom", "threshold", 0.55), number("bloom", "strength", 0.75))),
+                tone: enabled("tonemap").then(|| (aces, number("tonemap", "exposure", 1.))),
+            },
+            projected: pass("projected").is_none_or(|pass| pass.enabled),
+            ui: pass("ui").is_none_or(|pass| pass.enabled),
+        }
+    }
+}
+
 pub struct Renderer {
     projected:crate::projected::Projected,
     world_visible:bool,
+    render_pipeline: Option<PipelineFrame>,
     ui:crate::ui::Surface,
     particles: crate::particles::Particles,
     surface: wgpu::Surface<'static>,
@@ -1379,6 +1442,7 @@ impl Renderer {
         Ok(Self {
             projected,
             world_visible:true,
+            render_pipeline: None,
             ui:crate::ui::Surface::new(&device,format,package)?,
             particles,
             presentation_batches: serde_json::json!([]),
@@ -1777,7 +1841,7 @@ impl Renderer {
         });
         pass.set_pipeline(&self.pipeline);
         pass.set_bind_group(0, &self.camera_group, &[]);
-        if self.world_visible {
+        if self.world_visible && self.pipeline_scene() {
         for b in self.batches.values() {
             let m = &self.meshes[&b.asset];
             pass.set_bind_group(1, &*m.texture, &[]);
@@ -1826,7 +1890,8 @@ impl Renderer {
         if let Some(buffer) = &self.sprite_buffer {
             pass.set_vertex_buffer(1, buffer.slice(..));
         }
-        for run in &self.sprites.runs {
+        let runs = if self.pipeline_scene() { self.sprites.runs.len() } else { 0 };
+        for run in &self.sprites.runs[..runs] {
             pass.set_bind_group(1, &*self.textures[&run.asset], &[]);
             pass.draw_indexed(0..6, 0, run.start..run.start + run.count);
             self.draws += 1;
@@ -1841,6 +1906,20 @@ impl Renderer {
         self.draws = 0;
         self.triangles = 0;
         self.lod_counts = [0; 4];
+        let frame = self.render_pipeline;
+        if let Some(frame) = frame {
+            let needs_post = frame.post.bloom.is_some() || frame.post.tone.is_some();
+            if needs_post && self.bloom.is_none() {
+                self.bloom = Some(Bloom::new(&self.device, self.config.format, self.config.width, self.config.height));
+            }
+            if let Some(bloom) = &mut self.bloom {
+                bloom.configure(&self.queue, frame.post);
+            }
+            if !needs_post {
+                // The chain stays allocated for a later frame but is skipped.
+                return self.draw_unprocessed(encoder, view, frame);
+            }
+        }
         if self.is_2d {
             if let Some(scene_view) = self.bloom.as_ref().map(|bloom| bloom.scene_view.clone()) {
                 self.draw_world_2d(encoder, &scene_view);
@@ -1858,13 +1937,32 @@ impl Renderer {
                 self.draw_sprites_2d(encoder, view, false);
             }
         }
-        self.projected.draw(encoder,view,&self.depth,self.is_2d,self.config.width,self.config.height);
-        self.draws+=self.projected.draws;self.triangles+=self.projected.triangles;
-        self.submitted+=self.projected.draws;
-        if self.ui.draw(encoder,view){self.draws+=1;}
+        self.finish_frame(encoder, view, frame);
+    }
+    /// A declared pipeline with no post pass this frame draws straight to the target.
+    fn draw_unprocessed(&mut self, encoder: &mut wgpu::CommandEncoder, view: &wgpu::TextureView, frame: PipelineFrame) {
+        if self.is_2d {
+            self.draw_world_2d(encoder, view);
+        } else {
+            self.draw_world(encoder, view);
+            self.draw_sprites_2d(encoder, view, false);
+        }
+        self.finish_frame(encoder, view, Some(frame));
+    }
+    fn finish_frame(&mut self, encoder: &mut wgpu::CommandEncoder, view: &wgpu::TextureView, frame: Option<PipelineFrame>) {
+        if frame.is_none_or(|frame| frame.projected) {
+            self.projected.draw(encoder,view,&self.depth,self.is_2d,self.config.width,self.config.height);
+            self.draws+=self.projected.draws;self.triangles+=self.projected.triangles;
+            self.submitted+=self.projected.draws;
+        }
+        if frame.is_none_or(|frame| frame.ui) && self.ui.draw(encoder,view){self.draws+=1;}
+    }
+    fn pipeline_scene(&self) -> bool {
+        self.render_pipeline.is_none_or(|frame| frame.scene)
     }
     pub fn render(&mut self, s: &WorldSnapshot) -> R<bool> {
         crate::ensure_shader_backend(s)?;
+        self.render_pipeline = s.render_pipeline.as_ref().map(PipelineFrame::from_snapshot);
         let started = std::time::Instant::now();
         self.prepare(s)?;
         self.projected.prepare(&self.device,&self.queue,&self.textures,&s.projected_geometry)?;

@@ -1,7 +1,7 @@
 # Decision 0048: Declared, adjustable and extensible render pipeline
 
 - Date: 2026-10-30
-- Status: implemented on the official Web player (2026-10-30); native wgpu rejects declared pipelines until it executes them. Guide: [render pipeline](../render-pipeline.md)
+- Status: implemented. Web runs every v1 kind (2026-10-30); native wgpu runs scene, bloom, tonemap, projected and ui (2026-10-31) and rejects ao and extensions. Guide: [render pipeline](../render-pipeline.md)
 - Scope: official Web and native renderers, presentation config, Engine API
 
 ## Problem

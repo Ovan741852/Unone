@@ -1,0 +1,8 @@
+{
+  "camera3d": {"position": {"x": 6, "y": 5, "z": 9}, "target": {"x": 0, "y": 0.5, "z": 0}, "fov_degrees": 50},
+  "entities": [
+    {"id": "floor", "transform3d": {"position": {"x": 0, "y": -0.5, "z": 0}, "scale": {"x": 10, "y": 1, "z": 6}}, "mesh3d": {"asset": "mesh://primitive/box"}},
+    {"id": "cube", "transform3d": {"position": {"x": -1.5, "y": 1, "z": 0}}, "mesh3d": {"asset": "mesh://primitive/box"}},
+    {"id": "ball", "transform3d": {"position": {"x": 1.5, "y": 1, "z": 0}}, "mesh3d": {"asset": "mesh://primitive/sphere"}}
+  ]
+}

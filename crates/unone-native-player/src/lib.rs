@@ -39,8 +39,14 @@ pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
     if snapshot.projected_geometry.values().any(|batch|batch.blend==unone_engine::ProjectedBlend::SourceOver) {
         return Err("PROJECTED_BLEND_UNSUPPORTED: source_over requires the official WebGL projected renderer; native sRGB hardware blending does not implement the encoded-color contract".into());
     }
-    if snapshot.render_pipeline.is_some() {
-        return Err("NATIVE_RENDER_PIPELINE_UNSUPPORTED: render_pipeline (ADR 0048) runs on the official Web renderer; native wgpu keeps its built-in passes until it executes declared ones".into());
+    // Native executes scene, bloom, tonemap, projected and ui (ADR 0048).
+    if let Some(pipeline) = &snapshot.render_pipeline {
+        let unsupported: Vec<_> = pipeline.passes.iter()
+            .filter(|pass| !["scene", "bloom", "tonemap", "projected", "ui"].contains(&pass.kind.as_str()))
+            .map(|pass| format!("{} ({})", pass.id, pass.kind)).collect();
+        if !unsupported.is_empty() {
+            return Err(format!("NATIVE_RENDER_PASS_UNSUPPORTED: native wgpu executes scene, bloom, tonemap, projected and ui passes; remove or export Web for {}", unsupported.join(", ")));
+        }
     }
     if !snapshot.shader_materials.is_empty() {
         return Err("SHADER_BACKEND_UNSUPPORTED: GLSL sprite shader materials require the official WebGL player; native wgpu does not implement this contract".into());
@@ -1099,16 +1105,20 @@ mod telemetry_tests {
     }
 
     #[test]
-    fn native_runtime_rejects_a_declared_render_pipeline() {
-        let package = super::Package {
+    fn native_runtime_executes_core_passes_and_rejects_ao_and_extensions() {
+        let package = |passes: serde_json::Value| super::Package {
             files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&serde_json::json!({
                 "config":{"name":"native-pipeline-gate","entry_script":"main.luau",
-                    "render_pipeline":{"version":1,"passes":[{"id":"world","kind":"scene"},{"id":"glow","kind":"bloom"}]}},
+                    "render_pipeline":{"version":1,"passes":passes}},
                 "script":"return {start=function(api) end,update=function(api,dt) end}"
             })).unwrap())]),
             digest: "fixture".into(),
         };
-        assert!(package.runtime(42).err().expect("native pipeline gate").contains("NATIVE_RENDER_PIPELINE_UNSUPPORTED"));
+        assert!(package(serde_json::json!([{"id":"world","kind":"scene"},{"id":"glow","kind":"bloom"},{"id":"tone","kind":"tonemap"},{"id":"p","kind":"projected"},{"id":"hud","kind":"ui"}])).runtime(42).is_ok());
+        for (kind, id) in [("ao","occlusion"),("studio.tint","tint")] {
+            let error = package(serde_json::json!([{"id":"world","kind":"scene"},{"id":id,"kind":kind}])).runtime(42).err().expect("native pass gate");
+            assert!(error.contains("NATIVE_RENDER_PASS_UNSUPPORTED") && error.contains(id), "{error}");
+        }
     }
 
     #[test]
