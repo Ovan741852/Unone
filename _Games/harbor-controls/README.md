@@ -3,7 +3,7 @@
 A fresh-context SDK-only author built this UI from an empty project using public
 search/describe/schema/typings commands and the bundled official guides. The
 maintained copy keeps its game-owned design, interaction rules and strict types.
-Every control and surface uses the official `@unone/ui` 0.4.0 kit and player.
+Every control and surface uses the official `@unone/ui` 0.6.0 kit and player.
 
 Audio level, display choice, Apply/Reset, input counters and 120 semantic-key
 presets are project state. They do not change hardware volume/display settings

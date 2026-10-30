@@ -16,7 +16,7 @@
   "main_scene": "scene.json",
   "name": "VOIDWAKE · 深空餘燼",
   "runtime_packages": {
-    "@unone/ui": "0.4.0"
+    "@unone/ui": "0.6.0"
   },
   "systems": {
     "audio": true,

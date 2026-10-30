@@ -48,6 +48,19 @@ export type EntityApi = {
     setTransform3D: (id: string, transform: Transform3D) -> (),
 }
 
+export type HeightfieldDefinition = {
+    width: number, depth: number, heights: {number}, cell_size: number,
+    origin: Vec3, texture: string,
+}
+export type HeightfieldPatch = {x: number, z: number, width: number, depth: number, heights: {number}}
+export type HeightfieldApi = {
+    -- Native presentation geometry; no collision or game-owned editing rules.
+    -- Row-major X-fast samples; update rectangles use zero-based sample indices.
+    set: (id: string, definition: HeightfieldDefinition) -> (),
+    update: (id: string, patch: HeightfieldPatch) -> (),
+    remove: (id: string) -> (),
+}
+
 export type Instances3DApi = {
     -- Packed little-endian f32 records: position.xyz, quaternion.xyzw, scale.xyz (40 bytes).
     -- Replaces a complete batch atomically; max 262144 instances / 256 batches per world.
@@ -55,13 +68,81 @@ export type Instances3DApi = {
     remove: (id: string) -> (),
 }
 
+export type ProjectedGeometry = {
+    --40B f32LE vertex: clip.xyzw (0..w depth), uv, RGBA; u32LE triangle indices.
+    --Official mesh UV convention(v0 bottom); engine owns transport and GPU resources.
+    texture: string, vertices: buffer, indices: buffer,
+    order: number?, depth_test: boolean?, depth_write: boolean?,
+    scissor: {x: number,y: number,width: number,height: number}?,
+    color_mode: ("linear" | "encoded")?, filter: ("nearest" | "linear")?,
+    sampling_space: ("linear" | "encoded")?, address_mode: ("clamp" | "repeat")?, alpha_cutoff: number?, alpha_compare: ("greater_equal" | "greater")?,
+    --source_over requires depth_test=false and depth_write=false; WebGL host-raster only.
+    --Use alpha_cutoff=0 for full-alpha artwork; opaque defaults/snapshots are unchanged.
+    blend: ("opaque" | "source_over")?,
+}
+export type ProjectedCompare = "never" | "less" | "equal" | "less_equal" | "greater" | "not_equal" | "greater_equal" | "always"
+export type ProjectedFrameMaterial = {
+    rgb: "texture_times_vertex", texture_alpha: "sampled" | "one",
+    alpha: "texture" | "vertex" | "texture_times_vertex",
+    alpha_test: {enabled: boolean, compare: ProjectedCompare, reference: number},
+    blend: {enabled: boolean, operation: "add", source: "source_alpha", destination: "one" | "one_minus_source_alpha"},
+    depth: {test: boolean, write: boolean, compare: ProjectedCompare},
+    sampler: {min: "nearest" | "linear", mag: "nearest" | "linear", address_u: "clamp" | "repeat", address_v: "clamp" | "repeat"},
+}
+export type ProjectedFrameDraw = {
+    id: string, texture: string, vertices: buffer, indices: buffer,
+    clip_policy: "clip" | "inside", material: ProjectedFrameMaterial,
+    scissor: {x: number,y: number,width: number,height: number}?,
+}
+export type ProjectedFrame = {
+    profile: "rgb8_encoded_rebuild_v1" | "rgb8_encoded_gouraud_v1", initial: {rgb8: {number},depth: number}, draws: {ProjectedFrameDraw},
+}
+export type ProjectedApi = {
+    -- Atomic ordered encoded-RGB reference frame. Requires explicit official Web profile.
+    -- Caller supplies known initial RGB/depth and every predecessor draw; no previous-RAF accumulation.
+    setFrame: (frame: ProjectedFrame) -> (),
+    set: (id: string, geometry: ProjectedGeometry) -> (),
+    remove: (id: string) -> (),
+    setWorldVisible: (visible: boolean) -> (),
+    getViewport: () -> {width: number, height: number, aspect: number, revision: number},
+}
+
+export type EscapeBehavior = "action" | "quit"
+export type ApplicationApi = {
+    -- Defaults to quit. Action mode publishes neutral Escape input for game policy.
+    setEscapeBehavior: (behavior: EscapeBehavior) -> (),
+    -- Monotonic host intent; native exits after successfully presenting this state.
+    -- The game owns confirmation. Headless records the latch without GPU evidence.
+    requestQuit: () -> (),
+}
+
+export type PhysicalModifiers = {shift:boolean,control:boolean,alt:boolean,meta:boolean,alt_graph:boolean?,caps_lock:boolean?,num_lock:boolean?}
+export type PhysicalViewport = {revision:number,width:number,height:number,rect_left:number,rect_top:number,css_width:number,css_height:number,device_pixel_ratio:number}
+export type PhysicalPoint = {x:number,y:number,inside:boolean,viewport:PhysicalViewport}
+export type PhysicalCommon = {sequence:number,received_us:number,origin:"browser"|"host_synthetic"|"fixture",route:"control"|"game"|"engine_ui"|"host_ui"}
+export type PhysicalInputEvent = PhysicalCommon & (
+    {kind:"key",code:string,location:number,state:"down"|"up",["repeat"]:boolean,is_composing:boolean,modifiers:PhysicalModifiers}
+    | {kind:"pointer",pointer_id:number,pointer_type:"mouse"|"pen"|"touch",phase:"down"|"up"|"move"|"cancel",button:number,buttons:number,point:PhysicalPoint?,modifiers:PhysicalModifiers}
+    | {kind:"wheel",delta_x:number,delta_y:number,delta_z:number,unit:"pixel"|"line"|"page",point:PhysicalPoint,modifiers:PhysicalModifiers}
+    | {kind:"capture",pointer_id:number,captured:boolean,source:"got"|"lost"}
+    | {kind:"focus",focused:boolean,scope:"game"|"window"}
+    | {kind:"reset",scope:"all"|"pointer",pointer_id:number?,reason:string}
+    | {kind:"viewport",viewport:PhysicalViewport})
+export type PhysicalInputBatch = {profile:"ordered_physical_v1",epoch:number,after_sequence:number,through_sequence:number,events:{PhysicalInputEvent}}
 export type InputApi = {
+    -- Current successful-tick text editing event; nil when no event for this ID.
+    getTextInputInteraction: (id: string) -> UiTextInputInteraction?,
+    -- Tick-scope detached ordered ingress; nil outside update or for legacy input.
+    getPhysicalBatch: () -> PhysicalInputBatch?,
     -- Current-tick host-projected UI event. Prefer createSlider().update(input).
     getSliderInteraction: (id: string) -> UiSliderInteraction?,
     isDown: (action: string) -> boolean,
     -- Non-consuming edges for the current simulation tick. Read in update;
     -- multiple reads return the same result. Held actions press only once.
     wasPressed: (action: string) -> boolean,
+    -- O(1), non-consuming: any semantic wasPressed edge in this same snapshot.
+    -- Gate only discrete press scanners; held/release/pointer/text/slider work stays live.
+    hasPressedActions: () -> boolean,
     wasReleased: (action: string) -> boolean,
     getPointerPosition: () -> Vec2,
     getScreenPointerPosition: () -> Vec2,
@@ -146,6 +227,8 @@ export type Camera3DApi = {
 
 export type ObservationApi = {
     set: (key: string, value: ObservationValue) -> (),
+    array: ((values: nil) -> {ObservationValue}) & (<T>(values: {T}) -> {T}),
+    setArray: <T>(key: string, values: {T}?) -> (),
 }
 
 -- The UI design space is 0..100 on both axes and **y points UP**: y = 0 is the
@@ -167,7 +250,12 @@ export type UiAnchor =
     | "left" | "center" | "right"
     | "bottom_left" | "bottom" | "bottom_right"
 
+export type UiCursor = {kind:"default"}|{kind:"hidden"}|{kind:"image",asset:string,width:number,height:number,hotspot_x:number,hotspot_y:number,filter:"nearest"|"linear"}
 export type UiApi = {
+    -- Official Web cursor overlay; pixels/hotspot use drawing-buffer units, y-down.
+    setCursor: (cursor:UiCursor) -> (),
+    -- Stateful immutable artwork definitions; call outside pure View/renderItem.
+    imageBatch: UiImageBatchApi,
     components: UiComponentsApi,
     setRoot: (root: UiScreen) -> (),
     -- Current host width/height ratio, also used by anchored placement.
@@ -181,39 +269,70 @@ export type UiApi = {
     -- Actual host ceilings and the last valid tree's node/subtree usage.
     inspect: () -> ObservationValue,
 }
-export type UiRect = {x: number, y: number, width: number, height: number}
+-- Borrowed mutable authored tables are accepted; constructor results expose readonly views.
+-- Runtime recursive freezing is authoritative; analyzer builtins such as table.clear have gaps.
+export type UiReadArray<T> = {read [number]:T}
+-- Optional mutable authoring descriptors. Constructors borrow these values,
+-- copy unowned input and never freeze or retain caller-owned tables.
+export type UiRectInput = {x:number,y:number,width:number,height:number}
+export type UiRect = {read x: number, read y: number, read width: number, read height: number}
 -- Every style length uses vertical units (1 = 1% of viewport height).
 -- Styles belong to one leaf, with no implicit inheritance. An explicit
 -- font_size does not change when its box changes and never silently shrinks.
-export type UiColor = {number} -- exactly four RGBA values, each in 0..1
-export type UiInsets = {left: number?, top: number?, right: number?, bottom: number?}
+export type UiColor = UiReadArray<number> -- exactly four RGBA values, each in 0..1
+export type UiInsets = {read left: number?, read top: number?, read right: number?, read bottom: number?}
+-- Viewport-height units; positive y paints downward. Sharp same-layout glyph copy.
+export type UiTextShadow = {read offset_x: number, read offset_y: number, read color: UiColor}
 export type UiStyle = {
-    font_family: string?, font_size: number?, font_weight: number?,
-    line_height: number?, letter_spacing: number?, color: UiColor?,
-    text_align: ("start" | "center" | "end")?,
-    vertical_align: ("top" | "middle" | "bottom")?,
-    wrap: ("none" | "word")?, overflow: ("clip" | "ellipsis")?,
-    padding: UiInsets?, background: UiColor?, border_color: UiColor?,
-    border_width: number?, border_radius: number?, opacity: number?,
+    read text_shadow: UiTextShadow?,
+    read font_family: string?, read font_size: number?, read font_weight: number?,
+    read line_height: number?, read letter_spacing: number?, read color: UiColor?,
+    read text_align: ("start" | "center" | "end")?,
+    read vertical_align: ("top" | "middle" | "bottom")?,
+    read wrap: ("none" | "word")?, read overflow: ("clip" | "ellipsis")?,
+    read padding: UiInsets?, read background: UiColor?, read border_color: UiColor?,
+    read border_width: number?, read border_radius: number?, read opacity: number?,
+}
+export type UiStyleInput = {
+    text_shadow: {offset_x:number,offset_y:number,color:{number}}?,
+    font_family:string?,font_size:number?,font_weight:number?,
+    line_height:number?,letter_spacing:number?,color:{number}?,
+    text_align:("start"|"center"|"end")?,
+    vertical_align:("top"|"middle"|"bottom")?,
+    wrap:("none"|"word")?,overflow:("clip"|"ellipsis")?,
+    padding:{left:number?,top:number?,right:number?,bottom:number?}?,
+    background:{number}?,border_color:{number}?,
+    border_width:number?,border_radius:number?,opacity:number?,
 }
 export type UiPlacement = {
-    rect: UiRect?, anchor: UiAnchor?, pivot: UiAnchor?,
-    offset: {x: number?, y: number?}?, size: {width: number, height: number}?,
+    read rect: UiRect?, read anchor: UiAnchor?, read pivot: UiAnchor?,
+    read offset: {read x: number?, read y: number?}?, read size: {read width: number, read height: number}?,
 }
 export type UiTextNode = UiPlacement & {
-    kind: "text", id: string, text: string?, style: UiStyle?,
+    read kind: "text", read id: string, read text: string?, read style: UiStyle?,
 }
 export type UiButtonNode = UiPlacement & {
-    kind: "button", id: string, text: string?, action: string, style: UiStyle?,
+    read kind: "button", read id: string, read text: string?, read action: string, read style: UiStyle?,
+}
+-- No paint/style/children; ordinary semantic action and button capture lifetime.
+export type UiInputRegionNode = UiPlacement & {
+    read kind: "input_region", read id: string, read action: string,
+}
+export type UiTextInputNode = UiPlacement & {
+    read kind: "text_input", read id: string, read text: string?, read placeholder: string?, read max_length: number?,
+    read focused: boolean?, read enabled: boolean?, read style: UiStyle?,
+}
+export type UiTextInputInteraction = {
+    phase: "change" | "submit" | "cancel" | "focus" | "blur", text: string, composing: boolean,
 }
 export type UiSliderNode = UiPlacement & {
-    kind: "slider", id: string, text: string?, action: string, style: UiStyle?,
-    drag: UiSliderDrag?,
+    read kind: "slider", read id: string, read text: string?, read action: string, read style: UiStyle?,
+    read drag: UiSliderDrag?,
 }
 export type UiSliderInteraction = {phase: "start" | "drag" | "end" | "cancel", ratio: number}
 export type UiSliderDrag = {
-    axis: "horizontal" | "vertical", reverse: boolean, enabled: boolean,
-    track_rect: UiRect, hit_rect: UiRect,
+    read axis: "horizontal" | "vertical", read reverse: boolean, read enabled: boolean,
+    read track_rect: UiRect, read hit_rect: UiRect,
 }
 export type UiSliderOptions = {
     id: string, value: number, min: number?, max: number?, step: number?,
@@ -239,73 +358,125 @@ export type UiSliderControl = {
     cancel: () -> (),
 }
 export type UiComboBoxNode = UiPlacement & {
-    kind: "combobox", id: string, text: string?, action: string,
-    expanded: boolean?, style: UiStyle?,
+    read kind: "combobox", read id: string, read text: string?, read action: string,
+    read expanded: boolean?, read style: UiStyle?,
 }
 -- Image and panel styles accept box fields; typography requires a text leaf.
 -- A decorative surface may explicitly belong to its screen or an ancestor
 -- component in the same coordinate space. This never changes placement/order.
-export type UiBackgroundScope = {screen: true} | {component: string}
+export type UiBackgroundScope = {read screen: true} | {read component: string}
 export type UiImageNode = UiPlacement & {
-    kind: "image", id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+    read kind: "image", read id: string, read asset: string, read fit: ("contain" | "cover" | "stretch")?,
+    read alt: string?, read slice: UiSlice?, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
+-- Ordered, noninteractive artwork. Quads use the batch's coordinate space;
+-- source is an optional pixel crop, while rect is an absolute design rectangle.
+export type UiImageQuad = {
+    read asset: string, read rect: UiRect,
+    read source: {read x:number,read y:number,read width:number,read height:number}?, read opacity: number?,
+}
+export type UiImageQuadInput = {
+    asset:string,rect:UiRectInput,source:UiRectInput?,opacity:number?,
+}
+-- x'=a*x+c*y+tx, y'=b*x+d*y+ty. Maps retained local coordinates to stage y-up.
+export type UiImageTransform = {read a:number,read b:number,read c:number,read d:number,read tx:number,read ty:number}
+export type UiImageBatchDefinition = {read bounds:UiRect,read quads:UiReadArray<UiImageQuad>}
+export type UiImageBatchDefinitionInput = {bounds:UiRectInput,quads:{UiImageQuadInput}}
+export type UiImageBatchApi = {
+    define: (id:string, content:UiImageBatchDefinition) -> (),
+    remove: (id:string) -> boolean,
+}
+export type UiInlineImageBatchNode = {
+    read kind: "image_batch", read id: string, read rect: UiRect, read quads: UiReadArray<UiImageQuad>,
+    read background_for: UiBackgroundScope?, read pixel_snap:boolean?,
+}
+export type UiRetainedImageBatchNode = {
+    -- rect is the stage clip/layout bound; it never translates the resource.
+    read kind:"image_batch", read id:string, read rect:UiRect, read content:string,
+    read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read pixel_snap:boolean?,
+}
+export type UiImageBatchNode = UiInlineImageBatchNode | UiRetainedImageBatchNode
 export type UiPanelNode = UiPlacement & {
-    kind: "panel", id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+    read kind: "panel", read id: string, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
 export type UiComponentNode = UiPlacement & {
-    -- Grouping does not transform children: their coordinates remain in the
+    -- Grouping does not transform read children: their coordinates remain in the
     -- current stage/scroll space, with no relative-placement or style inheritance.
-    kind: "component", id: string, component: string, children: {UiNode}?,
+    read kind: "component", read id: string, read component: string, read children: UiReadArray<UiNode>?,
 }
+-- Engine-managed virtual handles are a readonly public view of helper-owned live state.
+-- They are not immutable reusable-subtree grants.
+export type UiVirtualItems = {read keys:UiReadArray<string>,read row_height:number,read column_width:number,read columns:number,read gap_x:number,read gap_y:number,read revision:number,read first:number,read last:number}
 export type UiScrollNode = UiPlacement & {
-    kind: "scroll_view", id: string, viewport: UiViewport?,
-    scroll: {axis: string?, enabled: boolean?, inertia: boolean?, deceleration: number?, reset_key: string?, wheel_rect: UiRect?, virtual_items: any?},
-    children: {UiNode}?,
+    read kind: "scroll_view", read id: string, read viewport: UiViewport?,
+    read scroll: {read axis: string?, read enabled: boolean?, read inertia: boolean?, read deceleration: number?, read reset_key: string?, read wheel_rect: UiRect?, read virtual_items: UiVirtualItems?},
+    read children: UiReadArray<UiNode>?,
 }
-export type UiNode = UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
-    | UiImageNode | UiPanelNode | UiComponentNode | UiScrollNode
-export type UiScreen = {kind: "screen", id: string, node: string, children: {UiNode}, budget: UiBudget?}
+export type UiNode = UiInputRegionNode | UiTextInputNode | UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
+    | UiImageNode | UiImageBatchNode | UiPanelNode | UiComponentNode | UiScrollNode
+export type UiScreen = {read kind: "screen", read id: string, read node: string, read children: UiReadArray<UiNode>, read budget: UiBudget?}
 -- @unone/ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.
 export type UiComponentsTheme = {
-    text: UiStyle?, button: UiStyle?, panel: UiStyle?, image: UiStyle?,
-    slider: UiStyle?, combobox: UiStyle?,
+    read text_input: UiStyle?,
+    read text: UiStyle?, read button: UiStyle?, read panel: UiStyle?, read image: UiStyle?,
+    read slider: UiStyle?, read combobox: UiStyle?,
 }
 export type UiComponentTextProps = UiPlacement & {
-    id: string, text: string?, style: UiStyle?,
+    read id: string, read text: string?, read style: UiStyle?,
+}
+export type UiComponentInputRegionProps = UiPlacement & {
+    read id: string, read action: string,
+}
+export type UiComponentTextInputProps = UiPlacement & {
+    read id: string, read text: string?, read placeholder: string?, read max_length: number?,
+    read focused: boolean?, read enabled: boolean?, read style: UiStyle?,
 }
 export type UiComponentButtonProps = UiPlacement & {
-    id: string, text: string?, action: string, style: UiStyle?,
+    read id: string, read text: string?, read action: string, read style: UiStyle?,
 }
 -- Common invented value/binding props are absent; state belongs to the project.
 -- Unknown fields and placement combinations still require runtime validation.
 export type UiComponentSliderProps = UiPlacement & {
-    value: never?, min: never?, max: never?, step: never?, onChange: never?,
-    id: string, text: string?, action: string, style: UiStyle?,
+    read value: never?, read min: never?, read max: never?, read step: never?, read onChange: never?,
+    read id: string, read text: string?, read action: string, read style: UiStyle?,
 }
 export type UiComponentComboBoxProps = UiPlacement & {
-    value: never?, options: never?, selected: never?, onChange: never?,
-    id: string, text: string?, action: string, expanded: boolean?, style: UiStyle?,
+    read value: never?, read options: never?, read selected: never?, read onChange: never?,
+    read id: string, read text: string?, read action: string, read expanded: boolean?, read style: UiStyle?,
 }
 export type UiComponentPanelProps = UiPlacement & {
-    id: string, style: UiStyle?, background_for: UiBackgroundScope?,
+    read id: string, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
 export type UiComponentImageProps = UiPlacement & {
-    id: string, asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?, background_for: UiBackgroundScope?,
+    read id: string, read asset: string, read fit: ("contain" | "cover" | "stretch")?,
+    read alt: string?, read slice: UiSlice?, read style: UiStyle?, read background_for: UiBackgroundScope?,
 }
+-- Constructors borrow inputs and return recursively frozen ordinary nodes.
+export type UiInlineImageBatchProps = {
+    read id:string, read rect:UiRect, read quads:UiReadArray<UiImageQuad>,
+    read background_for:UiBackgroundScope?, read content:never?, read transform:never?,
+    -- Optional physical-pixel edge rounding, ties away from zero; clip/UV unchanged.
+    read pixel_snap:boolean?,
+}
+export type UiRetainedImageBatchProps = {
+    read id:string, read rect:UiRect, read content:string,
+    read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read quads:never?,
+    -- true requires b=c=0; negative/zero a/d are allowed, collapsed quads skip.
+    read pixel_snap:boolean?,
+}
+export type UiComponentImageBatchProps = UiInlineImageBatchProps | UiRetainedImageBatchProps
 export type UiComponentSurface = {
-    kind: "panel", style: UiStyle?,
+    read kind: "panel", read style: UiStyle?,
 } | {
-    kind: "image", asset: string, fit: ("contain" | "cover" | "stretch")?,
-    alt: string?, slice: UiSlice?, style: UiStyle?,
+    read kind: "image", read asset: string, read fit: ("contain" | "cover" | "stretch")?,
+    read alt: string?, read slice: UiSlice?, read style: UiStyle?,
 }
 export type UiComponentProps = UiPlacement & {
-    id: string, component: string, children: {UiNode}?, surface: UiComponentSurface?,
+    read id: string, read component: string, read children: UiReadArray<UiNode>?, read surface: UiComponentSurface?,
 }
 export type UiComponentScreenProps = {
-    id: string, node: string, children: {UiNode}, budget: UiBudget?,
+    read id: string, read node: string, read children: UiReadArray<UiNode>, read budget: UiBudget?,
 }
 -- Layout lengths use normalized stage units per axis, like rect/viewport.
 -- They are NOT font/anchor vertical units. No intrinsic text measurement.
@@ -338,6 +509,8 @@ export type UiResponsiveLayout<T> = {
     resolve: (viewport: {aspect: number}, bounds: UiViewport?) -> UiResponsiveLayoutResult<T>,
 }
 export type UiComponentKit = {
+    inputRegion: (props: UiComponentInputRegionProps) -> UiInputRegionNode,
+    textInput: (props: UiComponentTextInputProps) -> UiTextInputNode,
     -- Create once with authored groups/thresholds; resolve each View for reflow.
     createResponsiveLayout: <T>(options: UiResponsiveLayoutOptions<T>) -> UiResponsiveLayout<T>,
     -- Preferred complete numeric slider: reusable state plus semantic host capture.
@@ -348,6 +521,7 @@ export type UiComponentKit = {
     combobox: (props: UiComponentComboBoxProps) -> UiComboBoxNode,
     panel: (props: UiComponentPanelProps) -> UiPanelNode,
     image: (props: UiComponentImageProps) -> UiImageNode,
+    imageBatch: (props: UiComponentImageBatchProps) -> UiImageBatchNode,
     component: (props: UiComponentProps) -> UiComponentNode,
     screen: (props: UiComponentScreenProps) -> UiScreen,
     -- Same engine-owned live helpers as UiApi. Scroll content is local
@@ -370,9 +544,9 @@ export type UiComponentsApi = UiComponentKit & {
     composeStyle: (base: UiStyle?, override: UiStyle?) -> UiStyle,
     id: (instanceId: string, role: string) -> string,
 }
-export type UiViewport = {left: number, top: number, width: number, height: number}
+export type UiViewport = {read left: number, read top: number, read width: number, read height: number}
 export type UiScrollOptions = {
-    id: string, viewport: UiViewport, content: {UiNode}?,
+    id: string, viewport: UiViewport, content: UiReadArray<UiNode>?,
     axis: ("vertical" | "horizontal" | "both")?, enabled: boolean?,
     resetKey: string?, wheelRect: UiViewport?,
     inertia: boolean?, deceleration: number?,
@@ -382,7 +556,7 @@ export type UiScrollOptions = {
 export type UiVirtualOptions<T = any> = {
     id: string, viewport: UiViewport, items: {T}, key: string | ((T, number) -> string),
     rowHeight: number, gapY: number?,
-    renderItem: (T, number, string) -> {UiNode},
+    renderItem: (T, number, string) -> UiReadArray<UiNode>,
     enabled: boolean?, resetKey: string?, wheelRect: UiViewport?,
     inertia: boolean?, deceleration: number?,
 }
@@ -393,11 +567,11 @@ export type UiVirtualGridOptions<T = any> = UiVirtualOptions<T> & {
 -- One source texture and one node. Border pixels / pixels_per_unit become
 -- vertical design units; optional source is a y-down pixel crop, not UI rect.
 export type UiSlice = {
-    left: number, top: number, right: number, bottom: number,
-    pixels_per_unit: number,
-    source: {x: number, y: number, width: number, height: number}?,
+    read left: number, read top: number, read right: number, read bottom: number,
+    read pixels_per_unit: number,
+    read source: {read x: number, read y: number, read width: number, read height: number}?,
 }
-export type UiBudget = {max_nodes: number}
+export type UiBudget = {read max_nodes: number}
 
 export type SaveApi = {
     set: (value: ObservationValue) -> (),
@@ -499,10 +673,137 @@ export type ShaderApi = {
     setUniform: (materialId: string, name: string, value: ShaderUniform) -> (),
 }
 
+-- Generic geometry only. Coordinates are packed f32 xyz triples, independent of entities.
+export type EngineDiagnosticRecovery = {
+    action: string,
+    retry: "after_correction" | "next_tick" | "after_release" | "new_session" | "none",
+    [string]: ObservationValue,
+}
+export type EngineDiagnosticContext = {
+    frame: number, index: number?, ticket: number?,
+    [string]: ObservationValue,
+}
+export type EngineDiagnostic = {
+    api_version: number, code: string, operation: string, message: string,
+    path: string?, actual: ObservationValue?, expected: ObservationValue?,
+    recovery: EngineDiagnosticRecovery, recoverable: boolean, terminal: boolean,
+    context: EngineDiagnosticContext,
+    [string]: ObservationValue,
+}
+export type SpatialLimits = {
+    indices: number, bodies: number, bodies_per_index: number,
+    queries_per_batch: number, hits_per_query: number, coordinate_abs: number,
+    submissions_per_tick: number, tickets: number, safe_integer: number,
+    [string]: ObservationValue,
+}
+export type SpatialInfo = {
+    api_version: number, backend: string, external: boolean,
+    delivery: "next_tick", packed_format: "USB1", operations: {string},
+    indices: number, bodies: number, tickets: number, pending: number, fault: string?,
+    limits: SpatialLimits,
+    [string]: ObservationValue,
+}
+export type SpatialBody = {
+    id: number, position: {number}, radius: number,
+    category: number?, previous_position: {number}?,
+}
+export type SpatialNearestQuery = {
+    kind: "nearest", point: {number}, max_distance: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialOverlapQuery = {
+    kind: "overlap_sphere", center: {number}, radius: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialSweepQuery = {
+    kind: "sweep_sphere", from: {number}, to: {number}, radius: number,
+    mask: number?, exclude_id: number?,
+}
+export type SpatialQuery = SpatialNearestQuery | SpatialOverlapQuery | SpatialSweepQuery
+export type SpatialHit = {
+    id: number, distance: number, fraction: number,
+    point: {number}, normal: {number},
+    [string]: ObservationValue,
+}
+export type SpatialQueryResult = {hits: {SpatialHit}, [string]: ObservationValue}
+export type SpatialBatchResult = {
+    version: number, results: {SpatialQueryResult}, [string]: ObservationValue,
+}
+export type SpatialExecutionPhases = {
+    preparation: number?, queue_wait: number?,
+    validation: number?, packing: number?, upload: number?, encode_submit: number?,
+    readback_wait: number?, decode: number?, cpu_execute: number?, gpu_kernel: number?,
+    [string]: ObservationValue,
+}
+export type SpatialExecutionProfile = {
+    clock: string, total_ms: number, phases_ms: SpatialExecutionPhases,
+    gpu_kernel_unavailable_reason: string?, upload_bytes: number, readback_bytes: number,
+    [string]: ObservationValue,
+}
+export type SpatialManagerTimings = {
+    snapshot: number, validation: number, result_validation: number, result_apply: number,
+    [string]: ObservationValue,
+}
+export type SpatialProfileTotals = {
+    submitted_batches: number, completed_batches: number, cancelled_tickets: number, failed_batches: number,
+    bodies: number, queries: number, pair_tests_upper_bound: number, returned_hits: number,
+    input_body_bytes: number, upload_bytes: number, readback_bytes: number,
+    manager_ms: SpatialManagerTimings, executor_ms: number, executor_phases_ms: SpatialExecutionPhases,
+    executor_samples: number, executor_wall_samples: number,
+    [string]: ObservationValue,
+}
+export type SpatialProfileBatch = {
+    ticket: number, version: number, bodies: number, queries: number,
+    pair_tests_upper_bound: number, returned_hits: number, manager_ms: SpatialManagerTimings,
+    executor_ms: number?, executor: SpatialExecutionProfile?, executor_unavailable_reason: string?,
+    [string]: ObservationValue,
+}
+export type SpatialBindingSample = {
+    operation: string, success: boolean, input_decode_ms: number, output_encode_ms: number,
+    index: number?, ticket: number?,
+    [string]: ObservationValue,
+}
+export type SpatialBindingProfile = {
+    clock: string, scope: string, calls: number, failed_calls: number,
+    input_decode_ms: number, output_encode_ms: number, last: SpatialBindingSample?,
+    [string]: ObservationValue,
+}
+export type SpatialProfile = {
+    api_version: number, backend: string, clock: string, scope: string,
+    limits: {retained_completed_batches: number, counter_max: number, [string]: ObservationValue},
+    totals: SpatialProfileTotals, last: SpatialProfileBatch?, bindings: SpatialBindingProfile,
+    [string]: ObservationValue,
+}
+export type SpatialApi = {
+    pack: (bodies: {SpatialBody}) -> buffer,
+    create: (bodies: {SpatialBody} | buffer) -> number,
+    update: (index: number, bodies: {SpatialBody} | buffer) -> number,
+    destroy: (index: number) -> (),
+    -- Submit/take/cancel during update; take is legal starting the next tick.
+    submit: (index: number, queries: {SpatialQuery}) -> number,
+    take: (ticket: number) -> SpatialBatchResult,
+    cancel: (ticket: number) -> (),
+    info: () -> SpatialInfo,
+    -- Latest structured failure; retained across successful calls, reset on successful reload.
+    lastDiagnostic: () -> EngineDiagnostic?,
+    -- Detached wall-clock diagnostics; excluded from replay unless explicitly published.
+    profile: () -> SpatialProfile,
+}
+
+-- Opt-in, demand-sampled runtime-origin elapsed milliseconds; never a fixed-dt alias.
+export type HostTimeApi = {
+    sample: (tag: string) -> number,
+}
+
 export type EngineApi = {
+    hostTime: HostTimeApi,
+    application: ApplicationApi,
+    spatial: SpatialApi,
     shader: ShaderApi,
     jobs: JobsApi,
     instances3d: Instances3DApi,
+    projected: ProjectedApi,
+    heightfield: HeightfieldApi,
     debug: DebugApi,
     particle: ParticleApi,
     entity: EntityApi,
@@ -522,9 +823,22 @@ export type EngineApi = {
     log: (message: string) -> (),
 }
 
+
+-- Optional diagnostics adapter read from the returned Game table; see docs/diagnostics-replay.md.
+export type GameReplayAdapter = {
+    id: string,
+    version: string,
+    restore: ((capture: ObservationValue, api: EngineApi) -> boolean)?,
+    inspect: ((context: { tick: number }, api: EngineApi) -> ObservationValue)?,
+    compatible: ((versions: ObservationValue, api: EngineApi) -> boolean)?,
+}
+
 export type Game = {
     start: (api: EngineApi) -> (),
     update: (api: EngineApi, dt: number) -> (),
+    -- Called on a successful hot reload with the candidate API; may update the world.
+    onReload: ((api: EngineApi) -> ())?,
+    replay: GameReplayAdapter?,
 }
 -- END UNONE API TYPES
 

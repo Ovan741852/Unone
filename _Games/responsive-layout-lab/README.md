@@ -1,7 +1,7 @@
 # Responsive Layout Lab
 
 A fresh-author example built only from the portable Unone SDK, its official
-documentation and API discovery. Uses `@unone/ui` 0.4.0 and the official player;
+documentation and API discovery. Uses `@unone/ui` 0.6.0 and the official player;
 no project-owned DOM, CSS layout or renderer.
 
 `createResponsiveLayout` selects authored narrow/medium/wide variants with

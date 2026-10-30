@@ -111,7 +111,7 @@ $Sdk = 'C:/Tools/UnoneSDK'
 ```
 
 Use a current SDK whose CLI and Web runtime both bundle `@unone/ui` version
-`0.4.0`. The project declares `"runtime_packages":{"@unone/ui":"0.4.0"}`;
+`0.6.0`. The project declares `"runtime_packages":{"@unone/ui":"0.6.0"}`;
 `api.ui.components.info()` exposes the installed version and declaration flag.
 No npm install, `require` import or filesystem module loader is involved. An
 older runtime cannot satisfy the package declaration; updating types alone does

@@ -194,9 +194,10 @@ local function updateUi(api:EngineApi)
  local function text(name:string,value:string,bounds:UiRect)
   local style:UiStyle=ui.composeStyle({font_family="Noto Sans TC, Noto Sans TC Supplemental",font_size=1.1,font_weight=400,color=muted,
    text_align="start",vertical_align="middle",line_height=1.5,letter_spacing=0,overflow="clip"},tokens[name])
-  if string.sub(name,1,7)=="rarity_" then style.font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental";style.font_size=.9;style.color=mint;style.letter_spacing=.18 end
-  if string.sub(name,1,12)=="choice_name_" then style.font_size=design.choiceNameSize;style.font_weight=600;style.color=ivory end
-  if string.sub(name,1,12)=="choice_desc_" then style.font_size=design.choiceBodySize;style.line_height=design.compact and 1.6 or 1.8 end
+  -- @unone/ui 0.6 returns frozen styles: compose a new one instead of mutating.
+  if string.sub(name,1,7)=="rarity_" then style=ui.composeStyle(style,{font_family="Share Tech Mono, Noto Sans TC, Noto Sans TC Supplemental",font_size=.9,color=mint,letter_spacing=.18}) end
+  if string.sub(name,1,12)=="choice_name_" then style=ui.composeStyle(style,{font_size=design.choiceNameSize,font_weight=600,color=ivory}) end
+  if string.sub(name,1,12)=="choice_desc_" then style=ui.composeStyle(style,{font_size=design.choiceBodySize,line_height=design.compact and 1.6 or 1.8}) end
   table.insert(nodes,(ui.text({id=name,text=value,rect=bounds,style=style})))
  end
  local function button(name:string,label:string,action:string,bounds:UiRect)

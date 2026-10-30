@@ -32,6 +32,6 @@
     }
   ],
   "runtime_packages": {
-    "@unone/ui": "0.4.0"
+    "@unone/ui": "0.6.0"
   }
 }
