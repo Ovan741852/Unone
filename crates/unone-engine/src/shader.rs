@@ -19,7 +19,7 @@ pub enum ShaderUniform {
 }
 
 impl ShaderUniform {
-    fn valid(&self) -> bool {
+    pub(crate) fn valid(&self) -> bool {
         match self {
             Self::Float(x) => x.is_finite() && x.abs() <= f32::MAX as f64,
             Self::Vec2(x) => x
@@ -34,7 +34,7 @@ impl ShaderUniform {
         }
     }
 
-    fn same_type(&self, other: &Self) -> bool {
+    pub(crate) fn same_type(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
     }
 }
@@ -122,6 +122,7 @@ impl World {
             ));
         }
         target.shader_material = Some(material.into());
+        target.sprite_uniforms.clear(); target.sprite_appearance = None;
         Ok(())
     }
 
@@ -131,6 +132,7 @@ impl World {
             .get_mut(entity)
             .ok_or_else(|| format!("ENTITY_UNKNOWN: '{entity}'"))?;
         target.shader_material = None;
+        target.sprite_uniforms.clear(); target.sprite_appearance = None;
         Ok(())
     }
 

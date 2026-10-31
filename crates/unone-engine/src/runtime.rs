@@ -21,6 +21,7 @@ const FIXED_DT: f64 = 1.0 / 60.0;
 mod bindings;
 mod host_time;
 mod save_state;
+mod sprite_resources;
 use save_state::SaveState;
 mod spatial;
 mod spatial_metrics;
@@ -82,6 +83,7 @@ pub struct SourceProject {
     /// Declared data assets and the bytes the host delivered for each.
     pub data_assets: Vec<crate::DataAssetDecl>,
     pub data: BTreeMap<String, Vec<u8>>,
+    pub asset_catalog: Vec<crate::AssetCatalogEntry>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -153,6 +155,7 @@ struct InputState {
     pending_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
     pending_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
+    pending_presentation: crate::PresentationResourceInput,
 }
 
 // Host writes may arrive several times between ticks. Publish one read-only
@@ -192,6 +195,7 @@ impl InputTick {
         input.previous_down = std::mem::take(&mut self.down);
         input.pending_ui_sliders.clear();
         input.pending_ui_text_inputs.clear();
+        input.pending_presentation = Default::default();
         input.physical.commit();
         self.committed = true;
     }
@@ -219,6 +223,7 @@ struct PointerState {
 
 #[derive(Clone)]
 struct ApiState {
+    sprite_resources: Rc<RefCell<sprite_resources::Registry>>,
     host_time: Rc<RefCell<crate::host_time::HostTime>>,
     spatial: Rc<RefCell<spatial::SpatialJobs>>,
     #[cfg(feature = "ui")]
@@ -305,6 +310,7 @@ struct ReloadRollbackState {
 }
 
 pub struct EngineRuntime {
+    sprite_resources: Rc<RefCell<sprite_resources::Registry>>,
     host_time: Rc<RefCell<crate::host_time::HostTime>>,
     spatial: Rc<RefCell<spatial::SpatialJobs>>,
     #[cfg(feature = "jobs")]
@@ -498,7 +504,8 @@ impl EngineRuntime {
         }
         let (decls, data) = crate::data_assets::read_from_project(&paths)?;
         let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
-        Self::with_world(config, paths, world, None, None, seed, restored_save, None, None, data_assets)
+        let catalog = crate::sprite_resources::read_catalog(&paths)?;
+        Self::with_world(config, paths, world, None, None, seed, restored_save, None, None, data_assets, catalog)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -601,6 +608,7 @@ impl EngineRuntime {
             viewport_size,
             data_assets,
             data,
+            asset_catalog,
         } = project;
         let data_assets = crate::data_assets::DataAssets::new(data_assets, data)?;
         let script_name = if config.entry_script.is_empty() {
@@ -637,6 +645,7 @@ impl EngineRuntime {
             viewport_aspect,
             Some(job_sources),
             data_assets,
+            asset_catalog,
         )
     }
 
@@ -652,8 +661,11 @@ impl EngineRuntime {
         initial_viewport_aspect: Option<f64>,
         job_sources: Option<BTreeMap<String, String>>,
         data_assets: crate::data_assets::DataAssets,
+        asset_catalog: Vec<crate::AssetCatalogEntry>,
     ) -> Result<Self, Box<Diagnostic>> {
         let data_assets = Rc::new(RefCell::new(data_assets));
+        let sprite_resources = Rc::new(RefCell::new(sprite_resources::Registry::new(asset_catalog)
+            .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
         let host_time = Rc::new(RefCell::new(crate::host_time::HostTime::new(config.host_time.clone())
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
         let input = Rc::new(RefCell::new(InputState::default()));
@@ -670,6 +682,7 @@ impl EngineRuntime {
         #[cfg(feature = "preview-tools")]
         let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
         let api_state = ApiState {
+            sprite_resources: Rc::clone(&sprite_resources),
             host_time: Rc::clone(&host_time),
             spatial: Rc::new(RefCell::new(spatial::SpatialJobs::new())),
             #[cfg(feature = "ui")]
@@ -735,6 +748,7 @@ impl EngineRuntime {
             ))
         })?;
         let mut runtime = Self {
+            sprite_resources,
             host_time,
             spatial: Rc::clone(&api_state.spatial),
             #[cfg(feature = "jobs")]
@@ -971,11 +985,14 @@ impl EngineRuntime {
                 input.pending_ui_sliders.get(id).is_some_and(|old| old != event))
                 || frame.ui_text_inputs.iter().any(|(id, event)|
                     input.pending_ui_text_inputs.get(id).is_some_and(|old| old != event));
+            let presentation_conflict = !input.pending_presentation.is_empty()
+                && !frame.presentation_resources.is_empty()
+                && input.pending_presentation != frame.presentation_resources;
             let slider_count = input.pending_ui_sliders.len() + frame.ui_sliders.keys()
                 .filter(|id| !input.pending_ui_sliders.contains_key(*id)).count();
             let text_count = input.pending_ui_text_inputs.len() + frame.ui_text_inputs.keys()
                 .filter(|id| !input.pending_ui_text_inputs.contains_key(*id)).count();
-            if conflicts || slider_count > 256 || text_count > 64 {
+            if conflicts || presentation_conflict || slider_count > 256 || text_count > 64 {
                 return Err(Box::new(Diagnostic::error(
                     "INPUT_UI_PENDING", "Semantic input is still pending",
                     "Complete the pending tick with tick() or an unchanged input frame before submitting replacement UI events; no part of this frame was admitted.",
@@ -985,6 +1002,7 @@ impl EngineRuntime {
             input.down = frame.actions.clone();
             input.pending_ui_sliders.extend(frame.ui_sliders.clone());
             input.pending_ui_text_inputs.extend(frame.ui_text_inputs.clone());
+            if !frame.presentation_resources.is_empty() { input.pending_presentation = frame.presentation_resources.clone(); }
         }
         if let Some(pointer) = &frame.pointer {
             let mut input = self.input.borrow_mut();
@@ -1079,6 +1097,9 @@ impl EngineRuntime {
         // barrier has passed. A pending spatial/job result is not a failed
         // physical-input execution and must leave the staged batch intact.
         let input_tick = InputTick::begin(&self.input);
+        let sprite_tick = sprite_resources::Tick::begin(&self.sprite_resources, &self.world,
+            &self.input.borrow().pending_presentation)
+            .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         #[cfg(feature = "phase-profile")]
         let phase_tick = phase_profile::TickScope::begin(&self.lua, self.world.borrow().frame + 1);
         let spatial_fault = Rc::clone(&self.spatial);
@@ -1250,6 +1271,7 @@ impl EngineRuntime {
         }
         host_time_tick.commit().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         input_tick.commit();
+        sprite_tick.commit();
         snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
         #[cfg(feature = "phase-profile")]
         if let Some(scope)=phase_tick { scope.complete(); }
@@ -1673,6 +1695,7 @@ impl EngineRuntime {
             Rc::clone(&self.world)
         };
         let candidate_api_state = ApiState {
+            sprite_resources: Rc::new(RefCell::new(self.sprite_resources.borrow().clone())),
             host_time: Rc::new(RefCell::new(self.host_time.borrow().clone())),
             spatial: Rc::new(RefCell::new(self.spatial.borrow().reload_candidate())),
             #[cfg(feature = "ui")]
@@ -1722,6 +1745,7 @@ impl EngineRuntime {
             self.world = candidate_world;
         }
         self.spatial = Rc::clone(&candidate_api_state.spatial);
+        self.sprite_resources = Rc::clone(&candidate_api_state.sprite_resources);
         self.host_time = Rc::clone(&candidate_api_state.host_time);
         self.spatial.borrow_mut().loaded();
         #[cfg(feature = "jobs")]

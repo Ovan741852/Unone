@@ -4,6 +4,12 @@ mod script_bytecode;
 pub use script_bytecode::{ScriptBytecode, ScriptBytecodeDecl, compile_production_script, script_bytecode_format,
     MAX_SCRIPT_BYTECODE_BYTES, SCRIPT_BYTECODE_DATA_ID};
 mod shader;
+mod sprite_resources;
+mod sprite_appearance;
+pub use sprite_resources::{AssetCatalogEntry, SpriteAppearance, SpriteAppearanceMetadata,
+    SpriteResourcePlan, SpriteResourcePlanUpdate, SpriteResourceReceipt, SpriteResourceState,
+    SpriteAppearanceReceipt, SpriteSubmissionState, PresentationResourceInput,
+    MAX_SPRITE_RESOURCES, MAX_PRESENTATION_RECEIPTS, MAX_SPRITE_RESOURCE_BYTES, MAX_PRESENTATION_INTEGER};
 /// Backend-independent packed geometry batches and reference query semantics.
 pub mod spatial;
 pub use shader::{ShaderMaterialDefinition, ShaderUniform};

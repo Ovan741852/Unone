@@ -866,6 +866,44 @@ pub unsafe extern "C" fn unone_web_jobs_request(pointer: *const u8, length: usiz
     }
 }
 
+/// Presentation-only resource intent transport. Feedback enters recorded input,
+/// never this read-only endpoint or a promise-driven World mutation.
+/// # Safety
+/// `pointer` must be the current allocation returned by unone_web_alloc.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_sprite_resources_request(pointer: *const u8, length: usize) -> i32 {
+    #[derive(serde::Deserialize)]
+    #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+    enum Request { Plan { after: Option<u64> } }
+    let result = (|| -> Result<serde_json::Value, String> {
+        let request = INPUT_BUFFER.with(|input| {
+            let input = input.borrow();
+            if pointer.is_null() || pointer != input.as_ptr() || length != input.len() || length == 0 || length > 1024 {
+                return Err("SPRITE_RESOURCE_REQUEST_INVALID: use current owned allocation, 1..1024 bytes".to_string());
+            }
+            serde_json::from_slice::<Request>(&input).map_err(|e| format!("SPRITE_RESOURCE_REQUEST_INVALID: {e}"))
+        })?;
+        RUNTIME.with(|runtime| {
+            let runtime = runtime.borrow();
+            let runtime = runtime.as_ref().ok_or("RUNTIME_NOT_LOADED")?;
+            match request {
+                Request::Plan { after } => {
+                    if after.is_some_and(|revision| revision > 9_007_199_254_740_991) {
+                        return Err("SPRITE_RESOURCE_REQUEST_INVALID: after must be a safe integer".into());
+                    }
+                    serde_json::to_value(runtime.sprite_resource_plan_since(after)).map_err(|e| e.to_string())
+                }
+            }
+        })
+    })();
+    match result {
+        // Reuse the publication buffer's capacity instead of replacing it per tick.
+        Ok(value) => { OUTPUT.with(|output| { let mut output = output.borrow_mut(); output.clear();
+            serde_json::to_writer(&mut *output, &value).expect("plain resource plan"); }); 0 },
+        Err(error) => { write_error(error); -1 },
+    }
+}
+
 /// Detached host-time report/tape transport. It never samples or advances World.
 /// # Safety
 /// `pointer` must be the current allocation returned by unone_web_alloc.

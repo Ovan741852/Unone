@@ -125,7 +125,7 @@ test('actual failure cleanup accepts the exported UI-disabled stub and retires t
   const trace=[],retire=name=>({dispose:()=>trace.push(name)}),error=Error('intentional failure');
   const context={profiler:null,startupAbort:new AbortController(),cursorHost:retire('cursor'),textInputs:retire('text'),
     uiScroll:retire('scroll'),uiRenderer:null,orderedQueue:null,orderedRouter:null,publishPhysical:()=>trace.push('physical'),
-    scheduler:{stop:()=>trace.push('scheduler')},renderer:{},disposeRenderer:()=>trace.push('renderer'),
+    scheduler:{stop:()=>trace.push('scheduler')},resourceHost:{close:()=>trace.push('resources')},renderer:{},disposeRenderer:()=>trace.push('renderer'),
     imageAssets:retire('images'),audio:retire('audio'),backend:{close:()=>trace.push('backend')},
     status:{textContent:''},document:{body:{dataset:{}}},console:{error(){}}};
   const producer=fs.readFileSync(new URL('../../crates/unone-cli/src/export.rs',import.meta.url),'utf8');
@@ -136,6 +136,6 @@ test('actual failure cleanup accepts the exported UI-disabled stub and retires t
   const begin=source.indexOf('function fail('),end=source.indexOf('\nfunction publishPhysical(',begin);
   assert(begin>=0&&end>begin);vm.createContext(context);vm.runInContext(disabled+';uiRenderer=createCanvasUi();'+source.slice(begin,end),context);
   assert.doesNotThrow(()=>context.fail(error));assert.equal(context.startupAbort.signal.aborted,true);
-  assert.deepEqual(trace,['cursor','text','scroll','physical','scheduler','renderer','images','audio','backend']);
+  assert.deepEqual(trace,['cursor','text','scroll','physical','scheduler','resources','renderer','images','audio','backend']);
   assert.match(context.document.body.dataset.playerError,/intentional failure/);
 });

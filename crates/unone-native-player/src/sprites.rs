@@ -20,13 +20,16 @@ pub struct Frame {
 
 impl Frame {
     pub fn prepare(&mut self, entities: &BTreeMap<String, EntitySnapshot>) {
+        self.prepare_selected(entities, |_|true);
+    }
+    pub fn prepare_selected(&mut self, entities: &BTreeMap<String, EntitySnapshot>, drawable: impl Fn(&EntitySnapshot)->bool) {
         let mut ordered: Vec<_> = entities
             .iter()
             .filter_map(|(id, entity)| {
                 entity
                     .sprite
                     .as_ref()
-                    .filter(|sprite| sprite.visible)
+                    .filter(|sprite| sprite.visible && drawable(entity))
                     .map(|sprite| (id, entity, sprite))
             })
             .collect();
@@ -40,8 +43,8 @@ impl Frame {
             self.instances.push([
                 entity.transform.x as f32,
                 entity.transform.y as f32,
-                (sprite.size.x * entity.scale.x).abs() as f32,
-                (sprite.size.y * entity.scale.y).abs() as f32,
+                (sprite.size.x * entity.scale.x) as f32,
+                (sprite.size.y * entity.scale.y) as f32,
                 entity.rotation as f32,
                 sprite.layer as f32,
                 u,
@@ -155,5 +158,21 @@ mod tests {
         );
         frame.prepare(&runtime.tick().unwrap().entities);
         assert_eq!(frame.instances[2][6..], [0.25, 0.5, 0.25, 0.5]);
+    }
+    #[test]
+    fn one_prepared_snapshot_switches_texture_frame_transform_size_and_layer_together() {
+        let scene=serde_json::from_value(serde_json::json!({"entities":[{"id":"actor","sprite":{"asset":"old"}}]})).unwrap();
+        let runtime=EngineRuntime::load_source("appearance","main.luau",
+            "return {start=function()end,update=function()end}",Some(scene)).unwrap();
+        let mut entities=runtime.observe().entities;let mut frame=Frame::default();frame.prepare(&entities);
+        assert_eq!(frame.runs[0].asset,"old");
+        let actor=entities.get_mut("actor").unwrap();
+        actor.sprite=Some(serde_json::from_value(serde_json::json!({"asset":"new","size":{"x":2,"y":3},
+            "layer":7,"sheet":{"columns":4,"rows":2},"frame":6})).unwrap());
+        actor.transform=unone_engine::Vec2 {x:5.,y:6.};actor.rotation=0.5;
+        actor.scale=unone_engine::Vec2 {x:-2.,y:4.};
+        frame.prepare_selected(&entities,|_|true);
+        assert_eq!(frame.runs[0].asset,"new");
+        assert_eq!(frame.instances[0],[5.,6.,-4.,12.,0.5,7.,0.5,0.5,0.25,0.5]);
     }
 }

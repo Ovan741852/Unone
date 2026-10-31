@@ -10,6 +10,8 @@ import {createBloom,normalizePostProcessing} from './bloom.js';
 import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 import { syncSpriteCell } from "./sprite-cells.js";
+import {createSpriteResourcePool,parseSpriteResourceBudget} from './sprite-resources.js';
+import {createSpritePresentation} from './sprite-presentation.js';
 import {heightfieldEntries,createHeightfieldRenderer} from '../shared/heightfields.js';
 import {configureTexture,createPerspectiveCamera} from './presentation3d.js';
 import {createProjectedRenderer,assertProjectedBackend} from './projected.js';
@@ -72,6 +74,8 @@ async function loadThree(url) {
  */
 export async function createThreeRenderer(canvas, options = {}) {
   parseTextureCache(options.textureCache);
+  parseSpriteResourceBudget(options.spriteResourceBudget);
+  let spriteResources=null,spritePresentation=null;
   if(options.getImageAssets!==undefined&&typeof options.getImageAssets!=='function')throw Error('IMAGE_ASSET_PROVIDER_INVALID: getImageAssets must be a function');
   const antialias=normalizeAntialias(options.antialias);
   const rasterPolicy=parseProjectedRaster(options.projectedRaster),checkedRaster=rasterPolicy.requested==='upper_left_checked';
@@ -204,14 +208,14 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
   function rasterLost(){
     if(['lost','failed','disposed'].includes(rasterCapability.metrics().status))return;
-    retireWorldGpuBindings();ui?.contextLost();
+    spriteResources?.contextLost();retireWorldGpuBindings();ui?.contextLost();
     projected.clear();uiImageBatchPrefix.clear();frameDraws?.clear();framePass?.contextLost?.();rasterPass?.contextLost?.();framePass?.invalidate();rasterPass?.invalidate();rasterCapability.lost();
     profile?.record('context','lost',{context_epoch:rasterCapability.metrics().context_epoch});
   }
   function rasterRestored(){
     if(rasterCapability.metrics().status!=='lost')return;
     projected.clear();uiImageBatchPrefix.clear();frameDraws?.clear();framePass?.invalidate();rasterPass?.invalidate();rasterCapability.restored();
-    profile?.record('context','restored',{context_epoch:rasterCapability.metrics().context_epoch});
+    spriteResources?.contextRestored();profile?.record('context','restored',{context_epoch:rasterCapability.metrics().context_epoch});
   }
   function rasterAvailable(){
     // The raw flag can change before webglcontextlost is dispatched.
@@ -229,6 +233,10 @@ export async function createThreeRenderer(canvas, options = {}) {
   const shaderMaterials = createShaderMaterials(THREE, renderer, backend);
   const textureRecords = new Map();
   const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
+  spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,
+    getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,
+    onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;
+  if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor);
   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
   const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature});
@@ -340,6 +348,20 @@ export async function createThreeRenderer(canvas, options = {}) {
     return record;
   }
 
+  function drawLegacySprite(record,entity,world) {
+    record.material??=new THREE.MeshBasicMaterial({color:colorFor(entity,THREE),transparent:true,opacity:1});
+    const sprite=entity.sprite,scale=entity.scale??{x:1,y:1};
+    record.mesh.position.set(entity.transform.x,entity.transform.y,(sprite.layer??0)/1000);
+    record.mesh.scale.set((sprite.size?.x??1)*(scale.x??1),(sprite.size?.y??1)*(scale.y??1),1);
+    record.mesh.rotation.z=entity.rotation??0;syncSpriteCell(record,sprite,geometry);record.mesh.visible=true;
+    const id=String(sprite.asset??''),texture=textureFor(specsOf().get(id),'sprite');
+    record.assetId=id;
+    if(texture?.state==='ready'){record.material.map=texture.texture;record.material.color.set(0xffffff);}
+    else{record.material.map=null;record.material.color.copy(colorFor(entity,THREE));}
+    record.material.needsUpdate=true;record.mesh.material=shaderMaterials.assign(entity,record.material,world);record.mesh.renderOrder=Number(sprite.layer??0);
+    return texture?.state==='ready';
+  }
+
   function meshAssetFor(id, specs) {
     if (meshAssets.has(id)) return meshAssets.get(id);
     const asset = specs.get(id);
@@ -431,6 +453,8 @@ export async function createThreeRenderer(canvas, options = {}) {
     profile?.mark('resize_raster_validate');
     const specs = specsOf();
     if(profile)profile.attach(()=>({asset_index:specs instanceof Map?'legacy_rebuild':'catalog',asset_index_size:specs.size,...(options.getAssetCatalog?{asset_catalog_generation:options.getAssetCatalog().generation}:{})}));
+    if(spritePresentation){if(!spritePresentation.draw(world,worldVisible))assetRequestPending=true;shaderMaterials.retain(spritePresentation.legacyEntities());}
+    else {
     const alive = new Set();
     for (const entity of visibleSprites(snapshot)) {
       const id = String(entity.id);
@@ -466,6 +490,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       }
     }
     shaderMaterials.retain(new Set([...alive].filter(id => Boolean(world.entities[id]?.shader_material))));
+    }
     let activeCamera = camera;
     world3d.scale.z=world.camera3d?.handedness==='left'?-1:1;
     if (world.camera3d) {
@@ -510,12 +535,14 @@ export async function createThreeRenderer(canvas, options = {}) {
     else projected.draw(renderer,activeCamera,!worldVisible);profile?.mark('projected_pass_submit');}
     if(!rasterAvailable()){startupPresentation?.invalidate();profile?.outcome('skipped_raster_unavailable');return DRAW_SKIPPED.raster_unavailable;}
     if(assetRequestPending){profile?.outcome('pending_world_assets');return DRAW_SKIPPED.world_assets_pending;}
+    spritePresentation?.submitted(worldVisible&&(!pipeline||pipeline.scene));
     startupPresentation?.drawn();
     profile?.outcome('completed');
     return DRAW_COMPLETED;
   }
 
   function clearTextures() {
+    spriteResources?.public.reset();
     if(frameProfile)startupPresentation?.invalidate();
     framePublication=null;framePublicationIdentity=null;
     frameDecoder.clear();
@@ -539,6 +566,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
 
   function dispose() {
+    spriteResources?.dispose();
     canvas.removeEventListener('webglcontextlost',rasterLost);canvas.removeEventListener('webglcontextrestored',rasterRestored);
     rasterCapability.dispose();startupPresentation?.dispose();rasterPass?.dispose();framePass?.dispose();clearRecovery?.dispose();uiImageBatchPrefix.dispose();ui?.dispose();
     for (const hook of [...disposeHooks].reverse()) {
@@ -573,7 +601,8 @@ export async function createThreeRenderer(canvas, options = {}) {
     ui,
     isPresentationAvailable:()=>rasterAvailable(),
     startupPresentation,
-    async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise)); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
+    spriteResources:spriteResources?.public??Object.freeze({prepare(){throw Error('SPRITE_RESOURCE_BACKEND_UNSUPPORTED');},reset(){},takeUpdates(){return {resources:[],appearances:[]};}}),
+    async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise));await spriteResources?.ready(); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
     clearTextures,
     attachPresentation,
     dispose,
@@ -583,7 +612,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-      metrics: () => ({texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

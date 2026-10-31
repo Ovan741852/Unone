@@ -64,6 +64,10 @@
           ],
           "default": null
         },
+        "presentation_resources": {
+          "$ref": "#/$defs/PresentationResourceInput",
+          "description": "Recorded presentation feedback, accepted only with a successful tick."
+        },
         "ui_sliders": {
           "additionalProperties": {
             "$ref": "#/$defs/SliderInteraction"
@@ -461,6 +465,24 @@
       ],
       "type": "object"
     },
+    "PresentationResourceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "appearances": {
+          "items": {
+            "$ref": "#/$defs/SpriteAppearanceReceipt"
+          },
+          "type": "array"
+        },
+        "resources": {
+          "items": {
+            "$ref": "#/$defs/SpriteResourceReceipt"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
     "SliderInteraction": {
       "additionalProperties": false,
       "properties": {
@@ -484,6 +506,89 @@
         "drag",
         "end",
         "cancel"
+      ],
+      "type": "string"
+    },
+    "SpriteAppearanceReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "entity": {
+          "type": "string"
+        },
+        "epoch": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "revision": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "state": {
+          "$ref": "#/$defs/SpriteSubmissionState"
+        }
+      },
+      "required": [
+        "entity",
+        "revision",
+        "state",
+        "epoch"
+      ],
+      "type": "object"
+    },
+    "SpriteResourceReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "epoch": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/SpriteResourceState"
+        }
+      },
+      "required": [
+        "id",
+        "state",
+        "epoch",
+        "bytes"
+      ],
+      "type": "object"
+    },
+    "SpriteResourceState": {
+      "enum": [
+        "loading",
+        "ready",
+        "error"
+      ],
+      "type": "string"
+    },
+    "SpriteSubmissionState": {
+      "enum": [
+        "submitted",
+        "error"
       ],
       "type": "string"
     },

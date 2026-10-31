@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {assembleProject,readObservation} from './load-project.js';
+import {assembleProject,readObservation,textureCatalog} from './load-project.js';
 test('assembly preserves every config declaration without a field allowlist',async()=>{
   const config={name:'test',entry_script:'main.luau',main_scene:'scene.json',audio:{categories:{music:{fade_in_frames:2}}},future_declaration:{nested:true}};
   const result=await assembleProject(config,async name=>{assert.equal(name,'main.luau');return 'return {}';},async name=>{assert.equal(name,'scene.json');return {entities:[]};});
@@ -19,4 +19,11 @@ test('observation decoding borrows the current heap without copying and releases
  module.HEAPU8.fill(0);assert.deepEqual(first,value,'JSON result must not alias the borrowed heap');
  publish({world:{text:'new heap after WASM memory growth'}});assert.equal(readObservation(module).world.text,'new heap after WASM memory growth');
  assert.equal(pointerReads,2);assert.equal(lengthReads,2);assert.equal(copies,0);
+});
+test('the sprite catalog keeps only declared textures from the loaded manifest',async()=>{
+  const manifest={version:1,assets:[{id:'texture://a',kind:'texture2d',source:'a.png'},{id:'mesh://b',kind:'mesh3d',source:'b.glb'}]};
+  assert.deepEqual(textureCatalog(manifest),[{id:'texture://a',kind:'texture2d'}]);
+  assert.deepEqual(textureCatalog(null),[]);
+  const result=await assembleProject({entry_script:'main.luau',asset_manifest:'assets.json'},async()=>'return {}',async()=>manifest);
+  assert.deepEqual(result.asset_catalog,[{id:'texture://a',kind:'texture2d'}]);
 });

@@ -26,7 +26,7 @@ async function fixture(profiler,{throwDraw=false,drawOutcome,uiOutcome={status:'
  const log=[],storage=new Map(),body={dataset:{}};
  const renderer={draw(s){log.push(['render',s.world.frame]);profiler?.renderer.mark('frame_decode_validate');if(throwDraw)throw Error('RENDER_FAILED');profiler?.renderer.outcome('completed');return drawOutcome;},
   metrics:()=>({}),};
- const context={profiler,profileFlight:null,profileLastSource:null,backend,renderer,imageAssets:null,serializedSavePayload,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
+ const context={resourceHost:null,profiler,profileFlight:null,profileLastSource:null,backend,renderer,imageAssets:null,serializedSavePayload,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
   bridgeMs:0,renderMs:0,renderCount:0,frozen:false,manualInput:null,lastStats:null,hasWorldPointer:false,saved:'null',key:'k',orderedQueue:null,scheduler:null,audio:null,
   input:{consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({})},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
   document:{body},localStorage:{setItem:(k,v)=>{storage.set(k,v);log.push(['save']);}},publishPhysical(){},performance,JSON,Error,String};

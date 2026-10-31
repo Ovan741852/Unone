@@ -53,6 +53,8 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/vfx-native.js",
         "renderer/shader-materials.js",
         "renderer/sprite-cells.js",
+        "renderer/sprite-resources.js",
+        "renderer/sprite-presentation.js",
         "renderer/texture-cache-policy.js",
         "shared/ui-tree.js",
         "shared/canvas-ui.mjs",
@@ -74,10 +76,12 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/heightfields.js",
         "shared/audio-playback.js",
         "shared/asset-encoding.js",
+        "shared/image-dimensions.mjs",
         "shared/load-project.js",
         "shared/fixed-step-scheduler.mjs",
         "shared/async-scheduler.mjs",
         "shared/runtime-core.mjs",
+        "shared/sprite-resource-host.mjs",
         "shared/spatial-host.mjs",
         "shared/spatial-metrics.mjs",
         "shared/spatial-gpu.mjs",
@@ -894,9 +898,15 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
     let job_sources: std::collections::BTreeMap<_,_>=config.job_scripts.iter().map(|(id,path)|Ok((id.clone(),fs::read_to_string(inside(project,path)?)?))).collect::<Result<_>>()?;
     let mut payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
     // Data assets travel as content files; the payload only declares them.
+    let mut asset_catalog = Vec::new();
     let data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {
-        Some(path) => serde_json::from_slice::<unone_engine::AssetManifest>(&fs::read(inside(project, path)?)?)?
-            .assets.iter().filter(|asset| asset.kind == "data").map(unone_engine::data_asset_decl).collect(),
+        Some(path) => {
+            let manifest: unone_engine::AssetManifest = serde_json::from_slice(&fs::read(inside(project, path)?)?)?;
+            // Only textures can back sprite resources.
+            asset_catalog = manifest.assets.iter().filter(|asset| asset.kind == "texture2d")
+                .map(|asset| json!({"id":asset.id,"kind":asset.kind})).collect();
+            manifest.assets.iter().filter(|asset| asset.kind == "data").map(unone_engine::data_asset_decl).collect()
+        },
         None => Vec::new(),
     };
     let data = data_assets.iter()
@@ -905,11 +915,17 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
     if !data_assets.is_empty() {
         payload["data_assets"] = serde_json::to_value(&data_assets)?;
     }
+    if !asset_catalog.is_empty() {
+        payload["asset_catalog"] = serde_json::to_value(&asset_catalog)?;
+    }
     // Exercise the exact player ingestion contract before creating any output.
     unone_engine::HostProject::parse(&serde_json::to_vec(&payload)?)
         .map_err(|e| anyhow::anyhow!(e.explanation))?
         .into_runtime_with_data(42, data)
         .map_err(|e| anyhow::anyhow!(e.explanation))?;
+    // Players derive the catalog from content/assets.json, which they load
+    // anyway; shipping a second copy would grow project.json by the manifest.
+    if let Some(payload) = payload.as_object_mut() { payload.remove("asset_catalog"); }
     let assets = if let Some(path) = &config.asset_manifest {
         let assets: unone_engine::AssetManifest =
             serde_json::from_slice(&fs::read(inside(project, path)?)?)?;

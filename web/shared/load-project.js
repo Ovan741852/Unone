@@ -16,10 +16,16 @@ export function playerSeed(search, random = globalThis.crypto) {
   const words = random.getRandomValues(new Uint32Array(2));
   return {seed: ((BigInt(words[0]) << 32n) | BigInt(words[1])).toString(), source: 'random'};
 }
+// Sprite resources accept only declared textures. Hosts derive this catalog
+// from the asset manifest they already load instead of shipping a copy.
+export function textureCatalog(manifest) {
+  return (manifest?.assets ?? []).filter(({kind}) => kind === 'texture2d').map(({id, kind}) => ({id, kind}));
+}
 // One config contract: never pick individual ProjectConfig declarations here.
 export async function assembleProject(config, readText, readJson) {
   const job_sources=Object.fromEntries(await Promise.all(Object.entries(config.job_scripts??{}).map(async([id,path])=>[id,await readText(path)])));
-  return {...(Object.keys(job_sources).length?{job_sources}:{}),config,script:await readText(config.entry_script??'scripts/main.luau'),scene:config.main_scene?await readJson(config.main_scene):null};
+  const asset_catalog=config.asset_manifest?textureCatalog(await readJson(config.asset_manifest)):[];
+  return {...(Object.keys(job_sources).length?{job_sources}:{}),...(asset_catalog.length?{asset_catalog}:{}),config,script:await readText(config.entry_script??'scripts/main.luau'),scene:config.main_scene?await readJson(config.main_scene):null};
 }
 const observationDecoder=new TextDecoder(),projectEncoder=new TextEncoder();
 export const SCRIPT_BYTECODE_DATA_ID='unone:script-bytecode';

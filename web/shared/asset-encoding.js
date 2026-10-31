@@ -1,3 +1,4 @@
+import {IMAGE_DIMENSIONS_MAX_PREFIX_BYTES,inspectImageDimensions} from './image-dimensions.mjs';
 // Accepted decoder routes, not a guarantee that bytes decode on this device.
 export const DECODER_ROUTES = Object.freeze({
   mesh: { "unone-mesh-json": "application/json" },
@@ -180,23 +181,33 @@ function loadDecodedImage(url, { signal } = {}) {
     signal?.addEventListener('abort', abort, { once: true }); image.src = String(url);
   });
 }
-async function inspectPngImage(url, { signal } = {}) {
-  // Retain only the PNG header. A server may ignore Range; drain a successful
+async function readImageHeader(url,signal,limit) {
+  // Retain only the bounded header prefix. A server may ignore Range; drain a successful
   // response to EOF rather than turning speculative inspection into an aborted
   // network request. The encoded body is never accumulated or decoded here.
-  const response = await fetch(url, { signal, headers: { Range: 'bytes=0-23' } });
+  const response = await fetch(url, { signal, headers: { Range: `bytes=0-${limit-1}` } });
   if (!response.ok) throw imageError('IMAGE_ASSET_HEADER_FAILED', String(response.status));
   if (!response.body?.getReader) return null;
-  const reader = response.body.getReader(), header = new Uint8Array(24); let length = 0, complete = false;
+  const reader = response.body.getReader(), header = new Uint8Array(limit); let length = 0, complete = false;
   try {
     while (true) {
       const next = await reader.read(); if (next.done) { complete = true; break; }
       if (length < header.length) { const take = Math.min(next.value.byteLength, header.length - length); header.set(next.value.subarray(0, take), length); length += take; }
     }
   } finally { if (!complete) { try { await reader.cancel(); } catch {} } reader.releaseLock(); }
-  if (length < 24 || [137,80,78,71,13,10,26,10].some((value, i) => header[i] !== value)) return null;
+  return header.subarray(0,length);
+}
+async function inspectPngImage(url, { signal } = {}) {
+  const header=await readImageHeader(url,signal,24);
+  if (!header || header.length < 24 || [137,80,78,71,13,10,26,10].some((value, i) => header[i] !== value)) return null;
   const view = new DataView(header.buffer); if (view.getUint32(8) !== 13 || view.getUint32(12) !== 0x49484452) throw imageError('IMAGE_ASSET_PNG_HEADER');
   return { format: 'png', width: view.getUint32(16), height: view.getUint32(20) };
+}
+async function inspectRasterImage(url,options={}) {
+  if(options.asset?.encoding?.format==='png')return inspectPngImage(url,options);
+  if(options.asset?.encoding?.format==='svg')return null;
+  const prefix=await readImageHeader(url,options.signal,IMAGE_DIMENSIONS_MAX_PREFIX_BYTES);
+  return prefix?inspectImageDimensions(prefix):null;
 }
 
 // Presentation-owned decoded pixels. GPU textures/samplers remain owned by
@@ -329,13 +340,58 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     if (!result.cancelled) preparation = freezePreparation(result); else freezePreparation(result);
     return result;
   }
+  const metadataInspector = createImageMetadataInspector({specFor, entries, resolveAssetUrl, inspectImage:inspectImage===inspectPngImage?inspectRasterImage:inspectImage, schedule,
+    maxEntries: Math.max(1, sceneMaxEntries, unusedMaxEntries)});
   return Object.freeze({
-    acquire: id => leaseFor(id), prepareScene,
+    acquire: id => leaseFor(id), prepareScene, inspect: metadataInspector.inspect,
     report() {
       let residentBytes = 0, activeBytes = 0, sceneBytes = 0, unusedBytes = 0, activeEntries = 0, sceneEntries = 0, unusedEntries = 0, loading = 0;
       for (const entry of entries.values()) { residentBytes += entry.bytes; if (entry.state === 'loading') loading++; if (entry.external) { activeEntries++; activeBytes += entry.bytes; } if (entry.scene) { sceneEntries++; sceneBytes += entry.bytes; } if (!entry.external && !entry.scene) { unusedEntries++; unusedBytes += entry.bytes; } }
       return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
     },
-    dispose() { if (disposed) return; disposed = true; planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
+    dispose() { if (disposed) return; disposed = true; metadataInspector.dispose(); planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
   });
+}
+
+// Metadata has no pixel lease. Each caller owns only its cancellation; one
+// cancelled prefetch must not abort inspection still needed by another owner.
+function createImageMetadataInspector({specFor, entries, resolveAssetUrl, inspectImage, schedule, maxEntries}) {
+  const records = new Map(); let disposed = false;
+  function start(id, asset) {
+    if (records.size >= maxEntries) {
+      for (const [key, value] of records) if (!value.users && value.done) { records.delete(key); break; }
+      if (records.size >= maxEntries) throw imageError('IMAGE_ASSET_INSPECTION_BUSY', id);
+    }
+    const record = {controller: new AbortController(), users: 0, done: false};
+    records.set(id, record);
+    record.promise = schedule(async () => {
+      const metadata = await inspectImage(await resolveAssetUrl(asset), {signal: record.controller.signal, asset});
+      if (disposed || record.controller.signal.aborted) throw abortImageError();
+      if (!metadata || !['png','jpeg','webp'].includes(metadata.format)) throw imageError('IMAGE_ASSET_DIMENSIONS_UNAVAILABLE', id);
+      return Object.freeze({format: metadata.format, ...imageDimensions(metadata)});
+    }, record.controller.signal).then(value => { record.done = true; return value; }, error => {
+      record.done = true; if (records.get(id) === record) records.delete(id); throw error;
+    });
+    record.promise.catch(() => {}); return record;
+  }
+  function inspect(id, {signal} = {}) {
+    const asset = specFor(id);
+    if (disposed || signal?.aborted) return Promise.reject(abortImageError());
+    const image = entries.get(id);
+    if (image?.state === 'ready') return Promise.resolve(Object.freeze({format: asset.encoding?.format ?? 'decoded', ...imageDimensions(image.image)}));
+    if (image?.reservation) return Promise.resolve(Object.freeze({format: 'png', ...imageDimensions(image.reservation)}));
+    const record = records.get(id) ?? start(id, asset); record.users++;
+    return new Promise((resolve, reject) => {
+      let live = true;
+      const finish = () => {
+        if (!live) return false; live = false; signal?.removeEventListener('abort', cancel); record.users--;
+        if (!record.users && !record.done) { if (records.get(id) === record) records.delete(id); record.controller.abort(); }
+        return true;
+      };
+      const cancel = () => { if (finish()) reject(abortImageError()); };
+      signal?.addEventListener('abort', cancel, {once: true});
+      record.promise.then(value => { if (finish()) resolve(value); }, error => { if (finish()) reject(error); });
+    });
+  }
+  return {inspect, dispose() { if (disposed) return; disposed = true; for (const record of records.values()) record.controller.abort(); records.clear(); }};
 }

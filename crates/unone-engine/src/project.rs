@@ -233,6 +233,9 @@ pub struct InputFrame {
     /// Host-owned UTF-8 editing snapshots, one event per ID per successful tick.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub ui_text_inputs: BTreeMap<String, TextInputInteraction>,
+    /// Recorded presentation feedback, accepted only with a successful tick.
+    #[serde(default, skip_serializing_if = "crate::PresentationResourceInput::is_empty")]
+    pub presentation_resources: crate::PresentationResourceInput,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
@@ -276,6 +279,8 @@ pub struct PointerInput {
 impl InputFrame {
     /// Validate before mutating input or ticking, across every host path.
     pub fn validate(&self) -> Result<(), Box<crate::Diagnostic>> {
+        self.presentation_resources.validate().map_err(|e| Box::new(crate::Diagnostic::error(
+            "INPUT_PRESENTATION_INVALID", "Invalid presentation resource feedback", e)))?;
         if let Some(b)=&self.physical {b.validate().map_err(|e|Box::new(crate::Diagnostic::error("INPUT_PHYSICAL_INVALID","Invalid physical batch",e)))?;}
         if self.ui_sliders.len() > 256 || self.ui_sliders.iter().any(|(id, event)| {
             id.trim().is_empty() || id.len() > 1024 || !event.ratio.is_finite()

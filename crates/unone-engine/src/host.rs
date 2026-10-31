@@ -37,6 +37,9 @@ pub struct HostProject {
     /// bytes beside this JSON (into_runtime_with_data), never inside it.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub data_assets: Vec<crate::DataAssetDecl>,
+    /// Declared presentation assets; bytes and decoded/GPU objects stay in the host.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub asset_catalog: Vec<crate::AssetCatalogEntry>,
 }
 
 impl HostProject {
@@ -91,6 +94,7 @@ impl HostProject {
             viewport_aspect: self.viewport_aspect,
             viewport_size: self.viewport_size,
             data_assets: self.data_assets,
+            asset_catalog: self.asset_catalog,
             data,
         })
     }

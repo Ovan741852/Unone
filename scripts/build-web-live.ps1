@@ -70,6 +70,7 @@ $env:RUSTFLAGS = '-C link-arg=--export=unone_web_init -C link-arg=--export=unone
 
 $env:RUSTFLAGS += ' -C link-arg=--export=unone_web_spatial_request'
 $env:RUSTFLAGS += ' -C link-arg=--export=unone_web_host_time_request'
+$env:RUSTFLAGS += ' -C link-arg=--export=unone_web_sprite_resources_request'
 $env:RUSTFLAGS += ' -C link-arg=--export=unone_web_set_ui_transport'
 $env:RUSTFLAGS += ' -C link-arg=--export=unone_web_unload_project'
 
@@ -80,7 +81,7 @@ if ($Player) {
         if (Test-Path (Join-Path $candidate 'bin/wasm-opt.exe')) { $BinaryenRoot = $candidate }
     }
     if ($BinaryenRoot) { $env:EM_BINARYEN_ROOT = [IO.Path]::GetFullPath($BinaryenRoot) }
-    $exports = @('init','alloc','stage_data','load_project','unload_project','set_save_payload','set_input_frame','set_viewport_aspect','set_viewport_size','set_instance_transport','set_ui_transport','tick','ui_request','jobs_request','jobs_binary','spatial_request','host_time_request','observation_ptr','observation_len')
+    $exports = @('init','alloc','stage_data','load_project','unload_project','set_save_payload','set_input_frame','set_viewport_aspect','set_viewport_size','set_instance_transport','set_ui_transport','tick','ui_request','jobs_request','jobs_binary','spatial_request','host_time_request','sprite_resources_request','observation_ptr','observation_len')
     if ($diagnosticPlayer) { $exports += 'developer_request' }
     $cli = if ($Cli) { [IO.Path]::GetFullPath($Cli) } else { Join-Path $repoRoot 'target/debug/game.exe' }
     if (-not (Test-Path -LiteralPath $cli)) { throw 'Build the current CLI first: cargo build -p unone-cli' }

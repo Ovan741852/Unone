@@ -24,7 +24,7 @@ const plain=value=>JSON.parse(JSON.stringify(value));
 function harness({world=snapshot(),hasWorldPointer=true}={}){
  const frames=[];
  const context=vm.createContext({
-  canvas,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,profiler:null,orderedQueue:null,serializedSavePayload,
+  resourceHost:null,canvas,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,profiler:null,orderedQueue:null,serializedSavePayload,
   performance:{now:()=>0},projectScreenPointer,worldFromPointer,
   backend:{request:async request=>{frames.push(plain(request.input));return context.snapshot;}},
   acceptSnapshot:value=>{context.snapshot=value;},audio:null,saved:'null',key:'pointer-test',

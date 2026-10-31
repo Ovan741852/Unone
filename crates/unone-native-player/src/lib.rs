@@ -11,6 +11,7 @@ mod render;
 mod projected;
 mod presentation_raster;
 mod sprites;
+mod sprite_resources;
 mod ui;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -53,8 +54,12 @@ pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
             return Err(format!("NATIVE_RENDER_PASS_UNSUPPORTED: native wgpu executes scene, bloom, tonemap, projected and ui passes; remove or export Web for {}", unsupported.join(", ")));
         }
     }
-    if !snapshot.shader_materials.is_empty() {
-        return Err("SHADER_BACKEND_UNSUPPORTED: GLSL sprite shader materials require the official WebGL player; native wgpu does not implement this contract".into());
+    // Declared or prepared unsupported materials are resource errors, rather
+    // than a startup error before Game can receive their status. Direct visible
+    // shader sprites still fail closed; managed ones never reach the draw list.
+    if snapshot.entities.values().any(|entity| entity.sprite.as_ref().is_some_and(|s|s.visible)
+        && entity.shader_material.is_some() && entity.sprite_appearance.is_none()) {
+        return Err(sprite_resources::SHADER_UNSUPPORTED.into());
     }
     Ok(())
 }
@@ -172,7 +177,18 @@ impl Package {
         Self::start(project,seed,None,data)
     }
     fn host_project(&self) -> R<HostProject> {
-        HostProject::parse(self.get("content/project.json")?).map_err(|e|e.explanation)
+        let mut project=HostProject::parse(self.get("content/project.json")?).map_err(|e|e.explanation)?;
+        // Core validates prepare() before Renderer exists. Resolve its catalog
+        // from the same verified package manifest that the GPU adapter uses.
+        if let Some(bytes)=self.files.get("content/assets.json") {
+            let manifest:Value=serde_json::from_slice(bytes).map_err(|e|e.to_string())?;
+            project.asset_catalog=manifest["assets"].as_array().ok_or("ASSET_MANIFEST_INVALID")?.iter()
+                .filter(|asset| asset["kind"]=="texture2d").map(|asset| {
+                Ok(unone_engine::AssetCatalogEntry {id:asset["id"].as_str().ok_or("ASSET_ID_MISSING")?.into(),
+                    kind:asset["kind"].as_str().ok_or("ASSET_KIND_MISSING")?.into()})
+            }).collect::<R<_>>()?;
+        }
+        Ok(project)
     }
     /// The verified package already holds every content file; hand the
     /// declared data assets to the runtime by id.
@@ -386,9 +402,17 @@ struct App {
     quit_request_presented: bool,
 }
 impl App {
+    fn sync_sprite_resources(&mut self)->R<()> {
+        if let Some(renderer)=&mut self.renderer {
+            let plan=self.runtime.sprite_resource_plan_since(renderer.sprite_plan_revision());
+            renderer.sync_sprite_resources(&self.snapshot,plan,&self.package)?;
+        }
+        Ok(())
+    }
     /// Both GUI and headless replay use the kernel's normalized input entry point.
     fn advance_tick(&mut self) -> R<()> {
-        let input = if let Some(replay) = &self.input_replay {
+        self.sync_sprite_resources()?;
+        let mut input = if let Some(replay) = &self.input_replay {
             replay.frame()
         } else {
             self.ui_input.reconcile(self.snapshot.ui.as_ref());
@@ -416,6 +440,11 @@ impl App {
             }
             input
         };
+        // Presentation readiness is recorded input. A replay's own receipts
+        // remain authoritative; never replace them with this machine's GPU.
+        if self.input_replay.is_none() && let Some(renderer)=&mut self.renderer {
+            input.presentation_resources=renderer.sprite_feedback(&self.snapshot);
+        }
         self.snapshot = self.runtime.tick_with_input(&input).map_err(|error| error.explanation)?;
         if let Some(replay) = &mut self.input_replay { replay.applied(); }
         self.save.persist(&self.runtime)
@@ -582,6 +611,7 @@ impl App {
         value["quit_request_presented"] = json!(self.quit_request_presented);
         value["spatial"] = self.runtime.spatial_report();
         value["save"] = self.save.report();
+        value["sprite_resources"] = r.map(|r|r.sprite_resource_report()).unwrap_or(Value::Null);
         if let Some(replay) = &self.input_replay {
             value["input_replay"] = replay.report();
             value["input_replay"]["successful_presentations"] = json!(self.drawn);
@@ -823,6 +853,9 @@ impl ApplicationHandler for App {
                         ));
                     }
                 }
+                if let Err(error)=self.sync_sprite_resources() {
+                    self.fail(error,event_loop);return;
+                }
                 let start = Instant::now();
                 let rendered = self.renderer.as_mut().unwrap().render(&self.snapshot);
                 match rendered {
@@ -891,6 +924,7 @@ pub fn desktop() -> R<()> {
         ;
         descriptor["input_replay"] = replay::declaration();
         descriptor["save"] = save::declaration();
+        descriptor["sprite_resources"] = sprite_resources::declaration();
         descriptor["input_replay"]["ordered_physical"]=json!({"live":"unsupported","normalized_core_replay":true,"text_ime":false});
         descriptor["projected_geometry"]=json!({"format":unone_engine::PROJECTED_FORMAT,"vertex_stride":40,"depth":"0..W","uv":"official mesh,bottom-left","color_mode":["linear","encoded"],"filter":["nearest","linear"],"sampling_space":["linear","encoded"],"address_mode":["clamp","repeat"],"alpha_cutoff":"0..1(default0.05);strict less-than discards","material_defaults":{"color_mode":"linear","filter":"nearest","sampling_space":"linear","address_mode":"clamp","alpha_cutoff":0.05},"blend":"opaque/cutout only; no blendlist","projection":"clip-space passthrough;no camera,culling,lighting or fog","world3d_visibility":true,"viewport":"physical pixels with revision"});
         descriptor["presentation"].as_array_mut().unwrap().push(json!("projected_geometry"));
@@ -1093,7 +1127,7 @@ mod telemetry_tests {
     }
 
     #[test]
-    fn native_runtime_rejects_shader_resources_instead_of_silently_ignoring_them() {
+    fn native_runtime_starts_with_declared_shader_materials_so_game_can_receive_their_status() {
         let make = |scene| super::Package {
             files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&serde_json::json!({
                 "config":{"name":"native-shader-gate","entry_script":"main.luau"},
@@ -1103,10 +1137,10 @@ mod telemetry_tests {
             digest: "fixture".into(),
         };
         assert!(make(serde_json::json!({"entities":[]})).runtime(42).is_ok());
-        let error = make(serde_json::json!({"entities":[],"shader_materials":{"tint":{
+        // Visible direct shader sprites still fail closed (see the admission test below).
+        assert!(make(serde_json::json!({"entities":[],"shader_materials":{"tint":{
             "fragment":"vec4 unoneShade(vec2 uv,vec4 color){return color;}"
-        }}})).runtime(42).err().expect("native shader gate");
-        assert!(error.contains("SHADER_BACKEND_UNSUPPORTED"));
+        }}})).runtime(42).is_ok());
     }
 
     #[test]
@@ -1138,6 +1172,36 @@ mod telemetry_tests {
         assert!(super::ensure_shader_backend(&snapshot).is_ok(),"opaque retains existing admission");
         snapshot.projected_geometry.insert("alpha".into(),batch.with_blend(unone_engine::ProjectedBlend::SourceOver).unwrap());
         assert!(super::ensure_shader_backend(&snapshot).unwrap_err().starts_with("PROJECTED_BLEND_UNSUPPORTED:"));
+    }
+
+    #[test]
+    fn native_shader_declarations_can_receive_resource_errors_but_direct_visible_shaders_fail_closed() {
+        let scene=serde_json::from_value(serde_json::json!({"entities":[{"id":"actor","sprite":{"asset":"atlas","visible":false}}]})).unwrap();
+        let runtime=unone_engine::EngineRuntime::load_source("shader-admission","main.luau",
+            "return {start=function()end,update=function()end}",Some(scene)).unwrap();
+        let mut snapshot=runtime.observe();
+        snapshot.shader_materials.insert("custom".into(),serde_json::from_value(serde_json::json!({
+            "fragment":"vec4 unoneShade(vec2 uv,vec4 color){return color;}","uniforms":{}})).unwrap());
+        snapshot.entities.get_mut("actor").unwrap().shader_material=Some("custom".into());
+        assert!(super::ensure_shader_backend(&snapshot).is_ok(),"unused materials must reach resource status admission");
+        snapshot.entities.get_mut("actor").unwrap().sprite.as_mut().unwrap().visible=true;
+        assert!(super::ensure_shader_backend(&snapshot).unwrap_err().starts_with("SHADER_BACKEND_UNSUPPORTED:"));
+        snapshot.entities.get_mut("actor").unwrap().sprite_appearance=Some(unone_engine::SpriteAppearanceMetadata {resource:"1".into(),revision:1});
+        assert!(super::ensure_shader_backend(&snapshot).is_ok(),"managed unsupported appearances are filtered and receive explicit error receipts");
+    }
+
+    #[test]
+    fn native_core_prepare_uses_verified_manifest_and_never_infers_gpu_readiness() {
+        let package=super::Package {files:std::collections::BTreeMap::from([
+            ("content/project.json".into(),serde_json::to_vec(&serde_json::json!({
+                "config":{"name":"manifest-catalog","entry_script":"main.luau"},
+                "asset_catalog":[{"id":"forged","kind":"texture2d"}],
+                "script":"return {start=function(api) local resource=api.sprite.prepare('atlas'); api.observation.set('state',api.sprite.status(resource).state); local sound=pcall(function() api.sprite.prepare('sound') end); local fake=pcall(function() api.sprite.prepare('forged') end); assert(not sound and not fake) end,update=function()end}"
+            })).unwrap()),
+            ("content/assets.json".into(),br#"{"assets":[{"id":"atlas","kind":"texture2d","source":"atlas.png"},{"id":"sound","kind":"audio","source":"sound.wav"}]}"#.to_vec()),
+        ]),digest:"fixture".into()};
+        let runtime=package.runtime(42).unwrap();
+        assert_eq!(runtime.observe().observations["state"],serde_json::json!("loading"));
     }
 
     #[test]

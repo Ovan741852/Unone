@@ -14,7 +14,7 @@ function fixture(){
  const available=()=>{if(lost){cap.lost();return false;}return cap.metrics().status!=='lost';};
  const startup=createStartupPresentationState({available,metrics:cap.metrics,view});
  const noop=()=>{},projected={entries:()=>[],prepare:noop,draw:noop},snapshot={entities:{},projected_world_visible:false};
- const context={ui:null,worldSubmitted:false,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},projectedFrame:()=>null,assertFrameSnapshot:noop,frameProfile:null,framePublication:null,assertProjectedBackend:noop,assertRasterSnapshot:noop,rasterAvailable:available,projectedEntries:()=>[],heightfieldEntries:()=>[],
+ const context={spritePresentation:null,spriteResources:null,ui:null,worldSubmitted:false,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},projectedFrame:()=>null,assertFrameSnapshot:noop,frameProfile:null,framePublication:null,assertProjectedBackend:noop,assertRasterSnapshot:noop,rasterAvailable:available,projectedEntries:()=>[],heightfieldEntries:()=>[],
   rasterPolicy:{requested:'upper_left_checked'},backend:'webgl',bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],renderer:{info:{reset:noop},render(){renders++;}},
   worldOf:x=>x,resize:noop,checkedRaster:true,validateRaster:()=>cap.ensure(view()),specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),
   shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},viewport(){},curvature:0},world3d:{scale:{z:1}},bufferSize:{x:1,y:1},drawInRect:(_,draw)=>draw(),meshEntities:{draw:()=>false,clear(){},contextLost(){}},heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},

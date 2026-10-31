@@ -838,7 +838,7 @@ pub struct EffectInstance {
     pub started_frame: u64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct SpriteData {
@@ -918,6 +918,10 @@ pub struct EntitySnapshot {
     pub sprite: Option<SpriteData>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shader_material: Option<String>,
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub sprite_uniforms: BTreeMap<String, crate::ShaderUniform>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sprite_appearance: Option<crate::SpriteAppearanceMetadata>,
     pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodySnapshot>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1027,6 +1031,8 @@ pub(crate) struct EntityState {
     pub transform3d: Option<Transform3DData>,
     pub sprite: Option<SpriteData>,
     pub shader_material: Option<String>,
+    pub sprite_uniforms: BTreeMap<String, crate::ShaderUniform>,
+    pub sprite_appearance: Option<crate::SpriteAppearanceMetadata>,
     pub mesh3d: Option<Mesh3DData>,
     pub rigidbody: Option<RigidBodyState>,
     pub animation: Option<AnimationState>,
@@ -1205,6 +1211,8 @@ impl World {
             transform3d: entity.transform3d,
             sprite: entity.sprite,
             shader_material: entity.shader_material,
+            sprite_uniforms: BTreeMap::new(),
+            sprite_appearance: None,
             mesh3d: entity.mesh3d,
             animation: entity.animation.map(|animation| AnimationState {
                 asset: animation.asset,
@@ -1296,6 +1304,8 @@ impl World {
             entity.sprite_animation = None;
         }
         entity.sprite = sprite;
+        entity.sprite_uniforms.clear();
+        entity.sprite_appearance = None;
         Ok(())
     }
 
@@ -1313,6 +1323,7 @@ impl World {
         }
         sprite.frame = frame;
         entity.sprite_animation = None;
+        entity.sprite_appearance = None;
         Ok(())
     }
 
@@ -1329,6 +1340,7 @@ impl World {
             return Ok(());
         }
         entity.sprite_animation = Some(SpriteAnimationState { clip, started_frame });
+        entity.sprite_appearance = None;
         Ok(())
     }
 
@@ -1357,6 +1369,8 @@ impl World {
                 transform3d: None,
                 sprite: None,
                 shader_material: None,
+                sprite_uniforms: BTreeMap::new(),
+                sprite_appearance: None,
                 mesh3d: None,
                 rigidbody: None,
                 animation: None,
@@ -1397,6 +1411,8 @@ impl World {
                                 sprite
                             }),
                             shader_material: entity.shader_material.clone(),
+                            sprite_uniforms: entity.sprite_uniforms.clone(),
+                            sprite_appearance: entity.sprite_appearance.clone(),
                             mesh3d: entity.mesh3d.clone(),
                             rigidbody: entity.rigidbody.as_ref().map(|body| RigidBodySnapshot {
                                 body_type: body.body_type,
@@ -1591,6 +1607,7 @@ impl World {
         let Some(sprite) = &mut entity.sprite else {
             return Err(format!("Entity '{id}' has no Sprite to show or hide."));
         };
+        if sprite.visible != visible || !visible { entity.sprite_appearance = None; }
         sprite.visible = visible;
         Ok(())
     }
@@ -2296,6 +2313,8 @@ mod tests {
             transform3d: None,
             sprite: None,
                 shader_material: None,
+            sprite_uniforms: BTreeMap::new(),
+            sprite_appearance: None,
             mesh3d: None,
             rigidbody: Some(rigidbody),
             animation: None,

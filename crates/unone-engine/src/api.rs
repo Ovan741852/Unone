@@ -2652,6 +2652,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
     ];
     result.extend(ui_component_descriptors());
     result.extend(byte_view_descriptors());
+    result.extend(sprite_resource_descriptors());
     result.extend(heightfield_descriptors());
     result.extend(geometry3d_descriptors());
     result.extend(projected_descriptors());
@@ -2854,6 +2855,43 @@ fn projected_descriptors() -> Vec<ApiDescriptor> {
         args,result,vec!["Bounded presentation state only"],
         "Same canonical payload preserves revision; updates validate before mutation. Scene load clears presentation. Legacy set retains opaque/cutout defaults and omits default blend from canonical snapshots; explicit source_over is revision-bearing. Canvas sampling/crop/pixel equivalence requires actual GPU evidence. setFrame atomically replaces ordered draws and rebuilds caller-known encoded RGB/depth each redraw, with explicit alpha/test/RGB blend/depth/sampler. New Frame indexed W1/Z0..1 and constant triangle RGBA; no original GPU equivalence. Viewport defaults1280x720 headless and hosts report physical size.",
         vec!["PROJECTED_INVALID","PROJECTED_LIMIT","PROJECTED_MISSING","PROJECTED_BACKEND_UNSUPPORTED","PROJECTED_BLEND_UNSUPPORTED"],example,vec!["camera.setTransform"])).collect()
+}
+
+fn sprite_resource_descriptors() -> Vec<ApiDescriptor> {
+    let shared = "Presentation-owned decoded images, GPU texture/program preparation and reference-counted lifetime. Host readiness/submission receipts enter recorded InputFrame.presentation_resources; no promise mutates World. A matching official player/runtime is required. Native custom sprite GLSL is unsupported and reports an error.";
+    let errors = vec!["SPRITE_ARGUMENT_INVALID", "SPRITE_HANDLE_INVALID", "SPRITE_ASSET_INVALID", "SPRITE_RESOURCE_RELEASED", "SPRITE_RESOURCE_LIMIT", "SPRITE_APPEARANCE_INVALID", "SHADER_BACKEND_UNSUPPORTED", "UI_PURE_VIEW"];
+    [
+        ("sprite.prepare", "Prepare a declared texture and optional material (prefetch, asset readiness, sprite lease, 預取、資源就緒).",
+         "Before a character, weapon, effect or unit needs an atlas; retain a small authored working set rather than preloading the manifest.",
+         vec![parameter("assetId", "string", "Declared texture2d asset id"), parameter("materialId", "string?", "Declared sprite shader material; absent selects plain sprite rendering")],
+         "SpriteResource: opaque VM-local userdata, initially loading; readonly id is diagnostic only.",
+         "local page = api.sprite.prepare(\"texture://page\", \"fx\")"),
+        ("sprite.status", "Read the latest recorded resource preparation state, epoch and decoded-byte estimate.",
+         "Pause presentation playback until prepared; context loss returns it to loading. Ready is GPU preparation, not screen scanout.",
+         vec![parameter("resource", "SpriteResource", "A resource issued by this runtime")],
+         "SpriteResourceStatus: state loading|ready|error|released, epoch, bytes, error?.",
+         "local prepared = api.sprite.status(page).state == \"ready\""),
+        ("sprite.commit", "Atomically apply a prepared resource, sprite, initial pose and per-instance shader uniforms.",
+         "Change an atlas page and its UV/frame/uniform values together; keep the old appearance until replacement is ready.",
+         vec![parameter("entityId", "string", "Existing 2D entity"), parameter("resource", "SpriteResource", "Prepared texture/material lease"), parameter("appearance", "SpriteAppearance", "transform required; size/visible/layer/sheet/frame/uniforms optional, unknown fields fail")],
+         "number?: accepted appearance revision, or nil while not prepared. This is not a GPU submission receipt; read sprite.getCommit.",
+         "local revision = api.sprite.commit(id, page, {transform = pose, uniforms = {alpha = 1}})"),
+        ("sprite.getCommit", "Read the requested and actually submitted appearance revision for an entity.",
+         "Confirm first submission after a page/renderer epoch change. Normal same-resource animation need not wait for a roundtrip each frame.",
+         vec![parameter("entityId", "string", "Existing entity; no managed commit reports state none")],
+         "SpriteCommitStatus: requestedRevision, submittedRevision?, state none|pending|submitted|error, epoch, error?.",
+         "local sent = api.sprite.getCommit(id).state == \"submitted\""),
+        ("sprite.release", "Release this caller's sprite-resource lease, idempotently.",
+         "Retire a prefetch or caller owner. Visible committed entities retain independent owners; hide/remove/despawn cancels their ownership without waiting for ready.",
+         vec![parameter("resource", "SpriteResource", "Caller handle; Lua aliases refer to the same lease")],
+         "(): no extra data; obtaining independent handles with prepare still shares underlying host resources.",
+         "api.sprite.release(page)"),
+    ].into_iter().map(|(name,purpose,when_to_use,parameters,returns,example)| descriptor(
+        name,"sprite",purpose,when_to_use,
+        "Pool size, atlas format, animation clock, prefetch count and memory policy remain authored game/presentation settings, not engine rules.",
+        parameters,returns,vec!["Prepare/release changes private presentation ownership; commit changes deterministic World; status/getCommit are read-only"],
+        shared,errors.clone(),example,vec!["entity.setSprite", "entity.setSpriteVisible", "shader.setUniform", "sprite.prepare", "sprite.status", "sprite.commit", "sprite.getCommit", "sprite.release"]
+    )).collect()
 }
 
 fn byte_view_descriptors() -> Vec<ApiDescriptor> {

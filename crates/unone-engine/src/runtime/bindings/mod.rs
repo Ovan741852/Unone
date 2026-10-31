@@ -24,6 +24,7 @@ mod state;
 mod ui_cursor;
 mod shader;
 mod spatial;
+mod sprite;
 pub(super) mod value;
 
 pub(super) fn build_api(
@@ -33,6 +34,7 @@ pub(super) fn build_api(
 ) -> mlua::Result<Table> {
     let api = lua.create_table()?;
     api.set("bytes", bytes::bind(lua)?)?;
+    api.set("sprite", sprite::bind(lua, state)?)?;
     api.set("assets", assets::bind(lua, state)?)?;
     api.set("render", render::bind(lua, state)?)?;
     api.set("hostTime", host_time::bind(lua, state)?)?;

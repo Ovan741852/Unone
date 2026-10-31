@@ -731,6 +731,27 @@ export type JobsApi = {
     reset: () -> (),
 }
 export type ShaderUniform = number | {number}
+-- Opaque VM-local resource; a table with an id is not a valid handle.
+export type SpriteResource = {read id: string}
+export type SpriteResourceStatus = {
+    state: "loading" | "ready" | "error" | "released", epoch: number, bytes: number, error: string?,
+}
+export type SpriteAppearance = {
+    transform: Transform2D, size: Vec2?, visible: boolean?, layer: number?,
+    sheet: SpriteSheet?, frame: number?, uniforms: {[string]: ShaderUniform}?,
+}
+export type SpriteCommitStatus = {
+    requestedRevision: number, submittedRevision: number?,
+    state: "none" | "pending" | "submitted" | "error", epoch: number, error: string?,
+}
+export type SpriteApi = {
+    prepare: (assetId: string, materialId: string?) -> SpriteResource,
+    status: (resource: SpriteResource) -> SpriteResourceStatus,
+    -- nil while not prepared; a revision is accepted intent, not a GPU submission receipt.
+    commit: (entityId: string, resource: SpriteResource, appearance: SpriteAppearance) -> number?,
+    getCommit: (entityId: string) -> SpriteCommitStatus,
+    release: (resource: SpriteResource) -> (),
+}
 export type ShaderApi = {
     setMaterial: (entityId: string, materialId: string) -> (),
     clearMaterial: (entityId: string) -> (),
@@ -900,6 +921,7 @@ export type RenderApi = {
 
 export type EngineApi = {
     assets: AssetsApi,
+    sprite: SpriteApi,
     render: RenderApi,
     bytes: BytesApi,
     hostTime: HostTimeApi,

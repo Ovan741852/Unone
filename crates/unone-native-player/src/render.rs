@@ -609,6 +609,14 @@ pub struct Renderer {
     meshes: BTreeMap<String, Mesh>,
     heightfield_revisions: BTreeMap<String, u64>,
     textures: BTreeMap<String, Arc<wgpu::BindGroup>>,
+    texture_layout: wgpu::BindGroupLayout,
+    texture_catalog: crate::sprite_resources::TextureCatalog,
+    texture_bytes: BTreeMap<String,u64>,
+    texture_estimates: BTreeMap<String,u64>,
+    persistent_textures: std::collections::BTreeSet<String>,
+    sprite_resources: crate::sprite_resources::Resources,
+    sprite_plan_revision:Option<u64>,
+    sprite_plan:Vec<unone_engine::SpriteResourcePlan>,
     batches: BTreeMap<String, Batch>,
     // Packed mesh-entity records per asset, retained between frames.
     entity_records: BTreeMap<String, Vec<u8>>,
@@ -770,6 +778,19 @@ mod tests {
         let error = decode_texture(svg).expect_err("external SVG must not be loaded");
         assert!(error.contains("NATIVE_TEXTURE_SVG_UNSUPPORTED"));
     }
+    #[test]
+    fn texture_admission_checks_budget_and_device_limits_before_pixel_materialization() {
+        let mut bytes=Vec::new();
+        {let mut encoder=png::Encoder::new(&mut bytes,2,2);encoder.set_color(png::ColorType::Rgba);
+            encoder.set_depth(png::BitDepth::Eight);encoder.write_header().unwrap().write_image_data(&[255;16]).unwrap();}
+        let (w,h,pixels)=super::decode_texture_bounded(&bytes,15,2).unwrap();
+        assert_eq!((w,h),(2,2));assert!(pixels.is_none(),"pending budget must not allocate a retained decoded page");
+        assert_eq!(super::decode_texture_bounded(&bytes,16,2).unwrap().2.unwrap().len(),16);
+        assert!(super::decode_texture_bounded(&bytes,16,1).unwrap_err().contains("DIMENSIONS_UNSUPPORTED"));
+        let svg=br#"<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32"><rect width="64" height="32"/></svg>"#;
+        assert!(super::decode_texture_bounded(svg,1,1024).unwrap().2.is_none());
+        assert!(super::texture_admitted(u32::MAX,u32::MAX,u64::MAX,u32::MAX).is_err());
+    }
 }
 fn depth(device: &wgpu::Device, c: &wgpu::SurfaceConfiguration) -> wgpu::TextureView {
     device
@@ -795,8 +816,11 @@ fn load_texture(
     queue: &wgpu::Queue,
     layout: &wgpu::BindGroupLayout,
     bytes: &[u8],
-) -> R<Arc<wgpu::BindGroup>> {
-    let (width, height, rgba) = decode_texture(bytes)?;
+    max_bytes:u64,
+) -> R<(Option<Arc<wgpu::BindGroup>>,u64)> {
+    let (width,height,rgba)=decode_texture_bounded(bytes,max_bytes,device.limits().max_texture_dimension_2d)?;
+    let byte_length=u64::from(width)*u64::from(height)*4;
+    let Some(rgba)=rgba else {return Ok((None,byte_length));};
     let size = wgpu::Extent3d { width, height, depth_or_array_layers: 1 };
     let tex = device.create_texture(&wgpu::TextureDescriptor {
         label: Some("native-texture"), size, mip_level_count: 1, sample_count: 1,
@@ -810,13 +834,28 @@ fn load_texture(
         mag_filter: wgpu::FilterMode::Nearest, min_filter: wgpu::FilterMode::Nearest, ..Default::default()
     });
     let view = tex.create_view(&Default::default());
-    Ok(Arc::new(device.create_bind_group(&wgpu::BindGroupDescriptor {
+    Ok((Some(Arc::new(device.create_bind_group(&wgpu::BindGroupDescriptor {
         label: Some("native-texture-bind-group"), layout,
         entries: &[
             wgpu::BindGroupEntry { binding: 0, resource: wgpu::BindingResource::TextureView(&view) },
             wgpu::BindGroupEntry { binding: 1, resource: wgpu::BindingResource::Sampler(&sampler) },
         ],
-    })))
+    }))),byte_length))
+}
+
+fn ensure_texture(device:&wgpu::Device,queue:&wgpu::Queue,layout:&wgpu::BindGroupLayout,
+    catalog:&crate::sprite_resources::TextureCatalog,package:&Package,
+    textures:&mut BTreeMap<String,Arc<wgpu::BindGroup>>,sizes:&mut BTreeMap<String,u64>,
+    estimates:&mut BTreeMap<String,u64>,id:&str,max_bytes:u64)->R<Option<u64>> {
+    // Always validate kind/id, including an asset already owned by a mesh.
+    let source=catalog.texture_source(id)?;
+    if estimates.get(id).is_some_and(|bytes|*bytes>max_bytes) {return Ok(None);}
+    if textures.contains_key(id) {return Ok(sizes.get(id).copied().filter(|bytes|*bytes<=max_bytes));}
+    let (texture,bytes)=load_texture(device,queue,layout,package.get(&format!("content/{source}"))?,max_bytes)?;
+    estimates.insert(id.into(),bytes);
+    let Some(texture)=texture else {return Ok(None);};
+    textures.insert(id.into(),texture);sizes.insert(id.into(),bytes);
+    Ok(Some(bytes))
 }
 
 /// Built-in meshes are part of the host contract, not project assets.  Keep
@@ -969,10 +1008,26 @@ fn builtin_sphere(
 /// world renderer.  Keeping PNG and static SVG here prevents sprites and mesh
 /// materials from silently having different format support.
 fn decode_texture(bytes: &[u8]) -> R<(u32, u32, Vec<u8>)> {
+    let (width,height,pixels)=decode_texture_bounded(bytes,u64::MAX,u32::MAX)?;
+    Ok((width,height,pixels.ok_or("NATIVE_TEXTURE_BUDGET_PENDING")?))
+}
+fn texture_admitted(width:u32,height:u32,max_bytes:u64,max_dimension:u32)->R<bool> {
+    if width==0 || height==0 || width>max_dimension || height>max_dimension {
+        return Err("NATIVE_TEXTURE_DIMENSIONS_UNSUPPORTED: image exceeds this GPU's texture limits".into());
+    }
+    let bytes=u64::from(width).checked_mul(u64::from(height)).and_then(|n|n.checked_mul(4))
+        .ok_or("NATIVE_TEXTURE_DIMENSIONS_UNSUPPORTED: RGBA size overflow")?;
+    Ok(bytes<=max_bytes)
+}
+/// Read dimensions before allocating pixels. A budget-pending page retains only
+/// its scalar size estimate, not a decoded image or a GPU texture.
+fn decode_texture_bounded(bytes:&[u8],max_bytes:u64,max_dimension:u32)->R<(u32,u32,Option<Vec<u8>>)> {
     if bytes.starts_with(b"\x89PNG\r\n\x1a\n") {
         let mut decoder = png::Decoder::new(std::io::Cursor::new(bytes));
         decoder.set_transformations(png::Transformations::EXPAND | png::Transformations::STRIP_16);
         let mut reader = decoder.read_info().map_err(|e| format!("NATIVE_TEXTURE_DECODE_FAILED: {e}"))?;
+        let (width,height)=(reader.info().width,reader.info().height);
+        if !texture_admitted(width,height,max_bytes,max_dimension)? {return Ok((width,height,None));}
         let mut pixels = vec![0; reader.output_buffer_size().ok_or("TEXTURE_TOO_LARGE")?];
         let info = reader.next_frame(&mut pixels).map_err(|e| format!("NATIVE_TEXTURE_DECODE_FAILED: {e}"))?;
         pixels.truncate(info.buffer_size());
@@ -984,7 +1039,7 @@ fn decode_texture(bytes: &[u8]) -> R<(u32, u32, Vec<u8>)> {
                 .collect(),
             _ => return Err("NATIVE_TEXTURE_FORMAT_UNSUPPORTED: use RGB/RGBA PNG or static SVG".into()),
         };
-        return Ok((info.width, info.height, rgba));
+        return Ok((info.width, info.height, Some(rgba)));
     }
 
     // Keep the native route aligned with the Web texture contract for common
@@ -993,11 +1048,15 @@ fn decode_texture(bytes: &[u8]) -> R<(u32, u32, Vec<u8>)> {
     let source = match std::str::from_utf8(bytes) {
         Ok(source) if source.trim_start().starts_with('<') => source,
         _ => {
+            let reader=image::ImageReader::new(std::io::Cursor::new(bytes)).with_guessed_format()
+                .map_err(|e|format!("NATIVE_TEXTURE_DECODE_FAILED: {e}"))?;
+            let (width,height)=reader.into_dimensions().map_err(|_|"NATIVE_TEXTURE_FORMAT_UNSUPPORTED: use PNG, JPEG, WebP, or static SVG")?;
+            if !texture_admitted(width,height,max_bytes,max_dimension)? {return Ok((width,height,None));}
             let decoded = image::load_from_memory(bytes)
                 .map_err(|_| "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: use PNG, JPEG, WebP, or static SVG")?
                 .to_rgba8();
             let (width, height) = decoded.dimensions();
-            return Ok((width, height, decoded.into_raw()));
+            return Ok((width, height, Some(decoded.into_raw())));
         }
     };
     let document = roxmltree::Document::parse(source)
@@ -1041,10 +1100,13 @@ fn decode_texture(bytes: &[u8]) -> R<(u32, u32, Vec<u8>)> {
     let tree = resvg::usvg::Tree::from_data(bytes, &options)
         .map_err(|e| format!("NATIVE_TEXTURE_SVG_INVALID: {e}"))?;
     let size = tree.size().to_int_size();
+    if !texture_admitted(size.width(),size.height(),max_bytes,max_dimension)? {
+        return Ok((size.width(),size.height(),None));
+    }
     let mut pixmap = resvg::tiny_skia::Pixmap::new(size.width(), size.height())
         .ok_or("NATIVE_TEXTURE_SVG_TOO_LARGE")?;
     resvg::render(&tree, resvg::tiny_skia::Transform::identity(), &mut pixmap.as_mut());
-    Ok((size.width(), size.height(), pixmap.take()))
+    Ok((size.width(), size.height(), Some(pixmap.take())))
 }
 impl Renderer {
     pub fn projected_buffer_bytes(&self)->usize {self.projected.retained_bytes()}
@@ -1247,8 +1309,10 @@ impl Renderer {
             .as_array()
             .ok_or("ASSET_MANIFEST_INVALID")?;
         let assets_by_id = index_assets(assets)?;
+        let texture_catalog = crate::sprite_resources::TextureCatalog::new(assets)?;
         let mut meshes = BTreeMap::new();
         let mut textures: BTreeMap<String, Arc<wgpu::BindGroup>> = BTreeMap::new();
+        let mut texture_bytes = BTreeMap::new();
         let mut lods = BTreeMap::new();
         for asset in assets {
             let kind = asset["kind"].as_str().unwrap_or("");
@@ -1349,6 +1413,7 @@ impl Renderer {
                 ],
             }));
             textures.insert(texture_id.to_owned(), texture.clone());
+            texture_bytes.insert(texture_id.to_owned(),u64::from(texture_width)*u64::from(texture_height)*4);
             texture
             };
             meshes.insert(
@@ -1406,20 +1471,9 @@ impl Renderer {
                 lods.insert(base.to_owned(), chain);
             }
         }
-        // Texture assets that are used by 2D sprites may not be referenced by
-        // a mesh. Decode those once as well so the same verified PNG path is
-        // used by both 3D materials and 2D sprites.
-        for asset in assets {
-            if asset["kind"].as_str() != Some("texture2d") {
-                continue;
-            }
-            let id = asset["id"].as_str().ok_or("ASSET_ID_MISSING")?.to_string();
-            if textures.contains_key(&id) {
-                continue;
-            }
-            let source = asset["source"].as_str().ok_or("TEXTURE_SOURCE_MISSING")?;
-            textures.insert(id, load_texture(&device, &queue, &texture_layout, package.get(&format!("content/{source}"))?)?);
-        }
+        // Mesh records hold their own shared bind groups. Preserve that existing
+        // ownership; ordinary and prepared sprite assets are demand-loaded below.
+        let persistent_textures=textures.keys().cloned().collect();
         let builtin_texture = solid_texture(&device, &queue, &texture_layout, [230, 236, 245, 255]);
         meshes.insert(
             "mesh://primitive/box".to_string(),
@@ -1441,6 +1495,8 @@ impl Renderer {
         });
         let particles = crate::particles::Particles::new(&device, format, &camera_layout);
         let projected=crate::projected::Projected::new(&device,format,&texture_layout);
+        let sprite_budget=crate::sprite_resources::Budget::from_plan(package.files.get("content/image-assets.json").map(Vec::as_slice))?;
+        let texture_estimates=texture_bytes.clone();
         Ok(Self {
             projected,
             world_visible:true,
@@ -1481,6 +1537,14 @@ impl Renderer {
             meshes,
             heightfield_revisions: BTreeMap::new(),
             textures,
+            texture_layout,
+            texture_catalog,
+            texture_bytes,
+            texture_estimates,
+            persistent_textures,
+            sprite_resources:crate::sprite_resources::Resources::new(crate::sprite_resources::next_epoch(),sprite_budget),
+            sprite_plan_revision:None,
+            sprite_plan:Vec::new(),
             batches: BTreeMap::new(),
             entity_records: BTreeMap::new(),
             sprites: Default::default(),
@@ -1506,6 +1570,38 @@ impl Renderer {
         if let Some(bloom) = &mut self.bloom {
             bloom.resize(&self.device, self.config.width, self.config.height);
         }
+    }
+    /// Upload incoming demand before retiring outgoing owners. No idle sprite
+    /// cache is retained: Game chooses its live/prefetch demand through plans.
+    pub fn sprite_plan_revision(&self)->Option<u64> {self.sprite_plan_revision}
+    pub fn sync_sprite_resources(&mut self,s:&WorldSnapshot,update:unone_engine::SpriteResourcePlanUpdate,package:&Package)->R<()> {
+        if let Some(plan)=update.resources {self.sprite_plan=plan;}
+        self.sprite_plan_revision=Some(update.revision);
+        let (device,queue,layout,catalog)=(&self.device,&self.queue,&self.texture_layout,&self.texture_catalog);
+        let (textures,sizes,estimates)=(&mut self.textures,&mut self.texture_bytes,&mut self.texture_estimates);
+        self.sprite_resources.reconcile(&self.sprite_plan,|id,limit|ensure_texture(device,queue,layout,catalog,package,textures,sizes,estimates,id,limit));
+        let mut needed=self.sprite_resources.ready_assets();
+        needed.extend(self.persistent_textures.iter().cloned());
+        for entity in s.entities.values().filter(|e|self.sprite_resources.drawable(e)) {
+            if let Some(sprite)=&entity.sprite && sprite.visible {needed.insert(sprite.asset.clone());}
+        }
+        needed.extend(s.projected_geometry.values().map(|batch|batch.texture.clone()));
+        for id in &needed {ensure_texture(device,queue,layout,catalog,package,textures,sizes,estimates,id,u64::MAX)?;}
+        textures.retain(|id,_|needed.contains(id));
+        sizes.retain(|id,_|needed.contains(id));
+        Ok(())
+    }
+    pub fn sprite_feedback(&mut self,s:&WorldSnapshot)->unone_engine::PresentationResourceInput {
+        self.sprite_resources.feedback(s)
+    }
+    pub fn sprite_resource_report(&self)->serde_json::Value {
+        serde_json::json!({"resident_textures":self.textures.len(),"resident_rgba_bytes_estimate":self.texture_bytes.values().sum::<u64>(),
+            "mesh_pinned_textures":self.persistent_textures.len(),"unused_sprite_cache_entries":0,
+            "prepared":self.sprite_resources.report(),"known_image_size_entries":self.texture_estimates.len(),
+            "managed_sprite_budget":{"max_bytes":self.sprite_resources.budget.max_bytes,"max_entries":self.sprite_resources.budget.max_entries},
+            "managed_budget_excludes":"ordinary unprepared sprites, mesh/projected/UI owners and temporary incoming/outgoing overlap",
+            "scope":"native world texture owners; excludes UI encoded images, render targets and driver/in-flight allocations",
+            "readiness":"texture upload commands queued in current renderer epoch; submitted appearance requires successful surface draw submission"})
     }
     fn batch(&mut self, id: &str, asset: &str, bytes: &[u8], revision: u64) -> R<()> {
         let started = std::time::Instant::now();
@@ -1779,7 +1875,7 @@ impl Renderer {
 
     fn prepare_sprites(&mut self, s: &WorldSnapshot) -> R<()> {
         let started = std::time::Instant::now();
-        self.sprites.prepare(&s.entities);
+        self.sprites.prepare_selected(&s.entities,|entity|self.sprite_resources.drawable(entity));
         for run in &self.sprites.runs {
             if !self.textures.contains_key(&run.asset) {
                 return Err(format!("NATIVE_SPRITE_TEXTURE_MISSING: {}", run.asset));
@@ -2004,6 +2100,8 @@ impl Renderer {
         let mut encoder = self.device.create_command_encoder(&Default::default());
         self.draw(&mut encoder, &view);
         self.queue.submit([encoder.finish()]);
+        let scene_drawn=self.world_visible && self.pipeline_scene();
+        self.sprite_resources.submitted(s,scene_drawn);
         self.submit_ms = started.elapsed().as_secs_f64() * 1000.;
         let started = std::time::Instant::now();
         self.queue.present(output);

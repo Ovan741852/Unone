@@ -22,6 +22,39 @@ void main(){gl_FragColor=unoneShade(unone_uv,texture2D(unone_texture,unone_uv)*u
 #include <colorspace_fragment>
 }`;
 }
+
+// Resource preparation owns source/type layout; instances own mutable values.
+export function spriteMaterialDescriptor(id, definition) {
+ if(!id && definition===undefined)return BASIC_SPRITE_MATERIAL;
+ if(typeof id!=='string'||!id||!definition)throw Error('SPRITE_MATERIAL_INVALID');
+ const source=fragmentSource(id,definition),defaults={};
+ for(const [name,value]of Object.entries(definition.uniforms??{}))defaults[name]=Array.isArray(value)?Object.freeze([...value]):value;
+ return Object.freeze({id,source,signature:source,defaults:Object.freeze(defaults),names:Object.freeze(Object.keys(defaults))});
+}
+const BASIC_SPRITE_MATERIAL=Object.freeze({signature:'basic',id:null,source:null,defaults:Object.freeze({}),names:Object.freeze([])});
+export function createSpriteMaterial(THREE, descriptor, texture) {
+ if(!descriptor.source)return new THREE.MeshBasicMaterial({color:0xffffff,map:texture,transparent:true,opacity:1});
+ const uniforms={unone_texture:{value:texture},unone_base_color:{value:[1,1,1,1]},unone_time:{value:0},unone_frame:{value:0}};
+ for(const [name,value]of Object.entries(descriptor.defaults))uniforms[name]={value:Array.isArray(value)?[...value]:value};
+ return new THREE.ShaderMaterial({name:`unone-shader:${descriptor.id}`,uniforms,vertexShader,fragmentShader:descriptor.source,transparent:true,depthWrite:false});
+}
+export function validateSpriteUniforms(descriptor, values=descriptor.defaults) {
+ if(!values||typeof values!=='object'||Array.isArray(values))throw Error('SPRITE_UNIFORMS_INVALID');
+ const names=descriptor.names;let count=0;for(const name in values)if(Object.hasOwn(values,name))count++;
+ if(count!==names.length)throw Error('SPRITE_UNIFORMS_INVALID');
+ for(const name of names)if(!Object.hasOwn(values,name)||width(values[name])!==width(descriptor.defaults[name]))throw Error(`SPRITE_UNIFORMS_INVALID: ${name}`);
+ return values;
+}
+export function applySpriteMaterialValues(material, descriptor, texture, values, world) {
+ validateSpriteUniforms(descriptor,values);
+ if(!descriptor.source){const changed=Boolean(material.map)!==Boolean(texture);material.map=texture;material.color.set(0xffffff);if(changed)material.needsUpdate=true;return;}
+ const uniforms=material.uniforms;uniforms.unone_texture.value=texture;
+ uniforms.unone_time.value=Number(world.time_seconds??0);uniforms.unone_frame.value=Number(world.frame??0);
+ for(const name of descriptor.names){const value=values[name];
+  if(Array.isArray(value)){const target=uniforms[name].value;for(let i=0;i<value.length;i++)target[i]=value[i];}
+  else uniforms[name].value=value;
+ }
+}
 export function createShaderMaterials(THREE,renderer,backend){
  const records=new Map();
  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;

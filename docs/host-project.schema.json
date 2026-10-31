@@ -27,6 +27,22 @@
       ],
       "type": "object"
     },
+    "AssetCatalogEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind"
+      ],
+      "type": "object"
+    },
     "AudioCategory": {
       "additionalProperties": false,
       "description": "How a game groups its sounds, and what the engine does about the grouping.\n\nThe engine does not name `bgm` or `sfx`: the taxonomy is the game's. It owns\nonly the rules, because they decide which source survives a switch, and that\nis world state a test asserts.\n\nThe reserved fields exist so the declaration shape does not have to change\nwhen they are implemented. Declaring one is an **error**, never a silent\nno-op: a game believing it configured something it did not is the hardest\nkind of audio bug to find.",
@@ -1664,6 +1680,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "asset_catalog": {
+      "description": "Declared presentation assets; bytes and decoded/GPU objects stay in the host.",
+      "items": {
+        "$ref": "#/$defs/AssetCatalogEntry"
+      },
+      "type": "array"
+    },
     "config": {
       "$ref": "#/$defs/ProjectConfig"
     },
