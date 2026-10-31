@@ -9,7 +9,13 @@ use std::collections::BTreeMap;
 #[serde(deny_unknown_fields)]
 pub struct HostProject {
     pub config: ProjectConfig,
+    /// Entry script source; empty when `script_bytecode` declares a precompiled chunk.
+    #[serde(default)]
     pub script: String,
+    /// Precompiled entry script in place of `script`. Its bytes travel beside this
+    /// JSON as staged data SCRIPT_BYTECODE_DATA_ID, never inside it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub script_bytecode: Option<crate::ScriptBytecodeDecl>,
     #[serde(default)]
     pub job_sources: BTreeMap<String,String>,
     // Preserve original JSON locations for the common scene validator.
@@ -52,8 +58,23 @@ impl HostProject {
     pub fn into_runtime_with_data(
         self,
         seed: u64,
-        data: BTreeMap<String, Vec<u8>>,
+        mut data: BTreeMap<String, Vec<u8>>,
     ) -> Result<EngineRuntime, Box<Diagnostic>> {
+        let invalid = |message: String| Box::new(Diagnostic::error("HOST_PROJECT_INVALID", "Invalid host project payload", message));
+        let script_bytecode = match &self.script_bytecode {
+            Some(decl) => {
+                if !self.script.is_empty() {
+                    return Err(invalid("SCRIPT_BYTECODE_INVALID: declare either script or script_bytecode".into()));
+                }
+                let bytes = data.remove(crate::SCRIPT_BYTECODE_DATA_ID)
+                    .ok_or_else(|| invalid(format!("SCRIPT_BYTECODE_MISSING: stage {} as {}", decl.source, crate::SCRIPT_BYTECODE_DATA_ID)))?;
+                crate::script_bytecode::admit(decl, &bytes).map_err(invalid)?;
+                Some(bytes)
+            }
+            None if data.contains_key(crate::SCRIPT_BYTECODE_DATA_ID) =>
+                return Err(invalid("SCRIPT_BYTECODE_UNDECLARED: staged bytecode needs a script_bytecode declaration".into())),
+            None => None,
+        };
         let scene = self
             .scene
             .as_deref()
@@ -62,6 +83,7 @@ impl HostProject {
         EngineRuntime::load_source_project(SourceProject {
             config: self.config,
             source: self.script,
+            script_bytecode,
             job_sources: self.job_sources,
             scene,
             seed,

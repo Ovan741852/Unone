@@ -22,6 +22,13 @@ export async function assembleProject(config, readText, readJson) {
   return {...(Object.keys(job_sources).length?{job_sources}:{}),config,script:await readText(config.entry_script??'scripts/main.luau'),scene:config.main_scene?await readJson(config.main_scene):null};
 }
 const observationDecoder=new TextDecoder(),projectEncoder=new TextEncoder();
+export const SCRIPT_BYTECODE_DATA_ID='unone:script-bytecode';
+// Content files a host stages beside a load payload: declared data assets and a
+// production export's precompiled entry script, as content-relative sources.
+export function payloadDataSources(payload){
+  return [...(payload?.data_assets??[]).map(({id,source})=>({id,source})),
+    ...(payload?.script_bytecode?[{id:SCRIPT_BYTECODE_DATA_ID,source:payload.script_bytecode.source}]:[])];
+}
 // Optional trusted Core ABI grant: immutable resource generations are leased by
 // the runtime until its next successful publication. Never retain a heap view.
 const imageResources=new WeakMap();

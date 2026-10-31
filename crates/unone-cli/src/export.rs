@@ -214,6 +214,11 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     // in case authoring files changed after the early compatibility preflight.
     validate_runtime_packages(&config.runtime_packages, &manifest)?;
     files.extend(content);
+    // Production players load the entry script precompiled with their exact
+    // compiler settings; development players keep source for hot reload.
+    if !development {
+        precompile_entry_script(&mut files, &manifest)?;
+    }
     let compiled = manifest["compiled_systems"].as_array()
         .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
     for id in settings.enabled_ids() {
@@ -523,7 +528,13 @@ mod tests {
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
         let output = directory.path().join("exact");
         web_with_templates(directory.path(), &output, Some(&runtime), false, &repo).unwrap();
-        assert_eq!(serde_json::from_slice::<Value>(&fs::read(output.join("content/project.json")).unwrap()).unwrap()["config"]["runtime_packages"], serde_json::to_value(&packages).unwrap());
+        let payload = serde_json::from_slice::<Value>(&fs::read(output.join("content/project.json")).unwrap()).unwrap();
+        assert_eq!(payload["config"]["runtime_packages"], serde_json::to_value(&packages).unwrap());
+        // A production export ships production bytecode instead of entry source.
+        assert!(payload.get("script").is_none());
+        let bytecode = fs::read(output.join("content").join(payload["script_bytecode"]["source"].as_str().unwrap())).unwrap();
+        assert_eq!(payload["script_bytecode"]["byte_length"], bytecode.len());
+        assert!(payload["script_bytecode"]["format"].as_str().unwrap().contains("/o2/t0/"));
 
         fs::write(&config_path, serde_json::to_vec(&json!({"name":"legacy project","entry_script":"main.luau"})).unwrap()).unwrap();
         descriptor.as_object_mut().unwrap().remove("runtime_packages");
@@ -785,6 +796,23 @@ fn validate_renderer_file_path(path: &str) -> Result<()> {
         && !path.starts_with('/') && path.split('/').all(|part| !part.is_empty() && part != "." && part != ".."),
         "RENDERER_PATH_INVALID: custom renderer files must use safe project-relative forward-slash paths: {path}");
     Ok(())
+}
+
+/// Replaces the payload's entry source with production bytecode served beside
+/// it, so the player neither parses source out of JSON nor compiles at load.
+fn precompile_entry_script(files: &mut Vec<(String, Vec<u8>)>, manifest: &Value) -> Result<()> {
+    let index = files.iter().position(|(path, _)| path == "content/project.json").context("content/project.json missing")?;
+    let mut payload: Value = serde_json::from_slice(&files[index].1)?;
+    let source = payload.as_object_mut().and_then(|p| p.remove("script")).context("ENTRY_SCRIPT_MISSING")?;
+    let native_codegen = manifest["cargo_features"].as_array().is_some_and(|f| f.iter().any(|v| v == "native-codegen"));
+    let compiled = unone_engine::compile_production_script(source.as_str().context("ENTRY_SCRIPT_MISSING")?, native_codegen)
+        .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
+    let decl = unone_engine::ScriptBytecodeDecl { source: "script.luaubc".into(), format: compiled.format, byte_length: compiled.bytes.len() };
+    payload["script_bytecode"] = serde_json::to_value(&decl)?;
+    let encoded = serde_json::to_vec(&payload)?;
+    unone_engine::HostProject::parse(&encoded).map_err(|e| anyhow::anyhow!(e.explanation))?;
+    files[index].1 = encoded;
+    push_unique_content_file(files, format!("content/{}", decl.source), compiled.bytes)
 }
 
 /// Initial engine-owned custom shader API executes on the WebGL2 player only.

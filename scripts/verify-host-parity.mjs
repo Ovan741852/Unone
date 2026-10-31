@@ -13,7 +13,7 @@ const cli=resolve(values.cli??join(root,'target/debug/game.exe'));
 const exported=values.export?resolve(values.export):null;
 const runtime=exported?JSON.parse(readFileSync(join(exported,'runtime/runtime.json'),'utf8')):null;
 const js=exported?join(exported,'runtime',runtime.javascript):resolve(values.wasm??join(root,'target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js'));
-const {loadProject,readObservation}=await import(pathToFileURL(join(exported??root,'web/shared/load-project.js')).href);
+const {loadProject,readObservation,payloadDataSources}=await import(pathToFileURL(join(exported??root,'web/shared/load-project.js')).href);
 const fixture=resolve(values.fixture??join(root,'tests/host-parity-project'));
 const config=JSON.parse(readFileSync(join(fixture,'project.unone.json'),'utf8'));
 const hasTests=Boolean(config.test_files?.length);
@@ -33,7 +33,7 @@ const module=await new Promise((resolveReady,reject)=>{
 });
 const payload=exported?JSON.parse(readFileSync(join(exported,'content/project.json'),'utf8')):await assembleProject(config,async path=>readFileSync(join(fixture,path),'utf8'),async path=>JSON.parse(readFileSync(join(fixture,path),'utf8')));
 // Data assets come from the export's content files, as the official player fetches them.
-const dataAssets=(payload.data_assets??[]).map(asset=>({id:asset.id,bytes:new Uint8Array(readFileSync(exported?join(exported,'content',asset.source):join(fixture,asset.source)))}));
+const dataAssets=payloadDataSources(payload).map(asset=>({id:asset.id,bytes:new Uint8Array(readFileSync(exported?join(exported,'content',asset.source):join(fixture,asset.source)))}));
 let compared=0;
 function replay(data,spec){
   let result=loadProject(module,{...data,restored_save:spec.load_save??null},BigInt(spec.seed??42),dataAssets);

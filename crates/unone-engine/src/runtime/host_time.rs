@@ -48,6 +48,6 @@ impl EngineRuntime {
         if let Some(scene) = &paths.main_scene { world.borrow_mut().load_scene(scene)?; }
         let (decls, data) = crate::data_assets::read_from_project(&paths)?;
         let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
-        Self::with_world(config, paths, world, None, seed, None, None, None, data_assets)
+        Self::with_world(config, paths, world, None, None, seed, None, None, None, data_assets)
     }
 }

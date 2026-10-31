@@ -83,10 +83,12 @@ measurements, not hidden claims.
 4. Only after a measured hotspot, prototype one typed batch/handle path. The
    existing table API remains the semantic reference and fallback, with parity
    tests before shipping.
-5. Consider persistent bytecode caching only after measuring startup/compile
-   cost. A cache key must include source/dependency hashes, Luau bytecode format,
-   target ABI, compiler options, sandbox/features and engine API version; cache
-   failure must safely fall back to compilation.
+5. Production Web exports precompile the entry script (see
+   `compile_production_script`); the declared format names the Luau bytecode
+   version, optimization and type-information levels and the engine version, and
+   a player loads only its own format. A persistent cache beyond export would also
+   need source/dependency hashes, target ABI and sandbox/features in its key, and
+   must fall back to compilation on failure.
 
 Do not add ECS, SoA, Web Workers, asset streaming or a bytecode cache merely to
 fill an architectural slot. They require workload evidence and a replay parity

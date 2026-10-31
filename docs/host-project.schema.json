@@ -1145,6 +1145,31 @@
       },
       "type": "object"
     },
+    "ScriptBytecodeDecl": {
+      "additionalProperties": false,
+      "description": "Declares the precompiled entry script in a host payload in place of `script`.",
+      "properties": {
+        "byte_length": {
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "format": {
+          "description": "Compiler identity; must equal the loading runtime's `script_bytecode_format`.",
+          "type": "string"
+        },
+        "source": {
+          "description": "Content-relative file the host fetches and stages as SCRIPT_BYTECODE_DATA_ID.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "format",
+        "byte_length"
+      ],
+      "type": "object"
+    },
     "ShaderMaterialDefinition": {
       "additionalProperties": false,
       "properties": {
@@ -1617,7 +1642,20 @@
       "default": null
     },
     "script": {
+      "default": "",
+      "description": "Entry script source; empty when `script_bytecode` declares a precompiled chunk.",
       "type": "string"
+    },
+    "script_bytecode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ScriptBytecodeDecl"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Precompiled entry script in place of `script`. Its bytes travel beside this\nJSON as staged data SCRIPT_BYTECODE_DATA_ID, never inside it."
     },
     "viewport_aspect": {
       "default": null,
@@ -1645,8 +1683,7 @@
     }
   },
   "required": [
-    "config",
-    "script"
+    "config"
   ],
   "title": "HostProject",
   "type": "object"

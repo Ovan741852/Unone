@@ -25,12 +25,18 @@ with actual VM allocation and incremental-GC measurements.
 
 ## Shipping reliability is broader than compressed scripts
 
-`export.rs` currently embeds Luau **source text** in `content/project.json`, with
-config and scene. It does not export Luau bytecode. The local measurement server
-supports gzip transport; production hosting must configure compression itself.
-Compression reduces transfer size, not script computation cost or source access.
-Bytecode would need a pinned compiler/VM version, build metadata and debug/source
-mapping decisions; evaluate startup savings before adding a second script format.
+A production Web export ships the entry script as Luau bytecode
+(`content/script.luaubc`), compiled with the production player's exact settings
+(optimization 2, type information only for native codegen). The payload declares
+it as `script_bytecode` with that compiler identity and its length; the player
+stages it beside the JSON and rejects a mismatched compiler or truncated file.
+Development exports keep source for hot reload and script digests. Bytecode keeps
+line information, so runtime errors name the same chunk and line as source.
+Measured on Populous R18 (84 MB source, 62 MB bytecode): compiling took 1.5 s
+natively at every load, and the JSON payload parse alone peaked at +206 MB.
+The local measurement server supports gzip transport; production hosting must
+configure compression itself. Compression reduces transfer size, not script
+computation cost.
 
 The important release guarantees are the selected production feature set,
 absence of developer ABI/UI, hash-verified files, actual exported-host replay

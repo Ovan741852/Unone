@@ -1,5 +1,8 @@
 mod application;
 pub use application::{ApplicationState, EscapeBehavior};
+mod script_bytecode;
+pub use script_bytecode::{ScriptBytecode, ScriptBytecodeDecl, compile_production_script, script_bytecode_format,
+    MAX_SCRIPT_BYTECODE_BYTES, SCRIPT_BYTECODE_DATA_ID};
 mod shader;
 /// Backend-independent packed geometry batches and reference query semantics.
 pub mod spatial;

@@ -71,6 +71,8 @@ pub fn encode_observation(
 pub struct SourceProject {
     pub config: ProjectConfig,
     pub source: String,
+    /// Entry chunk precompiled by `compile_production_script`; replaces `source`.
+    pub script_bytecode: Option<Vec<u8>>,
     pub job_sources: BTreeMap<String, String>,
     pub scene: Option<SceneFile>,
     pub seed: u64,
@@ -332,6 +334,8 @@ pub struct EngineRuntime {
     #[cfg(feature = "dev-tools")]
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
+    /// Precompiled entry chunk, consumed by the first load.
+    script_bytecode: Option<Vec<u8>>,
     performance: PerformanceCollector,
     performance_counts: FrameCounts,
     /// Whether to time the observation a host would receive. Off by default:
@@ -382,6 +386,7 @@ impl EngineRuntime {
         let value = match lua
             .load(&source)
             .set_name(paths.entry_script.to_string_lossy())
+            .set_mode(mlua::ChunkMode::Text)
             .eval::<Value>()
         {
             Ok(value) => value,
@@ -493,7 +498,7 @@ impl EngineRuntime {
         }
         let (decls, data) = crate::data_assets::read_from_project(&paths)?;
         let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
-        Self::with_world(config, paths, world, None, seed, restored_save, None, None, data_assets)
+        Self::with_world(config, paths, world, None, None, seed, restored_save, None, None, data_assets)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -587,6 +592,7 @@ impl EngineRuntime {
         let SourceProject {
             mut config,
             source,
+            script_bytecode,
             job_sources,
             scene,
             seed,
@@ -625,6 +631,7 @@ impl EngineRuntime {
             paths,
             world,
             Some(source),
+            script_bytecode,
             seed,
             restored_save,
             viewport_aspect,
@@ -639,6 +646,7 @@ impl EngineRuntime {
         paths: ProjectPaths,
         world: Rc<RefCell<World>>,
         script_source: Option<String>,
+        script_bytecode: Option<Vec<u8>>,
         seed: u64,
         restored_save: Option<serde_json::Value>,
         initial_viewport_aspect: Option<f64>,
@@ -755,6 +763,7 @@ impl EngineRuntime {
             #[cfg(feature = "dev-tools")]
             last_seen_script_stamp: None,
             script_source,
+            script_bytecode,
             performance: PerformanceCollector::default(),
             performance_counts: FrameCounts::default(),
             measure_serialization: false,
@@ -1569,14 +1578,21 @@ impl EngineRuntime {
         _is_reload: bool,
         _source_override: Option<String>,
     ) -> Result<(), Box<Diagnostic>> {
-        let source = self.script_source.as_deref().ok_or_else(|| {
-            Box::new(Diagnostic::error(
-                "PLAYER_SOURCE_REQUIRED",
-                "Player requires packaged source",
-                "Filesystem loading and hot reload are developer-only.",
-            ))
-        })?;
-        let table = evaluate_script(&self.lua, &self.paths, source)?;
+        // A player loads its script once and never reloads it, so it keeps
+        // neither the source text nor the bytecode after loading.
+        let table = if let Some(bytecode) = self.script_bytecode.take() {
+            self.script_source = None;
+            evaluate_chunk(&self.lua, &self.paths, &bytecode, mlua::ChunkMode::Binary)?
+        } else {
+            let source = self.script_source.take().ok_or_else(|| {
+                Box::new(Diagnostic::error(
+                    "PLAYER_SOURCE_REQUIRED",
+                    "Player requires packaged source",
+                    "Filesystem loading and hot reload are developer-only.",
+                ))
+            })?;
+            evaluate_script(&self.lua, &self.paths, &source)?
+        };
         let update_fn = script_entrypoint(&table, "update", &self.paths)?;
         script_entrypoint(&table, "start", &self.paths)?
             .call::<()>(self.api.clone())
@@ -1591,6 +1607,10 @@ impl EngineRuntime {
         is_reload: bool,
         source_override: Option<String>,
     ) -> Result<(), Box<Diagnostic>> {
+        if self.script_bytecode.is_some() {
+            return Err(Box::new(Diagnostic::error("SCRIPT_BYTECODE_UNSUPPORTED", "Developer players load script source",
+                "Hot reload and script digests need the source; export a production player to load bytecode.")));
+        }
         let script_stamp = self.script_stamp()?;
         let source = match source_override.as_deref() {
             Some(source) => source.to_string(),
@@ -1791,9 +1811,21 @@ fn evaluate_script(
     paths: &ProjectPaths,
     source: &str,
 ) -> Result<Table, Box<Diagnostic>> {
+    evaluate_chunk(lua, paths, source.as_bytes(), mlua::ChunkMode::Text)
+}
+
+// The mode is always explicit: auto-detection treats any source whose first
+// byte is below '\n' (a leading tab, for one) as unchecked bytecode.
+fn evaluate_chunk(
+    lua: &Lua,
+    paths: &ProjectPaths,
+    chunk: &[u8],
+    mode: mlua::ChunkMode,
+) -> Result<Table, Box<Diagnostic>> {
     let value = lua
-        .load(source)
+        .load(chunk)
         .set_name(paths.entry_script.to_string_lossy())
+        .set_mode(mode)
         .eval::<Value>()
         .map_err(|err| Box::new(script_diagnostic(paths, err.to_string())))?;
     match value {

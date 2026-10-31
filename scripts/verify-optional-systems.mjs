@@ -65,8 +65,10 @@ try {
    const checked=run([process.execPath,join(root,'scripts/verify-host-parity.mjs'),'--fixture',noTests,'--export',noTestsOutput]);
    if(!checked.stdout.includes('"compared_frames":1'))throw new Error('Project without test files was not replayed');
   }
-  const {loadProject,readObservation}=await import(pathToFileURL(join(output,'web/shared/load-project.js')).href);
+  const {loadProject:loadPayload,readObservation,payloadDataSources}=await import(pathToFileURL(join(output,'web/shared/load-project.js')).href);
   const payload=JSON.parse(readFileSync(join(output,'content/project.json'),'utf8'));
+  // Stage what the exported player stages, including precompiled bytecode.
+  const loadProject=(module,value,seed)=>loadPayload(module,value,seed,payloadDataSources(value).map(({id,source})=>({id,bytes:readFileSync(join(output,'content',source))})));
   const timings=[];
   for(let i=0;i<5;i++){
    const initialized=await moduleFor(runtime,manifest),began=performance.now();
@@ -96,7 +98,7 @@ try {
     let sceneRejected=false;
     try{loadProject(initialized.module,badScene,42n);}catch(error){sceneRejected=String(error).includes('SYSTEM_NOT_COMPILED');}
     if(!sceneRejected)throw new Error('Compiled-out scene solver accepted');
-    const bad=structuredClone(payload);bad.script='return {start=function(api) api.physics3d.raycast({}) end,update=function() end}';
+    const bad=structuredClone(payload);bad.script='return {start=function(api) api.physics3d.raycast({}) end,update=function() end}';delete bad.script_bytecode;
     let rejected=false;
     try{loadProject(initialized.module,bad,42n);}catch(error){rejected=String(error).includes('SYSTEM_NOT_COMPILED');}
     if(!rejected)throw new Error('Compiled-out Lua API silently accepted');
