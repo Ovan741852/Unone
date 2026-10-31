@@ -31,7 +31,7 @@ test('mesh bytes come from base64 or bounded memory views and are copied out of 
 
 test('meshes rebuild only on a new revision; placement and visibility update in place',()=>{
   const scene=new THREE.Scene(),loaded={state:'pending',texture:new THREE.Texture()};
-  const renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>loaded});
+  const renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>loaded,curvature:createWorldCurvature()});
   const specs=new Map([['texture://ground',{kind:'texture2d'}]]);
   assert.equal(renderer.draw({plain:mesh(1),ground:mesh(2,{texture:'texture://ground',material:{filter:'nearest',blend:'cutout'}})},{},specs),true,'a loading texture is pending');
   const plain=scene.children.find(o=>o.material&&!o.material.alphaTest),ground=scene.children.find(o=>o.material.alphaTest===.5);
@@ -39,14 +39,38 @@ test('meshes rebuild only on a new revision; placement and visibility update in 
   assert.equal(plain.geometry.attributes.color.itemSize,4);assert.equal(plain.geometry.index.count,3);
   loaded.state='ready';
   const moved={...placement,position:{x:5,y:0,z:0}};
-  assert.equal(renderer.draw({plain:mesh(1),ground:mesh(2,{texture:'texture://ground',material:{filter:'nearest',blend:'cutout'}})},{plain:{transform:moved,visible:false}},specs),false);
+  assert.equal(renderer.draw({plain:mesh(1),ground:mesh(2,{texture:'texture://ground',material:{filter:'nearest',blend:'cutout'}})},{plain:{transforms:[moved],visible:false}},specs),false);
   assert.equal(renderer.metrics().geometry3d_rebuilds,2,'placement never rebuilds');
-  assert.equal(plain.position.x,5);assert.equal(plain.visible,false);assert.equal(ground.visible,true);
+  const matrix=new THREE.Matrix4();plain.getMatrixAt(0,matrix);
+  assert.equal(matrix.elements[12],5);assert.equal(plain.visible,false);assert.equal(ground.visible,true);
   assert.equal(ground.material.map.magFilter,THREE.NearestFilter);assert.notEqual(ground.material.map,loaded.texture,'sampler state lives on a variant');
   renderer.draw({plain:mesh(3,{lift:1})},{},specs);
   assert.equal(renderer.metrics().geometry3d_rebuilds,3);assert.equal(scene.children.length,1,'removed meshes leave the scene');
   renderer.clear();assert.equal(scene.children.length,0);
   assert.throws(()=>renderer.draw({bad:mesh(4,{texture:'texture://missing'})},{},specs),/GEOMETRY3D_TEXTURE_MISSING/);
+});
+
+test('placements draw as instances and screen billboards carry pixel offsets',()=>{
+  const scene=new THREE.Scene(),curvature=createWorldCurvature(),renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>null,curvature});
+  const tiles=[-128,0,128].map(x=>({...placement,position:{x,y:0,z:0}}));
+  renderer.draw({ground:mesh(1)},{ground:{transforms:tiles,visible:true}},new Map());
+  const ground=scene.children[0],matrix=new THREE.Matrix4();assert.equal(ground.count,3);ground.getMatrixAt(2,matrix);assert.equal(matrix.elements[12],128);
+  renderer.draw({ground:mesh(1)},{ground:{transforms:[...tiles,...tiles],visible:true}},new Map());
+  assert.equal(renderer.metrics().geometry3d_rebuilds,2,'outgrowing the instance capacity rebuilds once');assert.equal(scene.children[0].count,6);
+  renderer.draw({ground:mesh(1)},{ground:{transforms:[],visible:true}},new Map());assert.equal(scene.children[0].visible,false);
+  const v=new Float32Array(33);for(let i=0;i<3;i++)v.set([i,0,0,i*4,-8,0,0,1,1,1,1],i*11);
+  const sprite={format:'f32le-p3-o2-uv2-rgba4-u32-v1',vertex_count:3,index_count:3,revision:2,material:{billboard:'screen',depth_bias:.5,blend:'cutout'},
+    vertices:base64(new Uint8Array(v.buffer)),indices:base64(new Uint8Array(new Uint32Array([0,1,2]).buffer))};
+  renderer.draw({sprite},{},new Map());
+  const billboard=scene.children.find(o=>o.geometry.attributes.unoneOffset);
+  assert.equal(billboard.geometry.attributes.unoneOffset.getX(1),4);assert.equal(billboard.geometry.attributes.uv.getY(0),0);assert.equal(billboard.material.side,THREE.DoubleSide);
+  const projecting=()=>({uniforms:{},vertexShader:'void main(){\n#include <project_vertex>\n}'});
+  const shader=projecting();billboard.material.onBeforeCompile(shader);
+  assert.match(shader.vertexShader,/attribute vec2 unoneOffset/);assert.match(shader.vertexShader,/unoneBiased/);assert.equal(shader.uniforms.unoneDepthBias.value,.5);
+  curvature.viewport(800,600);assert.deepEqual(shader.uniforms.unoneViewport.value,[800,600]);
+  // Curvature preparation never replaces a billboard's own projection stage.
+  curvature.prepare(scene,{position:{x:0,y:1,z:1},target:{x:0,y:0,z:0},curvature:.1});
+  const again=projecting();billboard.material.onBeforeCompile(again);assert.match(again.vertexShader,/unoneBiased/);
 });
 
 test('curvature patches world materials lazily and bends in view space around the target',()=>{

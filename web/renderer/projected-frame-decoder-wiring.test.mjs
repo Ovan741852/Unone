@@ -12,7 +12,7 @@ function fixture(){
   assertFrameSnapshot:noop,frameProfile:null,framePublication:null,assertProjectedBackend:noop,assertRasterSnapshot:noop,rasterAvailable:()=>true,
   projectedEntries:()=>[],heightfieldEntries:()=>[],rasterPolicy:{requested:'off'},backend:'webgl',bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop},render:noop},worldOf:x=>x,resize:noop,checkedRaster:false,specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),
-  shaderMaterials:{retain:noop,clear:noop},scene:{remove:noop},camera:{},camera3d:{},geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},curvature:0},drawInRect:(_,draw)=>draw(),meshEntities:{draw:()=>false,clear(){},contextLost(){}},meshAssets:new Map(),heightfields:{draw:noop,clear:noop},
+  shaderMaterials:{retain:noop,clear:noop},scene:{remove:noop},camera:{},camera3d:{},geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},viewport(){},curvature:0},world3d:{scale:{z:1}},bufferSize:{x:1,y:1},drawInRect:(_,draw)=>draw(),meshEntities:{draw:()=>false,clear(){},contextLost(){}},meshAssets:new Map(),heightfields:{draw:noop,clear:noop},
   instances:{draw:noop,clear:noop},particles:{draw:noop},projected:{entries:()=>[],prepare:noop,draw:noop,clear:noop},rasterPass:null,startupPresentation:null,frameDraws:null,
   textureCache:createTextureCachePolicy(new Map()),profile:null};
  vm.createContext(context);vm.runInContext(between('draw','clearTextures')+between('clearTextures','dispose'),context);

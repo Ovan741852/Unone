@@ -15,7 +15,7 @@ function fixture(){
   backend:'webgl',rasterPolicy:{requested:'upper_left_checked'},bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],
   renderer:{info:{reset:noop},getContext:()=>({NO_ERROR:0,getError:()=>0}),render(){events.push('ordinary');}},worldOf:x=>x,resize:noop,
   checkedRaster:true,validateRaster:()=>true,specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),shaderMaterials:{retain:noop},
-  scene:{},camera:{},camera3d:{},geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},curvature:0},drawInRect:(_,draw)=>draw(),meshEntities:{draw:()=>false,clear(){},contextLost(){}},heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
+  scene:{},camera:{},camera3d:{},geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},viewport(){},curvature:0},world3d:{scale:{z:1}},bufferSize:{x:1,y:1},drawInRect:(_,draw)=>draw(),meshEntities:{draw:()=>false,clear(){},contextLost(){}},heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
   projected:{entries:()=>[],prepare:noop,draw:noop},rasterPass:{draw:noop},
   frameDraws:{prepare(frame){events.push(['prepare',frame.draws.length]);return true;}},
   framePass:{draw(draws,camera,frame){events.push(['frame',frame.revision]);return complete;}},

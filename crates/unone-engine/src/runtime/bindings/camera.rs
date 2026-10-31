@@ -112,6 +112,7 @@ pub(super) fn camera(
                 target.set("z", camera.target.z)?;
                 result.set("fovDegrees", camera.fov_degrees)?;
                 result.set("curvature", camera.curvature)?;
+                result.set("handedness", if camera.handedness == crate::CameraHandedness::Left { "left" } else { "right" })?;
                 if let Some(rect) = camera.rect {
                     let value = lua.create_table()?;
                     value.set("x", rect.x)?;value.set("y", rect.y)?;value.set("width", rect.width)?;value.set("height", rect.height)?;
@@ -164,7 +165,7 @@ pub(super) fn camera(
         lua.create_function(move |_, transform: Table| {
             // Scene JSON spells these orthographic_size/fov_degrees; a copied
             // snake_case key must fail instead of leaving the camera unchanged.
-            super::reject_unknown_keys(&transform, &["projection", "position", "target", "orthographicSize", "fovDegrees", "curvature", "rect"], "camera.setTransform")?;
+            super::reject_unknown_keys(&transform, &["projection", "position", "target", "orthographicSize", "fovDegrees", "curvature", "rect", "handedness"], "camera.setTransform")?;
             let projection = match transform.get::<Option<String>>("projection")? {
                 Some(projection) => projection,
                 None => camera_set_transform_world.borrow().camera_projection().to_string(),
@@ -205,9 +206,10 @@ pub(super) fn camera(
                         || transform.get::<Option<f64>>("fovDegrees")?.is_some()
                         || transform.get::<Value>("curvature")? != Value::Nil
                         || transform.get::<Value>("rect")? != Value::Nil
+                        || transform.get::<Value>("handedness")? != Value::Nil
                     {
                         return Err(mlua::Error::RuntimeError(
-                            "CAMERA_TRANSFORM_INVALID: orthographic cannot declare target, fovDegrees, curvature or rect".into(),
+                            "CAMERA_TRANSFORM_INVALID: orthographic cannot declare target, fovDegrees, curvature, rect or handedness".into(),
                         ));
                     }
                     let mut world = camera_set_transform_world.borrow_mut();
@@ -283,6 +285,12 @@ pub(super) fn camera(
                     // Omitted curvature/rect keep their current values, like fovDegrees.
                     if let Some(curvature) = transform.get::<Option<f64>>("curvature")? {
                         camera.curvature = curvature;
+                    }
+                    match transform.get::<Option<String>>("handedness")?.as_deref() {
+                        None => {}
+                        Some("right") => camera.handedness = crate::CameraHandedness::Right,
+                        Some("left") => camera.handedness = crate::CameraHandedness::Left,
+                        Some(_) => return Err(mlua::Error::RuntimeError("CAMERA_HANDEDNESS_INVALID: handedness must be right or left".into())),
                     }
                     match transform.get::<Value>("rect")? {
                         Value::Nil => {}

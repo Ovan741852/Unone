@@ -58,7 +58,7 @@ fn retained_meshes_keep_their_revision_across_placement_and_camera_changes() {
     runtime.tick_with_input(&idle).unwrap();
     let moved = runtime.observe();
     assert_eq!(moved.geometry3d["ground"].revision, first);
-    assert_eq!(moved.geometry3d["ground"].transform.position.x, 3.0);
+    assert_eq!(moved.geometry3d["ground"].transforms[0].position.x, 3.0);
     assert_eq!(moved.camera3d.as_ref().unwrap().curvature, 0.002);
     assert_eq!(moved.camera3d.as_ref().unwrap().position.x, 1.0);
     runtime.tick_with_input(&idle).unwrap();
@@ -80,4 +80,41 @@ fn orthographic_cameras_reject_perspective_only_settings() {
     end,update=function()end}";
     let runtime = EngineRuntime::load_source("ortho", "main.luau", script, None).unwrap();
     assert!(runtime.observe().camera3d.is_none());
+}
+
+#[test]
+fn instances_billboards_and_a_left_handed_camera_round_trip_through_luau() {
+    let script = r#"
+local function sprite()
+  local v=buffer.create(3*44)
+  for i=0,2 do
+    local o=i*44
+    buffer.writef32(v,o,1);buffer.writef32(v,o+4,2);buffer.writef32(v,o+8,3)
+    buffer.writef32(v,o+12,i*8-8);buffer.writef32(v,o+16,-16)
+    for c=0,3 do buffer.writef32(v,o+28+c*4,1) end
+  end
+  local ix=buffer.create(12)
+  for i=0,2 do buffer.writeu32(ix,i*4,i) end
+  return v,ix
+end
+return {start=function(api)
+  api.camera.setTransform({projection='perspective',position={x=0,y=5,z=-5},target={x=0,y=0,z=0},handedness='left'})
+  assert(api.camera.getTransform().handedness=='left')
+  assert(not pcall(api.camera.setTransform,{projection='perspective',position={x=0,y=5,z=-5},target={x=0,y=0,z=0},handedness='up'}))
+  local v,ix=sprite()
+  api.geometry3d.set('person',{vertices=v,indices=ix,material={billboard='screen',depth_bias=0.25,blend='cutout'}})
+  api.geometry3d.setTransforms('person',{{position={x=-128,y=0,z=0}},{},{position={x=128,y=0,z=0}}})
+  assert(not pcall(api.geometry3d.setTransforms,'person',{{scale={x=-1,y=1,z=1}}}))
+  -- A 44-byte billboard buffer is not a plain mesh.
+  assert(not pcall(api.geometry3d.set,'plain',{vertices=v,indices=ix}))
+end,update=function()end}"#;
+    let runtime = EngineRuntime::load_source("sprites", "main.luau", script, None).unwrap();
+    let snapshot = runtime.observe();
+    assert_eq!(snapshot.camera3d.as_ref().unwrap().handedness, unone_engine::CameraHandedness::Left);
+    let person = &snapshot.geometry3d["person"];
+    assert_eq!((person.vertex_count(), person.transforms.len(), person.format()), (3, 3, unone_engine::GEOMETRY3D_BILLBOARD_FORMAT));
+    let json = serde_json::to_value(&snapshot).unwrap();
+    assert_eq!(json["camera3d"]["handedness"], "left");
+    assert_eq!(json["geometry3d_placements"]["person"]["transforms"][2]["position"]["x"], 128.0);
+    assert_eq!(json["geometry3d"]["person"]["material"]["billboard"], "screen");
 }

@@ -14,6 +14,10 @@
           "format": "double",
           "type": "number"
         },
+        "handedness": {
+          "$ref": "#/$defs/CameraHandedness",
+          "description": "How world coordinates map to the screen. `left` keeps x right, y up and\nz away from the viewer at identity, as in Direct3D and Unity."
+        },
         "position": {
           "$ref": "#/$defs/Vec3",
           "default": {
@@ -43,6 +47,13 @@
         }
       },
       "type": "object"
+    },
+    "CameraHandedness": {
+      "enum": [
+        "right",
+        "left"
+      ],
+      "type": "string"
     },
     "CameraRect": {
       "additionalProperties": false,

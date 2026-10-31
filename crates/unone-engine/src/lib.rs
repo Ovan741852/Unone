@@ -11,8 +11,9 @@ mod mesh;
 pub use mesh::{MeshAsset, MeshLod, validate_mesh_geometry};
 mod heightfield;
 mod geometry3d;
-pub use geometry3d::{Geometry3D, Geometry3DPlacement, Geometry3DAddress, Geometry3DBlend, Geometry3DContent, Geometry3DFilter, Geometry3DMaterial,
-    GEOMETRY3D_FORMAT, GEOMETRY3D_VERTEX_BYTES, MAX_GEOMETRY3D_MESHES, MAX_GEOMETRY3D_VERTICES, MAX_GEOMETRY3D_INDICES};
+pub use geometry3d::{Geometry3D, Geometry3DPlacement, Geometry3DAddress, Geometry3DBillboard, Geometry3DBlend, Geometry3DContent, Geometry3DFilter, Geometry3DMaterial,
+    GEOMETRY3D_FORMAT, GEOMETRY3D_VERTEX_BYTES, GEOMETRY3D_BILLBOARD_FORMAT, GEOMETRY3D_BILLBOARD_VERTEX_BYTES,
+    MAX_GEOMETRY3D_MESHES, MAX_GEOMETRY3D_VERTICES, MAX_GEOMETRY3D_INDICES, MAX_GEOMETRY3D_INSTANCES};
 pub use heightfield::{Heightfield, HeightfieldDefinition, HeightfieldPatch};
 mod projected;
 pub use projected::{ProjectedBatch,ProjectedViewport,ProjectedScissor,ProjectedColorMode,ProjectedFilter,ProjectedSamplingSpace,ProjectedAddressMode,ProjectedAlphaCompare,ProjectedBlend,PROJECTED_FORMAT};
@@ -162,7 +163,7 @@ pub use ui::{UI_DESIGN_HEIGHT, UI_DESIGN_WIDTH, UiBackgroundScope, UiImageFit, U
 #[cfg(feature = "dev-tools")]
 pub use verify::{DEFAULT_VERIFY_STEPS, StepStatus, VerifyReport, VerifyStep, verify};
 pub use world::{
-    AnimationData, AnimationSnapshot, Camera2DData, Camera3DData, CameraRect, Contact, EffectInstance,
+    AnimationData, AnimationSnapshot, Camera2DData, Camera3DData, CameraHandedness, CameraRect, Contact, EffectInstance,
     EntitySnapshot, Mesh3DData, PhysicsSettings, RigidBody2DData, RigidBodySnapshot, RigidBodyType,
     SceneFile, SpriteAnimationData, SpriteData, SpriteSheet, Transform2DData, Transform3DData, Vec2,
     Vec3, WorldSnapshot,

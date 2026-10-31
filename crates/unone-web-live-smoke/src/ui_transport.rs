@@ -111,7 +111,7 @@ impl Serialize for Geometry3DTransport<'_>{
         let view=|bytes:&[u8]|View{offset:bytes.as_ptr() as usize,byte_length:bytes.len()};
         let mut map=serializer.serialize_map(Some(self.0.geometry3d.len()))?;
         for (id,mesh) in &self.0.geometry3d{
-            map.serialize_entry(id,&Entry{format:unone_engine::GEOMETRY3D_FORMAT,texture:mesh.texture.as_deref(),material:&mesh.material,
+            map.serialize_entry(id,&Entry{format:mesh.format(),texture:mesh.texture.as_deref(),material:&mesh.material,
                 vertex_count:mesh.vertex_count(),index_count:mesh.index_count(),revision:mesh.revision,
                 memory:Views{vertices:view(&mesh.vertices),indices:view(&mesh.indices)}})?;
         }
@@ -433,7 +433,7 @@ mod tests{
   assert!(wire.get("world_transport").is_none_or(|t|t["fields"].get("geometry3d").is_none()),"meshes are never leased as JSON");
   // A placement-only tick keeps the same bytes and memory views.
   assert_eq!(super::super::unone_web_tick(),0);let moved=output();
-  assert_eq!(moved["world"]["geometry3d"]["tri"]["memory"],mesh["memory"]);assert_eq!(moved["world"]["geometry3d_placements"]["tri"]["transform"]["position"]["x"],1.0);
+  assert_eq!(moved["world"]["geometry3d"]["tri"]["memory"],mesh["memory"]);assert_eq!(moved["world"]["geometry3d_placements"]["tri"]["transforms"][0]["position"]["x"],1.0);
   assert_eq!(super::super::unone_web_set_instance_transport(0),0);assert!(output()["world"]["geometry3d"]["tri"]["vertices"].is_string());
  }
  #[test]

@@ -93,6 +93,9 @@ export type Geometry3DMaterial = {
     -- `order` after opaque ones and never write depth.
     blend: ("opaque" | "cutout" | "transparent")?, alpha_cutoff: number?, double_sided: boolean?,
     filter: ("nearest" | "linear")?, address: ("clamp" | "repeat")?, order: number?,
+    -- "screen": 44B vertices (anchor.xyz, pixel offset.xy with +y down, uv, RGBA) keep
+    -- their pixel size facing the screen; depth_bias moves only the depth test toward the camera.
+    billboard: ("none" | "screen")?, depth_bias: number?,
 }
 export type Geometry3D = {
     --36B f32LE vertex: position.xyz, uv (v0 bottom), linear RGBA 0..1; u32LE triangle indices.
@@ -104,6 +107,8 @@ export type Geometry3DApi = {
     -- Identical content keeps its revision; transform/visibility changes resend no vertices.
     set: (id: string, geometry: Geometry3D) -> (),
     setTransform: (id: string, transform: Transform3D) -> (),
+    -- Draws the mesh once per transform as GPU instances (at most 4096).
+    setTransforms: (id: string, transforms: {Transform3D}) -> (),
     setVisible: (id: string, visible: boolean) -> (),
     remove: (id: string) -> (),
 }
@@ -258,6 +263,7 @@ export type CameraTransform = {
     orthographicSize: number?,
     curvature: number?,
     rect: CameraRect?,
+    handedness: ("right" | "left")?,
 }
 
 -- Normalized viewport rectangle with a lower-left origin; the default is the whole surface.
@@ -273,6 +279,8 @@ export type CameraTransformInput = {
     -- the target, y -= curvature * (x^2 + z^2). Omitted values keep the current setting.
     curvature: number?,
     rect: CameraRect?,
+    -- "left": x right, y up and z away from the viewer at identity (Direct3D/Unity).
+    handedness: ("right" | "left")?,
 }
 
 export type Camera3DApi = {

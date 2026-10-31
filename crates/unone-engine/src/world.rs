@@ -134,9 +134,26 @@ pub struct Camera3DData {
     /// the whole surface.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rect: Option<CameraRect>,
+    /// How world coordinates map to the screen. `left` keeps x right, y up and
+    /// z away from the viewer at identity, as in Direct3D and Unity.
+    #[serde(default, skip_serializing_if = "CameraHandedness::is_right")]
+    pub handedness: CameraHandedness,
 }
 
 fn is_zero(value: &f64) -> bool { *value == 0.0 }
+
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "lowercase")]
+pub enum CameraHandedness {
+    #[default]
+    Right,
+    Left,
+}
+
+impl CameraHandedness {
+    pub(crate) fn is_right(&self) -> bool { *self == Self::Right }
+}
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
@@ -186,6 +203,7 @@ impl Default for Camera3DData {
             fov_degrees: default_camera3d_fov(),
             curvature: 0.0,
             rect: None,
+            handedness: CameraHandedness::Right,
         }
     }
 }
@@ -319,6 +337,7 @@ pub(crate) struct CameraState {
     pub(crate) orthographic_size: f64,
     pub(crate) curvature: f64,
     pub(crate) rect: Option<CameraRect>,
+    pub(crate) handedness: CameraHandedness,
 }
 
 impl Default for CameraState {
@@ -335,6 +354,7 @@ impl Default for CameraState {
             orthographic_size: default_view_height(),
             curvature: 0.0,
             rect: None,
+            handedness: CameraHandedness::Right,
         }
     }
 }
@@ -361,6 +381,7 @@ impl CameraState {
             fov_degrees: camera.fov_degrees,
             curvature: camera.curvature,
             rect: camera.rect,
+            handedness: camera.handedness,
             ..Self::default()
         }
     }
@@ -390,6 +411,7 @@ impl CameraState {
             fov_degrees: self.fov_degrees,
             curvature: self.curvature,
             rect: self.rect,
+            handedness: self.handedness,
         }
     }
 }
@@ -692,6 +714,7 @@ fn decode_camera_definition(
                     fov_degrees,
                     curvature: 0.0,
                     rect: None,
+                    handedness: CameraHandedness::Right,
                 }),
             ))
         }
@@ -1416,6 +1439,7 @@ impl World {
                 // Small coefficients are meaningful; quantizing would erase them.
                 curvature: camera.curvature,
                 rect: camera.rect,
+                handedness: camera.handedness,
             }
         });
         WorldSnapshot {
@@ -1902,6 +1926,7 @@ impl World {
         self.camera_state.fov_degrees = camera.fov_degrees;
         self.camera_state.curvature = camera.curvature;
         self.camera_state.rect = camera.rect;
+        self.camera_state.handedness = camera.handedness;
         Ok(())
     }
 

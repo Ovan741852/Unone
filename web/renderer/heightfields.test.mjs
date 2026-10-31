@@ -154,11 +154,11 @@ test('actual Three draw joins asynchronous host texture loading with heightfield
     renderer.draw({world});await renderer.ready();renderer.draw({world});
     assert.equal(renderer.metrics().heightfields,1);
     assert.equal(renderer.metrics().heightfield_triangles,4);
-    let terrain=context.scene.children.find(child=>child.isMesh);
+    let terrain=context.scene.getObjectByProperty('isMesh',true);
     assert.ok(terrain.visible&&terrain.material.map);
     world.heightfields.ground={...field(),revision:2,heights:[8,1,2,3,4,5]};
     renderer.draw({world});
-    terrain=context.scene.children.find(child=>child.isMesh);
+    terrain=context.scene.getObjectByProperty('isMesh',true);
     assert.equal(terrain.geometry.attributes.position.array[1],8);
     world.heightfields={};renderer.draw({world});
     assert.equal(renderer.metrics().heightfields,0);

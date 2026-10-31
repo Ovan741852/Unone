@@ -25,7 +25,7 @@ function fixture(policy={max_bytes:16,max_entries:1,idle_frames:2},imageAssets=n
   const THREE={TextureLoader:class {load(url,resolve,_progress,reject){loads.push({url,resolve,reject});}},
     Texture:class {constructor(image){this.image=image;this.disposed=0;allocated.push(this);}dispose(){this.disposed++;}},SRGBColorSpace:'srgb',NearestFilter:'nearest',ClampToEdgeWrapping:'clamp',
     MeshBasicMaterial:class {constructor(value){Object.assign(this,value);Object.assign(this,disposable('material'));}},DoubleSide:2};
-  const environment={ui:null,worldSubmitted:false,uiImageBatchPrefix:{clear(){}},assetRequestPending:false,textureRecords,textureCache,meshAssets,records,geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},curvature:0},drawInRect:(_,draw)=>draw(),meshEntities:{clear(){}},THREE,
+  const environment={ui:null,worldSubmitted:false,uiImageBatchPrefix:{clear(){}},assetRequestPending:false,textureRecords,textureCache,meshAssets,records,geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},viewport(){},curvature:0},world3d:{scale:{z:1}},bufferSize:{x:1,y:1},drawInRect:(_,draw)=>draw(),meshEntities:{clear(){}},THREE,
     options:{loadAssetUrl:async asset=>asset.id,...(imageAssets?{getImageAssets:()=>imageAssets}:{})},configureTexture:imageAssets?configureSharedTexture:(_three,texture)=>texture,
     fetch:async url=>{const data=deferred();fetches.push({url,...data});return {ok:true,json:()=>data.promise};},
     validateMesh:raw=>raw,meshGeometry:()=>disposable('geometry'),frameProfile:null,

@@ -153,11 +153,15 @@ export async function createThreeRenderer(canvas, options = {}) {
   const scene = new THREE.Scene();
   const root = new THREE.Group();
   scene.add(root);
+  // World objects share one group, so a left-handed camera mirrors the whole
+  // world (three flips face culling for its negative scale).
+  const world3d = new THREE.Group(),bufferSize = new THREE.Vector2();
+  scene.add(world3d);
   const camera3d = createPerspectiveCamera(THREE);
   const meshAssets = new Map();
-  const instances = createInstanceRenderer(THREE,scene,meshAssetFor,options.instanceMemory);
-  const meshEntities = createMeshEntityRenderer(THREE,scene,meshAssetFor);
-  const particles = createParticleRenderer(THREE,scene);
+  const instances = createInstanceRenderer(THREE,world3d,meshAssetFor,options.instanceMemory);
+  const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor);
+  const particles = createParticleRenderer(THREE,world3d);
   const projected = createProjectedRenderer(THREE,textureFor,{raster:rasterPolicy.requested});
   const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile});
   // The render pipeline's ui stage: game UI drawn into this frame after the world.
@@ -225,9 +229,9 @@ export async function createThreeRenderer(canvas, options = {}) {
   const shaderMaterials = createShaderMaterials(THREE, renderer, backend);
   const textureRecords = new Map();
   const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
-  const heightfields = createHeightfieldRenderer(THREE,scene,textureFor);
-  const geometry3d = createGeometry3DRenderer(THREE,scene,{textureFor,memory:options.instanceMemory});
+  const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor);
   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
+  const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature});
   // A camera rect (normalized, lower-left origin) renders the world into part of
   // the surface; the rest of the surface is still cleared.
   function drawInRect(rect,render){
@@ -407,7 +411,6 @@ export async function createThreeRenderer(canvas, options = {}) {
     if(!rasterAvailable()){profile?.outcome('skipped_raster_unavailable');return DRAW_SKIPPED.raster_unavailable;}
     const projectedBatches=projected.entries(snapshot);
     const worldVisible=(snapshot?.world??snapshot)?.projected_world_visible!==false;
-    if(projectedBatches.length&&bloom&&worldVisible)throw Error('PROJECTED_POSTPROCESSING_UNSUPPORTED: disable Bloom or hide normal world3D');
     const terrain=heightfieldEntries(snapshot);
     if(worldVisible&&terrain.length&&!(snapshot?.world??snapshot)?.camera3d)throw new Error('HEIGHTFIELD_CAMERA3D_REQUIRED');
     profile?.mark('legacy_projected_terrain_validate');
@@ -464,9 +467,10 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
     shaderMaterials.retain(new Set([...alive].filter(id => Boolean(world.entities[id]?.shader_material))));
     let activeCamera = camera;
+    world3d.scale.z=world.camera3d?.handedness==='left'?-1:1;
     if (world.camera3d) {
-      const c = world.camera3d; camera3d.position.set(c.position.x,c.position.y,c.position.z);
-      camera3d.lookAt(c.target.x,c.target.y,c.target.z); camera3d.fov=c.fov_degrees;
+      const c = world.camera3d,z = world3d.scale.z; camera3d.position.set(c.position.x,c.position.y,c.position.z*z);
+      camera3d.lookAt(c.target.x,c.target.y,c.target.z*z); camera3d.fov=c.fov_degrees;
       camera3d.aspect=aspectOf(canvas)*(c.rect?c.rect.width/c.rect.height:1); camera3d.updateProjectionMatrix(); activeCamera=camera3d;
     }
     if(meshEntities.draw(world,worldVisible,specs))assetRequestPending=true;
@@ -485,9 +489,13 @@ export async function createThreeRenderer(canvas, options = {}) {
     if(frameProfile)assertFrameGpuError(renderer.getContext(),'official.prepare');
     const overlay=worldVisible&&effects?()=>{effects.draw(world,activeCamera);renderer.resetState();}:null;
     const pipeline=world.render_pipeline?pipelineFrame(world.render_pipeline):null;
+    // Projected batches composite after the world, so they cannot follow an
+    // active post-processing pass; plain world rendering is fine.
+    if(projectedBatches.length&&worldVisible&&bloom?.active(pipeline))throw Error('PROJECTED_POSTPROCESSING_UNSUPPORTED: disable Bloom or hide normal world3D');
     if(pipeline&&!bloom)throw Error('RENDER_PIPELINE_BACKEND_UNSUPPORTED: render_pipeline needs the official WebGL renderer');
     curvature.prepare(scene,world.camera3d);
     const rect=world.camera3d?.rect;
+    if(renderer.getDrawingBufferSize){renderer.getDrawingBufferSize(bufferSize);curvature.viewport(bufferSize.x*(rect?rect.width:1),bufferSize.y*(rect?rect.height:1));}
     if(rect){
       if(bloom?.active(pipeline)||pipeline&&!pipeline.scene)throw Error('CAMERA_RECT_UNSUPPORTED: a camera rect cannot combine with bloom, tone mapping or render pipeline passes yet');
       drawInRect(rect,()=>{renderer.render(scene,activeCamera);overlay?.();});

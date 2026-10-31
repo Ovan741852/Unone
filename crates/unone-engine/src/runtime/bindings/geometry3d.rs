@@ -1,6 +1,6 @@
 //! api.geometry3d: retained world-space meshes that the camera places on the GPU.
 use super::{ApiState, Lua, Table, Value};
-use crate::{GEOMETRY3D_VERTEX_BYTES, MAX_GEOMETRY3D_INDICES, MAX_GEOMETRY3D_VERTICES};
+use crate::{GEOMETRY3D_BILLBOARD_VERTEX_BYTES, MAX_GEOMETRY3D_INDICES, MAX_GEOMETRY3D_INSTANCES, MAX_GEOMETRY3D_VERTICES};
 use std::rc::Rc;
 
 fn error(message: impl std::fmt::Display) -> mlua::Error {
@@ -18,7 +18,7 @@ fn decode(t: Table) -> mlua::Result<crate::Geometry3DContent> {
     let vertices: mlua::Buffer = t.get("vertices").map_err(|_| error("vertices buffer required"))?;
     let indices: mlua::Buffer = t.get("indices").map_err(|_| error("indices buffer required"))?;
     // Reject oversized buffers before copying them out of the VM.
-    if vertices.len() > GEOMETRY3D_VERTEX_BYTES * MAX_GEOMETRY3D_VERTICES || indices.len() > 4 * MAX_GEOMETRY3D_INDICES {
+    if vertices.len() > GEOMETRY3D_BILLBOARD_VERTEX_BYTES * MAX_GEOMETRY3D_VERTICES || indices.len() > 4 * MAX_GEOMETRY3D_INDICES {
         return Err(mlua::Error::RuntimeError("GEOMETRY3D_LIMIT: at most 262144 vertices and 1572864 indices per mesh".into()));
     }
     let texture = match t.get::<Value>("texture")? {
@@ -47,6 +47,17 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     api.set("setTransform", lua.create_function(move |_, (id, value): (String, Value)| {
         let transform = transform(value)?;
         world.borrow_mut().set_geometry3d_transform(&id, transform).map_err(mlua::Error::RuntimeError)
+    })?)?;
+    let world = Rc::clone(&state.world);
+    api.set("setTransforms", lua.create_function(move |_, (id, list): (String, Table)| {
+        let count = list.raw_len();
+        if count > MAX_GEOMETRY3D_INSTANCES {
+            return Err(mlua::Error::RuntimeError("GEOMETRY3D_LIMIT: at most 4096 transforms per mesh".into()));
+        }
+        let mut transforms = Vec::with_capacity(count);
+        for value in list.sequence_values::<Value>() { transforms.push(transform(value?)?); }
+        if transforms.len() != count { return Err(error("transforms must be a dense array")); }
+        world.borrow_mut().set_geometry3d_transforms(&id, transforms).map_err(mlua::Error::RuntimeError)
     })?)?;
     let world = Rc::clone(&state.world);
     api.set("setVisible", lua.create_function(move |_, (id, visible): (String, bool)| {

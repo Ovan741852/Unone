@@ -25,6 +25,18 @@ api.geometry3d.setVisible("terrain", false)
 -- api.geometry3d.remove("terrain")
 ```
 
+`api.geometry3d.setTransforms(id, transforms)` draws one mesh at up to 4096
+transforms as GPU instances, for wrapping terrain tiles or identical props,
+without duplicating its vertices. `setTransform` is the one-transform case.
+
+A `billboard = "screen"` material switches the vertex layout to 44 bytes:
+anchor position.xyz, pixel offset.xy (+x right, +y down), uv, RGBA. Each corner
+lands at its anchor's projected point plus its offset in drawing-buffer pixels,
+so sprites, labels and markers keep their pixel size and face the screen at any
+distance and through any camera motion, curvature included. `depth_bias` moves
+only the depth test toward the camera (world units), so a standing sprite is not
+cut by the ground behind its anchor. Billboards are never culled by facing.
+
 The material is unlit: texture (when declared) times vertex RGBA. `blend` is
 `opaque` (default), `cutout` (discard below `alpha_cutoff`, default 0.5) or
 `transparent` (alpha-blended in `order`, no depth writes). `filter` is
@@ -71,7 +83,13 @@ vertex shader, so it costs nothing per camera move.
 
 `rect` renders the world into a normalized part of the surface, such as the
 area beside a side panel, with the projection centered in that rect. The
-default is the whole surface. Both are perspective-only.
+default is the whole surface.
+
+`handedness = "left"` reads world coordinates as Direct3D and Unity do: at
+identity x points right, y up and z away from the viewer. A game ported from
+such an engine keeps its coordinates, camera and mesh assets unchanged; the
+host mirrors the world and camera together, so nothing renders mirrored and
+face culling stays correct. All three settings are perspective-only.
 
 ## Hosts
 
@@ -79,6 +97,6 @@ The official Web player draws meshes, curvature and rect. It patches the
 standard projection chunk of world materials (meshes, terrain, mesh entities,
 instances), so custom shaders that do not use it are not bent. A rect cannot
 yet combine with bloom or a declared render pipeline (`CAMERA_RECT_UNSUPPORTED`).
-The native player rejects meshes (`HOST_GEOMETRY3D_UNSUPPORTED`) and a curved or
-rect camera (`HOST_CAMERA_PROJECTION_UNSUPPORTED`) instead of drawing them
-differently.
+The native player rejects meshes (`HOST_GEOMETRY3D_UNSUPPORTED`) and a curved,
+rect or left-handed camera (`HOST_CAMERA_PROJECTION_UNSUPPORTED`) instead of
+drawing them differently.
