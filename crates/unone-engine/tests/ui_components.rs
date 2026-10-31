@@ -722,6 +722,13 @@ assert(changed.children[2]==first.children[2],'unchanged siblings are kept')
 local zero=ui.text({id='z',rect={x=0,y=0,width=1,height=1}})
 assert(ui.text({id='z',rect={x=-0,y=0,width=1,height=1}})~=zero,'0 and -0 differ')
 assert(ui.button({id='z',rect={x=0,y=0,width=1,height=1}}).kind=='button','another kind under the same id rebuilds')
+local full=ui.text({id='w',text='W',rect=R,style={color={1,1,1,1},background={0,0,0,1}}})
+assert(ui.text({id='w',text='W',rect=R,style={color={1,1,1,1}}})~=full,'a key dropped from a nested table rebuilds')
+local nested=ui.text({id='w',text='W',rect=R,style={color={1,1,1,1}}})
+assert(ui.text({id='w',rect=R,style={color={1,1,1,1}}})~=nested,'a key dropped from the props rebuilds')
+local shared=c.composeStyle({color={1,0,0,1}})
+local styled=ui.text({id='shared',rect=R,style=shared})
+assert(ui.text({id='shared',rect=R,style=shared})==styled,'shared owned tables compare by identity')
 local rows={{key='a'}}
 local function list() return ui.virtualList({id='rows',viewport={left=0,top=0,width=10,height=10},items=rows,key='key',rowHeight=2,
  renderItem=function(row) return {c.text({id='row-'..row.key,text=row.key,rect={x=0,y=0,width=5,height=2}})} end}) end

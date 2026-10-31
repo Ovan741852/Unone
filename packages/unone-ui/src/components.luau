@@ -217,26 +217,64 @@ end
 -- can never change. Core may then keep the tree it already built from it.
 helpers.trust(function(root: any): boolean return immutableOwned[root]~=nil end)
 
--- Exact structural equality of author props against the private copy made the
--- last time the same id was built. Every compared key must exist in that copy,
--- so the walk is bounded by data that already passed admission. Live virtual
--- handles are mutable and only ever equal themselves.
-local function same(value: any, copied: any, depth: number): boolean
-    if depth>64 or getmetatable(value)~=nil then return false end
-    if rawget(value,"id")~=nil and (isManagedNode(value) or isManagedNode(copied)) then return false end
-    local count = 0
+-- Copy work (tables and scalars) of an owned immutable subtree.
+local function ownedWork(item: any): number?
+    local grant = immutableOwned[item]
+    if grant==nil then return nil end
+    if type(grant)=="number" then
+        local packed = grant :: number
+        return (packed-packed%256)/256
+    end
+    return (grant :: OwnedStats).work
+end
+
+-- Copy work of author props when every key in them equals the same key in the
+-- private copy made the last time the same id was built, or nil at the first
+-- difference. Only author keys are walked, and every one must exist in the
+-- copy, so the walk is bounded by data that already passed admission; equal
+-- total work then rules out keys the copy has and the props lack.
+local function within(value: any, copied: any, depth: number): number?
+    if depth>64 or getmetatable(value)~=nil then return nil end
+    -- Cached copies never hold a live virtual handle, which is mutable.
+    if depth>0 and rawget(value,"id")~=nil and isManagedNode(value) then return nil end
+    local work = 1
     for key, child in pairs(value) do
         local other = rawget(copied,key)
         if rawequal(child,other) then
-            -- 0 and -0 are equal but serialize differently.
-            if child==0 and 1/child~=1/other then return false end
-        elseif type(child)~="table" or type(other)~="table" or not same(child,other,depth+1) then
-            return false
+            if type(child)=="table" then
+                local shared = ownedWork(child)
+                if shared==nil then return nil end
+                work += shared
+            elseif child==0 and 1/child~=1/other then
+                -- 0 and -0 are equal but serialize differently.
+                return nil
+            else
+                work += 1
+            end
+        elseif type(child)=="table" and type(other)=="table" then
+            local nested = within(child,other,depth+1)
+            if nested==nil then return nil end
+            work += nested
+        else
+            return nil
         end
-        count += 1
     end
-    for _ in pairs(copied) do count -= 1 end
-    return count==0
+    return work
+end
+
+-- Work of a private props copy whose nested tables are all owned immutable.
+local function sourceWork(source: any): number?
+    local work = 1
+    for _, child in pairs(source) do
+        if type(child)=="table" then
+            local nested = ownedWork(child)
+            if nested==nil then return nil end
+            work += nested
+        else
+            work += 1
+        end
+    end
+    return work
 end
 
 local function style(value: any, path: string)
@@ -609,8 +647,10 @@ local function makeKit(theme: any?): any
     -- so a UI rebuilt in every update allocates, copies and republishes
     -- nothing for its unchanged parts. Nodes are remembered weakly: the
     -- published tree keeps them, and nothing the author dropped is retained.
+    -- Only pure nodes (no live virtual handle) are remembered.
     local memos: {[string]: any} = setmetatable({}, {__mode="v"}) :: any
     local sources: {[any]: any} = setmetatable({}, {__mode="k"}) :: any
+    local works: {[any]: number} = setmetatable({}, {__mode="k"}) :: any
     local function memo(kind: string, build: (any) -> (any, any)): (any) -> any
         return function(props: any): any
             local id = if type(props)=="table" and getmetatable(props)==nil then rawget(props,"id") else nil
@@ -618,11 +658,15 @@ local function makeKit(theme: any?): any
             local previous = memos[id]
             if previous~=nil and previous.kind==kind then
                 local source = sources[previous]
-                if source~=nil and same(props,source,0) then return previous end
+                if source~=nil and within(props,source,0)==works[previous] then return previous end
             end
             local node, source = build(props)
-            memos[id] = node
-            sources[node] = source
+            local work = if immutableOwned[node]~=nil then sourceWork(source) else nil
+            if work~=nil then
+                memos[id] = node
+                sources[node] = source
+                works[node] = work
+            end
             return node
         end
     end
