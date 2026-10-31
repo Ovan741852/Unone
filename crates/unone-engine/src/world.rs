@@ -126,6 +126,44 @@ pub struct Camera3DData {
     pub target: Vec3,
     #[serde(default = "default_camera3d_fov")]
     pub fov_degrees: f64,
+    /// Bends world geometry around the target point: in view space relative to
+    /// the target, y -= curvature * (x^2 + z^2). 0 disables it.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub curvature: f64,
+    /// Normalized viewport (lower-left origin) the view renders into; None is
+    /// the whole surface.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rect: Option<CameraRect>,
+}
+
+fn is_zero(value: &f64) -> bool { *value == 0.0 }
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct CameraRect {
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
+}
+
+impl CameraRect {
+    pub(crate) fn validate(&self) -> Result<(), String> {
+        let finite = [self.x, self.y, self.width, self.height].iter().all(|n| n.is_finite());
+        if !finite || self.x < 0.0 || self.y < 0.0 || self.width <= 0.0 || self.height <= 0.0
+            || self.x + self.width > 1.0 + 1e-9 || self.y + self.height > 1.0 + 1e-9 {
+            return Err("CAMERA_RECT_INVALID: rect must be a nonempty normalized rectangle inside 0..1".into());
+        }
+        Ok(())
+    }
+}
+
+pub(crate) fn validate_camera_curvature(curvature: f64) -> Result<(), String> {
+    if !curvature.is_finite() || curvature.abs() > 1000.0 {
+        return Err("CAMERA_CURVATURE_INVALID: curvature must be finite within +/-1000".into());
+    }
+    Ok(())
 }
 
 fn default_camera3d_position() -> Vec3 {
@@ -146,6 +184,8 @@ impl Default for Camera3DData {
             position: default_camera3d_position(),
             target: Vec3::default(),
             fov_degrees: default_camera3d_fov(),
+            curvature: 0.0,
+            rect: None,
         }
     }
 }
@@ -277,6 +317,8 @@ pub(crate) struct CameraState {
     pub(crate) target: Vec3,
     pub(crate) fov_degrees: f64,
     pub(crate) orthographic_size: f64,
+    pub(crate) curvature: f64,
+    pub(crate) rect: Option<CameraRect>,
 }
 
 impl Default for CameraState {
@@ -291,6 +333,8 @@ impl Default for CameraState {
             },
             fov_degrees: default_camera3d_fov(),
             orthographic_size: default_view_height(),
+            curvature: 0.0,
+            rect: None,
         }
     }
 }
@@ -315,6 +359,8 @@ impl CameraState {
             position: camera.position,
             target: camera.target,
             fov_degrees: camera.fov_degrees,
+            curvature: camera.curvature,
+            rect: camera.rect,
             ..Self::default()
         }
     }
@@ -342,6 +388,8 @@ impl CameraState {
             position: self.position,
             target: self.target,
             fov_degrees: self.fov_degrees,
+            curvature: self.curvature,
+            rect: self.rect,
         }
     }
 }
@@ -642,6 +690,8 @@ fn decode_camera_definition(
                     },
                     target,
                     fov_degrees,
+                    curvature: 0.0,
+                    rect: None,
                 }),
             ))
         }
@@ -892,6 +942,12 @@ pub struct WorldSnapshot {
     pub spatial: Option<serde_json::Value>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub heightfields: BTreeMap<String, crate::Heightfield>,
+    /// Runtime world-space meshes, complete in canonical form.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub geometry3d: BTreeMap<String, crate::Geometry3D>,
+    /// Placement of each runtime mesh, apart from its content.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub geometry3d_placements: BTreeMap<String, crate::Geometry3DPlacement>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1016,6 +1072,9 @@ pub(crate) struct World {
     pub heightfields: BTreeMap<String, crate::Heightfield>,
     /// Monotonic per runtime, including remove/recreate and scene transitions.
     pub heightfield_revision: u64,
+    pub geometry3d: BTreeMap<String, crate::Geometry3D>,
+    /// Monotonic per runtime, like heightfield revisions.
+    pub geometry3d_revision: u64,
     pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
     #[cfg(feature = "physics3d")]
@@ -1064,6 +1123,7 @@ impl World {
         self.projected_frame=None;
         self.projected_world_hidden=false;
         self.heightfields.clear();
+        self.geometry3d.clear();
         self.instances3d.clear();
         #[cfg(feature = "physics3d")]
         let physics3d = scene.physics3d;
@@ -1353,6 +1413,9 @@ impl World {
                 position: quantize_vec3(camera.position),
                 target: quantize_vec3(camera.target),
                 fov_degrees: quantize_observation(camera.fov_degrees),
+                // Small coefficients are meaningful; quantizing would erase them.
+                curvature: camera.curvature,
+                rect: camera.rect,
             }
         });
         WorldSnapshot {
@@ -1365,6 +1428,8 @@ impl World {
             application: self.application.clone(),
             ui_image_batches:self.ui_image_batches.clone(),
             heightfields: self.heightfields.clone(),
+            geometry3d: self.geometry3d.clone(),
+            geometry3d_placements: self.geometry3d.iter().map(|(id, mesh)| (id.clone(), mesh.placement())).collect(),
             shader_materials: self.shader_materials.clone(),
             jobs: None,
             spatial: None,
@@ -1827,12 +1892,16 @@ impl World {
                 "CAMERA_FOV_INVALID: fovDegrees must be finite and between 1 and 179".into(),
             );
         }
+        validate_camera_curvature(camera.curvature)?;
+        if let Some(rect) = &camera.rect { rect.validate()?; }
         if self.camera_state.projection != CameraProjection::Perspective {
             return Err("The current scene has no perspective Camera.".into());
         }
         self.camera_state.position = camera.position;
         self.camera_state.target = camera.target;
         self.camera_state.fov_degrees = camera.fov_degrees;
+        self.camera_state.curvature = camera.curvature;
+        self.camera_state.rect = camera.rect;
         Ok(())
     }
 
@@ -2217,6 +2286,8 @@ mod tests {
             application: Default::default(),
             heightfields: BTreeMap::new(),
             heightfield_revision: 0,
+            geometry3d: BTreeMap::new(),
+            geometry3d_revision: 0,
             shader_materials: BTreeMap::new(),
             instances3d: BTreeMap::new(),
             physics3d: None,
@@ -2706,6 +2777,7 @@ mod tests {
                     z: 0.0,
                 },
                 fov_degrees: 48.0,
+                ..Camera3DData::default()
             })
             .unwrap();
 

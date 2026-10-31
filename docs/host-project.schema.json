@@ -198,6 +198,11 @@
     "Camera3DData": {
       "additionalProperties": false,
       "properties": {
+        "curvature": {
+          "description": "Bends world geometry around the target point: in view space relative to\nthe target, y -= curvature * (x^2 + z^2). 0 disables it.",
+          "format": "double",
+          "type": "number"
+        },
         "fov_degrees": {
           "default": 60.0,
           "format": "double",
@@ -211,6 +216,17 @@
             "z": 8.0
           }
         },
+        "rect": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CameraRect"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Normalized viewport (lower-left origin) the view renders into; None is\nthe whole surface."
+        },
         "target": {
           "$ref": "#/$defs/Vec3",
           "default": {
@@ -220,6 +236,34 @@
           }
         }
       },
+      "type": "object"
+    },
+    "CameraRect": {
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "format": "double",
+          "type": "number"
+        },
+        "width": {
+          "format": "double",
+          "type": "number"
+        },
+        "x": {
+          "format": "double",
+          "type": "number"
+        },
+        "y": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "width",
+        "height"
+      ],
       "type": "object"
     },
     "DataAssetDecl": {

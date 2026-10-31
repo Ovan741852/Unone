@@ -88,6 +88,26 @@ export type HeightfieldApi = {
     remove: (id: string) -> (),
 }
 
+export type Geometry3DMaterial = {
+    -- Unlit: texture (when declared) times vertex RGBA. Transparent meshes draw in
+    -- `order` after opaque ones and never write depth.
+    blend: ("opaque" | "cutout" | "transparent")?, alpha_cutoff: number?, double_sided: boolean?,
+    filter: ("nearest" | "linear")?, address: ("clamp" | "repeat")?, order: number?,
+}
+export type Geometry3D = {
+    --36B f32LE vertex: position.xyz, uv (v0 bottom), linear RGBA 0..1; u32LE triangle indices.
+    vertices: buffer, indices: buffer, texture: string?, transform: Transform3D?,
+    material: Geometry3DMaterial?, visible: boolean?,
+}
+export type Geometry3DApi = {
+    -- Retained world-space mesh placed by the camera on the GPU, curvature included.
+    -- Identical content keeps its revision; transform/visibility changes resend no vertices.
+    set: (id: string, geometry: Geometry3D) -> (),
+    setTransform: (id: string, transform: Transform3D) -> (),
+    setVisible: (id: string, visible: boolean) -> (),
+    remove: (id: string) -> (),
+}
+
 export type Instances3DApi = {
     -- Packed little-endian f32 records: position.xyz, quaternion.xyzw, scale.xyz (40 bytes).
     -- Replaces a complete batch atomically; max 262144 instances / 256 batches per world.
@@ -236,7 +256,12 @@ export type CameraTransform = {
     target: Vec3,
     fovDegrees: number?,
     orthographicSize: number?,
+    curvature: number?,
+    rect: CameraRect?,
 }
+
+-- Normalized viewport rectangle with a lower-left origin; the default is the whole surface.
+export type CameraRect = { x: number, y: number, width: number, height: number }
 
 export type CameraTransformInput = {
     projection: ("orthographic" | "perspective")?,
@@ -244,6 +269,10 @@ export type CameraTransformInput = {
     target: Vec3?,
     fovDegrees: number?,
     orthographicSize: number?,
+    -- Perspective only. Bends world geometry around `target`: in view space relative to
+    -- the target, y -= curvature * (x^2 + z^2). Omitted values keep the current setting.
+    curvature: number?,
+    rect: CameraRect?,
 }
 
 export type Camera3DApi = {
@@ -873,6 +902,7 @@ export type EngineApi = {
     instances3d: Instances3DApi,
     projected: ProjectedApi,
     heightfield: HeightfieldApi,
+    geometry3d: Geometry3DApi,
     debug: DebugApi,
     particle: ParticleApi,
     entity: EntityApi,

@@ -168,6 +168,11 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
                 "Camera3D fov_degrees must be a finite number greater than 1 and less than 179.",
             ));
         }
+        if let Err(explanation) = crate::world::validate_camera_curvature(camera3d.curvature)
+            .and_then(|()| camera3d.rect.as_ref().map_or(Ok(()), |rect| rect.validate()))
+        {
+            return Err(scene_error(source, "SCENE_CAMERA3D_INVALID", "Camera3D curvature or rect is invalid", &explanation));
+        }
     }
 
     let mut entity_ids = BTreeMap::new();

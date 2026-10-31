@@ -48,7 +48,7 @@ function restoreWorldFields(module,value,staged){
  const previous=worldFields.get(module),old=previous?.epoch===wire.epoch?previous.fields:null,next=new Map();
  for(const [key,field]of Object.entries(fields)){
   const memory=field?.memory;
-  if(!/^[a-z0-9_]{1,64}$/.test(key)||['ui','ui_image_batches','instances3d'].includes(key)||Object.hasOwn(value.world,key)
+  if(!/^[a-z0-9_]{1,64}$/.test(key)||['ui','ui_image_batches','instances3d','geometry3d'].includes(key)||Object.hasOwn(value.world,key)
    ||!field||Object.keys(field).some(k=>!['revision','memory'].includes(k))||!uint64(field.revision)
    ||!memory||Object.keys(memory).some(k=>!['offset','byte_length'].includes(k))||!Number.isSafeInteger(memory.offset)||memory.offset<0
    ||!Number.isSafeInteger(memory.byte_length)||memory.byte_length<1||memory.byte_length>WORLD_FIELD_MAX_ENCODED_BYTES

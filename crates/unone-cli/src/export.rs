@@ -6,6 +6,8 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/ui-image-batch-prefix.js",
         "renderer/ui-gpu.js",
         "renderer/mesh-entities.js",
+        "renderer/geometry3d.js",
+        "renderer/world-curvature.js",
         "renderer/projected-frame-shaders.js",
         "renderer/projected-frame-material.js",
         "renderer/projected-frame-draws.js",

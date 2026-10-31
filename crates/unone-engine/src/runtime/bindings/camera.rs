@@ -1,4 +1,4 @@
-use super::{ApiState, Lua, Table};
+use super::{ApiState, Lua, Table, Value};
 use crate::systems::SystemSettings;
 use crate::world::{Vec2, Vec3, validate_vec2, validate_vec3};
 use std::rc::Rc;
@@ -111,6 +111,12 @@ pub(super) fn camera(
                 target.set("y", camera.target.y)?;
                 target.set("z", camera.target.z)?;
                 result.set("fovDegrees", camera.fov_degrees)?;
+                result.set("curvature", camera.curvature)?;
+                if let Some(rect) = camera.rect {
+                    let value = lua.create_table()?;
+                    value.set("x", rect.x)?;value.set("y", rect.y)?;value.set("width", rect.width)?;value.set("height", rect.height)?;
+                    result.set("rect", value)?;
+                }
             } else {
                 let camera_position = world.get_camera_position();
                 position.set("x", camera_position.x)?;
@@ -158,7 +164,7 @@ pub(super) fn camera(
         lua.create_function(move |_, transform: Table| {
             // Scene JSON spells these orthographic_size/fov_degrees; a copied
             // snake_case key must fail instead of leaving the camera unchanged.
-            super::reject_unknown_keys(&transform, &["projection", "position", "target", "orthographicSize", "fovDegrees"], "camera.setTransform")?;
+            super::reject_unknown_keys(&transform, &["projection", "position", "target", "orthographicSize", "fovDegrees", "curvature", "rect"], "camera.setTransform")?;
             let projection = match transform.get::<Option<String>>("projection")? {
                 Some(projection) => projection,
                 None => camera_set_transform_world.borrow().camera_projection().to_string(),
@@ -197,9 +203,11 @@ pub(super) fn camera(
                     }
                     if target.is_some()
                         || transform.get::<Option<f64>>("fovDegrees")?.is_some()
+                        || transform.get::<Value>("curvature")? != Value::Nil
+                        || transform.get::<Value>("rect")? != Value::Nil
                     {
                         return Err(mlua::Error::RuntimeError(
-                            "CAMERA_TRANSFORM_INVALID: orthographic cannot declare target or fovDegrees".into(),
+                            "CAMERA_TRANSFORM_INVALID: orthographic cannot declare target, fovDegrees, curvature or rect".into(),
                         ));
                     }
                     let mut world = camera_set_transform_world.borrow_mut();
@@ -271,6 +279,20 @@ pub(super) fn camera(
                     camera.target = target;
                     if let Some(fov) = fov {
                         camera.fov_degrees = fov;
+                    }
+                    // Omitted curvature/rect keep their current values, like fovDegrees.
+                    if let Some(curvature) = transform.get::<Option<f64>>("curvature")? {
+                        camera.curvature = curvature;
+                    }
+                    match transform.get::<Value>("rect")? {
+                        Value::Nil => {}
+                        value => {
+                            let json = super::value::lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+                            let rect: crate::CameraRect = serde_json::from_value(json).map_err(|_| mlua::Error::RuntimeError(
+                                "CAMERA_RECT_INVALID: rect must be exactly {x,y,width,height}".into()))?;
+                            // The whole surface is the default, stored as no rect.
+                            camera.rect = (rect != crate::CameraRect { x: 0.0, y: 0.0, width: 1.0, height: 1.0 }).then_some(rect);
+                        }
                     }
                     world
                         .set_camera_perspective(camera)

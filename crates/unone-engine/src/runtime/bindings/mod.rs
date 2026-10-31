@@ -12,6 +12,7 @@ mod debug;
 mod entity;
 mod input;
 mod heightfield;
+mod geometry3d;
 mod host_time;
 mod projected;
 mod projected_frame;
@@ -37,6 +38,7 @@ pub(super) fn build_api(
     api.set("hostTime", host_time::bind(lua, state)?)?;
     api.set("application", application::bind(lua, state)?)?;
     api.set("heightfield", heightfield::bind(lua, state)?)?;
+    api.set("geometry3d", geometry3d::bind(lua, state)?)?;
     api.set("projected", projected::bind(lua, state)?)?;
     api.set("shader", shader::bind(lua, state)?)?;
     api.set("spatial", spatial::bind(lua, state)?)?;

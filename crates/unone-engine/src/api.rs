@@ -1661,7 +1661,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "camera.setTransform",
             "camera",
-            "Set the single Camera's transform and optional projection settings.",
+            "Set the single Camera's transform and optional projection settings, including perspective curvature and viewport rect.",
             "When a game needs to move or aim a camera while keeping one camera abstraction for both 2D and 3D.",
             "Do not put game-specific follow, shake, or targeting policy in the engine; pass the resulting transform only.",
             vec![parameter(
@@ -1676,6 +1676,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
                 "position coordinates must be finite",
                 "perspective requires target",
                 "fovDegrees and orthographicSize must be valid when supplied",
+                "curvature must be finite within +/-1000; rect must be a nonempty normalized rectangle; both are perspective-only",
             ],
             "api.camera.setTransform({ projection = 'perspective', position = { x = 0, y = 3, z = 8 }, target = { x = 0, y = 0, z = 0 } })",
             vec!["camera.getTransform", "camera.setProjection"],
@@ -2652,6 +2653,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
     result.extend(ui_component_descriptors());
     result.extend(byte_view_descriptors());
     result.extend(heightfield_descriptors());
+    result.extend(geometry3d_descriptors());
     result.extend(projected_descriptors());
     result.extend(spatial_descriptors());
     result.extend(physics3d_descriptors());
@@ -2885,6 +2887,53 @@ fn byte_view_descriptors() -> Vec<ApiDescriptor> {
             "All offsets/counts validate before comparison. Exact-end zero-length comparisons are valid. Direct comparison observes current mutable contents on each invocation.",
             vec!["BYTES_BUFFER_REQUIRED", "BYTES_ARGUMENTS_INVALID", "BYTES_RANGE_INVALID"],
             "assert(api.bytes.equalsRange(rom, offset, expected, 0, buffer.len(expected)))", vec!["bytes.equals", "bytes.span", "bytes.snapshot"],
+        ),
+    ]
+}
+
+fn geometry3d_descriptors() -> Vec<ApiDescriptor> {
+    vec![
+        descriptor(
+            "geometry3d.set", "presentation",
+            "Create or replace a retained world-space mesh drawn by the camera on the GPU.",
+            "Submit terrain, buildings or other generated geometry once, then move the camera or the mesh without rebuilding vertices in Luau.",
+            "Unlit: texture times vertex RGBA. The engine owns transport and GPU resources, not the meaning or generation of the mesh. Use projected geometry only for exact preprojected reference output.",
+            vec![parameter("id", "string", "1..128 UTF-8 bytes"), parameter("geometry", "Geometry3D", "{vertices,indices,texture?,transform?,material?,visible?}; 36-byte f32LE vertices position.xyz, uv, RGBA; u32LE triangle indices")],
+            "nil", vec!["Replace validated presentation geometry"],
+            "Identical mesh content keeps its revision and resends no vertices; transform and visible are placement. Content changes allocate a deterministic world-monotonic revision. Canonical observations contain the complete mesh; official hosts receive memory views. Applying a new scene clears runtime meshes.",
+            vec!["GEOMETRY3D_INVALID", "GEOMETRY3D_LIMIT: 1024 meshes / 2097152 vertices per world; 262144 vertices and 1572864 indices per mesh", "Unsupported render hosts must reject geometry3d explicitly"],
+            "api.geometry3d.set(ground,{vertices=vertices,indices=indices,texture=texture://ground})",
+            vec!["geometry3d.setTransform", "geometry3d.setVisible", "geometry3d.remove", "camera.setTransform"],
+        ),
+        descriptor(
+            "geometry3d.setTransform", "presentation",
+            "Move, rotate or scale an existing retained mesh.",
+            "Animate a placed object every tick without resending its vertices.",
+            "Euler rotation in radians, like entity transform3d. The engine does not interpret the motion.",
+            vec![parameter("id", "string", "Existing mesh ID"), parameter("transform", "Transform3D", "Finite position/rotation within +/-1000000, nonnegative scale")],
+            "nil", vec!["Change mesh placement"],
+            "Keeps the mesh revision; hosts update only the object transform.",
+            vec!["GEOMETRY3D_MISSING", "GEOMETRY3D_INVALID"],
+            "api.geometry3d.setTransform(ship,{position={x=1,y=0,z=2},rotation={x=0,y=math.pi,z=0},scale={x=1,y=1,z=1}})",
+            vec!["geometry3d.set"],
+        ),
+        descriptor(
+            "geometry3d.setVisible", "presentation",
+            "Show or hide an existing retained mesh without releasing it.",
+            "Toggle a prepared mesh cheaply instead of removing and recreating it.",
+            "Hidden meshes keep their GPU resources.",
+            vec![parameter("id", "string", "Existing mesh ID"), parameter("visible", "boolean", "Whether it draws")],
+            "nil", vec!["Change mesh visibility"], "Keeps the mesh revision.",
+            vec!["GEOMETRY3D_MISSING"], "api.geometry3d.setVisible(ship,false)", vec!["geometry3d.set"],
+        ),
+        descriptor(
+            "geometry3d.remove", "presentation",
+            "Release a retained mesh.",
+            "Free a mesh at a lifecycle boundary.",
+            "Does not affect entities or other meshes.",
+            vec![parameter("id", "string", "Existing mesh ID")], "nil", vec!["Remove presentation mesh"],
+            "Missing IDs fail. Recreating a removed ID receives a fresh revision.",
+            vec!["GEOMETRY3D_MISSING"], "api.geometry3d.remove(ship)", vec!["geometry3d.set"],
         ),
     ]
 }

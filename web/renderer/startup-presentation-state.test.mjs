@@ -17,7 +17,7 @@ function fixture(){
  const context={ui:null,worldSubmitted:false,DRAW_COMPLETED,DRAW_SKIPPED,uiImageBatchPrefix:{clear:noop},projectedFrame:()=>null,assertFrameSnapshot:noop,frameProfile:null,framePublication:null,assertProjectedBackend:noop,assertRasterSnapshot:noop,rasterAvailable:available,projectedEntries:()=>[],heightfieldEntries:()=>[],
   rasterPolicy:{requested:'upper_left_checked'},backend:'webgl',bloom:null,effects:null,lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[],renderer:{info:{reset:noop},render(){renders++;}},
   worldOf:x=>x,resize:noop,checkedRaster:true,validateRaster:()=>cap.ensure(view()),specsOf:()=>new Map(),visibleSprites:()=>[],records:new Map(),
-  shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},meshEntities:{draw:()=>false,clear(){},contextLost(){}},heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
+  shaderMaterials:{retain:noop},scene:{},camera:{},camera3d:{},geometry3d:{draw:()=>false,clear(){},contextLost(){},metrics:()=>({})},curvature:{prepare(){},curvature:0},drawInRect:(_,draw)=>draw(),meshEntities:{draw:()=>false,clear(){},contextLost(){}},heightfields:{draw:noop},instances:{draw:noop},particles:{draw:noop},
   projected,rasterPass:{draw:noop},startupPresentation:startup,
   // draw() begins/sweeps the production texture cache; supply the real default (unbounded) policy.
   textureCache:createTextureCachePolicy(new Map()),frameDecoder:createProjectedFrameDecoder(),profile:null};

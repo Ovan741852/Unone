@@ -94,10 +94,36 @@ impl Serialize for InstanceTransport<'_>{
         map.end()
     }
 }
-/// Packed instance bytes the published memory views point into; kept alive
-/// until the next complete publication.
+// Retained meshes publish memory views of their immutable bytes in place of the
+// canonical base64; every other field is the canonical one.
+struct Geometry3DTransport<'a>(&'a WorldSnapshot);
+impl Serialize for Geometry3DTransport<'_>{
+    fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
+        use serde::ser::SerializeMap;
+        #[derive(Serialize)]
+        struct View{offset:usize,byte_length:usize}
+        #[derive(Serialize)]
+        struct Views{vertices:View,indices:View}
+        #[derive(Serialize)]
+        struct Entry<'a>{format:&'static str,#[serde(skip_serializing_if="Option::is_none")]texture:Option<&'a str>,
+            material:&'a unone_engine::Geometry3DMaterial,
+            vertex_count:usize,index_count:usize,revision:u64,memory:Views}
+        let view=|bytes:&[u8]|View{offset:bytes.as_ptr() as usize,byte_length:bytes.len()};
+        let mut map=serializer.serialize_map(Some(self.0.geometry3d.len()))?;
+        for (id,mesh) in &self.0.geometry3d{
+            map.serialize_entry(id,&Entry{format:unone_engine::GEOMETRY3D_FORMAT,texture:mesh.texture.as_deref(),material:&mesh.material,
+                vertex_count:mesh.vertex_count(),index_count:mesh.index_count(),revision:mesh.revision,
+                memory:Views{vertices:view(&mesh.vertices),indices:view(&mesh.indices)}})?;
+        }
+        map.end()
+    }
+}
+/// Packed instance and mesh bytes the published memory views point into; kept
+/// alive until the next complete publication.
 pub(super) fn instance_leases(snapshot:&WorldSnapshot)->Vec<std::sync::Arc<[u8]>>{
-    if INSTANCE_MEMORY.with(|m|m.get()){snapshot.instances3d.values().map(|batch|batch.packed.clone()).collect()}else{Vec::new()}
+    if !INSTANCE_MEMORY.with(|m|m.get()){return Vec::new();}
+    snapshot.instances3d.values().map(|batch|batch.packed.clone())
+        .chain(snapshot.geometry3d.values().flat_map(|mesh|[mesh.vertices.clone(),mesh.indices.clone()])).collect()
 }
 /// Byte span of each top-level field value in the canonical encoding.
 type Spans=Vec<(&'static str,usize,usize)>;
@@ -124,6 +150,7 @@ impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct
         if self.fields.skips(key){Ok(())}
         else if let Some(capture)=self.fields.capture{self.serializer.serialize_field(key,&CapturedValue{key,value,capture})}
         else if key=="instances3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&InstanceTransport(world))}
+        else if key=="geometry3d"&&let Some(world)=self.fields.instances&&INSTANCE_MEMORY.with(|m|m.get()){self.serializer.serialize_field(key,&Geometry3DTransport(world))}
         else{self.serializer.serialize_field(key,value)}
     }
     fn skip_field(&mut self,key:&'static str)->Result<(),Self::Error>{
@@ -386,6 +413,28 @@ mod tests{
   assert_eq!(restored_world(&changed)["observations"]["terrain"].as_str().unwrap().as_bytes()[0],b'y');
   // Complete JSON restores every field inline and retires the leases.
   assert_eq!(unone_web_set_ui_transport(0),0);let full=output();assert!(full.get("world_transport").is_none());assert!(full["world"]["observations"].is_object());
+ }
+ #[test]
+ fn retained_meshes_publish_stable_memory_views_and_complete_base64_without_memory(){
+  let script=r#"local v=buffer.create(3*36);local ix=buffer.create(12)
+   for i=0,2 do buffer.writef32(v,i*36,i);for c=0,3 do buffer.writef32(v,i*36+20+c*4,1) end;buffer.writeu32(ix,i*4,i) end
+   return {start=function(api)api.geometry3d.set('tri',{vertices=v,indices=ix})end,
+    update=function(api)api.geometry3d.setTransform('tri',{position={x=1,y=0,z=0}})end}"#;
+  let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"mesh","entry_script":"main.luau"},"script":script})).unwrap();
+  assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0,"{}",output());
+  let full=output();let canonical=full["world"]["geometry3d"]["tri"].clone();assert!(canonical["vertices"].is_string());
+  assert_eq!(unone_web_set_ui_transport(1),0);assert_eq!(super::super::unone_web_set_instance_transport(1),0);
+  let wire=output();let mesh=&wire["world"]["geometry3d"]["tri"];
+  assert!(mesh.get("vertices").is_none());assert_eq!(mesh["revision"],canonical["revision"]);assert_eq!(wire["observation_digest"],full["observation_digest"]);
+  let read=|view:&serde_json::Value|{let pointer=view["offset"].as_u64().unwrap() as usize as *const u8;
+   unsafe{std::slice::from_raw_parts(pointer,view["byte_length"].as_u64().unwrap() as usize)}.to_vec()};
+  let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());let owned=&snapshot.geometry3d["tri"];
+  assert_eq!(read(&mesh["memory"]["vertices"]),owned.vertices.to_vec());assert_eq!(read(&mesh["memory"]["indices"]),owned.indices.to_vec());
+  assert!(wire.get("world_transport").is_none_or(|t|t["fields"].get("geometry3d").is_none()),"meshes are never leased as JSON");
+  // A placement-only tick keeps the same bytes and memory views.
+  assert_eq!(super::super::unone_web_tick(),0);let moved=output();
+  assert_eq!(moved["world"]["geometry3d"]["tri"]["memory"],mesh["memory"]);assert_eq!(moved["world"]["geometry3d_placements"]["tri"]["transform"]["position"]["x"],1.0);
+  assert_eq!(super::super::unone_web_set_instance_transport(0),0);assert!(output()["world"]["geometry3d"]["tri"]["vertices"].is_string());
  }
  #[test]
  fn ordinary_ui_without_registry_uses_a_stable_current_lease_and_complete_canonical_bytes(){

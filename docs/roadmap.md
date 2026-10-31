@@ -101,6 +101,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 | 30 | Gamepad input | No official host gamepad contract and cross-target acceptance. Add normalized controls, connection lifecycle and replayable input before game-specific mappings. |
 | 31 | Navigation / pathfinding | No reusable navigation/pathfinding API. Choose geometry/query primitives from concrete RTS needs; unit orders, steering rules and movement policy stay in Luau. |
 | 32 | Lighting and materials | Current basic 3D presentation is predominantly unlit. General lighting/material support and imported-material parity remain open; engine rendering owns GPU resources. |
+| 34 | Runtime meshes and camera projection | [Retained world meshes](geometry3d.md) (`api.geometry3d`) and perspective camera curvature/rect are drawn by the official Web player; camera motion costs no Luau vertex work. Remaining: native wgpu drawing (it rejects them explicitly), lit materials, and rect together with bloom/render pipelines. |
 | 33 | Localization | No implemented string-table/resolution contract. The [localization proposal](work-packages/2026-09-06-localization-seam.md) is design work, not a callable API. |
 
 ## Reliability and evidence

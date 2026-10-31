@@ -3,7 +3,9 @@
 //! Production parity runs on a production feature set:
 //! cargo test -p unone-engine --no-default-features --features all-systems --test script_bytecode
 use std::collections::BTreeMap;
-use unone_engine::{HostProject, InputFrame, ScriptBytecodeDecl, SCRIPT_BYTECODE_DATA_ID, compile_production_script, observation_digest};
+use unone_engine::{HostProject, ScriptBytecodeDecl, SCRIPT_BYTECODE_DATA_ID, compile_production_script};
+#[cfg(not(any(feature = "dev-tools", feature = "preview-tools")))]
+use unone_engine::{InputFrame, observation_digest};
 
 const SCRIPT: &str = "local n=0\nreturn {start=function(api) api.observation.set('n',0) end,\nupdate=function(api,dt)\n n=n+dt*3.5\n for i=1,10 do n=(n*1.000001+i)%1000 end\n api.observation.set('n',n)\n if n>990 then error('overflow') end\nend}";
 

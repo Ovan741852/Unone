@@ -62,12 +62,30 @@ export class InstanceTransfer {
       const old=this.revisions.get(id);let revision=old?.revision;
       if(old?.key!==key){
         if(!Number.isSafeInteger(m.byte_length)||m.byte_length<0||m.byte_length>4_000_000||!Number.isSafeInteger(m.offset)||m.offset<0||m.offset+m.byte_length>heap.byteLength)throw Error('TRANSFER_SOURCE_INVALID');
-        const index=this.pool.findIndex(buffer=>buffer.byteLength===m.byte_length);
-        let buffer;if(index<0){buffer=new ArrayBuffer(m.byte_length);this.metrics.allocated_bytes+=m.byte_length;}else{buffer=this.pool.splice(index,1)[0];this.poolBytes-=buffer.byteLength;this.metrics.reused_bytes+=buffer.byteLength;}
-        new Uint8Array(buffer).set(new Uint8Array(heap,m.offset,m.byte_length));this.metrics.copied_bytes+=m.byte_length;
+        const buffer=this.copy(heap,m);
         revision=String(++this.serial);this.revisions.set(id,{key,revision});updates.push({id,buffer});
       }else this.metrics.unchanged_batches++;
       b.memory={...m,offset:0,buffer_id:id,revision};
+    }
+    // Retained meshes cross as copies only when a mesh revision changes.
+    const meshes=snapshot.world.geometry3d;
+    if(meshes&&typeof meshes==='object'&&!Array.isArray(meshes)){
+      const out={};
+      for(const [id,mesh]of Object.entries(meshes)){
+        if(!mesh?.memory){out[id]=mesh;continue;}
+        const memory={};
+        for(const part of ['vertices','indices']){
+          const m=mesh.memory[part],bufferId=`geometry3d:${part}:${id}`,key=`${mesh.revision}|${m?.byte_length}`;alive.add(bufferId);
+          const old=this.revisions.get(bufferId);let revision=old?.revision;
+          if(old?.key!==key){
+            if(!Number.isSafeInteger(m?.byte_length)||m.byte_length<0||m.byte_length>16*1024*1024||!Number.isSafeInteger(m.offset)||m.offset<0||m.offset+m.byte_length>heap.byteLength)throw Error('TRANSFER_SOURCE_INVALID');
+            const buffer=this.copy(heap,m);revision=String(++this.serial);this.revisions.set(bufferId,{key,revision});updates.push({id:bufferId,buffer});
+          }else this.metrics.unchanged_batches++;
+          memory[part]={offset:0,byte_length:m.byte_length,buffer_id:bufferId,revision};
+        }
+        out[id]={...mesh,memory};
+      }
+      snapshot.world.geometry3d=out;
     }
     const removed=[...this.retired].filter(id=>!alive.has(id));this.retired.clear();for(const id of this.revisions.keys())if(!alive.has(id)){this.revisions.delete(id);removed.push(id);}
     this.images=nextImages;this.metrics.image_definition_updates+=imageUpdates.length;this.metrics.image_unchanged_resources+=imageActive.length-imageUpdates.length;
@@ -76,6 +94,13 @@ export class InstanceTransfer {
     this.fields=nextFields;
     this.ui=nextUi;if(uiPacket){if(Object.hasOwn(uiPacket,'json'))this.metrics.ui_definition_updates++;else this.metrics.ui_unchanged_publications++;}else if(Object.hasOwn(snapshot.world,'ui'))this.metrics.ui_inline_publications++;
     return {value,updates,removed,...(imagePacket?{ui_images:imagePacket}:{}),...(savePacket?{save:savePacket}:{}),...(uiPacket?{ui_tree:uiPacket}:{}),...(nextFields.size?{world_fields:{format:'world-fields-delta-v1',fields:fieldPacket}}:{})};
+  }
+  // Copies one memory view into a pooled or new transferable buffer.
+  copy(heap,m){
+    const index=this.pool.findIndex(buffer=>buffer.byteLength===m.byte_length);
+    let buffer;if(index<0){buffer=new ArrayBuffer(m.byte_length);this.metrics.allocated_bytes+=m.byte_length;}else{buffer=this.pool.splice(index,1)[0];this.poolBytes-=buffer.byteLength;this.metrics.reused_bytes+=buffer.byteLength;}
+    new Uint8Array(buffer).set(new Uint8Array(heap,m.offset,m.byte_length));this.metrics.copied_bytes+=m.byte_length;
+    return buffer;
   }
   report(){return {...this.metrics,pooled_bytes:this.poolBytes,pooled_buffers:this.pool.length};}
 }

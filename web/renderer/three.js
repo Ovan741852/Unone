@@ -3,6 +3,8 @@ import {createTextureCachePolicy,parseTextureCache} from './texture-cache-policy
 import { createParticleRenderer } from "./particles.js?build=particle-texture-colorbins-v1";
 import { meshGeometry, validateMesh } from "./mesh.js";
 import {createInstanceRenderer} from './instances3d.js';
+import {createGeometry3DRenderer} from './geometry3d.js';
+import {createWorldCurvature} from './world-curvature.js';
 import {createMeshEntityRenderer} from './mesh-entities.js';
 import {createBloom,normalizePostProcessing} from './bloom.js';
 import {createEffects} from './effekseer.js';
@@ -224,6 +226,17 @@ export async function createThreeRenderer(canvas, options = {}) {
   const textureRecords = new Map();
   const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
   const heightfields = createHeightfieldRenderer(THREE,scene,textureFor);
+  const geometry3d = createGeometry3DRenderer(THREE,scene,{textureFor,memory:options.instanceMemory});
+  const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
+  // A camera rect (normalized, lower-left origin) renders the world into part of
+  // the surface; the rest of the surface is still cleared.
+  function drawInRect(rect,render){
+    const size=renderer.getSize(rectSize),autoClear=renderer.autoClear;
+    renderer.setScissorTest(false);if(autoClear)renderer.clear();
+    const x=rect.x*size.x,y=rect.y*size.y,w=rect.width*size.x,h=rect.height*size.y;
+    renderer.setViewport(x,y,w,h);renderer.setScissor(x,y,w,h);renderer.setScissorTest(true);renderer.autoClear=false;
+    try{render();}finally{renderer.autoClear=autoClear;renderer.setScissorTest(false);renderer.setViewport(0,0,size.x,size.y);}
+  }
   // An explicit immutable catalog grant (getAssetCatalog) reuses one index across draws; callers that only
   // pass getAssetManifest keep the exact legacy per-draw rebuild, so their in-place edits stay visible.
   if(options.getAssetCatalog!==undefined&&typeof options.getAssetCatalog!=='function')throw Error('ASSET_CATALOG_PROVIDER_INVALID: getAssetCatalog must be a function');
@@ -364,6 +377,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     instances.contextLost(retire);
     particles.contextLost(retire);
     heightfields.contextLost(retire);
+    geometry3d.contextLost(retire);
     bloom?.contextLost(retire);
   }
 
@@ -453,11 +467,12 @@ export async function createThreeRenderer(canvas, options = {}) {
     if (world.camera3d) {
       const c = world.camera3d; camera3d.position.set(c.position.x,c.position.y,c.position.z);
       camera3d.lookAt(c.target.x,c.target.y,c.target.z); camera3d.fov=c.fov_degrees;
-      camera3d.aspect=aspectOf(canvas); camera3d.updateProjectionMatrix(); activeCamera=camera3d;
+      camera3d.aspect=aspectOf(canvas)*(c.rect?c.rect.width/c.rect.height:1); camera3d.updateProjectionMatrix(); activeCamera=camera3d;
     }
     if(meshEntities.draw(world,worldVisible,specs))assetRequestPending=true;
     profile?.mark('scene_sync');
     heightfields.draw(worldVisible?terrain:[],specs);
+    if(geometry3d.draw(worldVisible?world.geometry3d:{},world.geometry3d_placements,specs))assetRequestPending=true;
     instances.draw(worldVisible?world.instances3d:{},specs);
     particles.draw(worldVisible?world.particles:[], activeCamera);
     profile?.mark('subrenderer_prepare');
@@ -471,7 +486,13 @@ export async function createThreeRenderer(canvas, options = {}) {
     const overlay=worldVisible&&effects?()=>{effects.draw(world,activeCamera);renderer.resetState();}:null;
     const pipeline=world.render_pipeline?pipelineFrame(world.render_pipeline):null;
     if(pipeline&&!bloom)throw Error('RENDER_PIPELINE_BACKEND_UNSUPPORTED: render_pipeline needs the official WebGL renderer');
-    if(bloom) bloom.draw(scene,activeCamera,overlay,pipeline);
+    curvature.prepare(scene,world.camera3d);
+    const rect=world.camera3d?.rect;
+    if(rect){
+      if(bloom?.active(pipeline)||pipeline&&!pipeline.scene)throw Error('CAMERA_RECT_UNSUPPORTED: a camera rect cannot combine with bloom, tone mapping or render pipeline passes yet');
+      drawInRect(rect,()=>{renderer.render(scene,activeCamera);overlay?.();});
+    }
+    else if(bloom) bloom.draw(scene,activeCamera,overlay,pipeline);
     else {renderer.render(scene,activeCamera);overlay?.();}
     worldSubmitted=true;
     if(frameProfile)assertFrameGpuError(renderer.getContext(),'official.ordinary-render');
@@ -498,6 +519,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     uiImageBatchPrefix.clear();
     ui?.clear();
     heightfields.clear();
+    geometry3d.clear();
     meshEntities.clear();
     for (const record of meshAssets.values()) { record.discarded=true;record.geometry?.dispose(); record.material?.dispose(); }
     meshAssets.clear();
@@ -553,7 +575,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-      metrics: () => ({texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

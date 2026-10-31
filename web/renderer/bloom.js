@@ -93,6 +93,11 @@ export function createBloom(THREE,renderer,settings) {
     get enabled(){return enabled;},
     // pipeline: per-frame settings from a declared render pipeline (ADR 0048).
     // Without it the creation settings and setEnabled/setAO apply as before.
+    // Whether a draw would run any post-processing pass at all.
+    active(pipeline){
+      const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled,tone=pipeline?pipeline.tone:configuredTone;
+      return Boolean(bloomOn||aoOn||tone||(pipeline?.extensions??[]).length);
+    },
     draw(worldScene,worldCamera,overlay,pipeline) {
       if(disposed)throw Error('POSTPROCESSING_DISPOSED');
       const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled;

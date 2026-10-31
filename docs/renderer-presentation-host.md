@@ -101,6 +101,14 @@ Focused regression tests: `node --test web/renderer/bloom.test.mjs` (legacy pass
 counts/timers, validation, opt-in output/settings/state restoration and disposal).
 `node scripts/verify-postprocessing-browser.mjs` checks actual official WebGL
 color parity across quality modes and writes `.cache/postprocessing-browser-report.json`.
+# Retained world meshes
+
+The official Three WebGL adapter draws game-built world-space meshes from
+`api.geometry3d` with the camera, including camera curvature and rect; see
+[the contract](geometry3d.md). Prefer it over preprojected geometry whenever the
+game does not need exact preprojected output: camera motion then costs no Luau work.
+The native player rejects these meshes explicitly for now.
+
 # Preprojected transport
 
 The official native and Three WebGL adapters accept game-owned clip-space indexed

@@ -36,6 +36,11 @@ type R<T> = Result<T, String>;
 pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
     if let Some(tree)=&snapshot.ui {ui::ensure_retained_images_supported(tree)?;}
     if snapshot.projected_frame.is_some(){return Err("HOST_PROJECTED_FRAME_UNSUPPORTED: encoded reference Frame requires official WebGL2 profile".into());}
+    // Retained meshes and camera curvature/rect are drawn by the official Web player only so far.
+    if !snapshot.geometry3d.is_empty(){return Err("HOST_GEOMETRY3D_UNSUPPORTED: api.geometry3d meshes require the official Web player; export Web".into());}
+    if snapshot.camera3d.as_ref().is_some_and(|c|c.curvature!=0.0||c.rect.is_some()){
+        return Err("HOST_CAMERA_PROJECTION_UNSUPPORTED: camera curvature and rect require the official Web player; export Web".into());
+    }
     if snapshot.projected_geometry.values().any(|batch|batch.blend==unone_engine::ProjectedBlend::SourceOver) {
         return Err("PROJECTED_BLEND_UNSUPPORTED: source_over requires the official WebGL projected renderer; native sRGB hardware blending does not implement the encoded-color contract".into());
     }
