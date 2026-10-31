@@ -47,6 +47,27 @@ pub struct AssetSpec {
     /// not that a host can decode this asset. Every companion still belongs in files.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub encoding: Option<AssetEncoding>,
+    /// How `source` is produced: an importer turns source files into this
+    /// asset's file before hosts read or pack it (docs/import-pipeline.md).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub import: Option<AssetImport>,
+}
+
+/// One importer run whose product becomes an asset's file.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct AssetImport {
+    /// A name registered in project.unone.json `import.importers`.
+    pub importer: String,
+    /// Importer input -> `<root>:<path>` (a file under a declared import
+    /// root) or `asset:<id>` (another asset: its import product, or its file).
+    #[serde(default)]
+    pub inputs: BTreeMap<String, String>,
+    #[serde(default, skip_serializing_if = "serde_json::Value::is_null")]
+    pub params: serde_json::Value,
+    /// Which importer product this asset's file holds.
+    pub product: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
@@ -1649,7 +1670,7 @@ mod tests {
                 kind: "texture2d".to_string(),
                 bundle: "content".to_string(),
                 files: Vec::new(),
-                encoding: None,
+                encoding: None, import: None,
             }),
         );
         assert!(second.ok, "{:?}", second.diagnostics);

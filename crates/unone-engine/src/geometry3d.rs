@@ -14,6 +14,11 @@ pub const GEOMETRY3D_BILLBOARD_FORMAT: &str = "f32le-p3-o2-uv2-rgba4-u32-v1";
 /// Screen billboards: anchor position.xyz, pixel offset.xy (+x right, +y down),
 /// uv, linear RGBA 0..1.
 pub const GEOMETRY3D_BILLBOARD_VERTEX_BYTES: usize = 44;
+pub const GEOMETRY3D_ATTRIBUTE_FORMAT: &str = "f32le-p3-uv2-rgba4-attr-u32-v1";
+// Meshes whose shader material declares attributes: position.xyz, uv, linear
+// RGBA 0..1, then each declared attribute in order as finite floats.
+/// The largest vertex layout, for bounding buffers before they are copied.
+pub const MAX_GEOMETRY3D_VERTEX_BYTES: usize = GEOMETRY3D_VERTEX_BYTES + 4 * crate::shader::MAX_SHADER_ATTRIBUTE_FLOATS;
 pub const MAX_GEOMETRY3D_MESHES: usize = 1024;
 pub const MAX_GEOMETRY3D_VERTICES: usize = 262_144;
 pub const MAX_GEOMETRY3D_INDICES: usize = 1_572_864;
@@ -80,21 +85,29 @@ pub struct Geometry3DMaterial {
     /// image, so a standing sprite is not cut by the ground behind its anchor.
     #[serde(default)]
     pub depth_bias: f32,
+    /// A declared `scene.shader_materials` ID shading the mesh, optionally with
+    /// its own vertex stage and per-vertex attributes. Billboards keep the
+    /// built-in material.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shader: Option<String>,
 }
 fn default_cutoff() -> f32 { 0.5 }
 impl Default for Geometry3DMaterial {
     fn default() -> Self {
         Self { blend: Geometry3DBlend::Opaque, alpha_cutoff: default_cutoff(), double_sided: false,
             filter: Geometry3DFilter::Linear, address: Geometry3DAddress::Clamp, order: 0,
-            billboard: Geometry3DBillboard::None, depth_bias: 0.0 }
+            billboard: Geometry3DBillboard::None, depth_bias: 0.0, shader: None }
     }
 }
 impl Geometry3DMaterial {
-    pub fn vertex_bytes(&self) -> usize {
-        if self.billboard == Geometry3DBillboard::Screen { GEOMETRY3D_BILLBOARD_VERTEX_BYTES } else { GEOMETRY3D_VERTEX_BYTES }
-    }
-    pub fn format(&self) -> &'static str {
-        if self.billboard == Geometry3DBillboard::Screen { GEOMETRY3D_BILLBOARD_FORMAT } else { GEOMETRY3D_FORMAT }
+    /// Vertex bytes and format when the shader declares `attribute_floats`
+    /// extra floats per vertex.
+    pub fn layout(&self, attribute_floats: usize) -> (usize, &'static str) {
+        match (self.billboard, attribute_floats) {
+            (Geometry3DBillboard::Screen, _) => (GEOMETRY3D_BILLBOARD_VERTEX_BYTES, GEOMETRY3D_BILLBOARD_FORMAT),
+            (_, 0) => (GEOMETRY3D_VERTEX_BYTES, GEOMETRY3D_FORMAT),
+            (_, n) => (GEOMETRY3D_VERTEX_BYTES + 4 * n, GEOMETRY3D_ATTRIBUTE_FORMAT),
+        }
     }
 }
 
@@ -110,6 +123,8 @@ pub struct Geometry3D {
     pub vertices: Arc<[u8]>,
     pub indices: Arc<[u8]>,
     pub revision: u64,
+    /// Floats per vertex the shader material declares after the color.
+    attribute_floats: usize,
     encoded: Arc<OnceLock<[String; 2]>>,
 }
 
@@ -150,7 +165,9 @@ pub(crate) fn validate_transform(transform: &Transform3DData) -> Result<(), Stri
 }
 
 impl Geometry3DContent {
-    pub fn validate(&self) -> Result<(), String> {
+    /// Checks the content against its layout: `attribute_floats` extra floats
+    /// per vertex, as the shader material declares.
+    pub fn validate(&self, attribute_floats: usize) -> Result<(), String> {
         if self.texture.as_ref().is_some_and(|t| t.is_empty() || t.len() > 256) {
             return Err(invalid("texture asset ID must contain 1..256 UTF-8 bytes"));
         }
@@ -160,17 +177,21 @@ impl Geometry3DContent {
         {
             return Err(invalid("alpha_cutoff in 0..1, order in -32768..32767 and finite depth_bias required"));
         }
+        if m.billboard == Geometry3DBillboard::Screen && m.shader.is_some() {
+            return Err(invalid("screen billboards keep the built-in material"));
+        }
         validate_transform(&self.transform)?;
-        let (vertices, indices, stride) = (&self.vertices, &self.indices, m.vertex_bytes());
+        let (vertices, indices, stride) = (&self.vertices, &self.indices, m.layout(attribute_floats).0);
         if !vertices.len().is_multiple_of(stride) || !indices.len().is_multiple_of(4) {
-            return Err(invalid("36-byte (44-byte billboard) vertices and u32 indices required"));
+            return Err(invalid("36-byte vertices (44 for billboards, plus 4 per declared attribute float) and u32 indices required"));
         }
         let (vertex_count, index_count) = (vertices.len() / stride, indices.len() / 4);
         if !(3..=MAX_GEOMETRY3D_VERTICES).contains(&vertex_count) || !(3..=MAX_GEOMETRY3D_INDICES).contains(&index_count) || !index_count.is_multiple_of(3) {
             return Err(invalid("3..262144 vertices and 3..1572864 indices forming triangles required"));
         }
-        // Billboards carry a pixel offset after the anchor; the rest is shared.
-        let offset_fields = if stride == GEOMETRY3D_BILLBOARD_VERTEX_BYTES { 2 } else { 0 };
+        // Billboards carry a pixel offset after the anchor and declared
+        // attributes follow the color; position, uv and color are shared.
+        let offset_fields = if m.billboard == Geometry3DBillboard::Screen { 2 } else { 0 };
         for record in vertices.chunks_exact(stride) {
             for field in 0..stride / 4 {
                 let n = f32::from_le_bytes(record[field * 4..field * 4 + 4].try_into().unwrap());
@@ -178,9 +199,10 @@ impl Geometry3DContent {
                     0..=2 => n.abs() <= MAX_COORDINATE,
                     f if f < 3 + offset_fields => n.abs() <= MAX_PIXEL_OFFSET,
                     f if f < 5 + offset_fields => n.abs() <= MAX_UV,
-                    _ => (0.0..=1.0).contains(&n),
+                    f if f < 9 + offset_fields => (0.0..=1.0).contains(&n),
+                    _ => true,
                 };
-                if !ok { return Err(invalid("finite positions within +/-1000000, offsets and uv within +/-65536 and RGBA in 0..1 required")); }
+                if !ok { return Err(invalid("finite positions within +/-1000000, offsets and uv within +/-65536, RGBA in 0..1 and finite attributes required")); }
             }
         }
         if indices.chunks_exact(4).any(|i| u32::from_le_bytes(i.try_into().unwrap()) as usize >= vertex_count) {
@@ -195,8 +217,8 @@ impl Geometry3DContent {
 }
 
 impl Geometry3D {
-    pub fn format(&self) -> &'static str { self.material.format() }
-    pub fn vertex_count(&self) -> usize { self.vertices.len() / self.material.vertex_bytes() }
+    pub fn format(&self) -> &'static str { self.material.layout(self.attribute_floats).1 }
+    pub fn vertex_count(&self) -> usize { self.vertices.len() / self.material.layout(self.attribute_floats).0 }
     pub fn index_count(&self) -> usize { self.indices.len() / 4 }
     /// Base64 vertices and indices for hosts without memory views, encoded once
     /// per mesh generation.
@@ -232,7 +254,14 @@ impl Serialize for Geometry3D {
 impl crate::world::World {
     pub(crate) fn set_geometry3d(&mut self, id: String, content: Geometry3DContent) -> Result<(), String> {
         validate_id(&id)?;
-        content.validate()?;
+        // Scene materials are fixed until the next scene, which clears meshes,
+        // so the layout resolved here stays valid for the mesh's lifetime.
+        let attribute_floats = match &content.material.shader {
+            None => 0,
+            Some(shader) => self.shader_materials.get(shader).ok_or_else(|| format!(
+                "SHADER_MATERIAL_UNKNOWN: '{shader}' is not declared in scene.shader_materials"))?.attribute_floats(),
+        };
+        content.validate(attribute_floats)?;
         if let Some(current) = self.geometry3d.get_mut(&id) && content.same_mesh(current) {
             // Placement-only change: keep the mesh generation and its encoding.
             current.transforms = vec![content.transform];
@@ -242,7 +271,7 @@ impl crate::world::World {
         if !self.geometry3d.contains_key(&id) && self.geometry3d.len() >= MAX_GEOMETRY3D_MESHES {
             return Err("GEOMETRY3D_LIMIT: at most 1024 meshes per world".into());
         }
-        let stride = content.material.vertex_bytes();
+        let stride = content.material.layout(attribute_floats).0;
         let others: usize = self.geometry3d.iter().filter(|(key, _)| **key != id).map(|(_, mesh)| mesh.vertex_count()).sum();
         if others + content.vertices.len() / stride > MAX_WORLD_GEOMETRY3D_VERTICES {
             return Err("GEOMETRY3D_LIMIT: at most 2097152 vertices per world".into());
@@ -251,7 +280,7 @@ impl crate::world::World {
         self.geometry3d_revision = revision;
         self.geometry3d.insert(id, Geometry3D {
             texture: content.texture, material: content.material, transforms: vec![content.transform], visible: content.visible,
-            vertices: content.vertices.into(), indices: content.indices.into(), revision,
+            vertices: content.vertices.into(), indices: content.indices.into(), revision, attribute_floats,
             encoded: Arc::new(OnceLock::new()),
         });
         Ok(())
@@ -343,6 +372,58 @@ mod tests {
         far[12..16].copy_from_slice(&1e6f32.to_le_bytes());
         sprite.vertices = far;
         assert!(world.set_geometry3d("person".into(), sprite).unwrap_err().starts_with("GEOMETRY3D_INVALID"));
+    }
+    #[test]
+    fn shader_meshes_take_the_vertex_layout_their_material_declares() {
+        use crate::shader::{ShaderAttribute, ShaderMaterialDefinition};
+        let mut world = crate::world::World::default();
+        // Two declared attributes, cell (3 floats) and corner (1), follow the color.
+        let mut vertices = Vec::new();
+        for (x, z) in [(0f32, 0f32), (1., 0.), (0., 1.)] {
+            for n in [x, 0., z, x, z, 1., 1., 1., 1., -70000., 2.5, 3., 4.] { vertices.extend_from_slice(&n.to_le_bytes()); }
+        }
+        let indices: Vec<u8> = [0u32, 1, 2].iter().flat_map(|i| i.to_le_bytes()).collect();
+        let mut mesh = content(vertices.clone(), indices.clone());
+        mesh.material.shader = Some("exact".into());
+        assert!(world.set_geometry3d("land".into(), mesh.clone()).unwrap_err().starts_with("SHADER_MATERIAL_UNKNOWN"));
+        let exact = ShaderMaterialDefinition {
+            fragment: "vec4 unoneShade(vec2 uv, vec4 color) { return color; }".into(),
+            vertex: Some("vec4 unoneVertex(vec3 position, mat4 model) { return vec4(cell.xy, corner, 1.0); }".into()),
+            uniforms: Default::default(),
+            attributes: vec![ShaderAttribute { name: "cell".into(), size: 3 }, ShaderAttribute { name: "corner".into(), size: 1 }],
+            varyings: vec![], samplers: Default::default() };
+        exact.validate().unwrap();
+        world.shader_materials.insert("exact".into(), exact.clone());
+        world.set_geometry3d("land".into(), mesh.clone()).unwrap();
+        let json = serde_json::to_value(&world.geometry3d["land"]).unwrap();
+        assert_eq!((json["format"].as_str().unwrap(), json["vertex_count"].as_u64().unwrap()), (GEOMETRY3D_ATTRIBUTE_FORMAT, 3));
+        assert_eq!(json["material"]["shader"].as_str(), Some("exact"));
+        assert!(serde_json::to_value(Geometry3DMaterial::default()).unwrap().get("shader").is_none(), "plain materials keep their canonical form");
+        let mut nan = vertices.clone();
+        nan[48..52].copy_from_slice(&f32::NAN.to_le_bytes());
+        let mut bad = mesh.clone();
+        bad.vertices = nan;
+        assert!(world.set_geometry3d("land".into(), bad).unwrap_err().starts_with("GEOMETRY3D_INVALID"));
+        // A material without attributes reads plain 36-byte vertices, so these do not fit.
+        world.shader_materials.insert("plain".into(), ShaderMaterialDefinition { attributes: vec![], ..exact.clone() });
+        let mut plain = mesh.clone();
+        plain.material.shader = Some("plain".into());
+        assert!(world.set_geometry3d("other".into(), plain).unwrap_err().starts_with("GEOMETRY3D_INVALID"));
+        let mut billboard = mesh;
+        billboard.material.billboard = Geometry3DBillboard::Screen;
+        assert!(world.set_geometry3d("other".into(), billboard).unwrap_err().contains("billboards"));
+        // Two attribute floats make 44-byte vertices, the billboard size: the
+        // material, not the size, decides that field 3 is an attribute.
+        let mut wide = Vec::new();
+        for (x, z) in [(0f32, 0f32), (1., 0.), (0., 1.)] {
+            for n in [x, 0., z, x, z, 1., 1., 1., 1., -70000., 1.] { wide.extend_from_slice(&n.to_le_bytes()); }
+        }
+        world.shader_materials.insert("pair".into(), ShaderMaterialDefinition {
+            attributes: vec![ShaderAttribute { name: "cell".into(), size: 2 }], ..exact });
+        let mut pair = content(wide, indices);
+        pair.material.shader = Some("pair".into());
+        world.set_geometry3d("pair".into(), pair).unwrap();
+        assert_eq!(world.geometry3d["pair"].vertex_count(), 3);
     }
     #[test]
     fn invalid_content_never_replaces_the_current_mesh() {

@@ -580,7 +580,7 @@ fn run() -> Result<ExitCode> {
                         kind,
                         bundle,
                         files: file,
-                        encoding: None,
+                        encoding: None, import: None,
                     }),
                     (None, Some(_)) => {
                         return print_result(

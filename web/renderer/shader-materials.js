@@ -23,6 +23,82 @@ void main(){gl_FragColor=unoneShade(unone_uv,texture2D(unone_texture,unone_uv)*u
 }`;
 }
 
+// Mesh materials (geometry3d): an optional vertex stage plus the interface the
+// definition declares once -- uniforms, per-vertex attributes after the color,
+// and varyings between the stages. Both stages are generated from it here, so
+// a new kind of input (samplers, integer uniforms) is one more declaration.
+const vecType=size=>size===1?'float':`vec${size}`;
+const DEFAULT_VERTEX='vec4 unoneVertex(vec3 position, mat4 model){return unone_projection*unone_view*model*vec4(position,1.0);}';
+// Attribute offsets in floats within an interleaved vertex: position.xyz, uv,
+// RGBA, then the declared attributes in order.
+export function meshShaderLayout(definition){
+  let offset=9;const attributes=(definition?.attributes??[]).map(({name,size})=>{const at=offset;offset+=size;return {name,size,offset:at};});
+  return {stride:offset,attributes};
+}
+export function meshShaderSources(id,definition){
+  fragmentSource(id,definition);
+  const vertex=definition.vertex??DEFAULT_VERTEX;
+  if(typeof vertex!=='string'||!vertex.includes('unoneVertex')||vertex.includes('#version')||new TextEncoder().encode(vertex).length>16384)throw Error(`SHADER_DEFINITION_INVALID: ${id}`);
+  const uniforms=Object.entries(definition.uniforms??{}).map(([name,value])=>`uniform ${uniformType(value)} ${name};`).join('\n');
+  const varyings=(definition.varyings??[]).map(v=>`${v.interpolation==='flat'?'flat ':''}varying ${vecType(v.size)} ${v.name};`).join('\n');
+  const samplers=Object.entries(definition.samplers??{}).map(([name,s])=>`uniform highp ${s.type==='int'?'isampler2D':'sampler2D'} ${name};`).join('\n');
+  const shared=`// UNONE_MATERIAL:${id}
+uniform float unone_time;
+uniform float unone_frame;
+uniform vec4 unone_viewport;
+${uniforms}
+${samplers}
+varying vec2 unone_uv;
+varying vec4 unone_color;
+${varyings}`;
+  const vertexShader=`${shared}
+// The host may mirror the world root for a left-handed camera; model and
+// unone_view stay in the game's coordinates, and their product is unchanged.
+uniform mat4 unone_handedness;
+#define unone_view (viewMatrix*unone_handedness)
+#define unone_projection projectionMatrix
+${(definition.attributes??[]).map(a=>`attribute ${vecType(a.size)} ${a.name};`).join('\n')}
+${vertex}
+void main(){
+ unone_uv=uv;unone_color=color;
+ mat4 unone_model=unone_handedness*modelMatrix;
+#ifdef USE_INSTANCING
+ unone_model=unone_model*instanceMatrix;
+#endif
+ gl_Position=unoneVertex(position,unone_model);
+}`;
+  const fragmentShader=`${shared}
+uniform sampler2D unone_texture;
+uniform float unone_alpha_cutoff;
+${definition.fragment}
+void main(){
+ vec4 unoneColor=unoneShade(unone_uv,texture2D(unone_texture,unone_uv)*unone_color);
+ if(unoneColor.a<unone_alpha_cutoff)discard;
+ gl_FragColor=unoneColor;
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`;
+  return {vertexShader,fragmentShader,signature:vertexShader+'\n'+fragmentShader};
+}
+// `shared` uniforms (time, frame, viewport) are objects owned by the caller and
+// shared by every mesh material, so one write per frame reaches all of them.
+export function createMeshShaderMaterial(THREE,id,definition,{shared,texture,blend='opaque',alphaCutoff=.5,side}){
+  const {vertexShader,fragmentShader}=meshShaderSources(id,definition);
+  const uniforms={...shared,unone_texture:{value:texture},unone_alpha_cutoff:{value:blend==='cutout'?alphaCutoff:-1}};
+  for(const [name,value] of Object.entries(definition.uniforms??{}))uniforms[name]={value:Array.isArray(value)?[...value]:value};
+  // Samplers are bound before every draw.
+  for(const name of Object.keys(definition.samplers??{}))uniforms[name]={value:null};
+  return new THREE.ShaderMaterial({name:`unone-shader:${id}`,uniforms,vertexShader,fragmentShader,vertexColors:true,
+    transparent:blend==='transparent',depthWrite:blend!=='transparent',side});
+}
+// Current values of the declared uniforms; their names and widths are fixed by the definition.
+export function applyMeshShaderValues(material,definition){
+  for(const [name,value] of Object.entries(definition.uniforms??{})){
+    const uniform=material.uniforms[name];
+    if(Array.isArray(value)){for(let i=0;i<value.length;i++)uniform.value[i]=value[i];}else uniform.value=value;
+  }
+}
+
 // Resource preparation owns source/type layout; instances own mutable values.
 export function spriteMaterialDescriptor(id, definition) {
  if(!id && definition===undefined)return BASIC_SPRITE_MATERIAL;

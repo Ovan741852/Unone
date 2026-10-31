@@ -12,13 +12,16 @@ pub use sprite_resources::{AssetCatalogEntry, SpriteAppearance, SpriteAppearance
     MAX_SPRITE_RESOURCES, MAX_PRESENTATION_RECEIPTS, MAX_SPRITE_RESOURCE_BYTES, MAX_PRESENTATION_INTEGER};
 /// Backend-independent packed geometry batches and reference query semantics.
 pub mod spatial;
-pub use shader::{ShaderMaterialDefinition, ShaderUniform};
+pub use shader::{ShaderAttribute, ShaderInterpolation, ShaderMaterialDefinition, ShaderSampler, ShaderSamplerType, ShaderTextureSource, ShaderUniform, ShaderVarying};
 mod mesh;
 pub use mesh::{MeshAsset, MeshLod, validate_mesh_geometry};
 mod heightfield;
 mod geometry3d;
+mod data_texture;
+pub use data_texture::{DataTexture, DataTextureFormat, DataTextureRegion, MAX_DATA_TEXTURES, MAX_DATA_TEXTURE_BYTES, MAX_DATA_TEXTURE_SIZE, MAX_WORLD_DATA_TEXTURE_BYTES};
 pub use geometry3d::{Geometry3D, Geometry3DPlacement, Geometry3DAddress, Geometry3DBillboard, Geometry3DBlend, Geometry3DContent, Geometry3DFilter, Geometry3DMaterial,
     GEOMETRY3D_FORMAT, GEOMETRY3D_VERTEX_BYTES, GEOMETRY3D_BILLBOARD_FORMAT, GEOMETRY3D_BILLBOARD_VERTEX_BYTES,
+    GEOMETRY3D_ATTRIBUTE_FORMAT, MAX_GEOMETRY3D_VERTEX_BYTES,
     MAX_GEOMETRY3D_MESHES, MAX_GEOMETRY3D_VERTICES, MAX_GEOMETRY3D_INDICES, MAX_GEOMETRY3D_INSTANCES};
 pub use heightfield::{Heightfield, HeightfieldDefinition, HeightfieldPatch};
 mod projected;
@@ -77,6 +80,12 @@ pub use runtime_packages::compiled_runtime_packages;
 pub use runtime_packages::runtime_package_files;
 #[cfg(feature = "preview-tools")]
 pub use runtime::{DebugControl, DebugTab, PreviewRequest};
+#[cfg(feature = "dev-tools")]
+pub use runtime::import_nodes::{ImportNodeDefinition, ImportPortType, ImportValue, describe_import_nodes, run_import_node};
+#[cfg(feature = "dev-tools")]
+mod import;
+#[cfg(feature = "dev-tools")]
+pub use import::{ImportReport, prepare_imports};
 mod scene;
 #[cfg(feature = "dev-tools")]
 mod schema;
@@ -98,7 +107,7 @@ pub use api::{
 pub use api_typing_authoring::{ApiTypingsUpdateReport, api_typings_block, update_api_typings};
 #[cfg(feature = "dev-tools")]
 pub use asset::{
-    AssetCompanion, AssetEncoding, AssetInitReport, AssetInspectBlocker, AssetInspectReport,
+    AssetCompanion, AssetEncoding, AssetImport, AssetInitReport, AssetInspectBlocker, AssetInspectReport,
     AssetManifest, AssetReadReport, AssetReference, AssetSpec, ResolvedAssetBytes,
     SUPPORTED_ASSET_KINDS, StaticReferenceScope, init_asset_manifest, inspect as inspect_assets,
     inspect_strict as inspect_assets_strict, manifest as load_asset_manifest, read as read_asset,
@@ -151,7 +160,7 @@ pub use project::{
     AnimationAssertion, AudioAssertion, EffectsAssertion, InputFrame, ObservationAssertion,
     PointerInput, SliderInteraction, SliderPhase, TextInputInteraction, TextInputPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
     ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
-    UiPreviewSpec,
+    UiPreviewSpec, ImportConfig, ImporterSpec, ImportRoot,
 };
 pub use runtime::{
     CheckReport, EngineRuntime, RunReport, SourceProject, SpatialTask, TestCaseReport, TestSuiteReport,

@@ -39,6 +39,7 @@ pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
     if snapshot.projected_frame.is_some(){return Err("HOST_PROJECTED_FRAME_UNSUPPORTED: encoded reference Frame requires official WebGL2 profile".into());}
     // Retained meshes and camera curvature/rect are drawn by the official Web player only so far.
     if !snapshot.geometry3d.is_empty(){return Err("HOST_GEOMETRY3D_UNSUPPORTED: api.geometry3d meshes require the official Web player; export Web".into());}
+    if !snapshot.data_textures.is_empty(){return Err("HOST_DATA_TEXTURE_UNSUPPORTED: api.texture data textures require the official Web player; export Web".into());}
     if snapshot.camera3d.as_ref().is_some_and(|c|c.curvature!=0.0||c.rect.is_some()||c.handedness!=unone_engine::CameraHandedness::Right){
         return Err("HOST_CAMERA_PROJECTION_UNSUPPORTED: camera curvature, rect and left handedness require the official Web player; export Web".into());
     }

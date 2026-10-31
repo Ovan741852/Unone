@@ -177,6 +177,62 @@
       ],
       "type": "object"
     },
+    "ImportConfig": {
+      "additionalProperties": false,
+      "description": "The project's import pipeline declarations (docs/import-pipeline.md).",
+      "properties": {
+        "importers": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ImporterSpec"
+          },
+          "default": {},
+          "description": "Importer name -> a node of a project Luau module. This is where a game\nadds formats; the engine needs no change for a new source format.",
+          "type": "object"
+        },
+        "roots": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ImportRoot"
+          },
+          "default": {},
+          "description": "Read-only directories outside the project that imports read, such as an\noriginal game installation the project may not redistribute.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "ImportRoot": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "description": "Directories tried in order (${VAR} expands environment variables) when\nthe machine-local .unone/import-roots.json does not name this root.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ImporterSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "module": {
+          "description": "Project-relative Luau module returning node definitions.",
+          "type": "string"
+        },
+        "node": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "module",
+        "node"
+      ],
+      "type": "object"
+    },
     "RenderParam": {
       "anyOf": [
         {
@@ -381,6 +437,17 @@
         }
       ],
       "description": "Explicit opt-in demand-sampled host time; absent keeps deterministic legacy behavior."
+    },
+    "import": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ImportConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Importers and read-only import roots for assets declaring `import`."
     },
     "job_scripts": {
       "additionalProperties": {

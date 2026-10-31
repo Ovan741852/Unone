@@ -121,9 +121,9 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
     }
     for entity in &scene.entities {
         if let Some(material) = &entity.shader_material
-            && (entity.sprite.is_none() || !scene.shader_materials.contains_key(material))
+            && (entity.sprite.is_none() || crate::shader::sprite_material(&scene.shader_materials, material).is_err())
         {
-            return Err(scene_error(source, "SHADER_MATERIAL_REFERENCE_INVALID", "Invalid shader assignment", format!("Entity '{}' needs a sprite and a declared shader material '{}'", entity.id, material)));
+            return Err(scene_error(source, "SHADER_MATERIAL_REFERENCE_INVALID", "Invalid shader assignment", format!("Entity '{}' needs a sprite and a declared sprite shader material '{}' (one without a vertex stage)", entity.id, material)));
         }
     }
     for (id, definition) in &scene.particle_effects {

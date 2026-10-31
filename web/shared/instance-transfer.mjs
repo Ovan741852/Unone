@@ -67,25 +67,26 @@ export class InstanceTransfer {
       }else this.metrics.unchanged_batches++;
       b.memory={...m,offset:0,buffer_id:id,revision};
     }
-    // Retained meshes cross as copies only when a mesh revision changes.
-    const meshes=snapshot.world.geometry3d;
-    if(meshes&&typeof meshes==='object'&&!Array.isArray(meshes)){
+    // Revisioned presentation bytes (mesh vertices and indices, data texture
+    // texels) cross as copies only when their entry's revision changes.
+    for(const [field,parts]of BYTE_FIELDS){
+      const entries=snapshot.world[field];
+      if(!entries||typeof entries!=='object'||Array.isArray(entries))continue;
       const out={};
-      for(const [id,mesh]of Object.entries(meshes)){
-        if(!mesh?.memory){out[id]=mesh;continue;}
-        const memory={};
-        for(const part of ['vertices','indices']){
-          const m=mesh.memory[part],bufferId=`geometry3d:${part}:${id}`,key=`${mesh.revision}|${m?.byte_length}`;alive.add(bufferId);
+      for(const [id,entry]of Object.entries(entries)){
+        if(!entry?.memory){out[id]=entry;continue;}
+        const transfer=(m,bufferId)=>{
+          const key=`${entry.revision}|${m?.byte_length}`;alive.add(bufferId);
           const old=this.revisions.get(bufferId);let revision=old?.revision;
           if(old?.key!==key){
             if(!Number.isSafeInteger(m?.byte_length)||m.byte_length<0||m.byte_length>16*1024*1024||!Number.isSafeInteger(m.offset)||m.offset<0||m.offset+m.byte_length>heap.byteLength)throw Error('TRANSFER_SOURCE_INVALID');
             const buffer=this.copy(heap,m);revision=String(++this.serial);this.revisions.set(bufferId,{key,revision});updates.push({id:bufferId,buffer});
           }else this.metrics.unchanged_batches++;
-          memory[part]={offset:0,byte_length:m.byte_length,buffer_id:bufferId,revision};
-        }
-        out[id]={...mesh,memory};
+          return {offset:0,byte_length:m.byte_length,buffer_id:bufferId,revision};
+        };
+        out[id]={...entry,memory:parts?Object.fromEntries(parts.map(part=>[part,transfer(entry.memory[part],`${field}:${part}:${id}`)])):transfer(entry.memory,`${field}:${id}`)};
       }
-      snapshot.world.geometry3d=out;
+      snapshot.world[field]=out;
     }
     const removed=[...this.retired].filter(id=>!alive.has(id));this.retired.clear();for(const id of this.revisions.keys())if(!alive.has(id)){this.revisions.delete(id);removed.push(id);}
     this.images=nextImages;this.metrics.image_definition_updates+=imageUpdates.length;this.metrics.image_unchanged_resources+=imageActive.length-imageUpdates.length;
@@ -104,6 +105,8 @@ export class InstanceTransfer {
   }
   report(){return {...this.metrics,pooled_bytes:this.poolBytes,pooled_buffers:this.pool.length};}
 }
+// World fields whose entries carry memory views: named parts, or one view.
+const BYTE_FIELDS=[['geometry3d',['vertices','indices']],['data_textures',null]];
 export class InstanceReceiver {
   constructor(){this.buffers=new Map();this.recycled=[];this.images=new Map();this.save=null;this.ui=null;this.fields=new Map();}
   clear(){this.buffers.clear();this.recycled=[];this.images.clear();this.save=null;this.ui=null;this.fields.clear();}

@@ -6,9 +6,11 @@ engine owns material allocation, shader compilation, uniform upload, draw calls
 and disposal. A request for custom shaders does not require `renderer_mode:
 "custom"` or game-owned WebGL/OpenGL calls.
 
-This initial interface targets 2D sprite materials in the official WebGL renderer.
-It does not apply to meshes, instance batches, particle materials or arbitrary
-full-screen post-processing. Native export rejects scenes declaring
+The interface targets 2D sprite materials and runtime `api.geometry3d` meshes in
+the official WebGL renderer; meshes may add a vertex stage and per-vertex inputs
+(see [Mesh materials](#mesh-materials-and-the-vertex-stage)). It does not apply
+to mesh assets, instance batches, particle materials or arbitrary full-screen
+post-processing. Native export rejects scenes declaring
 `shader_materials`; the WebGPU renderer rejects active shader assignments rather
 than silently drawing the ordinary material. Built-in declarative
 particles remain the first choice for exhaust, sparks, smoke, trails and
@@ -86,6 +88,61 @@ independent parameter values. Headless tests can verify declarations, bindings
 and parameter changes; they do not compile GLSL or prove a rendered frame.
 Validate compilation and the visible result in the exported official WebGL
 player, and report that target when handing off the game.
+
+## Mesh materials and the vertex stage
+
+A runtime mesh names a material with `material = {shader = "id"}` in
+`api.geometry3d.set` (see [geometry3d](geometry3d.md)). The fragment stage is the
+same `unoneShade(uv, color)`, with `color` the texture (white when the mesh has
+none) times the vertex RGBA. A mesh material may also declare:
+
+- `vertex`: GLSL ES 3.00 defining `vec4 unoneVertex(vec3 position, mat4 model)`,
+  which returns the clip-space position. `model` includes the mesh's placement
+  (and instance); `unone_view` and `unone_projection` are the camera's matrices,
+  so `unone_projection * unone_view * model * vec4(position, 1.0)` is the default.
+  `model` and `unone_view` use the game's coordinates, including a left-handed
+  camera: the host's own mirroring never reaches the shader.
+  The stage may also write `unone_uv` and `unone_color` before the fragment stage
+  reads them. Returning `w = 1` gives screen-affine interpolation, as
+  pre-transformed (TL) vertices of older renderers had. Integer types and
+  operations are available (`highp int`, 32-bit wrapping arithmetic, shifts).
+- `attributes`: an ordered list of `{name, size}` (size 1..4 floats; at most 8
+  attributes and 16 floats). Each vertex of a mesh using the material carries
+  them after its RGBA, in this order, and the vertex stage reads them by name.
+- `varyings`: `{name, size, interpolation}` values the vertex stage writes and
+  the fragment stage reads; `interpolation` is `smooth` (default) or `flat`
+  (the triangle's last vertex).
+- `samplers`: texture inputs of both stages, `{"<name>": {"type": "float" | "int",
+  "source": {"asset": "texture://..."}}}`. A `float` sampler is a `sampler2D`
+  (image assets, `rgba8` and float data textures); an `int` sampler is an
+  `isampler2D` for `r32i`/`rgba32i` [data textures](data-textures.md), read
+  exactly with `texelFetch`. Scenes may name an asset; runtime data textures
+  are bound with `api.shader.setTexture(material, sampler, {data = id})`, and
+  `nil` unbinds. An unbound sampler reads zero. Like uniforms, bindings belong
+  to the shared material.
+
+The renderer supplies `unone_time`, `unone_frame` and `unone_viewport` (x, y,
+width, height of the world's drawing area in drawing-buffer pixels, lower-left
+origin) to both stages. Attributes and varyings need a vertex stage. Names of
+uniforms, attributes and varyings are distinct identifiers; a material with a
+vertex stage also cannot reuse the renderer's inputs (`position`, `uv`,
+`color`, `normal`, `modelMatrix`, `viewMatrix`, `projectionMatrix`, ...).
+A material with a vertex stage or samplers shades only meshes; assigning it to
+a sprite fails with `SHADER_TARGET_UNSUPPORTED`. The mesh's `blend`, `alpha_cutoff`,
+`filter`, `address` and `double_sided` still apply; camera curvature does not
+bend shader meshes (a vertex stage can apply its own).
+
+```json
+"shader_materials": {
+  "exact_land": {
+    "vertex": "vec4 unoneVertex(vec3 position, mat4 model) { shade = vec4(cell.z); return unone_projection * unone_view * model * vec4(position, 1.0); }",
+    "fragment": "vec4 unoneShade(vec2 uv, vec4 color) { return color * shade; }",
+    "attributes": [{"name": "cell", "size": 3}],
+    "varyings": [{"name": "shade", "size": 4, "interpolation": "flat"}],
+    "uniforms": {"zoom": 1.0}
+  }
+}
+```
 
 Shader source is an authored resource, not a security sandbox. Semantic
 validation does not prove that arbitrary GLSL compiles or is inexpensive. The

@@ -1,6 +1,6 @@
 //! api.geometry3d: retained world-space meshes that the camera places on the GPU.
 use super::{ApiState, Lua, Table, Value};
-use crate::{GEOMETRY3D_BILLBOARD_VERTEX_BYTES, MAX_GEOMETRY3D_INDICES, MAX_GEOMETRY3D_INSTANCES, MAX_GEOMETRY3D_VERTICES};
+use crate::{MAX_GEOMETRY3D_VERTEX_BYTES, MAX_GEOMETRY3D_INDICES, MAX_GEOMETRY3D_INSTANCES, MAX_GEOMETRY3D_VERTICES};
 use std::rc::Rc;
 
 fn error(message: impl std::fmt::Display) -> mlua::Error {
@@ -18,7 +18,7 @@ fn decode(t: Table) -> mlua::Result<crate::Geometry3DContent> {
     let vertices: mlua::Buffer = t.get("vertices").map_err(|_| error("vertices buffer required"))?;
     let indices: mlua::Buffer = t.get("indices").map_err(|_| error("indices buffer required"))?;
     // Reject oversized buffers before copying them out of the VM.
-    if vertices.len() > GEOMETRY3D_BILLBOARD_VERTEX_BYTES * MAX_GEOMETRY3D_VERTICES || indices.len() > 4 * MAX_GEOMETRY3D_INDICES {
+    if vertices.len() > MAX_GEOMETRY3D_VERTEX_BYTES * MAX_GEOMETRY3D_VERTICES || indices.len() > 4 * MAX_GEOMETRY3D_INDICES {
         return Err(mlua::Error::RuntimeError("GEOMETRY3D_LIMIT: at most 262144 vertices and 1572864 indices per mesh".into()));
     }
     let texture = match t.get::<Value>("texture")? {

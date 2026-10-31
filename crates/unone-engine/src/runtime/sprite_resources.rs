@@ -73,8 +73,7 @@ impl Registry {
         if !self.catalog.contains(&asset) {
             return Err(format!("SPRITE_ASSET_INVALID: '{asset}' must be a declared texture2d asset"));
         }
-        let material = material_id.as_ref().map(|id| world.shader_materials.get(id).cloned()
-            .ok_or_else(|| format!("SHADER_MATERIAL_UNKNOWN: '{id}' is not declared"))).transpose()?;
+        let material = material_id.as_ref().map(|id| crate::shader::sprite_material(&world.shader_materials, id).cloned()).transpose()?;
         if self.records.len() >= MAX_SPRITE_RESOURCES {
             return Err("SPRITE_RESOURCE_LIMIT: at most 4096 live resources".into());
         }

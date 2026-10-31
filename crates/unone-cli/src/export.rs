@@ -7,6 +7,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/ui-gpu.js",
         "renderer/mesh-entities.js",
         "renderer/geometry3d.js",
+        "renderer/data-textures.js",
         "renderer/world-curvature.js",
         "renderer/projected-frame-shaders.js",
         "renderer/projected-frame-material.js",
@@ -885,6 +886,8 @@ mod content_file_tests {
 type ExportContent = (unone_engine::ProjectConfig, unone_engine::SystemSettings, Value, Vec<(String, Vec<u8>)>);
 
 pub(crate) fn content(project:&Path)->Result<ExportContent>{
+    // Imported assets' files are produced before any export reads them.
+    unone_engine::prepare_imports(project).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
     let mut files=Vec::new();
     let (config, _) = unone_engine::ProjectPaths::discover(project)
         .map_err(|e| anyhow::anyhow!(e.explanation))?;

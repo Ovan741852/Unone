@@ -43,6 +43,15 @@ The material is unlit: texture (when declared) times vertex RGBA. `blend` is
 `linear` (default) or `nearest`; `address` is `clamp` (default) or `repeat`.
 Unknown fields fail.
 
+A `shader` names a `scene.shader_materials` material that shades the mesh
+instead (see [shader materials](shader-materials.md#mesh-materials-and-the-vertex-stage)).
+Its optional vertex stage replaces the camera placement, so a game can apply
+its own projection on the GPU, and its declared `attributes` extend each
+vertex: the 36 bytes above, then each attribute's floats in declared order
+(`f32le-p3-uv2-rgba4-attr-u32-v1`). Uniform values set with
+`api.shader.setUniform` reach every mesh using the material on the next frame.
+Billboards keep the built-in material.
+
 Limits: 3..262144 vertices and 3..1572864 indices (a multiple of 3) per mesh,
 1024 meshes and 2097152 vertices per world. Positions stay within +/-1000000,
 UVs within +/-65536 and colors in 0..1; every index references a vertex. Invalid
@@ -101,6 +110,7 @@ The official Web player draws meshes, curvature and rect. It patches the
 standard projection chunk of world materials (meshes, terrain, mesh entities,
 instances), so custom shaders that do not use it are not bent. A rect cannot
 yet combine with bloom or a declared render pipeline (`CAMERA_RECT_UNSUPPORTED`).
-The native player rejects meshes (`HOST_GEOMETRY3D_UNSUPPORTED`) and a curved,
+Shader meshes compile their stages in the official WebGL2 player. The native
+player rejects meshes (`HOST_GEOMETRY3D_UNSUPPORTED`) and a curved,
 rect or left-handed camera (`HOST_CAMERA_PROJECTION_UNSUPPORTED`) instead of
 drawing them differently.

@@ -55,6 +55,34 @@
       ],
       "type": "object"
     },
+    "AssetImport": {
+      "additionalProperties": false,
+      "description": "One importer run whose product becomes an asset's file.",
+      "properties": {
+        "importer": {
+          "description": "A name registered in project.unone.json `import.importers`.",
+          "type": "string"
+        },
+        "inputs": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "description": "Importer input -> `<root>:<path>` (a file under a declared import\nroot) or `asset:<id>` (another asset: its import product, or its file).",
+          "type": "object"
+        },
+        "params": true,
+        "product": {
+          "description": "Which importer product this asset's file holds.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "importer",
+        "product"
+      ],
+      "type": "object"
+    },
     "AssetSpec": {
       "additionalProperties": false,
       "properties": {
@@ -82,6 +110,17 @@
         },
         "id": {
           "type": "string"
+        },
+        "import": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AssetImport"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "How `source` is produced: an importer turns source files into this\nasset's file before hosts read or pack it (docs/import-pipeline.md)."
         },
         "kind": {
           "default": "texture2d",

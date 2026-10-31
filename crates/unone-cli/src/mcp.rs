@@ -909,7 +909,7 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
                     kind,
                     bundle,
                     files,
-                    encoding: None,
+                    encoding: None, import: None,
                 }),
                 _ => {
                     return argument_error(Diagnostic::error(

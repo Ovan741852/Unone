@@ -9,6 +9,9 @@ use crate::world::Vec2;
 #[serde(deny_unknown_fields)]
 pub struct ProjectConfig {
     pub name: String,
+    /// Importers and read-only import roots for assets declaring `import`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub import: Option<ImportConfig>,
     /// Explicit opt-in demand-sampled host time; absent keeps deterministic legacy behavior.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub host_time: Option<crate::HostTimeConfig>,
@@ -517,4 +520,40 @@ pub struct ObservationAssertion {
 #[serde(deny_unknown_fields)]
 pub struct UiAssertion {
     pub equals: serde_json::Value,
+}
+
+/// The project's import pipeline declarations (docs/import-pipeline.md).
+#[derive(Debug, Clone, Deserialize, Default, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct ImportConfig {
+    /// Importer name -> a node of a project Luau module. This is where a game
+    /// adds formats; the engine needs no change for a new source format.
+    #[serde(default)]
+    pub importers: BTreeMap<String, ImporterSpec>,
+    /// Read-only directories outside the project that imports read, such as an
+    /// original game installation the project may not redistribute.
+    #[serde(default)]
+    pub roots: BTreeMap<String, ImportRoot>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct ImporterSpec {
+    /// Project-relative Luau module returning node definitions.
+    pub module: String,
+    pub node: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Default, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct ImportRoot {
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub description: String,
+    /// Directories tried in order (${VAR} expands environment variables) when
+    /// the machine-local .unone/import-roots.json does not name this root.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub candidates: Vec<String>,
 }

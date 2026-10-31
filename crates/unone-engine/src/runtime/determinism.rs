@@ -37,6 +37,11 @@ pub(super) fn new_vm() -> Result<Lua, Box<crate::Diagnostic>> {
 pub(super) fn new_job_vm() -> Result<Lua, Box<crate::Diagnostic>> {
     create_vm(true)
 }
+/// The isolated job VM without a jobs build: import nodes run in it.
+#[cfg(feature = "dev-tools")]
+pub(super) fn new_pure_vm() -> Result<Lua, Box<crate::Diagnostic>> {
+    create_vm(true)
+}
 fn create_vm(job:bool) -> Result<Lua, Box<crate::Diagnostic>> {
     let lua = Lua::new();
     // Bytecode optimization is independent of native machine-code generation:

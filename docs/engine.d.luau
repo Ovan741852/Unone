@@ -96,6 +96,9 @@ export type Geometry3DMaterial = {
     -- "screen": 44B vertices (anchor.xyz, pixel offset.xy with +y down, uv, RGBA) keep
     -- their pixel size facing the screen; depth_bias moves only the depth test toward the camera.
     billboard: ("none" | "screen")?, depth_bias: number?,
+    -- A scene.shader_materials ID: its fragment stage shades the mesh, its optional
+    -- vertex stage places it, and its declared attributes follow each vertex's RGBA.
+    shader: string?,
 }
 export type Geometry3D = {
     --36B f32LE vertex: position.xyz, uv (v0 bottom), linear RGBA 0..1; u32LE triangle indices.
@@ -756,6 +759,21 @@ export type ShaderApi = {
     setMaterial: (entityId: string, materialId: string) -> (),
     clearMaterial: (entityId: string) -> (),
     setUniform: (materialId: string, name: string, value: ShaderUniform) -> (),
+    -- What a declared mesh sampler reads; nil unbinds (the sampler reads zero).
+    setTexture: (materialId: string, sampler: string, source: ShaderTextureSource?) -> (),
+}
+export type ShaderTextureSource = {asset: string} | {data: string}
+-- Texels are little-endian: rgba8 4 bytes (read 0..1), r32i/r32f 4 bytes, rgba32i/rgba32f 16 bytes.
+export type DataTextureFormat = "rgba8" | "r32i" | "rgba32i" | "r32f" | "rgba32f"
+export type DataTexture = {width: number, height: number, format: DataTextureFormat, data: buffer}
+export type DataTextureRegion = {x: number, y: number, width: number, height: number, data: buffer}
+export type TextureApi = {
+    -- Creates or replaces a runtime data texture; identical texels keep its revision.
+    set: (id: string, texture: DataTexture) -> (),
+    -- Replaces one rectangle of texels.
+    update: (id: string, region: DataTextureRegion) -> (),
+    -- Fails while a material sampler is bound to it.
+    remove: (id: string) -> (),
 }
 
 -- Generic geometry only. Coordinates are packed f32 xyz triples, independent of entities.
@@ -933,6 +951,7 @@ export type EngineApi = {
     projected: ProjectedApi,
     heightfield: HeightfieldApi,
     geometry3d: Geometry3DApi,
+    texture: TextureApi,
     debug: DebugApi,
     particle: ParticleApi,
     entity: EntityApi,

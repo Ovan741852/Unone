@@ -2655,6 +2655,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
     result.extend(sprite_resource_descriptors());
     result.extend(heightfield_descriptors());
     result.extend(geometry3d_descriptors());
+    result.extend(data_texture_descriptors());
     result.extend(projected_descriptors());
     result.extend(spatial_descriptors());
     result.extend(physics3d_descriptors());
@@ -2929,17 +2930,69 @@ fn byte_view_descriptors() -> Vec<ApiDescriptor> {
     ]
 }
 
+fn data_texture_descriptors() -> Vec<ApiDescriptor> {
+    vec![
+        descriptor(
+            "texture.set", "presentation",
+            "Create or replace a runtime data texture that mesh shader materials sample.",
+            "Lookup tables, palettes, height/flag maps and other per-texel data a vertex or fragment stage reads with texelFetch or texture.",
+            "Not for authored images: declare texture2d assets. The engine keeps the texels immutable and does not interpret them.",
+            vec![parameter("id", "string", "1..128 UTF-8 bytes"), parameter("texture", "DataTexture", "{width,height,format,data}; width/height 1..4096; format rgba8|r32i|rgba32i|r32f|rgba32f; data holds exactly width*height little-endian texels (row-major, first row first)")],
+            "nil", vec!["Replace presentation data"],
+            "Identical texels keep the revision. Observations carry width, height, format and revision only; official hosts receive memory views. Applying a new scene clears data textures.",
+            vec!["DATA_TEXTURE_INVALID", "DATA_TEXTURE_LIMIT: 64 textures / 64 MiB per world; 16 MiB per texture"],
+            "api.texture.set('heights',{width=128,height=128,format='r32i',data=heights})",
+            vec!["texture.update", "texture.remove", "shader.setTexture"],
+        ),
+        descriptor(
+            "texture.update", "presentation",
+            "Replace one rectangle of a data texture's texels.",
+            "Terrain edits, palette changes and other local updates without resubmitting the whole texture.",
+            "The region must lie inside the texture; changing its size or format needs texture.set.",
+            vec![parameter("id", "string", "Existing data texture"), parameter("region", "DataTextureRegion", "{x,y,width,height,data}; data holds exactly the region's texels")],
+            "nil", vec!["Replace presentation data"],
+            "An unchanged region keeps the revision; any change allocates a new one.",
+            vec!["DATA_TEXTURE_MISSING", "DATA_TEXTURE_INVALID"],
+            "api.texture.update('heights',{x=4,y=9,width=1,height=1,data=cell})",
+            vec!["texture.set"],
+        ),
+        descriptor(
+            "texture.remove", "presentation",
+            "Remove a runtime data texture.",
+            "Release a texture no material reads any longer.",
+            "A texture bound to a material sampler cannot be removed; unbind it with shader.setTexture first.",
+            vec![parameter("id", "string", "Existing data texture")],
+            "nil", vec!["Replace presentation data"], "Takes effect in the next observation.",
+            vec!["DATA_TEXTURE_MISSING", "DATA_TEXTURE_BOUND"],
+            "api.texture.remove('heights')", vec!["texture.set", "shader.setTexture"],
+        ),
+        descriptor(
+            "shader.setTexture", "shader",
+            "Bind what a declared mesh material sampler reads.",
+            "Point a sampler at a runtime data texture ({data=id}) or a texture2d asset ({asset=id}); nil unbinds it.",
+            "Samplers are declared in scene.shader_materials with type float or int; only geometry3d meshes use them.",
+            vec![parameter("materialId", "string", "Declared shader material ID."), parameter("sampler", "string", "Declared sampler name."),
+                parameter("source", "ShaderTextureSource?", "{asset=id} for a float sampler, {data=id} for a data texture of the sampler's type (int: r32i/rgba32i), or nil")],
+            "nil", vec!["Update shader material texture state"],
+            "Bindings are snapshot state of the shared material; every mesh using it reads the texture from the next frame.",
+            vec!["SHADER_MATERIAL_UNKNOWN", "SHADER_SAMPLER_UNKNOWN", "SHADER_TEXTURE_TYPE", "DATA_TEXTURE_MISSING"],
+            "api.shader.setTexture('land','heights',{data='heights'})",
+            vec!["texture.set", "shader.setUniform", "geometry3d.set"],
+        ),
+    ]
+}
+
 fn geometry3d_descriptors() -> Vec<ApiDescriptor> {
     vec![
         descriptor(
             "geometry3d.set", "presentation",
             "Create or replace a retained world-space mesh drawn by the camera on the GPU.",
             "Submit terrain, buildings or other generated geometry once, then move the camera or the mesh without rebuilding vertices in Luau.",
-            "Unlit: texture times vertex RGBA. The engine owns transport and GPU resources, not the meaning or generation of the mesh. Use projected geometry only for exact preprojected reference output.",
-            vec![parameter("id", "string", "1..128 UTF-8 bytes"), parameter("geometry", "Geometry3D", "{vertices,indices,texture?,transform?,material?,visible?}; 36-byte f32LE vertices position.xyz, uv, RGBA (44-byte anchor, pixel offset, uv, RGBA for screen billboards); u32LE triangle indices")],
+            "Unlit: texture times vertex RGBA, unless material.shader names a scene shader material, whose optional vertex stage replaces the camera placement and whose declared attributes extend each vertex. The engine owns transport and GPU resources, not the meaning or generation of the mesh.",
+            vec![parameter("id", "string", "1..128 UTF-8 bytes"), parameter("geometry", "Geometry3D", "{vertices,indices,texture?,transform?,material?,visible?}; 36-byte f32LE vertices position.xyz, uv, RGBA, then the shader material's declared attribute floats (44-byte anchor, pixel offset, uv, RGBA for screen billboards); u32LE triangle indices")],
             "nil", vec!["Replace validated presentation geometry"],
-            "Identical mesh content keeps its revision and resends no vertices; transform and visible are placement. Content changes allocate a deterministic world-monotonic revision. Canonical observations contain the complete mesh; official hosts receive memory views. Applying a new scene clears runtime meshes.",
-            vec!["GEOMETRY3D_INVALID", "GEOMETRY3D_LIMIT: 1024 meshes / 2097152 vertices per world; 262144 vertices and 1572864 indices per mesh", "Unsupported render hosts must reject geometry3d explicitly"],
+            "Identical mesh content keeps its revision and resends no vertices; transform and visible are placement. Content changes allocate a deterministic world-monotonic revision. Canonical observations identify the mesh by format, counts, material and revision without its bytes; official hosts receive memory views. Applying a new scene clears runtime meshes.",
+            vec!["GEOMETRY3D_INVALID", "GEOMETRY3D_LIMIT: 1024 meshes / 2097152 vertices per world; 262144 vertices and 1572864 indices per mesh", "SHADER_MATERIAL_UNKNOWN", "Unsupported render hosts must reject geometry3d explicitly"],
             "api.geometry3d.set('ground',{vertices=vertices,indices=indices,texture='texture://ground'})",
             vec!["geometry3d.setTransform", "geometry3d.setVisible", "geometry3d.remove", "camera.setTransform"],
         ),

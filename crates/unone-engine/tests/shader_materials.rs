@@ -101,3 +101,69 @@ fn shader_data_round_trips_through_the_scene_contract() {
     let decoded = unone_engine::parse_scene_fragment(&encoded).unwrap();
     assert_eq!(scene.shader_materials, decoded.shader_materials);
 }
+
+#[test]
+fn meshes_take_a_vertex_stage_material_and_its_declared_vertex_layout() {
+    let payload = json!({
+        "config":{"name":"mesh-shader","entry_script":"main.luau","systems":{"physics2d":false,"physics3d":false}},
+        "script":r#"local G={}
+local function triangle(floats)
+ local v=buffer.create(3*floats*4)
+ for i=0,2 do
+  local o=i*floats*4
+  buffer.writef32(v,o,i);buffer.writef32(v,o+8,i%2)
+  for c=0,3 do buffer.writef32(v,o+20+c*4,1) end
+  for a=9,floats-1 do buffer.writef32(v,o+a*4,-70000+i) end
+ end
+ local ix=buffer.create(12);for i=0,2 do buffer.writeu32(ix,i*4,i) end
+ return v,ix
+end
+function G.start(api)
+ local v,ix=triangle(13)
+ api.geometry3d.set("land",{vertices=v,indices=ix,material={shader="exact",blend="cutout"}})
+ api.shader.setUniform("exact","zoom",40786)
+ -- The layout comes from the material: plain 36-byte vertices do not fit it.
+ local plain,pix=triangle(9)
+ assert(not pcall(api.geometry3d.set,"land",{vertices=plain,indices=pix,material={shader="exact"}}))
+ assert(not pcall(api.geometry3d.set,"other",{vertices=v,indices=ix,material={shader="missing"}}))
+ assert(not pcall(api.shader.setMaterial,"ship","exact"))
+ local texels=buffer.create(16);for i=0,3 do buffer.writei32(texels,i*4,-1000*i) end
+ api.texture.set("heights",{width=2,height=2,format="r32i",data=texels})
+ api.shader.setTexture("exact","heights",{data="heights"})
+ assert(not pcall(api.shader.setTexture,"exact","heights",{data="missing"}))
+ assert(not pcall(api.shader.setTexture,"exact","heights",{bad="x"}))
+ assert(not pcall(api.texture.set,"bad",{width=2,height=2,format="r16",data=texels}))
+ assert(not pcall(api.texture.remove,"heights"))
+end
+function G.update(api,dt) end
+return G"#,
+        "scene":{
+            "entities":[{"id":"ship","sprite":{"asset":"image://ship"}}],
+            "shader_materials":{"exact":{
+                "vertex":"vec4 unoneVertex(vec3 position, mat4 model){shade=vec4(cell.z);return vec4(cell.xy*zoom,0.0,1.0);}",
+                "fragment":"vec4 unoneShade(vec2 uv, vec4 color){return color*shade;}",
+                "uniforms":{"zoom":1.0},
+                "attributes":[{"name":"cell","size":3},{"name":"corner","size":1}],
+                "varyings":[{"name":"shade","size":4,"interpolation":"flat"}],
+                "samplers":{"heights":{"type":"int"}}
+            }}
+        }
+    });
+    let mut runtime = HostProject::parse(&serde_json::to_vec(&payload).unwrap()).unwrap().into_runtime(42).unwrap();
+    runtime.tick_with_input(&Default::default()).unwrap();
+    let json = serde_json::to_value(runtime.observe()).unwrap();
+    let land = &json["geometry3d"]["land"];
+    assert_eq!((land["format"].as_str(), land["vertex_count"].as_u64()), (Some("f32le-p3-uv2-rgba4-attr-u32-v1"), Some(3)));
+    assert_eq!((land["material"]["shader"].as_str(), land["material"]["blend"].as_str()), (Some("exact"), Some("cutout")));
+    let exact = &json["shader_materials"]["exact"];
+    assert_eq!(exact["uniforms"]["zoom"], 40786.0);
+    assert_eq!(exact["attributes"][1], json!({"name":"corner","size":1}));
+    assert_eq!(exact["varyings"][0]["interpolation"], "flat");
+    assert_eq!(exact["samplers"]["heights"], json!({"type":"int","source":{"data":"heights"}}));
+    assert_eq!(json["data_textures"]["heights"], json!({"width":2,"height":2,"format":"r32i","revision":1}));
+    // A sprite entity cannot be declared with a vertex-stage material either.
+    let mut sprite = payload.clone();
+    sprite["scene"]["entities"][0]["shader_material"] = json!("exact");
+    let error = HostProject::parse(&serde_json::to_vec(&sprite).unwrap()).and_then(|p| p.into_runtime(42).map(|_| ()));
+    assert!(format!("{error:?}").contains("SHADER_MATERIAL_REFERENCE_INVALID"), "{error:?}");
+}

@@ -9,7 +9,7 @@ use std::{cell::RefCell, collections::BTreeMap, sync::Arc};
 /// Smaller fields stay inline: a descriptor costs about as much as they do.
 pub(super) const MIN_LEASED_BYTES: usize = 1024;
 /// Fields with their own presentation transport are never leased here.
-pub(super) fn leasable(key: &str) -> bool { !matches!(key, "ui" | "ui_image_batches" | "instances3d" | "geometry3d") }
+pub(super) fn leasable(key: &str) -> bool { !matches!(key, "ui" | "ui_image_batches" | "instances3d" | "geometry3d" | "data_textures") }
 
 #[derive(Clone)]
 struct Lease { revision: u64, bytes: Arc<Vec<u8>> }

@@ -326,6 +326,11 @@ pub fn pack_project(
             ));
         }
     };
+    // Imported assets' files are produced before they are packed.
+    #[cfg(feature = "dev-tools")]
+    if let Err(diagnostic) = crate::import::prepare_imports(&root) {
+        return EngineResult::failure(*diagnostic);
+    }
     let (config, paths) = match ProjectPaths::discover(&root) {
         Ok(result) => result,
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
@@ -2574,7 +2579,7 @@ mod tests {
             kind: "texture2d".to_string(),
             bundle: "content".to_string(),
             files: Vec::new(),
-            encoding: None,
+            encoding: None, import: None,
         }
     }
 

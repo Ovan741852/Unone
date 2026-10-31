@@ -444,6 +444,62 @@
       ],
       "type": "object"
     },
+    "ImportConfig": {
+      "additionalProperties": false,
+      "description": "The project's import pipeline declarations (docs/import-pipeline.md).",
+      "properties": {
+        "importers": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ImporterSpec"
+          },
+          "default": {},
+          "description": "Importer name -> a node of a project Luau module. This is where a game\nadds formats; the engine needs no change for a new source format.",
+          "type": "object"
+        },
+        "roots": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ImportRoot"
+          },
+          "default": {},
+          "description": "Read-only directories outside the project that imports read, such as an\noriginal game installation the project may not redistribute.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "ImportRoot": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "description": "Directories tried in order (${VAR} expands environment variables) when\nthe machine-local .unone/import-roots.json does not name this root.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ImporterSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "module": {
+          "description": "Project-relative Luau module returning node definitions.",
+          "type": "string"
+        },
+        "node": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "module",
+        "node"
+      ],
+      "type": "object"
+    },
     "Mesh3DData": {
       "additionalProperties": false,
       "properties": {
@@ -784,6 +840,17 @@
             }
           ],
           "description": "Explicit opt-in demand-sampled host time; absent keeps deterministic legacy behavior."
+        },
+        "import": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ImportConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Importers and read-only import roots for assets declaring `import`."
         },
         "job_scripts": {
           "additionalProperties": {
@@ -1241,12 +1308,61 @@
       ],
       "type": "object"
     },
+    "ShaderAttribute": {
+      "additionalProperties": false,
+      "description": "A named per-vertex input of 1..4 floats.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "size": {
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "size"
+      ],
+      "type": "object"
+    },
+    "ShaderInterpolation": {
+      "oneOf": [
+        {
+          "const": "smooth",
+          "description": "Interpolated across the triangle.",
+          "type": "string"
+        },
+        {
+          "const": "flat",
+          "description": "The triangle's provoking (last) vertex value everywhere.",
+          "type": "string"
+        }
+      ]
+    },
     "ShaderMaterialDefinition": {
       "additionalProperties": false,
+      "description": "A declared material: the stages and the interface between mesh data, the\nvertex stage and the fragment stage. Sprites use only the fragment stage.",
       "properties": {
+        "attributes": {
+          "description": "Extra floats each vertex of a mesh using this material carries after\nits color, in this order; the vertex stage reads them by name.",
+          "items": {
+            "$ref": "#/$defs/ShaderAttribute"
+          },
+          "type": "array"
+        },
         "fragment": {
           "description": "GLSL ES 1.00 function: vec4 unoneShade(vec2 uv, vec4 color).",
           "type": "string"
+        },
+        "samplers": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ShaderSampler"
+          },
+          "description": "Texture inputs of both stages: lookup tables, palettes, data maps.",
+          "type": "object"
         },
         "uniforms": {
           "additionalProperties": {
@@ -1254,12 +1370,92 @@
           },
           "default": {},
           "type": "object"
+        },
+        "varyings": {
+          "description": "Values passed from the vertex stage to the fragment stage by name.",
+          "items": {
+            "$ref": "#/$defs/ShaderVarying"
+          },
+          "type": "array"
+        },
+        "vertex": {
+          "description": "GLSL ES 3.00 function `vec4 unoneVertex(vec3 position, mat4 model)`\nreturning the clip-space position. Only geometry3d meshes have a vertex\nstage, so a material declaring one cannot shade sprites.",
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
         "fragment"
       ],
       "type": "object"
+    },
+    "ShaderSampler": {
+      "additionalProperties": false,
+      "description": "A texture input of both mesh stages. Unbound samplers read zero.",
+      "properties": {
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ShaderTextureSource"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "$ref": "#/$defs/ShaderSamplerType",
+          "default": "float"
+        }
+      },
+      "type": "object"
+    },
+    "ShaderSamplerType": {
+      "oneOf": [
+        {
+          "const": "float",
+          "description": "`sampler2D`: image assets and rgba8/float data textures.",
+          "type": "string"
+        },
+        {
+          "const": "int",
+          "description": "`isampler2D`: r32i/rgba32i data textures, read exactly with texelFetch.",
+          "type": "string"
+        }
+      ]
+    },
+    "ShaderTextureSource": {
+      "description": "What a sampler reads.",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "description": "A declared texture2d asset.",
+          "properties": {
+            "asset": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "asset"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "description": "A runtime data texture (`api.texture`), bound with `api.shader.setTexture`.",
+          "properties": {
+            "data": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "data"
+          ],
+          "type": "object"
+        }
+      ]
     },
     "ShaderUniform": {
       "anyOf": [
@@ -1295,6 +1491,30 @@
           "type": "array"
         }
       ]
+    },
+    "ShaderVarying": {
+      "additionalProperties": false,
+      "description": "A value of 1..4 floats the vertex stage writes and the fragment stage reads.",
+      "properties": {
+        "interpolation": {
+          "$ref": "#/$defs/ShaderInterpolation",
+          "default": "smooth"
+        },
+        "name": {
+          "type": "string"
+        },
+        "size": {
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "size"
+      ],
+      "type": "object"
     },
     "Shape3D": {
       "oneOf": [

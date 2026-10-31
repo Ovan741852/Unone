@@ -3228,6 +3228,7 @@ dependencies = [
  "anyhow",
  "base64",
  "mlua",
+ "png",
  "rapier3d",
  "schemars",
  "serde",

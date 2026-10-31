@@ -27,6 +27,8 @@ mod spatial;
 mod spatial_metrics;
 pub use spatial::SpatialTask;
 mod determinism;
+#[cfg(feature = "dev-tools")]
+pub(crate) mod import_nodes;
 #[cfg(feature = "jobs")]
 mod jobs;
 #[cfg(feature = "preview-tools")]
@@ -497,6 +499,8 @@ impl EngineRuntime {
         seed: u64,
         restored_save: Option<serde_json::Value>,
     ) -> Result<Self, Box<Diagnostic>> {
+        // Imported assets' files are brought up to date before anything reads them.
+        crate::import::prepare_imports(project_root.as_ref())?;
         let (config, paths) = ProjectPaths::discover(project_root)?;
         let world = Rc::new(RefCell::new(World::default()));
         if let Some(scene) = &paths.main_scene {

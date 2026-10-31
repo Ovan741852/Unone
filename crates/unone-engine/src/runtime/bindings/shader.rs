@@ -29,5 +29,18 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         let value = serde_json::from_value(json).map_err(|_| mlua::Error::RuntimeError("SHADER_UNIFORM_INVALID: expected a finite number or an array of 2, 3, or 4 finite numbers".into()))?;
         world.borrow_mut().set_shader_uniform(&material, &name, value).map_err(mlua::Error::RuntimeError)
     })?)?;
+    let world = Rc::clone(&state.world);
+    api.set("setTexture", lua.create_function(move |_, (material, sampler, source): (String, String, Value)| {
+        // nil unbinds; otherwise {asset = "texture://..."} or {data = "<api.texture id>"}.
+        let source = match source {
+            Value::Nil => None,
+            value => {
+                let json = super::value::lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+                Some(serde_json::from_value(json).map_err(|_| mlua::Error::RuntimeError(
+                    "SHADER_TEXTURE_INVALID: expected nil, {asset = id} or {data = id}".into()))?)
+            }
+        };
+        world.borrow_mut().set_shader_texture(&material, &sampler, source).map_err(mlua::Error::RuntimeError)
+    })?)?;
     Ok(api)
 }

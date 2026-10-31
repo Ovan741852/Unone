@@ -23,7 +23,7 @@ impl World {
             return Err(format!("SPRITE_APPEARANCE_INVALID: {error}"));
         }
         let mut uniforms = match material {
-            Some(id) => self.shader_materials.get(id).ok_or_else(|| format!("SHADER_MATERIAL_UNKNOWN: '{id}'"))?.uniforms.clone(),
+            Some(id) => crate::shader::sprite_material(&self.shader_materials, id)?.uniforms.clone(),
             None => BTreeMap::new(),
         };
         if appearance.uniforms.len() > crate::shader::MAX_SHADER_UNIFORMS {

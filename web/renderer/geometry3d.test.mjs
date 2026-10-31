@@ -119,3 +119,43 @@ test('same-shape revisions upload heap bytes into the existing buffers without a
   bytes.fill(0);assert.equal(tri.geometry.attributes.position.getY(2),3,'the geometry never aliases the heap');
   assert.deepEqual(renderer.metrics(),{geometry3d_meshes:1,geometry3d_rebuilds:1,geometry3d_updates:2});
 });
+
+test('shader meshes read the layout and stages their scene material declares',()=>{
+  const scene=new THREE.Scene(),loaded={state:'ready',texture:new THREE.Texture()};
+  const renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>loaded,curvature:createWorldCurvature()});
+  // Three vertices of position, uv, RGBA, then cell (3 floats) and corner (1).
+  const v=new Float32Array(39);for(let i=0;i<3;i++)v.set([i,0,0,0,0,1,1,1,1,10+i,20,30,40+i],i*13);
+  const bytes={vertices:base64(new Uint8Array(v.buffer)),indices:base64(new Uint8Array(new Uint32Array([0,1,2]).buffer))};
+  const exact={fragment:'vec4 unoneShade(vec2 uv, vec4 color){return color+shade;}',
+    vertex:'vec4 unoneVertex(vec3 position, mat4 model){shade=vec4(corner);return vec4(cell.xy*zoom,0.0,1.0);}',
+    uniforms:{zoom:2,tint:[1,0,0]},attributes:[{name:'cell',size:3},{name:'corner',size:1}],varyings:[{name:'shade',size:4,interpolation:'flat'}]};
+  const land=(revision,material={shader:'exact'})=>({format:'f32le-p3-uv2-rgba4-attr-u32-v1',vertex_count:3,index_count:3,revision,material,texture:'texture://ground',...bytes});
+  const specs=new Map([['texture://ground',{kind:'texture2d'}]]),world={shader_materials:{exact},time_seconds:2,frame:120};
+  renderer.draw({land:land(1)},{},specs,world);renderer.viewport(10,0,640,480);
+  const drawn=scene.children[0],geometry=drawn.geometry,material=drawn.material;
+  assert.equal(geometry.attributes.position.data.stride,13);
+  assert.deepEqual(['cell','corner'].map(n=>[geometry.attributes[n].itemSize,geometry.attributes[n].offset]),[[3,9],[1,12]]);
+  assert.equal(geometry.attributes.corner.getX(2),42);
+  assert.ok(material.isShaderMaterial&&material.vertexColors);
+  for(const line of ['attribute vec3 cell;','attribute float corner;','flat varying vec4 shade;','uniform float zoom;','uniform vec4 unone_viewport;'])
+    assert.ok(material.vertexShader.includes(line),line);
+  assert.ok(material.fragmentShader.includes('flat varying vec4 shade;')&&!material.fragmentShader.includes('attribute'));
+  assert.equal(material.uniforms.unone_texture.value.isTexture,true);assert.notEqual(material.uniforms.unone_texture.value,loaded.texture,'sampler state lives on a variant');
+  assert.deepEqual([material.uniforms.unone_time.value,material.uniforms.unone_frame.value,material.uniforms.unone_viewport.value],[2,120,[10,0,640,480]]);
+  assert.equal(material.uniforms.unone_alpha_cutoff.value,-1,'only cutout materials discard');
+  // A left-handed camera mirrors the host's world root; game matrices undo it.
+  assert.ok(material.vertexShader.includes('#define unone_view (viewMatrix*unone_handedness)')&&material.vertexShader.includes('unone_model=unone_handedness*modelMatrix'));
+  assert.equal(material.uniforms.unone_handedness.value.elements[10],1);
+  renderer.draw({land:land(1)},{},specs,{...world,camera3d:{handedness:'left'}});
+  assert.equal(material.uniforms.unone_handedness.value.elements[10],-1);
+  // Uniform values follow the world each frame; an unchanged program never rebuilds.
+  renderer.draw({land:land(1)},{},specs,{...world,shader_materials:{exact:{...exact,uniforms:{zoom:3,tint:[0,1,0]}}}});
+  assert.equal(scene.children[0],drawn);assert.deepEqual([material.uniforms.zoom.value,material.uniforms.tint.value],[3,[0,1,0]]);
+  renderer.draw({land:land(2)},{},specs,world);
+  assert.equal(renderer.metrics().geometry3d_updates,1,'new bytes of the same shape upload in place');
+  renderer.draw({land:land(2)},{},specs,{shader_materials:{exact:{...exact,fragment:'vec4 unoneShade(vec2 uv, vec4 color){return color;}'}}});
+  assert.notEqual(scene.children[0],drawn,'a new program rebuilds the mesh');
+  assert.throws(()=>renderer.draw({land:land(3,{shader:'missing'})},{},specs,world),/SHADER_MATERIAL_UNKNOWN/);
+  const plain={...exact,attributes:[]};
+  assert.throws(()=>renderer.draw({land:land(3)},{},specs,{shader_materials:{exact:plain}}),/GEOMETRY3D_INVALID: byte counts/);
+});

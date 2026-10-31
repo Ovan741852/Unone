@@ -7,7 +7,7 @@ license.workspace = true
 [features]
 native-codegen = ["mlua/luau-jit"]
 default = ["dev-tools", "all-systems"]
-dev-tools = ["dep:schemars", "preview-tools"]
+dev-tools = ["dep:schemars", "dep:png", "preview-tools"]
 preview-tools = []
 # Coarse Core timings with the production interpreter's bytecode policy.
 # Function sampling and VM allocation/GC hooks are deliberately unavailable.
@@ -42,6 +42,8 @@ serde = { version = "1", features = ["derive"] }
 # finite binary64 value through a JSON parse/serialize cycle on every host.
 serde_json = { version = "1", features = ["raw_value", "float_roundtrip"] }
 sha2 = "0.10"
+# Import products are written as PNG by the build-time import pipeline (dev-tools).
+png = { version = "0.18", optional = true }
 thiserror = "2"
 rapier3d = { optional = true, version = "=0.26.1", default-features = false, features = ["dim3", "f32", "enhanced-determinism"] }
 

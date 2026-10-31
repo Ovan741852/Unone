@@ -124,12 +124,39 @@ impl Serialize for Geometry3DTransport<'_>{
         map.end()
     }
 }
-/// Packed instance and mesh bytes the published memory views point into; kept
-/// alive until the next complete publication.
+// Canonical data textures carry shape and revision; the wire adds their
+// texels as a memory view or base64 encoded once per revision, like meshes.
+struct DataTextureTransport<'a>(&'a WorldSnapshot);
+impl Serialize for DataTextureTransport<'_>{
+    fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
+        use serde::ser::SerializeMap;
+        #[derive(Serialize)]
+        struct View{offset:usize,byte_length:usize}
+        #[derive(Serialize)]
+        struct Entry<'a>{width:u32,height:u32,format:unone_engine::DataTextureFormat,revision:u64,
+            #[serde(skip_serializing_if="Option::is_none")]memory:Option<View>,
+            #[serde(skip_serializing_if="Option::is_none")]data:Option<&'a str>}
+        let memory=INSTANCE_MEMORY.with(|m|m.get());
+        let mut map=serializer.serialize_map(Some(self.0.data_textures.len()))?;
+        for (id,texture) in &self.0.data_textures{
+            map.serialize_entry(id,&Entry{width:texture.width,height:texture.height,format:texture.format,revision:texture.revision,
+                memory:memory.then(||View{offset:texture.bytes.as_ptr() as usize,byte_length:texture.bytes.len()}),
+                data:(!memory).then(||texture.encoded())})?;
+        }
+        map.end()
+    }
+}
+/// Packed instance, mesh and texel bytes the published memory views point
+/// into; kept alive until the next complete publication.
 pub(super) fn instance_leases(snapshot:&WorldSnapshot)->Vec<std::sync::Arc<[u8]>>{
     if !INSTANCE_MEMORY.with(|m|m.get()){return Vec::new();}
     snapshot.instances3d.values().map(|batch|batch.packed.clone())
-        .chain(snapshot.geometry3d.values().flat_map(|mesh|[mesh.vertices.clone(),mesh.indices.clone()])).collect()
+        .chain(snapshot.geometry3d.values().flat_map(|mesh|[mesh.vertices.clone(),mesh.indices.clone()]))
+        .chain(snapshot.data_textures.values().map(|texture|texture.bytes.clone())).collect()
+}
+/// Whether the world has presentation bytes that travel beside the canonical JSON.
+pub(super) fn has_byte_transport(snapshot:&WorldSnapshot)->bool{
+    !(snapshot.instances3d.is_empty()&&snapshot.geometry3d.is_empty()&&snapshot.data_textures.is_empty())
 }
 /// Byte span of each top-level field value in the canonical encoding.
 type Spans=Vec<(&'static str,usize,usize)>;
@@ -157,6 +184,7 @@ impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct
         else if let Some(capture)=self.fields.capture{self.serializer.serialize_field(key,&CapturedValue{key,value,capture})}
         else if key=="instances3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&InstanceTransport(world))}
         else if key=="geometry3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&Geometry3DTransport(world))}
+        else if key=="data_textures"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&DataTextureTransport(world))}
         else{self.serializer.serialize_field(key,value)}
     }
     fn skip_field(&mut self,key:&'static str)->Result<(),Self::Error>{
@@ -443,6 +471,28 @@ mod tests{
   assert_eq!(super::super::unone_web_tick(),0);let moved=output();
   assert_eq!(moved["world"]["geometry3d"]["tri"]["memory"],mesh["memory"]);assert_eq!(moved["world"]["geometry3d_placements"]["tri"]["transforms"][0]["position"]["x"],1.0);
   assert_eq!(super::super::unone_web_set_instance_transport(0),0);assert!(output()["world"]["geometry3d"]["tri"]["vertices"].is_string());
+ }
+ #[test]
+ fn data_textures_publish_texels_beside_their_canonical_shape(){
+  let script=r#"local t=buffer.create(16);for i=0,3 do buffer.writei32(t,i*4,-i) end
+   return {start=function(api)api.texture.set('heights',{width=2,height=2,format='r32i',data=t})end,
+    update=function(api)local c=buffer.create(4);buffer.writei32(c,0,99);api.texture.update('heights',{x=1,y=1,width=1,height=1,data=c})end}"#;
+  let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"texels","entry_script":"main.luau"},"script":script})).unwrap();
+  assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0,"{}",output());
+  let full=output();let inline=full["world"]["data_textures"]["heights"].clone();
+  assert_eq!((inline["width"].as_u64(),inline["format"].as_str()),(Some(2),Some("r32i")));
+  let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());let owned=&snapshot.data_textures["heights"];
+  assert_eq!(inline["data"].as_str(),Some(owned.encoded()));let decoded=owned.bytes.to_vec();
+  assert_eq!(i32::from_le_bytes(decoded[12..16].try_into().unwrap()),-3);
+  assert_eq!(unone_web_set_ui_transport(1),0);assert_eq!(super::super::unone_web_set_instance_transport(1),0);
+  let wire=output();let texture=&wire["world"]["data_textures"]["heights"];
+  assert!(texture.get("data").is_none());assert_eq!(wire["observation_digest"],full["observation_digest"]);
+  let view=&texture["memory"];let pointer=view["offset"].as_u64().unwrap() as usize as *const u8;
+  assert_eq!(unsafe{std::slice::from_raw_parts(pointer,view["byte_length"].as_u64().unwrap() as usize)},&decoded[..]);
+  assert!(wire.get("world_transport").is_none_or(|t|t["fields"].get("data_textures").is_none()),"texels are never leased as JSON");
+  assert_eq!(super::super::unone_web_tick(),0);let updated=output();
+  assert_ne!(updated["world"]["data_textures"]["heights"]["revision"],texture["revision"]);
+  assert_eq!(super::super::unone_web_set_instance_transport(0),0);
  }
  #[test]
  fn ordinary_ui_without_registry_uses_a_stable_current_lease_and_complete_canonical_bytes(){

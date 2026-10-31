@@ -975,6 +975,9 @@ pub struct WorldSnapshot {
     /// Placement of each runtime mesh, apart from its content.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub geometry3d_placements: BTreeMap<String, crate::Geometry3DPlacement>,
+    /// Runtime data textures by shape and revision; texels travel on the wire.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub data_textures: BTreeMap<String, crate::DataTexture>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1104,6 +1107,9 @@ pub(crate) struct World {
     pub geometry3d: BTreeMap<String, crate::Geometry3D>,
     /// Monotonic per runtime, like heightfield revisions.
     pub geometry3d_revision: u64,
+    pub data_textures: BTreeMap<String, crate::DataTexture>,
+    /// Monotonic per runtime, including remove/recreate and scene transitions.
+    pub data_texture_revision: u64,
     pub shader_materials: BTreeMap<String, crate::ShaderMaterialDefinition>,
     pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
     #[cfg(feature = "physics3d")]
@@ -1153,6 +1159,7 @@ impl World {
         self.projected_world_hidden=false;
         self.heightfields.clear();
         self.geometry3d.clear();
+        self.data_textures.clear();
         self.instances3d.clear();
         #[cfg(feature = "physics3d")]
         let physics3d = scene.physics3d;
@@ -1470,6 +1477,7 @@ impl World {
             heightfields: self.heightfields.clone(),
             geometry3d: self.geometry3d.clone(),
             geometry3d_placements: self.geometry3d.iter().map(|(id, mesh)| (id.clone(), mesh.placement())).collect(),
+            data_textures: self.data_textures.clone(),
             shader_materials: self.shader_materials.clone(),
             jobs: None,
             spatial: None,
@@ -2332,6 +2340,8 @@ mod tests {
             heightfield_revision: 0,
             geometry3d: BTreeMap::new(),
             geometry3d_revision: 0,
+            data_textures: BTreeMap::new(),
+            data_texture_revision: 0,
             shader_materials: BTreeMap::new(),
             instances3d: BTreeMap::new(),
             physics3d: None,

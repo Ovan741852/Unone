@@ -4,6 +4,7 @@ import { createParticleRenderer } from "./particles.js?build=particle-texture-co
 import { meshGeometry, validateMesh } from "./mesh.js";
 import {createInstanceRenderer} from './instances3d.js';
 import {createGeometry3DRenderer} from './geometry3d.js';
+import {createDataTextures} from './data-textures.js';
 import {createWorldCurvature} from './world-curvature.js';
 import {createMeshEntityRenderer} from './mesh-entities.js';
 import {createBloom,normalizePostProcessing} from './bloom.js';
@@ -239,7 +240,8 @@ export async function createThreeRenderer(canvas, options = {}) {
   if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor);
   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
-  const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature});
+  const dataTextures = createDataTextures(THREE,{memory:options.instanceMemory});
+  const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature,dataTextures});
   // A camera rect (normalized, lower-left origin) renders the world into part of
   // the surface; the rest of the surface is still cleared.
   function drawInRect(rect,render){
@@ -403,7 +405,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     instances.contextLost(retire);
     particles.contextLost(retire);
     heightfields.contextLost(retire);
-    geometry3d.contextLost(retire);
+    geometry3d.contextLost(retire);dataTextures.contextLost(retire);
     bloom?.contextLost(retire);
   }
 
@@ -501,7 +503,8 @@ export async function createThreeRenderer(canvas, options = {}) {
     if(meshEntities.draw(world,worldVisible,specs))assetRequestPending=true;
     profile?.mark('scene_sync');
     heightfields.draw(worldVisible?terrain:[],specs);
-    if(geometry3d.draw(worldVisible?world.geometry3d:{},world.geometry3d_placements,specs))assetRequestPending=true;
+    dataTextures.sync(world.data_textures);
+    if(geometry3d.draw(worldVisible?world.geometry3d:{},world.geometry3d_placements,specs,world))assetRequestPending=true;
     instances.draw(worldVisible?world.instances3d:{},specs);
     particles.draw(worldVisible?world.particles:[], activeCamera);
     profile?.mark('subrenderer_prepare');
@@ -520,7 +523,9 @@ export async function createThreeRenderer(canvas, options = {}) {
     if(pipeline&&!bloom)throw Error('RENDER_PIPELINE_BACKEND_UNSUPPORTED: render_pipeline needs the official WebGL renderer');
     curvature.prepare(scene,world.camera3d);
     const rect=world.camera3d?.rect;
-    if(renderer.getDrawingBufferSize){renderer.getDrawingBufferSize(bufferSize);curvature.viewport(bufferSize.x*(rect?rect.width:1),bufferSize.y*(rect?rect.height:1));}
+    if(renderer.getDrawingBufferSize){renderer.getDrawingBufferSize(bufferSize);
+      const w=bufferSize.x*(rect?rect.width:1),h=bufferSize.y*(rect?rect.height:1);
+      curvature.viewport(w,h);geometry3d.viewport(bufferSize.x*(rect?rect.x:0),bufferSize.y*(rect?rect.y:0),w,h);}
     if(rect){
       if(bloom?.active(pipeline)||pipeline&&!pipeline.scene)throw Error('CAMERA_RECT_UNSUPPORTED: a camera rect cannot combine with bloom, tone mapping or render pipeline passes yet');
       drawInRect(rect,()=>{renderer.render(scene,activeCamera);overlay?.();});
@@ -554,7 +559,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     uiImageBatchPrefix.clear();
     ui?.clear();
     heightfields.clear();
-    geometry3d.clear();
+    geometry3d.clear();dataTextures.clear();
     meshEntities.clear();
     for (const record of meshAssets.values()) { record.discarded=true;record.geometry?.dispose(); record.material?.dispose(); }
     meshAssets.clear();
@@ -612,7 +617,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     resetMeasurements:()=>bloom?.resetMeasurements(),
     implementation: "three.js",
     backend,
-      metrics: () => ({sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 
