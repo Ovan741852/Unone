@@ -18,11 +18,14 @@ function createGeometry(canvas,win,queue,common){
  return{viewport,point,revision:()=>revision};
 }
 function createPointerSession({canvas,queue,common,point,active,isReady,beforeDown,listen,reset,routePointer,routeCapture}){
- const pointers=new Map();let serial=0;
+ // stale: source ID -> ID of a captured gesture a new press already ended.
+ const pointers=new Map(),stale=new Map();let serial=0;
  function identity(raw,start=false){
   if(!Number.isInteger(raw)||raw< -2147483648||raw>2147483647)queue.terminate('POINTER_SOURCE_ID_UNSUPPORTED');
   let p=pointers.get(raw);
-  if(start&&p){if(p.buttons||p.captured)queue.terminate('POINTER_REUSE_BEFORE_CAPTURE_TAIL');p=null;}
+  // A new press can arrive before the browser reports the previous gesture's
+  // release or capture loss: that gesture ends with an ordered pointer reset.
+  if(start&&p){if(p.buttons||p.captured){reset('lost_capture',p.id);if(p.captured)stale.set(raw,p.id);}p=null;}
   if(!p){if(pointers.size>=256&&!pointers.has(raw))queue.terminate('POINTER_CAPACITY');
    if(!Number.isSafeInteger(++serial))queue.terminate('POINTER_ID_EXHAUSTED');
    p={id:serial,buttons:0,captured:false,owner:undefined,started:false};pointers.set(raw,p);}
@@ -41,7 +44,11 @@ function createPointerSession({canvas,queue,common,point,active,isReady,beforeDo
   if(!buttons&&phase!=='cancel'){state.owner=undefined;state.started=false;}
  }
  function capture(e,captured){
-  if(!isReady())return;const p=identity(e.pointerId);p.captured=captured;
+  if(!isReady())return;
+  // The late capture loss of an already ended gesture keeps that gesture's ID.
+  if(!captured&&stale.has(e.pointerId)){const id=stale.get(e.pointerId);stale.delete(e.pointerId);
+   queue.append({...common('capture'),pointer_id:id,captured,source:'lost'});return;}
+  const p=identity(e.pointerId);p.captured=captured;
   queue.append({...common('capture'),pointer_id:p.id,captured,source:captured?'got':'lost'});
   if(!captured)routeCapture(e);
   if(!captured&&p.buttons!==0)reset('lost_capture',p.id);
@@ -49,7 +56,7 @@ function createPointerSession({canvas,queue,common,point,active,isReady,beforeDo
  for(const phase of ['down','up','move','cancel'])listen(canvas,'pointer'+phase,e=>pointer(e,phase));
  listen(canvas,'pointerout',e=>{const p=pointers.get(e.pointerId);if(p&&!(e.buttons??p.buttons)&&!p.captured)pointers.delete(e.pointerId);});
  listen(canvas,'gotpointercapture',e=>capture(e,true));listen(canvas,'lostpointercapture',e=>capture(e,false));
- return{reset(id){for(const p of pointers.values())if(id===undefined||p.id===id){p.buttons=0;p.started=false;if(p.owner!=='engine_ui')p.owner='host_ui';}},dispose:()=>pointers.clear()};
+ return{reset(id){for(const p of pointers.values())if(id===undefined||p.id===id){p.buttons=0;p.started=false;if(p.owner!=='engine_ui')p.owner='host_ui';}},dispose:()=>{pointers.clear();stale.clear();}};
 }
 function createKeySession({win,queue,common,active,listen,routeKey}){
  const keys=new Map();

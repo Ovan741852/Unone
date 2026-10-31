@@ -78,3 +78,16 @@ test('source key bookkeeping is bounded even for repeats without admitted starts
  const s=setup();s.router.activate();for(let i=0;i<256;i++)s.win.emit('keydown',{code:'Fixture'+i,location:0,repeat:true,isComposing:false});
  assert.throws(()=>s.win.emit('keydown',{code:'Fixture256',location:0,repeat:true,isComposing:false}),/KEY_CAPACITY/);
 });
+test('a press before the previous capture tail ends that gesture with a reset and keeps input alive',()=>{
+ const s=setup({pointer:(e,k,c)=>{if(k==='down')c.emit('gotpointercapture',{pointerId:8});return 'game';}});s.router.activate();
+ s.canvas.emit('pointerdown',pointer);s.canvas.emit('pointerup',{...pointer,buttons:0});
+ // The next press arrives before the browser reports the first capture loss.
+ s.canvas.emit('pointerdown',pointer);s.canvas.emit('lostpointercapture',{pointerId:8});
+ s.canvas.emit('pointerup',{...pointer,buttons:0});s.canvas.emit('lostpointercapture',{pointerId:8});
+ assert.equal(s.q.report().fault,null,'input is never terminated');
+ const rows=s.rows().filter(e=>['pointer','capture','reset'].includes(e.kind)&&!(e.kind==='reset'&&e.scope==='all'));
+ assert.deepEqual(rows.map(e=>[e.kind,e.phase??e.reason??e.source,e.pointer_id]),[
+  ['pointer','down',1],['capture','got',1],['pointer','up',1],
+  ['reset','lost_capture',1],['pointer','down',2],['capture','got',2],['capture','lost',1],
+  ['pointer','up',2],['capture','lost',2]]);
+});

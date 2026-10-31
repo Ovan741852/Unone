@@ -37,8 +37,10 @@ the contract. A viewport control row precedes use of a changed mapping.
 
 Browser signed 32-bit source pointer IDs map to positive epoch-local IDs. A new
 down after a quiescent gesture receives a new ID, including browser-ID reuse;
-got/lost capture tails retain the preceding ID. Reuse before an outstanding
-capture tail is an explicit terminal source ambiguity. Quiescent pointerout
+got/lost capture tails retain the preceding ID. A down that reuses a source ID
+before its previous gesture's release or capture loss arrives first ends that
+gesture with a pointer `reset` (reason `lost_capture`), then starts a new ID;
+late tails of the old gesture keep its ID. Quiescent pointerout
 retires mapping storage; live bookkeeping is bounded to 256 source pointers and
 256 held keys, with visible capacity failure. IDs are not game entity IDs.
 
