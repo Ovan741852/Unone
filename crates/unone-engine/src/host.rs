@@ -18,6 +18,10 @@ pub struct HostProject {
     pub script_bytecode: Option<crate::ScriptBytecodeDecl>,
     #[serde(default)]
     pub job_sources: BTreeMap<String,String>,
+    /// Modules the entry script may `require`, keyed by path relative to the
+    /// entry script's directory ("world/terrain.luau"); always source text.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub script_modules: BTreeMap<String,String>,
     // Preserve original JSON locations for the common scene validator.
     #[serde(default)]
     #[cfg_attr(feature = "dev-tools", schemars(with = "Option<crate::SceneFile>"))]
@@ -88,6 +92,7 @@ impl HostProject {
             source: self.script,
             script_bytecode,
             job_sources: self.job_sources,
+            script_modules: self.script_modules,
             scene,
             seed,
             restored_save: self.restored_save,

@@ -27,6 +27,10 @@ mod spatial;
 mod spatial_metrics;
 pub use spatial::SpatialTask;
 mod determinism;
+mod script_modules;
+pub use script_modules::{MAX_SCRIPT_MODULES, ScriptModuleSources};
+#[cfg(feature = "dev-tools")]
+pub use script_modules::read_from_disk as read_script_modules;
 #[cfg(feature = "dev-tools")]
 pub(crate) mod import_nodes;
 #[cfg(feature = "jobs")]
@@ -77,6 +81,9 @@ pub struct SourceProject {
     /// Entry chunk precompiled by `compile_production_script`; replaces `source`.
     pub script_bytecode: Option<Vec<u8>>,
     pub job_sources: BTreeMap<String, String>,
+    /// Modules the entry script may `require`, keyed by their path relative
+    /// to the entry script's directory ("world/terrain.luau").
+    pub script_modules: BTreeMap<String, String>,
     pub scene: Option<SceneFile>,
     pub seed: u64,
     pub restored_save: Option<serde_json::Value>,
@@ -296,6 +303,8 @@ impl DeterministicRng {
 struct ScriptStamp {
     modified: SystemTime,
     size: u64,
+    /// Path, modification time and size of every module beside the entry.
+    modules: Vec<(PathBuf, Option<SystemTime>, u64)>,
 }
 
 #[cfg(feature = "dev-tools")]
@@ -343,6 +352,8 @@ pub struct EngineRuntime {
     #[cfg(feature = "dev-tools")]
     last_seen_script_stamp: Option<ScriptStamp>,
     script_source: Option<String>,
+    /// Host-provided modules; a file-backed project reads them beside the entry.
+    script_modules: Option<Rc<ScriptModuleSources>>,
     /// Precompiled entry chunk, consumed by the first load.
     script_bytecode: Option<Vec<u8>>,
     performance: PerformanceCollector,
@@ -395,6 +406,13 @@ impl EngineRuntime {
             Ok(lua) => lua,
             Err(error) => return EngineResult::failure(*error),
         };
+        let modules = match script_modules::read_from_disk(&paths.entry_script) {
+            Ok(modules) => Rc::new(modules),
+            Err(error) => return EngineResult::failure(*error),
+        };
+        if let Err(error) = install_require(&lua, &config, &paths, modules) {
+            return EngineResult::failure(*error);
+        }
         let value = match lua
             .load(&source)
             .set_name(paths.entry_script.to_string_lossy())
@@ -524,7 +542,7 @@ impl EngineRuntime {
             let catalog = crate::sprite_resources::read_catalog(&paths)?;
             Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog))
         })?;
-        let mut runtime = Self::with_world(config, paths, world, None, None, seed, restored_save, None, None, data_assets, catalog)?;
+        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog)?;
         (runtime.startup.imports_ms, runtime.startup.project_ms) = (startup.imports_ms, startup.project_ms);
         Ok(runtime)
     }
@@ -622,6 +640,7 @@ impl EngineRuntime {
             source,
             script_bytecode,
             job_sources,
+            script_modules,
             scene,
             seed,
             restored_save,
@@ -631,6 +650,10 @@ impl EngineRuntime {
             data,
             asset_catalog,
         } = project;
+        if script_modules.len() > MAX_SCRIPT_MODULES {
+            return Err(Box::new(Diagnostic::error("SCRIPT_MODULE_LIMIT", "Too many script modules",
+                format!("{} modules exceed the limit of {MAX_SCRIPT_MODULES}.", script_modules.len()))));
+        }
         let data_assets = crate::data_assets::DataAssets::new(data_assets, data)?;
         let script_name = if config.entry_script.is_empty() {
             "main.luau".to_string()
@@ -661,6 +684,7 @@ impl EngineRuntime {
             world,
             Some(source),
             script_bytecode,
+            Some(Rc::new(script_modules)),
             seed,
             restored_save,
             viewport_aspect,
@@ -677,6 +701,7 @@ impl EngineRuntime {
         world: Rc<RefCell<World>>,
         script_source: Option<String>,
         script_bytecode: Option<Vec<u8>>,
+        script_modules: Option<Rc<ScriptModuleSources>>,
         seed: u64,
         restored_save: Option<serde_json::Value>,
         initial_viewport_aspect: Option<f64>,
@@ -800,6 +825,7 @@ impl EngineRuntime {
             #[cfg(feature = "dev-tools")]
             last_seen_script_stamp: None,
             script_source,
+            script_modules,
             script_bytecode,
             performance: PerformanceCollector::default(),
             performance_counts: FrameCounts::default(),
@@ -1631,6 +1657,8 @@ impl EngineRuntime {
     ) -> Result<(), Box<Diagnostic>> {
         // A player loads its script once and never reloads it, so it keeps
         // neither the source text nor the bytecode after loading.
+        let modules = self.script_modules.take().unwrap_or_default();
+        install_require(&self.lua, &self.config, &self.paths, modules)?;
         let table = if let Some(bytecode) = self.script_bytecode.take() {
             self.script_source = None;
             timed_startup(&mut self.startup, StartupPhase::Script, || evaluate_chunk(&self.lua, &self.paths, &bytecode, mlua::ChunkMode::Binary))?
@@ -1677,7 +1705,9 @@ impl EngineRuntime {
                 })?,
             },
         };
+        let modules = self.module_sources()?;
         if !is_reload {
+            install_require(&self.lua, &self.config, &self.paths, Rc::clone(&modules))?;
             let table = timed_startup(&mut self.startup, StartupPhase::Script, || evaluate_script(&self.lua, &self.paths, &source))?;
             // Optional developer metadata must not invoke gameplay metatables or
             // break existing games that already use a non-table `replay` field.
@@ -1690,7 +1720,7 @@ impl EngineRuntime {
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
             self.startup.luau_heap_after_start_bytes = self.lua.used_memory();
             self.update_fn = update_fn;
-            self.loaded_script_digest = format!("sha256:{}", hex_digest(source.as_bytes()));
+            self.loaded_script_digest = script_digest(&source, &modules);
             if let Some(source) = source_override {
                 self.script_source = Some(source);
             }
@@ -1703,6 +1733,7 @@ impl EngineRuntime {
         self.host_time.borrow().healthy().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         self.input.borrow().physical.healthy().map_err(|e|Box::new(script_diagnostic(&self.paths,e)))?;
         let candidate_lua = determinism::new_vm()?;
+        install_require(&candidate_lua, &self.config, &self.paths, Rc::clone(&modules))?;
         let table = evaluate_script(&candidate_lua, &self.paths, &source)?;
         // The adapter belongs to the candidate VM just like its update
         // function. Publish the new registry only with a successful reload.
@@ -1794,12 +1825,21 @@ impl EngineRuntime {
         self.lua = candidate_lua;
         self.api = candidate_api;
         self.update_fn = update_fn;
-        self.loaded_script_digest = format!("sha256:{}", hex_digest(source.as_bytes()));
+        self.loaded_script_digest = script_digest(&source, &modules);
         if let Some(source) = source_override {
             self.script_source = Some(source);
         }
         self.last_seen_script_stamp = Some(script_stamp);
         Ok(())
+    }
+
+    /// The modules the next load sees: the host's, or the files beside the entry.
+    #[cfg(feature = "dev-tools")]
+    fn module_sources(&self) -> Result<Rc<ScriptModuleSources>, Box<Diagnostic>> {
+        match &self.script_modules {
+            Some(modules) => Ok(Rc::clone(modules)),
+            None => Ok(Rc::new(script_modules::read_from_disk(&self.paths.entry_script)?)),
+        }
     }
 
     #[cfg(feature = "dev-tools")]
@@ -1838,6 +1878,7 @@ impl EngineRuntime {
             return Ok(ScriptStamp {
                 modified: SystemTime::UNIX_EPOCH,
                 size: 0,
+                modules: Vec::new(),
             });
         }
         let metadata = fs::metadata(&self.paths.entry_script).map_err(|err| {
@@ -1857,8 +1898,38 @@ impl EngineRuntime {
         Ok(ScriptStamp {
             modified,
             size: metadata.len(),
+            modules: script_modules::stamp(&self.paths.entry_script),
         })
     }
+}
+
+/// Installs `require` for the entry script's modules in `lua`.
+fn install_require(lua: &Lua, config: &ProjectConfig, paths: &ProjectPaths, modules: Rc<ScriptModuleSources>) -> Result<(), Box<Diagnostic>> {
+    let entry = std::path::Path::new(&config.entry_script);
+    let entry_key = entry.file_name().map(|name| name.to_string_lossy().into_owned()).unwrap_or_default();
+    let prefix = match entry.parent().map(|dir| dir.to_string_lossy().replace('\\', "/")) {
+        Some(dir) if !dir.is_empty() => format!("{dir}/"),
+        _ => String::new(),
+    };
+    script_modules::install(lua, modules, &paths.entry_script.to_string_lossy(), &entry_key, &prefix)
+        .map_err(|error| Box::new(Diagnostic::error("ENGINE_INIT_FAILED", "Unable to install script modules", error.to_string())))
+}
+
+/// The entry source alone for a single-file game; with modules, every source.
+#[cfg(feature = "dev-tools")]
+fn script_digest(source: &str, modules: &ScriptModuleSources) -> String {
+    if modules.is_empty() {
+        return format!("sha256:{}", hex_digest(source.as_bytes()));
+    }
+    let mut hasher = Sha256::new();
+    hasher.update(source.as_bytes());
+    for (key, text) in modules {
+        hasher.update([0]);
+        hasher.update(key.as_bytes());
+        hasher.update([0]);
+        hasher.update(text.as_bytes());
+    }
+    format!("sha256:{:x}", hasher.finalize())
 }
 
 fn evaluate_script(
@@ -2112,6 +2183,7 @@ fn analyzer_path() -> PathBuf {
 
 /// The entry script and every other Luau file beside it or below it, so data
 /// moved into another module is still found. Asset and build folders are skipped.
+#[cfg(feature = "dev-tools")]
 fn project_scripts(paths: &ProjectPaths, entry_source: &str) -> Vec<(PathBuf, String)> {
     const SKIP: [&str; 5] = ["assets", "bundles", "dist", "target", "node_modules"];
     let mut scripts = vec![(paths.entry_script.clone(), entry_source.to_string())];

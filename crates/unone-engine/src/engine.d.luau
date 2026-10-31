@@ -4,9 +4,9 @@
 -- asserts every API in the engine's semantic index appears here, so the two
 -- cannot drift. Write it into a project with:
 --     game api typings --output <path>
--- project init inlines it into the entry script, because the engine runtime
--- has no module require: a single-file game must carry its own types for
--- `game check --types` to mean anything.
+-- project init inlines it into the entry script, so `game check --types`
+-- means something from the first line; modules the entry `require`s
+-- (docs/script-modules.md) are checked through it.
 -- Official SDK-bundled Luau packages use typed API namespaces such as
 -- api.ui.components; declare their exact runtime_packages versions in the project.
 -- Refresh an existing marked type block without replacing game code with:

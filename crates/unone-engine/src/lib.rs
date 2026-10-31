@@ -164,9 +164,11 @@ pub use project::{
     UiPreviewSpec, ImportConfig, ImporterSpec, ImportRoot,
 };
 pub use runtime::{
-    CheckReport, EngineRuntime, RunReport, SourceProject, SpatialTask, TestCaseReport, TestSuiteReport,
+    CheckReport, EngineRuntime, MAX_SCRIPT_MODULES, RunReport, ScriptModuleSources, SourceProject, SpatialTask, TestCaseReport, TestSuiteReport,
     TypeCheckReport, encode_observation, observation_digest,
 };
+#[cfg(feature = "dev-tools")]
+pub use runtime::read_script_modules;
 pub use scene::parse_scene_fragment;
 #[cfg(feature = "dev-tools")]
 pub use schema::{SCHEMA_NAMES, contract_schema};

@@ -899,7 +899,10 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
         Value::Null
     };
     let job_sources: std::collections::BTreeMap<_,_>=config.job_scripts.iter().map(|(id,path)|Ok((id.clone(),fs::read_to_string(inside(project,path)?)?))).collect::<Result<_>>()?;
-    let mut payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(inside(project,&config.entry_script)?)?,"scene":scene});
+    let entry = inside(project,&config.entry_script)?;
+    let script_modules = unone_engine::read_script_modules(&entry).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
+    let mut payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(&entry)?,"scene":scene});
+    if !script_modules.is_empty() { payload["script_modules"] = json!(script_modules); }
     // Data assets travel as content files; the payload only declares them.
     let mut asset_catalog = Vec::new();
     let data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {

@@ -49,6 +49,6 @@ impl EngineRuntime {
         let (decls, data) = crate::data_assets::read_from_project(&paths)?;
         let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
         let catalog = crate::sprite_resources::read_catalog(&paths)?;
-        Self::with_world(config, paths, world, None, None, seed, None, None, None, data_assets, catalog)
+        Self::with_world(config, paths, world, None, None, None, seed, None, None, None, data_assets, catalog)
     }
 }

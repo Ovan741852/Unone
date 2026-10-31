@@ -1955,6 +1955,13 @@
       ],
       "description": "Precompiled entry script in place of `script`. Its bytes travel beside this\nJSON as staged data SCRIPT_BYTECODE_DATA_ID, never inside it."
     },
+    "script_modules": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Modules the entry script may `require`, keyed by path relative to the\nentry script's directory (\"world/terrain.luau\"); always source text.",
+      "type": "object"
+    },
     "viewport_aspect": {
       "default": null,
       "description": "UI viewport aspect, supplied before Game.start; defaults to 16:9.\nIgnored when viewport_size is present: the physical size then defines\nthe aspect exactly, so hosts may send a rounded CSS aspect alongside it.",
