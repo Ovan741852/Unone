@@ -128,7 +128,8 @@ fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_trans
     if ui_transport::enabled() {
         return ui_transport::write(project, snapshot, save);
     }
-    if snapshot.instances3d.is_empty() {
+    // Instance batches and meshes carry their bytes only on the wire.
+    if snapshot.instances3d.is_empty() && snapshot.geometry3d.is_empty() {
         return write_direct_snapshot(project, snapshot, save);
     }
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]

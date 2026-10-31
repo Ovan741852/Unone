@@ -94,8 +94,8 @@ impl Serialize for InstanceTransport<'_>{
         map.end()
     }
 }
-// Retained meshes publish memory views of their immutable bytes in place of the
-// canonical base64; every other field is the canonical one.
+// Canonical meshes carry no bytes. The wire adds them to each entry: memory
+// views of the immutable bytes, or base64 encoded once per mesh generation.
 struct Geometry3DTransport<'a>(&'a WorldSnapshot);
 impl Serialize for Geometry3DTransport<'_>{
     fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
@@ -107,13 +107,19 @@ impl Serialize for Geometry3DTransport<'_>{
         #[derive(Serialize)]
         struct Entry<'a>{format:&'static str,#[serde(skip_serializing_if="Option::is_none")]texture:Option<&'a str>,
             material:&'a unone_engine::Geometry3DMaterial,
-            vertex_count:usize,index_count:usize,revision:u64,memory:Views}
+            vertex_count:usize,index_count:usize,revision:u64,
+            #[serde(skip_serializing_if="Option::is_none")]memory:Option<Views>,
+            #[serde(skip_serializing_if="Option::is_none")]vertices:Option<&'a str>,
+            #[serde(skip_serializing_if="Option::is_none")]indices:Option<&'a str>}
         let view=|bytes:&[u8]|View{offset:bytes.as_ptr() as usize,byte_length:bytes.len()};
+        let memory=INSTANCE_MEMORY.with(|m|m.get());
         let mut map=serializer.serialize_map(Some(self.0.geometry3d.len()))?;
         for (id,mesh) in &self.0.geometry3d{
+            let encoded=(!memory).then(||mesh.encoded());
             map.serialize_entry(id,&Entry{format:mesh.format(),texture:mesh.texture.as_deref(),material:&mesh.material,
                 vertex_count:mesh.vertex_count(),index_count:mesh.index_count(),revision:mesh.revision,
-                memory:Views{vertices:view(&mesh.vertices),indices:view(&mesh.indices)}})?;
+                memory:memory.then(||Views{vertices:view(&mesh.vertices),indices:view(&mesh.indices)}),
+                vertices:encoded.map(|[vertices,_]|vertices.as_str()),indices:encoded.map(|[_,indices]|indices.as_str())})?;
         }
         map.end()
     }
@@ -150,7 +156,7 @@ impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct
         if self.fields.skips(key){Ok(())}
         else if let Some(capture)=self.fields.capture{self.serializer.serialize_field(key,&CapturedValue{key,value,capture})}
         else if key=="instances3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&InstanceTransport(world))}
-        else if key=="geometry3d"&&let Some(world)=self.fields.instances&&INSTANCE_MEMORY.with(|m|m.get()){self.serializer.serialize_field(key,&Geometry3DTransport(world))}
+        else if key=="geometry3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&Geometry3DTransport(world))}
         else{self.serializer.serialize_field(key,value)}
     }
     fn skip_field(&mut self,key:&'static str)->Result<(),Self::Error>{
@@ -422,13 +428,15 @@ mod tests{
     update=function(api)api.geometry3d.setTransform('tri',{position={x=1,y=0,z=0}})end}"#;
   let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"mesh","entry_script":"main.luau"},"script":script})).unwrap();
   assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0,"{}",output());
-  let full=output();let canonical=full["world"]["geometry3d"]["tri"].clone();assert!(canonical["vertices"].is_string());
+  // Without memory views the wire inlines base64; the canonical entry and its digest never carry bytes.
+  let full=output();let inline=full["world"]["geometry3d"]["tri"].clone();assert!(inline["vertices"].is_string()&&inline["indices"].is_string());
   assert_eq!(unone_web_set_ui_transport(1),0);assert_eq!(super::super::unone_web_set_instance_transport(1),0);
   let wire=output();let mesh=&wire["world"]["geometry3d"]["tri"];
-  assert!(mesh.get("vertices").is_none());assert_eq!(mesh["revision"],canonical["revision"]);assert_eq!(wire["observation_digest"],full["observation_digest"]);
+  assert!(mesh.get("vertices").is_none());assert_eq!(mesh["revision"],inline["revision"]);assert_eq!(wire["observation_digest"],full["observation_digest"]);
   let read=|view:&serde_json::Value|{let pointer=view["offset"].as_u64().unwrap() as usize as *const u8;
    unsafe{std::slice::from_raw_parts(pointer,view["byte_length"].as_u64().unwrap() as usize)}.to_vec()};
   let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());let owned=&snapshot.geometry3d["tri"];
+  assert!(serde_json::to_value(owned).unwrap().get("vertices").is_none());
   assert_eq!(read(&mesh["memory"]["vertices"]),owned.vertices.to_vec());assert_eq!(read(&mesh["memory"]["indices"]),owned.indices.to_vec());
   assert!(wire.get("world_transport").is_none_or(|t|t["fields"].get("geometry3d").is_none()),"meshes are never leased as JSON");
   // A placement-only tick keeps the same bytes and memory views.

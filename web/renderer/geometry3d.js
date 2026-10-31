@@ -1,29 +1,44 @@
-// Retained world-space meshes (api.geometry3d). One instanced mesh per mesh
-// generation, rebuilt only when its revision changes; placements and visibility
+// Retained world-space meshes (api.geometry3d). One instanced mesh per mesh,
+// touched only when its revision changes: new bytes of the same shape upload
+// into the existing buffers, anything else rebuilds. Placements and visibility
 // update in place. The camera places them on the GPU, so camera motion costs
 // nothing here.
 const FORMATS={'f32le-p3-uv2-rgba4-u32-v1':{stride:9,billboard:false},'f32le-p3-o2-uv2-rgba4-u32-v1':{stride:11,billboard:true}};
 const IDENTITY={position:{x:0,y:0,z:0},rotation:{x:0,y:0,z:0},scale:{x:1,y:1,z:1}};
 const invalid=message=>{throw Error(`GEOMETRY3D_INVALID: ${message}`);};
 function decodeBase64(text){const raw=atob(text),bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return bytes;}
-// Copies one mesh's bytes out of the Wasm heap, a transferred buffer or base64.
-export function geometry3dBytes(mesh,memory){
+// One mesh's bytes as views into the Wasm heap or a transferred buffer, or
+// decoded from base64. Views alias their source: copy before keeping them.
+function geometry3dViews(mesh,memory){
   const layout=FORMATS[mesh.format];if(!layout)throw Error('GEOMETRY3D_FORMAT_UNSUPPORTED: '+mesh.format);
   const vc=mesh.vertex_count,ic=mesh.index_count;
   if(!Number.isSafeInteger(vc)||vc<3||vc>262144||!Number.isSafeInteger(ic)||ic<3||ic>1572864||ic%3)invalid('counts');
-  let vertices,indices;
+  let vertices,indices,aliased=false;
   if(mesh.memory){
     const part=view=>{const buffer=memory?.({memory:view});
       if(!(buffer instanceof ArrayBuffer)||!Number.isSafeInteger(view?.offset)||view.offset<0||!Number.isSafeInteger(view.byte_length)||view.offset+view.byte_length>buffer.byteLength)invalid('memory view');
-      return new Uint8Array(buffer,view.offset,view.byte_length).slice();};
-    vertices=part(mesh.memory.vertices);indices=part(mesh.memory.indices);
+      return new Uint8Array(buffer,view.offset,view.byte_length);};
+    vertices=part(mesh.memory.vertices);indices=part(mesh.memory.indices);aliased=true;
   }else{vertices=decodeBase64(mesh.vertices);indices=decodeBase64(mesh.indices);}
   if(vertices.byteLength!==vc*layout.stride*4||indices.byteLength!==ic*4)invalid('byte counts');
-  return {vertices:new Float32Array(vertices.buffer,0,vc*layout.stride),indices:new Uint32Array(indices.buffer,0,ic),...layout};
+  return {vertices,indices,aliased,...layout};
+}
+// Copies one mesh's bytes out of the Wasm heap, a transferred buffer or base64.
+export function geometry3dBytes(mesh,memory){
+  const {vertices,indices,aliased,...layout}=geometry3dViews(mesh,memory);
+  const own=bytes=>aliased?bytes.slice():bytes;
+  return {vertices:new Float32Array(own(vertices).buffer,0,mesh.vertex_count*layout.stride),
+    indices:new Uint32Array(own(indices).buffer,0,mesh.index_count),...layout};
+}
+// Unaligned heap offsets are possible, so bytes are compared and copied as bytes.
+function sameBytes(a,b){
+  if(a.byteLength!==b.byteLength)return false;
+  for(let i=0;i<a.length;i++)if(a[i]!==b[i])return false;
+  return true;
 }
 
 export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvature}){
-  const records=new Map(),variants=new Map(),object=new THREE.Object3D();let rebuilds=0;
+  const records=new Map(),variants=new Map(),object=new THREE.Object3D();let rebuilds=0,updates=0;
   // Sampler state lives on the texture object, so each filter/address pair of
   // one asset gets its own shallow clone sharing the decoded image.
   function sampled(source,filter,address){
@@ -35,6 +50,17 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     return texture;
   }
   function dispose(record){scene.remove(record.mesh);record.mesh.geometry.dispose();record.mesh.material.dispose();record.mesh.dispose();}
+  // Everything but the bytes: a new revision with the same shape updates the
+  // existing GPU buffers in place instead of rebuilding mesh and material.
+  const shapeOf=mesh=>JSON.stringify([mesh.format,mesh.vertex_count,mesh.index_count,mesh.texture??null,mesh.material??null]);
+  function update(record,mesh){
+    const {vertices,indices}=geometry3dViews(mesh,memory),geometry=record.mesh.geometry;
+    const interleaved=geometry.attributes.position.data,index=geometry.index;
+    new Uint8Array(interleaved.array.buffer,interleaved.array.byteOffset,interleaved.array.byteLength).set(vertices);interleaved.needsUpdate=true;
+    const current=new Uint8Array(index.array.buffer,index.array.byteOffset,index.array.byteLength);
+    if(!sameBytes(current,indices)){current.set(indices);index.needsUpdate=true;}
+    updates++;
+  }
   function build(mesh,capacity){
     const {vertices,indices,stride,billboard}=geometry3dBytes(mesh,memory),geometry=new THREE.BufferGeometry();
     const interleaved=new THREE.InterleavedBuffer(vertices,stride),at=billboard?2:0;
@@ -60,10 +86,12 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     for(const [id,mesh]of Object.entries(meshes??{})){
       alive.add(id);const placement=placements?.[id],transforms=placement?.transforms??[IDENTITY];
       let record=records.get(id);const revision=String(mesh.revision);
-      if(record?.revision!==revision||record.capacity<transforms.length){
+      if(record&&record.revision!==revision&&record.capacity>=transforms.length&&record.shape===shapeOf(mesh)){
+        update(record,mesh);record.revision=revision;
+      }else if(record?.revision!==revision||record.capacity<transforms.length){
         if(record)dispose(record);
         const capacity=2**Math.ceil(Math.log2(Math.max(1,transforms.length)));
-        record={revision,capacity,mesh:build(mesh,capacity),placement:null};records.set(id,record);scene.add(record.mesh);
+        record={revision,capacity,shape:shapeOf(mesh),mesh:build(mesh,capacity),placement:null};records.set(id,record);scene.add(record.mesh);
       }
       const instanced=record.mesh,key=JSON.stringify(transforms);
       if(record.placement!==key){
@@ -90,5 +118,5 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
   return {draw,
     contextLost(retire){for(const record of records.values()){retire(record.mesh.geometry);retire(record.mesh.material);}},
     clear(){for(const record of records.values())dispose(record);records.clear();clearVariants();},
-    metrics:()=>({geometry3d_meshes:records.size,geometry3d_rebuilds:rebuilds})};
+    metrics:()=>({geometry3d_meshes:records.size,geometry3d_rebuilds:rebuilds,geometry3d_updates:updates})};
 }

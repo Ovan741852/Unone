@@ -44,8 +44,13 @@ test('meshes rebuild only on a new revision; placement and visibility update in 
   const matrix=new THREE.Matrix4();plain.getMatrixAt(0,matrix);
   assert.equal(matrix.elements[12],5);assert.equal(plain.visible,false);assert.equal(ground.visible,true);
   assert.equal(ground.material.map.magFilter,THREE.NearestFilter);assert.notEqual(ground.material.map,loaded.texture,'sampler state lives on a variant');
+  const buffer=plain.geometry.attributes.position.data;
   renderer.draw({plain:mesh(3,{lift:1})},{},specs);
-  assert.equal(renderer.metrics().geometry3d_rebuilds,3);assert.equal(scene.children.length,1,'removed meshes leave the scene');
+  assert.equal(renderer.metrics().geometry3d_rebuilds,2,'new bytes of the same shape never rebuild');assert.equal(renderer.metrics().geometry3d_updates,1);
+  assert.equal(scene.children[0],plain);assert.equal(plain.geometry.attributes.position.data,buffer);assert.equal(plain.geometry.attributes.position.getY(0),1);
+  assert.equal(scene.children.length,1,'removed meshes leave the scene');
+  renderer.draw({plain:mesh(4,{material:{blend:'cutout'}})},{},specs);
+  assert.equal(renderer.metrics().geometry3d_rebuilds,3,'a new material rebuilds');assert.notEqual(scene.children[0],plain);
   renderer.clear();assert.equal(scene.children.length,0);
   assert.throws(()=>renderer.draw({bad:mesh(4,{texture:'texture://missing'})},{},specs),/GEOMETRY3D_TEXTURE_MISSING/);
 });
@@ -97,4 +102,20 @@ test('the worker sends mesh bytes once per revision and the receiver resolves th
   receiver.accept(structuredClone(again));
   assert.equal(sender.encode(world(2),heap).updates.length,2);
   assert.deepEqual(sender.encode({world:{frame:3}},heap).removed.sort(),['geometry3d:indices:tri','geometry3d:vertices:tri']);
+});
+
+test('same-shape revisions upload heap bytes into the existing buffers without aliasing the heap',()=>{
+  const scene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>null,curvature:createWorldCurvature(),memory:batch=>batch.memory.heap});
+  const heap=new ArrayBuffer(4096),bytes=new Uint8Array(heap);
+  const viewed=(revision,lift,order,offset)=>{const t=triangle(lift);bytes.set(t.vertices,offset);bytes.set(new Uint8Array(new Uint32Array(order).buffer),offset+200);
+    const m={...mesh(revision),memory:{vertices:{offset,byte_length:108,heap},indices:{offset:offset+200,byte_length:12,heap}}};delete m.vertices;delete m.indices;return m;};
+  renderer.draw({tri:viewed(1,0,[0,1,2],64)},{},new Map());
+  const tri=scene.children[0],index=tri.geometry.index,version=index.version;
+  renderer.draw({tri:viewed(2,3,[0,1,2],1001)},{},new Map());
+  assert.equal(scene.children[0],tri);assert.equal(tri.geometry.attributes.position.getY(2),3,'unaligned heap bytes are copied');
+  assert.equal(index.version,version,'unchanged indices are not uploaded again');
+  renderer.draw({tri:viewed(3,3,[2,1,0],1500)},{},new Map());
+  assert.deepEqual([...index.array],[2,1,0]);assert.ok(index.version>version);
+  bytes.fill(0);assert.equal(tri.geometry.attributes.position.getY(2),3,'the geometry never aliases the heap');
+  assert.deepEqual(renderer.metrics(),{geometry3d_meshes:1,geometry3d_rebuilds:1,geometry3d_updates:2});
 });

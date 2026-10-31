@@ -51,7 +51,8 @@ fn retained_meshes_keep_their_revision_across_placement_and_camera_changes() {
     assert_eq!(json["camera3d"]["curvature"], 0.002);
     assert_eq!(json["camera3d"]["rect"]["width"], 0.8);
     assert_eq!(json["geometry3d"]["ground"]["material"]["filter"], "nearest");
-    assert!(json["geometry3d"]["ground"]["vertices"].is_string(), "canonical observations hold the complete mesh");
+    assert_eq!(json["geometry3d"]["ground"]["revision"], first);
+    assert!(json["geometry3d"]["ground"].get("vertices").is_none(), "canonical observations identify content by revision, not bytes");
     assert!(json["geometry3d"]["ground"].get("transform").is_none(), "placement is published apart from content");
     assert_eq!(json["geometry3d_placements"]["ground"]["visible"], true);
     let idle = InputFrame::default();

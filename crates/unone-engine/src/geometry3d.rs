@@ -5,7 +5,6 @@
 use crate::{Transform3DData, Vec3};
 use base64::Engine;
 use serde::{Deserialize, Serialize, ser::SerializeStruct};
-use serde_json::value::RawValue;
 use std::sync::{Arc, OnceLock};
 
 pub const GEOMETRY3D_FORMAT: &str = "f32le-p3-uv2-rgba4-u32-v1";
@@ -112,7 +111,6 @@ pub struct Geometry3D {
     pub indices: Arc<[u8]>,
     pub revision: u64,
     encoded: Arc<OnceLock<[String; 2]>>,
-    canonical: Arc<OnceLock<Box<RawValue>>>,
 }
 
 /// Where a mesh draws. Canonical observations publish placements apart from
@@ -200,7 +198,8 @@ impl Geometry3D {
     pub fn format(&self) -> &'static str { self.material.format() }
     pub fn vertex_count(&self) -> usize { self.vertices.len() / self.material.vertex_bytes() }
     pub fn index_count(&self) -> usize { self.indices.len() / 4 }
-    /// Base64 vertices and indices, encoded once per mesh generation.
+    /// Base64 vertices and indices for hosts without memory views, encoded once
+    /// per mesh generation.
     pub fn encoded(&self) -> &[String; 2] {
         self.encoded.get_or_init(|| {
             let engine = &base64::engine::general_purpose::STANDARD;
@@ -212,32 +211,21 @@ impl Geometry3D {
     }
 }
 
-struct Content<'a>(&'a Geometry3D);
-impl Serialize for Content<'_> {
-    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let mesh = self.0;
-        let mut s = serializer.serialize_struct("Geometry3D", 7 + usize::from(mesh.texture.is_some()))?;
-        s.serialize_field("format", mesh.format())?;
-        if let Some(texture) = &mesh.texture { s.serialize_field("texture", texture)?; }
-        s.serialize_field("material", &mesh.material)?;
-        s.serialize_field("vertex_count", &mesh.vertex_count())?;
-        s.serialize_field("index_count", &mesh.index_count())?;
-        s.serialize_field("revision", &mesh.revision)?;
-        let [vertices, indices] = mesh.encoded();
-        s.serialize_field("vertices", vertices)?;
-        s.serialize_field("indices", indices)?;
-        s.end()
-    }
-}
-
-/// Canonical form: the complete mesh content, so digests and inspection see it;
-/// placement is published separately. The JSON is encoded once per mesh
-/// generation and then copied, never re-escaped. Official hosts publish memory
-/// views of the same bytes instead.
+/// Canonical form: the content's shape and its deterministic revision, which
+/// changes exactly when the bytes, texture or material change, as instance
+/// batches identify theirs. The bytes themselves never enter observations or
+/// their digest, so a large mesh costs no encoding or hashing per tick; hosts
+/// receive them through their transport. Placement is published separately.
 impl Serialize for Geometry3D {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        let raw = self.canonical.get_or_init(|| serde_json::value::to_raw_value(&Content(self)).expect("mesh content serializes"));
-        raw.serialize(serializer)
+        let mut s = serializer.serialize_struct("Geometry3D", 5 + usize::from(self.texture.is_some()))?;
+        s.serialize_field("format", self.format())?;
+        if let Some(texture) = &self.texture { s.serialize_field("texture", texture)?; }
+        s.serialize_field("material", &self.material)?;
+        s.serialize_field("vertex_count", &self.vertex_count())?;
+        s.serialize_field("index_count", &self.index_count())?;
+        s.serialize_field("revision", &self.revision)?;
+        s.end()
     }
 }
 
@@ -264,7 +252,7 @@ impl crate::world::World {
         self.geometry3d.insert(id, Geometry3D {
             texture: content.texture, material: content.material, transforms: vec![content.transform], visible: content.visible,
             vertices: content.vertices.into(), indices: content.indices.into(), revision,
-            encoded: Arc::new(OnceLock::new()), canonical: Arc::new(OnceLock::new()),
+            encoded: Arc::new(OnceLock::new()),
         });
         Ok(())
     }
@@ -330,7 +318,10 @@ mod tests {
         assert_eq!(world.geometry3d["ground"].revision, first.revision + 1);
         let json = serde_json::to_value(&world.geometry3d["ground"]).unwrap();
         assert_eq!(json["vertex_count"], 4);
-        assert_eq!(base64::engine::general_purpose::STANDARD.decode(json["vertices"].as_str().unwrap()).unwrap().len(), 4 * GEOMETRY3D_VERTEX_BYTES);
+        assert_eq!(json["revision"], first.revision + 1);
+        assert!(json.get("vertices").is_none() && json.get("indices").is_none(), "canonical meshes carry no bytes");
+        let [encoded, _] = world.geometry3d["ground"].encoded();
+        assert_eq!(base64::engine::general_purpose::STANDARD.decode(encoded).unwrap().len(), 4 * GEOMETRY3D_VERTEX_BYTES);
     }
     #[test]
     fn screen_billboards_use_their_own_vertex_layout() {

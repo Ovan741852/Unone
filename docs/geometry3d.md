@@ -55,11 +55,15 @@ revision even when its placement changes. Content changes allocate a
 deterministic world-monotonic revision; a removed and recreated ID gets a fresh
 one. Applying a new scene clears runtime meshes.
 
-The canonical observation contains the complete mesh as base64, so digests and
-inspection see the content. The official Web player instead receives memory
-views of the engine's immutable bytes, decodes a mesh only when its revision
-changes, and the worker backend transfers the bytes only then. The canonical
-base64 is encoded once per mesh generation.
+The canonical observation identifies each mesh by its format, counts, texture,
+material and revision, as instance batches are identified; the bytes never
+enter observations or their digest, so a large mesh costs no encoding or hashing
+per tick. Hosts receive the bytes on their wire: the official Web player gets
+memory views of the engine's immutable bytes, other hosts base64 encoded once
+per mesh generation. The player reads a mesh only when its revision changes;
+new bytes of the same shape (format, counts, texture and material) upload into
+the existing GPU buffers instead of rebuilding the mesh, and the worker backend
+transfers the bytes only on a new revision.
 
 ## Camera curvature and rect
 
