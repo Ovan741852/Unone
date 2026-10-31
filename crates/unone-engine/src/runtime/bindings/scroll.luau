@@ -7,6 +7,9 @@ local assert, error, type, pairs, ipairs, tostring = assert, error, type, pairs,
 local next, pcall, rawget, rawequal = next, pcall, rawget, rawequal
 local publish, renderPure = ...
 local registry, root, revision = {}, nil, 0
+-- The UI package's check for roots that can never change (deeply frozen by it,
+-- no live virtual handle inside).
+local immutable = nil
 local function positive(n, name)
  assert(type(n)=="number" and n==n and n>0 and n<math.huge,"UI_SCROLL_SPEC: positive "..name.." required")
  return n
@@ -106,7 +109,7 @@ local function virtual(s,grid)
  return node
 end
 local function setRoot(nextRoot)
- publish(nextRoot)
+ publish(nextRoot,immutable~=nil and immutable(nextRoot))
  root=nextRoot
  -- No virtual registry means no handles to retire. Ordinary UI trees do not
  -- need a second Lua traversal after Core has validated their publication.
@@ -132,13 +135,14 @@ local function request(r)
  local children=materialize(entry,r.first,r.last)
  local oldChildren,oldFirst,oldLast=entry.node.children,v.first,v.last
  entry.node.children=children;v.first=r.first;v.last=r.last
- local ok,err=pcall(publish,root)
+ local ok,err=pcall(publish,root,false)
  if not ok then entry.node.children=oldChildren;v.first=oldFirst;v.last=oldLast;error(err) end
  entry.first=r.first;entry.last=r.last
  return true
 end
 return {scrollView=scrollView,virtualList=function(s)return virtual(s,false)end,
  virtualGrid=function(s)return virtual(s,true)end,setRoot=setRoot,request=request,
+ trust=function(check)assert(immutable==nil,"UI_TRUST: already installed");immutable=check end,
  -- Private ownership check for tree composers. A virtual node is a live
  -- registry handle; copying its table would disconnect later materialization.
  isManagedNode=function(node)

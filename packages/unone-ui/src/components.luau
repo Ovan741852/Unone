@@ -5,7 +5,7 @@
 -- replace a public function's environment. Ownership grants depend on these.
 local table, math, string = table, math, string
 local assert, error, type, pairs, ipairs, tostring = assert, error, type, pairs, ipairs, tostring
-local getmetatable, setmetatable = getmetatable, setmetatable
+local getmetatable, setmetatable, rawget, rawequal = getmetatable, setmetatable, rawget, rawequal
 local metadata: any, declared: boolean, isManagedNode: (any) -> boolean, helpers: any = ...
 type Fields = {[string]: boolean}
 local placement: Fields = {rect=true,anchor=true,pivot=true,offset=true,size=true}
@@ -211,6 +211,32 @@ local function finish(value: any): any
     end
     visit(value)
     return value
+end
+
+-- A root this package froze, with no live virtual handle anywhere below it,
+-- can never change. Core may then keep the tree it already built from it.
+helpers.trust(function(root: any): boolean return immutableOwned[root]~=nil end)
+
+-- Exact structural equality of author props against the private copy made the
+-- last time the same id was built. Every compared key must exist in that copy,
+-- so the walk is bounded by data that already passed admission. Live virtual
+-- handles are mutable and only ever equal themselves.
+local function same(value: any, copied: any, depth: number): boolean
+    if depth>64 or getmetatable(value)~=nil then return false end
+    if rawget(value,"id")~=nil and (isManagedNode(value) or isManagedNode(copied)) then return false end
+    local count = 0
+    for key, child in pairs(value) do
+        local other = rawget(copied,key)
+        if rawequal(child,other) then
+            -- 0 and -0 are equal but serialize differently.
+            if child==0 and 1/child~=1/other then return false end
+        elseif type(child)~="table" or type(other)~="table" or not same(child,other,depth+1) then
+            return false
+        end
+        count += 1
+    end
+    for _ in pairs(copied) do count -= 1 end
+    return count==0
 end
 
 local function style(value: any, path: string)
@@ -579,11 +605,34 @@ local function makeKit(theme: any?): any
     local defaults = if theme==nil then {} else finish(copy(theme))
     local kit: any = {}
     kit.createResponsiveLayout = function(options: any): any available();return responsiveLayout(options) end
-    local function leaf(kind: string, props: any): any
+    -- An identical construction returns the previous frozen node for its id,
+    -- so a UI rebuilt in every update allocates, copies and republishes
+    -- nothing for its unchanged parts. Nodes are remembered weakly: the
+    -- published tree keeps them, and nothing the author dropped is retained.
+    local memos: {[string]: any} = setmetatable({}, {__mode="v"}) :: any
+    local sources: {[any]: any} = setmetatable({}, {__mode="k"}) :: any
+    local function memo(kind: string, build: (any) -> (any, any)): (any) -> any
+        return function(props: any): any
+            local id = if type(props)=="table" and getmetatable(props)==nil then rawget(props,"id") else nil
+            if type(id)~="string" then return (build(props)) end
+            local previous = memos[id]
+            if previous~=nil and previous.kind==kind then
+                local source = sources[previous]
+                if source~=nil and same(props,source,0) then return previous end
+            end
+            local node, source = build(props)
+            memos[id] = node
+            sources[node] = source
+            return node
+        end
+    end
+    -- Returns the node and the private copy of props it was built from.
+    local function leaf(kind: string, props: any): (any, any)
         available()
         fields(props,leafFields[kind],kind)
         style(props.style,kind..".style")
-        local node = copy(props,true)
+        local source = copy(props)
+        local node = table.clone(source)
         node.kind = kind
         if defaults[kind]~=nil or props.style~=nil then
             if getmetatable(props)==nil and (props.style==nil or getmetatable(props.style)==nil) then
@@ -594,13 +643,19 @@ local function makeKit(theme: any?): any
                 node.style = compose(defaults[kind],props.style)
             end
         end
-        return node
+        return node, source
     end
-    kit.textInput = function(props: any): any return finish(leaf("text_input",props)) end
-    kit.inputRegion = function(props: any): any return finish(leaf("input_region",props)) end
-    kit.text = function(props: any): any return finish(leaf("text",props)) end
-    kit.button = function(props: any): any return finish(leaf("button",props)) end
-    kit.slider = function(props: any): any return finish(leaf("slider",props)) end
+    local function leafKind(kind: string): (any) -> any
+        return memo(kind,function(props: any): (any, any)
+            local node, source = leaf(kind,props)
+            return finish(node), source
+        end)
+    end
+    kit.textInput = leafKind("text_input")
+    kit.inputRegion = leafKind("input_region")
+    kit.text = leafKind("text")
+    kit.button = leafKind("button")
+    kit.slider = leafKind("slider")
     -- The official control owns numeric/gesture state, while the host owns
     -- hit testing in the fully projected/clipped stage or scroll space.
     -- view remains pure so virtual materialization never advances interaction.
@@ -662,7 +717,7 @@ local function makeKit(theme: any?): any
                 height=math.max(rect.y+rect.height,track.y+track.height+padding)-y}
             finite(hitRect.x,"hit_rect.x");finite(hitRect.y,"hit_rect.y")
             finite(hitRect.width,"hit_rect.width");finite(hitRect.height,"hit_rect.height")
-            local node = leaf("slider",{id=id,text=props.text,action=action,rect=rect,style=props.style})
+            local node = (leaf("slider",{id=id,text=props.text,action=action,rect=rect,style=props.style}))
             node.drag = {axis=axis,reverse=reverse,track_rect=track,hit_rect=hitRect,enabled=props.enabled~=false}
             return finish(node)
         end
@@ -702,10 +757,10 @@ local function makeKit(theme: any?): any
         end
         return control
     end
-    kit.combobox = function(props: any): any return finish(leaf("combobox",props)) end
-    kit.panel = function(props: any): any return finish(leaf("panel",props)) end
-    kit.image = function(props: any): any return finish(leaf("image",props)) end
-    kit.imageBatch = function(props: any): any
+    kit.combobox = leafKind("combobox")
+    kit.panel = leafKind("panel")
+    kit.image = leafKind("image")
+    kit.imageBatch = memo("image_batch",function(props: any): (any, any)
         available()
         fields(props,leafFields.image_batch,"imageBatch")
         assert(props.pixel_snap==nil or type(props.pixel_snap)=="boolean","UI_IMAGE_BATCH_PIXEL_SNAP: pixel_snap must be a boolean")
@@ -722,13 +777,15 @@ local function makeKit(theme: any?): any
                 if quad.source~=nil then fields(quad.source,rectFields,"imageBatch.quad.source") end
             end
         end
-        return finish(leaf("image_batch",props))
-    end
-    kit.component = function(props: any): any
+        local node, source = leaf("image_batch",props)
+        return finish(node), source
+    end)
+    kit.component = memo("component",function(props: any): (any, any)
         available()
         fields(props,componentFields,"component")
         if props.children~=nil then dense(props.children,"component.children") end
-        local node = copy(props,true)
+        local source = copy(props)
+        local node = table.clone(source)
         node.kind = "component"
         node.surface = nil
         local children: any = node.children or {}
@@ -746,16 +803,17 @@ local function makeKit(theme: any?): any
             table.insert(children,1,finish(leaf(surface.kind,surfaceProps)))
         end
         node.children = if #children>0 then children else nil
-        return finish(node)
-    end
-    kit.screen = function(props: any): any
+        return finish(node), source
+    end)
+    kit.screen = memo("screen",function(props: any): (any, any)
         available()
         fields(props,screenFields,"screen")
         dense(props.children,"screen.children")
-        local node = copy(props,true)
+        local source = copy(props)
+        local node = table.clone(source)
         node.kind = "screen"
-        return finish(node)
-    end
+        return finish(node), source
+    end)
     -- Forward the original helper options, including renderItem/key functions.
     -- These helpers own registration, materialization and live node identity;
     -- portable-data copying here would break their established lifecycle.

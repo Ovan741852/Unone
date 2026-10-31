@@ -443,6 +443,14 @@ does not grant that ownership. Private reuse metadata contains only expanded
 work/depth values and uses weak keys; every occurrence still consumes the same
 copy budget, even when a subtree appears more than once.
 
+A constructor called again with the same ID and identical props returns its
+previous result, the same frozen node, while that node is still referenced (the
+published tree keeps it). A UI rebuilt in every update therefore copies and
+allocates nothing for its unchanged parts, and Core skips converting and
+validating a republished root it already built for the current viewport.
+Numbers compare exactly (0 and -0 differ), and a live virtual handle matches
+only itself. Results are remembered weakly: nothing the author dropped is kept.
+
 Use `UiRectInput`, `UiStyleInput`, `UiImageQuadInput` and
 `UiImageBatchDefinitionInput` for mutable authored builders. Constructor parameters
 accept these mutable values and existing readonly styles/children. For example:

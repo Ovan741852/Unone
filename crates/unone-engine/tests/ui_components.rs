@@ -487,7 +487,9 @@ local theme={text={padding={left=1,right=2},color=shared,background=shared,text_
 local ui=c.create(theme)
 local props={id='a',text='A',rect={x=0,y=0,width=10,height=5},style={padding={right=4},color={.7,.8,.9,1},text_shadow={offset_x=3,color={1,1,1,.2}}}}
 local a=ui.text(props)
-local b=ui.text(props)
+assert(ui.text(props)==a,'an identical construction returns the same frozen node')
+local other=table.clone(props);other.id='b'
+local b=ui.text(other)
 assert(a~=b and a.style~=b.style and a.style.color~=b.style.color and a.style.padding~=b.style.padding)
 assert(a.style~=props.style and a.style.color~=props.style.color and a.rect~=props.rect)
 assert(a.style.padding.left==1 and a.style.padding.right==4)
@@ -696,4 +698,70 @@ end,update=function(api)frame+=1;api.ui.setRoot(view())end}
             std::fs::write(path,serde_json::to_vec_pretty(&value).unwrap()).unwrap();
         }
     }
+}
+
+#[test]
+fn identical_constructions_return_the_previous_node_until_their_id_lapses() {
+    let values = observed(r#"
+local c=api.ui.components
+local ui=c.create({text={font_size=2}})
+local R={x=0,y=0,width=10,height=5}
+local function hud(label)
+ return ui.screen({id='s',node='s',children={
+  ui.text({id='t',text=label,rect={x=0,y=0,width=10,height=5},style={color={1,1,1,1}}}),
+  ui.component({id='c',component='hud',rect={x=0,y=10,width=20,height=20},surface={kind='panel'},children={
+   ui.image({id='i',asset='asset://a',rect={x=1,y=11,width=5,height=5},background_for={component='c'}}),
+  }}),
+ }})
+end
+local first=hud('A')
+assert(hud('A')==first,'an unchanged UI is the same frozen tree')
+local changed=hud('B')
+assert(changed~=first and changed.children[1]~=first.children[1],'the changed leaf and its ancestors are rebuilt')
+assert(changed.children[2]==first.children[2],'unchanged siblings are kept')
+local zero=ui.text({id='z',rect={x=0,y=0,width=1,height=1}})
+assert(ui.text({id='z',rect={x=-0,y=0,width=1,height=1}})~=zero,'0 and -0 differ')
+assert(ui.button({id='z',rect={x=0,y=0,width=1,height=1}}).kind=='button','another kind under the same id rebuilds')
+local rows={{key='a'}}
+local function list() return ui.virtualList({id='rows',viewport={left=0,top=0,width=10,height=10},items=rows,key='key',rowHeight=2,
+ renderItem=function(row) return {c.text({id='row-'..row.key,text=row.key,rect={x=0,y=0,width=5,height=2}})} end}) end
+local holder=ui.component({id='holder',component='list',rect=R,children={list()}})
+assert(ui.component({id='holder',component='list',rect=R,children={list()}})~=holder,'live virtual handles never compare equal')
+-- The published tree keeps its nodes for the next rebuild.
+local function published() return ui.screen({id='g',node='g',children={ui.text({id='kept',rect=R})}}) end
+api.ui.setRoot(published())
+assert(published()==published(),'a republished UI is the same tree')
+api.observation.set('memo',true)
+"#);
+    assert_eq!(values["memo"], true);
+}
+
+#[test]
+fn republishing_an_immutable_root_keeps_the_tree_until_the_viewport_or_tree_changes() {
+    let source = r#"
+local ui
+
+local function root(api)
+ return ui.screen({id='s',node='s',children={
+  ui.text({id='t',text='A',anchor='top_right',size={width=20,height=6}}),
+ }})
+end
+return {
+ start=function(api) ui=api.ui.components.create() api.ui.setRoot(root(api)) end,
+ update=function(api)
+  local r=root(api)
+  api.observation.set('same',r==root(api))
+  api.ui.setRoot(r)
+ end,
+}"#;
+    let mut runtime = load_script(source, true).unwrap();
+    runtime.tick().unwrap();
+    assert_eq!(runtime.semantic_observations()["same"], true);
+    let wide = runtime.observe().ui.unwrap();
+    runtime.set_viewport_aspect(9.0 / 16.0).unwrap();
+    runtime.tick().unwrap();
+    let narrow = runtime.observe().ui.unwrap();
+    assert!(wide.children[0].rect().width < narrow.children[0].rect().width, "the same root resolves again for a new viewport");
+    runtime.tick().unwrap();
+    assert_eq!(runtime.observe().ui.unwrap(), narrow);
 }

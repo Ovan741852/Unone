@@ -9,7 +9,8 @@ selection and slot/row/column/grid geometry. Components never arrange children
 implicitly.
 Version 0.6 returns recursively frozen ordinary nodes and composed styles.
 Authored props remain mutable borrowed inputs; retain and reuse owned immutable
-subtrees, and construct a new result when values change. Registered virtual
+subtrees, and construct a new result when values change; rebuilding an
+unchanged node returns the previous one, so per-update UI code stays cheap. Registered virtual
 handles remain helper-owned live state with readonly public types. See the
 [ownership and migration contract](../../docs/ui-components.md#theme-copying-and-surfaces)
 for mutable input descriptors, readonly child iteration and runtime enforcement.

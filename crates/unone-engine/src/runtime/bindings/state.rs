@@ -99,9 +99,24 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     })?)?;
     let ui_aspect = Rc::clone(&viewport_aspect);
     let resource_world=Rc::clone(&state.world);
+    // The last immutable root and the publication stamp of the tree built from it.
+    let published: std::cell::RefCell<Option<(Table, u64)>> = std::cell::RefCell::new(None);
+    let stamps = std::cell::Cell::new(0_u64);
     ui_api.set(
         "setRoot",
-        lua.create_function(move |_lua, value: Value| {
+        lua.create_function(move |_lua, (value, immutable): (Value, Option<bool>)| {
+            // An immutable root (deeply frozen by the UI package, no live
+            // virtual handle) that already built the committed tree for this
+            // viewport is that tree: converting and validating it again would
+            // rebuild it unchanged. Developer edits rebuild the tree without a
+            // stamp; image batch definitions refresh it as a rebuild would.
+            let root = match (&value, immutable) { (Value::Table(table), Some(true)) => Some(table.clone()), _ => None };
+            if let (Some(root), Some((last, stamp))) = (&root, published.borrow().as_ref()) {
+                if root.to_pointer() == last.to_pointer() && ui_state.borrow().as_ref()
+                    .is_some_and(|tree| tree.publication == *stamp && tree.viewport_aspect == *ui_aspect.borrow()) {
+                    return Ok(());
+                }
+            }
             #[cfg(feature = "phase-profile")]
             let value=phase_profile::measure(_lua,Phase::UiConvert,||lua_value_to_json(value));
             #[cfg(not(feature = "phase-profile"))]
@@ -120,9 +135,12 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                 },
             );
             #[cfg(feature = "phase-profile")]
-            let tree=phase_profile::measure(_lua,Phase::UiValidate,parse)?;
+            let mut tree=phase_profile::measure(_lua,Phase::UiValidate,parse)?;
             #[cfg(not(feature = "phase-profile"))]
-            let tree=parse()?;
+            let mut tree=parse()?;
+            stamps.set(stamps.get() + 1);
+            tree.publication = stamps.get();
+            *published.borrow_mut() = root.map(|root| (root, stamps.get()));
             let commit=|| { *ui_state.borrow_mut() = Some(tree); };
             #[cfg(feature = "phase-profile")]
             phase_profile::measure(_lua,Phase::UiCommitDrop,commit);

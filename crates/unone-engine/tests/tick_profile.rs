@@ -3,7 +3,9 @@
 //! regular suite; run on an optimized sampling build:
 //! UNONE_TICK_PROJECT=<dir> UNONE_TICK_INPUT=<test.json> [UNONE_TICK_FRAMES=120]
 //! cargo test --release -p unone-engine --features sampling-profile --test tick_profile -- --ignored --nocapture
-#![cfg(all(feature = "sampling-profile", not(feature = "phase-profile")))]
+//! With `--features phase-profile` instead, it times the engine's own phases
+//! (script, UI conversion and validation, observation, snapshot) per tick.
+#![cfg(any(feature = "sampling-profile", feature = "phase-profile"))]
 use std::time::Instant;
 use unone_engine::{InputFrame, PreviewRequest};
 
@@ -28,7 +30,8 @@ fn tick_profile() {
     for frame in &inputs { runtime.tick_with_input(frame).unwrap(); }
     let frames: usize = std::env::var("UNONE_TICK_FRAMES").ok().and_then(|v| v.parse().ok()).unwrap_or(120);
     for _ in 0..10 { runtime.tick_with_input(&idle).unwrap(); }
-    runtime.preview_request(PreviewRequest::ProfileStart { sampling: true }).unwrap();
+    let phases = cfg!(feature = "phase-profile");
+    runtime.preview_request(PreviewRequest::ProfileStart { sampling: !phases }).unwrap();
     let mut times = Vec::with_capacity(frames);
     for _ in 0..frames {
         let started = Instant::now();
@@ -40,6 +43,15 @@ fn tick_profile() {
     println!("{frames} ticks: median {:.1} ms, p95 {:.1} ms, max {:.1} ms",
         times[frames / 2], times[frames * 95 / 100], times[frames - 1]);
     let window = &stopped["window"];
+    if phases {
+        let mut phases: Vec<(&String, &serde_json::Value)> = window["core_phases"]["phases"].as_object().unwrap().iter().collect();
+        phases.sort_by(|a, b| b.1["total_ms"].as_f64().partial_cmp(&a.1["total_ms"].as_f64()).unwrap());
+        for (name, phase) in phases {
+            println!("  {name:32} mean {:7.3} ms  p95 {:7.3} ms  calls {}",
+                phase["mean_ms"].as_f64().unwrap_or(0.), phase["p95_ms"].as_f64().unwrap_or(0.), phase["calls"]);
+        }
+        return;
+    }
     println!("vm: {}", window["vm"]);
     let mut functions: Vec<&serde_json::Value> = window["functions"].as_object().unwrap().values().collect();
     let total = window["samples"].as_u64().unwrap_or(1).max(1) as f64;

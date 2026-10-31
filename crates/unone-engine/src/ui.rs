@@ -817,6 +817,10 @@ pub struct UiTree {
     pub(crate) viewport_aspect: f64,
     #[serde(skip)]
     pub(crate) string_bytes: usize,
+    /// Which `setRoot` publication built this tree, or 0 when anything else
+    /// built or edited it. Not part of the tree's value.
+    #[serde(skip)]
+    pub(crate) publication: u64,
     pub kind: String,
     pub id: String,
     pub node: String,
@@ -1206,6 +1210,7 @@ impl UiTree {
         let tree=Self {
             viewport_aspect: aspect,
             string_bytes: bytes,
+            publication: 0,
             kind: raw.kind,
             id: raw.id,
             node: raw.node,
