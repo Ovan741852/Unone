@@ -6,6 +6,7 @@ use serde::Serialize;
 mod ui_transport;
 mod save_transport;
 mod ui_tree_transport;
+mod world_transport;
 use unone_engine::{
     Diagnostic, EngineRuntime, HostInputState, HostProject, Vec2, WorldSnapshot, parse_input_frame,
 };
@@ -124,7 +125,7 @@ fn write_snapshot(
 }
 
 fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_transport::Prepared<'_>)->Result<(),String>{
-    if ui_transport::enabled() && (snapshot.ui.is_some() || !snapshot.ui_image_batches.is_empty()) {
+    if ui_transport::enabled() {
         return ui_transport::write(project, snapshot, save);
     }
     if snapshot.instances3d.is_empty() {
@@ -338,7 +339,7 @@ fn publish_snapshot(
     save_payload: Option<&serde_json::value::RawValue>,
 ) -> i32 {
     match write_snapshot(project, snapshot, save_payload) {
-        Ok(()) => { if !ui_transport::enabled() || (snapshot.ui.is_none() && snapshot.ui_image_batches.is_empty()) { ui_transport::retire(); } 0 },
+        Ok(()) => { if !ui_transport::enabled() { ui_transport::retire(); } 0 },
         Err(error) => {
             write_error(error);
             -1
@@ -1609,7 +1610,9 @@ fn actual_publication_phase_windows_cover_all_paths_preserve_digest_and_freeze()
         let script=format!("return {{start=function(api){start} end,update=function(api) api.observation.set('advanced',true) end}}");
         let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"publication phase","entry_script":"main.luau"},"script":script})).unwrap();
         assert_eq!(unsafe{unone_web_load_project(bytes.as_ptr(),bytes.len(),42)},0,"{}",output());
-        assert_eq!(ui_transport::unone_web_set_ui_transport(1),0);assert_eq!(unone_web_set_instance_transport(1),0);
+        // The official retained wire publishes every world through one writer;
+        // complete JSON keeps the direct and instance writers.
+        assert_eq!(ui_transport::unone_web_set_ui_transport(i32::from(retained)),0);assert_eq!(unone_web_set_instance_transport(1),0);
         request(r#"{"method":"profile_start","sampling":false}"#);
         for _ in 0..3{assert_eq!(unone_web_tick(),0);RUNTIME.with(|v|assert_eq!(output()["observation_digest"],unone_engine::observation_digest(&v.borrow().as_ref().unwrap().observe()).unwrap()));}
         let report=request(r#"{"method":"profile"}"#);

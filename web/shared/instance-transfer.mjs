@@ -2,14 +2,15 @@
 import {retainImageResource,retainedImageGeneration} from './retained-image-generation.mjs';
 import {createSavePublication,attachSavePublication,savePublication} from './save-publication.mjs';
 import {createUiTreePublication,uiTreePublication} from './ui-tree-publication.mjs';
+import {createWorldFieldPublication,worldFieldPublication} from './world-field-publication.mjs';
 const imageFormat='ui-image-delta-v1';
 const imageEncoder=new TextEncoder();
 const validId=id=>typeof id==='string'&&/\S/.test(id)&&(id.length<=256||imageEncoder.encode(id).length<=1024);
 const validGeneration=value=>typeof value==='string'&&/^[1-9][0-9]{0,15}$/.test(value)&&Number.isSafeInteger(Number(value));
 export class InstanceTransfer {
-  constructor(){this.revisions=new Map();this.retired=new Set();this.pool=[];this.poolBytes=0;this.serial=0;this.imageSerial=0;this.images=new Map();this.save=null;this.saveSerial=0;this.ui=null;this.uiSerial=0;this.metrics={copied_bytes:0,allocated_bytes:0,reused_bytes:0,unchanged_batches:0,image_definition_updates:0,image_unchanged_resources:0,save_definition_updates:0,save_unchanged_publications:0,ui_definition_updates:0,ui_unchanged_publications:0,ui_inline_publications:0};}
+  constructor(){this.revisions=new Map();this.retired=new Set();this.pool=[];this.poolBytes=0;this.serial=0;this.imageSerial=0;this.images=new Map();this.save=null;this.saveSerial=0;this.ui=null;this.uiSerial=0;this.fields=new Map();this.fieldSerial=0;this.metrics={copied_bytes:0,allocated_bytes:0,reused_bytes:0,unchanged_batches:0,image_definition_updates:0,image_unchanged_resources:0,save_definition_updates:0,save_unchanged_publications:0,ui_definition_updates:0,ui_unchanged_publications:0,ui_inline_publications:0,world_field_updates:0,world_field_unchanged:0};}
   recycle(buffers=[]){for(const b of buffers){if(!(b instanceof ArrayBuffer))throw Error('TRANSFER_RECYCLE_INVALID');if(this.pool.length<32&&this.poolBytes+b.byteLength<=16*1024*1024){this.pool.push(b);this.poolBytes+=b.byteLength;}}}
-  reset(){for(const id of this.revisions.keys())this.retired.add(id);this.revisions.clear();this.images.clear();this.save=null;this.ui=null;}
+  reset(){for(const id of this.revisions.keys())this.retired.add(id);this.revisions.clear();this.images.clear();this.save=null;this.ui=null;this.fields.clear();}
   encode(value,heap){
     let snapshot=value?.world?value:value?.observation;
     if(!snapshot?.world)return {value,updates:[],removed:[]};
@@ -28,10 +29,20 @@ export class InstanceTransfer {
       if(this.ui?.token===uiPublication.token){nextUi=this.ui;uiPacket={format:'ui-tree-delta-v1',generation:nextUi.generation};}
       else{if(this.uiSerial===Number.MAX_SAFE_INTEGER)throw Error('TRANSFER_UI_TREE_LIMIT');nextUi={token:uiPublication.token,generation:String(++this.uiSerial)};uiPacket={format:'ui-tree-delta-v1',generation:nextUi.generation,json:uiPublication.text};}
     }
+    // Leased world fields cross as a generation; text only when it changed.
+    const nextFields=new Map(),fieldPacket={};
+    for(const key in snapshot.world){
+      const publication=worldFieldPublication(snapshot.world[key]);if(!publication)continue;
+      const old=this.fields.get(key);let generation=old?.generation;
+      if(old?.token===publication.token)fieldPacket[key]={generation};
+      else{if(this.fieldSerial===Number.MAX_SAFE_INTEGER)throw Error('TRANSFER_WORLD_FIELD_LIMIT');generation=String(++this.fieldSerial);fieldPacket[key]={generation,json:publication.text};}
+      nextFields.set(key,{token:publication.token,generation});
+    }
     snapshot={...snapshot,world:{...snapshot.world,instances3d:Object.fromEntries(Object.entries(snapshot.world.instances3d??{}).map(([id,b])=>[id,{...b,memory:b.memory?{...b.memory}:undefined}]))}};
     value=value.world?snapshot:{...value,observation:snapshot};
     if(savePacket)delete snapshot.save_payload;
     if(uiPacket)delete snapshot.world.ui;
+    for(const key of nextFields.keys())delete snapshot.world[key];
     const imageDefinitions=snapshot.world.ui_image_batches??{},nextImages=new Map(),imageUpdates=[],imageActive=[];
     if(typeof imageDefinitions!=='object'||Array.isArray(imageDefinitions)||Object.keys(imageDefinitions).length>256)throw Error('TRANSFER_UI_IMAGE_INVALID');
     for(const [id,definition]of Object.entries(imageDefinitions)){
@@ -61,18 +72,35 @@ export class InstanceTransfer {
     const removed=[...this.retired].filter(id=>!alive.has(id));this.retired.clear();for(const id of this.revisions.keys())if(!alive.has(id)){this.revisions.delete(id);removed.push(id);}
     this.images=nextImages;this.metrics.image_definition_updates+=imageUpdates.length;this.metrics.image_unchanged_resources+=imageActive.length-imageUpdates.length;
     this.save=nextSave;if(savePacket){if(Object.hasOwn(savePacket,'json'))this.metrics.save_definition_updates++;else this.metrics.save_unchanged_publications++;}
+    for(const packet of Object.values(fieldPacket))this.metrics[Object.hasOwn(packet,'json')?'world_field_updates':'world_field_unchanged']++;
+    this.fields=nextFields;
     this.ui=nextUi;if(uiPacket){if(Object.hasOwn(uiPacket,'json'))this.metrics.ui_definition_updates++;else this.metrics.ui_unchanged_publications++;}else if(Object.hasOwn(snapshot.world,'ui'))this.metrics.ui_inline_publications++;
-    return {value,updates,removed,...(imagePacket?{ui_images:imagePacket}:{}),...(savePacket?{save:savePacket}:{}),...(uiPacket?{ui_tree:uiPacket}:{})};
+    return {value,updates,removed,...(imagePacket?{ui_images:imagePacket}:{}),...(savePacket?{save:savePacket}:{}),...(uiPacket?{ui_tree:uiPacket}:{}),...(nextFields.size?{world_fields:{format:'world-fields-delta-v1',fields:fieldPacket}}:{})};
   }
   report(){return {...this.metrics,pooled_bytes:this.poolBytes,pooled_buffers:this.pool.length};}
 }
 export class InstanceReceiver {
-  constructor(){this.buffers=new Map();this.recycled=[];this.images=new Map();this.save=null;this.ui=null;}
-  clear(){this.buffers.clear();this.recycled=[];this.images.clear();this.save=null;this.ui=null;}
+  constructor(){this.buffers=new Map();this.recycled=[];this.images=new Map();this.save=null;this.ui=null;this.fields=new Map();}
+  clear(){this.buffers.clear();this.recycled=[];this.images.clear();this.save=null;this.ui=null;this.fields.clear();}
   accept(packet){
     let nextImages=this.images,value=packet.value;
     let nextSave=this.save;
     let nextUi=this.ui;
+    let nextFields=this.fields;
+    if(packet.world_fields){
+      const wire=packet.world_fields,snapshot=value?.world?value:value?.observation,invalid=()=>{throw Error('TRANSFER_WORLD_FIELD_INVALID');};
+      if(!snapshot?.world||!wire||Object.keys(wire).some(k=>!['format','fields'].includes(k))||wire.format!=='world-fields-delta-v1'||!wire.fields||typeof wire.fields!=='object'||Array.isArray(wire.fields))invalid();
+      nextFields=new Map();
+      for(const [key,field]of Object.entries(wire.fields)){
+        if(!field||Object.keys(field).some(k=>!['generation','json'].includes(k))||!validGeneration(field.generation)||Object.hasOwn(snapshot.world,key))invalid();
+        const old=this.fields.get(key);
+        if(Object.hasOwn(field,'json')){
+          if(typeof field.json!=='string'||(old?.generation===field.generation&&old.publication.text!==field.json))invalid();
+          nextFields.set(key,old?.generation===field.generation?old:{generation:field.generation,publication:createWorldFieldPublication(field.json)});
+        }else if(old?.generation!==field.generation)throw Error('TRANSFER_WORLD_FIELD_MISSING');
+        else nextFields.set(key,old);
+      }
+    }else if(value?.world||value?.observation?.world)nextFields=new Map();
     if(Object.hasOwn(packet,'ui_tree')){
       const ui=packet.ui_tree,snapshot=value?.world?value:value?.observation;
       if(!ui||!snapshot?.world||Object.hasOwn(snapshot.world,'ui')||Object.keys(ui).some(k=>!['format','generation','json'].includes(k))||ui.format!=='ui-tree-delta-v1'||!validGeneration(ui.generation))throw Error('TRANSFER_UI_TREE_INVALID');
@@ -114,7 +142,9 @@ export class InstanceReceiver {
     for(const id of packet.removed??[]){const old=this.buffers.get(id);if(old)this.recycled.push(old);this.buffers.delete(id);}for(const {id,buffer}of packet.updates??[]){const old=this.buffers.get(id);if(old)this.recycled.push(old);this.buffers.set(id,buffer);}
     if(Object.hasOwn(packet,'ui_tree')){const snapshot=value?.world?value:value.observation,restored={...snapshot,world:{...snapshot.world,ui:nextUi.publication.value}};value=value.world?restored:{...value,observation:restored};}
     if(packet.save){const snapshot=value?.world?value:value.observation,restored=attachSavePublication({...snapshot,save_payload:nextSave.publication.value},nextSave.publication);value=value.world?restored:{...value,observation:restored};}
-    this.images=nextImages;this.save=nextSave;this.ui=nextUi;return value;
+    // The structured clone is this receiver's fresh object; attach retained values in place.
+    if(packet.world_fields){const world=(value?.world?value:value.observation).world;for(const [key,entry]of nextFields)world[key]=entry.publication.value;}
+    this.images=nextImages;this.save=nextSave;this.ui=nextUi;this.fields=nextFields;return value;
   }
   memory(batch){const b=this.buffers.get(batch.memory.buffer_id);if(!b)throw Error('TRANSFER_BATCH_MISSING');return b;}
   takeRecycled(){return this.recycled.splice(0);}

@@ -4,6 +4,7 @@ import {rejectUnsupportedHeightfields,heightfieldEntries,heightfieldMeshData,cre
 import * as THREE from '../vendor/three/three.core.js';
 import {createThreeRenderer} from './three.js';
 import {createWebGpuRenderer} from '../shared/webgpu-snapshot.js';
+import {createWorldFieldPublication} from '../shared/world-field-publication.mjs';
 
 test('snapshots without heightfields preserve compatibility without mutation', () => {
   for (const snapshot of [{entities:{}}, {heightfields:{}}, {world:{heightfields:{}}}]) {
@@ -59,6 +60,15 @@ test('actual Three draw rejects before presentation hooks or renderer resets', a
 });
 
 const field=()=>({width:3,depth:2,heights:[0,1,2,3,4,5],cell_size:2,origin:{x:-4,y:7,z:12},texture:'texture://terrain',revision:1});
+
+test('a leased heightfield map is validated once while it stays published', () => {
+  const leased=createWorldFieldPublication(JSON.stringify({ground:field()})).value;
+  const entries=heightfieldEntries({world:{heightfields:leased}});
+  assert.equal(heightfieldEntries({heightfields:leased}),entries);assert.ok(Object.isFrozen(entries));
+  // Caller-owned maps can change in place and are revalidated on every call.
+  const plain={ground:field()};assert.notEqual(heightfieldEntries({heightfields:plain}),heightfieldEntries({heightfields:plain}));
+  plain.ground.width=1;assert.throws(()=>heightfieldEntries({heightfields:plain}),/HEIGHTFIELD_INVALID/);
+});
 
 test('heightfield geometry matches Core X-fast positions, native texture rows and upward fixed diagonal', () => {
   const d=field(),before=JSON.stringify(d),data=heightfieldMeshData(d);

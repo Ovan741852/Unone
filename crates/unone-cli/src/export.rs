@@ -35,6 +35,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/save-publication.mjs",
         "shared/player-seed.mjs",
         "shared/ui-tree-publication.mjs",
+        "shared/world-field-publication.mjs",
         "renderer/presentation3d.js",
         "shared/projected-geometry.js",
         "shared/projected-base64.js",
@@ -548,7 +549,7 @@ mod tests {
                 assert_eq!(output.join("web/shared").join(name).is_file(), !minimal,
                     "disabled UI cannot retain a dangling {name} module");
             }
-            for name in ["player-completion.mjs", "retained-image-generation.mjs", "ui-tree-publication.mjs"] {
+            for name in ["player-completion.mjs", "retained-image-generation.mjs", "ui-tree-publication.mjs", "world-field-publication.mjs"] {
                 assert!(output.join("web/shared").join(name).is_file(),
                     "always-imported host dependency {name} survives the UI-disabled export");
             }

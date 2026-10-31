@@ -197,12 +197,39 @@ and distinct submitted frames; scheduling never manufactures presentation counts
 validated candidate before `World::set_projected` compares it with the old batch.
 An identical call therefore still performs admission work. A retained world
 snapshot shares the immutable bytes through Arc; it does not deep-copy the entire
-binary geometry. `ProjectedBatch::serialize` caches the base64 encoding but still
-writes the full strings into each publication. Changing the combined descriptor
-can replace that cache even when geometry is unchanged.
+binary geometry. `ProjectedBatch::serialize` caches the base64 encoding, and the
+canonical snapshot still contains the full strings. Changing the combined
+descriptor can replace that cache even when geometry is unchanged.
+
+The official player wire leases large top-level world fields instead of
+re-sending them (`world-fields-memory-v1`). Each field whose canonical encoding
+is at least 1 KiB — projected geometry and frames, heightfields, entities,
+observations and the like — publishes its exact canonical byte span as a Wasm
+memory view with an engine-issued revision. A byte-identical field keeps its lease
+and revision, so the reader neither decodes nor parses it again and hands the same
+deeply frozen value to consumers. The worker sends such a field's text only when
+its generation changes. `ui`, `ui_image_batches` and `instances3d` keep their own
+transports. The digest is still computed over the complete canonical world.
+
+```text
+world_transport = {
+  format: "world-fields-memory-v1",
+  epoch: decimal-u64-string,
+  fields: { <top-level world key>: { revision: decimal-u64-string,
+            memory: { offset: safe-integer, byte_length: safe-integer } } }
+}
+```
+
+A leased key is absent from the inline `world`. As with `ui-tree-memory-v1`, a
+candidate commits only after the whole envelope succeeds, revisions never repeat
+within an epoch, and switching to complete JSON or unloading retires the leases.
+Populous R18 in-world went from about 705 KB to 5 KB of observation JSON per tick
+(Node, release Wasm). A changed field is still sent whole: a field that changes
+every tick, such as moving entities, costs the same as inline JSON.
 
 The current Web decoder and GPU changes avoid repeated decoding and GPU object
-recreation in the tested paths. They do not change that Core-to-host data model.
+recreation in the tested paths. Leased frames and heightfields are also validated
+once per published value instead of once per draw.
 The source-over extension is useful in the advanced path, but passing its bounded
 pixel/resource tests does not establish a suitable ordinary 2D API or 60 FPS.
 

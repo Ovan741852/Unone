@@ -12,15 +12,17 @@ pub(super) fn enabled()->bool { ENABLED.with(Cell::get) }
 pub(super) fn epoch()->u64 { EPOCH.with(Cell::get) }
 pub(super) fn retire(){
     let had_ui=super::ui_tree_transport::clear();
+    let had_fields=super::world_transport::clear();
     let had_cache=CANONICAL.with(|v|{let mut bytes=v.borrow_mut();let retained=bytes.capacity()>0;*bytes=Vec::new();retained});
     let had_leases=LEASES.with(|v|{let mut leases=v.borrow_mut();let retained=!leases.is_empty();*leases=Vec::new();retained});
     // Only the retained-wire retirement boundary drops the hash prefix too.
-    // Ordinary non-UI publications keep their normal bounded prefix reuse.
-    if had_cache||had_leases||had_ui{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
+    // Complete-JSON publications keep their normal bounded prefix reuse.
+    if had_cache||had_leases||had_ui||had_fields{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
 }
 pub(super) fn unload(){
     super::save_transport::clear();
     super::ui_tree_transport::clear();
+    super::world_transport::clear();
     LEASES.with(|v|*v.borrow_mut()=Vec::new());
     CANONICAL.with(|v|*v.borrow_mut()=Vec::new());
     ENABLED.with(|v|v.set(false));
@@ -47,15 +49,18 @@ struct Observation<'a,W:Serialize+?Sized>{
     ui_transport:Option<Transport>,
     #[serde(flatten)]
     ui_tree:&'a super::ui_tree_transport::Prepared,
+    #[serde(flatten)]
+    world_fields:&'a super::world_transport::Prepared,
 }
 
-// Delegate the complete canonical struct and filter only its top-level registry
-// field. Nested values serialize through the original serializer, so this does
-// not require a second field inventory or a hidden serialization mode.
-struct Presentation<'a>(&'a WorldSnapshot,bool);
+// Delegate the complete canonical struct and filter only its top-level
+// registry, UI and leased fields. Nested values serialize through the original
+// serializer, so this needs no second field inventory or hidden serialization mode.
+struct Presentation<'a>(&'a WorldSnapshot,bool,&'a super::world_transport::Prepared);
 impl Serialize for Presentation<'_>{
     fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
-        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:true,hide_ui:self.1,capture:None,instances:Some(self.0)},field_count:usize::from(!self.0.ui_image_batches.is_empty())+usize::from(self.1&&self.0.ui.is_some())})
+        let hidden=usize::from(!self.0.ui_image_batches.is_empty())+usize::from(self.1&&self.0.ui.is_some())+self.2.len();
+        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:true,hide_ui:self.1,capture:None,instances:Some(self.0),leased:Some(self.2)},field_count:hidden})
     }
 }
 /// The canonical world with only its instance batches in transport form, for
@@ -63,7 +68,7 @@ impl Serialize for Presentation<'_>{
 pub(super) struct InstanceWorld<'a>(pub(super) &'a WorldSnapshot);
 impl Serialize for InstanceWorld<'_>{
     fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
-        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:None,instances:Some(self.0)},field_count:0})
+        self.0.serialize(WorldSerializer{serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:None,instances:Some(self.0),leased:None},field_count:0})
     }
 }
 // Instance batches publish their presentation transport in place of the
@@ -94,18 +99,21 @@ impl Serialize for InstanceTransport<'_>{
 pub(super) fn instance_leases(snapshot:&WorldSnapshot)->Vec<std::sync::Arc<[u8]>>{
     if INSTANCE_MEMORY.with(|m|m.get()){snapshot.instances3d.values().map(|batch|batch.packed.clone()).collect()}else{Vec::new()}
 }
+/// Byte span of each top-level field value in the canonical encoding.
+type Spans=Vec<(&'static str,usize,usize)>;
+fn span(spans:&Spans,key:&str)->Option<(usize,usize)>{spans.iter().find(|(k,..)|*k==key).map(|&(_,start,end)|(start,end))}
 #[derive(Clone,Copy)]
-struct Capture<'a>{position:&'a Cell<usize>,span:&'a Cell<Option<(usize,usize)>>}
+struct Capture<'a>{position:&'a Cell<usize>,spans:&'a RefCell<Spans>}
 #[derive(Clone,Copy)]
-struct Fields<'a>{hide_registry:bool,hide_ui:bool,capture:Option<Capture<'a>>,instances:Option<&'a WorldSnapshot>}
-impl Fields<'_>{fn skips(self,key:&str)->bool{(self.hide_registry&&key=="ui_image_batches")||(self.hide_ui&&key=="ui")}}
-struct CapturedValue<'a,T:?Sized>{value:&'a T,capture:Capture<'a>}
+struct Fields<'a>{hide_registry:bool,hide_ui:bool,capture:Option<Capture<'a>>,instances:Option<&'a WorldSnapshot>,leased:Option<&'a super::world_transport::Prepared>}
+impl Fields<'_>{fn skips(self,key:&str)->bool{(self.hide_registry&&key=="ui_image_batches")||(self.hide_ui&&key=="ui")||self.leased.is_some_and(|l|l.leases(key))}}
+struct CapturedValue<'a,T:?Sized>{key:&'static str,value:&'a T,capture:Capture<'a>}
 impl<T:Serialize+?Sized> Serialize for CapturedValue<'_,T>{
     fn serialize<S:serde::Serializer>(&self,serializer:S)->Result<S::Ok,S::Error>{
-        // SerializeStruct has already written the key and colon. Only the UI
-        // value passes through this wrapper; nested fields are untouched.
+        // SerializeStruct has already written the key and colon. Only
+        // top-level values pass through this wrapper; nested fields are untouched.
         let start=self.capture.position.get();let result=self.value.serialize(serializer)?;
-        self.capture.span.set(Some((start,self.capture.position.get())));Ok(result)
+        self.capture.spans.borrow_mut().push((self.key,start,self.capture.position.get()));Ok(result)
     }
 }
 struct WorldSerializer<'a,S>{serializer:S,fields:Fields<'a>,field_count:usize}
@@ -114,7 +122,7 @@ impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct
     type Ok=S::Ok;type Error=S::Error;
     fn serialize_field<T:Serialize+?Sized>(&mut self,key:&'static str,value:&T)->Result<(),Self::Error>{
         if self.fields.skips(key){Ok(())}
-        else if key=="ui"&&self.fields.capture.is_some(){self.serializer.serialize_field(key,&CapturedValue{value,capture:self.fields.capture.unwrap()})}
+        else if let Some(capture)=self.fields.capture{self.serializer.serialize_field(key,&CapturedValue{key,value,capture})}
         else if key=="instances3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&InstanceTransport(world))}
         else{self.serializer.serialize_field(key,value)}
     }
@@ -160,11 +168,11 @@ impl std::io::Write for CountingWriter<'_>{
     fn write(&mut self,bytes:&[u8])->std::io::Result<usize>{self.bytes.extend_from_slice(bytes);self.position.set(self.bytes.len());Ok(bytes.len())}
     fn flush(&mut self)->std::io::Result<()>{Ok(())}
 }
-fn canonical<T:Serialize+?Sized>(bytes:&mut Vec<u8>,snapshot:&T)->Result<Option<(usize,usize)>,String>{
-    bytes.clear();let position=Cell::new(0);let span=Cell::new(None);
+fn canonical<T:Serialize+?Sized>(bytes:&mut Vec<u8>,snapshot:&T)->Result<Spans,String>{
+    bytes.clear();let position=Cell::new(0);let spans=RefCell::new(Vec::with_capacity(40));
     let mut serializer=serde_json::Serializer::new(CountingWriter{bytes,position:&position});
-    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,span:&span}),instances:None},field_count:0}).map_err(|e|e.to_string())?;
-    Ok(span.get())
+    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,spans:&spans}),instances:None,leased:None},field_count:0}).map_err(|e|e.to_string())?;
+    Ok(spans.into_inner())
 }
 fn finish_ui_publication(ui_tree:super::ui_tree_transport::Prepared,oversized:bool){
     let released_ui=ui_tree.releases_large_bytes();ui_tree.commit();
@@ -176,11 +184,11 @@ fn finish_ui_publication(ui_tree:super::ui_tree_transport::Prepared,oversized:bo
         else{false}});
     if released_ui||shrunk{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
 }
-fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:&super::save_transport::Prepared<'_>,resources:BTreeMap<String,Resource>,ui_tree:&super::ui_tree_transport::Prepared)->Result<(),String>{
+fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:&super::save_transport::Prepared<'_>,resources:BTreeMap<String,Resource>,ui_tree:&super::ui_tree_transport::Prepared,world_fields:&super::world_transport::Prepared)->Result<(),String>{
     let observation=Observation{compiled_systems:unone_engine::compiled_systems(),project,world,
         observation_digest:digest,save,
         instance_transport:INSTANCE_MEMORY.with(|m|m.get().then_some("wasm-memory-v1")),
-        ui_transport:(!resources.is_empty()).then(||Transport{format:"retained-image-batches-v1",epoch:EPOCH.with(|e|e.get().to_string()),resources}),ui_tree};
+        ui_transport:(!resources.is_empty()).then(||Transport{format:"retained-image-batches-v1",epoch:EPOCH.with(|e|e.get().to_string()),resources}),ui_tree,world_fields};
     OUTPUT.with(|out|{let mut bytes=out.borrow_mut();bytes.clear();
         serde_json::to_writer(&mut *bytes,&observation).map_err(|error|error.to_string())})
 }
@@ -189,18 +197,21 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     let measuring=PUBLICATION_PROFILE.with(|p|p.borrow().active);
     #[cfg(not(any(feature="dev-tools",feature="preview-tools")))]
     let measuring=false;
-    let (digest,_work,_encode_ms,_hash_ms,span,oversized)=CANONICAL.with(|cache|{
+    let (digest,_work,_encode_ms,_hash_ms,spans,oversized)=CANONICAL.with(|cache|{
         let started=measuring.then(std::time::Instant::now);
-        let mut bytes=cache.borrow_mut();let span=canonical(&mut bytes,snapshot)?;
+        let mut bytes=cache.borrow_mut();let spans=canonical(&mut bytes,snapshot)?;
         let encode_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
         let started=measuring.then(std::time::Instant::now);
         let (digest,work)=CANONICAL_HASHER.with(|h|h.borrow_mut().hash(&bytes));
         let hash_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
-        let oversized=span.is_some_and(|(start,end)|end-start>super::ui_tree_transport::MAX_ENCODED_BYTES);
-        Ok::<_,String>((digest,work,encode_ms,hash_ms,span,oversized))
+        let oversized=span(&spans,"ui").is_some_and(|(start,end)|end-start>super::ui_tree_transport::MAX_ENCODED_BYTES);
+        Ok::<_,String>((digest,work,encode_ms,hash_ms,spans,oversized))
     })?;
     let presentation_started=measuring.then(std::time::Instant::now);
-    let ui_tree=CANONICAL.with(|cache|{let bytes=cache.borrow();super::ui_tree_transport::prepare(span.map(|(start,end)|&bytes[start..end]),epoch())})?;
+    let (ui_tree,world_fields)=CANONICAL.with(|cache|{let bytes=cache.borrow();
+        let ui_tree=super::ui_tree_transport::prepare(span(&spans,"ui").map(|(start,end)|&bytes[start..end]),epoch())?;
+        let world_fields=super::world_transport::prepare(spans.iter().map(|&(key,start,end)|(key,&bytes[start..end])),epoch())?;
+        Ok::<_,String>((ui_tree,world_fields))})?;
     let mut resources=BTreeMap::new();let mut leases=Vec::new();
     for (id,resource) in &snapshot.ui_image_batches {
         let bytes=resource.encoded_json().get().as_bytes();
@@ -210,11 +221,12 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     let instances=instance_leases(snapshot);
     let _presentation_ms=presentation_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     let envelope_started=measuring.then(std::time::Instant::now);
-    envelope(project,&Presentation(snapshot,ui_tree.has_lease()),&digest,save,resources,&ui_tree)?;
+    envelope(project,&Presentation(snapshot,ui_tree.has_lease(),&world_fields),&digest,save,resources,&ui_tree,&world_fields)?;
     let _envelope_ms=envelope_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     // Retire previous leases only after the complete envelope was written.
     INSTANCE_BUFFERS.with(|out|*out.borrow_mut()=instances);
     LEASES.with(|out|*out.borrow_mut()=leases);
+    world_fields.commit();
     // A cleared/oversized UI must not leave its former large scratch allocation
     // or hash-prefix contents reachable indefinitely. Keep normal reuse while
     // the current complete canonical world still needs that capacity.
@@ -264,7 +276,13 @@ mod tests{
   serde_json::from_slice(unsafe{std::slice::from_raw_parts(pointer,length)}).unwrap()
  }
  fn restored_world(value:&serde_json::Value)->serde_json::Value{
-  let mut world=value["world"].clone();if value.get("ui_tree_transport").is_some(){world["ui"]=ui(value);}world
+  let mut world=value["world"].clone();if value.get("ui_tree_transport").is_some(){world["ui"]=ui(value);}
+  for (key,field) in value["world_transport"]["fields"].as_object().into_iter().flatten(){world[key]=leased(field);}world
+ }
+ fn leased(field:&serde_json::Value)->serde_json::Value{
+  let pointer=field["memory"]["offset"].as_u64().unwrap() as usize as *const u8;
+  let length=field["memory"]["byte_length"].as_u64().unwrap() as usize;
+  serde_json::from_slice(unsafe{std::slice::from_raw_parts(pointer,length)}).unwrap()
  }
  #[test]
  fn retained_memory_wire_is_complete_digest_equivalent_and_camera_updates_reuse_lease(){
@@ -295,7 +313,8 @@ mod tests{
   snapshot.physical_input_receipt=Some(unone_engine::PhysicalReceipt{profile:"ordered_physical_v1",epoch:2,through_sequence:9});
   snapshot.ui_cursor=Some(serde_json::from_value(serde_json::json!({"kind":"hidden"})).unwrap());
   let mut expected=serde_json::to_value(&snapshot).unwrap();expected.as_object_mut().unwrap().remove("ui_image_batches");
-  assert_eq!(serde_json::to_value(Presentation(&snapshot,false)).unwrap(),expected);
+  let fields=super::super::world_transport::prepare(std::iter::empty(),epoch()).unwrap();
+  assert_eq!(serde_json::to_value(Presentation(&snapshot,false,&fields)).unwrap(),expected);
   let save=serde_json::value::to_raw_value(&serde_json::json!({"large":"x".repeat(64*1024)})).unwrap();
   for memory in [false,true]{
    INSTANCE_MEMORY.with(|v|v.set(memory));write("borrowed",&snapshot,Some(&save)).unwrap();
@@ -350,6 +369,25 @@ mod tests{
   }
  }
  #[test]
+ fn large_world_fields_lease_by_revision_and_unchanged_fields_keep_their_view(){
+  load("texture://fields");assert_eq!(unone_web_set_ui_transport(1),0);
+  let mut snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());
+  snapshot.observations.insert("terrain".into(),serde_json::json!("x".repeat(4096)));
+  write("fields",&snapshot,None).unwrap();let first=output();
+  let observations=first["world_transport"]["fields"]["observations"].clone();
+  assert_eq!(first["world_transport"]["format"],"world-fields-memory-v1");assert!(first["world"].get("observations").is_none());
+  assert!(first["world_transport"]["fields"].get("frame").is_none());assert_eq!(first["world"]["frame"],snapshot.frame);
+  let mut expected=serde_json::to_value(&snapshot).unwrap();expected.as_object_mut().unwrap().remove("ui_image_batches");
+  assert_eq!(restored_world(&first),expected);assert_eq!(first["observation_digest"],unone_engine::observation_digest(&snapshot).unwrap());
+  snapshot.frame+=1;write("fields",&snapshot,None).unwrap();let same=output();
+  assert_eq!(same["world_transport"]["fields"]["observations"],observations);
+  snapshot.observations.insert("terrain".into(),serde_json::json!("y".repeat(4096)));write("fields",&snapshot,None).unwrap();let changed=output();
+  assert_ne!(changed["world_transport"]["fields"]["observations"]["revision"],observations["revision"]);
+  assert_eq!(restored_world(&changed)["observations"]["terrain"].as_str().unwrap().as_bytes()[0],b'y');
+  // Complete JSON restores every field inline and retires the leases.
+  assert_eq!(unone_web_set_ui_transport(0),0);let full=output();assert!(full.get("world_transport").is_none());assert!(full["world"]["observations"].is_object());
+ }
+ #[test]
  fn ordinary_ui_without_registry_uses_a_stable_current_lease_and_complete_canonical_bytes(){
   let script=r#"return {start=function(api)api.ui.setRoot({kind='screen',id='s',node='s',children={{kind='text',id='text',rect={x=0,y=0,width=1,height=1},text='中文\\n\"\\'}}})end,update=function()end}"#;
   let bytes=serde_json::to_vec(&serde_json::json!({"config":{"name":"ordinary","entry_script":"main.luau"},"script":script})).unwrap();
@@ -360,9 +398,9 @@ mod tests{
   for _ in 0..8{assert_eq!(super::super::unone_web_tick(),0);assert_eq!(output()["ui_tree_transport"],first["ui_tree_transport"]);}
   let mut snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());
   snapshot.observations.insert("nested".into(),serde_json::json!({"ui":{"ui_image_batches":"retain"},"ui_image_batches":{"ui":"retain"},"escape":"\\\"\n中文","number":1e-220}));
-  let mut encoded=Vec::new();let (start,end)=canonical(&mut encoded,&snapshot).unwrap().unwrap();
+  let mut encoded=Vec::new();let (start,end)=span(&canonical(&mut encoded,&snapshot).unwrap(),"ui").unwrap();
   assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());assert_eq!(&encoded[start..end],serde_json::to_vec(snapshot.ui.as_ref().unwrap()).unwrap());
-  snapshot.ui=None;assert!(canonical(&mut encoded,&snapshot).unwrap().is_none());assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());
+  snapshot.ui=None;assert!(span(&canonical(&mut encoded,&snapshot).unwrap(),"ui").is_none());assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());
  }
  #[test]
  fn identical_ui_bytes_do_not_reuse_private_resource_usage_or_hide_registry_updates(){
@@ -383,14 +421,14 @@ mod tests{
   assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe().ui.unwrap().usage().logical_nodes),usage+1);
  }
  #[test]
- fn no_ui_world_preserves_direct_publication_and_retires_the_previous_lease_after_success(){
+ fn no_ui_world_retires_the_previous_ui_lease_and_reuses_retained_scratch(){
   load("texture://direct");assert_eq!(unone_web_set_ui_transport(1),0);let first=output();
   let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());let mut no_ui=snapshot.clone();no_ui.ui=None;no_ui.ui_image_batches.clear();
   assert_eq!(publish_snapshot("direct",&no_ui,None),0);let direct=output();assert!(enabled());assert!(direct.get("ui_tree_transport").is_none());assert!(direct.get("ui_transport").is_none());
-  CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));assert_eq!(direct["world"],serde_json::to_value(&no_ui).unwrap());assert_eq!(direct["observation_digest"],unone_engine::observation_digest(&no_ui).unwrap());
-  // A second no-UI frame must stay on the one-pass direct writer, without
-  // allocating the retained canonical scratch again.
-  assert_eq!(publish_snapshot("direct",&no_ui,None),0);CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));
+  assert_eq!(restored_world(&direct),serde_json::to_value(&no_ui).unwrap());assert_eq!(direct["observation_digest"],unone_engine::observation_digest(&no_ui).unwrap());
+  // Later no-UI frames reuse the retained canonical scratch instead of reallocating it.
+  let scratch=CANONICAL.with(|v|v.borrow().as_ptr());
+  assert_eq!(publish_snapshot("direct",&no_ui,None),0);CANONICAL.with(|v|assert_eq!(v.borrow().as_ptr(),scratch));
   assert_eq!(publish_snapshot("restore",&snapshot,None),0);let restored=output();assert_eq!(restored["ui_tree_transport"]["epoch"],first["ui_tree_transport"]["epoch"]);let revision=first["ui_tree_transport"]["revision"].as_str().unwrap().parse::<u64>().unwrap();assert_eq!(restored["ui_tree_transport"]["revision"],(revision+1).to_string());
  }
  #[test]
@@ -400,7 +438,8 @@ mod tests{
   let epoch=epoch();let candidate=super::super::ui_tree_transport::prepare(Some(b"{\"changed\":true}"),epoch).unwrap();
   struct Fails;impl Serialize for Fails{fn serialize<S:serde::Serializer>(&self,_:S)->Result<S::Ok,S::Error>{Err(serde::ser::Error::custom("injected envelope failure"))}}
   let save=super::super::save_transport::prepare(None,true,epoch).unwrap();
-  assert!(envelope("failed",&Fails,"digest",&save,BTreeMap::new(),&candidate).is_err());drop(candidate);
+  let fields=super::super::world_transport::prepare(std::iter::empty(),epoch).unwrap();
+  assert!(envelope("failed",&Fails,"digest",&save,BTreeMap::new(),&candidate,&fields).is_err());drop(candidate);
   assert_eq!(ui(&first),old);
   let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());write("transaction",&snapshot,None).unwrap();let retry=output();assert_eq!(retry["ui_tree_transport"]["memory"]["offset"],old_pointer);assert_eq!(retry["ui_tree_transport"]["revision"],first["ui_tree_transport"]["revision"]);
   let revision=first["ui_tree_transport"]["revision"].as_str().unwrap().parse::<u64>().unwrap();
@@ -413,8 +452,8 @@ mod tests{
  fn escaped_oversized_ui_falls_back_inline_and_releases_duplicate_scratch_after_success(){
   #[derive(Serialize)]struct Fixture<'a>{before:u32,ui:&'a str,after:u32}
   let text="\u{1}".repeat(super::super::ui_tree_transport::MAX_ENCODED_BYTES/6+1);let fixture=Fixture{before:1,ui:&text,after:2};
-  let prepared=CANONICAL.with(|cache|{let mut bytes=cache.borrow_mut();let (start,end)=canonical(&mut bytes,&fixture).unwrap().unwrap();assert!(end-start>super::super::ui_tree_transport::MAX_ENCODED_BYTES);super::super::ui_tree_transport::prepare(Some(&bytes[start..end]),epoch()).unwrap()});assert!(!prepared.has_lease());
-  let save=super::super::save_transport::prepare(None,true,epoch()).unwrap();envelope("oversized",&fixture,"digest",&save,BTreeMap::new(),&prepared).unwrap();
+  let prepared=CANONICAL.with(|cache|{let mut bytes=cache.borrow_mut();let (start,end)=span(&canonical(&mut bytes,&fixture).unwrap(),"ui").unwrap();assert!(end-start>super::super::ui_tree_transport::MAX_ENCODED_BYTES);super::super::ui_tree_transport::prepare(Some(&bytes[start..end]),epoch()).unwrap()});assert!(!prepared.has_lease());
+  let save=super::super::save_transport::prepare(None,true,epoch()).unwrap();let fields=super::super::world_transport::prepare(std::iter::empty(),epoch()).unwrap();envelope("oversized",&fixture,"digest",&save,BTreeMap::new(),&prepared,&fields).unwrap();
   finish_ui_publication(prepared,true);CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));
   let value=output();assert!(value.get("ui_tree_transport").is_none());assert_eq!(value["world"]["ui"].as_str().unwrap().len(),text.len());assert_eq!(value["world"]["before"],1);assert_eq!(value["world"]["after"],2);
   // Test-only large output is not a runtime lease after the test ends.

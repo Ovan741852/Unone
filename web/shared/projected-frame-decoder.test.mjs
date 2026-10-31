@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as frameModule from './projected-frame.mjs';
 import {frameFixture} from './projected-frame.test.mjs';
+import {createWorldFieldPublication} from './world-field-publication.mjs';
 const {projectedFrame}=frameModule;
 // Count base64 payload decodes, the per-byte work that scales with geometry size.
 function countAtob(fn){const original=globalThis.atob;let n=0;globalThis.atob=s=>{n++;return original(s);};try{fn();}finally{globalThis.atob=original;}return n;}
@@ -24,7 +25,19 @@ test('retained decoder re-decodes only changed geometry across redraws and host 
  assert.equal(countAtob(()=>decode.decode({projected_frame:reparse(f)})),0,'new revision, same content');
  const next=reparse(f);next.draws[5].vertices=changedVertices(next.draws[5],.01);next.revision++;
  assert.equal(countAtob(()=>decode.decode({projected_frame:next})),2,'one changed draw');
- assert.deepEqual(decode.metrics(),{geometry_decodes:34,geometry_reuses:98,retained_geometries:33});
+ assert.deepEqual(decode.metrics(),{geometry_decodes:34,geometry_reuses:98,frame_reuses:0,retained_geometries:33});
+});
+test('renderer decoder reuses one decoded frame while the same leased frame is published',()=>{
+ const decode=frameModule.createProjectedFrameDecoder({copyGeometry:false}),leased=createWorldFieldPublication(JSON.stringify(frame(3))).value;
+ const first=decode.decode({projected_frame:leased});
+ assert.equal(countAtob(()=>assert.equal(decode.decode({world:{projected_frame:leased}}),first)),0);
+ assert.equal(decode.metrics().frame_reuses,1);
+ // A caller-owned frame may change in place, so it is always revalidated.
+ const plain=frame(3);decode.decode({projected_frame:plain});plain.revision++;
+ assert.equal(decode.decode({projected_frame:plain}).revision,plain.revision);assert.equal(decode.metrics().frame_reuses,1);
+ // Copying decoders never hand out the same arrays twice.
+ const copying=decoder(),copy=copying.decode({projected_frame:leased});
+ assert.notEqual(copying.decode({projected_frame:leased}).draws[0].data.vertices,copy.draws[0].data.vertices);
 });
 test('retained output is byte-identical to the uncached decoder and isolated from in-place mutation',()=>{
  const decode=decoder(),f=frame(3);f.draws[1].scissor={x:1,y:2,width:3,height:4};

@@ -1,4 +1,5 @@
 import {meshGeometry} from '../renderer/mesh.js';
+import {worldFieldPublication} from './world-field-publication.mjs';
 
 // Backends without a heightfield adapter must still reject partial scenes.
 export function rejectUnsupportedHeightfields(snapshot, backend = 'web') {
@@ -21,10 +22,14 @@ function invalid(message) {
 const byteLength=value=>new TextEncoder().encode(value).length;
 const bounded=value=>Number.isFinite(value)&&Math.abs(value)<=100000;
 
+// A leased publication is deeply frozen, so its validated entries stay valid
+// for as long as the same value is published.
+const validated=new WeakMap();
 /** Validate the shared, flattened Heightfield snapshot without mutating it. */
 export function heightfieldEntries(snapshot) {
   const fields=(snapshot?.world??snapshot)?.heightfields;
   if(fields===undefined||fields===null)return [];
+  const known=validated.get(fields);if(known)return known;
   if(typeof fields!=='object'||Array.isArray(fields))invalid('heightfields must be an object');
   const entries=Object.entries(fields).sort(([a],[b])=>a.localeCompare(b));
   if(entries.length>16)invalid('at most16 heightfields');
@@ -42,6 +47,7 @@ export function heightfieldEntries(snapshot) {
     const r=d.revision;
     if(!(Number.isSafeInteger(r)&&r>0)&&!(typeof r==='string'&&/^[1-9][0-9]{0,19}$/.test(r)&&BigInt(r)<=18446744073709551615n))invalid('revision');
   }
+  if(worldFieldPublication(fields)){Object.freeze(entries);validated.set(fields,entries);}
   return entries;
 }
 

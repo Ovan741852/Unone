@@ -1,6 +1,7 @@
 import {retainImageResource} from './retained-image-generation.mjs';
 import {createSavePublication,attachSavePublication} from './save-publication.mjs';
 import {createUiTreePublication,UI_TREE_MAX_ENCODED_BYTES} from './ui-tree-publication.mjs';
+import {createWorldFieldPublication,WORLD_FIELD_MAX_ENCODED_BYTES} from './world-field-publication.mjs';
 // Session selection belongs to the host load boundary; deterministic callers
 // continue passing their explicit seeds directly to loadProject.
 const MAX_SESSION_SEED = (1n << 64n) - 1n;
@@ -26,8 +27,35 @@ const observationDecoder=new TextDecoder(),projectEncoder=new TextEncoder();
 const imageResources=new WeakMap();
 const saves=new WeakMap();
 const uiTrees=new WeakMap(),uiTreeDecoder=new TextDecoder('utf-8',{fatal:true});
+const worldFields=new WeakMap();
 const uint64=value=>typeof value==='string'&&/^[1-9][0-9]{0,19}$/.test(value)&&BigInt(value)<=18446744073709551615n;
-export function releaseObservationResources(module){imageResources.delete(module);saves.delete(module);uiTrees.delete(module);}
+export function releaseObservationResources(module){imageResources.delete(module);saves.delete(module);uiTrees.delete(module);worldFields.delete(module);}
+// Large world fields arrive as leased canonical JSON by revision. An unchanged
+// revision reuses the previous frozen value without decoding or parsing.
+function restoreWorldFields(module,value,staged){
+ const wire=value?.world_transport;
+ if(wire===undefined){staged.worldFields=null;return value;}
+ const fields=wire?.fields,invalid=()=>{throw Error('WORLD_TRANSPORT_INVALID');};
+ if(!value.world||typeof value.world!=='object'||Array.isArray(value.world)||!wire||Object.keys(wire).some(k=>!['format','epoch','fields'].includes(k))
+  ||wire.format!=='world-fields-memory-v1'||!uint64(wire.epoch)||!fields||typeof fields!=='object'||Array.isArray(fields))invalid();
+ const previous=worldFields.get(module),old=previous?.epoch===wire.epoch?previous.fields:null,next=new Map();
+ for(const [key,field]of Object.entries(fields)){
+  const memory=field?.memory;
+  if(!/^[a-z0-9_]{1,64}$/.test(key)||['ui','ui_image_batches','instances3d'].includes(key)||Object.hasOwn(value.world,key)
+   ||!field||Object.keys(field).some(k=>!['revision','memory'].includes(k))||!uint64(field.revision)
+   ||!memory||Object.keys(memory).some(k=>!['offset','byte_length'].includes(k))||!Number.isSafeInteger(memory.offset)||memory.offset<0
+   ||!Number.isSafeInteger(memory.byte_length)||memory.byte_length<1||memory.byte_length>WORLD_FIELD_MAX_ENCODED_BYTES
+   ||memory.offset+memory.byte_length>module.HEAPU8.byteLength)invalid();
+  let entry=old?.get(key);
+  if(!entry||entry.revision!==field.revision||entry.bytes!==memory.byte_length){
+   let publication;
+   try{publication=createWorldFieldPublication(uiTreeDecoder.decode(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length)));}catch{invalid();}
+   entry={revision:field.revision,bytes:memory.byte_length,publication};
+  }
+  next.set(key,entry);value.world[key]=entry.publication.value;
+ }
+ delete value.world_transport;staged.worldFields={epoch:wire.epoch,fields:next};return value;
+}
 function restoreUiTree(module,value,staged){
  const wire=value?.ui_tree_transport;
  if(wire===undefined){staged.uiTree=null;return value;}
@@ -101,10 +129,11 @@ export function readObservation(module,mark) {
   if(mark)mark('observation_view',bytes.length);
   const text=observationDecoder.decode(bytes);if(mark)mark('observation_utf8');
   const value=JSON.parse(text);if(mark)mark('observation_parse');
-  const staged={},restored=restoreSave(module,restoreImages(module,restoreUiTree(module,value,staged),staged),staged);
+  const staged={},restored=restoreSave(module,restoreImages(module,restoreUiTree(module,restoreWorldFields(module,value,staged),staged),staged),staged);
   // Advance no generation cache until every descriptor in this publication
   // has validated. A malformed companion resource/save cannot replace UI.
   if(Object.hasOwn(staged,'uiTree')){if(staged.uiTree)uiTrees.set(module,staged.uiTree);else uiTrees.delete(module);}
+  if(Object.hasOwn(staged,'worldFields')){if(staged.worldFields)worldFields.set(module,staged.worldFields);else worldFields.delete(module);}
   if(Object.hasOwn(staged,'images')){if(staged.images)imageResources.set(module,staged.images);else imageResources.delete(module);}
   if(Object.hasOwn(staged,'save')){if(staged.save)saves.set(module,staged.save);else saves.delete(module);}
   return restored;

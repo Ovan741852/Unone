@@ -1,5 +1,6 @@
 import {FRAME_PROFILE,FRAME_PROFILES,frameInvalid,frameMaterial,frameNormalized,frameObject,frameSequence} from './projected-frame-material.mjs';
 import {projectedGeometryData} from './projected-geometry.js';
+import {worldFieldPublication} from './world-field-publication.mjs';
 const utf8=new TextEncoder(),format='f32le-clip4-uv2-rgba4-u32-v1';
 export const PROJECTED_FRAME_DRAW_LIMIT=1024;
 function geometry(d,profile){
@@ -49,9 +50,13 @@ export function projectedFrame(snapshot){return decodeFrame(snapshot,geometry);}
 // copyGeometry=false is reserved for a renderer-owned decoder: its borrowed arrays must never
 // be mutated or exposed to presentation hooks. Public/default decodes remain detached copies.
 export function createProjectedFrameDecoder({copyGeometry=true}={}){
- let retained=new Map(),decodes=0,reuses=0;
+ let retained=new Map(),decodes=0,reuses=0,lastSource=null,lastFrame=null,frameReuses=0;
  const find=(map,d,profile)=>map.get(d.vertices)?.find(r=>r.indices===d.indices&&r.vertex_count===d.vertex_count&&r.index_count===d.index_count&&r.clip_policy===d.clip_policy&&r.profile===profile);
  function decode(snapshot){
+  // A renderer-owned decoder returns the same decoded frame while the same
+  // deeply frozen leased frame is published; nothing in it can have changed.
+  const source=(snapshot?.world??snapshot)?.projected_frame;
+  if(!copyGeometry&&source&&source===lastSource){frameReuses++;return lastFrame;}
   const next=new Map();let built=0,found=0;
   const frame=decodeFrame(snapshot,(d,profile)=>{
    let r=find(next,d,profile)??find(retained,d,profile);
@@ -63,8 +68,9 @@ export function createProjectedFrameDecoder({copyGeometry=true}={}){
   });
   // An absent frame publishes nothing and keeps the last accepted generation.
   if(frame){retained=next;decodes+=built;reuses+=found;}
+  [lastSource,lastFrame]=frame&&!copyGeometry&&worldFieldPublication(source)?[source,frame]:[null,null];
   return frame;
  }
- return {decode,clear(){retained=new Map();},
-  metrics:()=>({geometry_decodes:decodes,geometry_reuses:reuses,retained_geometries:[...retained.values()].reduce((n,rows)=>n+rows.length,0)})};
+ return {decode,clear(){retained=new Map();lastSource=lastFrame=null;},
+  metrics:()=>({geometry_decodes:decodes,geometry_reuses:reuses,frame_reuses:frameReuses,retained_geometries:[...retained.values()].reduce((n,rows)=>n+rows.length,0)})};
 }
