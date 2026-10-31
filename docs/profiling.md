@@ -1,5 +1,28 @@
 # Profiling for AI-directed optimization
 
+## Measuring the game's own Luau: `api.profile`
+
+Time a piece of game code with a named span and count per-frame work with a
+counter; never time code with `api.hostTime` or report timings through
+observations, which would change the run and its digest.
+
+```luau
+local path = api.profile.span("ai.pathfind", function() return findPath(a, b) end)
+api.profile.count("ai.nodes", visited)
+```
+
+`span` returns the function's results and records wall time and Luau heap
+growth; spans include the spans nested in them. `count` adds to a counter whose
+value closes at the end of each frame. Nothing is returned to the game, so a run
+is identical with or without profiling, and the calls work in every build.
+
+Read the results where frame timings already appear: `game perf`, `game run
+--json` (`performance.spans`, `performance.counters`) and the session `perf`
+request. The same report has `performance.startup`: how long importing assets,
+reading the project, running the script's top level and `Game.start` took, and
+the Luau heap after start. At most 256 distinct names are kept; later ones are
+dropped and listed in the report's notes.
+
 ## Official production-player completion counters
 
 Engine 0.2.0's official Web player exposes a read-only endpoint without enabling

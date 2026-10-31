@@ -99,6 +99,161 @@ pub struct PerformanceReport {
     /// has to remember to ask.
     pub profile: &'static str,
     pub notes: Vec<String>,
+    /// Where loading the project went, when this runtime loaded one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub startup: Option<StartupCost>,
+    /// Spans the game recorded with `api.profile.span`, most total time first.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub spans: Vec<SpanCost>,
+    /// Counters the game recorded with `api.profile.count`.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub counters: Vec<CounterTotal>,
+}
+
+/// Loading a project, phase by phase. `imports` and `project` are zero for a
+/// runtime made from packaged content.
+#[derive(Debug, Clone, Copy, Default, Serialize, PartialEq)]
+pub struct StartupCost {
+    /// Bringing imported asset files up to date (docs/import-pipeline.md).
+    pub imports_ms: f64,
+    /// Reading the project, scene, data assets and sprite catalog.
+    pub project_ms: f64,
+    /// Compiling the entry script and running its top level.
+    pub script_ms: f64,
+    /// `Game.start`.
+    pub start_ms: f64,
+    pub luau_heap_after_start_bytes: usize,
+}
+
+impl StartupCost {
+    pub(crate) fn set(&mut self, field: StartupPhase, duration: Duration) {
+        let ms = millis(duration);
+        match field {
+            StartupPhase::Imports => self.imports_ms = ms,
+            StartupPhase::Project => self.project_ms = ms,
+            StartupPhase::Script => self.script_ms = ms,
+            StartupPhase::Start => self.start_ms = ms,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum StartupPhase { Imports, Project, Script, Start }
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SpanCost {
+    pub name: String,
+    pub calls: u64,
+    /// Inclusive: a span's time contains the spans nested in it.
+    pub total_ms: f64,
+    pub mean_ms: f64,
+    /// Over the most recent calls (up to the frame sample window).
+    pub p95_ms: f64,
+    pub max_ms: f64,
+    /// Sum of positive Luau heap growth across calls; not allocation volume.
+    pub heap_growth_bytes: u64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct CounterTotal {
+    pub name: String,
+    pub total: f64,
+    /// Over every frame since the runtime started, counting frames where it stayed 0.
+    pub per_frame_mean: f64,
+    pub per_frame_max: f64,
+}
+
+/// At most this many distinct span and counter names are kept; later names are
+/// dropped and reported, so a name built from data cannot grow memory.
+pub(crate) const MAX_PROFILE_NAMES: usize = 256;
+
+#[derive(Debug, Default)]
+struct SpanStats {
+    calls: u64,
+    total: Duration,
+    max: Duration,
+    recent: VecDeque<Duration>,
+    heap_growth: u64,
+}
+
+#[derive(Debug, Default)]
+struct CounterStats {
+    total: f64,
+    frame: f64,
+    frame_max: f64,
+}
+
+/// What a game measures about itself with `api.profile`. Wall clock like the
+/// frame phases: kept with the host and never returned to the game, so it
+/// cannot reach the world, observations, digests or replay tapes.
+#[derive(Debug, Default)]
+pub(crate) struct ScriptProfile {
+    spans: std::collections::BTreeMap<String, SpanStats>,
+    counters: std::collections::BTreeMap<String, CounterStats>,
+    frames: u64,
+    dropped: std::collections::BTreeSet<String>,
+}
+
+impl ScriptProfile {
+    fn admits(&mut self, name: &str, known: bool) -> bool {
+        if known { return true; }
+        if self.spans.len() + self.counters.len() < MAX_PROFILE_NAMES { return true; }
+        if self.dropped.len() < 16 { self.dropped.insert(name.to_string()); }
+        false
+    }
+
+    pub(crate) fn span(&mut self, name: &str, elapsed: Duration, heap_growth: usize) {
+        let known = self.spans.contains_key(name);
+        if !self.admits(name, known) { return; }
+        let stats = self.spans.entry(name.to_string()).or_default();
+        stats.calls += 1;
+        stats.total = stats.total.saturating_add(elapsed);
+        stats.max = stats.max.max(elapsed);
+        stats.heap_growth = stats.heap_growth.saturating_add(heap_growth as u64);
+        if stats.recent.len() == MAX_FRAME_SAMPLES { stats.recent.pop_front(); }
+        stats.recent.push_back(elapsed);
+    }
+
+    pub(crate) fn count(&mut self, name: &str, amount: f64) {
+        let known = self.counters.contains_key(name);
+        if !self.admits(name, known) { return; }
+        let stats = self.counters.entry(name.to_string()).or_default();
+        stats.total += amount;
+        stats.frame += amount;
+    }
+
+    /// A frame finished: each counter's value for it is final.
+    pub(crate) fn end_frame(&mut self) {
+        self.frames += 1;
+        for stats in self.counters.values_mut() {
+            stats.frame_max = stats.frame_max.max(stats.frame);
+            stats.frame = 0.0;
+        }
+    }
+
+    pub(crate) fn apply(&self, report: &mut PerformanceReport) {
+        let mut spans: Vec<SpanCost> = self.spans.iter().map(|(name, s)| {
+            let mut recent: Vec<Duration> = s.recent.iter().copied().collect();
+            recent.sort();
+            let p95 = recent.get((recent.len() * 95).div_ceil(100).saturating_sub(1)).copied().unwrap_or_default();
+            SpanCost {
+                name: name.clone(), calls: s.calls, total_ms: millis(s.total),
+                mean_ms: millis(s.total.div_f64(s.calls.max(1) as f64)), p95_ms: millis(p95), max_ms: millis(s.max),
+                heap_growth_bytes: s.heap_growth,
+            }
+        }).collect();
+        spans.sort_by(|a, b| b.total_ms.total_cmp(&a.total_ms).then_with(|| a.name.cmp(&b.name)));
+        report.spans = spans;
+        report.counters = self.counters.iter().map(|(name, c)| CounterTotal {
+            name: name.clone(), total: c.total,
+            per_frame_mean: if self.frames == 0 { c.frame } else { c.total / self.frames as f64 },
+            per_frame_max: c.frame_max.max(c.frame),
+        }).collect();
+        if !self.dropped.is_empty() {
+            report.notes.push(format!("api.profile keeps {MAX_PROFILE_NAMES} names; dropped: {}",
+                self.dropped.iter().cloned().collect::<Vec<_>>().join(", ")));
+        }
+    }
 }
 
 /// The build these timings came from.
@@ -220,6 +375,9 @@ impl PerformanceCollector {
                 observation_bytes: None,
                 profile: build_profile(),
                 notes: vec!["no frames were run".to_string()],
+                startup: None,
+                spans: Vec::new(),
+                counters: Vec::new(),
             };
         }
 
@@ -324,6 +482,9 @@ impl PerformanceCollector {
                 ));
                 notes
             },
+            startup: None,
+            spans: Vec::new(),
+            counters: Vec::new(),
         }
     }
 }
@@ -379,6 +540,25 @@ pub fn to_markdown(report: &PerformanceReport) -> String {
         report.counts.effects,
         report.counts.observations
     ));
+    if let Some(startup) = &report.startup {
+        out.push_str(&format!(
+            "\nStartup: imports {:.3} ms, project {:.3} ms, script {:.3} ms, Game.start {:.3} ms; Luau heap after start {} bytes\n",
+            startup.imports_ms, startup.project_ms, startup.script_ms, startup.start_ms, startup.luau_heap_after_start_bytes
+        ));
+    }
+    if !report.spans.is_empty() {
+        out.push_str("\n| span | calls | total ms | mean ms | p95 ms | max ms | heap growth |\n|---|---|---|---|---|---|---|\n");
+        for span in &report.spans {
+            out.push_str(&format!("| {} | {} | {:.3} | {:.3} | {:.3} | {:.3} | {} |\n",
+                span.name, span.calls, span.total_ms, span.mean_ms, span.p95_ms, span.max_ms, span.heap_growth_bytes));
+        }
+    }
+    if !report.counters.is_empty() {
+        out.push_str("\n| counter | total | per frame mean | per frame max |\n|---|---|---|---|\n");
+        for counter in &report.counters {
+            out.push_str(&format!("| {} | {} | {:.3} | {} |\n", counter.name, counter.total, counter.per_frame_mean, counter.per_frame_max));
+        }
+    }
     for note in &report.notes {
         out.push_str(&format!("\n> {note}\n"));
     }

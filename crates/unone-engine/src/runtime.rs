@@ -10,7 +10,7 @@ use sha2::{Digest, Sha256};
 
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult, SourceLocation},
-    performance::{FrameCounts, FrameTiming, PerformanceCollector, PerformanceReport, timed},
+    performance::{FrameCounts, FrameTiming, PerformanceCollector, PerformanceReport, StartupPhase, timed},
     project::{InputFrame, ProjectConfig, ProjectPaths},
     systems::SystemSettings,
     ui::UiTree,
@@ -243,6 +243,7 @@ struct ApiState {
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
     data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
+    script_profile: Rc<RefCell<crate::performance::ScriptProfile>>,
     /// Depth of host-driven UI view callbacks (virtual renderItem). Simulation
     /// mutators refuse to run while it is nonzero.
     pure_view: Rc<std::cell::Cell<usize>>,
@@ -346,6 +347,9 @@ pub struct EngineRuntime {
     script_bytecode: Option<Vec<u8>>,
     performance: PerformanceCollector,
     performance_counts: FrameCounts,
+    /// What the game measured with api.profile; shared with the API.
+    script_profile: Rc<RefCell<crate::performance::ScriptProfile>>,
+    startup: crate::performance::StartupCost,
     /// Whether to time the observation a host would receive. Off by default:
     /// only a profiling run should pay for a cost it is measuring.
     measure_serialization: bool,
@@ -441,6 +445,13 @@ impl EngineRuntime {
             entrypoints,
             type_check: None,
         });
+        for (path, text) in project_scripts(&paths, &source) {
+            let shown = path.strip_prefix(&paths.root).unwrap_or(&path);
+            if let Some(diagnostic) = crate::script_data::embedded_data_diagnostic(shown, &text) {
+                result.ok = false;
+                result.diagnostics.push(diagnostic);
+            }
+        }
         if !strict_mode {
             result.diagnostics.push(Diagnostic::warning(
                 "STRICT_MODE_NOT_ENABLED",
@@ -500,16 +511,22 @@ impl EngineRuntime {
         restored_save: Option<serde_json::Value>,
     ) -> Result<Self, Box<Diagnostic>> {
         // Imported assets' files are brought up to date before anything reads them.
-        crate::import::prepare_imports(project_root.as_ref())?;
-        let (config, paths) = ProjectPaths::discover(project_root)?;
-        let world = Rc::new(RefCell::new(World::default()));
-        if let Some(scene) = &paths.main_scene {
-            world.borrow_mut().load_scene(scene)?;
-        }
-        let (decls, data) = crate::data_assets::read_from_project(&paths)?;
-        let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
-        let catalog = crate::sprite_resources::read_catalog(&paths)?;
-        Self::with_world(config, paths, world, None, None, seed, restored_save, None, None, data_assets, catalog)
+        let mut startup = crate::performance::StartupCost::default();
+        timed_startup(&mut startup, StartupPhase::Imports, || crate::import::prepare_imports(project_root.as_ref()))?;
+        let (config, paths, world, data_assets, catalog) = timed_startup(&mut startup, StartupPhase::Project, || {
+            let (config, paths) = ProjectPaths::discover(project_root)?;
+            let world = Rc::new(RefCell::new(World::default()));
+            if let Some(scene) = &paths.main_scene {
+                world.borrow_mut().load_scene(scene)?;
+            }
+            let (decls, data) = crate::data_assets::read_from_project(&paths)?;
+            let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
+            let catalog = crate::sprite_resources::read_catalog(&paths)?;
+            Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog))
+        })?;
+        let mut runtime = Self::with_world(config, paths, world, None, None, seed, restored_save, None, None, data_assets, catalog)?;
+        (runtime.startup.imports_ms, runtime.startup.project_ms) = (startup.imports_ms, startup.project_ms);
+        Ok(runtime)
     }
 
     /// Create a runtime from host-provided source instead of a native filesystem.
@@ -685,6 +702,7 @@ impl EngineRuntime {
         let save_payload = Rc::new(RefCell::new(SaveState::new(restored_save)));
         #[cfg(feature = "preview-tools")]
         let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
+        let script_profile = Rc::new(RefCell::new(crate::performance::ScriptProfile::default()));
         let api_state = ApiState {
             sprite_resources: Rc::clone(&sprite_resources),
             host_time: Rc::clone(&host_time),
@@ -704,6 +722,7 @@ impl EngineRuntime {
             viewport_aspect: Rc::clone(&viewport_aspect),
             save_payload: Rc::clone(&save_payload),
             data_assets: Rc::clone(&data_assets),
+            script_profile: Rc::clone(&script_profile),
             pure_view: Rc::new(std::cell::Cell::new(0)),
         };
         let systems = SystemSettings::from_config(&config)?;
@@ -784,6 +803,8 @@ impl EngineRuntime {
             script_bytecode,
             performance: PerformanceCollector::default(),
             performance_counts: FrameCounts::default(),
+            script_profile,
+            startup: crate::performance::StartupCost::default(),
             measure_serialization: false,
             #[cfg(feature = "dev-tools")]
             loaded_script_digest: String::new(),
@@ -1263,6 +1284,7 @@ impl EngineRuntime {
                 self.performance.record_serialization(serialize_time, bytes);
             }
 
+            self.script_profile.borrow_mut().end_frame();
             self.performance.record(
                 snapshot.frame,
                 FrameTiming {
@@ -1302,11 +1324,14 @@ impl EngineRuntime {
     }
     /// Cached counters: profiling must not clone/serialize the full scene.
     fn performance_report(&self) -> PerformanceReport {
-        self.performance.report(
+        let mut report = self.performance.report(
             self.performance_counts,
             self.lua.used_memory(),
             std::time::Duration::from_secs_f64(FIXED_DT),
-        )
+        );
+        report.startup = Some(self.startup);
+        self.script_profile.borrow().apply(&mut report);
+        report
     }
 
     #[cfg(feature = "dev-tools")]
@@ -1608,7 +1633,7 @@ impl EngineRuntime {
         // neither the source text nor the bytecode after loading.
         let table = if let Some(bytecode) = self.script_bytecode.take() {
             self.script_source = None;
-            evaluate_chunk(&self.lua, &self.paths, &bytecode, mlua::ChunkMode::Binary)?
+            timed_startup(&mut self.startup, StartupPhase::Script, || evaluate_chunk(&self.lua, &self.paths, &bytecode, mlua::ChunkMode::Binary))?
         } else {
             let source = self.script_source.take().ok_or_else(|| {
                 Box::new(Diagnostic::error(
@@ -1617,12 +1642,13 @@ impl EngineRuntime {
                     "Filesystem loading and hot reload are developer-only.",
                 ))
             })?;
-            evaluate_script(&self.lua, &self.paths, &source)?
+            timed_startup(&mut self.startup, StartupPhase::Script, || evaluate_script(&self.lua, &self.paths, &source))?
         };
         let update_fn = script_entrypoint(&table, "update", &self.paths)?;
-        script_entrypoint(&table, "start", &self.paths)?
-            .call::<()>(self.api.clone())
+        let start_fn = script_entrypoint(&table, "start", &self.paths)?;
+        timed_startup(&mut self.startup, StartupPhase::Start, || start_fn.call::<()>(self.api.clone()))
             .map_err(|error| Box::new(script_diagnostic(&self.paths, error.to_string())))?;
+        self.startup.luau_heap_after_start_bytes = self.lua.used_memory();
         self.update_fn = update_fn;
         Ok(())
     }
@@ -1652,7 +1678,7 @@ impl EngineRuntime {
             },
         };
         if !is_reload {
-            let table = evaluate_script(&self.lua, &self.paths, &source)?;
+            let table = timed_startup(&mut self.startup, StartupPhase::Script, || evaluate_script(&self.lua, &self.paths, &source))?;
             // Optional developer metadata must not invoke gameplay metatables or
             // break existing games that already use a non-table `replay` field.
             if let Ok(Value::Table(adapter)) = table.raw_get::<Value>("replay") {
@@ -1660,9 +1686,9 @@ impl EngineRuntime {
             }
             let update_fn = script_entrypoint(&table, "update", &self.paths)?;
             let start_fn = script_entrypoint(&table, "start", &self.paths)?;
-            start_fn
-                .call::<()>(self.api.clone())
+            timed_startup(&mut self.startup, StartupPhase::Start, || start_fn.call::<()>(self.api.clone()))
                 .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
+            self.startup.luau_heap_after_start_bytes = self.lua.used_memory();
             self.update_fn = update_fn;
             self.loaded_script_digest = format!("sha256:{}", hex_digest(source.as_bytes()));
             if let Some(source) = source_override {
@@ -1718,6 +1744,7 @@ impl EngineRuntime {
             viewport_aspect: Rc::clone(&self.viewport_aspect),
             save_payload: Rc::clone(&self.save_payload),
             data_assets: Rc::clone(&self.data_assets),
+            script_profile: Rc::clone(&self.script_profile),
             pure_view: Rc::new(std::cell::Cell::new(0)),
         };
         let candidate_api = match build_api(&candidate_lua, &candidate_api_state, &self.systems) {
@@ -2081,6 +2108,27 @@ fn analyzer_path() -> PathBuf {
         }
     }
     PathBuf::from("luau-analyze")
+}
+
+/// The entry script and every other Luau file beside it or below it, so data
+/// moved into another module is still found. Asset and build folders are skipped.
+fn project_scripts(paths: &ProjectPaths, entry_source: &str) -> Vec<(PathBuf, String)> {
+    const SKIP: [&str; 5] = ["assets", "bundles", "dist", "target", "node_modules"];
+    let mut scripts = vec![(paths.entry_script.clone(), entry_source.to_string())];
+    let mut pending: Vec<PathBuf> = paths.entry_script.parent().map(Path::to_path_buf).into_iter().collect();
+    while let Some(dir) = pending.pop() {
+        let Ok(entries) = fs::read_dir(&dir) else { continue };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if path.is_dir() {
+                if !name.starts_with('.') && !SKIP.contains(&name.as_str()) { pending.push(path); }
+            } else if path.extension().is_some_and(|ext| ext == "luau") && path != paths.entry_script {
+                if let Ok(text) = fs::read_to_string(&path) { scripts.push((path, text)); }
+            }
+        }
+    }
+    scripts
 }
 
 fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
@@ -3635,4 +3683,11 @@ mod text_input_tick_tests {
         InputTick::begin(&state).commit();
         assert!(state.borrow().ui_text_inputs.is_empty());
     }
+}
+
+/// Run one loading phase and record how long it took.
+fn timed_startup<T>(startup: &mut crate::performance::StartupCost, phase: StartupPhase, work: impl FnOnce() -> T) -> T {
+    let (value, elapsed) = timed(work);
+    startup.set(phase, elapsed);
+    value
 }

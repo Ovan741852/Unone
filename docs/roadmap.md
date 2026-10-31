@@ -30,7 +30,8 @@ See the [authorized delivery plan](work-packages/2026-09-06-capability-first.md)
 
 Author tools: verify, systems list/search/set, API search/describe/typings.
 Diagnostics: semantic observations, UI preview, trace, replay record/diff.
-Performance: per-stage timings, bounded-window median/p95, frame counts and Luau heap measurements;
+Performance: per-stage timings, bounded-window median/p95, frame counts and Luau heap measurements,
+startup phases, and game-defined spans/counters ([api.profile](profiling.md)) that never reach the digest;
 these are measurements, not deterministic gameplay facts or automatic verdicts.
 
 Core: fixed timestep, seeded random, deterministic replay/digest, 2D gravity,
@@ -87,7 +88,7 @@ Stable IDs are retained for existing references, not a competing priority order.
 | 5 | Scene switching | Only main_scene loads. Define runtime state ownership and save relationships first. |
 | 6 | Physics queries | [3D closest raycast, convex shape cast and overlap queries](physics3d.md) and [batched spatial geometry queries](spatial-batches.md) exist. General 2D physics raycast/region-query APIs remain open; deterministic hit ordering stays part of each contract. |
 | 7 | Sensors/triggers | [3D sensors with enter/stay/exit contacts](physics3d.md) exist. General 2D sensor/trigger support remains open. |
-| 8 | Import pipeline | [Asset imports](import-pipeline.md): an asset declares which project importer (a pure Luau node with typed ports) makes its file from read-only roots or other assets; every development host and export brings imported files up to date with caching and provenance, so new source formats need no engine change. Products are bytes, RGBA images (PNG) and JSON. Remaining: running importers at runtime over player-selected files, mesh/audio product types, GLB ingestion; see the [Wuxia capability audit](issues/2026-09-19-wuxia-engine-capability-gap-audit.md). Convert external formats into engine contracts, not game policy. |
+| 8 | Import pipeline | [Asset imports](import-pipeline.md): an asset declares which project importer (a pure Luau node with typed ports) makes its file from read-only roots or other assets; every development host and export brings imported files up to date with caching and provenance, so new source formats need no engine change. A file needing no conversion is copied with `import.from`; `game check` rejects data pasted into scripts as large string literals (SCRIPT_EMBEDDED_DATA) and points to data assets. Products are bytes, RGBA images (PNG) and JSON. Remaining: running importers at runtime over player-selected files, mesh/audio product types, GLB ingestion; see the [Wuxia capability audit](issues/2026-09-19-wuxia-engine-capability-gap-audit.md). Convert external formats into engine contracts, not game policy. |
 | 9 | Non-circle colliders | [3D sphere, oriented box, capsule, convex hull and static triangle mesh](physics3d.md) exist. 2D remains circle/ground based; do not describe the 3D engine as circle-only. |
 | 10 | Multiple pointers | [Ordered physical input](ordered-physical-input.md) carries pointer identities and multiple-pointer records. Legacy semantic input remains one pointer; native live routing and touch/device acceptance need explicit host work. Engine owns identities; game owns gestures. |
 | 21 | Reliable authoring start | Init/scene/API changes are candidates, not finished game acceptance. See [work package](work-packages/2026-09-06-ai-authoring.md). |

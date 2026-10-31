@@ -57,7 +57,21 @@ them:
 
 ## Imported assets
 
-An asset entry adds `import`; `source` is where its file is written:
+A file that needs no conversion is copied as it is with `from`; no importer is
+involved:
+
+```json
+{"id": "data://populous/levels/levl2001.dat", "kind": "data", "source": "assets/imported/levels/levl2001.dat",
+ "encoding": {"format": "binary", "mime": "application/octet-stream", "decoder": "bytes"},
+ "import": {"from": "original:levels/levl2001.dat"}}
+```
+
+The game reads it with `api.assets.load(id)` (a frozen buffer for the `bytes`
+decoder). Never paste such bytes into a script as a string literal: `game verify`
+rejects large literals because data belongs in assets.
+
+An asset made by an importer names it with `importer` and `product`; `source`
+is where its file is written:
 
 ```json
 {"id": "texture://populous/models/c", "kind": "texture2d", "source": "assets/imported/models-c.png",

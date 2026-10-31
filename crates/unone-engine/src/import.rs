@@ -169,14 +169,28 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     let mut dependencies: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
     for asset in &imported {
         let import = asset.import.as_ref().expect("filtered");
-        let importer = importers.get(&import.importer)
-            .ok_or_else(|| error("IMPORTER_UNKNOWN", format!("asset '{}' uses unregistered importer '{}'", asset.id, import.importer)))?;
-        let product = importer.definition.outputs.get(&import.product)
-            .ok_or_else(|| error("IMPORT_PRODUCT_UNKNOWN", format!("'{}' produces no '{}'", import.importer, import.product)))?;
+        let deps = dependencies.entry(asset.id.as_str()).or_default();
+        if let Some(from) = &import.from {
+            if import.importer.is_some() || import.product.is_some() || !import.inputs.is_empty() || !import.params.is_null() {
+                return Err(error("IMPORT_DECLARATION_INVALID", format!("asset '{}' copies `from` one file, so it takes no importer, inputs, params or product", asset.id)));
+            }
+            match parse_input(from)? {
+                Input::Root { root: name, .. } if !import_config.roots.contains_key(name) =>
+                    return Err(error("IMPORT_ROOT_UNDECLARED", format!("'{}' reads root '{name}'", asset.id))),
+                Input::Root { .. } => continue,
+                Input::Asset(_) => return Err(error("IMPORT_INPUT_INVALID", format!("asset '{}' `from` must name a file under an import root: <root>:<path>", asset.id))),
+            }
+        }
+        let (Some(importer_name), Some(product_name)) = (&import.importer, &import.product) else {
+            return Err(error("IMPORT_DECLARATION_INVALID", format!("asset '{}' import needs `from` (copy one file) or `importer` with `product`", asset.id)));
+        };
+        let importer = importers.get(importer_name)
+            .ok_or_else(|| error("IMPORTER_UNKNOWN", format!("asset '{}' uses unregistered importer '{importer_name}'", asset.id)))?;
+        let product = importer.definition.outputs.get(product_name)
+            .ok_or_else(|| error("IMPORT_PRODUCT_UNKNOWN", format!("'{importer_name}' produces no '{product_name}'")))?;
         if *product == ImportPortType::Image && asset.kind != "texture2d" {
             return Err(error("IMPORT_PRODUCT_KIND", format!("asset '{}' holds an image product, so its kind must be texture2d", asset.id)));
         }
-        let deps = dependencies.entry(asset.id.as_str()).or_default();
         for (port, kind) in &importer.definition.inputs {
             let text = import.inputs.get(port).ok_or_else(|| error("IMPORT_INPUT_MISSING", format!("asset '{}' needs input '{port}'", asset.id)))?;
             let given = match parse_input(text)? {
@@ -186,16 +200,18 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
                 }
                 Input::Asset(id) => {
                     let target = by_id.get(id).ok_or_else(|| error("IMPORT_INPUT_INVALID", format!("'{}' reads unknown asset '{id}'", asset.id)))?;
-                    match &target.import {
-                        Some(other) => { deps.insert(target.id.as_str()); importers.get(&other.importer).and_then(|i| i.definition.outputs.get(&other.product)).copied().unwrap_or(ImportPortType::Bytes) }
-                        None => ImportPortType::Bytes,
-                    }
+                    if let Some(other) = &target.import {
+                        deps.insert(target.id.as_str());
+                        other.importer.as_ref().and_then(|name| importers.get(name))
+                            .zip(other.product.as_ref()).and_then(|(i, product)| i.definition.outputs.get(product))
+                            .copied().unwrap_or(ImportPortType::Bytes)
+                    } else { ImportPortType::Bytes }
                 }
             };
             if given != *kind { return Err(error("IMPORT_TYPE_MISMATCH", format!("'{}' input '{port}' needs {kind:?}, gets {given:?}", asset.id))); }
         }
         if let Some(extra) = import.inputs.keys().find(|port| !importer.definition.inputs.contains_key(*port)) {
-            return Err(error("IMPORT_INPUT_INVALID", format!("'{}' importer '{}' has no input '{extra}'", asset.id, import.importer)));
+            return Err(error("IMPORT_INPUT_INVALID", format!("'{}' importer '{importer_name}' has no input '{extra}'", asset.id)));
         }
     }
     let mut order = Vec::new();
@@ -210,24 +226,51 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     let mut runs: BTreeMap<String, BTreeMap<String, ImportValue>> = BTreeMap::new();
     let mut products: BTreeMap<&str, Option<ImportValue>> = BTreeMap::new();
     let mut provenance = BTreeMap::new();
+    // A root file, read once however many imports use it; None when its root
+    // is not on this machine.
+    let mut read_root = |name: &str, path: &str| -> Result<Option<(Vec<u8>, Value)>, Box<Diagnostic>> {
+        let Some(dir) = roots[name].as_ref() else { return Ok(None) };
+        let key = format!("{name}:{path}");
+        if !reads.contains_key(&key) {
+            let bytes = std::fs::read(contained(dir, path)?).map_err(|e| error("IMPORT_SOURCE_READ", format!("{key}: {e}")))?;
+            let digest = sha256(&bytes);reads.insert(key.clone(), (bytes, digest));
+        }
+        let (bytes, digest) = &reads[&key];
+        Ok(Some((bytes.clone(), json!({"root": name, "path": path, "sha256": digest, "bytes": bytes.len()}))))
+    };
+    let write_file = |artifact: &Path, bytes: &[u8], report: &mut ImportReport| -> Result<(), Box<Diagnostic>> {
+        if std::fs::read(artifact).ok().as_deref() == Some(bytes) { report.unchanged += 1; return Ok(()) }
+        if let Some(parent) = artifact.parent() { std::fs::create_dir_all(parent).map_err(|e| error("IMPORT_WRITE_FAILED", e.to_string()))?; }
+        std::fs::write(artifact, bytes).map_err(|e| error("IMPORT_WRITE_FAILED", format!("{}: {e}", artifact.display())))?;
+        report.written += 1;
+        Ok(())
+    };
     for id in order {
         let asset = by_id[id];
         let import = asset.import.as_ref().expect("filtered");
-        let importer = &importers[&import.importer];
         let artifact = contained(&root, &asset.source)?;
+        if let Some(from) = &import.from {
+            let Input::Root { root: name, path } = parse_input(from)? else { unreachable!("checked while wiring") };
+            let Some((bytes, record)) = read_root(name, path)? else {
+                if !artifact.is_file() {
+                    return Err(error("IMPORT_ROOT_UNAVAILABLE", format!("asset '{id}' needs {name}; name the directory in {LOCAL_ROOTS_FILE} or UNONE_IMPORT_ROOT_<NAME>")));
+                }
+                report.unverified.push(id.to_string());products.insert(id, None);continue;
+            };
+            write_file(&artifact, &bytes, &mut report)?;
+            provenance.insert(id.to_string(), json!({"source": asset.source, "sha256": sha256(&bytes), "from": record}));
+            products.insert(id, Some(ImportValue::Bytes(bytes)));
+            continue;
+        }
+        let importer = &importers[import.importer.as_ref().expect("checked while wiring")];
+        let product = import.product.as_ref().expect("checked while wiring");
         let (mut inputs, mut records, mut missing) = (BTreeMap::new(), BTreeMap::new(), None);
         for (port, text) in &import.inputs {
             match parse_input(text)? {
                 Input::Root { root: name, path } => {
-                    let Some(dir) = roots[name].as_ref() else { missing = Some(name.to_string()); continue };
-                    let key = format!("{name}:{path}");
-                    if !reads.contains_key(&key) {
-                        let bytes = std::fs::read(contained(dir, path)?).map_err(|e| error("IMPORT_SOURCE_READ", format!("{key}: {e}")))?;
-                        let digest = sha256(&bytes);reads.insert(key.clone(), (bytes, digest));
-                    }
-                    let (bytes, digest) = &reads[&key];
-                    records.insert(port.clone(), json!({"root": name, "path": path, "sha256": digest, "bytes": bytes.len()}));
-                    inputs.insert(port.clone(), ImportValue::Bytes(bytes.clone()));
+                    let Some((bytes, record)) = read_root(name, path)? else { missing = Some(name.to_string()); continue };
+                    records.insert(port.clone(), record);
+                    inputs.insert(port.clone(), ImportValue::Bytes(bytes));
                 }
                 Input::Asset(other) => {
                     let value = match products.get(other) {
@@ -264,15 +307,11 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
             };
             runs.insert(key.clone(), outputs);
         }
-        let value = runs[&key][&import.product].clone();
+        let value = runs[&key][product].clone();
         let bytes = encode(&value)?;
-        if std::fs::read(&artifact).ok().as_deref() == Some(&bytes[..]) { report.unchanged += 1 } else {
-            if let Some(parent) = artifact.parent() { std::fs::create_dir_all(parent).map_err(|e| error("IMPORT_WRITE_FAILED", e.to_string()))?; }
-            std::fs::write(&artifact, &bytes).map_err(|e| error("IMPORT_WRITE_FAILED", format!("{}: {e}", asset.source)))?;
-            report.written += 1;
-        }
+        write_file(&artifact, &bytes, &mut report)?;
         provenance.insert(id.to_string(), json!({"source": asset.source, "sha256": sha256(&bytes), "importer": import.importer,
-            "module": importer.module, "module_sha256": importer.module_sha256, "node": importer.node, "product": import.product,
+            "module": importer.module, "module_sha256": importer.module_sha256, "node": importer.node, "product": product,
             "params": import.params, "inputs": records, "run": key}));
         products.insert(id, Some(value));
     }

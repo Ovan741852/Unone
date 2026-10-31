@@ -725,6 +725,15 @@ export type DebugApi = {
     register: (control: DebugControl, callback: ((value: boolean?) -> ())?) -> (),
     set: (id: string, value: string | boolean) -> (),
 }
+-- Wall-clock measurements kept with the host (game perf, run --json): nothing
+-- is returned to the game, so profiling never changes a run. Spans include the
+-- spans nested in them; the measured function cannot yield.
+export type ProfileApi = {
+    -- Run fn, record its time and Luau heap growth under name, return its results.
+    span: <T...>(name: string, fn: () -> T...) -> T...,
+    -- Add n (default 1) to a per-frame counter.
+    count: (name: string, n: number?) -> (),
+}
 export type JobsApi = {
     schedule: (operation: string, options: {every_ticks: number, times: number?}, prepare: (api: any, occurrence: number) -> buffer, apply: (api: any, output: buffer, occurrence: number) -> ()) -> string,
     register: (id: string, source: string) -> (),
@@ -953,6 +962,7 @@ export type EngineApi = {
     geometry3d: Geometry3DApi,
     texture: TextureApi,
     debug: DebugApi,
+    profile: ProfileApi,
     particle: ParticleApi,
     entity: EntityApi,
     input: InputApi,

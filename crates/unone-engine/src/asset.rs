@@ -53,21 +53,28 @@ pub struct AssetSpec {
     pub import: Option<AssetImport>,
 }
 
-/// One importer run whose product becomes an asset's file.
+/// How an asset's file is made: copied `from` one root file, or produced by a
+/// project importer.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct AssetImport {
+    /// `<root>:<path>`: the asset's file is that file, copied as it is. Takes
+    /// no importer, inputs, params or product.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<String>,
     /// A name registered in project.unone.json `import.importers`.
-    pub importer: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub importer: Option<String>,
     /// Importer input -> `<root>:<path>` (a file under a declared import
     /// root) or `asset:<id>` (another asset: its import product, or its file).
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub inputs: BTreeMap<String, String>,
     #[serde(default, skip_serializing_if = "serde_json::Value::is_null")]
     pub params: serde_json::Value,
     /// Which importer product this asset's file holds.
-    pub product: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub product: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]

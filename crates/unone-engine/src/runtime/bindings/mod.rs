@@ -9,6 +9,7 @@ mod audio;
 mod bytes;
 mod camera;
 mod debug;
+mod profile;
 mod entity;
 mod input;
 mod heightfield;
@@ -52,6 +53,7 @@ pub(super) fn build_api(
     api.set("jobs",unavailable(lua,"jobs")?)?;
     api.set("instances3d", presentation::instances3d(lua, state)?)?;
     api.set("debug", debug::bind(lua, state)?)?;
+    api.set("profile", profile::bind(lua, state)?)?;
     state::log(lua, state, &api)?;
     api.set("entity", entity::entity(lua, state)?)?;
     api.set("input", input::input(lua, state)?)?;

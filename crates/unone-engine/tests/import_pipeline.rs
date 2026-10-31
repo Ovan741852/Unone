@@ -39,7 +39,8 @@ fn project(dir: &Path, assets: Value) {
     write(&dir.join("project.unone.json"), json!({"name": "imports", "entry_script": "main.luau", "asset_manifest": "assets.json",
         "import": {"importers": {"pal": {"module": "import/pop.luau", "node": "palette"}, "count": {"module": "import/pop.luau", "node": "opaque"}},
             "roots": {"original": {"description": "an installation the game may not redistribute", "candidates": ["${UNONE_TEST_NO_SUCH_VARIABLE}/x"]}}}}).to_string());
-    write(&dir.join("main.luau"), "return {start = function(api) api.observation.set('stats', api.assets.load('data://opaque')) end, update = function() end}");
+    write(&dir.join("main.luau"), "return {start = function(api) api.observation.set('stats', api.assets.load('data://opaque')); \
+        api.observation.set('palette_bytes', buffer.len(api.assets.load('data://palette'))) end, update = function() end}");
     write(&dir.join("import/pop.luau"), IMPORTERS);
     write(&dir.join("assets.json"), json!({"version": 1, "assets": assets}).to_string());
 }
@@ -52,6 +53,10 @@ fn assets() -> Value {
         {"id": "data://opaque", "kind": "data", "source": "imported/opaque.json",
          "encoding": {"format": "json", "mime": "application/json", "decoder": "json"},
          "import": {"importer": "count", "inputs": {"image": "asset:texture://atlas"}, "product": "pixels"}},
+        // A file needing no conversion is copied as it is.
+        {"id": "data://palette", "kind": "data", "source": "imported/pal.dat",
+         "encoding": {"format": "binary", "mime": "application/octet-stream", "decoder": "bytes"},
+         "import": {"from": "original:DATA/pal.dat"}},
     ])
 }
 
@@ -70,6 +75,8 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     write(&dir.join(".unone/import-roots.json"), json!({"original": original}).to_string());
     let runtime = unone_engine::EngineRuntime::load(&dir).unwrap();
     assert_eq!(runtime.semantic_observations()["stats"], json!({"opaque": 2}), "the game reads the imported data asset");
+    assert_eq!(runtime.semantic_observations()["palette_bytes"], json!(9), "and the copied file as bytes");
+    assert_eq!(std::fs::read(dir.join("imported/pal.dat")).unwrap(), std::fs::read(original.join("DATA/pal.dat")).unwrap());
     let png = std::fs::read(dir.join("imported/atlas.png")).unwrap();
     let decoder = png::Decoder::new(std::io::Cursor::new(png));
     let mut reader = decoder.read_info().unwrap();
@@ -80,9 +87,10 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     let atlas = &provenance["assets"]["texture://atlas"];
     assert_eq!((atlas["inputs"]["palette"]["root"].as_str(), atlas["inputs"]["palette"]["bytes"].as_u64()), (Some("original"), Some(9)));
     assert_eq!(provenance["assets"]["data://opaque"]["inputs"]["image"]["asset"], "texture://atlas");
+    assert_eq!(provenance["assets"]["data://palette"]["from"]["path"], "DATA/pal.dat");
     // Unchanged sources: everything comes from the cache and no file is rewritten.
     let again = unone_engine::prepare_imports(&dir).unwrap();
-    assert_eq!((again.ran, again.cached, again.written, again.unchanged), (0, 2, 0, 2));
+    assert_eq!((again.ran, again.cached, again.written, again.unchanged), (0, 2, 0, 3));
     // A changed source file reruns what depends on it.
     write(&original.join("DATA/pixels.dat"), [1u8, 1, 2]);
     let changed = unone_engine::prepare_imports(&dir).unwrap();
@@ -90,7 +98,7 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     // On a machine without the installation, produced files are kept but marked unverified.
     std::fs::remove_file(dir.join(".unone/import-roots.json")).unwrap();
     let offline = unone_engine::prepare_imports(&dir).unwrap();
-    assert_eq!(offline.unverified, ["texture://atlas", "data://opaque"], "in dependency order");
+    assert_eq!(offline.unverified, ["data://palette", "texture://atlas", "data://opaque"], "in dependency order");
     // Wiring is checked before anything runs.
     let mut wrong = assets();
     wrong[1]["import"]["inputs"]["image"] = json!("original:DATA/pal.dat");
@@ -104,5 +112,18 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     unknown[0]["import"]["importer"] = json!("missing");
     project(&dir, unknown);
     assert_eq!(unone_engine::prepare_imports(&dir).unwrap_err().code, "IMPORTER_UNKNOWN");
+    // A copy names one root file and nothing else.
+    let mut both = assets();
+    both[2]["import"]["importer"] = json!("pal");
+    project(&dir, both);
+    assert_eq!(unone_engine::prepare_imports(&dir).unwrap_err().code, "IMPORT_DECLARATION_INVALID");
+    let mut from_asset = assets();
+    from_asset[2]["import"]["from"] = json!("asset:texture://atlas");
+    project(&dir, from_asset);
+    assert_eq!(unone_engine::prepare_imports(&dir).unwrap_err().code, "IMPORT_INPUT_INVALID");
+    let mut neither = assets();
+    neither[2]["import"] = json!({"params": {"key": 0}});
+    project(&dir, neither);
+    assert_eq!(unone_engine::prepare_imports(&dir).unwrap_err().code, "IMPORT_DECLARATION_INVALID");
     let _ = std::fs::remove_dir_all(&root);
 }

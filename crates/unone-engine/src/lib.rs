@@ -1,6 +1,7 @@
 mod application;
 pub use application::{ApplicationState, EscapeBehavior};
 mod script_bytecode;
+mod script_data;
 pub use script_bytecode::{ScriptBytecode, ScriptBytecodeDecl, compile_production_script, script_bytecode_format,
     MAX_SCRIPT_BYTECODE_BYTES, SCRIPT_BYTECODE_DATA_ID};
 mod shader;
@@ -153,7 +154,7 @@ pub use layout::{
     draw as draw_layout, inspect as inspect_layout, to_markdown as layout_markdown,
 };
 pub use performance::{
-    FrameCounts, PerformanceReport, PhaseCost, SlowestFrame, to_markdown as performance_markdown,
+    CounterTotal, FrameCounts, PerformanceReport, PhaseCost, SlowestFrame, SpanCost, StartupCost, to_markdown as performance_markdown,
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{

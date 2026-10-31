@@ -57,30 +57,38 @@
     },
     "AssetImport": {
       "additionalProperties": false,
-      "description": "One importer run whose product becomes an asset's file.",
+      "description": "How an asset's file is made: copied `from` one root file, or produced by a\nproject importer.",
       "properties": {
+        "from": {
+          "description": "`<root>:<path>`: the asset's file is that file, copied as it is. Takes\nno importer, inputs, params or product.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "importer": {
           "description": "A name registered in project.unone.json `import.importers`.",
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "inputs": {
           "additionalProperties": {
             "type": "string"
           },
-          "default": {},
           "description": "Importer input -> `<root>:<path>` (a file under a declared import\nroot) or `asset:<id>` (another asset: its import product, or its file).",
           "type": "object"
         },
         "params": true,
         "product": {
           "description": "Which importer product this asset's file holds.",
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
-      "required": [
-        "importer",
-        "product"
-      ],
       "type": "object"
     },
     "AssetSpec": {
