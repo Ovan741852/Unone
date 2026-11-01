@@ -528,11 +528,26 @@ impl EngineRuntime {
         seed: u64,
         restored_save: Option<serde_json::Value>,
     ) -> Result<Self, Box<Diagnostic>> {
+        Self::load_with_seed_save_and_host_time(project_root, seed, restored_save, None)
+    }
+
+    /// As `load_with_seed_and_save`, with `host_time` (when given) replacing
+    /// the project's host-time policy before `Game.start`.
+    #[cfg(feature = "dev-tools")]
+    pub fn load_with_seed_save_and_host_time(
+        project_root: impl AsRef<Path>,
+        seed: u64,
+        restored_save: Option<serde_json::Value>,
+        host_time: Option<crate::HostTimeConfig>,
+    ) -> Result<Self, Box<Diagnostic>> {
         // Imported assets' files are brought up to date before anything reads them.
         let mut startup = crate::performance::StartupCost::default();
         timed_startup(&mut startup, StartupPhase::Imports, || crate::import::prepare_imports(project_root.as_ref()))?;
         let (config, paths, world, data_assets, catalog) = timed_startup(&mut startup, StartupPhase::Project, || {
-            let (config, paths) = ProjectPaths::discover(project_root)?;
+            let (mut config, paths) = ProjectPaths::discover(project_root)?;
+            if host_time.is_some() {
+                config.host_time = host_time;
+            }
             let world = Rc::new(RefCell::new(World::default()));
             if let Some(scene) = &paths.main_scene {
                 world.borrow_mut().load_scene(scene)?;
@@ -1366,9 +1381,6 @@ impl EngineRuntime {
             Ok(value) => value,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
-        if let Err(diagnostic) = Self::require_replayable_host_time(&config) {
-            return EngineResult::failure(*diagnostic);
-        }
         if paths.test_files.is_empty() {
             return EngineResult::failure(Diagnostic::error(
                 "TESTS_NOT_CONFIGURED",
@@ -1410,12 +1422,25 @@ impl EngineRuntime {
                     ));
                 }
             }
-            let mut runtime =
-                match Self::load_with_seed_and_save(&paths.root, spec.seed, spec.load_save.clone())
-                {
-                    Ok(runtime) => runtime,
-                    Err(diagnostic) => return EngineResult::failure(*diagnostic),
-                };
+            // The case's own tape, else the project's policy, which must replay.
+            let host_time = match spec.host_time.clone() {
+                Some(tape) => Some(crate::HostTimeConfig::Replay { tape }),
+                None => {
+                    if let Err(diagnostic) = Self::require_replayable_host_time(&config) {
+                        return EngineResult::failure(*diagnostic);
+                    }
+                    None
+                }
+            };
+            let mut runtime = match Self::load_with_seed_save_and_host_time(
+                &paths.root,
+                spec.seed,
+                spec.load_save.clone(),
+                host_time,
+            ) {
+                Ok(runtime) => runtime,
+                Err(diagnostic) => return EngineResult::failure(*diagnostic),
+            };
             for (action, is_down) in &spec.input {
                 runtime.set_input(action.clone(), *is_down);
             }
@@ -2255,6 +2280,37 @@ fn hex_digest(bytes: &[u8]) -> String {
     digest.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
+/// JSON equality with numbers compared by value: Luau has one number type, so
+/// an observed 2.0 and an expected 2 (or 4294967297.0 and 4294967297) agree.
+#[cfg(feature = "dev-tools")]
+fn json_equal(actual: &serde_json::Value, expected: &serde_json::Value) -> bool {
+    use serde_json::Value;
+    match (actual, expected) {
+        (Value::Number(a), Value::Number(b)) => match (integral(a), integral(b)) {
+            (Some(a), Some(b)) => a == b,
+            _ => a.as_f64() == b.as_f64(),
+        },
+        (Value::Array(a), Value::Array(b)) => a.len() == b.len() && a.iter().zip(b).all(|(a, b)| json_equal(a, b)),
+        (Value::Object(a), Value::Object(b)) => {
+            a.len() == b.len() && a.iter().all(|(key, value)| b.get(key).is_some_and(|other| json_equal(value, other)))
+        }
+        _ => actual == expected,
+    }
+}
+
+/// An integral JSON number exactly, whether written as an integer or a float.
+#[cfg(feature = "dev-tools")]
+fn integral(number: &serde_json::Number) -> Option<i128> {
+    if let Some(value) = number.as_i64() {
+        return Some(i128::from(value));
+    }
+    if let Some(value) = number.as_u64() {
+        return Some(i128::from(value));
+    }
+    let value = number.as_f64()?;
+    (value.fract() == 0.0 && value.abs() < 1e38).then_some(value as i128)
+}
+
 #[cfg(feature = "dev-tools")]
 fn evaluate_assertion(
     world: &WorldSnapshot,
@@ -2283,7 +2339,7 @@ fn evaluate_assertion(
             .ok_or_else(|| format!("Entity '{}' does not exist.", animation.entity))?;
         let actual = serde_json::to_value(&entity.animation)
             .map_err(|error| format!("Unable to serialize animation state: {error}"))?;
-        if actual != animation.equals {
+        if !json_equal(&actual, &animation.equals) {
             return Err(format!(
                 "Entity '{}' animation = {actual}, does not equal expected {}.",
                 animation.entity, animation.equals
@@ -2294,7 +2350,7 @@ fn evaluate_assertion(
     if let Some(effects) = &assertion.effects {
         let actual = serde_json::to_value(&world.effects)
             .map_err(|error| format!("Unable to serialize effects: {error}"))?;
-        if actual != effects.equals {
+        if !json_equal(&actual, &effects.equals) {
             return Err(format!(
                 "effects = {actual}, does not equal expected {}.",
                 effects.equals
@@ -2306,7 +2362,7 @@ fn evaluate_assertion(
         if let Some(expected) = &audio.events {
             let actual = serde_json::to_value(&world.audio_events)
                 .map_err(|error| format!("Unable to serialize audio events: {error}"))?;
-            if actual != *expected {
+            if !json_equal(&actual, expected) {
                 return Err(format!(
                     "audio events = {actual}, does not equal expected {expected}."
                 ));
@@ -2315,7 +2371,7 @@ fn evaluate_assertion(
         if let Some(expected) = &audio.loops {
             let actual = serde_json::to_value(&world.audio_loops)
                 .map_err(|error| format!("Unable to serialize audio loops: {error}"))?;
-            if actual != *expected {
+            if !json_equal(&actual, expected) {
                 return Err(format!(
                     "audio loops = {actual}, does not equal expected {expected}."
                 ));
@@ -2328,7 +2384,7 @@ fn evaluate_assertion(
             .observations
             .get(&observation.key)
             .ok_or_else(|| format!("Observation '{}' does not exist.", observation.key))?;
-        if actual != &observation.equals {
+        if !json_equal(actual, &observation.equals) {
             return Err(format!(
                 "Observation '{}' = {}, does not equal expected {}.",
                 observation.key, actual, observation.equals

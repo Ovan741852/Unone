@@ -28,7 +28,7 @@ impl EngineRuntime {
         if matches!(config.host_time, Some(crate::HostTimeConfig::Live | crate::HostTimeConfig::Record { .. })) {
             return Err(Box::new(Diagnostic::error("HOST_TIME_REPLAY_TAPE_MISSING",
                 "Deterministic authoring requires recorded host-time inputs",
-                "Set project.host_time to replay with a recorded tape for tests and UI preview; live resampling cannot verify deterministic behavior.")));
+                "Set project.host_time to replay with a recorded tape for tests and UI preview, or give the test case its own host_time tape (game replay record saves one); live resampling cannot verify deterministic behavior.")));
         }
         Ok(())
     }

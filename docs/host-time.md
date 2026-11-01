@@ -67,7 +67,10 @@ Developer sessions also select record before start, export `host_time` with thei
 command recording, and require that tape on replay. A failed clock transaction
 cannot be exported as a successful committed recording. Deterministic tests and
 UI preview reject `live`/`record` policies; provide an explicit project replay
-tape, including startup samples. Tests require complete consumption of that tape.
+tape, including startup samples. A test case may instead carry its own tape in
+its `host_time` field (the field `game replay record` saves), which replaces the
+project policy for that case only; a live game keeps `live` and still has tests.
+Tests require complete consumption of the tape they replay.
 
 ## Lifecycle and faults
 

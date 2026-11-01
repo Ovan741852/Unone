@@ -214,6 +214,11 @@ pub struct TestSpec {
     pub input_sequence: Vec<InputFrame>,
     #[serde(default)]
     pub load_save: Option<serde_json::Value>,
+    /// This case's recorded host-time tape (as `game replay record` saves it),
+    /// replayed instead of the project's policy; required when that policy is
+    /// live or record.
+    #[serde(default)]
+    pub host_time: Option<crate::HostTimeTape>,
     #[serde(default)]
     pub assertions: Vec<TestAssertion>,
 }

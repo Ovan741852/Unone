@@ -157,6 +157,33 @@ fn deterministic_tests_and_ui_preview_require_replay_time_and_consume_the_tape()
 }
 
 #[test]
+fn a_test_case_may_carry_its_own_tape_for_a_live_clock_project() {
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::write(dir.path().join("main.luau"), SOURCE).unwrap();
+    std::fs::write(dir.path().join("project.unone.json"), json!({
+        "name":"test-clock", "entry_script":"main.luau", "test_files":["clock.test.json"], "host_time":{"mode":"live"}
+    }).to_string()).unwrap();
+    let case = |tape: Option<Value>| {
+        let mut case = json!({"name":"clock", "frames":1,
+            "assertions":[{"observation":{"key":"values","equals":[4294967297u64,4294967298u64,4294967379u64]}}]});
+        if let Some(tape) = tape { case["host_time"] = tape; }
+        std::fs::write(dir.path().join("clock.test.json"), case.to_string()).unwrap();
+        EngineRuntime::run_tests(dir.path())
+    };
+    let own = case(Some(tape()));
+    assert!(own.ok, "{:?}", own.diagnostics);
+    let own = own.value.unwrap();
+    assert!(own.cases[0].passed, "{:?}", own.cases[0].failures);
+    let missing = case(None);
+    assert_eq!(missing.diagnostics[0].code, "HOST_TIME_REPLAY_TAPE_MISSING");
+    // The case's tape must still be consumed completely.
+    let mut longer = tape();
+    longer["transactions"].as_array_mut().unwrap().push(json!({"phase":"tick","frame":1,"samples":[{"tag":"before","milliseconds":4294967380u64}]}));
+    let unused = case(Some(longer));
+    assert!(!unused.value.unwrap().cases[0].passed);
+}
+
+#[test]
 fn record_capacity_fails_without_dropping_and_invalid_tapes_fail_before_start() {
     let mut runtime=load(SOURCE,json!({"mode":"record","max_samples":2,"max_transactions":4}));
     assert!(runtime.tick().is_err());
