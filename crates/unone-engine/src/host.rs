@@ -19,9 +19,13 @@ pub struct HostProject {
     #[serde(default)]
     pub job_sources: BTreeMap<String,String>,
     /// Modules the entry script may `require`, keyed by path relative to the
-    /// entry script's directory ("world/terrain.luau"); always source text.
+    /// entry script's directory ("world/terrain.luau"), as source text.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub script_modules: BTreeMap<String,String>,
+    /// Precompiled modules in place of `script_modules`. Their bytes travel
+    /// beside this JSON as staged data SCRIPT_MODULE_BYTECODE_DATA_ID.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub script_module_bytecode: Option<crate::ScriptModuleBytecodeDecl>,
     // Preserve original JSON locations for the common scene validator.
     #[serde(default)]
     #[cfg_attr(feature = "dev-tools", schemars(with = "Option<crate::SceneFile>"))]
@@ -82,6 +86,19 @@ impl HostProject {
                 return Err(invalid("SCRIPT_BYTECODE_UNDECLARED: staged bytecode needs a script_bytecode declaration".into())),
             None => None,
         };
+        let script_module_bytecode = match &self.script_module_bytecode {
+            Some(decl) => {
+                if !self.script_modules.is_empty() {
+                    return Err(invalid("SCRIPT_BYTECODE_INVALID: declare either script_modules or script_module_bytecode".into()));
+                }
+                let bytes = data.remove(crate::SCRIPT_MODULE_BYTECODE_DATA_ID)
+                    .ok_or_else(|| invalid(format!("SCRIPT_BYTECODE_MISSING: stage {} as {}", decl.source, crate::SCRIPT_MODULE_BYTECODE_DATA_ID)))?;
+                crate::script_bytecode::admit_modules(decl, &bytes).map_err(invalid)?
+            }
+            None if data.contains_key(crate::SCRIPT_MODULE_BYTECODE_DATA_ID) =>
+                return Err(invalid("SCRIPT_BYTECODE_UNDECLARED: staged module bytecode needs a script_module_bytecode declaration".into())),
+            None => BTreeMap::new(),
+        };
         let scene = self
             .scene
             .as_deref()
@@ -93,6 +110,7 @@ impl HostProject {
             script_bytecode,
             job_sources: self.job_sources,
             script_modules: self.script_modules,
+            script_module_bytecode,
             scene,
             seed,
             restored_save: self.restored_save,

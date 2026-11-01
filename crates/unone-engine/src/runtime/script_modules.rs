@@ -16,6 +16,29 @@ use std::rc::Rc;
 /// Module sources keyed by their path relative to the entry script's directory.
 pub type ScriptModuleSources = BTreeMap<String, String>;
 
+/// What `require` loads: module source, or production bytecode precompiled at
+/// export (see `crate::script_bytecode`), keyed alike.
+#[derive(Clone)]
+pub(crate) enum ScriptModules {
+    Source(Rc<ScriptModuleSources>),
+    Bytecode(Rc<BTreeMap<String, Vec<u8>>>),
+}
+
+impl ScriptModules {
+    fn resolve(&self, from: &str, path: &str) -> Result<String, String> {
+        match self {
+            Self::Source(sources) => resolve(sources, from, path),
+            Self::Bytecode(chunks) => resolve(chunks, from, path),
+        }
+    }
+    fn chunk(&self, key: &str) -> (&[u8], mlua::ChunkMode) {
+        match self {
+            Self::Source(sources) => (sources[key].as_bytes(), mlua::ChunkMode::Text),
+            Self::Bytecode(chunks) => (&chunks[key], mlua::ChunkMode::Binary),
+        }
+    }
+}
+
 /// Most modules a game may ship; a directory with more is a mistake.
 pub const MAX_SCRIPT_MODULES: usize = 4096;
 
@@ -108,7 +131,7 @@ fn join(from: &str, path: &str) -> Result<String, String> {
 }
 
 /// The module key `path` resolves to from `from`, given the available modules.
-pub fn resolve(sources: &ScriptModuleSources, from: &str, path: &str) -> Result<String, String> {
+pub fn resolve<T>(sources: &BTreeMap<String, T>, from: &str, path: &str) -> Result<String, String> {
     let base = join(from, path)?;
     let candidates = if base.ends_with(".luau") { vec![base.clone()] } else { vec![format!("{base}.luau"), format!("{base}/init.luau")] };
     candidates.into_iter().find(|key| sources.contains_key(key))
@@ -116,7 +139,7 @@ pub fn resolve(sources: &ScriptModuleSources, from: &str, path: &str) -> Result<
 }
 
 struct Loader {
-    sources: Rc<ScriptModuleSources>,
+    modules: ScriptModules,
     /// Chunk name -> module key, for every chunk this VM loaded.
     chunks: HashMap<String, String>,
     loaded: HashMap<String, RegistryKey>,
@@ -130,21 +153,21 @@ fn chunk_key(chunks: &HashMap<String, String>, source: &str) -> Option<String> {
 /// Installs `require` for chunks of this VM. `entry_chunk` is the name the
 /// entry script is loaded under and `entry_key` its module key (its file name);
 /// a module loads under `chunk_prefix` + its key, e.g. "scripts/world/b.luau".
-pub fn install(lua: &Lua, sources: Rc<ScriptModuleSources>, entry_chunk: &str, entry_key: &str, chunk_prefix: &str) -> mlua::Result<()> {
+pub(crate) fn install(lua: &Lua, modules: ScriptModules, entry_chunk: &str, entry_key: &str, chunk_prefix: &str) -> mlua::Result<()> {
     let chunk_prefix = chunk_prefix.to_string();
     let loader = Rc::new(RefCell::new(Loader {
-        sources,
+        modules,
         chunks: HashMap::from([(entry_chunk.to_string(), entry_key.to_string())]),
         loaded: HashMap::new(),
         loading: Vec::new(),
     }));
     let require = lua.create_function(move |lua, path: String| {
         let caller = lua.inspect_stack(1, |debug| debug.source().source.map(|s| s.into_owned())).flatten();
-        let (key, chunk, source) = {
+        let (key, chunk, modules) = {
             let state = loader.borrow();
             let from = caller.as_deref().and_then(|source| chunk_key(&state.chunks, source))
                 .ok_or_else(|| mlua::Error::RuntimeError("SCRIPT_REQUIRE_CALLER: require is called from game script code".into()))?;
-            let key = resolve(&state.sources, &from, &path).map_err(mlua::Error::RuntimeError)?;
+            let key = state.modules.resolve(&from, &path).map_err(mlua::Error::RuntimeError)?;
             if let Some(value) = state.loaded.get(&key) {
                 return lua.registry_value::<Value>(value);
             }
@@ -154,7 +177,7 @@ pub fn install(lua: &Lua, sources: Rc<ScriptModuleSources>, entry_chunk: &str, e
                 return Err(mlua::Error::RuntimeError(format!("SCRIPT_REQUIRE_CYCLE: {}", cycle.join(" -> "))));
             }
             let chunk = format!("{chunk_prefix}{key}");
-            (key.clone(), chunk, state.sources[&key].clone())
+            (key, chunk, state.modules.clone())
         };
         {
             let mut state = loader.borrow_mut();
@@ -162,7 +185,9 @@ pub fn install(lua: &Lua, sources: Rc<ScriptModuleSources>, entry_chunk: &str, e
             state.loading.push(key.clone());
         }
         // The module may require others, so no borrow is held while it runs.
-        let result = lua.load(source.as_str()).set_name(chunk).set_mode(mlua::ChunkMode::Text).call::<mlua::MultiValue>(());
+        // The mode is explicit, as for the entry script.
+        let (code, mode) = modules.chunk(&key);
+        let result = lua.load(code).set_name(chunk).set_mode(mode).call::<mlua::MultiValue>(());
         loader.borrow_mut().loading.pop();
         let values = result?;
         let value = match values.len() {

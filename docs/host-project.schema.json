@@ -1308,6 +1308,41 @@
       ],
       "type": "object"
     },
+    "ScriptModuleBytecodeDecl": {
+      "additionalProperties": false,
+      "description": "Declares precompiled modules in a host payload in place of `script_modules`.\nOne file holds every module's chunk, back to back in key order.",
+      "properties": {
+        "byte_length": {
+          "format": "uint",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "format": {
+          "description": "Compiler identity; must equal the loading runtime's `script_bytecode_format`.",
+          "type": "string"
+        },
+        "modules": {
+          "additionalProperties": {
+            "format": "uint",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "description": "Each module's chunk length, keyed by its path relative to the entry\nscript's directory; the lengths add up to `byte_length`.",
+          "type": "object"
+        },
+        "source": {
+          "description": "Content-relative file the host fetches and stages as SCRIPT_MODULE_BYTECODE_DATA_ID.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "format",
+        "byte_length",
+        "modules"
+      ],
+      "type": "object"
+    },
     "ShaderAttribute": {
       "additionalProperties": false,
       "description": "A named per-vertex input of 1..4 floats.",
@@ -1955,11 +1990,22 @@
       ],
       "description": "Precompiled entry script in place of `script`. Its bytes travel beside this\nJSON as staged data SCRIPT_BYTECODE_DATA_ID, never inside it."
     },
+    "script_module_bytecode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ScriptModuleBytecodeDecl"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Precompiled modules in place of `script_modules`. Their bytes travel\nbeside this JSON as staged data SCRIPT_MODULE_BYTECODE_DATA_ID."
+    },
     "script_modules": {
       "additionalProperties": {
         "type": "string"
       },
-      "description": "Modules the entry script may `require`, keyed by path relative to the\nentry script's directory (\"world/terrain.luau\"); always source text.",
+      "description": "Modules the entry script may `require`, keyed by path relative to the\nentry script's directory (\"world/terrain.luau\"), as source text.",
       "type": "object"
     },
     "viewport_aspect": {

@@ -1,0 +1,11 @@
+{
+  "name": "ScriptModulesParity",
+  "entry_script": "scripts/main.luau",
+  "systems": {
+    "ui": false,
+    "particle": false,
+    "effekseer": false,
+    "audio": false,
+    "save": false
+  }
+}

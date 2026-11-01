@@ -30,6 +30,8 @@ A production Web export ships the entry script as Luau bytecode
 (optimization 2, type information only for native codegen). The payload declares
 it as `script_bytecode` with that compiler identity and its length; the player
 stages it beside the JSON and rejects a mismatched compiler or truncated file.
+The entry's modules ship the same way in `content/script-modules.luaubc`,
+declared as `script_module_bytecode` (see [script modules](script-modules.md#hosts)).
 Development exports keep source for hot reload and script digests. Bytecode keeps
 line information, so runtime errors name the same chunk and line as source.
 Measured on Populous R18 (84 MB source, 62 MB bytecode): compiling took 1.5 s

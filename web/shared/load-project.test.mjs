@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {assembleProject,readObservation,textureCatalog} from './load-project.js';
+import {assembleProject,payloadDataSources,readObservation,textureCatalog} from './load-project.js';
+test('a production payload stages its data assets, entry bytecode and module bytecode',()=>{
+  const payload={data_assets:[{id:'map',source:'map.bin'}],script_bytecode:{source:'script.luaubc'},script_module_bytecode:{source:'script-modules.luaubc'}};
+  assert.deepEqual(payloadDataSources(payload),[{id:'map',source:'map.bin'},{id:'unone:script-bytecode',source:'script.luaubc'},
+    {id:'unone:script-module-bytecode',source:'script-modules.luaubc'}]);
+  assert.deepEqual(payloadDataSources({script:'return {}'}),[]);
+});
 test('assembly preserves every config declaration without a field allowlist',async()=>{
   const config={name:'test',entry_script:'main.luau',main_scene:'scene.json',audio:{categories:{music:{fade_in_frames:2}}},future_declaration:{nested:true}};
   const result=await assembleProject(config,async name=>{assert.equal(name,'main.luau');return 'return {}';},async name=>{assert.equal(name,'scene.json');return {entities:[]};});

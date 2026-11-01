@@ -2,8 +2,8 @@ mod application;
 pub use application::{ApplicationState, EscapeBehavior};
 mod script_bytecode;
 mod script_data;
-pub use script_bytecode::{ScriptBytecode, ScriptBytecodeDecl, compile_production_script, script_bytecode_format,
-    MAX_SCRIPT_BYTECODE_BYTES, SCRIPT_BYTECODE_DATA_ID};
+pub use script_bytecode::{ScriptBytecode, ScriptBytecodeDecl, ScriptModuleBytecode, ScriptModuleBytecodeDecl, compile_production_modules,
+    compile_production_script, script_bytecode_format, MAX_SCRIPT_BYTECODE_BYTES, SCRIPT_BYTECODE_DATA_ID, SCRIPT_MODULE_BYTECODE_DATA_ID};
 mod shader;
 mod sprite_resources;
 mod sprite_appearance;

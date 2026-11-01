@@ -221,10 +221,10 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     // in case authoring files changed after the early compatibility preflight.
     validate_runtime_packages(&config.runtime_packages, &manifest)?;
     files.extend(content);
-    // Production players load the entry script precompiled with their exact
-    // compiler settings; development players keep source for hot reload.
+    // Production players load the entry script and its modules precompiled with
+    // their exact compiler settings; development players keep source for hot reload.
     if !development {
-        precompile_entry_script(&mut files, &manifest)?;
+        precompile_scripts(&mut files, &manifest)?;
     }
     let compiled = manifest["compiled_systems"].as_array()
         .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
@@ -552,6 +552,38 @@ mod tests {
     }
 
     #[test]
+    fn production_web_exports_ship_modules_as_bytecode_and_development_exports_keep_source() {
+        let directory = tempfile::tempdir().unwrap();
+        let (runtime, repo, mut descriptor) = package_export_fixture(directory.path());
+        let scripts = directory.path().join("scripts");
+        fs::create_dir_all(scripts.join("world")).unwrap();
+        fs::write(scripts.join("main.luau"), "local a=require('./world/a')\nreturn {start=function()end,update=function()end,a=a}").unwrap();
+        fs::write(scripts.join("world/a.luau"), "return require('../shared')").unwrap();
+        fs::write(scripts.join("shared.luau"), "return {n=1}").unwrap();
+        fs::write(directory.path().join("project.unone.json"), serde_json::to_vec(&json!({"name":"modules","entry_script":"scripts/main.luau"})).unwrap()).unwrap();
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        let output = directory.path().join("production");
+        web_with_templates(directory.path(), &output, Some(&runtime), false, &repo).unwrap();
+        let payload = serde_json::from_slice::<Value>(&fs::read(output.join("content/project.json")).unwrap()).unwrap();
+        assert!(payload.get("script_modules").is_none());
+        let decl = &payload["script_module_bytecode"];
+        let bytes = fs::read(output.join("content").join(decl["source"].as_str().unwrap())).unwrap();
+        assert_eq!(decl["byte_length"], bytes.len());
+        assert_eq!(decl["format"], payload["script_bytecode"]["format"]);
+        let lengths = decl["modules"].as_object().unwrap();
+        assert_eq!(lengths.keys().map(String::as_str).collect::<Vec<_>>(), ["shared.luau", "world/a.luau"]);
+        assert_eq!(lengths.values().map(|n| n.as_u64().unwrap()).sum::<u64>(), bytes.len() as u64);
+
+        descriptor["preview_tools"] = json!(true);
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        let development = directory.path().join("development");
+        web_with_templates(directory.path(), &development, Some(&runtime), true, &repo).unwrap();
+        let payload = serde_json::from_slice::<Value>(&fs::read(development.join("content/project.json")).unwrap()).unwrap();
+        assert!(payload.get("script_module_bytecode").is_none());
+        assert_eq!(payload["script_modules"]["world/a.luau"], "return require('../shared')");
+    }
+
+    #[test]
     fn actual_official_web_exports_have_complete_static_local_dependency_closure() {
         let dir=tempfile::tempdir().unwrap();let (runtime,repo,descriptor)=package_export_fixture(dir.path());
         fs::write(runtime.join("runtime.json"),serde_json::to_vec(&descriptor).unwrap()).unwrap();
@@ -805,9 +837,10 @@ fn validate_renderer_file_path(path: &str) -> Result<()> {
     Ok(())
 }
 
-/// Replaces the payload's entry source with production bytecode served beside
-/// it, so the player neither parses source out of JSON nor compiles at load.
-fn precompile_entry_script(files: &mut Vec<(String, Vec<u8>)>, manifest: &Value) -> Result<()> {
+/// Replaces the payload's entry and module sources with production bytecode
+/// served beside it, so the player neither parses source out of JSON nor
+/// compiles at load. Every module is compiled, required at start or not.
+fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, manifest: &Value) -> Result<()> {
     let index = files.iter().position(|(path, _)| path == "content/project.json").context("content/project.json missing")?;
     let mut payload: Value = serde_json::from_slice(&files[index].1)?;
     let source = payload.as_object_mut().and_then(|p| p.remove("script")).context("ENTRY_SCRIPT_MISSING")?;
@@ -816,10 +849,23 @@ fn precompile_entry_script(files: &mut Vec<(String, Vec<u8>)>, manifest: &Value)
         .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
     let decl = unone_engine::ScriptBytecodeDecl { source: "script.luaubc".into(), format: compiled.format, byte_length: compiled.bytes.len() };
     payload["script_bytecode"] = serde_json::to_value(&decl)?;
+    let mut bytecode_files = vec![(decl.source, compiled.bytes)];
+    if let Some(modules) = payload.as_object_mut().and_then(|p| p.remove("script_modules")) {
+        let sources: std::collections::BTreeMap<String, String> = serde_json::from_value(modules)?;
+        let compiled = unone_engine::compile_production_modules(&sources, native_codegen)
+            .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
+        let decl = unone_engine::ScriptModuleBytecodeDecl { source: "script-modules.luaubc".into(), format: compiled.format,
+            byte_length: compiled.bytes.len(), modules: compiled.modules };
+        payload["script_module_bytecode"] = serde_json::to_value(&decl)?;
+        bytecode_files.push((decl.source, compiled.bytes));
+    }
     let encoded = serde_json::to_vec(&payload)?;
     unone_engine::HostProject::parse(&encoded).map_err(|e| anyhow::anyhow!(e.explanation))?;
     files[index].1 = encoded;
-    push_unique_content_file(files, format!("content/{}", decl.source), compiled.bytes)
+    for (source, bytes) in bytecode_files {
+        push_unique_content_file(files, format!("content/{source}"), bytes)?;
+    }
+    Ok(())
 }
 
 /// Initial engine-owned custom shader API executes on the WebGL2 player only.
