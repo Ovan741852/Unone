@@ -61,6 +61,20 @@ impl HostProject {
         })
     }
 
+    /// Content files a host stages beside this payload, as (staged id,
+    /// content-relative source): declared data assets, then the precompiled
+    /// entry script and modules. The Web host's `payloadDataSources` lists the same.
+    pub fn staged_files(&self) -> Vec<(&str, &str)> {
+        let mut files: Vec<(&str, &str)> = self.data_assets.iter().map(|asset| (asset.id.as_str(), asset.source.as_str())).collect();
+        if let Some(decl) = &self.script_bytecode {
+            files.push((crate::SCRIPT_BYTECODE_DATA_ID, &decl.source));
+        }
+        if let Some(decl) = &self.script_module_bytecode {
+            files.push((crate::SCRIPT_MODULE_BYTECODE_DATA_ID, &decl.source));
+        }
+        files
+    }
+
     pub fn into_runtime(self, seed: u64) -> Result<EngineRuntime, Box<Diagnostic>> {
         self.into_runtime_with_data(seed, BTreeMap::new())
     }

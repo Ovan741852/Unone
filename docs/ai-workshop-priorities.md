@@ -25,8 +25,8 @@ with actual VM allocation and incremental-GC measurements.
 
 ## Shipping reliability is broader than compressed scripts
 
-A production Web export ships the entry script as Luau bytecode
-(`content/script.luaubc`), compiled with the production player's exact settings
+A production Web or native export ships the entry script as Luau bytecode
+(`content/script.luaubc`), compiled with the target player's exact settings
 (optimization 2, type information only for native codegen). The payload declares
 it as `script_bytecode` with that compiler identity and its length; the player
 stages it beside the JSON and rejects a mismatched compiler or truncated file.

@@ -45,8 +45,10 @@ modules too. A host project payload carries them as `script_modules`, a map from
 path relative to the entry script's directory to source text; development
 exports write it.
 
-A production Web export precompiles every module, like the entry script, with
-the production player's exact compiler settings. It ships one file,
+A production Web export and a native (Windows, Android) export precompile every
+module, like the entry script, with the target player's exact compiler
+settings: optimization 2, and type information only when that runtime was built
+with native codegen. The export ships one file,
 `content/script-modules.luaubc`, holding each module's chunk back to back in
 path order, and declares it in place of `script_modules`:
 
@@ -60,7 +62,8 @@ path order, and declares it in place of `script_modules`:
 ```
 
 The player stages the file beside the payload as `unone:script-module-bytecode`
-and splits it by those lengths; `require` then loads a module's chunk instead of
+(hosts list what to stage with `HostProject::staged_files` or, on the Web,
+`payloadDataSources`) and splits it by those lengths; `require` then loads a module's chunk instead of
 compiling its source. Admission rejects a different compiler
 (`SCRIPT_BYTECODE_INCOMPATIBLE`); a file or module lengths that do not match, an
 empty chunk or a chunk holding a compile error (`SCRIPT_BYTECODE_INVALID`); a
@@ -71,5 +74,5 @@ file and line as source does.
 
 Every `.luau` file under the entry script's directory is compiled, whether the
 game requires it at start, later, or never; a file that does not compile fails
-the export with `SCRIPT_COMPILE_FAILED` and its path. Native exports still ship
-the entry and modules as source.
+the export with `SCRIPT_COMPILE_FAILED` and its path. Development Web exports
+keep source; there is no development native export.

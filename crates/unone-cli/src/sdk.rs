@@ -878,6 +878,9 @@ fn native_export_staged(
     crate::export::append_presentation(project, &mut files)?;
     let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     native_asset_gate(&assets, &metadata)?;
+    // Native players are release builds and load the entry and modules as
+    // bytecode compiled for their own codegen setting.
+    crate::export::precompile_scripts(&mut files, metadata["native_codegen_compiled"] == true)?;
     let runtime_files = runtime_files(&metadata)?;
     if host.id == "windows" {
         for (name, _) in &runtime_files {
@@ -981,6 +984,35 @@ mod tests {
             path: format!("runtimes/{id}"),
             compiled_systems: systems.iter().map(|system| (*system).to_string()).collect(),
             runtime_packages: BTreeMap::new(), bytes,
+        }
+    }
+
+    #[test]
+    fn native_exports_ship_bytecode_for_the_runtimes_codegen() {
+        let dir = tempfile::tempdir().unwrap();
+        let project = dir.path().join("game");
+        fs::create_dir_all(project.join("scripts")).unwrap();
+        fs::write(project.join("project.unone.json"), json!({"name":"native modules","entry_script":"scripts/main.luau"}).to_string()).unwrap();
+        fs::write(project.join("scripts/main.luau"), "local a=require('./a')\nreturn {start=function()end,update=function()end}").unwrap();
+        fs::write(project.join("scripts/a.luau"), "return 1").unwrap();
+        let host = crate::hosts::require_exportable("windows").unwrap();
+        for (codegen, level) in [(false, "/t0/"), (true, "/t1/")] {
+            let runtime = dir.path().join(format!("runtime-{codegen}"));
+            fs::create_dir_all(&runtime).unwrap();
+            fs::write(runtime.join("player.exe"), b"stub").unwrap();
+            fs::write(runtime.join("runtime.json"), json!({"target":"windows","native_codegen_compiled":codegen,
+                "files":[{"path":"player.exe","sha256":hash(b"stub")}]}).to_string()).unwrap();
+            let output = dir.path().join(format!("export-{codegen}"));
+            native_export_staged(&project, &output, dir.path(), &runtime, host, false).unwrap();
+            let payload: Value = serde_json::from_slice(&fs::read(output.join("content/project.json")).unwrap()).unwrap();
+            assert!(payload.get("script").is_none() && payload.get("script_modules").is_none());
+            assert!(payload["script_bytecode"]["format"].as_str().unwrap().contains(level));
+            let modules = fs::read(output.join("content/script-modules.luaubc")).unwrap();
+            assert_eq!(payload["script_module_bytecode"]["modules"], json!({"a.luau": modules.len()}));
+            // The package manifest lists the bytecode, so the player verifies and loads it.
+            let manifest: Value = serde_json::from_slice(&fs::read(output.join("export.json")).unwrap()).unwrap();
+            let listed = |path: &str| manifest["files"].as_array().unwrap().iter().any(|file| file["path"] == path);
+            assert!(listed("content/script.luaubc") && listed("content/script-modules.luaubc"));
         }
     }
 

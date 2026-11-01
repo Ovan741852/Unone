@@ -44,6 +44,7 @@ mod tests {
             heightfields: Default::default(),
             geometry3d: Default::default(),
             geometry3d_placements: Default::default(),
+            data_textures: Default::default(),
             shader_materials: Default::default(),
             jobs: None,
             instances3d: Default::default(),

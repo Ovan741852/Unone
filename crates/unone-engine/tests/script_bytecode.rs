@@ -116,6 +116,19 @@ fn modules_compile_back_to_back_in_key_order_and_name_a_broken_module() {
 }
 
 #[test]
+fn a_payload_names_every_file_its_host_stages() {
+    let (decl, _) = compiled_modules();
+    let entry = ScriptBytecodeDecl { source: "script.luaubc".into(), format: decl.format.clone(), byte_length: 1 };
+    let mut value = modules_payload(Some(&entry), false, Some(&decl));
+    value["data_assets"] = serde_json::json!([{"id":"map","source":"data/map.bin","loader":"bytes"}]);
+    let project = HostProject::parse(&serde_json::to_vec(&value).unwrap()).unwrap();
+    assert_eq!(project.staged_files(), [("map", "data/map.bin"), (SCRIPT_BYTECODE_DATA_ID, "script.luaubc"),
+        (SCRIPT_MODULE_BYTECODE_DATA_ID, "script-modules.luaubc")]);
+    let source = HostProject::parse(&serde_json::to_vec(&modules_payload(None, true, None)).unwrap()).unwrap();
+    assert!(source.staged_files().is_empty());
+}
+
+#[test]
 fn module_bytecode_needs_one_declaration_and_its_staged_file() {
     let (decl, bytes) = compiled_modules();
     assert!(error(load_value(&modules_payload(None, true, None), staged_modules(&bytes))).contains("SCRIPT_BYTECODE_UNDECLARED"));

@@ -224,7 +224,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     // Production players load the entry script and its modules precompiled with
     // their exact compiler settings; development players keep source for hot reload.
     if !development {
-        precompile_scripts(&mut files, &manifest)?;
+        let native_codegen = manifest["cargo_features"].as_array().is_some_and(|f| f.iter().any(|v| v == "native-codegen"));
+        precompile_scripts(&mut files, native_codegen)?;
     }
     let compiled = manifest["compiled_systems"].as_array()
         .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
@@ -584,6 +585,21 @@ mod tests {
     }
 
     #[test]
+    fn precompiled_scripts_follow_the_runtimes_native_codegen() {
+        let payload = json!({"config":{"name":"codegen","entry_script":"main.luau"},"script":"return {start=function()end,update=function()end}",
+            "script_modules":{"a.luau":"return 1"}});
+        for (codegen, level) in [(false, "/t0/"), (true, "/t1/")] {
+            let mut files = vec![("content/project.json".to_string(), serde_json::to_vec(&payload).unwrap())];
+            super::precompile_scripts(&mut files, codegen).unwrap();
+            let compiled: Value = serde_json::from_slice(&files[0].1).unwrap();
+            assert!(compiled["script_bytecode"]["format"].as_str().unwrap().contains(level));
+            assert_eq!(compiled["script_module_bytecode"]["format"], compiled["script_bytecode"]["format"]);
+            assert_eq!(files.iter().map(|(path, _)| path.as_str()).collect::<Vec<_>>(),
+                ["content/project.json", "content/script.luaubc", "content/script-modules.luaubc"]);
+        }
+    }
+
+    #[test]
     fn actual_official_web_exports_have_complete_static_local_dependency_closure() {
         let dir=tempfile::tempdir().unwrap();let (runtime,repo,descriptor)=package_export_fixture(dir.path());
         fs::write(runtime.join("runtime.json"),serde_json::to_vec(&descriptor).unwrap()).unwrap();
@@ -840,11 +856,12 @@ fn validate_renderer_file_path(path: &str) -> Result<()> {
 /// Replaces the payload's entry and module sources with production bytecode
 /// served beside it, so the player neither parses source out of JSON nor
 /// compiles at load. Every module is compiled, required at start or not.
-fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, manifest: &Value) -> Result<()> {
+/// `native_codegen` must match the target runtime, whose bytecode format
+/// includes its type-information level.
+pub(crate) fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, native_codegen: bool) -> Result<()> {
     let index = files.iter().position(|(path, _)| path == "content/project.json").context("content/project.json missing")?;
     let mut payload: Value = serde_json::from_slice(&files[index].1)?;
     let source = payload.as_object_mut().and_then(|p| p.remove("script")).context("ENTRY_SCRIPT_MISSING")?;
-    let native_codegen = manifest["cargo_features"].as_array().is_some_and(|f| f.iter().any(|v| v == "native-codegen"));
     let compiled = unone_engine::compile_production_script(source.as_str().context("ENTRY_SCRIPT_MISSING")?, native_codegen)
         .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
     let decl = unone_engine::ScriptBytecodeDecl { source: "script.luaubc".into(), format: compiled.format, byte_length: compiled.bytes.len() };

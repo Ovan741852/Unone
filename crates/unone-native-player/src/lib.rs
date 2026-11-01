@@ -192,10 +192,10 @@ impl Package {
         Ok(project)
     }
     /// The verified package already holds every content file; hand the
-    /// declared data assets to the runtime by id.
+    /// declared data assets and precompiled scripts to the runtime by id.
     fn data_assets(&self, project:&HostProject) -> R<BTreeMap<String,Vec<u8>>> {
-        project.data_assets.iter()
-            .map(|asset| Ok((asset.id.clone(), self.get(&format!("content/{}", asset.source))?.to_vec())))
+        project.staged_files().into_iter()
+            .map(|(id, source)| Ok((id.to_string(), self.get(&format!("content/{source}"))?.to_vec())))
             .collect()
     }
     fn start(mut project:HostProject, seed:u64, viewport:Option<[u32;2]>, data:BTreeMap<String,Vec<u8>>)->R<EngineRuntime> {
@@ -1142,6 +1142,36 @@ mod telemetry_tests {
         assert!(make(serde_json::json!({"entities":[],"shader_materials":{"tint":{
             "fragment":"vec4 unoneShade(vec2 uv,vec4 color){return color;}"
         }}})).runtime(42).is_ok());
+    }
+
+    #[test]
+    fn a_precompiled_package_runs_like_its_source() {
+        let main = "local counter = require('./world/counter')\nreturn {start=function(api) end,\nupdate=function(api,dt) counter.step(dt) api.observation.set('n', counter.n) end}";
+        let modules = std::collections::BTreeMap::from([("world/counter.luau".to_string(),
+            "local M = {n = 1}\nfunction M.step(dt) M.n = (M.n * 1.0001 + dt * 7) % 1000 end\nreturn M".to_string())]);
+        let config = serde_json::json!({"name":"native-bytecode","entry_script":"scripts/main.luau"});
+        let source = super::Package {
+            files: std::collections::BTreeMap::from([("content/project.json".into(),
+                serde_json::to_vec(&serde_json::json!({"config":config,"script":main,"script_modules":modules})).unwrap())]),
+            digest: "source".into(),
+        };
+        let codegen = cfg!(feature = "native-codegen");
+        let entry = unone_engine::compile_production_script(main, codegen).unwrap();
+        let compiled = unone_engine::compile_production_modules(&modules, codegen).unwrap();
+        let payload = serde_json::json!({"config":config,
+            "script_bytecode":{"source":"script.luaubc","format":entry.format,"byte_length":entry.bytes.len()},
+            "script_module_bytecode":{"source":"script-modules.luaubc","format":compiled.format,"byte_length":compiled.bytes.len(),"modules":compiled.modules}});
+        let precompiled = super::Package {
+            files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&payload).unwrap()),
+                ("content/script.luaubc".into(), entry.bytes), ("content/script-modules.luaubc".into(), compiled.bytes)]),
+            digest: "precompiled".into(),
+        };
+        let (mut a, mut b) = (source.runtime(42).unwrap(), precompiled.runtime(42).unwrap());
+        for _ in 0..60 {
+            a.tick_with_input(&Default::default()).unwrap();
+            b.tick_with_input(&Default::default()).unwrap();
+        }
+        assert_eq!(unone_engine::observation_digest(&a.observe()).unwrap(), unone_engine::observation_digest(&b.observe()).unwrap());
     }
 
     #[test]

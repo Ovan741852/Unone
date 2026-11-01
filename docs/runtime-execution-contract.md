@@ -83,7 +83,7 @@ measurements, not hidden claims.
 4. Only after a measured hotspot, prototype one typed batch/handle path. The
    existing table API remains the semantic reference and fallback, with parity
    tests before shipping.
-5. Production Web exports precompile the entry script and its modules (see
+5. Production Web and native exports precompile the entry script and its modules (see
    `compile_production_script`, `compile_production_modules` and
    [script modules](script-modules.md#hosts)); the declared format names the Luau bytecode
    version, optimization and type-information levels and the engine version, and
