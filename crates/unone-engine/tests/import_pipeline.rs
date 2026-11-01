@@ -88,9 +88,21 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     assert_eq!((atlas["inputs"]["palette"]["root"].as_str(), atlas["inputs"]["palette"]["bytes"].as_u64()), (Some("original"), Some(9)));
     assert_eq!(provenance["assets"]["data://opaque"]["inputs"]["image"]["asset"], "texture://atlas");
     assert_eq!(provenance["assets"]["data://palette"]["from"]["path"], "DATA/pal.dat");
-    // Unchanged sources: everything comes from the cache and no file is rewritten.
+    // Nothing changed since the last prepare: its stamp (sizes and times of every
+    // input, module and product) answers without reading or hashing a source.
     let again = unone_engine::prepare_imports(&dir).unwrap();
-    assert_eq!((again.ran, again.cached, again.written, again.unchanged), (0, 2, 0, 3));
+    assert!(again.up_to_date);
+    assert_eq!((again.imports, again.ran, again.cached, again.written, again.unchanged), (3, 0, 0, 0, 0));
+    // Without the stamp, every product is checked by content: all from the cache, none rewritten.
+    std::fs::remove_file(dir.join(".unone/import-stamp.json")).unwrap();
+    let checked = unone_engine::prepare_imports(&dir).unwrap();
+    assert!(!checked.up_to_date);
+    assert_eq!((checked.ran, checked.cached, checked.written, checked.unchanged), (0, 2, 0, 3));
+    // A product edited by hand is not up to date; it is produced again.
+    write(&dir.join("imported/pal.dat"), [0u8]);
+    let edited = unone_engine::prepare_imports(&dir).unwrap();
+    assert_eq!((edited.up_to_date, edited.written), (false, 1));
+    assert_eq!(std::fs::read(dir.join("imported/pal.dat")).unwrap(), std::fs::read(original.join("DATA/pal.dat")).unwrap());
     // A changed source file reruns what depends on it.
     write(&original.join("DATA/pixels.dat"), [1u8, 1, 2]);
     let changed = unone_engine::prepare_imports(&dir).unwrap();

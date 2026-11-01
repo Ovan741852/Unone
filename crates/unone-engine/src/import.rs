@@ -4,10 +4,11 @@
 //! project.unone.json `import.importers`), so a game adds source formats
 //! without engine changes; the engine owns file access, typing, caching,
 //! encoding products into engine formats and provenance. Results are cached by
-//! everything that determines them, so an unchanged project costs only hashing.
+//! everything that determines them, and a stamp of every file the last prepare
+//! read or wrote lets an unchanged project skip even the hashing.
 //! See docs/import-pipeline.md.
 use crate::{AssetSpec, Diagnostic, ImportPortType, ImportValue, ProjectConfig};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
@@ -17,10 +18,15 @@ const CACHE_DIR: &str = ".unone/import-cache";
 /// Machine-local import root paths: {"<root>": "<directory>"}; never committed.
 pub const LOCAL_ROOTS_FILE: &str = ".unone/import-roots.json";
 pub const PROVENANCE_FILE: &str = ".unone/import-provenance.json";
+const STAMP_FILE: &str = ".unone/import-stamp.json";
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ImportReport {
     pub imports: usize,
+    /// Answered by the stamp: nothing the last prepare read or wrote has
+    /// changed, so no source was read and no product checked.
+    #[serde(default)]
+    pub up_to_date: bool,
     pub ran: usize,
     pub cached: usize,
     pub written: usize,
@@ -132,6 +138,37 @@ fn resolve_roots(project: &Path, config: &crate::ImportConfig) -> BTreeMap<Strin
     }).collect()
 }
 
+/// A file's size and modification time; None when it does not exist.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+struct FileStamp { len: u64, modified_ns: u64 }
+fn file_stamp(path: &Path) -> Option<FileStamp> {
+    let meta = std::fs::metadata(path).ok()?;
+    let modified = meta.modified().ok()?.duration_since(std::time::UNIX_EPOCH).ok()?;
+    Some(FileStamp { len: meta.len(), modified_ns: u64::try_from(modified.as_nanos()).ok()? })
+}
+
+/// Every file the last successful prepare read or wrote, with where the roots
+/// were, so an unchanged project is recognised by metadata alone (as make and
+/// ninja do). A file whose time is not older than the stamp may have changed
+/// within one clock tick of being recorded, so it never counts as unchanged.
+#[derive(Serialize, Deserialize)]
+struct ImportStamp {
+    engine: String,
+    written_ns: u64,
+    roots: BTreeMap<String, Option<PathBuf>>,
+    files: BTreeMap<PathBuf, Option<FileStamp>>,
+    imports: usize,
+    unverified: Vec<String>,
+}
+fn stamped_report(path: &Path, roots: &BTreeMap<String, Option<PathBuf>>) -> Option<ImportReport> {
+    let stamp: ImportStamp = serde_json::from_slice(&std::fs::read(path).ok()?).ok()?;
+    if stamp.engine != env!("CARGO_PKG_VERSION") || stamp.roots != *roots { return None; }
+    for (file, recorded) in &stamp.files {
+        if file_stamp(file) != *recorded || recorded.as_ref().is_some_and(|r| r.modified_ns >= stamp.written_ns) { return None; }
+    }
+    Some(ImportReport { imports: stamp.imports, up_to_date: true, unverified: stamp.unverified, ..ImportReport::default() })
+}
+
 enum Input<'a> { Root { root: &'a str, path: &'a str }, Asset(&'a str) }
 fn parse_input(text: &str) -> Result<Input<'_>, Box<Diagnostic>> {
     if let Some(id) = text.strip_prefix("asset:") { return Ok(Input::Asset(id)); }
@@ -155,9 +192,21 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     if imported.is_empty() { return Ok(report); }
     let root = paths.root.clone();
     let import_config = config.import.clone().unwrap_or_default();
+    let roots = resolve_roots(&root, &import_config);
+    let stamp_path = root.join(STAMP_FILE);
+    if let Some(report) = stamped_report(&stamp_path, &roots) { return Ok(report); }
+    let _ = std::fs::remove_file(&stamp_path);
+    // Each file is stamped before it is read, so a change while reading shows next time.
+    let mut files: BTreeMap<PathBuf, Option<FileStamp>> = BTreeMap::new();
+    for path in [paths.config.clone(), root.join(LOCAL_ROOTS_FILE)].into_iter().chain(paths.asset_manifest.clone()) {
+        let stamp = file_stamp(&path);
+        files.insert(path, stamp);
+    }
     let mut importers = BTreeMap::new();
     for (name, spec) in &import_config.importers {
-        let source = std::fs::read_to_string(contained(&root, &spec.module)?)
+        let module = contained(&root, &spec.module)?;
+        files.insert(module.clone(), file_stamp(&module));
+        let source = std::fs::read_to_string(module)
             .map_err(|e| error("IMPORTER_MODULE_MISSING", format!("{}: {e}", spec.module)))?;
         let definition = crate::describe_import_nodes(&spec.module, &source).map_err(|e| error("IMPORTER_INVALID", e))?
             .into_iter().find(|n| n.name == spec.node)
@@ -221,8 +270,7 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
         if ready.is_empty() { return Err(error("IMPORT_CYCLE", "imported assets read each other's products in a cycle")); }
         for id in ready { done.insert(id); order.push(id); }
     }
-    let roots = resolve_roots(&root, &import_config);
-    let mut reads: BTreeMap<String, (Vec<u8>, String)> = BTreeMap::new();
+    let mut reads: BTreeMap<String, (Vec<u8>, String, PathBuf, Option<FileStamp>)> = BTreeMap::new();
     let mut runs: BTreeMap<String, BTreeMap<String, ImportValue>> = BTreeMap::new();
     let mut products: BTreeMap<&str, Option<ImportValue>> = BTreeMap::new();
     let mut provenance = BTreeMap::new();
@@ -232,10 +280,12 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
         let Some(dir) = roots[name].as_ref() else { return Ok(None) };
         let key = format!("{name}:{path}");
         if !reads.contains_key(&key) {
-            let bytes = std::fs::read(contained(dir, path)?).map_err(|e| error("IMPORT_SOURCE_READ", format!("{key}: {e}")))?;
-            let digest = sha256(&bytes);reads.insert(key.clone(), (bytes, digest));
+            let file = contained(dir, path)?;
+            let stamp = file_stamp(&file);
+            let bytes = std::fs::read(&file).map_err(|e| error("IMPORT_SOURCE_READ", format!("{key}: {e}")))?;
+            let digest = sha256(&bytes);reads.insert(key.clone(), (bytes, digest, file, stamp));
         }
-        let (bytes, digest) = &reads[&key];
+        let (bytes, digest, _, _) = &reads[&key];
         Ok(Some((bytes.clone(), json!({"root": name, "path": path, "sha256": digest, "bytes": bytes.len()}))))
     };
     let write_file = |artifact: &Path, bytes: &[u8], report: &mut ImportReport| -> Result<(), Box<Diagnostic>> {
@@ -255,9 +305,11 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
                 if !artifact.is_file() {
                     return Err(error("IMPORT_ROOT_UNAVAILABLE", format!("asset '{id}' needs {name}; name the directory in {LOCAL_ROOTS_FILE} or UNONE_IMPORT_ROOT_<NAME>")));
                 }
-                report.unverified.push(id.to_string());products.insert(id, None);continue;
+                report.unverified.push(id.to_string());products.insert(id, None);
+                files.insert(artifact.clone(), file_stamp(&artifact));continue;
             };
             write_file(&artifact, &bytes, &mut report)?;
+            files.insert(artifact.clone(), file_stamp(&artifact));
             provenance.insert(id.to_string(), json!({"source": asset.source, "sha256": sha256(&bytes), "from": record}));
             products.insert(id, Some(ImportValue::Bytes(bytes)));
             continue;
@@ -276,8 +328,11 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
                     let value = match products.get(other) {
                         Some(Some(value)) => value.clone(),
                         Some(None) => { missing = Some(format!("asset:{other}")); continue }
-                        None => ImportValue::Bytes(std::fs::read(contained(&root, &by_id[other].source)?)
-                            .map_err(|e| error("IMPORT_SOURCE_READ", format!("asset:{other}: {e}")))?),
+                        None => {
+                            let file = contained(&root, &by_id[other].source)?;
+                            files.insert(file.clone(), file_stamp(&file));
+                            ImportValue::Bytes(std::fs::read(&file).map_err(|e| error("IMPORT_SOURCE_READ", format!("asset:{other}: {e}")))?)
+                        }
                     };
                     records.insert(port.clone(), json!({"asset": other, "sha256": value_hash(&value)}));
                     inputs.insert(port.clone(), value);
@@ -289,7 +344,8 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
             if !artifact.is_file() {
                 return Err(error("IMPORT_ROOT_UNAVAILABLE", format!("asset '{id}' needs {missing}; name the directory in {LOCAL_ROOTS_FILE} or UNONE_IMPORT_ROOT_<NAME>")));
             }
-            report.unverified.push(id.to_string());products.insert(id, None);continue;
+            report.unverified.push(id.to_string());products.insert(id, None);
+            files.insert(artifact.clone(), file_stamp(&artifact));continue;
         }
         let key = sha256(json!({"module_sha256": importer.module_sha256, "node": importer.node, "params": import.params,
             "inputs": inputs.iter().map(|(p, v)| (p.clone(), value_hash(v))).collect::<BTreeMap<_, _>>()}).to_string().as_bytes());
@@ -310,6 +366,7 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
         let value = runs[&key][product].clone();
         let bytes = encode(&value)?;
         write_file(&artifact, &bytes, &mut report)?;
+        files.insert(artifact.clone(), file_stamp(&artifact));
         provenance.insert(id.to_string(), json!({"source": asset.source, "sha256": sha256(&bytes), "importer": import.importer,
             "module": importer.module, "module_sha256": importer.module_sha256, "node": importer.node, "product": product,
             "params": import.params, "inputs": records, "run": key}));
@@ -322,5 +379,12 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
         if let Some(parent) = path.parent() { let _ = std::fs::create_dir_all(parent); }
         std::fs::write(&path, text).map_err(|e| error("IMPORT_WRITE_FAILED", e.to_string()))?;
     }
+    files.insert(path.clone(), file_stamp(&path));
+    for (_, _, file, stamp) in reads.into_values() { files.insert(file, stamp); }
+    let written_ns = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
+        .ok().and_then(|now| u64::try_from(now.as_nanos()).ok()).unwrap_or(0);
+    let stamp = ImportStamp { engine: env!("CARGO_PKG_VERSION").to_string(), written_ns, roots, files,
+        imports: report.imports, unverified: report.unverified.clone() };
+    if let Ok(text) = serde_json::to_vec(&stamp) { let _ = std::fs::write(&stamp_path, text); }
     Ok(report)
 }
