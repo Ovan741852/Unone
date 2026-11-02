@@ -60,6 +60,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          sparse-checkout: |
+            /*
+            !/_Games/
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -134,7 +138,7 @@ jobs:
               --cli "$GITHUB_WORKSPACE/target/release/game" --runtime "$base/runtime" \
               --fixture "$GITHUB_WORKSPACE/tests/host-parity-project" --timeout-ms 300000 "${diagnostic[@]}" \
               2>&1 | tee "$base/parity.log"
-            printf '{"explicit_fixture":true,"default_extra_physics_fixture_executed":false,"browser_visual_acceptance":false}\n' > "$base/verification-scope.json"
+            printf '{"explicit_fixture":true,"default_extra_physics_fixture_executed":false,"browser_visual_acceptance":false,"source_checkout_excludes":["/_Games/"],"source_checkout_reason":"engine CI uses an explicit fixture, not repo-local Game projects"}\n' > "$base/verification-scope.json"
           done
       - uses: actions/upload-artifact@v4
         if: always()

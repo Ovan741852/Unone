@@ -1,0 +1,137 @@
+{
+  "schema": "unone.shared-ui.ci-checkout-scope.v1",
+  "status": "source-audited-change-awaiting-standard-ci",
+  "scope": "Official Web runtime matrix source checkout only. This record does not establish browser, FPS, SDK, or Native acceptance.",
+  "source_before_change": "05d72e072836c71200ffbf00ebca29cd9ec0c61e",
+  "baseline_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+  "observed_run": {
+    "id": 41506358276,
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41506358276",
+    "head_sha": "05d72e072836c71200ffbf00ebca29cd9ec0c61e",
+    "core_job": {"id": 125486571242, "conclusion": "success"},
+    "baseline_job": {
+      "id": 125487840917,
+      "url": "https://github.com/Ovan741852/Unone/actions/runs/41506358276/job/125487840917",
+      "conclusion": "failure",
+      "failed_step": "Capture verification tools outside the checkout",
+      "failed_command": "test -z \"$(git status --porcelain)\"",
+      "failed_at_utc": "2026-11-02T19:06:16.8870753Z",
+      "preceding_commands": {
+        "copy_scripts_and_web": "success",
+        "create_external_package_json": "success",
+        "checkout_detached_baseline": "success",
+        "status_and_diff_observability": "success"
+      },
+      "initial_checkout_warning": {
+        "at_utc": "2026-11-02T19:06:15.6939837Z",
+        "message": "Encountered 1564 files that should have been pointers, but weren't:",
+        "count": 1564,
+        "all_four_later_dirty_paths_listed": true
+      },
+      "dirty_paths": 4,
+      "diff_stat_files_changed": 4
+    },
+    "candidate_job": {
+      "id": 125487841056,
+      "url": "https://github.com/Ovan741852/Unone/actions/runs/41506358276/job/125487841056",
+      "conclusion": "success",
+      "initial_checkout_non_pointer_warning_count": 1564,
+      "capture_step_conclusion": "success",
+      "variants": [
+        {"variant": "production", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:11:52.7999324Z"},
+        {"variant": "phase-profile", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:14:20.7402590Z"},
+        {"variant": "sampling-profile", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:16:24.6223653Z"}
+      ],
+      "explicit_fixture": "tests/host-parity-project"
+    }
+  },
+  "raw_git_blob_audit": {
+    "method": "git cat-file --batch-check against both commit:path objects; no --filters, checkout, clean, or asset writes",
+    "all_four_objects_identical_between_commits": true,
+    "objects": [
+      {
+        "path": "_Games/ashen-legion/wardrobe/assets/vinyl/validation-rig.glb",
+        "git_blob_sha1": "20c7b688994187c92bc3ff988b63aed6f678cc88",
+        "raw_bytes": 2009236,
+        "ci_diff_comparison_bytes": 132
+      },
+      {
+        "path": "_Games/ashen-legion/wardrobe/blender/style-choice-board.png",
+        "git_blob_sha1": "f9e6da0d75c9e622fc13b53d3cbb5731df7ebc7e",
+        "raw_bytes": 2489047,
+        "ci_diff_comparison_bytes": 132
+      },
+      {
+        "path": "_Games/ashen-legion/wardrobe/storybook-a-preview.jpg",
+        "git_blob_sha1": "bea640b49f7c9f731607c6a8aef2a2f008722a06",
+        "raw_bytes": 91342,
+        "ci_diff_comparison_bytes": 130
+      },
+      {
+        "path": "_Games/ashen-legion/wardrobe/wardrobe-preview.jpg",
+        "git_blob_sha1": "175b9fa57fb9a7f587af4dc34c2e8c7e7f9ed610",
+        "raw_bytes": 178679,
+        "ci_diff_comparison_bytes": 131
+      }
+    ],
+    "versioned_attributes": {
+      "path": "_Games/ashen-legion/.gitattributes",
+      "same_relevant_rules_in_both_commits": true,
+      "rules": [
+        "*.png filter=lfs diff=lfs merge=lfs -text",
+        "*.jpg filter=lfs diff=lfs merge=lfs -text",
+        "*.glb filter=lfs diff=lfs merge=lfs -text"
+      ],
+      "check_attr_source_both_commits": {"filter": "lfs", "diff": "lfs", "merge": "lfs", "text": "unset"},
+      "check_attr_scope": "Read on the local audit machine with --source selecting each tree. This is not a capture of the CI machine's complete filter configuration."
+    },
+    "interpretation": [
+      "The traced baseline clean comparison is proven; the initial LFS non-pointer warning is also proven.",
+      "The small diff sizes are compatible with a clean-filter representation. They do not establish that the physical worktree files became pointer files; physical CI file bytes were not separately captured.",
+      "The candidate had the same initial warning and passed its clean gate, so the warning alone does not imply capture failure.",
+      "No EOL cause is established. No claim is made about the command that failed the earlier untraced 5ddb candidate capture."
+    ]
+  },
+  "source_dependency_audit": {
+    "command": "rg -n '_Games' crates scripts tests Cargo.toml",
+    "cargo_workspace_game_members_or_dependencies_found": false,
+    "engine_reference": {
+      "path": "crates/unone-engine/src/runtime/jobs.rs",
+      "function": "native_pool_benchmark",
+      "target": "_Games/jobs-lab",
+      "annotation": "#[ignore = \"manual release-only throughput experiment, not a timing assertion\"]",
+      "ordinary_ci_executes_ignored_tests": false
+    },
+    "utility_references": [
+      {
+        "path": "scripts/verify-player-parity.mjs",
+        "target": "_Games/physics3d-lab",
+        "condition": "Only the default additional-fixture branch. The official runtime workflow supplies --fixture tests/host-parity-project and does not execute this branch."
+      },
+      {
+        "path": "scripts/verify-optional-systems.mjs",
+        "target": "_Games/physics3d-lab",
+        "condition": "Not invoked by the audited official runtime or ordinary CI workflow."
+      },
+      {"path": "scripts/prepare-legion-native-stress.py", "condition": "Manual repo-local Game preparation tool; not invoked by this workflow."},
+      {"path": "scripts/serve-frame-atelier.py", "condition": "Manual art-serving path; not invoked by this workflow."}
+    ],
+    "external_sibling_project_defaults": ["scripts/build-android-apk.ps1", "scripts/mcp-smoke.ps1", "scripts/export-web-host-snapshot.ps1", "scripts/validate-game-matrix.ps1"],
+    "external_defaults_note": "Unone_Games substring matches refer to sibling project paths, not this repository's /_Games directory.",
+    "limit": "Bounded source audit of literal references and current workflow invocations, not proof about arbitrary future tests or manual tools."
+  },
+  "approved_source_change": {
+    "file": ".github/workflows/web-runtime.yml",
+    "job": "runtimes",
+    "matrix_sources": ["baseline", "candidate"],
+    "checkout": {"fetch-depth": 0, "sparse-checkout": ["/*", "!/_Games/"], "sparse-checkout-cone-mode": false},
+    "retained": ["engine crates", "vendor", "docs", "tests", "web", "scripts", "root build files", "baseline detached checkout", "step-local xtrace", "git status output", "git diff --stat", "original test -z clean gate"],
+    "verification_scope_additions": {
+      "source_checkout_excludes": ["/_Games/"],
+      "source_checkout_reason": "engine CI uses an explicit fixture, not repo-local Game projects"
+    },
+    "unchanged": ["core job checkout", "ordinary CI workflow", "LFS filters and attributes", "Game asset blobs", "runtime variants", "ABI checks", "parity checks", "artifact upload gates"],
+    "future_condition": "If an active engine CI test requires a repo-local Game project, declare that dependency and revise the checkout/fixture scope explicitly; do not silently skip the test.",
+    "validation": "Source inspection and diff review only. No local Node tests, Native execution, Cargo, browser, or timing run was performed for this checkout-only change. Its actual clean checkout and parity outcome require the next standard CI run."
+  }
+}
