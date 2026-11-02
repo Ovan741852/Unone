@@ -1,0 +1,314 @@
+{
+  "schema": "unone.official-web.performance-feed-validation.v1",
+  "status": "node-gates-and-actual-source-ingestion-refresh-passed-live-browser-acceptance-pending",
+  "source_commit": "5ddb16ece0b69054a80bcfa18133a5fce58ee77f",
+  "scope": "Bounded opt-in read-only official-player DOM diagnostics; existing captured Node gates and real production-WASM source-ingestion validation. No new execution of tests, Core, browser, Native CLI or Cargo by this evidence writer.",
+  "frozen_host": {
+    "path": "artifacts/web-performance-feed-host-5ddb16e-20261103/host.json",
+    "bytes": 18838,
+    "sha256": "34cb4bd42d260526bd475ad82e75e9b499b979039bedce6d005a394e08adb66b",
+    "root": "artifacts/web-performance-feed-host-5ddb16e-20261103",
+    "source_commit": "5ddb16ece0b69054a80bcfa18133a5fce58ee77f",
+    "source_dirty": false,
+    "host_sha256": "c9afc994342bae52d21a98663db9dbcaa4d0361af6b2c546430c45c90e99a36b",
+    "indexed_files": 111,
+    "full_sdk": false,
+    "independent_full_inventory_rehash_by_writer": false,
+    "inventory_verification": "Root freeze script verifies every captured file against the source inventory and recomputes the copied-host fingerprint; this writer checked metadata and exact selected source pins only."
+  },
+  "source_pins": [
+    {
+      "path": "web/shared/player-performance-feed.mjs",
+      "bytes": 4690,
+      "sha256": "4781542d2b857b60a9740521046442c2f36c0759b5f18524eed900ffe8843b63"
+    },
+    {
+      "path": "web/shared/player-performance-feed.test.mjs",
+      "bytes": 12752,
+      "sha256": "3cc75f7b4d7ea4c7edfd4e652db8ac81dc31f7266b2ca5354118ea0dd576edc2"
+    },
+    {
+      "path": "web/shared/player-performance-feed-entry.test.mjs",
+      "bytes": 2044,
+      "sha256": "d4178865b1ce3372c3b57e6e2ad05c379cc21059a1abace3ade5a256d055dc96"
+    },
+    {
+      "path": "web/player/main.js",
+      "bytes": 31486,
+      "sha256": "d99816bd9425f44cb106aa3155d19b4e8329f79880d2aa6ff626843789d5d2d1"
+    },
+    {
+      "path": "crates/unone-cli/src/export.rs",
+      "bytes": 64448,
+      "sha256": "8b81154b1592f8bf41ba13ef286b0eff2d53992c532d1e5c687abf1ce5aea780"
+    },
+    {
+      "path": "docs/player-export.md",
+      "bytes": 15015,
+      "sha256": "4be40fc7f98a8f7dbe8da0f5b18e32a74880c84acab2b5f1253f24e2185a109a"
+    },
+    {
+      "path": "web/shared/image-broker-integration.test.mjs",
+      "bytes": 11161,
+      "sha256": "db54ac304e0fd6cf3e9ee05c718e373aa6237755d0ac9cfaa5b381d4383447fa"
+    },
+    {
+      "path": "web/shared/player-profile-main.test.mjs",
+      "bytes": 15721,
+      "sha256": "a80b1f03aa03c05a36db2d4088dc211898493f13348fb10f02b30c5ef696506c"
+    },
+    {
+      "path": "web/shared/startup-player-entry.test.mjs",
+      "bytes": 14508,
+      "sha256": "86fabd0e7e196c1b8af16f82770112427df7b82fd9a3b524e97d90a0ebc15c67"
+    }
+  ],
+  "contract": {
+    "opt_in": "Exactly one unone_performance_feed=1 URL query parameter",
+    "sink": "document.body.dataset.playerCompletion (data-player-completion)",
+    "readonly": true,
+    "game_controls": false,
+    "interval_ms": 500,
+    "window_ms": 1500,
+    "max_sample_rows": 512,
+    "max_serialized_utf8_bytes": 262144,
+    "construction_clock_reads": 0,
+    "disabled_snapshot_clock_or_feed_writes": 0,
+    "timers_or_event_listeners_installed_by_module": 0,
+    "publication_boundary": "After official playerCompletion.rafEnd, plus one startup publication; no independent polling timer.",
+    "failure_behavior": "Terminal feed disposal only; independent catches prevent snapshot, dispose and diagnostic-sink exceptions escaping RAF or later Game teardown.",
+    "cleanup": "fail/pagehide retire the feed; delete only its owned current dataset value; a locked sink can leave stale data."
+  },
+  "independent_source_review": {
+    "reviewer": "Codex runtime_audit",
+    "status": "bounded-clear-after-concrete-P2-correction",
+    "finding": {
+      "priority": "P2",
+      "before": "A thrown feed dispose or error-attribute assignment could escape the diagnostic consumer and prevent remaining Game cleanup.",
+      "after": "Main takes and nulls the feed before attempting disposal; publish, disposal and error-sink writes are independently caught. Two actual-main source-extraction tests cover both publication and teardown failure boundaries."
+    },
+    "reviewed": "Module opt-in/throttle/caps/reentrancy/terminal retirement, main onRafEnd/startup/fail/pagehide boundaries, exporter inventory and disabled-system closure, documented observer-cost semantics.",
+    "limitations": "Source review is not browser performance, physical presentation, zero-allocation or universal resource-lifetime proof."
+  },
+  "test_evidence": {
+    "focused_module": {
+      "tests": 12,
+      "pass": 12,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 118.1225,
+      "raw_log": {
+        "path": ".cache/player-performance-feed-focused-20261103-r1.log",
+        "bytes": 1426,
+        "sha256": "fd88082b5243c56ce5125097f9a7ab43f936ab1a155097b086b3e194f5f629a1"
+      },
+      "execution": "Previously captured actual 12-test Node run; not rerun by this writer."
+    },
+    "consumer_fault_regressions": {
+      "tests": 2,
+      "evidence": "web/shared/player-performance-feed-entry.test.mjs; both actual-main-helper tests are present and passed in the complete R2 log."
+    },
+    "fixture_red_to_green": {
+      "before": {
+        "tests": 829,
+        "pass": 818,
+        "fail": 6,
+        "cancelled": 0,
+        "skipped": 5,
+        "todo": 0,
+        "duration_ms": 15402.6664
+      },
+      "failed_test_names": [
+        "actual failure cleanup accepts the exported UI-disabled stub and retires the broker/backend",
+        "actual public accessor forwards opt-in paired RAF samples and rejects unknown or malformed options without backend work",
+        "actual production startup entry waits raw-loss event gap, redraws, then publishes exactly one READY and starts scheduler once",
+        "actual ordinary and checked startup wait for delayed Canvas-only images without polling RAF or starting simulation",
+        "pointer entry at the final RAF barrier cannot READY a newly required pending cursor",
+        "Game.start save changes are persisted exactly once before READY, including private encoded publications"
+      ],
+      "actual_reference_errors": [
+        "disposePerformanceFeed is not defined",
+        "readPlayerPerformance is not defined",
+        "performanceFeed is not defined"
+      ],
+      "cause": "Legacy source-extraction contexts lacked newly introduced performanceFeed/publishPerformanceFeed bindings; production assertions were retained.",
+      "changed_fixtures": [
+        "web/shared/image-broker-integration.test.mjs",
+        "web/shared/player-profile-main.test.mjs",
+        "web/shared/startup-player-entry.test.mjs"
+      ],
+      "after": {
+        "tests": 831,
+        "pass": 826,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 5,
+        "todo": 0,
+        "duration_ms": 15328.4703
+      },
+      "count_difference": "R2 includes two newly added consumer-boundary fault tests; the total changed from829 to831."
+    },
+    "full_node": {
+      "tests": 831,
+      "pass": 826,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 5,
+      "todo": 0,
+      "duration_ms": 15328.4703,
+      "exit_status": 0,
+      "exit_status_source": "Root reported actual completed command; raw test summary independently parsed.",
+      "skip_details": [
+        {
+          "test": "actual pinned WASM loads fresh source module plus JSON/text data before publishing",
+          "reason": "Set UNONE_WEB_REFRESH_INTEGRATION=1 plus exact runtime path/manifest SHA to run actual Core"
+        },
+        {
+          "test": "actual Core JSON decoder rejection and entry compile failure never publish output",
+          "reason": "Set UNONE_WEB_REFRESH_INTEGRATION=1 plus exact runtime path/manifest SHA to run actual Core"
+        },
+        {
+          "test": "no navigator.gpu reports preview unavailable while real plugin inspection works",
+          "reason": "Set UNONE_SHADER_ROOT to test the installed plugin"
+        },
+        {
+          "test": "CPU-only plugin profile keeps GPU null and rejects samples with no timing",
+          "reason": "Set UNONE_SHADER_ROOT to test the installed plugin"
+        },
+        {
+          "test": "real adjacent normal-World packets: same-length vertex changes update in place, length changes rebuild, output equals a fresh renderer",
+          "reason": "packets missing"
+        }
+      ]
+    },
+    "actual_refresh": {
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "duration_ms": 2428.1215,
+      "exit_status": 0,
+      "exit_status_source": "Root reported actual completed command; raw test summary independently parsed.",
+      "scope": "Actual pinned production WASM HostProject ABI parse, source/module compilation, data staging and Game.start; raw validation envelope only, no UI/presentation transport decoding, gameplay ticks or renderer",
+      "validation": {
+        "actual_core_validation": {
+          "status": "passed",
+          "scope": "Actual pinned production WASM HostProject ABI parse, source/module compilation, data staging and Game.start; raw validation envelope only, no UI/presentation transport decoding, gameplay ticks or renderer",
+          "seed": 42,
+          "initial_frame": 0,
+          "initial_digest": "sha256:27afebbcee9aa9b24f3d1700fdee60ecd3ec33f55fa73a7597d0bc120f35c092",
+          "diagnostics": []
+        },
+        "runtime_manifest_sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+        "runtime_wasm_sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+        "core_source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+        "host_sha256": "c9afc994342bae52d21a98663db9dbcaa4d0361af6b2c546430c45c90e99a36b",
+        "source_script_sha256": "ef5d8bf3dec272e79756334051befb396672a4db554962f43e910c93ef0833d2",
+        "release_root": "releases/690039b16536f0b061998210a87be468c8f66bfe03c1c63a61ddd242f9bef8f8/",
+        "generation_matches": true,
+        "module_sources": [
+          "value.luau"
+        ],
+        "staged_data_loaders": [
+          "json",
+          "text"
+        ],
+        "indexed_files": 219
+      },
+      "positive": "Real pinned production WASM parsed HostProject, compiled fresh source/module code, staged JSON/text and executed Game.start before publication.",
+      "negatives": "The actual Core rejected malformed JSON data and an entry syntax error, and no output was published.",
+      "not_proved": "No browser/render/READY/feed publication/FPS acceptance; no current-production precompile/full-SDK claim."
+    }
+  },
+  "observer_cost_and_acceptance_limits": [
+    "Read/sort, JSON serialization, UTF-8 counting and DOM assignment allocate and cost CPU; feed publication can perturb subsequent callbacks.",
+    "The feed runs after the stored callback-end measurement. Its current cost is excluded from that callback and appears only in a later envelope as previous_completed_publication_ms; max_completed_publication_ms is lifetime maximum, not a1500ms maximum.",
+    "published_at_ms is taken before serialization/DOM assignment, not GPU completion or display time.",
+    "Freshness/session/time-origin, retained coverage, paired samples and advancing sequence must be checked. Stale/incomplete/absent data is insufficient evidence of smooth playback.",
+    "Enabled and default runs must be assessed separately; no zero-overhead, CPU-isolation, scanout, GC-frequency, no-leak or universal-release claim.",
+    "Game live-browser seven-case acceptance was pending when this record was prepared; this file does not infer its later result."
+  ],
+  "raw_logs": [
+    {
+      "source": {
+        "path": ".cache/performance-feed-full-node-20261103-r1.log",
+        "bytes": 95745,
+        "sha256": "1b2d2e567173c63b6bb41d1bf0af947cafc361bdeb08d4881d32c21050e553b1"
+      },
+      "copy": {
+        "path": "docs/evidence/2026-11-03-shared-ui/performance-feed-full-node-r1.log",
+        "bytes": 95745,
+        "sha256": "1b2d2e567173c63b6bb41d1bf0af947cafc361bdeb08d4881d32c21050e553b1"
+      },
+      "copy_scope": "Byte-exact original captured stdout/stderr log; this evidence writer did not rerun its command."
+    },
+    {
+      "source": {
+        "path": ".cache/performance-feed-full-node-20261103-r2.log",
+        "bytes": 85351,
+        "sha256": "f5201e87b0c14ff0f8b62d32c840c8404b4a88a5533c16003021d4a7b0b51c33"
+      },
+      "copy": {
+        "path": "docs/evidence/2026-11-03-shared-ui/performance-feed-full-node-r2.log",
+        "bytes": 85351,
+        "sha256": "f5201e87b0c14ff0f8b62d32c840c8404b4a88a5533c16003021d4a7b0b51c33"
+      },
+      "copy_scope": "Byte-exact original captured stdout/stderr log; this evidence writer did not rerun its command."
+    },
+    {
+      "source": {
+        "path": ".cache/performance-feed-actual-refresh-20261103-r1.log",
+        "bytes": 8672,
+        "sha256": "a258a8e26d64b56adeb68769082a60922c58dae4d04896643e3a9319a666df1e"
+      },
+      "copy": {
+        "path": "docs/evidence/2026-11-03-shared-ui/performance-feed-actual-refresh-r1.log",
+        "bytes": 8672,
+        "sha256": "a258a8e26d64b56adeb68769082a60922c58dae4d04896643e3a9319a666df1e"
+      },
+      "copy_scope": "Byte-exact original captured stdout/stderr log; this evidence writer did not rerun its command."
+    },
+    {
+      "source": {
+        "path": ".cache/player-performance-feed-focused-20261103-r1.log",
+        "bytes": 1426,
+        "sha256": "fd88082b5243c56ce5125097f9a7ab43f936ab1a155097b086b3e194f5f629a1"
+      },
+      "copy": {
+        "path": "docs/evidence/2026-11-03-shared-ui/performance-feed-focused-r1.log",
+        "bytes": 1426,
+        "sha256": "fd88082b5243c56ce5125097f9a7ab43f936ab1a155097b086b3e194f5f629a1"
+      },
+      "copy_scope": "Byte-exact original captured stdout/stderr log; this evidence writer did not rerun its command."
+    }
+  ],
+  "execution_provenance": {
+    "source": "Exact commands, env and exits supplied by Root from its executed PowerShell tool calls; not embedded in the raw logs.",
+    "cwd": "D:/Projects/Unone",
+    "shell": "PowerShell",
+    "node_executable": "C:/Users/liNao/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "node_major": 24,
+    "full_node": {
+      "command": "node --test web/**/*.test.mjs scripts/*.test.mjs > .cache/performance-feed-full-node-20261103-r2.log 2>&1",
+      "integration_environment": "No UNONE_WEB_REFRESH_INTEGRATION set for this shell",
+      "exit_status": 0
+    },
+    "actual_refresh": {
+      "preparation_command": "node .cache/freeze-performance-feed-host.mjs",
+      "env": {
+        "UNONE_WEB_REFRESH_INTEGRATION": "1",
+        "UNONE_WEB_REFRESH_RUNTIME": "D:/Projects/Unone/artifacts/ui-shared-ci-9c773e3/candidate/production/runtime",
+        "UNONE_WEB_REFRESH_RUNTIME_SHA256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+        "UNONE_WEB_REFRESH_HOST_COMMIT": "5ddb16ece0b69054a80bcfa18133a5fce58ee77f"
+      },
+      "command": "node --test scripts/refresh-official-web.test.mjs > .cache/performance-feed-actual-refresh-20261103-r1.log 2>&1",
+      "exit_status": 0
+    },
+    "new_tests_or_browser_started_by_writer": false,
+    "commit_or_push_by_writer": false
+  }
+}

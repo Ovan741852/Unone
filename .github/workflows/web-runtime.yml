@@ -70,12 +70,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          set -x
           echo "UNONE_CI_NODE=$(command -v node)" >> "$GITHUB_ENV"
           echo "UNONE_CI_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
           mkdir -p "$RUNNER_TEMP/verification"
           cp -R scripts web "$RUNNER_TEMP/verification/"
           printf '{"type":"module"}\n' > "$RUNNER_TEMP/verification/package.json"
           if [ '${{ matrix.source }}' = baseline ]; then git checkout --detach "$BASELINE_COMMIT"; fi
+          git status --porcelain=v1
+          git diff --stat
           test -z "$(git status --porcelain)"
       - name: Install pinned toolchain
         run: rustup show active-toolchain

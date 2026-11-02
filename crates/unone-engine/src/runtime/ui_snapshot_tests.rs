@@ -131,7 +131,7 @@ fn developer_edits_detach_candidates_and_rejections_keep_identity_and_digest() {
     let (dry,_)=runtime.enact_developer(std::slice::from_ref(&edit),true).unwrap();
     assert_eq!(text(dry.ui.as_deref().unwrap()),"edited");
     assert!(Arc::ptr_eq(old.ui.as_ref().unwrap(),runtime.observe().ui.as_ref().unwrap()));
-    let (accepted,_)=runtime.enact_developer(&[edit.clone()],false).unwrap();
+    let (accepted,_)=runtime.enact_developer(std::slice::from_ref(&edit),false).unwrap();
     assert!(!Arc::ptr_eq(old.ui.as_ref().unwrap(),accepted.ui.as_ref().unwrap()));
     assert_eq!(text(old.ui.as_deref().unwrap()),"before");
     assert_eq!(text(accepted.ui.as_deref().unwrap()),"edited");

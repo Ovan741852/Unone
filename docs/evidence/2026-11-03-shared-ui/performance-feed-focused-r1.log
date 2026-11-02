@@ -1,0 +1,20 @@
+✔ only an unambiguous exact opt-in enables the feed; off touches no target, read or clock (2.1723ms)
+✔ caller-driven publication throttles at exactly500ms with one snapshot read and one serialization (1.372ms)
+✔ actual completion rows preserve exact RAF/submission/callback joins and all outcomes without changing counters (1.2646ms)
+✔ the real512-row primitive ring is retained within the feed byte bound without truncation (3.1983ms)
+✔ publication cost is complete only in the NEXT envelope and never requires a second serialization (2.1696ms)
+✔ UTF8 accounting admits the exact byte boundary and rejects multibyte overflow without an encoder buffer (6.425ms)
+✔ wrong-window, missing-samples, oversized-rings and cyclic reports fail closed instead of looking complete (1.2177ms)
+✔ dispose removes only its exact last value and late calls perform no reads or clocks (0.3578ms)
+✔ read failures retire owned data, preserve another writer, and permanently stop observation (0.4172ms)
+✔ reentrant publish is ignored and disposal during read/serialization/write cannot republish (0.3857ms)
+✔ failed attribute deletion is explicit but disposal stays terminal (0.1979ms)
+✔ invalid/regressing clocks fail closed and no timer, listener or control API is installed (0.5943ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.1225
