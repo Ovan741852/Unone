@@ -25,6 +25,70 @@ function fixture(options={}){
  };
 }
 
+test('disabled wake diagnostics add neither an observer packet nor an end-clock read',async()=>{
+ let reads=0;const h=fixture({scheduler:{onWake:null,onWakeDiagnostic:null,now:()=>{reads++;return h.getTime();}}});
+ h.scheduler.start();await h.frame(5);assert.equal(reads,4);assert.deepEqual(h.counts(),{ticks:0,draws:1,timers:0});h.scheduler.stop();
+ const legacy=fixture();legacy.scheduler.start();await legacy.frame(5);assert.equal(legacy.wakes.length,1);assert.equal(Object.hasOwn(legacy.wakes[0],'acc_before_ms'),false);legacy.scheduler.stop();
+});
+
+test('passive wake records expose zero/two steps and retained negative debt without changing frames',async()=>{
+ const rows=[],h=fixture({scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();
+ await h.frame(9.95);await h.frame(19.85);await h.frame(30);
+ assert.deepEqual(h.seen,[1,1,3]);assert.equal(rows.length,3);
+ assert.deepEqual(rows.map(r=>[r.raf_time_ms,r.due,r.admitted,r.actual_steps,r.lost,r.dropped_delta]),[[9.95,1,1,1,0,0],[19.85,0,0,0,0,0],[30,2,2,2,0,0]]);
+ assert.equal(rows[0].step_ms,10);assert.equal(rows[0].tolerance_ms,.1);assert.equal(rows[0].max_catch_up_steps,5);
+ assert(Math.abs(rows[0].acc_after_ms+.05)<1e-10);assert(Math.abs(rows[1].acc_before_ms+.05)<1e-10);assert(Math.abs(rows[2].acc_after_ms)<1e-10);
+ assert.deepEqual(rows.map(r=>r.reset_before_wake),[true,false,false]);assert(rows.every(r=>!r.cancelled&&!r.error));
+ assert.equal(h.wakes.length,3,'the development wake hook remains independent');h.scheduler.stop();
+});
+
+test('wake diagnostics distinguish capped catch-up, paused redraw and resets',async()=>{
+ const rows=[],h=fixture({scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();await h.frame(103);
+ assert.equal(rows[0].due,10);assert.equal(rows[0].admitted,5);assert.equal(rows[0].lost,5);assert.equal(rows[0].actual_steps,5);assert.equal(rows[0].dropped_delta,5);assert.equal(rows[0].acc_after_ms,3);
+ h.scheduler.pause();await h.frame(1000);assert.equal(rows[1].paused,true);assert.equal(rows[1].actual_steps,0);assert.equal(rows[1].due,0);assert.equal(rows[1].cancelled,false);assert.equal(rows[1].reset_before_wake,true);
+ h.scheduler.resume();await h.frame(1010);assert.equal(rows[2].reset_before_wake,true);assert.equal(rows[2].actual_steps,1);assert.equal(h.scheduler.totalDroppedSteps,5);h.scheduler.stop();
+});
+
+test('stale rejected wake retains its original generation and cannot claim the replacement clock debt',async()=>{
+ let reject;const rows=[],h=fixture({tick:()=>new Promise((_,r)=>reject=r),scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();await h.frame(10);
+ assert.equal(rows.length,0);h.scheduler.stop();h.setTime(1000);h.scheduler.start();reject(Error('RUNTIME_CLOSED'));await flush();
+ assert.equal(rows.length,1);const row=rows[0];assert.equal(row.raf_time_ms,10);assert(row.generation_end>row.generation);assert.equal(row.reset_during_wake,true);assert.equal(row.cancelled,true);assert.equal(row.actual_steps,0);assert.equal(row.attempted_steps,1);assert.equal(row.error,'RUNTIME_CLOSED');assert.equal(row.acc_current_ms,0);
+ assert.deepEqual(h.errors,[]);assert.deepEqual(h.seen,[]);assert.equal(h.frames.size,1);h.scheduler.stop();
+});
+
+test('a failed diagnostic sink preserves legacy wake delivery and the next unmodified RAF',async()=>{
+ const h=fixture({scheduler:{onWakeDiagnostic(){throw Error('DIAGNOSTIC_FAILED');}}});h.scheduler.start();await h.frame(10);await h.frame(20);
+ assert.deepEqual(h.seen,[1,2]);assert.equal(h.wakes.length,2);assert.equal(h.scheduler.wakeDiagnosticFailures,2);assert.equal(h.frames.size,1);assert.deepEqual(h.errors,[]);h.scheduler.stop();
+});
+
+for(const transition of ['pause','reset','hide-restore'])test(`passive wake preserves old debt on a successful tick cancelled by ${transition}`,async()=>{
+ let resolve;const rows=[],h=fixture({tick:()=>new Promise(r=>resolve=r),scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();await h.frame(30);
+ if(transition==='pause')h.scheduler.pause();else if(transition==='reset')h.scheduler.resetClock();else{await h.visibility(true,40);await h.visibility(false,1000);}
+ resolve();await flush();assert.equal(rows.length,1);assert.equal(rows[0].admitted,3);assert.equal(rows[0].actual_steps,1);assert.equal(rows[0].attempted_steps,1);
+ assert.equal(rows[0].acc_after_ms,20);assert.equal(rows[0].acc_current_ms,0);assert.equal(rows[0].cancelled,true);assert.equal(rows[0].reset_during_wake,true);assert.equal(rows[0].error,null);
+ assert.deepEqual(h.seen,[]);assert.deepEqual(h.errors,[]);assert.equal(h.frames.size,1);h.scheduler.stop();
+});
+
+test('diagnostic fencing does not swallow or replace a historical legacy onWake failure',async()=>{
+ let time=0,callback,observed=0,scheduled=0;const legacy=Error('LEGACY_WAKE_FAILED');
+ const scheduler=createAsyncScheduler({stepMs:10,now:()=>time,visibilityTarget:{hidden:false},raf:f=>(callback=f,++scheduled),cancelRaf(){},tick:async()=>{},render(){},
+  onWake(){throw legacy;},onWakeDiagnostic(){observed++;throw Error('NEW_DIAGNOSTIC_FAILED');}});
+ scheduler.start();time=10;const first=callback;await assert.rejects(first(10),error=>error===legacy);
+ assert.equal(observed,1);assert.equal(scheduler.wakeDiagnosticFailures,1);assert.equal(scheduled,2);scheduler.stop();
+});
+
+for(const action of ['reset','pause'])test(`wake body state excludes RAF observer work and a legacy ${action}`,async()=>{
+ const rows=[],legacy=[];const h=fixture({tick:()=>h.setTime(17),render:()=>h.setTime(18),scheduler:{
+  onRafEnd(){h.setTime(h.getTime()+15);},onWakeDiagnostic:r=>rows.push(r),
+  onWake:r=>{legacy.push(r);if(action==='reset')h.scheduler.resetClock();else h.scheduler.pause();},
+ }});h.scheduler.start();await h.frame(15);
+ assert.deepEqual(h.seen,[1]);assert.equal(rows.length,1);assert.equal(rows[0].wake_end_ms,18,'body endpoint precedes the RAF/feed observer');
+ assert.equal(rows[0].acc_after_ms,5);assert.equal(rows[0].acc_current_ms,5,'snapshot precedes legacy resetting live debt');
+ assert.equal(rows[0].generation_end,rows[0].generation);assert.equal(rows[0].reset_during_wake,false);assert.equal(rows[0].paused_end,false);assert.equal(rows[0].cancelled,false);
+ assert.equal(rows[0].actual_steps,1);assert.equal(rows[0].tolerance_ms,.1);assert.equal(legacy[0].end_ms,33,'historical legacy wake includes RAF observer cost');
+ assert.equal(h.frames.size,1);assert.deepEqual(h.errors,[]);h.scheduler.stop();
+});
+
 test('coherent update/accept/draw keeps original RAF metadata while actual variable completion times remain honest',async()=>{
  const h=fixture({tick:()=>{h.setTime(h.counts().ticks*10+(h.counts().ticks%2?4:9));},render:()=>h.setTime(h.getTime()+1)});h.scheduler.start();
  assert.equal(h.frames.size,1);assert.equal(h.counts().ticks,0);

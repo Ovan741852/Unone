@@ -50,6 +50,17 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-11-03: the official production player's opt-in host profiler can now
+  record bounded passive wake metadata. Default-off execution adds no Core
+  calls, packet or observer clock. Simulation timing and the legacy wake hook
+  remain unchanged. Manual review caught an observer-boundary attribution P2;
+  its negative control and reset/pause regressions now pass. Final focused
+  checks passed 52/52; the exact final full Node gate passed 870/875 with five
+  skips. The separate tool-free Claude attempt timed out after 45.320 seconds
+  without output and remains incomplete. This is diagnostic metadata, not a
+  scheduler/FPS correction; actual frozen-host validation is recorded in
+  [the execution evidence](evidence/2026-11-03-shared-ui/player-wake-diagnostic.json).
+
 - 2026-11-03: GPU UI hidden/reused draw runs now detach sampler references
   before a texture retires. The actual-module negative control had six failures;
   the fix passed 33 focused checks and 856/861 full Node tests (five skipped).

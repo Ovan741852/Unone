@@ -37,6 +37,41 @@ Changed leased fields additionally emit `world_field/<name>/utf8`, `/parse` and
 `/freeze` spans. `world_field_publications` records each field's encoded bytes
 and whether it changed; unchanged generations emit `/reuse` without reparsing.
 
+With `?unone_profile=1`, the official production host also records one `wake`
+event per admitted scheduler RAF in that same bounded profiler ring. The
+default limit is 256 events across all kinds; `unone_profile_limit=16..2048`
+selects another capacity. Inspect `data-player-profile` or the existing
+`window.unonePlayerProfile.report()` accessor. Overwritten records remain
+counted, so complete JSON alone does not establish continuous coverage.
+
+| Wake attributes | Meaning |
+|---|---|
+| `raf_time_ms`, `wake_start_ms`, `wake_end_ms` | Original browser RAF token and the enclosing asynchronous wake body. The body endpoint is captured after preparation finalization but before `onRafEnd`, completion-feed publication and legacy wake observers. |
+| `generation`, `generation_end`, `reset_before_wake`, `reset_during_wake` | Clock-generation identity and reset markers captured before observers. The first observed generation has `reset_before_wake=true`. |
+| `elapsed_ms`, `acc_before_ms`, `acc_after_elapsed_ms`, `acc_after_ms`, `acc_current_ms` | Actual scheduler elapsed time and debt snapshots. `acc_after_ms` retains the old generation's last admitted/debited debt; `acc_current_ms` can differ after cancellation/reset. Negative debt is retained. |
+| `step_ms`, `tolerance_ms`, `max_catch_up_steps`, `due`, `admitted`, `lost`, `actual_steps`, `attempted_steps`, `dropped_delta` | Existing policy and outcomes, without changing them. `actual_steps` counts successful awaited scheduler tick calls; a coalesced request is not necessarily a distinct Core update. |
+| `paused`, `paused_end`, `cancelled`, event `status` and sanitized `error_code` | Body state and cancellation/failure classification. A paused UI redraw is distinct from a cancelled preparation. Read `status` when deciding whether a wake failed. |
+
+The `wake` event's own `wall_ms` measures recording the observation, not the
+wake body or Core CPU work. Its `wake_start_ms`/`wake_end_ms` attributes enclose
+awaited update and draw work, overlap their existing spans and must not be
+added to those timings. The endpoint deliberately excludes subsequent feed
+and wake observers; their work can still delay the next RAF. A zero-step wake
+can redraw an old snapshot, while a later catch-up wake can execute multiple
+ticks before one draw. These records help distinguish those cases; they do
+not change a freshness gate or establish physical scanout. Healthy wakes omit
+`error_code`; genuine errors retain only their sanitized leading code.
+
+Wake recording is off by default: no new diagnostic packet, end-clock read
+or Core/worker request is made. The development `PROFILE_WAKE` hook remains
+independent and keeps its historical endpoint after `onRafEnd`. A throwing
+new diagnostic callback is fenced and counted by the scheduler's read-only
+`wakeDiagnosticFailures`; it cannot skip the legacy hook or next RAF. The
+main profiler consumer contains record/sink failures and attempts to set
+`data-player-profile-error` without stopping the game. No simulation policy,
+clock, tolerance, tick count or schedule order is changed. Active profiling
+still adds observer work: validate production cadence separately.
+
 Engine 0.2.0's official Web player exposes a read-only endpoint without enabling
 the developer profiler:
 

@@ -71,6 +71,12 @@ let orderedQueue=null,orderedRouter=null,orderedEpoch=0,physicalProfile;
 // Explicit opt-in host profiling (?unone_profile=1). Null when disabled: each site is one branch.
 let profiler=null,profileFlight=null,profileLastSource=null;
 /* PROFILE_INIT */
+function recordSchedulerWake(wake){
+ if(!profiler)return;
+ const {error,...attrs}=wake;if(error)attrs.error=error;
+ try{profiler.record('wake',wake.cancelled?'cancelled':error?'error':'ok',attrs);}
+ catch(error){try{document.body.dataset.playerProfileError=String(error?.message??error).slice(0,128);}catch{}}
+}
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
@@ -189,6 +195,7 @@ async function finishStartup(presentation,kind){
  if(sample().state!=='presented')return false;
  assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,
+  onWakeDiagnostic:profiler?recordSchedulerWake:null,
   onRafEnd:(at,start,end,flight,budget)=>{playerCompletion.rafEnd(at,start,end,flight,budget);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
   onPreparationEnd:(tag,at,start,end,steps,cancelled,budget)=>playerCompletion.preparationEnd(tag,at,start,end,steps,cancelled,budget),
   onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
