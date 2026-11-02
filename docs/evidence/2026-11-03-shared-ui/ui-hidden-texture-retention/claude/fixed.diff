@@ -1,0 +1,119 @@
+diff --git a/web/renderer/ui-gpu.js b/web/renderer/ui-gpu.js
+index 756451d..e9da988 100644
+--- a/web/renderer/ui-gpu.js
++++ b/web/renderer/ui-gpu.js
+@@ -40,25 +40,38 @@ void main(){
+ const imageSize=image=>[image?.naturalWidth??image?.width,image?.naturalHeight??image?.height];
+ const capacityFor=n=>2**Math.ceil(Math.log2(Math.max(64,n)));
+ const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
+ 
+ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas')}={}){
+  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
+  const positions=new THREE.BufferAttribute(new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),3),index=new THREE.BufferAttribute(new Uint16Array([0,1,2,0,2,3]),1);
+  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
+- const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map();
++ const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
+  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
+  let rebuilds=0,rasters=0,uploads=0,compactions=0,draws=0,lastRegions=0,lastMs=null,wasted=0,stale=true;
+ 
+  function material(){
+   return new THREE.ShaderMaterial({vertexShader:VERTEX,fragmentShader:FRAGMENT,uniforms:{uiSize:{value:uiSize},uiTexture:{value:white}},
+    transparent:true,depthTest:false,depthWrite:false,toneMapped:false,side:THREE.DoubleSide,blending:THREE.CustomBlending,
+    blendSrc:THREE.OneFactor,blendDst:THREE.OneMinusSrcAlphaFactor,blendSrcAlpha:THREE.OneFactor,blendDstAlpha:THREE.OneMinusSrcAlphaFactor});
+  }
++ function bindRun(run,texture){
++  const old=run.texture;if(old===texture)return;
++  const owners=textureRuns.get(old);if(owners){owners.delete(run);if(!owners.size)textureRuns.delete(old);}
++  if(old&&run.mesh.material.map===old)run.mesh.material.map=null;
++  run.texture=texture;run.mesh.material.uniforms.uiTexture.value=texture;
++  if(texture!==white){let next=textureRuns.get(texture);if(!next)textureRuns.set(texture,next=new Set());next.add(run);}
++ }
++ function retireTexture(texture){
++  // Reusable hidden runs must not retain a retired image/canvas. Track their
++  // bindings so retirement visits only the actual owners, not every run.
++  const owners=textureRuns.get(texture);if(owners)for(const run of owners)bindRun(run,white);
++  texture.dispose();
++ }
+  function runAt(i,needed){
+   let r=runs[i];if(r&&r.capacity>=needed)return r;
+   const capacity=capacityFor(needed),geometry=new THREE.InstancedBufferGeometry(),buffer=new THREE.InstancedInterleavedBuffer(new Float32Array(capacity*STRIDE),STRIDE,1);
+   buffer.setUsage(THREE.DynamicDrawUsage);geometry.setIndex(index);geometry.setAttribute('position',positions);
+   ATTRIBUTES.forEach((name,k)=>geometry.setAttribute(name,new THREE.InterleavedBufferAttribute(buffer,4,k*4)));
+   if(r){r.geometry.dispose();r.mesh.geometry=geometry;Object.assign(r,{geometry,buffer,capacity});return r;}
+   const mesh=new THREE.Mesh(geometry,material());mesh.frustumCulled=false;mesh.renderOrder=i;scene.add(mesh);
+   r={mesh,geometry,buffer,capacity};runs[i]=r;return r;
+@@ -124,22 +137,22 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+    compactions++;wasted=0;slots.clear();for(const page of pages){page.shelves=[];page.top=0;}missing=resolve(true);
+   }
+   for(const request of requests)if(request.slot&&!missing.includes(request)){
+    if(request.slot.content!==request.content){upload(request.slot,request);request.slot.content=request.content;}
+    const s=request.slot;request.texture=s.page.texture;request.uv=[s.x/atlasSize,s.y/atlasSize,(s.x+request.w)/atlasSize,(s.y+request.h)/atlasSize];
+   }
+   for(const request of missing){
+    let own=dedicated.get(request.key);
+-   if(!own||own.content!==request.content){own?.texture.dispose();const canvas=surface(request.w,request.h),context=canvas.getContext('2d');
++   if(!own||own.content!==request.content){const canvas=surface(request.w,request.h),context=canvas.getContext('2d');
+     if(!context)throw Error('UI_TEXT_RASTER_UNAVAILABLE');paint(request,canvas,context);
+-    own={texture:configure(new THREE.Texture(canvas)),content:request.content};own.texture.needsUpdate=true;dedicated.set(request.key,own);uploads++;}
++    const previous=own;own={texture:configure(new THREE.Texture(canvas)),content:request.content};own.texture.needsUpdate=true;dedicated.set(request.key,own);if(previous)retireTexture(previous.texture);uploads++;}
+    request.texture=own.texture;request.uv=FULL_UV;request.dedicated=true;
+   }
+-  for(const [key,own]of dedicated)if(!missing.some(r=>r.key===key)){own.texture.dispose();dedicated.delete(key);}
++  for(const [key,own]of dedicated)if(!missing.some(r=>r.key===key)){dedicated.delete(key);retireTexture(own.texture);}
+  }
+  function imageTexture(image,used){
+   used.add(image);let texture=imageTextures.get(image);
+   if(!texture){texture=configure(new THREE.Texture(image));texture.needsUpdate=true;imageTextures.set(image,texture);}
+   return texture;
+  }
+ 
+  function rebuild(context){
+@@ -196,41 +209,41 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+    const radius=(style?.border_radius??0)*unit;
+    if(style?.background)rect(x,y,w,h,{mode:FILL,color:style.background,radius,opacity,clip});
+    if(node.kind==='image')image(node,x,y,w,h,radius,opacity,clip);
+    else if(hasText(node))text(node,nodeKeys?.[index]??JSON.stringify(node),x,y,w,h,radius,opacity,clip,bounds);
+    const border=Math.min((style?.border_width??0)*unit,w,h);
+    if(border>0)rect(x,y,w,h,{mode:BORDER,border:style.border_color??WHITE,radius,width:border,opacity,clip});
+   }
+   placeText(requests);
+-  for(const [image,texture]of imageTextures)if(!usedImages.has(image)){texture.dispose();imageTextures.delete(image);}
++  for(const [image,texture]of imageTextures)if(!usedImages.has(image)){imageTextures.delete(image);retireTexture(texture);}
+   // Pack quads in painter order; a draw call ends only where the texture changes.
+   if(data.length<prims.length*STRIDE)data=new Float32Array(capacityFor(prims.length)*STRIDE);
+   const groups=[];let group=null;count=0;
+   for(const p of prims){
+    const texture=p.text?p.text.texture:p.texture;if(p.text&&!texture)continue;
+    if(!group||(texture&&group.texture&&texture!==group.texture)){group={texture:null,start:count,count:0};groups.push(group);}
+    if(texture)group.texture=texture;
+    const uv=p.text?p.text.uv:p.uv,o=count*STRIDE,c=p.color,b=p.border,box=p.box,clip=p.clip;
+    data.set([p.origin[0],p.origin[1],p.axisX[0],p.axisX[1],p.axisY[0],p.axisY[1],0,0,uv[0],uv[1],uv[2],uv[3],c[0],c[1],c[2],c[3],b[0],b[1],b[2],b[3],
+     box[0],box[1],box[2],box[3],p.radius,p.width,p.mode,p.opacity,clip[0],clip[1],clip[2],clip[3]],o);
+    group.count++;count++;
+   }
+   groups.forEach((g,i)=>{const r=runAt(i,g.count);r.buffer.array.set(data.subarray(g.start*STRIDE,(g.start+g.count)*STRIDE));
+    r.buffer.clearUpdateRanges();r.buffer.addUpdateRange(0,g.count*STRIDE);r.buffer.needsUpdate=true;
+-   r.geometry.instanceCount=g.count;r.mesh.material.uniforms.uiTexture.value=g.texture??white;r.mesh.visible=g.count>0;});
+-  for(let i=groups.length;i<runs.length;i++)runs[i].mesh.visible=false;
++   r.geometry.instanceCount=g.count;bindRun(r,g.texture??white);r.mesh.visible=g.count>0;});
++  for(let i=groups.length;i<runs.length;i++){bindRun(runs[i],white);runs[i].mesh.visible=false;}
+   drawRuns=groups.length;lastRegions=prims.length;lastMs=performance.now()-started;rebuilds++;stale=false;
+  }
+ 
+  function clear(){
+-  for(const r of runs){scene.remove(r.mesh);r.geometry.dispose();r.mesh.material.dispose();}runs.length=0;
+-  for(const page of pages)page.texture.dispose();pages.length=0;slots.clear();
+-  for(const own of dedicated.values())own.texture.dispose();dedicated.clear();
+-  for(const texture of imageTextures.values())texture.dispose();imageTextures.clear();
++  for(const r of runs){bindRun(r,white);scene.remove(r.mesh);r.geometry.dispose();r.mesh.material.dispose();}runs.length=0;textureRuns.clear();
++  for(const page of pages)retireTexture(page.texture);pages.length=0;slots.clear();
++  for(const own of dedicated.values())retireTexture(own.texture);dedicated.clear();
++  for(const texture of imageTextures.values())retireTexture(texture);imageTextures.clear();
+   scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=0;stale=true;
+  }
+  return {
+   // Drawing-buffer pixels the UI lays out against, and the CSS->device scale.
+   target(){if(disposed||!available()||renderer.getContext().isContextLost())return null;renderer.getDrawingBufferSize(size);return {width:size.x,height:size.y,scale:renderer.getPixelRatio()};},
+   draw(context){
+    if(disposed||!available()||renderer.getContext().isContextLost())return {skipped:true,regions:0};
+    renderer.getDrawingBufferSize(size);

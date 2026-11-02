@@ -50,6 +50,17 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-11-03: GPU UI hidden/reused draw runs now detach sampler references
+  before a texture retires. The actual-module negative control had six failures;
+  the fix passed 33 focused checks and 856/861 full Node tests (five skipped).
+  Independent and manual source reviews found no remaining concrete P1/P2.
+  The separate tool-free Claude attempt timed out after 45.345 seconds without
+  output and remains incomplete. This fixes a concrete strong-reference path,
+  without claiming process/GPU leak freedom or the cause of FPS failures. See
+  [the issue and raw evidence](issues/2026-11-03-ui-hidden-texture-retention.md).
+  The fixed 08c4 host's seven-scene run remains two passes, three failures and
+  two insufficient endpoints in [the scoped result](evidence/2026-11-03-shared-ui/seven-cases-08c4.json).
+
 - 2026-11-03: one bounded world-texture cache authority now covers ordinary
   sprite-pool resources and legacy records. Independent Codex review closed a
   retirement-reentrancy defect and found no remaining concrete P1/P2. Focused

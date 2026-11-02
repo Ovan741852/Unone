@@ -1,0 +1,56 @@
+{
+  "status": "running",
+  "started_utc": "2026-11-02T21:41:28.589Z",
+  "base_revision": "848f45a6dee8412f116e4130a8eda7238a00c124",
+  "captured_head": "848f45a6dee8412f116e4130a8eda7238a00c124",
+  "fixed_diff_sha256": "f158cec7c9c408e2f60d46f3943e64646eef984d17668ba0704888b37906428e",
+  "paths": [
+    {
+      "path": "web/renderer/ui-gpu.js",
+      "bytes": 19707,
+      "sha256": "ae5ba44ba66f0420ec9a6988cb88558d6bb51a5c5614fd4e83d5d9d21c3568e3"
+    },
+    {
+      "path": "web/renderer/ui-gpu-ownership.test.mjs",
+      "bytes": 8000,
+      "sha256": "1add99dfd806e6dc46e38b038617884922023c7755f73ba369df02b671ba9e0f"
+    },
+    {
+      "path": "docs/issues/2026-11-03-ui-hidden-texture-retention.md",
+      "bytes": 4178,
+      "sha256": "27b559a6757c027aa7c6b2ad8541b8d2c5e52bcf821a87169e5ec4813d42a064"
+    }
+  ],
+  "cli": {
+    "path": "C:/Users/liNao/.local/bin/claude.exe",
+    "version": "2.1.308 (Claude Code)",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version_exit": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 45000
+  },
+  "prompt_sha256": "b0303455f4d3d121587cb56fc583f98f0d5f39afb95ec1501cd04ee9007ec578"
+}

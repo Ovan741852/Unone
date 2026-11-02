@@ -1,0 +1,1920 @@
+{
+  "schema": "unone.seven-case-native-completion-review.v1",
+  "status": "two-pass-three-fail-two-insufficient-not-release-ready",
+  "scope": "Independent offline review of existing native DOM completion captures and strict analyses. No browser, Core, Native executable, build, test, new threshold or recut window was run.",
+  "host": {
+    "commit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+    "sha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7"
+  },
+  "game_source": {
+    "production_main_sha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89",
+    "battle_wrapper_sha256": "fc079df197c4332a70a9e2a001b1a5e27febd669119ee1c18b2b6de42adaf180",
+    "battle_scope": "QA wrapper around98a9 with separately pinned URL/release; not an identical production-main body.",
+    "not_old_profile_source": "Earlier32fd profile runs and independently evolved routes/state do not establish causal A/B performance here."
+  },
+  "runtime_context": {
+    "core_source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+    "production_wasm_sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+    "identity_scope": "Root-supplied verified export/runtime context; DOM completion does not itself cryptographically attest the module."
+  },
+  "criteria": {
+    "minimumRafFps": 59,
+    "minimumSimulationFps": 59,
+    "rafP95Ms": 18.5,
+    "rafP99Ms": 25,
+    "reportedDroppedDelta": 0,
+    "minimumOneSecondSimulationFrames": 58,
+    "maximumPresentedFrameGapMs": 50,
+    "minimumPresentedSnapshotFps": 58,
+    "battleClockToleranceSeconds": 0.05,
+    "minimumTravelTiles": 0.05,
+    "minimumViewportPanPixels": 8
+  },
+  "criteria_scope": "Existing adapter/legacy gates retained exactly; rates use the larger native collection or official counter-query span. No tail was removed.",
+  "analyzers": {
+    "adapter": {
+      "sha256": "9328bb1ee68d6570807ecbfb622b075391e6b276e77becac6d81cd1c54161daf",
+      "bytes": 17911
+    },
+    "legacy": {
+      "sha256": "b8505680366f51c440229e8f01c91e7a1c26f1c5804910274161ecb3561c9f5c",
+      "bytes": 37953,
+      "criteria": {
+        "minimumRafFps": 59,
+        "minimumSimulationFps": 59,
+        "rafP95Ms": 18.5,
+        "rafP99Ms": 25,
+        "reportedDroppedDelta": 0,
+        "minimumOneSecondSimulationFrames": 58,
+        "maximumPresentedFrameGapMs": 50,
+        "minimumPresentedSnapshotFps": 58,
+        "battleClockToleranceSeconds": 0.05,
+        "minimumTravelTiles": 0.05,
+        "minimumViewportPanPixels": 8
+      }
+    }
+  },
+  "raw_manifest": {
+    "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/seven-case-input-manifest-r1.json",
+    "bytes": 8096,
+    "sha256": "7ca1cb87cc97ffe8769b832b2d25cb06bcba0afaa98931bc18441429a12dec29",
+    "listed_files": 48,
+    "listed_bytes": 70139504,
+    "verification_scope": "Seven raw hashes were independently calculated during prior offline parsing and match analysis provenance and this manifest. Seven analyses and collector-source copies were hashed now. This writer did not recopy or rehash all48raw/PNG files."
+  },
+  "game_review": {
+    "json": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/seven-case-summary-r1.json",
+      "bytes": 284287,
+      "sha256": "778e21ba9b0f129ffe46ca3dbf9d715ca0a249ad793c8d7d8864598dd68a1699"
+    },
+    "markdown": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/seven-case-summary-r1.md",
+      "bytes": 3344,
+      "sha256": "31f356695b2482a16efeadc4873fc3882c44d4bbfc4006f073be06388b4cb2e4"
+    },
+    "same_verdict_counts": true,
+    "counts": {
+      "pass": 2,
+      "fail": 3,
+      "insufficient-evidence": 2
+    }
+  },
+  "results": [
+    {
+      "scenario": "idle",
+      "revision": 1,
+      "status": "pass",
+      "evidence_complete": true,
+      "source_identity": {
+        "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+        "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+        "url": "http://127.0.0.1:8244/main-map-cache-20261103-r6/index.html?seed=42&unone_performance_feed=1",
+        "releaseRoot": "releases/dbc3652b829688fdef7c988b1a1924e2ac5eefcda94b231d0176fcf6b191ad3f/",
+        "sourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+      },
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/idle-capture-r1.json",
+        "bytes": 7485579,
+        "sha256": "b5854610a12259a52d1c2b0e3150492a2181a859e89b626dda282bea4728c6b0"
+      },
+      "analysis": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/idle-analysis-r1.json",
+        "bytes": 187851,
+        "sha256": "113d82634079c1331aa61a97d2e4289274a67f3e9129f0e3497c5a1ba8908a9a"
+      },
+      "raw_sha_matches_analysis_and_game_manifest": true,
+      "collector": {
+        "pin": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/idle-capture-r1.json.collector-pin.json",
+          "bytes": 1410,
+          "sha256": "194bfd00b214a2131d1b994f3c559eb418b1228a8c237eab922171e17674803a"
+        },
+        "source": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/idle-capture-r1.json.collector-source.mjs",
+          "bytes": 11474,
+          "sha256": "722a76eaa23a480870fc5b2829af523a8d3e6b5c4cf716d4e9ae0c7208f6b3b2"
+        },
+        "pinned_at_utc_ms": 1793653336112,
+        "recorded_pin_precedes_before_read": true,
+        "source_file_not_executed_by_reviewer": true
+      },
+      "plan": {
+        "startUtcMs": 1793653493234,
+        "endUtcMs": 1793653523234
+      },
+      "actual": {
+        "startUtcMs": 1793653493234,
+        "endUtcMs": 1793653523254
+      },
+      "native_seconds": 30.02,
+      "query_counter_deltas": {
+        "scope": "Exact official query-boundary deltas; not proof of a stale endpoint tail or display scanout.",
+        "simulationFrames": 1801,
+        "completedDraws": 1801,
+        "presentedFrameChanges": 1801,
+        "skippedDraws": 0,
+        "droppedSteps": 0,
+        "errorDraws": 0,
+        "unknownDraws": 0,
+        "skipReasons": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 0,
+          "ui_assets_pending": 0,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "outcomes": {
+          "completed": 1801,
+          "skipped": 0,
+          "unknown": 0,
+          "error": 0,
+          "no_submission": 0
+        },
+        "scheduler": {
+          "submissions": 1801,
+          "completed": 1801,
+          "repeats": 0,
+          "regressions": 0,
+          "already_submitted_frames": 0,
+          "in_flight_submissions": 0,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0,
+          "non_increasing_successful_raf_timestamps": 0
+        },
+        "derivedFreshSchedulerFrames": 1801
+      },
+      "rates": {
+        "wallSeconds": 30.02,
+        "officialQueryWallSeconds": 30.0175,
+        "conservativeRateSeconds": 30.02,
+        "nativeWallSimulationFps": 59.99333777481679,
+        "officialQuerySimulationFps": 59.99833430498876,
+        "nativeWallFreshSubmissionFps": 59.99333777481679,
+        "officialQueryFreshSubmissionFps": 59.99833430498876,
+        "simulationFps": 59.99333777481679,
+        "freshSchedulerSubmissionFps": 59.99333777481679,
+        "denominatorScope": "Both native collection span and official counter-query span must meet the same59 threshold; the larger span is used so allowed boundary age cannot inflate the rate."
+      },
+      "windows": {
+        "window_ms": 1000,
+        "step_ms": 500,
+        "total": 59,
+        "pass": 59,
+        "failed_covered": 0,
+        "uncovered": 0,
+        "worst_window_fresh_raf_p95_ms": 16.900000000023283,
+        "worst_window_fresh_raf_p99_ms": 17,
+        "worst_window_fresh_gap_ms": 17,
+        "scope": "Overlapping fixed one-second query windows at500ms steps; counts are not distinct stalls."
+      },
+      "dropped": {
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "exact": true,
+        "precision": "Synchronous v1 query boundaries within the same session/time origin."
+      },
+      "endpoints": {
+        "before": {
+          "query": 317385.2999999523,
+          "origin": 1793653175812,
+          "frame": 18977,
+          "draws": 18965,
+          "fresh": 18956,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 2,
+            "ui_assets_pending": 17,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 623,
+          "read_start": 1793653493224,
+          "read_end": 1793653493234
+        },
+        "after": {
+          "query": 347402.7999999523,
+          "frame": 20778,
+          "draws": 20766,
+          "fresh": 20757,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 2,
+            "ui_assets_pending": 17,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 682,
+          "read_start": 1793653523244,
+          "read_end": 1793653523254,
+          "age_ms": 39.199951171875
+        }
+      },
+      "max_observed_fresh_raf_gap": {
+        "ms": 17,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 321630.5,
+          "start_ms": 321634.5,
+          "end_ms": 321635.59999990463,
+          "callback_end_ms": 321635.59999990463,
+          "snapshot_frame": 19232,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 321647.5,
+          "start_ms": 321651.1999999285,
+          "end_ms": 321652.1999999285,
+          "callback_end_ms": 321652.1999999285,
+          "snapshot_frame": 19233,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        }
+      },
+      "transport_missing": [],
+      "transport_issue_codes": [],
+      "counter_missing": [],
+      "legacy_end_clock_gate": {
+        "complete": true,
+        "passed": true,
+        "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+      },
+      "release_ready": false,
+      "scene_behavior_verified_by_analyzer": false,
+      "same_row_data_availability": {
+        "keys": [
+          "role",
+          "readStartUtcMs",
+          "readEndUtcMs",
+          "completionRaw",
+          "feedError",
+          "playerError",
+          "visibility",
+          "readError",
+          "preludeReadIndex"
+        ],
+        "performance": false,
+        "profile": false,
+        "broker": false
+      },
+      "raw_health": {
+        "raw_reads": 245,
+        "read_errors": 0,
+        "completion_json_parse_errors": 0,
+        "feed_error_rows": 0,
+        "player_error_rows": 0,
+        "backend": [
+          "main"
+        ],
+        "scope": "Only captured feed/player error attributes and completion contract. No full browser console/network/GPU health collection is implied."
+      },
+      "observer_publication_cost_ms": {
+        "n": 59,
+        "p50": 0.20000004768371582,
+        "p95": 0.30000007152557373,
+        "p99": 0.30000007152557373,
+        "min": 0.09999990463256836,
+        "max": 0.30000007152557373,
+        "mean": 0.20847457546298787
+      }
+    },
+    {
+      "scenario": "atlas",
+      "revision": 1,
+      "status": "fail",
+      "evidence_complete": true,
+      "source_identity": {
+        "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+        "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+        "url": "http://127.0.0.1:8244/main-map-cache-20261103-r6/index.html?seed=42&unone_performance_feed=1",
+        "releaseRoot": "releases/dbc3652b829688fdef7c988b1a1924e2ac5eefcda94b231d0176fcf6b191ad3f/",
+        "sourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+      },
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/atlas-capture-r1.json",
+        "bytes": 7462511,
+        "sha256": "1c566ee31615efc3982b19157a155e2a07b066c8bba38e769152c7e372435475"
+      },
+      "analysis": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/atlas-analysis-r1.json",
+        "bytes": 186682,
+        "sha256": "44cbbb573c3abcbac785c2e50adc9f6d40f5820ff08ed59890867d3c5cd40e24"
+      },
+      "raw_sha_matches_analysis_and_game_manifest": true,
+      "collector": {
+        "pin": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/atlas-capture-r1.json.collector-pin.json",
+          "bytes": 1412,
+          "sha256": "66139a5c5cee03d8cf8c43e55398d1cc01e9bfb9c786fca8192b81aca10fa607"
+        },
+        "source": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/atlas-capture-r1.json.collector-source.mjs",
+          "bytes": 11474,
+          "sha256": "722a76eaa23a480870fc5b2829af523a8d3e6b5c4cf716d4e9ae0c7208f6b3b2"
+        },
+        "pinned_at_utc_ms": 1793653720081,
+        "recorded_pin_precedes_before_read": true,
+        "source_file_not_executed_by_reviewer": true
+      },
+      "plan": {
+        "startUtcMs": 1793653720522,
+        "endUtcMs": 1793653750522
+      },
+      "actual": {
+        "startUtcMs": 1793653720522,
+        "endUtcMs": 1793653750541
+      },
+      "native_seconds": 30.019,
+      "query_counter_deltas": {
+        "scope": "Exact official query-boundary deltas; not proof of a stale endpoint tail or display scanout.",
+        "simulationFrames": 1798,
+        "completedDraws": 1797,
+        "presentedFrameChanges": 1730,
+        "skippedDraws": 0,
+        "droppedSteps": 0,
+        "errorDraws": 0,
+        "unknownDraws": 0,
+        "skipReasons": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 0,
+          "ui_assets_pending": 0,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "outcomes": {
+          "completed": 1797,
+          "skipped": 0,
+          "unknown": 0,
+          "error": 0,
+          "no_submission": 0
+        },
+        "scheduler": {
+          "submissions": 1797,
+          "completed": 1797,
+          "repeats": 67,
+          "regressions": 0,
+          "already_submitted_frames": 67,
+          "in_flight_submissions": 0,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0,
+          "non_increasing_successful_raf_timestamps": 0
+        },
+        "derivedFreshSchedulerFrames": 1730
+      },
+      "rates": {
+        "wallSeconds": 30.019,
+        "officialQueryWallSeconds": 29.951299999952315,
+        "conservativeRateSeconds": 30.019,
+        "nativeWallSimulationFps": 59.89539958026584,
+        "officialQuerySimulationFps": 60.03078330499386,
+        "nativeWallFreshSubmissionFps": 57.63016756054499,
+        "officialQueryFreshSubmissionFps": 57.76043109991066,
+        "simulationFps": 59.89539958026584,
+        "freshSchedulerSubmissionFps": 57.63016756054499,
+        "denominatorScope": "Both native collection span and official counter-query span must meet the same59 threshold; the larger span is used so allowed boundary age cannot inflate the rate."
+      },
+      "windows": {
+        "window_ms": 1000,
+        "step_ms": 500,
+        "total": 58,
+        "pass": 44,
+        "failed_covered": 14,
+        "uncovered": 0,
+        "worst_window_fresh_raf_p95_ms": 33.39999999990687,
+        "worst_window_fresh_raf_p99_ms": 33.5,
+        "worst_window_fresh_gap_ms": 33.5,
+        "scope": "Overlapping fixed one-second query windows at500ms steps; counts are not distinct stalls."
+      },
+      "dropped": {
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "exact": true,
+        "precision": "Synchronous v1 query boundaries within the same session/time origin."
+      },
+      "endpoints": {
+        "before": {
+          "query": 544708.3999999762,
+          "origin": 1793653175812,
+          "frame": 32616,
+          "draws": 32585,
+          "fresh": 32576,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 2,
+            "ui_assets_pending": 27,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 1070,
+          "read_start": 1793653720510,
+          "read_end": 1793653720522
+        },
+        "after": {
+          "query": 574659.6999999285,
+          "frame": 34414,
+          "draws": 34382,
+          "fresh": 34306,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 2,
+            "ui_assets_pending": 27,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 1129,
+          "read_start": 1793653750529,
+          "read_end": 1793653750541,
+          "age_ms": 69.300048828125
+        }
+      },
+      "max_observed_fresh_raf_gap": {
+        "ms": 33.5,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 554487.5,
+          "start_ms": 554491.1999999285,
+          "end_ms": 554491.8999999762,
+          "callback_end_ms": 554492,
+          "snapshot_frame": 33204,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 554521,
+          "start_ms": 554527.6999999285,
+          "end_ms": 554528.2999999523,
+          "callback_end_ms": 554528.2999999523,
+          "snapshot_frame": 33206,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        }
+      },
+      "transport_missing": [],
+      "transport_issue_codes": [
+        "RAW_ONE_SECOND_CADENCE_FAILURE"
+      ],
+      "counter_missing": [],
+      "legacy_end_clock_gate": {
+        "complete": true,
+        "passed": false,
+        "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+      },
+      "release_ready": false,
+      "scene_behavior_verified_by_analyzer": false,
+      "same_row_data_availability": {
+        "keys": [
+          "role",
+          "readStartUtcMs",
+          "readEndUtcMs",
+          "completionRaw",
+          "feedError",
+          "playerError",
+          "visibility",
+          "readError",
+          "preludeReadIndex"
+        ],
+        "performance": false,
+        "profile": false,
+        "broker": false
+      },
+      "raw_health": {
+        "raw_reads": 245,
+        "read_errors": 0,
+        "completion_json_parse_errors": 0,
+        "feed_error_rows": 0,
+        "player_error_rows": 0,
+        "backend": [
+          "main"
+        ],
+        "scope": "Only captured feed/player error attributes and completion contract. No full browser console/network/GPU health collection is implied."
+      },
+      "observer_publication_cost_ms": {
+        "n": 59,
+        "p50": 0.19999992847442627,
+        "p95": 0.30000007152557373,
+        "p99": 0.30000007152557373,
+        "min": 0,
+        "max": 0.30000007152557373,
+        "mean": 0.1830508567519107
+      }
+    },
+    {
+      "scenario": "inventory",
+      "revision": 2,
+      "status": "pass",
+      "evidence_complete": true,
+      "source_identity": {
+        "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+        "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+        "url": "http://127.0.0.1:8244/main-map-cache-20261103-r6/index.html?seed=42&unone_performance_feed=1",
+        "releaseRoot": "releases/dbc3652b829688fdef7c988b1a1924e2ac5eefcda94b231d0176fcf6b191ad3f/",
+        "sourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+      },
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/inventory-capture-r2.json",
+        "bytes": 14320746,
+        "sha256": "e639f61126f410f926773da2a88c481bafe5d879fba0381bcc7bcabe563f74e4"
+      },
+      "analysis": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/inventory-analysis-r2.json",
+        "bytes": 362308,
+        "sha256": "6768c5c61fd6fef1ce356a7c1b98abe02e5b7839159a5b4fffaf35a963b566f8"
+      },
+      "raw_sha_matches_analysis_and_game_manifest": true,
+      "collector": {
+        "pin": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/inventory-capture-r2.json.collector-pin.json",
+          "bytes": 1420,
+          "sha256": "738f37100c905cf0124b63888bf72d7140eb3948cfb3c94aafff9665079fa2cc"
+        },
+        "source": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/inventory-capture-r2.json.collector-source.mjs",
+          "bytes": 11474,
+          "sha256": "722a76eaa23a480870fc5b2829af523a8d3e6b5c4cf716d4e9ae0c7208f6b3b2"
+        },
+        "pinned_at_utc_ms": 1793653627903,
+        "recorded_pin_precedes_before_read": true,
+        "source_file_not_executed_by_reviewer": true
+      },
+      "plan": {
+        "startUtcMs": 1793653627977,
+        "endUtcMs": 1793653687977
+      },
+      "actual": {
+        "startUtcMs": 1793653627977,
+        "endUtcMs": 1793653687997
+      },
+      "native_seconds": 60.02,
+      "query_counter_deltas": {
+        "scope": "Exact official query-boundary deltas; not proof of a stale endpoint tail or display scanout.",
+        "simulationFrames": 3602,
+        "completedDraws": 3602,
+        "presentedFrameChanges": 3602,
+        "skippedDraws": 0,
+        "droppedSteps": 0,
+        "errorDraws": 0,
+        "unknownDraws": 0,
+        "skipReasons": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 0,
+          "ui_assets_pending": 0,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "outcomes": {
+          "completed": 3602,
+          "skipped": 0,
+          "unknown": 0,
+          "error": 0,
+          "no_submission": 0
+        },
+        "scheduler": {
+          "submissions": 3602,
+          "completed": 3602,
+          "repeats": 0,
+          "regressions": 0,
+          "already_submitted_frames": 0,
+          "in_flight_submissions": 0,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0,
+          "non_increasing_successful_raf_timestamps": 0
+        },
+        "derivedFreshSchedulerFrames": 3602
+      },
+      "rates": {
+        "wallSeconds": 60.02,
+        "officialQueryWallSeconds": 60.0415,
+        "conservativeRateSeconds": 60.0415,
+        "nativeWallSimulationFps": 60.01332889036988,
+        "officialQuerySimulationFps": 59.99183897804019,
+        "nativeWallFreshSubmissionFps": 60.01332889036988,
+        "officialQueryFreshSubmissionFps": 59.99183897804019,
+        "simulationFps": 59.99183897804019,
+        "freshSchedulerSubmissionFps": 59.99183897804019,
+        "denominatorScope": "Both native collection span and official counter-query span must meet the same59 threshold; the larger span is used so allowed boundary age cannot inflate the rate."
+      },
+      "windows": {
+        "window_ms": 1000,
+        "step_ms": 500,
+        "total": 119,
+        "pass": 119,
+        "failed_covered": 0,
+        "uncovered": 0,
+        "worst_window_fresh_raf_p95_ms": 16.800000000046566,
+        "worst_window_fresh_raf_p99_ms": 18.5,
+        "worst_window_fresh_gap_ms": 18.5,
+        "scope": "Overlapping fixed one-second query windows at500ms steps; counts are not distinct stalls."
+      },
+      "dropped": {
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "exact": true,
+        "precision": "Synchronous v1 query boundaries within the same session/time origin."
+      },
+      "endpoints": {
+        "before": {
+          "query": 452139.5,
+          "origin": 1793653175812,
+          "frame": 27062,
+          "draws": 27048,
+          "fresh": 27039,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 2,
+            "ui_assets_pending": 17,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 888,
+          "read_start": 1793653627958,
+          "read_end": 1793653627977
+        },
+        "after": {
+          "query": 512181,
+          "frame": 30664,
+          "draws": 30650,
+          "fresh": 30641,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 2,
+            "ui_assets_pending": 17,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 1006,
+          "read_start": 1793653687988,
+          "read_end": 1793653687997,
+          "age_ms": 4
+        }
+      },
+      "max_observed_fresh_raf_gap": {
+        "ms": 18.5,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 488502.2,
+          "start_ms": 488511.6999999285,
+          "end_ms": 488512.89999997616,
+          "callback_end_ms": 488512.89999997616,
+          "snapshot_frame": 29244,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 488520.7,
+          "start_ms": 488529,
+          "end_ms": 488530.1999999285,
+          "callback_end_ms": 488530.6999999285,
+          "snapshot_frame": 29245,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        }
+      },
+      "transport_missing": [],
+      "transport_issue_codes": [],
+      "counter_missing": [],
+      "legacy_end_clock_gate": {
+        "complete": true,
+        "passed": false,
+        "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+      },
+      "release_ready": false,
+      "scene_behavior_verified_by_analyzer": false,
+      "same_row_data_availability": {
+        "keys": [
+          "role",
+          "readStartUtcMs",
+          "readEndUtcMs",
+          "completionRaw",
+          "feedError",
+          "playerError",
+          "visibility",
+          "readError",
+          "preludeReadIndex"
+        ],
+        "performance": false,
+        "profile": false,
+        "broker": false
+      },
+      "raw_health": {
+        "raw_reads": 485,
+        "read_errors": 0,
+        "completion_json_parse_errors": 0,
+        "feed_error_rows": 0,
+        "player_error_rows": 0,
+        "backend": [
+          "main"
+        ],
+        "scope": "Only captured feed/player error attributes and completion contract. No full browser console/network/GPU health collection is implied."
+      },
+      "observer_publication_cost_ms": {
+        "n": 118,
+        "p50": 0.20000004768371582,
+        "p95": 0.30000007152557373,
+        "p99": 0.5,
+        "min": 0.09999990463256836,
+        "max": 0.5,
+        "mean": 0.2118643997079235
+      }
+    },
+    {
+      "scenario": "travel",
+      "revision": 1,
+      "status": "fail",
+      "evidence_complete": false,
+      "source_identity": {
+        "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+        "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+        "url": "http://127.0.0.1:8244/main-map-cache-20261103-r6/index.html?seed=42&unone_performance_feed=1",
+        "releaseRoot": "releases/dbc3652b829688fdef7c988b1a1924e2ac5eefcda94b231d0176fcf6b191ad3f/",
+        "sourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+      },
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/travel-capture-r1.json",
+        "bytes": 5710036,
+        "sha256": "ebd8055806889de95d03420ef5d4a95e5b67d0a3e1c77bbb5d93ee99c98b82e2"
+      },
+      "analysis": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/travel-analysis-r1.json",
+        "bytes": 190206,
+        "sha256": "1146acf972caf52fb77596cf51b377a4d443a2d4d842ab8e4783ffd71fd94052"
+      },
+      "raw_sha_matches_analysis_and_game_manifest": true,
+      "collector": {
+        "pin": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/travel-capture-r1.json.collector-pin.json",
+          "bytes": 1414,
+          "sha256": "8db984e8ee1462dbc47c6fedd467bc8ee0949fe15fcaeaf21e4ad279677c6c24"
+        },
+        "source": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/travel-capture-r1.json.collector-source.mjs",
+          "bytes": 11474,
+          "sha256": "722a76eaa23a480870fc5b2829af523a8d3e6b5c4cf716d4e9ae0c7208f6b3b2"
+        },
+        "pinned_at_utc_ms": 1793653840671,
+        "recorded_pin_precedes_before_read": true,
+        "source_file_not_executed_by_reviewer": true
+      },
+      "plan": {
+        "startUtcMs": 1793653840735,
+        "endUtcMs": 1793653870735
+      },
+      "actual": {
+        "startUtcMs": 1793653840735,
+        "endUtcMs": 1793653870771
+      },
+      "native_seconds": 30.036,
+      "query_counter_deltas": {
+        "scope": "Exact official query-boundary deltas; not proof of a stale endpoint tail or display scanout.",
+        "simulationFrames": 1794,
+        "completedDraws": 1352,
+        "presentedFrameChanges": 1352,
+        "skippedDraws": 22,
+        "droppedSteps": 2,
+        "errorDraws": 0,
+        "unknownDraws": 0,
+        "skipReasons": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 0,
+          "ui_assets_pending": 22,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "outcomes": {
+          "completed": 1352,
+          "skipped": 22,
+          "unknown": 0,
+          "error": 0,
+          "no_submission": 0
+        },
+        "scheduler": {
+          "submissions": 1374,
+          "completed": 1352,
+          "repeats": 0,
+          "regressions": 0,
+          "already_submitted_frames": 0,
+          "in_flight_submissions": 0,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0,
+          "non_increasing_successful_raf_timestamps": 0
+        },
+        "derivedFreshSchedulerFrames": 1352
+      },
+      "rates": {
+        "wallSeconds": 30.036,
+        "officialQueryWallSeconds": 29.911700000047684,
+        "conservativeRateSeconds": 30.036,
+        "nativeWallSimulationFps": 59.72832600878945,
+        "officialQuerySimulationFps": 59.97653092258682,
+        "nativeWallFreshSubmissionFps": null,
+        "officialQueryFreshSubmissionFps": null,
+        "simulationFps": 59.72832600878945,
+        "freshSchedulerSubmissionFps": null,
+        "denominatorScope": "Both native collection span and official counter-query span must meet the same59 threshold; the larger span is used so allowed boundary age cannot inflate the rate."
+      },
+      "windows": {
+        "window_ms": 1000,
+        "step_ms": 500,
+        "total": 58,
+        "pass": 30,
+        "failed_covered": 25,
+        "uncovered": 3,
+        "worst_window_fresh_raf_p95_ms": 416.69999999995343,
+        "worst_window_fresh_raf_p99_ms": 416.69999999995343,
+        "worst_window_fresh_gap_ms": 416.69999999995343,
+        "scope": "Overlapping fixed one-second query windows at500ms steps; counts are not distinct stalls."
+      },
+      "dropped": {
+        "before": 0,
+        "after": 2,
+        "delta": 2,
+        "exact": true,
+        "precision": "Synchronous v1 query boundaries within the same session/time origin."
+      },
+      "endpoints": {
+        "before": {
+          "query": 664893.1999999285,
+          "origin": 1793653175812,
+          "frame": 39826,
+          "draws": 39626,
+          "fresh": 39550,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 3,
+            "ui_assets_pending": 39,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 1306,
+          "read_start": 1793653840673,
+          "read_end": 1793653840735
+        },
+        "after": {
+          "query": 694804.8999999762,
+          "frame": 41620,
+          "draws": 40978,
+          "fresh": 40902,
+          "drop": 2,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 3,
+            "ui_assets_pending": 61,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 1364,
+          "read_start": 1793653870738,
+          "read_end": 1793653870771,
+          "age_ms": 154.10009765625
+        }
+      },
+      "max_observed_fresh_raf_gap": {
+        "ms": 416.69999999995343,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 677357.8,
+          "start_ms": 677398.8999999762,
+          "end_ms": 677400.7999999523,
+          "callback_end_ms": 677400.7999999523,
+          "snapshot_frame": 40574,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 677774.5,
+          "start_ms": 677835.2999999523,
+          "end_ms": 677865.5,
+          "callback_end_ms": 677865.5999999046,
+          "snapshot_frame": 40599,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        }
+      },
+      "transport_missing": [],
+      "transport_issue_codes": [
+        "RAW_COMPLETION_FAULT"
+      ],
+      "counter_missing": [
+        "Paired one-second RAF coverage is incomplete, sampling configuration differs or a read failed."
+      ],
+      "legacy_end_clock_gate": {
+        "complete": false,
+        "passed": false,
+        "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+      },
+      "release_ready": false,
+      "scene_behavior_verified_by_analyzer": false,
+      "same_row_data_availability": {
+        "keys": [
+          "role",
+          "readStartUtcMs",
+          "readEndUtcMs",
+          "completionRaw",
+          "feedError",
+          "playerError",
+          "visibility",
+          "readError",
+          "preludeReadIndex"
+        ],
+        "performance": false,
+        "profile": false,
+        "broker": false
+      },
+      "raw_health": {
+        "raw_reads": 240,
+        "read_errors": 0,
+        "completion_json_parse_errors": 0,
+        "feed_error_rows": 0,
+        "player_error_rows": 0,
+        "backend": [
+          "main"
+        ],
+        "scope": "Only captured feed/player error attributes and completion contract. No full browser console/network/GPU health collection is implied."
+      },
+      "observer_publication_cost_ms": {
+        "n": 58,
+        "p50": 0.19999992847442627,
+        "p95": 0.2999999523162842,
+        "p99": 0.3999999761581421,
+        "min": 0,
+        "max": 0.3999999761581421,
+        "mean": 0.17068965887201243
+      }
+    },
+    {
+      "scenario": "town",
+      "revision": 1,
+      "status": "insufficient-evidence",
+      "evidence_complete": false,
+      "source_identity": {
+        "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+        "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+        "url": "http://127.0.0.1:8244/main-map-cache-20261103-r6/index.html?seed=42&unone_performance_feed=1",
+        "releaseRoot": "releases/dbc3652b829688fdef7c988b1a1924e2ac5eefcda94b231d0176fcf6b191ad3f/",
+        "sourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+      },
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/town-capture-r1.json",
+        "bytes": 7134657,
+        "sha256": "243b66de6c6bc61b7288c30bd9287dedd05cc42e3c8aad3033b1620da0f52803"
+      },
+      "analysis": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/town-analysis-r1.json",
+        "bytes": 184146,
+        "sha256": "9bf27ad7e5c03f2dd2a15f0c4861d19f01a84c342ff288170c739f0033b7a3ac"
+      },
+      "raw_sha_matches_analysis_and_game_manifest": true,
+      "collector": {
+        "pin": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/town-capture-r1.json.collector-pin.json",
+          "bytes": 1410,
+          "sha256": "b4d49ced63e6b0d047a33be66efacf7d08adef19c0d1aa92bef59e715fe3e300"
+        },
+        "source": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/town-capture-r1.json.collector-source.mjs",
+          "bytes": 11474,
+          "sha256": "722a76eaa23a480870fc5b2829af523a8d3e6b5c4cf716d4e9ae0c7208f6b3b2"
+        },
+        "pinned_at_utc_ms": 1793654073391,
+        "recorded_pin_precedes_before_read": true,
+        "source_file_not_executed_by_reviewer": true
+      },
+      "plan": {
+        "startUtcMs": 1793654073451,
+        "endUtcMs": 1793654103451
+      },
+      "actual": {
+        "startUtcMs": 1793654073451,
+        "endUtcMs": 1793654103469
+      },
+      "native_seconds": 30.018,
+      "query_counter_deltas": {
+        "scope": "Exact official query-boundary deltas; not proof of a stale endpoint tail or display scanout.",
+        "simulationFrames": 1775,
+        "completedDraws": 1775,
+        "presentedFrameChanges": 1775,
+        "skippedDraws": 0,
+        "droppedSteps": 0,
+        "errorDraws": 0,
+        "unknownDraws": 0,
+        "skipReasons": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 0,
+          "ui_assets_pending": 0,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "outcomes": {
+          "completed": 1775,
+          "skipped": 0,
+          "unknown": 0,
+          "error": 0,
+          "no_submission": 0
+        },
+        "scheduler": {
+          "submissions": 1775,
+          "completed": 1775,
+          "repeats": 0,
+          "regressions": 0,
+          "already_submitted_frames": 0,
+          "in_flight_submissions": 0,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0,
+          "non_increasing_successful_raf_timestamps": 0
+        },
+        "derivedFreshSchedulerFrames": 1775
+      },
+      "rates": {
+        "wallSeconds": 30.018,
+        "officialQueryWallSeconds": 29.5845,
+        "conservativeRateSeconds": 30.018,
+        "nativeWallSimulationFps": null,
+        "officialQuerySimulationFps": null,
+        "nativeWallFreshSubmissionFps": null,
+        "officialQueryFreshSubmissionFps": null,
+        "simulationFps": null,
+        "freshSchedulerSubmissionFps": null,
+        "denominatorScope": "Both native collection span and official counter-query span must meet the same59 threshold; the larger span is used so allowed boundary age cannot inflate the rate."
+      },
+      "windows": {
+        "window_ms": 1000,
+        "step_ms": 500,
+        "total": 58,
+        "pass": 58,
+        "failed_covered": 0,
+        "uncovered": 0,
+        "worst_window_fresh_raf_p95_ms": 16.800000000046566,
+        "worst_window_fresh_raf_p99_ms": 17,
+        "worst_window_fresh_gap_ms": 17,
+        "scope": "Overlapping fixed one-second query windows at500ms steps; counts are not distinct stalls."
+      },
+      "dropped": {
+        "before": 2,
+        "after": 2,
+        "delta": 0,
+        "exact": true,
+        "precision": "Synchronous v1 query boundaries within the same session/time origin."
+      },
+      "endpoints": {
+        "before": {
+          "query": 897603.2999999523,
+          "origin": 1793653175812,
+          "frame": 53788,
+          "draws": 53138,
+          "fresh": 53062,
+          "drop": 2,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 3,
+            "ui_assets_pending": 68,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 1762,
+          "read_start": 1793654073440,
+          "read_end": 1793654073451
+        },
+        "after": {
+          "query": 927187.7999999523,
+          "frame": 55563,
+          "draws": 54913,
+          "fresh": 54837,
+          "drop": 2,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 3,
+            "ui_assets_pending": 68,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 1820,
+          "read_start": 1793654103457,
+          "read_end": 1793654103469,
+          "age_ms": 469.199951171875
+        }
+      },
+      "max_observed_fresh_raf_gap": {
+        "ms": 17,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 899364.4,
+          "start_ms": 899369,
+          "end_ms": 899370,
+          "callback_end_ms": 899370,
+          "snapshot_frame": 53894,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 899381.4,
+          "start_ms": 899386.5,
+          "end_ms": 899387,
+          "callback_end_ms": 899387.0999999046,
+          "snapshot_frame": 53895,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        }
+      },
+      "transport_missing": [
+        {
+          "code": "BOUNDARY_FEED_STALE_OR_CLOCK_UNCERTAIN",
+          "role": "after",
+          "ageMs": 469.2000000476837
+        }
+      ],
+      "transport_issue_codes": [],
+      "counter_missing": [
+        "Paired one-second RAF coverage is incomplete, sampling configuration differs or a read failed."
+      ],
+      "legacy_end_clock_gate": {
+        "complete": true,
+        "passed": false,
+        "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+      },
+      "release_ready": false,
+      "scene_behavior_verified_by_analyzer": false,
+      "same_row_data_availability": {
+        "keys": [
+          "role",
+          "readStartUtcMs",
+          "readEndUtcMs",
+          "completionRaw",
+          "feedError",
+          "playerError",
+          "visibility",
+          "readError",
+          "preludeReadIndex"
+        ],
+        "performance": false,
+        "profile": false,
+        "broker": false
+      },
+      "raw_health": {
+        "raw_reads": 242,
+        "read_errors": 0,
+        "completion_json_parse_errors": 0,
+        "feed_error_rows": 0,
+        "player_error_rows": 0,
+        "backend": [
+          "main"
+        ],
+        "scope": "Only captured feed/player error attributes and completion contract. No full browser console/network/GPU health collection is implied."
+      },
+      "observer_publication_cost_ms": {
+        "n": 58,
+        "p50": 0.20000004768371582,
+        "p95": 0.30000007152557373,
+        "p99": 0.6000000238418579,
+        "min": 0.09999990463256836,
+        "max": 0.6000000238418579,
+        "mean": 0.20344827298460336
+      }
+    },
+    {
+      "scenario": "chat",
+      "revision": 1,
+      "status": "fail",
+      "evidence_complete": true,
+      "source_identity": {
+        "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+        "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+        "url": "http://127.0.0.1:8244/main-map-cache-20261103-r6/index.html?seed=42&unone_performance_feed=1",
+        "releaseRoot": "releases/dbc3652b829688fdef7c988b1a1924e2ac5eefcda94b231d0176fcf6b191ad3f/",
+        "sourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+      },
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/chat-capture-r1.json",
+        "bytes": 7438552,
+        "sha256": "d6285e2dd669d9d57f8db9a792c46dee7f98bb0ecbb66674ac36d7f6698ec688"
+      },
+      "analysis": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/chat-analysis-r1.json",
+        "bytes": 188429,
+        "sha256": "73a8ea15b174dc175db6224c1aed7b9caa525df112736e998103c757f59c43df"
+      },
+      "raw_sha_matches_analysis_and_game_manifest": true,
+      "collector": {
+        "pin": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/chat-capture-r1.json.collector-pin.json",
+          "bytes": 1410,
+          "sha256": "4158f35978e2bded671c15f39c975a3b8de56254a2f26d5904a1e3fce0b1dbd7"
+        },
+        "source": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/chat-capture-r1.json.collector-source.mjs",
+          "bytes": 11474,
+          "sha256": "722a76eaa23a480870fc5b2829af523a8d3e6b5c4cf716d4e9ae0c7208f6b3b2"
+        },
+        "pinned_at_utc_ms": 1793654210124,
+        "recorded_pin_precedes_before_read": true,
+        "source_file_not_executed_by_reviewer": true
+      },
+      "plan": {
+        "startUtcMs": 1793654210325,
+        "endUtcMs": 1793654240325
+      },
+      "actual": {
+        "startUtcMs": 1793654210325,
+        "endUtcMs": 1793654240346
+      },
+      "native_seconds": 30.021,
+      "query_counter_deltas": {
+        "scope": "Exact official query-boundary deltas; not proof of a stale endpoint tail or display scanout.",
+        "simulationFrames": 1797,
+        "completedDraws": 1797,
+        "presentedFrameChanges": 1796,
+        "skippedDraws": 0,
+        "droppedSteps": 0,
+        "errorDraws": 0,
+        "unknownDraws": 0,
+        "skipReasons": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 0,
+          "ui_assets_pending": 0,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "outcomes": {
+          "completed": 1797,
+          "skipped": 0,
+          "unknown": 0,
+          "error": 0,
+          "no_submission": 0
+        },
+        "scheduler": {
+          "submissions": 1797,
+          "completed": 1797,
+          "repeats": 1,
+          "regressions": 0,
+          "already_submitted_frames": 1,
+          "in_flight_submissions": 0,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0,
+          "non_increasing_successful_raf_timestamps": 0
+        },
+        "derivedFreshSchedulerFrames": 1796
+      },
+      "rates": {
+        "wallSeconds": 30.021,
+        "officialQueryWallSeconds": 29.949899999976157,
+        "conservativeRateSeconds": 30.021,
+        "nativeWallSimulationFps": 59.85809933046867,
+        "officialQuerySimulationFps": 60.000200334606475,
+        "nativeWallFreshSubmissionFps": 59.82478931414676,
+        "officialQueryFreshSubmissionFps": 59.96681124148761,
+        "simulationFps": 59.85809933046867,
+        "freshSchedulerSubmissionFps": 59.82478931414676,
+        "denominatorScope": "Both native collection span and official counter-query span must meet the same59 threshold; the larger span is used so allowed boundary age cannot inflate the rate."
+      },
+      "windows": {
+        "window_ms": 1000,
+        "step_ms": 500,
+        "total": 58,
+        "pass": 56,
+        "failed_covered": 2,
+        "uncovered": 0,
+        "worst_window_fresh_raf_p95_ms": 16.800000000046566,
+        "worst_window_fresh_raf_p99_ms": 29.099999999976717,
+        "worst_window_fresh_gap_ms": 29.099999999976717,
+        "scope": "Overlapping fixed one-second query windows at500ms steps; counts are not distinct stalls."
+      },
+      "dropped": {
+        "before": 2,
+        "after": 2,
+        "delta": 0,
+        "exact": true,
+        "precision": "Synchronous v1 query boundaries within the same session/time origin."
+      },
+      "endpoints": {
+        "before": {
+          "query": 1034509.6999999285,
+          "origin": 1793653175812,
+          "frame": 62002,
+          "draws": 61350,
+          "fresh": 61274,
+          "drop": 2,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 3,
+            "ui_assets_pending": 70,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 2031,
+          "read_start": 1793654210311,
+          "read_end": 1793654210325
+        },
+        "after": {
+          "query": 1064459.5999999046,
+          "frame": 63799,
+          "draws": 63147,
+          "fresh": 63070,
+          "drop": 2,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 3,
+            "ui_assets_pending": 70,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 2090,
+          "read_start": 1793654240338,
+          "read_end": 1793654240346,
+          "age_ms": 74.39990234375
+        }
+      },
+      "max_observed_fresh_raf_gap": {
+        "ms": 29.099999999976717,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 1037539.4,
+          "start_ms": 1037551.5,
+          "end_ms": 1037553.8999999762,
+          "callback_end_ms": 1037553.8999999762,
+          "snapshot_frame": 62185,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 1037568.5,
+          "start_ms": 1037575.3999999762,
+          "end_ms": 1037577.3999999762,
+          "callback_end_ms": 1037577.3999999762,
+          "snapshot_frame": 62186,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        }
+      },
+      "transport_missing": [],
+      "transport_issue_codes": [
+        "RAW_ONE_SECOND_CADENCE_FAILURE"
+      ],
+      "counter_missing": [],
+      "legacy_end_clock_gate": {
+        "complete": true,
+        "passed": false,
+        "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+      },
+      "release_ready": false,
+      "scene_behavior_verified_by_analyzer": false,
+      "same_row_data_availability": {
+        "keys": [
+          "role",
+          "readStartUtcMs",
+          "readEndUtcMs",
+          "completionRaw",
+          "feedError",
+          "playerError",
+          "visibility",
+          "readError",
+          "preludeReadIndex"
+        ],
+        "performance": false,
+        "profile": false,
+        "broker": false
+      },
+      "raw_health": {
+        "raw_reads": 245,
+        "read_errors": 0,
+        "completion_json_parse_errors": 0,
+        "feed_error_rows": 0,
+        "player_error_rows": 0,
+        "backend": [
+          "main"
+        ],
+        "scope": "Only captured feed/player error attributes and completion contract. No full browser console/network/GPU health collection is implied."
+      },
+      "observer_publication_cost_ms": {
+        "n": 59,
+        "p50": 0.20000004768371582,
+        "p95": 0.30000007152557373,
+        "p99": 0.30000007152557373,
+        "min": 0.09999990463256836,
+        "max": 0.30000007152557373,
+        "mean": 0.18644068806858385
+      }
+    },
+    {
+      "scenario": "battle",
+      "revision": 1,
+      "status": "insufficient-evidence",
+      "evidence_complete": false,
+      "source_identity": {
+        "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+        "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+        "url": "http://127.0.0.1:8244/battle-perf-feed-qa-20261103-r3/index.html?seed=42&unone_performance_feed=1",
+        "releaseRoot": "releases/eaed421c8c6d7edf2856f6470627fec4f78c2e9a437be9e34601b5730bfd8845/",
+        "sourceSha256": "fc079df197c4332a70a9e2a001b1a5e27febd669119ee1c18b2b6de42adaf180",
+        "unwrappedGameSourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+      },
+      "raw": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/battle-capture-r1.json",
+        "bytes": 7216766,
+        "sha256": "d3fcacb5e1166bd00838325684fde7aa670d04943a5839cbcfbc60bdceab790a"
+      },
+      "analysis": {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/battle-analysis-r1.json",
+        "bytes": 185355,
+        "sha256": "90120d366d83960635d67fecb2475de8efb15eb13f1fe6632a4f4eb143f42fef"
+      },
+      "raw_sha_matches_analysis_and_game_manifest": true,
+      "collector": {
+        "pin": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/battle-capture-r1.json.collector-pin.json",
+          "bytes": 1520,
+          "sha256": "18d925359c0fa5a160e40917f38defb028ba42ee50d576cd00a1a4f9c318a6d4"
+        },
+        "source": {
+          "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/native-cache-host-r6/battle-capture-r1.json.collector-source.mjs",
+          "bytes": 11474,
+          "sha256": "722a76eaa23a480870fc5b2829af523a8d3e6b5c4cf716d4e9ae0c7208f6b3b2"
+        },
+        "pinned_at_utc_ms": 1793654377779,
+        "recorded_pin_precedes_before_read": true,
+        "source_file_not_executed_by_reviewer": true
+      },
+      "plan": {
+        "startUtcMs": 1793654377932,
+        "endUtcMs": 1793654407932
+      },
+      "actual": {
+        "startUtcMs": 1793654377932,
+        "endUtcMs": 1793654407960
+      },
+      "native_seconds": 30.028,
+      "query_counter_deltas": {
+        "scope": "Exact official query-boundary deltas; not proof of a stale endpoint tail or display scanout.",
+        "simulationFrames": 1776,
+        "completedDraws": 1776,
+        "presentedFrameChanges": 1776,
+        "skippedDraws": 0,
+        "droppedSteps": 0,
+        "errorDraws": 0,
+        "unknownDraws": 0,
+        "skipReasons": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 0,
+          "ui_assets_pending": 0,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "outcomes": {
+          "completed": 1776,
+          "skipped": 0,
+          "unknown": 0,
+          "error": 0,
+          "no_submission": 0
+        },
+        "scheduler": {
+          "submissions": 1776,
+          "completed": 1776,
+          "repeats": 0,
+          "regressions": 0,
+          "already_submitted_frames": 0,
+          "in_flight_submissions": 0,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0,
+          "non_increasing_successful_raf_timestamps": 0
+        },
+        "derivedFreshSchedulerFrames": 1776
+      },
+      "rates": {
+        "wallSeconds": 30.028,
+        "officialQueryWallSeconds": 29.6,
+        "conservativeRateSeconds": 30.028,
+        "nativeWallSimulationFps": null,
+        "officialQuerySimulationFps": null,
+        "nativeWallFreshSubmissionFps": null,
+        "officialQueryFreshSubmissionFps": null,
+        "simulationFps": null,
+        "freshSchedulerSubmissionFps": null,
+        "denominatorScope": "Both native collection span and official counter-query span must meet the same59 threshold; the larger span is used so allowed boundary age cannot inflate the rate."
+      },
+      "windows": {
+        "window_ms": 1000,
+        "step_ms": 500,
+        "total": 58,
+        "pass": 58,
+        "failed_covered": 0,
+        "uncovered": 0,
+        "worst_window_fresh_raf_p95_ms": 16.800000000017462,
+        "worst_window_fresh_raf_p99_ms": 19.199999999982538,
+        "worst_window_fresh_gap_ms": 19.199999999982538,
+        "scope": "Overlapping fixed one-second query windows at500ms steps; counts are not distinct stalls."
+      },
+      "dropped": {
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "exact": true,
+        "precision": "Synchronous v1 query boundaries within the same session/time origin."
+      },
+      "endpoints": {
+        "before": {
+          "query": 123688.39999997616,
+          "origin": 1793654254237.8,
+          "frame": 7354,
+          "draws": 7315,
+          "fresh": 7308,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 6,
+            "ui_assets_pending": 27,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 242,
+          "read_start": 1793654377923,
+          "read_end": 1793654377932
+        },
+        "after": {
+          "query": 153288.39999997616,
+          "frame": 9130,
+          "draws": 9091,
+          "fresh": 9084,
+          "drop": 0,
+          "skips": {
+            "raster_unavailable": 0,
+            "raster_validation": 0,
+            "frame_resources_pending": 0,
+            "frame_pass_incomplete": 0,
+            "world_assets_pending": 6,
+            "ui_assets_pending": 27,
+            "ui_diagnostics": 0,
+            "ui_target_unavailable": 0,
+            "cursor_assets_pending": 0,
+            "cursor_diagnostics": 0,
+            "other": 0
+          },
+          "sequence": 300,
+          "read_start": 1793654407946,
+          "read_end": 1793654407960,
+          "age_ms": 433.800048828125
+        }
+      },
+      "max_observed_fresh_raf_gap": {
+        "ms": 19.199999999982538,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 152581.7,
+          "start_ms": 152588.39999997616,
+          "end_ms": 152589.60000002384,
+          "callback_end_ms": 152589.60000002384,
+          "snapshot_frame": 9088,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 152600.9,
+          "start_ms": 152606.79999995232,
+          "end_ms": 152607.70000004768,
+          "callback_end_ms": 152607.70000004768,
+          "snapshot_frame": 9089,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        }
+      },
+      "transport_missing": [
+        {
+          "code": "BOUNDARY_FEED_STALE_OR_CLOCK_UNCERTAIN",
+          "role": "after",
+          "ageMs": 433.79995119571686
+        }
+      ],
+      "transport_issue_codes": [],
+      "counter_missing": [
+        "Paired one-second RAF coverage is incomplete, sampling configuration differs or a read failed."
+      ],
+      "legacy_end_clock_gate": {
+        "complete": true,
+        "passed": false,
+        "scope": "Original p95/p99 thresholds reconstructed from all successful paired submission end_ms in the same fixed 1000ms windows; CPU-end-jitter diagnostic. Raw completed_intervals summaries retain their actual 1500ms query window."
+      },
+      "release_ready": false,
+      "scene_behavior_verified_by_analyzer": false,
+      "same_row_data_availability": {
+        "keys": [
+          "role",
+          "readStartUtcMs",
+          "readEndUtcMs",
+          "completionRaw",
+          "feedError",
+          "playerError",
+          "visibility",
+          "readError",
+          "preludeReadIndex"
+        ],
+        "performance": false,
+        "profile": false,
+        "broker": false
+      },
+      "raw_health": {
+        "raw_reads": 242,
+        "read_errors": 0,
+        "completion_json_parse_errors": 0,
+        "feed_error_rows": 0,
+        "player_error_rows": 0,
+        "backend": [
+          "main"
+        ],
+        "scope": "Only captured feed/player error attributes and completion contract. No full browser console/network/GPU health collection is implied."
+      },
+      "observer_publication_cost_ms": {
+        "n": 58,
+        "p50": 0.20000004768371582,
+        "p95": 0.30000007152557373,
+        "p99": 0.5,
+        "min": 0.09999990463256836,
+        "max": 0.5,
+        "mean": 0.186206906006254
+      }
+    }
+  ],
+  "excluded_inventory_r1": {
+    "status": "collector-failure-excluded-from-game-performance",
+    "raw": {
+      "path": "inventory-capture-r1.json",
+      "bytes": 7254176,
+      "sha256": "11347c2b4f8c9c4b28037252d7438ef595cd254170cc5f5c656ca66a7274ae11"
+    },
+    "analysis": {
+      "path": "inventory-analysis-r1.json",
+      "bytes": 56851,
+      "sha256": "9b3cfcd795d8c13b9b16864c3aa3a0778b28adda3dabb433ea1e6acc26b759dc"
+    },
+    "read_failures": {
+      "count": 242,
+      "firstIndex": 239,
+      "lastIndex": 480,
+      "types": [
+        {
+          "name": "Error",
+          "message": "node_repl exec context not found"
+        }
+      ],
+      "roleCounts": {
+        "before": 0,
+        "sample": 240,
+        "after": 1,
+        "cost-followup": 1
+      }
+    },
+    "after_error": {
+      "name": "Error",
+      "message": "node_repl exec context not found"
+    },
+    "cause": "242 collector read failures, node_repl exec context not found, including after and followup. Null catch attributes do not prove the page was hidden or the Game failed.",
+    "preserved_not_overwritten": true,
+    "replacement": "inventory-r2 is a separate complete60-second capture, not a repaired/truncated r1."
+  },
+  "scheduler_source_review": {
+    "source_pins": [
+      {
+        "path": "D:/Projects/Unone/web/shared/async-scheduler.mjs",
+        "bytes": 4315,
+        "sha256": "9d93682a427dd0544113309629881ec75559711c2b9e36e023ee053dd17b9dd0"
+      },
+      {
+        "path": "D:/Projects/Unone/web/player/main.js",
+        "bytes": 31486,
+        "sha256": "d99816bd9425f44cb106aa3155d19b4e8329f79880d2aa6ff626843789d5d2d1"
+      },
+      {
+        "path": "D:/Projects/Unone/web/shared/player-completion.mjs",
+        "bytes": 15567,
+        "sha256": "be4339501cfd5c93c20e19869d31f630c190dcb17f371b549c8341905ae06996"
+      }
+    ],
+    "confirmed_atlas_counters": {
+      "callbacks": 1797,
+      "preparations": 1730,
+      "preparation_steps": 1798,
+      "completed_draws": 1797,
+      "repeats": 67,
+      "dropped_steps": 0,
+      "world_ui_skip_delta": 0
+    },
+    "hypothesis": "Fixed60Hz accumulator can render a zero-step callback, then run two updates before a later draw.1797callbacks/1730preparations/1798ticks is consistent with that pattern, while preserving simulation rate. It is not by itself proof of a scheduling bug.",
+    "source_mechanism": "resetClock anchors last to performance.now(); RAF callback uses its original timestamp; count=floor((acc+0.1667ms)/16.6667ms), with negative debt retained. Every admitted callback draws even count0. Next RAF is scheduled after awaited updates/draw finally.",
+    "alternative": "Async prepare/draw/host work can delay scheduling the next RAF. Atlas near60callback cadence and small prep/draw wall distributions weigh against sustained throughput saturation there, without proving a pure phase cause.",
+    "existing_fields": "RAF time, submission start/end/callback_end, frame, outcome,new_snapshot and cumulative preparation/step counters are recorded; current rows do not expose exact per-callback step/accumulator state.",
+    "minimal_diagnostic": "A separate opt-in bounded passive row can retain existing onWake elapsed_ms/steps plus accumulator before/after,due/count/lost and reset/generation markers, joined to the unchanged RAF token. Existing profiler can record tickOnce coalescing. Do not alter clock, render order, fixedstep policy or create frames/ticks.",
+    "no_bug_or_fix_claim": true
+  },
+  "limits": [
+    "Current main source98a9 and earlier source32fd differ; these runs are not strict engine A/B and no cross-version speedup is inferred.",
+    "Battle uses the explicitly recorded QA wrapper fc079 around the current98a9 source, not an identical production-main artifact.",
+    "Root reported an offline Lab scan may just have been finishing before idle. External load was not independently quantified.",
+    "Travel includes the recorded camera/projection transitions. It is not an exact replay of the earlier32fd route.",
+    "Inventory-r1 lost the CUA exec context. Null catch attributes do not prove the page was hidden or the game feed failed; the whole60s r2 replaces it for performance review.",
+    "Prospective source pins and recorded time order agree on disk; offline hashes alone cannot independently prove execution history.",
+    "Native scene screenshots/input require human review. This analysis does not manufacture private world observations or behavior acceptance.",
+    "Freshness failures are retained: town after469.2ms and battle after433.8ms exceed250ms boundary tolerance despite observed internal cadence. No chosen subwindow or later cost-followup replaces those original endpoints.",
+    "Travel remains a known failure:22UI-assets skips and2dropped steps plus coverage holes; its later faster tail does not rescue the whole window. No asset ID or Lua/GPU cause can be inferred from these completion-only rows.",
+    "No same-row playerPerformance, broker/decoded-image, UI GPU metrics or CPU stage profile was collected; backend main and completion timing are available. Do not join the earlier32fd profiler or another page epoch as if it were same-state evidence.",
+    "All releaseReady flags remainfalse and analyzer scene behavior unverified. Cadence pass is not pixel correctness, GPU/OS scanout, entire-game release readiness, no-GC or no-leak proof."
+  ],
+  "provenance": {
+    "offline_reviewer": "Codex runtime_audit",
+    "offline_scripts": [
+      {
+        "path": "D:/Projects/Unone/.cache/audit-native-cache-host-r6.mjs",
+        "bytes": 4642,
+        "sha256": "6a7b8e094021dc0ab5beebf56f1098ddeacd4460b00c8ed356ba9dfa76153eb9"
+      },
+      {
+        "path": "D:/Projects/Unone/.cache/record-seven-cases-08c4.mjs",
+        "bytes": 9996,
+        "sha256": "2270f8ce9fed6ebe80756c0a77f37ea53ab690340adad833d1b1dd7075ed1a30"
+      }
+    ],
+    "game_files_modified": false,
+    "tracked_runtime_or_game_source_modified": false,
+    "commit_or_push_by_writer": false
+  }
+}

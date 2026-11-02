@@ -1,0 +1,171 @@
+✖ shrinking UI runs detach retired image/dedicated samplers while preserving active ownership (3.9258ms)
+✖ an empty UI composition clears every old sampler even when no new render call occurs (1.0039ms)
+✔ next reuse preserves reusable geometry/materials and binds only newly live textures (1.1514ms)
+✖ a failed dedicated text raster leaves its preceding complete sampler and texture alive (0.8149ms)
+✖ clear detaches all sampler references before physical texture disposal (1.5361ms)
+✖ contextLost detaches all sampler references before physical texture disposal (0.405ms)
+✖ dispose detaches all sampler references before physical texture disposal (1.0166ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 1
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 106.0217
+
+✖ failing tests:
+
+test at web\renderer\ui-gpu-ownership.test.mjs:28:1
+✖ shrinking UI runs detach retired image/dedicated samplers while preserving active ownership (3.9258ms)
+  AssertionError [ERR_ASSERTION]: An inactive engine run must not retain retired CPU image/canvas through its sampler
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:32:81)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Texture],
+    expected: [Texture],
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at web\renderer\ui-gpu-ownership.test.mjs:38:1
+✖ an empty UI composition clears every old sampler even when no new render call occurs (1.0039ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" not to be reference-equal to "expected":
+  
+  Texture {
+    anisotropy: 1,
+    center: Vector2 {
+      x: 0,
+      y: 0
+    },
+    channel: 0,
+    colorSpace: '',
+    flipY: false,
+    format: 1023,
+    generateMipmaps: false,
+    internalFormat: null,
+    isArrayTexture: false,
+    isRenderTargetTexture: false,
+    isTexture: true,
+    magFilter: 1006,
+    mapping: 300,
+    matrix: Matrix3 {
+      elements: [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    matrixAutoUpdate: true,
+    minFilter: 1006,
+    mipmaps: [],
+    name: '',
+    offset: Vector2 {
+      x: 0,
+      y: 0
+    },
+    onUpdate: null,
+    pmremVersion: 0,
+    premultiplyAlpha: true,
+    renderTarget: null,
+    repeat: Vector2 {
+      x: 1,
+      y: 1
+    },
+  ...
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:42:81)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Texture],
+    expected: [Texture],
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at web\renderer\ui-gpu-ownership.test.mjs:56:1
+✖ a failed dedicated text raster leaves its preceding complete sampler and texture alive (0.8149ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:60:77)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at web\renderer\ui-gpu-ownership.test.mjs:64:55
+✖ clear detaches all sampler references before physical texture disposal (1.5361ms)
+  AssertionError [ERR_ASSERTION]: Retirement callbacks must not observe a run still borrowing the retiring image
+      at Texture.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:67:105)
+      at Texture.dispatchEvent (file:///D:/Projects/Unone/web/vendor/three/three.core.js:1791:16)
+      at Texture.dispose (file:///D:/Projects/Unone/web/vendor/three/three.core.js:7471:8)
+      at clear (file:///D:/Projects/Unone/web/renderer/ui-gpu.js:227:51)
+      at Object.dispose (file:///D:/Projects/Unone/web/renderer/ui-gpu.js:248:32)
+      at Object.dispose (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:23:16)
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:70:13)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Texture],
+    expected: [Texture],
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at web\renderer\ui-gpu-ownership.test.mjs:64:55
+✖ contextLost detaches all sampler references before physical texture disposal (0.405ms)
+  AssertionError [ERR_ASSERTION]: Retirement callbacks must not observe a run still borrowing the retiring image
+      at Texture.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:67:105)
+      at Texture.dispatchEvent (file:///D:/Projects/Unone/web/vendor/three/three.core.js:1791:16)
+      at Texture.dispose (file:///D:/Projects/Unone/web/vendor/three/three.core.js:7471:8)
+      at clear (file:///D:/Projects/Unone/web/renderer/ui-gpu.js:227:51)
+      at Object.dispose (file:///D:/Projects/Unone/web/renderer/ui-gpu.js:248:32)
+      at Object.dispose (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:23:16)
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:70:13)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Texture],
+    expected: [Texture],
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at web\renderer\ui-gpu-ownership.test.mjs:64:55
+✖ dispose detaches all sampler references before physical texture disposal (1.0166ms)
+  AssertionError [ERR_ASSERTION]: Retirement callbacks must not observe a run still borrowing the retiring image
+      at Texture.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:67:105)
+      at Texture.dispatchEvent (file:///D:/Projects/Unone/web/vendor/three/three.core.js:1791:16)
+      at Texture.dispose (file:///D:/Projects/Unone/web/vendor/three/three.core.js:7471:8)
+      at clear (file:///D:/Projects/Unone/web/renderer/ui-gpu.js:227:51)
+      at Object.dispose (file:///D:/Projects/Unone/web/renderer/ui-gpu.js:248:32)
+      at Object.dispose (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:23:16)
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-ownership.test.mjs:70:13)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Texture],
+    expected: [Texture],
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }

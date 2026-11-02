@@ -1,0 +1,107 @@
+[
+  {
+    "path": "ui-hidden-texture-retention/red.log",
+    "source_path": ".cache/ui-hidden-texture-retention-red-20261103.log",
+    "sha256": "f9790950c8a6e1c2d888fedafc21ef1389df380de2c4e1bb10a9a12bebd35954",
+    "bytes": 7373,
+    "role": "Original actual-module negative-control stdout/stderr capture"
+  },
+  {
+    "path": "ui-hidden-texture-retention/red-test-source.mjs.txt",
+    "source_path": ".cache/ui-hidden-texture-retention-red-test-20261103.mjs",
+    "sha256": "19fd6d6f13fc236feb4afec11af8eac529d91faf5919498f5d57a43d40ca33a6",
+    "bytes": 6291,
+    "role": "Exact seven-case source used by the original RED run; source snapshot, imports remain relative to its original test path"
+  },
+  {
+    "path": "ui-hidden-texture-retention/green.log",
+    "source_path": ".cache/ui-hidden-texture-retention-green-20261103-r2.log",
+    "sha256": "5c313a71d50cae6041dfcd836c7eb18e4212f5fe7edcc3b8f9be8563c769d83d",
+    "bytes": 3391,
+    "role": "Final focused nine ownership plus 24 related Node checks"
+  },
+  {
+    "path": "ui-hidden-texture-retention/full-node.log",
+    "source_path": ".cache/ui-hidden-texture-retention-full-node-20261103-r1.log",
+    "sha256": "425004ac6a74f8a5cf59d38a7bf8b78945cc9ca9f48f797915d1a025954bfecc",
+    "bytes": 88542,
+    "role": "Root full regenerated Node suite actual raw output"
+  },
+  {
+    "path": "ui-hidden-texture-retention/final-ui-gpu.js.txt",
+    "source_path": "web/renderer/ui-gpu.js",
+    "sha256": "ae5ba44ba66f0420ec9a6988cb88558d6bb51a5c5614fd4e83d5d9d21c3568e3",
+    "bytes": 19707,
+    "role": "Final implementation source snapshot"
+  },
+  {
+    "path": "ui-hidden-texture-retention/final-ui-gpu-ownership.test.mjs.txt",
+    "source_path": "web/renderer/ui-gpu-ownership.test.mjs",
+    "sha256": "1add99dfd806e6dc46e38b038617884922023c7755f73ba369df02b671ba9e0f",
+    "bytes": 8000,
+    "role": "Final nine-case ownership test source snapshot"
+  },
+  {
+    "path": "ui-hidden-texture-retention/pre-claude-status/evidence.json",
+    "source_path": "docs/evidence/2026-11-03-shared-ui/ui-hidden-texture-retention.json",
+    "sha256": "cb05038135cb3805d5dfd2b652f4eeb1bf151cceee03152cd52708e1350d36d0",
+    "bytes": 10236,
+    "role": "Prior record before actual bounded Claude attempt status update"
+  },
+  {
+    "path": "ui-hidden-texture-retention/pre-claude-status/issue.md",
+    "source_path": "docs/issues/2026-11-03-ui-hidden-texture-retention.md",
+    "sha256": "27b559a6757c027aa7c6b2ad8541b8d2c5e52bcf821a87169e5ec4813d42a064",
+    "bytes": 4178,
+    "role": "Exact issue postimage supplied to Claude, before status update"
+  },
+  {
+    "path": "ui-hidden-texture-retention/pre-claude-status/file-index.json",
+    "source_path": "docs/evidence/2026-11-03-shared-ui/ui-hidden-texture-retention/file-index.json",
+    "sha256": "f74f96a45e2a60a484e0522e03cb193c56f1feb65443a0c8c56245afa5e48e6b",
+    "bytes": 1959,
+    "role": "Prior raw evidence index"
+  },
+  {
+    "path": "ui-hidden-texture-retention/claude/result.json",
+    "source_path": ".cache/ui-hidden-texture-retention-source-review-20261103/result.json",
+    "sha256": "b63650c60f9b05b1ce3324d3f2f8eae46d174e2b0798559d22ec9578dedff680",
+    "bytes": 2448,
+    "role": "Actual bounded read-only external review capture; final result.json is authoritative"
+  },
+  {
+    "path": "ui-hidden-texture-retention/claude/command.json",
+    "source_path": ".cache/ui-hidden-texture-retention-source-review-20261103/command.json",
+    "sha256": "10210a27d21064c0cce2b123759222e6bab8dc168cfe342d7812f43b8b943764",
+    "bytes": 1643,
+    "role": "Actual bounded read-only external review capture; final result.json is authoritative"
+  },
+  {
+    "path": "ui-hidden-texture-retention/claude/fixed.diff",
+    "source_path": ".cache/ui-hidden-texture-retention-source-review-20261103/fixed.diff",
+    "sha256": "f158cec7c9c408e2f60d46f3943e64646eef984d17668ba0704888b37906428e",
+    "bytes": 9132,
+    "role": "Actual bounded read-only external review capture; final result.json is authoritative"
+  },
+  {
+    "path": "ui-hidden-texture-retention/claude/prompt.txt",
+    "source_path": ".cache/ui-hidden-texture-retention-source-review-20261103/prompt.txt",
+    "sha256": "b0303455f4d3d121587cb56fc583f98f0d5f39afb95ec1501cd04ee9007ec578",
+    "bytes": 44550,
+    "role": "Actual bounded read-only external review capture; final result.json is authoritative"
+  },
+  {
+    "path": "ui-hidden-texture-retention/claude/review.stdout.json",
+    "source_path": ".cache/ui-hidden-texture-retention-source-review-20261103/review.stdout.json",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "Actual bounded read-only external review capture; final result.json is authoritative"
+  },
+  {
+    "path": "ui-hidden-texture-retention/claude/review.stderr.txt",
+    "source_path": ".cache/ui-hidden-texture-retention-source-review-20261103/review.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "role": "Actual bounded read-only external review capture; final result.json is authoritative"
+  }
+]

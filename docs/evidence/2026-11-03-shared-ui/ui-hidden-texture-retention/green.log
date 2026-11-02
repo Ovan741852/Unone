@@ -1,0 +1,41 @@
+✔ shrinking UI runs detach retired image/dedicated samplers while preserving active ownership (5.5192ms)
+✔ an empty UI composition clears every old sampler even when no new render call occurs (0.826ms)
+✔ next reuse preserves reusable geometry/materials and binds only newly live textures (0.7559ms)
+✔ shared A/B/A runs detach only the hidden borrower and preserve the still-live A sampler (0.5878ms)
+✔ hidden atlas borrowers detach without evicting cached text; context loss retires the page once (0.8166ms)
+✔ a failed dedicated text raster leaves its preceding complete sampler and texture alive (0.5785ms)
+✔ clear detaches all sampler references before physical texture disposal (1.0613ms)
+✔ contextLost detaches all sampler references before physical texture disposal (0.3449ms)
+✔ dispose detaches all sampler references before physical texture disposal (0.27ms)
+✔ Canvas skips repeat serialization of private source and projected trees without suppressing GPU draws or dirty triggers (2.6699ms)
+✔ new private generations cancel stale control capture and still validate first-use geometry (1.2275ms)
+✔ Canvas detects in-place text, action and clip edits and validates changed batches (6.0482ms)
+✔ pointer router disposal cancels once and releases nodes and all pointer tails (0.5157ms)
+✔ viewport clips drawing and input without resizing content (0.5852ms)
+✔ lifecycle reset drops queued taps and captures across multiple pointers (0.4868ms)
+✔ hold down/up survive a single display frame without click-through (0.215ms)
+✔ reverse leaf order, cancellation and multiple fingers share action safely (0.1726ms)
+✔ semantic slider stays in hierarchy while pointer input passes through to settings logic (0.1095ms)
+✔ official slider owns padded visible-track gesture, clamps outside and keeps quick tap edges (0.3452ms)
+✔ slider capture survives value text but cancels geometry, disabled and removed nodes without world leakage (0.253ms)
+✔ slider uses foreground semantic order and scroll-local geometry with clipping and reverse once (0.4283ms)
+✔ decorative text, image and panel captions pass through to the topmost semantic control (0.1445ms)
+✔ Canvas has transparent buttons, draws loaded images in leaf order and reports failures (2.7063ms)
+✔ explicit font size stays consistent across control heights and scales with canvas pixels (0.2705ms)
+✔ combobox captures the complete field and keeps capture when expanded changes (0.1846ms)
+✔ styled font sizes use viewport height, never shrink to fit the rectangle (1.3209ms)
+✔ native tracking preserves whole shaped lines and old hosts reject unsupported joining scripts (0.729ms)
+✔ padding, measured alignment, line height and tracking share vertical units (0.7267ms)
+✔ word wrapping measures Latin, CJK, long words and Unicode graphemes (0.6697ms)
+✔ ellipsis measures horizontal overflow without changing size or explicit line layout (1.066ms)
+✔ panel painting has rounded backgrounds, borders and no input interception (2.0664ms)
+✔ opacity composites one isolated leaf, reuses its surface and disposes resources (0.1708ms)
+✔ font catalogs preserve legacy faces and distinguish weights with actionable failures (0.7125ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.5445

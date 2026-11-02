@@ -1,0 +1,44 @@
+[
+  {
+    "path": "ui-hidden-texture-retention/red.log",
+    "source_path": ".cache/ui-hidden-texture-retention-red-20261103.log",
+    "sha256": "f9790950c8a6e1c2d888fedafc21ef1389df380de2c4e1bb10a9a12bebd35954",
+    "bytes": 7373,
+    "role": "Original actual-module negative-control stdout/stderr capture"
+  },
+  {
+    "path": "ui-hidden-texture-retention/red-test-source.mjs.txt",
+    "source_path": ".cache/ui-hidden-texture-retention-red-test-20261103.mjs",
+    "sha256": "19fd6d6f13fc236feb4afec11af8eac529d91faf5919498f5d57a43d40ca33a6",
+    "bytes": 6291,
+    "role": "Exact seven-case source used by the original RED run; source snapshot, imports remain relative to its original test path"
+  },
+  {
+    "path": "ui-hidden-texture-retention/green.log",
+    "source_path": ".cache/ui-hidden-texture-retention-green-20261103-r2.log",
+    "sha256": "5c313a71d50cae6041dfcd836c7eb18e4212f5fe7edcc3b8f9be8563c769d83d",
+    "bytes": 3391,
+    "role": "Final focused nine ownership plus 24 related Node checks"
+  },
+  {
+    "path": "ui-hidden-texture-retention/full-node.log",
+    "source_path": ".cache/ui-hidden-texture-retention-full-node-20261103-r1.log",
+    "sha256": "425004ac6a74f8a5cf59d38a7bf8b78945cc9ca9f48f797915d1a025954bfecc",
+    "bytes": 88542,
+    "role": "Root full regenerated Node suite actual raw output"
+  },
+  {
+    "path": "ui-hidden-texture-retention/final-ui-gpu.js.txt",
+    "source_path": "web/renderer/ui-gpu.js",
+    "sha256": "ae5ba44ba66f0420ec9a6988cb88558d6bb51a5c5614fd4e83d5d9d21c3568e3",
+    "bytes": 19707,
+    "role": "Final implementation source snapshot"
+  },
+  {
+    "path": "ui-hidden-texture-retention/final-ui-gpu-ownership.test.mjs.txt",
+    "source_path": "web/renderer/ui-gpu-ownership.test.mjs",
+    "sha256": "1add99dfd806e6dc46e38b038617884922023c7755f73ba369df02b671ba9e0f",
+    "bytes": 8000,
+    "role": "Final nine-case ownership test source snapshot"
+  }
+]

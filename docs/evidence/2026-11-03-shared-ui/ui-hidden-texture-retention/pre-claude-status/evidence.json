@@ -1,0 +1,214 @@
+{
+  "schema": "unone.web.ui-hidden-texture-retention.v1",
+  "recorded_at_utc": "2026-11-02T21:39:00.5325549Z",
+  "repository_head_at_evidence_capture": "848f45a6dee8412f116e4130a8eda7238a00c124",
+  "status": "source-and-node-validated-browser-gpu-gc-fps-not-run-for-this-slice",
+  "scope": {
+    "classification": "Reusable engine presentation resource ownership correction",
+    "production_paths": [
+      "web/renderer/ui-gpu.js"
+    ],
+    "test_paths": [
+      "web/renderer/ui-gpu-ownership.test.mjs"
+    ],
+    "excluded": [
+      "Game logic or assets",
+      "Core or native runtime changes",
+      "text raster key optimization",
+      "renderer replacement",
+      "cache budget changes",
+      "image.close by GPU UI",
+      "forced collection"
+    ],
+    "evidence_limits": "Strong-reference and disposal-order assertions in Node; not a reachability measurement, driver-allocation proof, memory-leak proof, pixel comparison, or FPS acceptance"
+  },
+  "sources": [
+    {
+      "path": "web/renderer/ui-gpu.js",
+      "sha256": "ae5ba44ba66f0420ec9a6988cb88558d6bb51a5c5614fd4e83d5d9d21c3568e3",
+      "snapshot": "ui-hidden-texture-retention/final-ui-gpu.js.txt"
+    },
+    {
+      "path": "web/renderer/ui-gpu-ownership.test.mjs",
+      "sha256": "1add99dfd806e6dc46e38b038617884922023c7755f73ba369df02b671ba9e0f",
+      "snapshot": "ui-hidden-texture-retention/final-ui-gpu-ownership.test.mjs.txt"
+    }
+  ],
+  "hash_scope": "SHA-256 of actual captured working-tree file bytes. These are not claims about normalized Git LF byte digests. Recursive evidence -text attributes preserve copied raw bytes.",
+  "baseline": {
+    "path": "web/renderer/ui-gpu.js",
+    "git_blob": "756451da12e160c01c646427f2d3dd60a4b88d99",
+    "description": "Original module before the scoped production edit; the working tree was clean except foreign .claude at the start of implementation",
+    "original_working_tree_raw_sha256": null,
+    "raw_pin_limit": "The original module raw-byte SHA was not captured before editing. The Git blob is a separate provenance identity, not an invented raw working-tree digest."
+  },
+  "defect": {
+    "reference_path": "runs[i] -> mesh.material.uniforms.uiTexture.value -> retired Texture -> CPU image/canvas source",
+    "trigger": "Composition shrinks or becomes empty; dedicated text/image map entry is disposed/deleted but inactive run is only hidden",
+    "scope": "Engine-held source reference, bounded by historical reusable-run peak; not by itself proof of retained native/GPU allocations or unbounded growth"
+  },
+  "correction": {
+    "binding_ownership": "Private Texture -> Set<run> index; detach affected sampler/map references before retirement, and bind inactive runs to the shared white texture",
+    "complexity": "Retirement visits actual run borrowers, avoiding a scan of every run for every retired texture",
+    "reuse": "Keep reusable geometry/material capacity and active/shared A/B/A texture ownership",
+    "dedicated_failure": "Paint replacement first; a first replacement-raster exception preserves the preceding sampler and texture",
+    "failure_limit": "No new all-or-nothing rollback promise for arbitrary later GPU/allocation/disposal failures",
+    "atlas": "Existing page/slot cache lifetime remains; hidden borrowers detach while valid cached pages remain, and context cleanup retires pages",
+    "broker": "GPU texture retirement does not close image pixels; real broker leases remain ready until their separate owners release them"
+  },
+  "executed": {
+    "negative": {
+      "executor": "/root/web_lifecycle",
+      "command": "node --test web/renderer/ui-gpu-ownership.test.mjs",
+      "raw": "ui-hidden-texture-retention/red.log",
+      "test_source_snapshot": "ui-hidden-texture-retention/red-test-source.mjs.txt",
+      "source_cases": 7,
+      "tests": 7,
+      "pass": 1,
+      "fail": 6,
+      "skipped": 0,
+      "duration_ms": 106.0217,
+      "exit_code": 1,
+      "status": "expected-red-preserved",
+      "note": "Captured before production edits. Two more coverage cases were subsequently added to the final test source."
+    },
+    "focused": {
+      "executor": "/root/web_lifecycle",
+      "command": "node --test web/renderer/ui-gpu-ownership.test.mjs web/shared/canvas-ui.test.mjs web/shared/canvas-ui-publication.test.mjs web/shared/ui-style.test.mjs",
+      "raw": "ui-hidden-texture-retention/green.log",
+      "tests": 33,
+      "ownership_cases": 9,
+      "related_cases": 24,
+      "pass": 33,
+      "fail": 0,
+      "skipped": 0,
+      "duration_ms": 108.5445,
+      "exit_code": 0
+    },
+    "full": {
+      "executor": "/root",
+      "scope": "Full regenerated web + scripts colocated Node suite, explicitly including the then-untracked new ownership test",
+      "command": null,
+      "command_provenance": "Root reported the actual full gate; raw output is preserved. Exact shell invocation was not included in that raw stdout and is not reconstructed here.",
+      "raw": "ui-hidden-texture-retention/full-node.log",
+      "tests": 861,
+      "pass": 856,
+      "fail": 0,
+      "skipped": 5,
+      "duration_ms": 15388.2592,
+      "status": "actual-passed-with-five-skips",
+      "skip_reason_scope": "Skipped cases remain visible in the raw log and are not claimed as executed passes"
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "status": "passed",
+      "executed_by": "/root/web_lifecycle"
+    }
+  },
+  "ownership_case_names": [
+    "shrinking UI runs detach retired image/dedicated samplers while preserving active ownership",
+    "an empty UI composition clears every old sampler even when no new render call occurs",
+    "next reuse preserves reusable geometry/materials and binds only newly live textures",
+    "shared A/B/A runs detach only the hidden borrower and preserve the still-live A sampler",
+    "hidden atlas borrowers detach without evicting cached text; context loss retires the page once",
+    "a failed dedicated text raster leaves its preceding complete sampler and texture alive",
+    "clear detaches all sampler references before physical texture disposal",
+    "contextLost detaches all sampler references before physical texture disposal",
+    "dispose detaches all sampler references before physical texture disposal"
+  ],
+  "test_host": {
+    "actual_modules": [
+      "web/renderer/ui-gpu.js",
+      "web/vendor/three/three.module.js",
+      "web/shared/asset-encoding.js"
+    ],
+    "controlled_boundaries": [
+      "Renderer GPU calls and canvas surfaces",
+      "Raster paint callback and pixel buffer"
+    ],
+    "not_proven": [
+      "Actual browser rendering or pixels",
+      "Hardware GPU behavior",
+      "Object collectability after GC",
+      "Native/process/GPU memory release",
+      "Frame-rate or temporal acceptance"
+    ]
+  },
+  "reviews": [
+    {
+      "reviewer": "/root",
+      "status": "CLEAR",
+      "provenance": "Root reported independent manual diff review in the task handoff",
+      "execution": "Read-only source review, separate from Root full Node gate"
+    },
+    {
+      "reviewer": "/root/web_lifecycle/ui_port_review",
+      "status": "CLEAR",
+      "concrete_p1_p2": 0,
+      "provenance": "Independent child reviewed final implementation and nine ownership tests; no edits or workload",
+      "checked": [
+        "Reverse binding ownership",
+        "Inactive white binding",
+        "Dedicated paint-before-retire",
+        "Shared A/B/A and atlas lifetime",
+        "Clear/context/disposal ordering"
+      ]
+    }
+  ],
+  "external_claude": {
+    "status": "not-attempted-for-this-slice",
+    "note": "Root plans a bounded read-only attempt after the coordinated Game quiet window. No external review pass or waiver is claimed."
+  },
+  "actual_browser_gpu_gc_fps": {
+    "status": "not-run-for-this-slice",
+    "acceptance_claim": false
+  },
+  "artifacts": [
+    {
+      "path": "ui-hidden-texture-retention/red.log",
+      "source_path": ".cache/ui-hidden-texture-retention-red-20261103.log",
+      "sha256": "f9790950c8a6e1c2d888fedafc21ef1389df380de2c4e1bb10a9a12bebd35954",
+      "bytes": 7373,
+      "role": "Original actual-module negative-control stdout/stderr capture"
+    },
+    {
+      "path": "ui-hidden-texture-retention/red-test-source.mjs.txt",
+      "source_path": ".cache/ui-hidden-texture-retention-red-test-20261103.mjs",
+      "sha256": "19fd6d6f13fc236feb4afec11af8eac529d91faf5919498f5d57a43d40ca33a6",
+      "bytes": 6291,
+      "role": "Exact seven-case source used by the original RED run; source snapshot, imports remain relative to its original test path"
+    },
+    {
+      "path": "ui-hidden-texture-retention/green.log",
+      "source_path": ".cache/ui-hidden-texture-retention-green-20261103-r2.log",
+      "sha256": "5c313a71d50cae6041dfcd836c7eb18e4212f5fe7edcc3b8f9be8563c769d83d",
+      "bytes": 3391,
+      "role": "Final focused nine ownership plus 24 related Node checks"
+    },
+    {
+      "path": "ui-hidden-texture-retention/full-node.log",
+      "source_path": ".cache/ui-hidden-texture-retention-full-node-20261103-r1.log",
+      "sha256": "425004ac6a74f8a5cf59d38a7bf8b78945cc9ca9f48f797915d1a025954bfecc",
+      "bytes": 88542,
+      "role": "Root full regenerated Node suite actual raw output"
+    },
+    {
+      "path": "ui-hidden-texture-retention/final-ui-gpu.js.txt",
+      "source_path": "web/renderer/ui-gpu.js",
+      "sha256": "ae5ba44ba66f0420ec9a6988cb88558d6bb51a5c5614fd4e83d5d9d21c3568e3",
+      "bytes": 19707,
+      "role": "Final implementation source snapshot"
+    },
+    {
+      "path": "ui-hidden-texture-retention/final-ui-gpu-ownership.test.mjs.txt",
+      "source_path": "web/renderer/ui-gpu-ownership.test.mjs",
+      "sha256": "1add99dfd806e6dc46e38b038617884922023c7755f73ba369df02b671ba9e0f",
+      "bytes": 8000,
+      "role": "Final nine-case ownership test source snapshot"
+    }
+  ],
+  "artifact_index": {
+    "path": "ui-hidden-texture-retention/file-index.json",
+    "sha256": "f74f96a45e2a60a484e0522e03cb193c56f1feb65443a0c8c56245afa5e48e6b"
+  }
+}
