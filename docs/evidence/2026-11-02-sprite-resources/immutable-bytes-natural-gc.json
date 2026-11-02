@@ -1,0 +1,279 @@
+{
+  "schema": "unone.immutable-bytes.actual-wasm-natural-gc.v1",
+  "ok": true,
+  "started_at": "2026-11-02T14:31:32.560Z",
+  "node": "v24.19.0",
+  "command": {
+    "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "argv": [
+      "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-natural-gc-wasm.mjs",
+      "--runtime",
+      "target/populous-r20-web2/runtime",
+      "--out",
+      ".cache/immutable-bytes-bfcd916-natural-gc-r1",
+      "--expected-manifest",
+      "04b34b8eef606136f63853f5a185511e4cc81acd3d04341348b96798bd5c7007",
+      "--expected-source",
+      "bfcd9160ae3cb7c4dff6d8515ee7400ee3adff00",
+      "--expected-javascript",
+      "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+      "--expected-wasm",
+      "dd30ee204e6faa5809625166dd4a02727218a35bd8273df7952d8a60da0f98f3",
+      "--expected-fixture",
+      "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0",
+      "--expected-loader",
+      "217fc37880ccb192561e987bb46892acc4675bac4d1897f80b26c2405570f1b3"
+    ],
+    "cwd": "D:\\Projects\\Unone"
+  },
+  "pins": {
+    "runtime_harness": {
+      "path": "D:\\Projects\\Unone\\scripts\\immutable-bytes-emitted-runtime.mjs",
+      "bytes": 3825,
+      "sha256": "c937d4536fe352cc2b4132b711a85f5b14737ab99a5a10baa26f9fb0f9312720"
+    },
+    "runtime_manifest": {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\runtime\\runtime.json",
+      "bytes": 1250,
+      "sha256": "04b34b8eef606136f63853f5a185511e4cc81acd3d04341348b96798bd5c7007"
+    },
+    "javascript": {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\runtime\\unone-player.js",
+      "bytes": 102845,
+      "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+    },
+    "wasm": {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\runtime\\unone_player.wasm",
+      "bytes": 5278087,
+      "sha256": "dd30ee204e6faa5809625166dd4a02727218a35bd8273df7952d8a60da0f98f3"
+    },
+    "fixture": {
+      "path": "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes-natural-gc.luau",
+      "bytes": 3591,
+      "sha256": "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0"
+    },
+    "observation_loader": {
+      "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+      "bytes": 13537,
+      "sha256": "217fc37880ccb192561e987bb46892acc4675bac4d1897f80b26c2405570f1b3"
+    }
+  },
+  "stderr": [],
+  "stderr_overflow": 0,
+  "aborts": [],
+  "checkpoints": [
+    {
+      "frame": 0,
+      "observation_digest": "sha256:3dcb7a1dc7ead066165e594ea26613ccf2900b461631c1dd85fba73d8d883e48",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": true,
+        "bytes_gc_intermediate_collected": false,
+        "bytes_gc_pressure_bytes": 0,
+        "bytes_gc_pressure_checksum": 0,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": false,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 0
+      }
+    },
+    {
+      "frame": 1,
+      "observation_digest": "sha256:1046fbd576149aaba32ff1e5fde305bfbd598b49a97c49812077672c76ec5756",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": true,
+        "bytes_gc_intermediate_collected": false,
+        "bytes_gc_pressure_bytes": 2097152,
+        "bytes_gc_pressure_checksum": 560,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": false,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 1
+      }
+    },
+    {
+      "frame": 2,
+      "observation_digest": "sha256:f96215f32062436fa88a4a53fdcc06fca2cec4a060d027b8f6d5464ea7664579",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": true,
+        "bytes_gc_intermediate_collected": true,
+        "bytes_gc_pressure_bytes": 4194304,
+        "bytes_gc_pressure_checksum": 592,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": false,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 2
+      }
+    },
+    {
+      "frame": 3,
+      "observation_digest": "sha256:e4bf530ab4c938e8bc2d6375a7141a6368ed80fa64179bcdedb605a255650dcb",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": false,
+        "bytes_gc_intermediate_collected": true,
+        "bytes_gc_pressure_bytes": 6291456,
+        "bytes_gc_pressure_checksum": 624,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": true,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 3
+      }
+    },
+    {
+      "frame": 4,
+      "observation_digest": "sha256:9074a53dbb3220ea963805e1a3159153b0b9c089fac1710a12d9edc8d3239b26",
+      "observations": {
+        "bytes_gc_child_collected": false,
+        "bytes_gc_child_valid": false,
+        "bytes_gc_intermediate_collected": true,
+        "bytes_gc_pressure_bytes": 8388608,
+        "bytes_gc_pressure_checksum": 656,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": true,
+        "bytes_gc_root_alive": true,
+        "bytes_gc_ticks": 4
+      }
+    },
+    {
+      "frame": 5,
+      "observation_digest": "sha256:23e8f9c2e37dd53b10fcc54d91664ec0a4abb3b5649996f49ae049198e575397",
+      "observations": {
+        "bytes_gc_child_collected": true,
+        "bytes_gc_child_valid": false,
+        "bytes_gc_intermediate_collected": true,
+        "bytes_gc_pressure_bytes": 10485760,
+        "bytes_gc_pressure_checksum": 688,
+        "bytes_gc_ready": true,
+        "bytes_gc_released": true,
+        "bytes_gc_root_alive": false,
+        "bytes_gc_ticks": 5
+      }
+    }
+  ],
+  "budget": {
+    "maximum_fixed_ticks": 100,
+    "ephemeral_buffers_per_tick": 32,
+    "ephemeral_buffer_bytes": 65536,
+    "maximum_cumulative_pressure_bytes": 209715200
+  },
+  "cleanup": {
+    "attempted": true,
+    "unloaded": true,
+    "decoder_released": true
+  },
+  "limitations": [
+    "No force-GC API, profiler, browser, gameplay code or clock replacement is used.",
+    "Weak-value disappearance witnesses actual collection of these specific objects; it is not a collection-frequency measurement.",
+    "Pressure bytes are cumulative requested ephemeral payload bytes, not live memory, allocation counters or WASM capacity.",
+    "The test proves bounded span/root ownership behavior on this actual WASM artifact, not global leak freedom or FPS."
+  ],
+  "runtime_metadata": {
+    "bytecode_optimization_level": 2,
+    "cargo_features": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "jobs",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui"
+    ],
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "input",
+      "jobs",
+      "observation",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui",
+      "world"
+    ],
+    "dev_tools": false,
+    "exports": [
+      "init",
+      "alloc",
+      "stage_data",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "observation_ptr",
+      "observation_len",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len",
+      "sprite_resources_request"
+    ],
+    "javascript": "unone-player.js",
+    "javascript_sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+    "phase_profile": false,
+    "preview_tools": false,
+    "profile": "release",
+    "profile_mode": "none",
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "sampling_profile": false,
+    "source_commit": "bfcd9160ae3cb7c4dff6d8515ee7400ee3adff00",
+    "source_dirty": false,
+    "wasm": "unone_player.wasm",
+    "wasm_bytes": 5278087,
+    "wasm_sha256": "dd30ee204e6faa5809625166dd4a02727218a35bd8273df7952d8a60da0f98f3"
+  },
+  "retained_root_witness": {
+    "frame": 2,
+    "observations": {
+      "bytes_gc_child_collected": false,
+      "bytes_gc_child_valid": true,
+      "bytes_gc_intermediate_collected": true,
+      "bytes_gc_pressure_bytes": 4194304,
+      "bytes_gc_pressure_checksum": 592,
+      "bytes_gc_ready": true,
+      "bytes_gc_released": false,
+      "bytes_gc_root_alive": true,
+      "bytes_gc_ticks": 2
+    }
+  },
+  "release_action_frame": 3,
+  "final_collection_witness": {
+    "frame": 5,
+    "observations": {
+      "bytes_gc_child_collected": true,
+      "bytes_gc_child_valid": false,
+      "bytes_gc_intermediate_collected": true,
+      "bytes_gc_pressure_bytes": 10485760,
+      "bytes_gc_pressure_checksum": 688,
+      "bytes_gc_ready": true,
+      "bytes_gc_released": true,
+      "bytes_gc_root_alive": false,
+      "bytes_gc_ticks": 5
+    }
+  },
+  "finished_at": "2026-11-02T14:31:32.664Z"
+}

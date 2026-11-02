@@ -1,0 +1,18 @@
+{
+  "source_commit": "a5ceca3",
+  "original_sha256": "0fbea6087969f59e3498bb0714646caeb4b950ea0631bcf57940ceb4d15f7d39",
+  "executed_sha256": "7754970362bd454f1c5c72a5d6e0b0a19d9f064883d656bc579abce6925839f0",
+  "only_change": "Three static import URLs relocated; exact body reversal checked",
+  "test_sha256": "d3b255a408fa6d6b4ad1fbce0085fd548eca9cecc91236ce04e3c86ab3b6e840",
+  "command": [
+    "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "--test",
+    "--test-name-pattern=two distinct materials|one material compilation|context restore rebuilds|different material identities|releasing one loading|shared upload failure",
+    "web/renderer/sprite-resources.test.mjs"
+  ],
+  "exit_code": 1,
+  "signal": null,
+  "stdout_sha256": "61a297236eba135981d557e216d078685f5ad34c1f3bd1dd072a719f7dfc80cf",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Old actual pool module with current real broker/Three CPU objects and fake upload/compile hooks; no GPU/browser/FPS claim"
+}

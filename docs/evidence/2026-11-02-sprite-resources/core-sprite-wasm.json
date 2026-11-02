@@ -1,0 +1,45 @@
+{
+  "schema": "unone.sprite-resources.emitted-wasm.v1",
+  "ok": true,
+  "checks": [
+    "opaque lease prepares a typed captured material plan",
+    "loading cannot publish partial appearance and unchanged plan is omitted",
+    "prepared receipt atomically publishes UV pose size and independent uniforms",
+    "invalid instance uniform cannot mutate the accepted revision",
+    "submission is distinct and live movement retains ownership",
+    "new epoch invalidates prior submission receipt",
+    "idempotent caller release preserves visible entity demand",
+    "hide drops last entity demand and invalidates commit",
+    "failed tick keeps admitted feedback and rolls back appearance revision",
+    "fractional epoch input is rejected by actual Core"
+  ],
+  "pins": {
+    "runtime_manifest": {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\runtime\\runtime.json",
+      "sha256": "04b34b8eef606136f63853f5a185511e4cc81acd3d04341348b96798bd5c7007",
+      "bytes": 1250
+    },
+    "javascript": {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\runtime\\unone-player.js",
+      "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+      "bytes": 102845
+    },
+    "wasm": {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\runtime\\unone_player.wasm",
+      "sha256": "dd30ee204e6faa5809625166dd4a02727218a35bd8273df7952d8a60da0f98f3",
+      "bytes": 5278087
+    },
+    "fixture": {
+      "sha256": "ff4e39e4ae632f8c1310bd3023e54d9cb6d434e33a738b5c6d3b5a3f768e4607",
+      "bytes": 1206
+    }
+  },
+  "stderr": [],
+  "stderr_overflow": 0,
+  "aborts": [],
+  "limitations": [
+    "Actual production WASM Core with recorded host receipts; no GPU, scanout, FPS or global leak/GC certification.",
+    "Source ingestion exercises the runtime API; this gate does not certify the latest CLI precompiler or a complete SDK."
+  ],
+  "unloaded": true
+}

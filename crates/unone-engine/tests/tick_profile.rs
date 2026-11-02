@@ -1,30 +1,27 @@
 //! Where a project's ticks go: replays a test file's input to reach a state,
 //! then samples Luau functions and VM GC over further ticks. Not part of the
 //! regular suite; run on an optimized sampling build:
-//! UNONE_TICK_PROJECT=<dir> UNONE_TICK_INPUT=<test.json> [UNONE_TICK_FRAMES=120]
+//! UNONE_TICK_PROJECT=<dir> UNONE_TICK_INPUT=<test.json or input array> [UNONE_TICK_FRAMES=120]
 //! cargo test --release -p unone-engine --features sampling-profile --test tick_profile -- --ignored --nocapture
 //! With `--features phase-profile` instead, it times the engine's own phases
 //! (script, UI conversion and validation, observation, snapshot) per tick.
+//! The project loads as development hosts load it: imports, script modules
+//! and data assets included.
 #![cfg(any(feature = "sampling-profile", feature = "phase-profile"))]
 use std::time::Instant;
-use unone_engine::{InputFrame, PreviewRequest};
+use unone_engine::{EngineRuntime, InputFrame, PreviewRequest};
 
 #[test]
 #[ignore = "benchmark"]
 fn tick_profile() {
     let Some(dir) = std::env::var_os("UNONE_TICK_PROJECT") else { return };
-    let dir = std::path::PathBuf::from(dir);
-    let config: serde_json::Value = serde_json::from_slice(&std::fs::read(dir.join("project.unone.json")).unwrap()).unwrap();
-    let script = std::fs::read_to_string(dir.join(config["entry_script"].as_str().unwrap())).unwrap();
-    let scene: Option<serde_json::Value> = config["main_scene"].as_str()
-        .map(|path| serde_json::from_slice(&std::fs::read(dir.join(path)).unwrap()).unwrap());
-    let payload = serde_json::json!({"config": config, "script": script, "scene": scene}).to_string();
     let started = Instant::now();
-    let mut runtime = unone_engine::HostProject::parse(payload.as_bytes()).unwrap().into_runtime(42).unwrap();
+    let mut runtime = EngineRuntime::load_with_seed(std::path::PathBuf::from(dir), 42).unwrap();
     println!("load {:.0} ms", started.elapsed().as_secs_f64() * 1000.);
     let inputs: Vec<InputFrame> = std::env::var_os("UNONE_TICK_INPUT").map(|path| {
         let test: serde_json::Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
-        serde_json::from_value(test["input_sequence"].clone()).unwrap()
+        let sequence = if test.is_array() { test } else { test["input_sequence"].clone() };
+        serde_json::from_value(sequence).unwrap()
     }).unwrap_or_default();
     let idle = inputs.last().cloned().unwrap_or_default();
     for frame in &inputs { runtime.tick_with_input(frame).unwrap(); }

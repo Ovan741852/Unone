@@ -1,0 +1,711 @@
+{
+  "schema": "unone.world-fields-diagnostic.v1",
+  "status": "diagnostic-complete-not-acceptance",
+  "scope": "Actual clean production WASM with current official Node host profiling; no renderer, FPS, GPU, pause-cause or no-leak/GC certification.",
+  "runtime": {
+    "source_commit": "bfcd9160ae3cb7c4dff6d8515ee7400ee3adff00",
+    "source_dirty": false,
+    "profile": "release",
+    "bytecode_optimization_level": 2,
+    "dev_tools": false,
+    "preview_tools": false,
+    "phase_profile": false,
+    "sampling_profile": false,
+    "pins": [
+      {
+        "label": "runtime_manifest",
+        "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\releases\\8e702771c1c3de0713bf639c429a63401add8b649a24e4b1f21777b0915b5535\\runtime\\runtime.json",
+        "bytes": 1250,
+        "sha256": "04b34b8eef606136f63853f5a185511e4cc81acd3d04341348b96798bd5c7007"
+      },
+      {
+        "label": "runtime_javascript",
+        "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\releases\\8e702771c1c3de0713bf639c429a63401add8b649a24e4b1f21777b0915b5535\\runtime\\unone-player.js",
+        "bytes": 102845,
+        "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+      },
+      {
+        "label": "runtime_wasm",
+        "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\releases\\8e702771c1c3de0713bf639c429a63401add8b649a24e4b1f21777b0915b5535\\runtime\\unone_player.wasm",
+        "bytes": 5278087,
+        "sha256": "dd30ee204e6faa5809625166dd4a02727218a35bd8273df7952d8a60da0f98f3"
+      }
+    ]
+  },
+  "inputs": {
+    "original_payload_sha256": "8be551d0059cb2b3838021e4005ec98a57f69ab3c23331742b5effe594840a22",
+    "game_script_sha256": "2ee7eb9caada8866909006df43fb81fcdeddc4cb730f937150880c29befa368e",
+    "staged_payload_sorted_sha256": "fddc2ef8c3dc7a8b0053254e7356723f1d710a00bd6ea0175c90e7c5b691eaa9",
+    "payload_file_sha256": "414f0d19952acc34e0d9ecab392844974fd20a7c0c5a42799ebac4774115480a",
+    "input_sequence_sha256": "0b10d68aaefb6806198b8f38bc13de01256c190981a9d350070f1f3b417b871c",
+    "preparation_function_sha256": "600169f5684bf929f32ef68a48e9d4767a4498fe3b5aa96041c960d5d02c6cad",
+    "original_preparation_source_sha256": "475e09195160b79da0895b1ba99bb148ead64b7b7de971f8e0d2b56aed8cf36a",
+    "fixture_hashes": [
+      {
+        "name": "named-fresh.save.json",
+        "bytes": 201806,
+        "sha256": "098d5f27cc79f1750327dcbe163708ea4567e8fc4cfa857ffc3abad92f732deb"
+      },
+      {
+        "name": "world-map.json",
+        "bytes": 92288835,
+        "sha256": "3cadd1dbfa1216a5a0a0b1adfd0448b358ac1423856a25d4f816039be13890ca"
+      }
+    ],
+    "seed": 42,
+    "viewport": [
+      1600,
+      900
+    ],
+    "scenario": "battle",
+    "prefix_ticks": 6,
+    "battle_warmup_ticks": 60,
+    "measured_ticks": 300,
+    "total_ticks": 366,
+    "original_files_verified_unchanged_during_copy": true,
+    "product_writes": false
+  },
+  "execution": {
+    "exit_code": 0,
+    "ok": true,
+    "closed": true,
+    "aborts": 0,
+    "stderr_entries": 0,
+    "inputs_unchanged": true,
+    "concurrency": "Root reported a concurrent worker100cycle GPU functional workload; no exclusive-machine assumption. External activity was not traced.",
+    "current_verifier_sha256": "38eefd9f1e4651c584149c67c93718842acfc73972578d5ba4e545bf590e7c53",
+    "executed_primary_verifier": {
+      "label": "verification_script",
+      "path": "D:\\Projects\\Unone\\scripts\\profile-world-fields-wasm.mjs",
+      "bytes": 13938,
+      "sha256": "6ff7add25b44eaf7a05745eefdc5036c2ac19cc9e28b43a4069d9d50718b5960"
+    },
+    "host_static_graph_count": 10,
+    "host_static_graph_sha256": "6374a4e877a51097ecc876af7cdbef679daf7a598ee4d3952042e90bc3a67b3b",
+    "instrumented_sources": [
+      {
+        "path": "web/shared/load-project.js",
+        "bytes": 14120,
+        "sha256": "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c"
+      },
+      {
+        "path": "web/shared/runtime-core.mjs",
+        "bytes": 10218,
+        "sha256": "f38a5dce3ee3f161e25c18c8f598863e475780a6c0976ec69eb6baaec5f175b1"
+      },
+      {
+        "path": "web/shared/world-field-publication.mjs",
+        "bytes": 1151,
+        "sha256": "fe0ff26fa6e7c40bb262c8e89d05c61cd2e0adfe9501392f468a6b08b9931090"
+      }
+    ]
+  },
+  "measured_command_wall": {
+    "samples": 300,
+    "total_ms": 1127.7209999999995,
+    "median_ms": 2.9687999999999874,
+    "p95_ms": 8.49739999999997,
+    "max_ms": 22.50660000000005
+  },
+  "fields": {
+    "entities": {
+      "leased_publications": 300,
+      "changed": 300,
+      "reused": 0,
+      "total_changed_encoded_bytes": 27510097,
+      "max_encoded_bytes": 91836,
+      "min_top_level_entries": 317,
+      "max_top_level_entries": 317,
+      "min_container_children": 317,
+      "max_container_children": 317,
+      "stages": {
+        "utf8": {
+          "samples": 300,
+          "total_ms": 43.934499999999275,
+          "median_ms": 0.008100000000013097,
+          "p95_ms": 0.029500000000098225,
+          "max_ms": 9.286100000000033
+        },
+        "parse": {
+          "samples": 300,
+          "total_ms": 95.74330000000123,
+          "median_ms": 0.31189999999992324,
+          "p95_ms": 0.3791000000001077,
+          "max_ms": 1.7989000000000033
+        },
+        "freeze": {
+          "samples": 300,
+          "total_ms": 37.92429999999763,
+          "median_ms": 0.12349999999992178,
+          "p95_ms": 0.14229999999997744,
+          "max_ms": 0.2599999999999909
+        },
+        "reuse": null,
+        "descriptor": {
+          "samples": 300,
+          "total_ms": 2.5382000000014386,
+          "median_ms": 0.006799999999884676,
+          "p95_ms": 0.019499999999993634,
+          "max_ms": 0.06610000000000582
+        }
+      }
+    },
+    "observations": {
+      "leased_publications": 300,
+      "changed": 300,
+      "reused": 0,
+      "total_changed_encoded_bytes": 9608245,
+      "max_encoded_bytes": 32209,
+      "min_top_level_entries": 782,
+      "max_top_level_entries": 782,
+      "min_container_children": 22,
+      "max_container_children": 22,
+      "stages": {
+        "utf8": {
+          "samples": 300,
+          "total_ms": 7.347400000001812,
+          "median_ms": 0.013599999999996726,
+          "p95_ms": 0.030200000000036198,
+          "max_ms": 1.5045000000000073
+        },
+        "parse": {
+          "samples": 300,
+          "total_ms": 51.22659999999894,
+          "median_ms": 0.1534999999998945,
+          "p95_ms": 0.26720000000000255,
+          "max_ms": 0.8668999999999869
+        },
+        "freeze": {
+          "samples": 300,
+          "total_ms": 42.024100000000544,
+          "median_ms": 0.13520000000016807,
+          "p95_ms": 0.15540000000009968,
+          "max_ms": 0.42840000000001055
+        },
+        "reuse": null,
+        "descriptor": {
+          "samples": 300,
+          "total_ms": 1.4085999999995238,
+          "median_ms": 0.003200000000106229,
+          "p95_ms": 0.01319999999986976,
+          "max_ms": 0.03560000000004493
+        }
+      }
+    },
+    "particle_effects": {
+      "leased_publications": 300,
+      "changed": 0,
+      "reused": 300,
+      "total_changed_encoded_bytes": 0,
+      "max_encoded_bytes": 4349,
+      "min_top_level_entries": 6,
+      "max_top_level_entries": 6,
+      "min_container_children": 6,
+      "max_container_children": 6,
+      "stages": {
+        "utf8": null,
+        "parse": null,
+        "freeze": null,
+        "reuse": {
+          "samples": 300,
+          "total_ms": 1.038599999999974,
+          "median_ms": 0.002300000000104774,
+          "p95_ms": 0.007600000000138607,
+          "max_ms": 0.05129999999996926
+        },
+        "descriptor": null
+      }
+    },
+    "shader_materials": {
+      "leased_publications": 300,
+      "changed": 45,
+      "reused": 255,
+      "total_changed_encoded_bytes": 997613,
+      "max_encoded_bytes": 22201,
+      "min_top_level_entries": 20,
+      "max_top_level_entries": 20,
+      "min_container_children": 20,
+      "max_container_children": 20,
+      "stages": {
+        "utf8": {
+          "samples": 45,
+          "total_ms": 0.1509000000010019,
+          "median_ms": 0.002200000000129876,
+          "p95_ms": 0.008300000000190266,
+          "max_ms": 0.01089999999999236
+        },
+        "parse": {
+          "samples": 45,
+          "total_ms": 1.271299999999428,
+          "median_ms": 0.027000000000043656,
+          "p95_ms": 0.03340000000002874,
+          "max_ms": 0.03519999999980428
+        },
+        "freeze": {
+          "samples": 45,
+          "total_ms": 0.503199999998742,
+          "median_ms": 0.01089999999999236,
+          "p95_ms": 0.012799999999970169,
+          "max_ms": 0.01410000000009859
+        },
+        "reuse": {
+          "samples": 255,
+          "total_ms": 0.30339999999898737,
+          "median_ms": 0.0009999999999763531,
+          "p95_ms": 0.002499999999940883,
+          "max_ms": 0.007499999999936335
+        },
+        "descriptor": {
+          "samples": 45,
+          "total_ms": 0.2880999999993037,
+          "median_ms": 0.001099999999951251,
+          "p95_ms": 0.003399999999828651,
+          "max_ms": 0.22679999999991196
+        }
+      }
+    },
+    "particles": {
+      "leased_publications": 25,
+      "changed": 25,
+      "reused": 0,
+      "total_changed_encoded_bytes": 38857,
+      "max_encoded_bytes": 1947,
+      "min_top_level_entries": 6,
+      "max_top_level_entries": 10,
+      "min_container_children": 6,
+      "max_container_children": 10,
+      "stages": {
+        "utf8": {
+          "samples": 25,
+          "total_ms": 0.04160000000047148,
+          "median_ms": 0.001099999999951251,
+          "p95_ms": 0.004899999999906868,
+          "max_ms": 0.005400000000008731
+        },
+        "parse": {
+          "samples": 25,
+          "total_ms": 0.21960000000080981,
+          "median_ms": 0.008500000000140062,
+          "p95_ms": 0.012299999999868305,
+          "max_ms": 0.017299999999977445
+        },
+        "freeze": {
+          "samples": 25,
+          "total_ms": 0.1399999999996453,
+          "median_ms": 0.005100000000084037,
+          "p95_ms": 0.008799999999837382,
+          "max_ms": 0.010299999999915599
+        },
+        "reuse": null,
+        "descriptor": {
+          "samples": 25,
+          "total_ms": 0.032999999999219654,
+          "median_ms": 0.0011000000001786248,
+          "p95_ms": 0.0025000000000545697,
+          "max_ms": 0.005499999999983629
+        }
+      }
+    }
+  },
+  "tail": {
+    "threshold": "Rows at or above measured command p95",
+    "threshold_ms": 8.49739999999997,
+    "rows": [
+      {
+        "frame": 108,
+        "command_ms": 9.482799999999997,
+        "tick_abi_atomic_ms": 1.9451999999999998,
+        "world_field_boundaries_sum_ms": 7.4184999999999945,
+        "entities": {
+          "descriptor": 0.00760000000002492,
+          "utf8": 6.275099999999952,
+          "parse": 0.4515999999999849,
+          "freeze": 0.18830000000002656
+        },
+        "observations": {
+          "descriptor": 0.023300000000062937,
+          "utf8": 0.03819999999996071,
+          "parse": 0.2576999999999998,
+          "freeze": 0.16489999999998872
+        },
+        "larger_region": "world_field_boundaries_sum"
+      },
+      {
+        "frame": 119,
+        "command_ms": 8.947999999999979,
+        "tick_abi_atomic_ms": 8.014599999999973,
+        "world_field_boundaries_sum_ms": 0.8128000000000384,
+        "entities": {
+          "descriptor": 0.015399999999999636,
+          "utf8": 0.006499999999959982,
+          "parse": 0.31500000000005457,
+          "freeze": 0.12139999999999418
+        },
+        "observations": {
+          "descriptor": 0.01059999999995398,
+          "utf8": 0.012600000000020373,
+          "parse": 0.19219999999995707,
+          "freeze": 0.13269999999999982
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 124,
+        "command_ms": 15.33770000000004,
+        "tick_abi_atomic_ms": 14.0702,
+        "world_field_boundaries_sum_ms": 0.9148999999999887,
+        "entities": {
+          "descriptor": 0.027400000000056934,
+          "utf8": 0.009299999999939246,
+          "parse": 0.33360000000004675,
+          "freeze": 0.12609999999995125
+        },
+        "observations": {
+          "descriptor": 0.01239999999995689,
+          "utf8": 0.013599999999996726,
+          "parse": 0.24310000000002674,
+          "freeze": 0.1389000000000351
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 129,
+        "command_ms": 15.631600000000049,
+        "tick_abi_atomic_ms": 14.501899999999978,
+        "world_field_boundaries_sum_ms": 0.9495000000000573,
+        "entities": {
+          "descriptor": 0.03180000000008931,
+          "utf8": 0.006799999999998363,
+          "parse": 0.34359999999992397,
+          "freeze": 0.12930000000005748
+        },
+        "observations": {
+          "descriptor": 0.012299999999981992,
+          "utf8": 0.017699999999990723,
+          "parse": 0.2541999999999689,
+          "freeze": 0.14560000000005857
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 135,
+        "command_ms": 16.593799999999987,
+        "tick_abi_atomic_ms": 15.344400000000064,
+        "world_field_boundaries_sum_ms": 1.0203000000000202,
+        "entities": {
+          "descriptor": 0.03269999999997708,
+          "utf8": 0.011799999999993815,
+          "parse": 0.35580000000004475,
+          "freeze": 0.13229999999998654
+        },
+        "observations": {
+          "descriptor": 0.013900000000035106,
+          "utf8": 0.027599999999893043,
+          "parse": 0.29490000000009786,
+          "freeze": 0.1409999999999627
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 140,
+        "command_ms": 15.802900000000022,
+        "tick_abi_atomic_ms": 14.672799999999938,
+        "world_field_boundaries_sum_ms": 0.9548999999999523,
+        "entities": {
+          "descriptor": 0.021399999999971442,
+          "utf8": 0.0061000000000603904,
+          "parse": 0.3442000000000007,
+          "freeze": 0.12979999999993197
+        },
+        "observations": {
+          "descriptor": 0.010300000000029286,
+          "utf8": 0.018100000000004002,
+          "parse": 0.268100000000004,
+          "freeze": 0.15009999999995216
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 146,
+        "command_ms": 17.84400000000005,
+        "tick_abi_atomic_ms": 16.679399999999987,
+        "world_field_boundaries_sum_ms": 0.9774000000001024,
+        "entities": {
+          "descriptor": 0.021800000000098407,
+          "utf8": 0.005799999999908323,
+          "parse": 0.3502000000000862,
+          "freeze": 0.1291999999999689
+        },
+        "observations": {
+          "descriptor": 0.010700000000042564,
+          "utf8": 0.03199999999992542,
+          "parse": 0.27309999999999945,
+          "freeze": 0.14650000000006003
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 151,
+        "command_ms": 12.25159999999994,
+        "tick_abi_atomic_ms": 11.182700000000068,
+        "world_field_boundaries_sum_ms": 0.9144000000000005,
+        "entities": {
+          "descriptor": 0.020800000000008367,
+          "utf8": 0.008000000000038199,
+          "parse": 0.3288000000000011,
+          "freeze": 0.12950000000000728
+        },
+        "observations": {
+          "descriptor": 0.008699999999976171,
+          "utf8": 0.031499999999937245,
+          "parse": 0.24080000000003565,
+          "freeze": 0.14170000000001437
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 156,
+        "command_ms": 8.49739999999997,
+        "tick_abi_atomic_ms": 7.663999999999987,
+        "world_field_boundaries_sum_ms": 0.7446999999999662,
+        "entities": {
+          "descriptor": 0.008400000000051477,
+          "utf8": 0.004899999999906868,
+          "parse": 0.287900000000036,
+          "freeze": 0.11770000000001346
+        },
+        "observations": {
+          "descriptor": 0.0036000000000058208,
+          "utf8": 0.009199999999964348,
+          "parse": 0.1752999999999929,
+          "freeze": 0.1331000000000131
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 162,
+        "command_ms": 16.223999999999933,
+        "tick_abi_atomic_ms": 15.211599999999976,
+        "world_field_boundaries_sum_ms": 0.8673999999999751,
+        "entities": {
+          "descriptor": 0.019300000000043838,
+          "utf8": 0.005400000000008731,
+          "parse": 0.32200000000000273,
+          "freeze": 0.12659999999993943
+        },
+        "observations": {
+          "descriptor": 0.007399999999961437,
+          "utf8": 0.012500000000045475,
+          "parse": 0.23329999999998563,
+          "freeze": 0.13660000000004402
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 167,
+        "command_ms": 22.50660000000005,
+        "tick_abi_atomic_ms": 14.298900000000003,
+        "world_field_boundaries_sum_ms": 8.05190000000016,
+        "entities": {
+          "descriptor": 0.018100000000004002,
+          "utf8": 7.004200000000083,
+          "parse": 0.3931999999999789,
+          "freeze": 0.14670000000000982
+        },
+        "observations": {
+          "descriptor": 0.019199999999955253,
+          "utf8": 0.03230000000007749,
+          "parse": 0.2945999999999458,
+          "freeze": 0.13750000000004547
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 173,
+        "command_ms": 14.127999999999929,
+        "tick_abi_atomic_ms": 12.959499999999935,
+        "world_field_boundaries_sum_ms": 1.0126999999999953,
+        "entities": {
+          "descriptor": 0.019800000000032014,
+          "utf8": 0.020299999999906504,
+          "parse": 0.3762000000001535,
+          "freeze": 0.13229999999998654
+        },
+        "observations": {
+          "descriptor": 0.008800000000064756,
+          "utf8": 0.021399999999857755,
+          "parse": 0.278400000000147,
+          "freeze": 0.14859999999998763
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 236,
+        "command_ms": 11.994900000000143,
+        "tick_abi_atomic_ms": 2.0336999999999534,
+        "world_field_boundaries_sum_ms": 9.820400000000063,
+        "entities": {
+          "descriptor": 0.00430000000005748,
+          "utf8": 8.858899999999949,
+          "parse": 0.3648000000000593,
+          "freeze": 0.13040000000000873
+        },
+        "observations": {
+          "descriptor": 0.021500000000060027,
+          "utf8": 0.023199999999860665,
+          "parse": 0.2676000000001295,
+          "freeze": 0.14239999999995234
+        },
+        "larger_region": "world_field_boundaries_sum"
+      },
+      {
+        "frame": 292,
+        "command_ms": 12.593700000000126,
+        "tick_abi_atomic_ms": 2.0243000000000393,
+        "world_field_boundaries_sum_ms": 10.296400000000176,
+        "entities": {
+          "descriptor": 0.004100000000107684,
+          "utf8": 9.286100000000033,
+          "parse": 0.35760000000004766,
+          "freeze": 0.13199999999983447
+        },
+        "observations": {
+          "descriptor": 0.01999999999998181,
+          "utf8": 0.021700000000009823,
+          "parse": 0.26720000000000255,
+          "freeze": 0.14409999999998035
+        },
+        "larger_region": "world_field_boundaries_sum"
+      },
+      {
+        "frame": 294,
+        "command_ms": 10.025300000000016,
+        "tick_abi_atomic_ms": 8.86220000000003,
+        "world_field_boundaries_sum_ms": 0.9127999999998337,
+        "entities": {
+          "descriptor": 0.013399999999819556,
+          "utf8": 0.005300000000033833,
+          "parse": 0.32100000000014006,
+          "freeze": 0.11879999999996471
+        },
+        "observations": {
+          "descriptor": 0.006200000000035288,
+          "utf8": 0.01209999999991851,
+          "parse": 0.24109999999996035,
+          "freeze": 0.1351999999999407
+        },
+        "larger_region": "tick_abi_atomic"
+      },
+      {
+        "frame": 352,
+        "command_ms": 12.18730000000005,
+        "tick_abi_atomic_ms": 1.9255000000000564,
+        "world_field_boundaries_sum_ms": 10.095100000000002,
+        "entities": {
+          "descriptor": 0.004100000000107684,
+          "utf8": 8.817000000000007,
+          "parse": 0.4479999999998654,
+          "freeze": 0.1875999999999749
+        },
+        "observations": {
+          "descriptor": 0.027700000000095315,
+          "utf8": 0.031799999999975626,
+          "parse": 0.30770000000006803,
+          "freeze": 0.2501999999999498
+        },
+        "larger_region": "world_field_boundaries_sum"
+      }
+    ],
+    "larger_region_counts": {
+      "tick_abi_atomic": 12,
+      "world_field_boundaries_sum": 4
+    },
+    "interpretation": "These are locations within consecutive host-wall boundaries, not causal attribution. Entity UTF8 boundary excursions and tick ABI excursions both occur. No subtraction of aggregate percentiles is used."
+  },
+  "endpoint_check": {
+    "ok": true,
+    "frame": 246,
+    "scope": "Same frozen payload/input atframe246; exact historical four sorted value hashes, no fullhistoricalCoreDigest available",
+    "hashes": {
+      "observations": "20ffbfb1db7f2d54d7daa956b1e8a740e0ab8ae0eedf33bfaf5e86e44a4aaf5f",
+      "ui": "353c1c5eb5b738bef228fccfa2f6dbf47f87245a987792138642582011437505",
+      "entities": "a90e8293dcfe004c77e73113a6a07e8b7d74ed4c44259846c69a44691eaaaf1a",
+      "save": "adc692466cc2dc8a349025585da816f07f1378d523829805f545b1ce1b98c57d"
+    },
+    "historical_runs_compared": [
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261102/core-ab/battle-1-after.json",
+        "sha256": "955317184de2cca514e87da36a3143703d40e7e85dd2984df77ad79d54e24e26"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261102/core-ab/battle-2-after.json",
+        "sha256": "d2768bc64b365e105d0251a7cd42b14f38838f5544ee41491d56f6d9ee4c43c9"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261102/core-ab/battle-3-after.json",
+        "sha256": "155eb2e8186630457f67d5c057025dbe4703f417303e86c19daba1bee7458175"
+      }
+    ],
+    "closed": true,
+    "stderr_entries": 0,
+    "aborts": 0,
+    "executed_verifier": {
+      "label": "verification_script",
+      "path": "D:\\Projects\\Unone\\scripts\\profile-world-fields-wasm.mjs",
+      "bytes": 14464,
+      "sha256": "38eefd9f1e4651c584149c67c93718842acfc73972578d5ba4e545bf590e7c53"
+    },
+    "difference_from_primary_verifier": "Only after-loop sorted endpoint hashes were added. No additional stringify was inserted into the measured loop. No timing comparison between these runs is asserted."
+  },
+  "source_review": {
+    "reviewer": "/root/runtime_audit",
+    "status": "clear-no-concrete-P1-P2",
+    "scope": "Source-only actual-runtime/provenance/output-containment/cleanup/measurement-boundary review; no workload executed by reviewer",
+    "limit": "Static host-import regex is not a complete proof of dynamic Worker or GPU dependencies."
+  },
+  "preflight_tests": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "raw_log": ".cache/world-field-profile-preflight-tests-20261102.log",
+    "scope": "Help and rejected invalid inputs only, not fake Core execution"
+  },
+  "records": {
+    "primary": {
+      "path": ".cache/world-fields-battle-bfcd916-20261102-run1/result.json",
+      "bytes": 1166638,
+      "sha256": "4efae594157f5a8cc6e46b4d31af390bdcb436366834ac4da0409ccd39587f6b"
+    },
+    "execution": {
+      "path": ".cache/world-fields-battle-bfcd916-20261102-execution-r1/result.json",
+      "bytes": 328,
+      "sha256": "1651ddd40b1113bb7c1a8129dffdf6eea824a615ea175ec4a35edbd4e6654a46"
+    },
+    "preparation": {
+      "path": ".cache/world-fields-battle-20261102-inputs-r2/preparation.json",
+      "bytes": 3072,
+      "sha256": "ad18e592b9db1134d6767f7facd3f580695e55ade6891870f2e2a2c67bffde03"
+    },
+    "endpoint_comparison": {
+      "path": ".cache/world-fields-battle-bfcd916-20261102-endpoint-execution-r1/comparison.json",
+      "bytes": 2414,
+      "sha256": "0ca751b7878c74207043d9c97685eb99bef5aaf1e74448d56b577fdf6acc1a24"
+    },
+    "endpoint_raw": {
+      "path": ".cache/world-fields-battle-bfcd916-20261102-endpoint-r1/result.json",
+      "bytes": 768312,
+      "sha256": "83982856800ef96700ee4e6d14ee322c20f42116b479695a315785e62d5e0ff2"
+    },
+    "failed_preparation": ".cache/world-fields-battle-20261102-inputs-r1/failure.json"
+  },
+  "limits": [
+    "Consecutive marks are host-clock spans, not independent CPU measurements. Descriptor/reuse includes preceding loop work.",
+    "Field cardinality/report construction happens after each measured command and can perturb later GC; profile-disabled acceptance is separate.",
+    "No presentation readiness is fabricated; only the supplied input sequence can provide host receipts.",
+    "The load phase is timed but lacks per-field marks; warmup is recorded and excluded from summaries.",
+    "Host wall measurements include instrumentation and possible concurrent load. They do not prove Core CPU, GC, OS scheduling or GPU causes.",
+    "The historical comparison covers the four stored sorted value hashes; a historical full raw Core digest was not available at frame246.",
+    "No JSON member parser or resource/lease optimization was implemented by this diagnostic."
+  ],
+  "recommended_next_step": "Use profiler-disabled real-game paired acceptance for performance decisions. Per-member Core leases may reduce repeated object materialization; do not infer acceptance or implement a JS JSON scanner from this one profile."
+}

@@ -1,0 +1,150 @@
+{
+  "schema": "unone.web-sprite-resources.acceptance.v1",
+  "date": "2026-11-02",
+  "core_source_commit": "bfcd9160ae3cb7c4dff6d8515ee7400ee3adff00",
+  "host_source_commit": "97e6383129ea9b982dad1ba1cbce2a5098269059",
+  "host_sha256": "b3d771176624a6a60adc9ce39d9ef115ae4c155fb6aaa97533285aceacbb141c",
+  "runtime_manifest_sha256": "04b34b8eef606136f63853f5a185511e4cc81acd3d04341348b96798bd5c7007",
+  "wasm_sha256": "dd30ee204e6faa5809625166dd4a02727218a35bd8273df7952d8a60da0f98f3",
+  "release_root": "releases/6cfd2b165bbaf7799ba1f4bf675ef0c813ead77a9e925e2834e8cc890c68d507/",
+  "artifact_files": 219,
+  "artifact_mode": "source-ingestion-refresh",
+  "complete_sdk": false,
+  "checks": {
+    "wasm_core_transactions": 10,
+    "immutable_bytes_checks": 353,
+    "immutable_bytes_rejections": 69,
+    "natural_collection_final_tick": 5,
+    "web_suite": {
+      "passed": 729,
+      "failed": 0,
+      "skipped": 1,
+      "skip_reason": "adjacent normal-World mesh packet captures missing"
+    },
+    "publisher": {
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0
+    },
+    "official_browser": {
+      "browser": "IAB",
+      "renderer": "official three-webgl",
+      "drawing_buffer": [
+        1280,
+        720
+      ],
+      "main": {
+        "cycles": 100,
+        "submitted_revisions": 4800,
+        "fixture_failures": 0,
+        "scheduler_drops": 0,
+        "final_managed_resources": 0,
+        "observed_wasm_capacity_bytes": 16777216
+      },
+      "worker": {
+        "cycles": 100,
+        "submitted_revisions": 4800,
+        "fixture_failures": 0,
+        "scheduler_drops": 0,
+        "final_managed_resources": 0,
+        "observed_wasm_capacity_bytes": 16777216
+      },
+      "submission_count_evidence": "Visible PASS counters in screenshots; no synthetic host-ready receipts"
+    }
+  },
+  "limits": [
+    "Latest WASM/native rebuilds blocked by Windows4551; selected existing clean bfcd9160 runtime was executed.",
+    "Source-ingestion refresh is not a complete SDK or current CLI production precompile.",
+    "GPU context loss was not deliberately induced in this browser run.",
+    "Other chats/builds were allowed concurrently; this is not an isolated benchmark.",
+    "Seven gameplay scenes at stable60FPS, global leak freedom and GC frequency remain unaccepted.",
+    "JYRogue battle p95 regression is unresolved."
+  ],
+  "evidence": [
+    {
+      "path": "core-sprite-wasm.json",
+      "bytes": 1911,
+      "sha256": "c4fde3226e4699ca2c9351a84e9d209f3f3762d9b3c69930a3eb20e8b69ff057"
+    },
+    {
+      "path": "immutable-bytes-functional.json",
+      "bytes": 15790,
+      "sha256": "d19daadd01b56949a8c3f2bbedd877e7ec858e978b3cebd145a4cd2c3ae93852"
+    },
+    {
+      "path": "immutable-bytes-natural-gc.json",
+      "bytes": 9085,
+      "sha256": "9fe8abbe2a7afe516e8b8acf3db2efda8cd74580ee2f4fa44923f40561fdb8dc"
+    },
+    {
+      "path": "latest-wasm-build-blocked.log",
+      "bytes": 2708,
+      "sha256": "752ccc0ce5129e9b3cd1a4645b4a28b049aee0d8ed8e65374376fdadca156447"
+    },
+    {
+      "path": "main-100-final.json",
+      "bytes": 18877,
+      "sha256": "38363e81ca5bac4e8a04fbfefef18a214f04e169628b17ccac4b3a93ba6a26b4"
+    },
+    {
+      "path": "main-100-mid.json",
+      "bytes": 18849,
+      "sha256": "e0245f1cdaf7a68cfbc89a327b0619fe508c12b0793eaf961ae5c2944d6cae6a"
+    },
+    {
+      "path": "main-100-pass.jpg",
+      "bytes": 35129,
+      "sha256": "ccc37191973911e9eb9ba9a9996cde9516c289adf15e6ad20f3cbe27a56318a3"
+    },
+    {
+      "path": "main-3-cycles.jpg",
+      "bytes": 33912,
+      "sha256": "00310048188fab96bc85dfe42751ee0343f0da6bb0d22685e75601967907ad67"
+    },
+    {
+      "path": "main-3-cycles.json",
+      "bytes": 18883,
+      "sha256": "3f19de5ff8e41e231e027bfc615ce83dcb18a189458cce0f3ba4d05c13ae2ee7"
+    },
+    {
+      "path": "shared-texture-old-code-negative.json",
+      "bytes": 1084,
+      "sha256": "981fd708ce37dc0dd700109f5b46d5d23110487d9c37255b1c65b1ca96c1b1a0"
+    },
+    {
+      "path": "web-preparation-tests.log",
+      "bytes": 8674,
+      "sha256": "cc9171400b20fc07f36b3195fbfeda6822b83d29110b18e6adbe4805da7b2a34"
+    },
+    {
+      "path": "web-suite.log",
+      "bytes": 75225,
+      "sha256": "bf644844dc71dc0d612c4c3cce76f5f86605bfb4bed743c8ec551e859bdb5830"
+    },
+    {
+      "path": "worker-100-early.json",
+      "bytes": 19421,
+      "sha256": "c2bc6bfa329b387bb73d85df8c5301e5fa5188f7521ac7d1d585e83cae23bf57"
+    },
+    {
+      "path": "worker-100-final.json",
+      "bytes": 19462,
+      "sha256": "e67ce381c789560d146d72774d68124eb9858a0256c40bb85b4ad47cdb79220f"
+    },
+    {
+      "path": "worker-100-pass.jpg",
+      "bytes": 35129,
+      "sha256": "ccc37191973911e9eb9ba9a9996cde9516c289adf15e6ad20f3cbe27a56318a3"
+    },
+    {
+      "path": "worker-100-visible.jpg",
+      "bytes": 70063,
+      "sha256": "b6daa0a891dc5f4c6b5e074954ee9de25c8a2107df0369662ed06593e4f98328"
+    },
+    {
+      "path": "world-fields-diagnostic-summary.json",
+      "bytes": 25737,
+      "sha256": "cfd32afb68b2598302282264c3c0033da55db7d7a1423e769c8a5ec2cd9b7cd6"
+    }
+  ]
+}

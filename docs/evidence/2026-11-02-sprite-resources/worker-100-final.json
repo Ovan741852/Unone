@@ -1,0 +1,645 @@
+{
+  "error": null,
+  "frame": "23833",
+  "performance": {
+    "ao": false,
+    "ao_method": "depth-ssao-12",
+    "backend": {
+      "backend": "worker",
+      "closed": false,
+      "execute_ms": 0.7000000476837158,
+      "jobs": {
+        "binary_transport": {
+          "abi_ms": 0,
+          "copied_payload_from_wasm_bytes": 0,
+          "decode_ms": 0,
+          "encode_ms": 0,
+          "format": "UJB1",
+          "metadata_received_bytes": 0,
+          "metadata_sent_bytes": 0,
+          "note": "Host-local totals. Payloads are opaque bytes; metadata alone is JSON. encode/decode includes JS boundary copies; abi_ms includes Rust work and is not disjoint from kernel run_ms.",
+          "payload_received_bytes": 0,
+          "payload_sent_bytes": 0,
+          "requests": 0
+        },
+        "closed": false,
+        "fault": null,
+        "policy": {
+          "reason": "jobs_disabled",
+          "workers": 0
+        },
+        "pool": null,
+        "spatial": {
+          "backend": "cpu",
+          "fallback_reason": null,
+          "fault": null,
+          "metrics": {
+            "api_version": 1,
+            "bridge": {
+              "by_kind": {},
+              "totals": {
+                "abi_ms": 0,
+                "copy_in_ms": 0,
+                "failed_requests": 0,
+                "json_encode_ms": 0,
+                "request_bytes": 0,
+                "requests": 0,
+                "response_bytes": 0,
+                "response_decode_ms": 0
+              }
+            },
+            "clock": "host_monotonic",
+            "scope": "Since latest host load. JSON encode includes stringify/TextEncoder; copy_in covers WASM allocation/copy; abi includes the synchronous WASM request and its internal serialization, not GPU execution; response_decode covers readObservation copy/TextDecoder/JSON parse. Setup includes executor creation/configuration; configure_ms overlaps bridge configure timings. Excludes project load, Worker messaging, caller application and report cloning. Failed request metrics include only phases reached.",
+            "setup": {
+              "configure_ms": 0,
+              "executor_create_ms": 0,
+              "gpu_initialized": false,
+              "success": true,
+              "total_ms": 0
+            }
+          },
+          "profile": null,
+          "requested": "cpu"
+        },
+        "viewport": {
+          "aspect_api": true,
+          "mode": "physical",
+          "physical_api": true,
+          "required": false
+        }
+      },
+      "pack_ms": 0,
+      "pending": 0,
+      "transfer": {
+        "allocated_bytes": 0,
+        "copied_bytes": 0,
+        "image_definition_updates": 0,
+        "image_unchanged_resources": 0,
+        "pooled_buffers": 0,
+        "pooled_bytes": 0,
+        "reused_bytes": 0,
+        "save_definition_updates": 1,
+        "save_unchanged_publications": 23816,
+        "ui_definition_updates": 3135,
+        "ui_inline_publications": 0,
+        "ui_unchanged_publications": 20682,
+        "unchanged_batches": 0,
+        "world_field_unchanged": 23416,
+        "world_field_updates": 401
+      },
+      "viewport": {
+        "aspect_api": true,
+        "mode": "physical",
+        "physical_api": true,
+        "required": false
+      },
+      "wasm_linear_bytes": 16777216
+    },
+    "bloom": true,
+    "bloom_resolution": [
+      320,
+      180
+    ],
+    "bridge_ms": 1.100000023841858,
+    "completion": {
+      "accepted_publications": 23817,
+      "backend": "worker",
+      "callback_sync_wall": {
+        "capacity": 512,
+        "coverage_ms": 4983.100000023842,
+        "max_ms": 1,
+        "min_ms": 0.10000002384185792,
+        "newest_end_ms": 397596.89999997616,
+        "oldest_end_ms": 392613.89999997616,
+        "oldest_start_ms": 392613.10000002384,
+        "p50_ms": 0.3999999761581421,
+        "p95_ms": 0.6000000238418579,
+        "p99_ms": 0.7999999523162842,
+        "retained": 300,
+        "window_coverage": 0.9966200000047684,
+        "window_ms": 5000
+      },
+      "completed_draws": 23820,
+      "completed_intervals": {
+        "capacity": 512,
+        "newest_end_ms": 397613.7000000477,
+        "oldest_end_ms": 392629.89999997616,
+        "p95_ms": 17,
+        "p99_ms": 17.199999928474426,
+        "retained": 300,
+        "window_ms": 5000
+      },
+      "completion_contract": "available",
+      "draw_attempts": 23820,
+      "dropped_steps_total": 0,
+      "error_draws": 0,
+      "last_completed_at_ms": 397613.7000000477,
+      "last_draw_status": "completed",
+      "last_presented_snapshot_frame": 23816,
+      "new_snapshot_raf_intervals": {
+        "capacity": 512,
+        "coverage_ms": 4998.000000047672,
+        "max_ms": 16.800000000046566,
+        "min_ms": 16.5,
+        "newest_end_ms": 397611.8,
+        "oldest_end_ms": 392628.3,
+        "oldest_start_ms": 392611.6,
+        "p50_ms": 16.70000000001164,
+        "p95_ms": 16.79999999998836,
+        "p99_ms": 16.800000000046566,
+        "retained": 300,
+        "window_coverage": 0.9996000000095344,
+        "window_ms": 5000
+      },
+      "paused": false,
+      "preparation_wall": {
+        "capacity": 512,
+        "coverage_ms": 4984.600000023842,
+        "max_ms": 1.5,
+        "min_ms": 0.6999999284744263,
+        "newest_end_ms": 397613.2000000477,
+        "oldest_end_ms": 392629.60000002384,
+        "oldest_start_ms": 392628.60000002384,
+        "p50_ms": 1,
+        "p95_ms": 1.2999999523162842,
+        "p99_ms": 1.399999976158142,
+        "retained": 300,
+        "window_coverage": 0.9969200000047684,
+        "window_ms": 5000
+      },
+      "presented_frame_changes": 23817,
+      "publication_at_ms": 397613.2000000477,
+      "publication_timestamp_scope": "main-host snapshot acceptance",
+      "queried_at_ms": 397613.7999999523,
+      "raf_diagnostics": {
+        "callbacks": 23816,
+        "callbacks_in_flight": 0,
+        "capacity": 512,
+        "nominal_deadlines": {
+          "budget_ms_last": 16.666666666666668,
+          "callback": {
+            "eligible": 23816,
+            "missed": 0,
+            "unknown": 0
+          },
+          "preparation": {
+            "eligible": 23816,
+            "missed": 0,
+            "unknown": 0
+          },
+          "scope": "Nominal RAF timestamp plus supplied budget; wall-time diagnostics, not GPU, OS compositor or presentation deadlines.",
+          "submission": {
+            "eligible": 23817,
+            "missed": 0,
+            "unknown": 0
+          }
+        },
+        "outcome_counts": {
+          "completed": 23820,
+          "error": 0,
+          "no_submission": 0,
+          "skipped": 0,
+          "unknown": 0
+        },
+        "preparation_cancelled": 0,
+        "preparation_steps": 23816,
+        "preparation_unknown_steps": 0,
+        "preparation_wall_scope": "Active non-cancelled preparation spans only; cancelled spans retain step/count counters but have no active nominal deadline.",
+        "preparations": 23816,
+        "recorded_total": 23820,
+        "retained": 301,
+        "scheduler_raf": {
+          "already_submitted_frames": 1,
+          "completed": 23817,
+          "in_flight_submissions": 0,
+          "non_increasing_successful_raf_timestamps": 0,
+          "regressions": 0,
+          "repeats": 0,
+          "submissions": 23817,
+          "unknown_frames": 0,
+          "unknown_raf_timestamps": 0
+        },
+        "source_counts": {
+          "manual": 0,
+          "scheduler_raf": 23817,
+          "startup": 3,
+          "unknown": 0
+        },
+        "wall_scope": "Submission/callback pacing wall statistics cover scheduler RAF only; startup/manual draws remain explicit source counters and optional rows.",
+        "window_ms": 5000
+      },
+      "semantics": "Completed synchronous world, UI and cursor submission; repeated snapshot redraws count separately. RAF intervals use browser callback timestamps; new-snapshot RAF intervals require a globally first shown valid advancing frame. Wall/preparation/nominal-deadline diagnostics are not GPU scanout or an FPS guarantee.",
+      "session": 1,
+      "simulation_frame": 23816,
+      "simulation_time_seconds": 396.93333333333334,
+      "skip_counts": {
+        "cursor_assets_pending": 0,
+        "cursor_diagnostics": 0,
+        "frame_pass_incomplete": 0,
+        "frame_resources_pending": 0,
+        "other": 0,
+        "raster_unavailable": 0,
+        "raster_validation": 0,
+        "ui_assets_pending": 0,
+        "ui_diagnostics": 0,
+        "ui_target_unavailable": 0,
+        "world_assets_pending": 0
+      },
+      "skipped_draws": 0,
+      "submit_sync_wall": {
+        "capacity": 512,
+        "coverage_ms": 4984.100000023842,
+        "max_ms": 0.6999999284744263,
+        "min_ms": 0.10000002384185792,
+        "newest_end_ms": 397613.7000000477,
+        "oldest_end_ms": 392629.89999997616,
+        "oldest_start_ms": 392629.60000002384,
+        "p50_ms": 0.3999999761581421,
+        "p95_ms": 0.5,
+        "p99_ms": 0.6000000238418579,
+        "retained": 300,
+        "window_coverage": 0.9968200000047684,
+        "window_ms": 5000
+      },
+      "successful_submission_raf_intervals": {
+        "capacity": 512,
+        "coverage_ms": 4998.000000047672,
+        "max_ms": 16.800000000046566,
+        "min_ms": 16.5,
+        "newest_end_ms": 397611.8,
+        "oldest_end_ms": 392628.3,
+        "oldest_start_ms": 392611.6,
+        "p50_ms": 16.70000000001164,
+        "p95_ms": 16.79999999998836,
+        "p99_ms": 16.800000000046566,
+        "retained": 300,
+        "window_coverage": 0.9996000000095344,
+        "window_ms": 5000
+      },
+      "time_origin_ms": 1793631817475.8,
+      "unknown_draws": 0,
+      "version": 1
+    },
+    "culled_instances": 0,
+    "curvature": 0,
+    "data_texture_uploads": 0,
+    "data_textures": 0,
+    "decoded_images": {
+      "active_bytes_estimate": 0,
+      "active_entries": 0,
+      "active_tasks": 0,
+      "catalog_generation": 1,
+      "closed_images": 0,
+      "disposed": false,
+      "evictions": 0,
+      "limits": {
+        "sceneMaxBytes": 33554432,
+        "sceneMaxEntries": 64,
+        "unusedMaxBytes": 16777216,
+        "unusedMaxEntries": 128
+      },
+      "loading": 0,
+      "loads": 2,
+      "preload_plan": {
+        "budget": {
+          "max_bytes": 33554432,
+          "max_entries": 64
+        },
+        "groups": 1,
+        "startup_groups": [],
+        "version": 1
+      },
+      "preparation": {
+        "admitted_entries": 1,
+        "budget_skipped": [],
+        "cancelled": false,
+        "declared_entries": 1,
+        "duplicate_references": 11,
+        "errors": [],
+        "partial": false,
+        "ready_entries": 1,
+        "required_entries": 0,
+        "required_ready_entries": 0,
+        "reserved_bytes": 128,
+        "scene_declared_entries": 1,
+        "startup_entries": 0,
+        "startup_groups": [],
+        "unsupported": []
+      },
+      "pressure_bytes": 0,
+      "pressure_entries": 0,
+      "queued_tasks": 0,
+      "released_bytes_estimate": 0,
+      "resident_bytes_estimate": 256,
+      "resident_entries": 2,
+      "reuses": 199,
+      "scene_bytes_estimate": 128,
+      "scene_entries": 1,
+      "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.",
+      "unused_bytes_estimate": 128,
+      "unused_entries": 1
+    },
+    "draw_calls": 5,
+    "drawing_buffer": [
+      1280,
+      720
+    ],
+    "dropped_steps": 0,
+    "effects": 0,
+    "frozen": false,
+    "geometry3d_meshes": 0,
+    "geometry3d_rebuilds": 0,
+    "geometry3d_updates": 0,
+    "gpu_ao_only": null,
+    "gpu_bloom_with_ao": null,
+    "gpu_comparison": {
+      "active_mode": "bloom_on_ao_off",
+      "gpu_on_off_same_ao_only": true
+    },
+    "gpu_off": null,
+    "gpu_on": {
+      "median_ms": 0.033824,
+      "p95_ms": 0.039936,
+      "samples": 240
+    },
+    "gpu_samples_by_mode": {
+      "bloom_off_ao_off": null,
+      "bloom_off_ao_on": null,
+      "bloom_on_ao_off": {
+        "median_ms": 0.033824,
+        "p95_ms": 0.039936,
+        "samples": 240
+      },
+      "bloom_on_ao_on": null
+    },
+    "gpu_timer_available": true,
+    "gpu_timer_context": {
+      "active": false,
+      "disposed": false,
+      "epoch": 1,
+      "lost": false,
+      "pending": 1
+    },
+    "hdr": true,
+    "heightfield_rebuilds": 0,
+    "heightfield_triangles": 0,
+    "heightfields": 0,
+    "instance_cells": 0,
+    "instances": 0,
+    "interpolation": {
+      "enabled": false,
+      "instance_batches": [],
+      "interpolated_entities": 0,
+      "interpolated_instances": 0,
+      "semantics": "Display-only delayed interpolation. Packed rows must retain identity/order; count/asset changes snap. Does not alter canonical state or tick rate.",
+      "snaps": 1
+    },
+    "mesh_entities": 0,
+    "mesh_entity_batches": 0,
+    "output_pipeline": "legacy",
+    "particle_batches": [],
+    "particle_pool": {
+      "capacity": 0,
+      "compactions": 0,
+      "groups": 0,
+      "instance_buffer_bytes": 0
+    },
+    "particles": 0,
+    "postprocessing": null,
+    "projected_batches": 0,
+    "projected_geometry_builds": 0,
+    "projected_geometry_decode_reuses": 0,
+    "projected_geometry_decodes": 0,
+    "projected_geometry_disposes": 0,
+    "projected_geometry_updates": 0,
+    "projected_index_update_bytes": 0,
+    "projected_live_geometries": 0,
+    "projected_live_materials": 0,
+    "projected_material_builds": 0,
+    "projected_material_disposes": 0,
+    "projected_rebuilds": 0,
+    "projected_retained_geometries": 0,
+    "projected_triangles": 0,
+    "projected_vertex_update_bytes": 0,
+    "raster": {
+      "antialias_requested": true,
+      "clear_state_recovery": {
+        "last_restored_clear": null,
+        "losses": 0,
+        "pending": false,
+        "restores": 0,
+        "scope": "public clearColor/alpha only; not full GPU/device-state recovery"
+      },
+      "context_antialias": true,
+      "offscreen_antialias": "not_configured",
+      "projected": {
+        "context_epoch": 1,
+        "declared": false,
+        "dpr": null,
+        "failure": null,
+        "last_validation": null,
+        "limitations": "host raster; no upper-left validation claim",
+        "physical_size": null,
+        "probe_hash": null,
+        "profile_version": null,
+        "requested": "host",
+        "status": "host",
+        "target_generation": null
+      },
+      "reconfigure": "relaunch",
+      "scope": "default_framebuffer"
+    },
+    "render_ms": 0.3999999761581421,
+    "render_pipeline": [
+      "world",
+      "glow",
+      "display",
+      "hud"
+    ],
+    "shader_materials": 0,
+    "sprite_resources": {
+      "builds": 400,
+      "cpu_reserved_bytes_estimate": 0,
+      "entries": 0,
+      "epoch": 1,
+      "errors": 0,
+      "gpu_reserved_bytes_estimate": 0,
+      "handles": 0,
+      "image_leases": 0,
+      "legacy_fallback_sprites": 0,
+      "limits": {
+        "max_bytes": 33554432,
+        "max_entries": 64
+      },
+      "live_textures": 0,
+      "pending": 0,
+      "ready": 0,
+      "retired": 400,
+      "scope": "Unique managed asset/sampler texture RGBA reservations; material entries/programs, broker/browser copies and other renderer owners are separate. No unowned GPU idle cache",
+      "supported": true,
+      "texture_builds": 200,
+      "texture_entries": 0,
+      "texture_retired": 200
+    },
+    "submitted_instance_cells": 0,
+    "submitted_instances": 0,
+    "texture_cache": {
+      "decoded_texture_bytes_estimate": 0,
+      "enabled": false,
+      "entries": 0,
+      "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets",
+      "evicted": 0,
+      "loading": 0,
+      "pinned_bytes_estimate": 0,
+      "policy": null,
+      "pressure_bytes": 0,
+      "pressure_entries": 0,
+      "released_bytes_estimate": 0,
+      "scope": "2D sprite textures; active and non-sprite dependencies are protected"
+    },
+    "textures": 5,
+    "triangles": 44,
+    "ui": {
+      "assets": [],
+      "backend": "three.js",
+      "cpu_render_ms": 1.5,
+      "decoded_rgba_bytes_estimate": 0,
+      "diagnostics": [],
+      "fontFamily": "monospace",
+      "gpu": {
+        "atlas_compactions": 0,
+        "atlas_page_size": 4096,
+        "atlas_pages": 1,
+        "atlas_uploads": 11682,
+        "backend": "three.js",
+        "dedicated_text_textures": 0,
+        "draw_calls": 1,
+        "image_textures": 0,
+        "last_rebuild_ms": 1.5,
+        "quads": 18,
+        "rebuilds": 3135,
+        "submits": 23820,
+        "text_rasters": 11682,
+        "text_slots": 18
+      },
+      "gpu_render_ms": null,
+      "limitations": [
+        "CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.",
+        "System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.",
+        "Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed."
+      ],
+      "nodes": 18,
+      "render_regions": 18,
+      "usage": {
+        "host_max_nodes": 16384,
+        "leaf_nodes": 18,
+        "limit_source": "screen.budget",
+        "logical_nodes": 18,
+        "max_nodes": 64,
+        "render_regions_upper_bound": 18,
+        "subtrees": [
+          [
+            "title",
+            1
+          ],
+          [
+            "counts",
+            1
+          ],
+          [
+            "slot-label-1",
+            1
+          ],
+          [
+            "slot-label-2",
+            1
+          ],
+          [
+            "slot-label-3",
+            1
+          ],
+          [
+            "slot-label-4",
+            1
+          ],
+          [
+            "slot-label-5",
+            1
+          ],
+          [
+            "slot-label-6",
+            1
+          ],
+          [
+            "slot-label-7",
+            1
+          ],
+          [
+            "slot-label-8",
+            1
+          ],
+          [
+            "slot-label-9",
+            1
+          ],
+          [
+            "slot-label-10",
+            1
+          ],
+          [
+            "slot-label-11",
+            1
+          ],
+          [
+            "slot-label-12",
+            1
+          ],
+          [
+            "history-1",
+            1
+          ],
+          [
+            "history-2",
+            1
+          ],
+          [
+            "history-3",
+            1
+          ],
+          [
+            "history-4",
+            1
+          ]
+        ]
+      }
+    },
+    "ui_image_batches": {
+      "active_resource_quads": 0,
+      "buffer_capacity_quads": 0,
+      "coverage": "pixel_center",
+      "draws": 0,
+      "fallback_reason": "empty",
+      "geometry_builds": 0,
+      "geometry_disposes": 0,
+      "geometry_updates": 0,
+      "image_leases": 0,
+      "live_geometries": 0,
+      "live_materials": 0,
+      "live_meshes": 0,
+      "live_textures": 0,
+      "material_builds": 0,
+      "material_disposes": 0,
+      "mesh_builds": 0,
+      "mesh_disposes": 0,
+      "prefix_nodes": 0,
+      "prefix_quads": 0,
+      "texture_builds": 0,
+      "texture_disposes": 0
+    },
+    "world_image_leases": {
+      "active": 0,
+      "enabled": true
+    }
+  },
+  "url": "http://127.0.0.1:8294/?backend=worker&seed=42"
+}
