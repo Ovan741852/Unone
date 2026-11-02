@@ -1,0 +1,110 @@
+diff --git a/luau/CodeGen/src/BytecodeAnalysis.cpp b/luau/CodeGen/src/BytecodeAnalysis.cpp
+index fa1a061..0d13e40 100644
+--- a/luau/CodeGen/src/BytecodeAnalysis.cpp
++++ b/luau/CodeGen/src/BytecodeAnalysis.cpp
+@@ -579,6 +579,10 @@ static void applyBuiltinCall(LuauBuiltinFunction bfid, BytecodeTypes& types)
+         types.result = LBC_TYPE_BOOLEAN;
+         types.a = LBC_TYPE_NUMBER;
+         break;
++    case LBF_BUFFER_LEN:
++        types.result = LBC_TYPE_NUMBER;
++        types.a = LBC_TYPE_BUFFER;
++        break;
+     }
+ }
+ 
+diff --git a/luau/CodeGen/src/OptimizeConstProp.cpp b/luau/CodeGen/src/OptimizeConstProp.cpp
+index 931f6a8..6a665a6 100644
+--- a/luau/CodeGen/src/OptimizeConstProp.cpp
++++ b/luau/CodeGen/src/OptimizeConstProp.cpp
+@@ -1507,6 +1507,7 @@ static void handleBuiltinEffects(ConstPropState& state, LuauBuiltinFunction bfid
+     case LBF_MATH_ISNAN:
+     case LBF_MATH_ISINF:
+     case LBF_MATH_ISFINITE:
++    case LBF_BUFFER_LEN:
+         break;
+     case LBF_TABLE_INSERT:
+         state.invalidateHeap();
+diff --git a/luau/Common/include/Luau/Bytecode.h b/luau/Common/include/Luau/Bytecode.h
+index cf1a1c3..9321c25 100644
+--- a/luau/Common/include/Luau/Bytecode.h
++++ b/luau/Common/include/Luau/Bytecode.h
+@@ -643,7 +643,10 @@ enum LuauBuiltinFunction
+     // math.
+     LBF_MATH_ISNAN,
+     LBF_MATH_ISINF,
+-    LBF_MATH_ISFINITE
++    LBF_MATH_ISFINITE,
++
++    // buffer.len (Unone patch; see UNONE.md)
++    LBF_BUFFER_LEN,
+ };
+ 
+ // Capture type, used in LOP_CAPTURE
+diff --git a/luau/Compiler/src/Builtins.cpp b/luau/Compiler/src/Builtins.cpp
+index 9b23969..7e86df7 100644
+--- a/luau/Compiler/src/Builtins.cpp
++++ b/luau/Compiler/src/Builtins.cpp
+@@ -257,6 +257,8 @@ static int getBuiltinFunctionId(const Builtin& builtin, const CompileOptions& op
+             return LBF_BUFFER_READF64;
+         if (builtin.method == "writef64")
+             return LBF_BUFFER_WRITEF64;
++        if (builtin.method == "len")
++            return LBF_BUFFER_LEN;
+     }
+ 
+     if (builtin.object == "vector")
+@@ -599,6 +601,9 @@ BuiltinInfo getBuiltinInfo(int bfid)
+         return {1, 1, BuiltinInfo::Flag_NoneSafe};
+     case LBF_MATH_ISFINITE:
+         return {1, 1, BuiltinInfo::Flag_NoneSafe};
++
++    case LBF_BUFFER_LEN:
++        return {1, 1, BuiltinInfo::Flag_NoneSafe};
+     }
+ 
+     LUAU_UNREACHABLE();
+diff --git a/luau/Compiler/src/Types.cpp b/luau/Compiler/src/Types.cpp
+index b6559d5..9e30238 100644
+--- a/luau/Compiler/src/Types.cpp
++++ b/luau/Compiler/src/Types.cpp
+@@ -746,6 +746,7 @@ struct TypeMapVisitor : AstVisitor
+             case LBF_VECTOR_MAGNITUDE:
+             case LBF_VECTOR_DOT:
+             case LBF_MATH_LERP:
++            case LBF_BUFFER_LEN:
+                 recordResolvedType(node, &builtinTypes.numberType);
+                 break;
+ 
+diff --git a/luau/VM/src/lbuiltins.cpp b/luau/VM/src/lbuiltins.cpp
+index 1d98bd3..a0641b9 100644
+--- a/luau/VM/src/lbuiltins.cpp
++++ b/luau/VM/src/lbuiltins.cpp
+@@ -1357,6 +1357,18 @@ static bool checkedbufferoffset(double value, unsigned length, int& offset)
+     return double(offset) == value;
+ }
+ 
++// Unone patch: buffer.len without a C call. A view reports its logical length.
++static int luauF_bufferlen(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
++{
++    if (nparams >= 1 && nresults <= 1 && ttisbuffer(arg0))
++    {
++        setnvalue(res, double(unsigned(bufvalue(arg0)->len)));
++        return 1;
++    }
++
++    return -1;
++}
++
+ template<typename T>
+ static int luauF_readinteger(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
+ {
+@@ -1993,6 +2005,8 @@ const luau_FastFunction luauF_table[256] = {
+     luauF_isinf,
+     luauF_isfinite,
+ 
++    luauF_bufferlen,
++
+ // When adding builtins, add them above this line; what follows is 64 "dummy" entries with luauF_missing fallback.
+ // This is important so that older versions of the runtime that don't support newer builtins automatically fall back via luauF_missing.
+ // Given the builtin addition velocity this should always provide a larger compatibility window than bytecode versions suggest.

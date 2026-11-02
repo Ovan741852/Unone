@@ -82,9 +82,25 @@ does for other VM values. Embedders must not write frozen payloads through raw
 pointers. The guarantee covers supported Lua operations and checked safe host
 operations, not arbitrary unsafe native code.
 
+## `buffer.len` fastcall
+
+Upstream Luau (through 0.734) compiles `buffer.len(b)` to an ordinary C call;
+`UNONE-buffer-len-fastcall.patch` adds the builtin `LBF_BUFFER_LEN`, appended
+after the last upstream builtin, so the interpreter answers it like
+`string.len`. Byte-level interpreters written in Luau call it per memory
+access: on Populous R20's World turn it cut native mean frame time ~2% and the
+Web runtime's turn ticks ~4%. The fastcall returns the logical length (a view
+reports its own) and declines anything but one buffer argument, so wrong calls
+still reach `buffer_len` and its error. Native codegen has no inline form and
+calls the same function through `INVOKE_FASTCALL`. An older runtime given newer
+bytecode falls back through `luauF_missing`. `UNONE_BUFFER_LEN_FASTCALL=1`
+identifies this revision. `crates/unone-engine/tests/buffer_len_fastcall.rs`
+checks the compiled shape and results.
+
 ## Upgrading and validation
 
-1. Copy a new upstream `luau0-src` crate and apply the complete patch.
+1. Copy a new upstream `luau0-src` crate and apply both patches. If upstream
+   adds its own `buffer.len` builtin, drop `LBF_BUFFER_LEN` instead.
 2. Audit every buffer writer and data-address path in VM and codegen, including
    new fastcalls and any changes to GC marking, accounting or debug enumeration.
 3. Check the independent x64/32-bit ABI assertions and bounded-view lifetime.

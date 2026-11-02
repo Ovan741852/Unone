@@ -1507,6 +1507,7 @@ static void handleBuiltinEffects(ConstPropState& state, LuauBuiltinFunction bfid
     case LBF_MATH_ISNAN:
     case LBF_MATH_ISINF:
     case LBF_MATH_ISFINITE:
+    case LBF_BUFFER_LEN:
         break;
     case LBF_TABLE_INSERT:
         state.invalidateHeap();

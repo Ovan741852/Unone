@@ -142,6 +142,8 @@ impl Build {
         config.define("LUA_API", "extern \"C\"");
         // Unone read-only buffer patch revision (see UNONE.md).
         config.define("UNONE_READONLY_BUFFERS", "2");
+        // Unone buffer.len fastcall patch revision (LBF_BUFFER_LEN; see UNONE.md).
+        config.define("UNONE_BUFFER_LEN_FASTCALL", "1");
 
         if self.use_longjmp {
             config.define("LUA_USE_LONGJMP", "1");

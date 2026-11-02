@@ -579,6 +579,10 @@ static void applyBuiltinCall(LuauBuiltinFunction bfid, BytecodeTypes& types)
         types.result = LBC_TYPE_BOOLEAN;
         types.a = LBC_TYPE_NUMBER;
         break;
+    case LBF_BUFFER_LEN:
+        types.result = LBC_TYPE_NUMBER;
+        types.a = LBC_TYPE_BUFFER;
+        break;
     }
 }
 

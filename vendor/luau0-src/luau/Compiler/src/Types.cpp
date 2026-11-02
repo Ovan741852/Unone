@@ -746,6 +746,7 @@ struct TypeMapVisitor : AstVisitor
             case LBF_VECTOR_MAGNITUDE:
             case LBF_VECTOR_DOT:
             case LBF_MATH_LERP:
+            case LBF_BUFFER_LEN:
                 recordResolvedType(node, &builtinTypes.numberType);
                 break;
 

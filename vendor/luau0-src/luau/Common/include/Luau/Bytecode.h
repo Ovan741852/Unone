@@ -643,7 +643,10 @@ enum LuauBuiltinFunction
     // math.
     LBF_MATH_ISNAN,
     LBF_MATH_ISINF,
-    LBF_MATH_ISFINITE
+    LBF_MATH_ISFINITE,
+
+    // buffer.len (Unone patch; see UNONE.md)
+    LBF_BUFFER_LEN,
 };
 
 // Capture type, used in LOP_CAPTURE

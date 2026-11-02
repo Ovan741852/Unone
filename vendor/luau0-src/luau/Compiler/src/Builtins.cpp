@@ -257,6 +257,8 @@ static int getBuiltinFunctionId(const Builtin& builtin, const CompileOptions& op
             return LBF_BUFFER_READF64;
         if (builtin.method == "writef64")
             return LBF_BUFFER_WRITEF64;
+        if (builtin.method == "len")
+            return LBF_BUFFER_LEN;
     }
 
     if (builtin.object == "vector")
@@ -598,6 +600,9 @@ BuiltinInfo getBuiltinInfo(int bfid)
     case LBF_MATH_ISINF:
         return {1, 1, BuiltinInfo::Flag_NoneSafe};
     case LBF_MATH_ISFINITE:
+        return {1, 1, BuiltinInfo::Flag_NoneSafe};
+
+    case LBF_BUFFER_LEN:
         return {1, 1, BuiltinInfo::Flag_NoneSafe};
     }
 

@@ -1357,6 +1357,18 @@ static bool checkedbufferoffset(double value, unsigned length, int& offset)
     return double(offset) == value;
 }
 
+// Unone patch: buffer.len without a C call. A view reports its logical length.
+static int luauF_bufferlen(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
+{
+    if (nparams >= 1 && nresults <= 1 && ttisbuffer(arg0))
+    {
+        setnvalue(res, double(unsigned(bufvalue(arg0)->len)));
+        return 1;
+    }
+
+    return -1;
+}
+
 template<typename T>
 static int luauF_readinteger(lua_State* L, StkId res, TValue* arg0, int nresults, StkId args, int nparams)
 {
@@ -1992,6 +2004,8 @@ const luau_FastFunction luauF_table[256] = {
     luauF_isnan,
     luauF_isinf,
     luauF_isfinite,
+
+    luauF_bufferlen,
 
 // When adding builtins, add them above this line; what follows is 64 "dummy" entries with luauF_missing fallback.
 // This is important so that older versions of the runtime that don't support newer builtins automatically fall back via luauF_missing.
