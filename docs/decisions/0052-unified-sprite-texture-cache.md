@@ -1,6 +1,7 @@
 # 0052: One bounded world-texture cache authority
 
-Status: implemented; source and Node gates passed, actual GPU acceptance pending
+Status: implemented; source, Node and bounded official WebGL main/worker GPU
+ownership acceptance passed. Game FPS acceptance remains separate.
 
 Ordinary sprites began using the prepared sprite pool, while `texture_cache`
 still controlled only the older texture-record map. Hiding an ordinary sprite
@@ -37,5 +38,7 @@ Independent idle caches were rejected because each could consume the full
 declared budget. Unlimited retention and ignoring genuine pending draws were
 also rejected. This is renderer resource ownership, not game streaming rules.
 
-The reproduction, source reviews and execution scope are recorded separately
-from actual official-player FPS, GPU and memory acceptance.
+The reproduction, source reviews, actual official WebGL 100-cycle results and
+execution limits are recorded in
+[the review](../reviews/2026-11-03-unified-sprite-cache.md). This bounded resource
+acceptance is separate from the Game's FPS, GC and process-memory acceptance.

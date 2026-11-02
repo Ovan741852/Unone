@@ -1,0 +1,796 @@
+{
+  "schema": "unone.unified-sprite-cache.validation.v1",
+  "status": "source-and-node-cleared; actual-main-and-worker-bounded-gpu-lifecycle-passed",
+  "scope": "Reusable official three-webgl world asset-texture GPU ownership. This is not a renderer replacement, Core/WASM change, Game-specific rule, cache-budget increase, stable-FPS or global leak/GC acceptance.",
+  "source": {
+    "base_revision": "25043834ca7006d67bf0fd08e400868abe817088",
+    "implemented_revision": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+    "production_files": [
+      {
+        "path": "web/renderer/texture-cache-policy.js",
+        "bytes": 6809,
+        "sha256": "208d0841265d4d35e9da47fe03c568e4e13e4702d4ea2d1e670b7733ea220692"
+      },
+      {
+        "path": "web/renderer/sprite-resources.js",
+        "bytes": 19160,
+        "sha256": "c5f93f0dbd1cbe01449cf4ed8da53b5fd6bcfaa35501682db4f089ffe3e924dd"
+      },
+      {
+        "path": "web/renderer/sprite-presentation.js",
+        "bytes": 11351,
+        "sha256": "cbe0e451f8b7f0858bddd74b45bbaafb01acf1500d4fa513ca650b2170273d70"
+      },
+      {
+        "path": "web/renderer/three.js",
+        "bytes": 39693,
+        "sha256": "42f50cb22305b3b85135dcd1c564d0d004ee583ff4ab7a1f7337bacece949332"
+      }
+    ],
+    "regressions": [
+      {
+        "path": "web/renderer/sprite-auto-cache.test.mjs",
+        "bytes": 4654,
+        "sha256": "55fd3d6f82e7ed2db6a834aca4518d609c904922ac153cbf17e0c508920a63db"
+      },
+      {
+        "path": "web/renderer/texture-cache-policy.test.mjs",
+        "bytes": 9212,
+        "sha256": "399c4182967521560745e8971c3135d9040d021bd11ca3b92b4ba9d8fe926837"
+      },
+      {
+        "path": "web/renderer/sprite-resources.test.mjs",
+        "bytes": 34762,
+        "sha256": "5af53f8dd8150d1034dff608488bb263b615fa046eea1e06361fb76a95bc12fd"
+      },
+      {
+        "path": "web/renderer/bloom-resource-preparation.test.mjs",
+        "bytes": 3152,
+        "sha256": "ec9fc0ecef330df2302963930466c7ed71cedbc45fd1426efbeabd82076e8ee5"
+      }
+    ],
+    "docs": [
+      "docs/texture-cache.md",
+      "docs/sprite-resources.md"
+    ],
+    "adr": "docs/decisions/0052-unified-sprite-texture-cache.md"
+  },
+  "correction": {
+    "demonstrated_defect": "Ordinary scene sprites use the sprite pool, while the previous texture_cache idle policy governed only legacy texture records. Last automatic lease release immediately retired a warmed pool entry, so each short hide/re-show repeated GPU preparation despite the broker retaining decoded pixels.",
+    "policy": "One registered physical world-texture controller covers legacy and pool owners. Omitted idle policy is64MiB/128entries/1800rendererframes; active/prepared/persistent owners remain pinned.",
+    "automatic_ownership": "Only ready ordinary resources may gain an explicit idle cache owner. Last ordinary use controls TTL; managed use cannot grant or refresh auto retention. Managed-only final release remains immediate.",
+    "bounds": "Idle material entries are bounded separately by min(texture_cache.max_entries,4096) and TTL. The existing hard sprite-pool admission budget remains, including active/incoming/reservations. Only eligible pool idle owners may be reclaimed before a hard-budget error; live leases are not evicted.",
+    "lifecycle": "Cold/pending work still reports pending and keeps the prior complete appearance. Generation, epoch, context loss, reset/dispose and retirement callback fences remain explicit; no promise is replaced with fake readiness.",
+    "budget_scope": "GPU texture estimates, decoded-image broker retention, UI/Bloom/data/render-target allocations and process/native memory are separate scopes."
+  },
+  "validation": {
+    "routing_negative": {
+      "tests": 2,
+      "passed": 0,
+      "failed": 2,
+      "scope": "Executed old behavior rejects configured idle retention and cannot re-show a warmed ordinary sprite synchronously.",
+      "raw": {
+        "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/routing-negative.log",
+        "bytes": 1843,
+        "sha256": "2ed58b322166dcfc1f4ee91218c4eee08740185a8dec9f672b7603b2fce5b963",
+        "original_path": ".cache/sprite-auto-cache-routing-red-20261103-r1.log"
+      }
+    },
+    "focused": {
+      "tests": 86,
+      "passed": 86,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 174.78,
+      "raw": {
+        "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/focused-86.log",
+        "bytes": 9029,
+        "sha256": "6633b309c376ff5dd72f04fa6654ce9bf062a72a10f12f182d951a56f656c2a7",
+        "original_path": ".cache/sprite-auto-cache-focused-green-20261103-r4.log"
+      }
+    },
+    "full_node": {
+      "tests": 852,
+      "passed": 847,
+      "failed": 0,
+      "skipped": 5,
+      "duration_ms": 13808.6247,
+      "raw": {
+        "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/full-node.log",
+        "bytes": 87657,
+        "sha256": "893d03f9067bcb250c2fc4ae85376a8cdecf5422689000d8395d0ae108a354e2",
+        "original_path": ".cache/sprite-auto-cache-full-node-20261103-r1.log"
+      }
+    },
+    "actual_refresh": {
+      "tests": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 2136.441,
+      "raw": {
+        "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/actual-refresh-22.log",
+        "bytes": 8673,
+        "sha256": "c65d48e8e2a246177a99a995bc3edec6d0b5f427461cfbfd7e2fc1896878ccf9",
+        "original_path": ".cache/sprite-auto-cache-actual-refresh-20261103-r1.log"
+      },
+      "scope": "Source-refresh tool tests include actual pinned production Core load/module/data staging and rejection controls. They are not actual browser GPU rendering."
+    },
+    "node_limit": "Deterministic real-broker/presenter/pinned-Three preparation and ownership tests include instrumented/mocked renderer calls; Node counters are not hardware GPU performance or browser output proof."
+  },
+  "independent_codex_review": {
+    "reviewer": "/root/runtime_audit",
+    "disposition": "CLEAR: final bounded source review found no remaining concrete P1/P2",
+    "scope": "Whole four-production-file ownership/integration slice, separately from the incomplete external attempt. Source review alone is not host output proof.",
+    "finding_closed": {
+      "finding": "Physical cached retirement untracked its owner before material.dispose; a reentrant same-asset acquisition could rejoin that untracked owner.",
+      "correction": "Full retiring fence rejects reentrant acquisition while cleanup completes. A disposal-callback reacquisition regression covers the concrete branch."
+    },
+    "reviewed_boundaries": [
+      "unique physical texture count and shared material bounds",
+      "independent hard pool admission",
+      "ordinary auto TTL versus managed-only final release",
+      "touching the actually displayed old complete appearance while replacement is pending",
+      "managed-to-ordinary ownership conversion",
+      "context/reset/dispose and late generations",
+      "atomic pending resource/UV/uniform tuple"
+    ],
+    "execution_limit": "Reviewer read the existing86/86 log but did not run tests or browser/GPU workloads."
+  },
+  "external_claude_review": {
+    "status": "timed-out-incomplete",
+    "cli_version": "2.1.308 (Claude Code)",
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "read_only": true,
+    "tool_access": "none",
+    "base_revision": "25043834ca7006d67bf0fd08e400868abe817088",
+    "captured_head": "25043834ca7006d67bf0fd08e400868abe817088",
+    "fixed_diff_sha256": "b49aa7225683a8941f9765d688f9fc562cf9efae5fe9be939799fde4d3d8eb72",
+    "paths": [
+      {
+        "path": "web/renderer/texture-cache-policy.js",
+        "bytes": 6809,
+        "sha256": "208d0841265d4d35e9da47fe03c568e4e13e4702d4ea2d1e670b7733ea220692"
+      },
+      {
+        "path": "web/renderer/sprite-resources.js",
+        "bytes": 19160,
+        "sha256": "c5f93f0dbd1cbe01449cf4ed8da53b5fd6bcfaa35501682db4f089ffe3e924dd"
+      },
+      {
+        "path": "web/renderer/sprite-presentation.js",
+        "bytes": 11351,
+        "sha256": "cbe0e451f8b7f0858bddd74b45bbaafb01acf1500d4fa513ca650b2170273d70"
+      },
+      {
+        "path": "docs/texture-cache.md",
+        "bytes": 4538,
+        "sha256": "e19862de8af196cb67dd492da93e3db30d6bb8ef2f07a0a981c5bf4b2fb7a53f"
+      },
+      {
+        "path": "docs/sprite-resources.md",
+        "bytes": 6376,
+        "sha256": "0ec220f41fefbefae4f2e22cb5c5a421b211072146fe912ace30d569184d4aeb"
+      }
+    ],
+    "timeout_ms": 45000,
+    "elapsed_ms": 45302.4969,
+    "exit_code": 1,
+    "timed_out": true,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "interpretation": "One bounded attempt timed out with zero output and is INCOMPLETE, not a passed review. Supplied source scope is three production files plus two docs; three.js integration was not in that attempt.",
+    "result": {
+      "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/claude-result.json",
+      "bytes": 2754,
+      "sha256": "2c6c854ae0c419adee3a793fd1b01121e4fedafd3fdd24096e7836e1d657ab75",
+      "original_path": ".cache/sprite-auto-cache-source-review-20261103/result.json"
+    },
+    "command_record": {
+      "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/claude-command.json",
+      "bytes": 1949,
+      "sha256": "2705ae0687f7b605063a9b5a14019fff0cae1c3e0ef70d6308f5ea28344b04de",
+      "original_path": ".cache/sprite-auto-cache-source-review-20261103/command.json"
+    },
+    "diff": {
+      "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/claude-fixed.diff",
+      "bytes": 71320,
+      "sha256": "b49aa7225683a8941f9765d688f9fc562cf9efae5fe9be939799fde4d3d8eb72",
+      "original_path": ".cache/sprite-auto-cache-source-review-20261103/fixed.diff"
+    },
+    "prompt": {
+      "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/claude-prompt.txt",
+      "bytes": 123909,
+      "sha256": "c7a2cb20fcc3ee2795c0170d996918a8007fc902f267aa5207bcf964485bfbb8",
+      "original_path": ".cache/sprite-auto-cache-source-review-20261103/prompt.txt"
+    },
+    "stdout": {
+      "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/claude.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": ".cache/sprite-auto-cache-source-review-20261103/review.stdout.json"
+    },
+    "stderr": {
+      "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/claude.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": ".cache/sprite-auto-cache-source-review-20261103/review.stderr.txt"
+    }
+  },
+  "fixture": {
+    "provenance": {
+      "path": ".cache/sprite-auto-gpu-project-20261103/fixture-provenance.json",
+      "bytes": 4167,
+      "sha256": "612840ae41df5c82962469eef70834537b6d708d752552e75558122f13613761"
+    },
+    "script": {
+      "path": ".cache/sprite-auto-gpu-project-20261103/scripts/main.luau",
+      "bytes": 57868,
+      "sha256": "9bcf287b5aef6e7f019fe56849e43de322b23c3a8c2bceb8405ad000dc5b1012"
+    },
+    "scene": {
+      "path": ".cache/sprite-auto-gpu-project-20261103/scenes/main.scene.json",
+      "bytes": 1548,
+      "sha256": "760917e0892f3af725a2e7dd79b5c26cdc6bc1fba1881fb299c9ce7e88c27482"
+    },
+    "protocol": {
+      "warmup": 60,
+      "cycles": 100,
+      "hidden_per_cycle": 3,
+      "visible_per_cycle": 6,
+      "final_hidden": 120,
+      "expected_protocol_end_tick": 1080,
+      "expected_hides": 101,
+      "expected_shows": 100,
+      "note": "Intervals are fixed simulation ticks. Cache idle_frames counts renderer draws. Host must verify sufficient actual submitted frames and final owner retirement."
+    },
+    "material_definitions": 2,
+    "used_asset": "texture://fixture/page-a",
+    "copied_unused_asset": "texture://fixture/page-b",
+    "png": [
+      {
+        "from": "D:\\Projects\\Unone\\.cache\\sprite-gpu-project-100\\assets\\page-a.png",
+        "to": "assets/page-a.png",
+        "bytes": 94,
+        "sha256": "5297e6c5e7b85f79cf6dc1b5442af2ca8a9d32f878cc6c5276f3b01b2e7f5bfb"
+      },
+      {
+        "from": "D:\\Projects\\Unone\\.cache\\sprite-gpu-project-100\\assets\\page-b.png",
+        "to": "assets/page-b.png",
+        "bytes": 96,
+        "sha256": "a49e2a901b99c0bb410f54aebaab78fe430e7e75a04b57776528369668f914b6"
+      }
+    ],
+    "gpu_idle_policy": {
+      "max_bytes": 512,
+      "max_entries": 2,
+      "idle_frames": 16
+    },
+    "image_admission_budget": {
+      "max_bytes": 1024,
+      "max_entries": 2
+    },
+    "meaning": "Two ordinary scene sprites share one asset and use different shader source definitions, Bloom enabled. No api.sprite.prepare/commit or fake host receipts. Protocol PASS is authored transition completion; actual host counters are measured externally. Root observed protocol PASS on the before main run."
+  },
+  "artifact_identity": {
+    "before": {
+      "manifest": {
+        "path": "artifacts/web-sprite-auto-before-5ddb-20261103/export.json",
+        "bytes": 68566,
+        "sha256": "17cdaf38587710315b31e9fdaaa6bf777e62c428a43587826a34b6d036bb0768"
+      },
+      "release_root": "releases/c8891dde623a6fff59932a35736cebfc4ca429cbfde23405270f93aa0c182dbd/",
+      "indexed_files": 221,
+      "renderer": "three-webgl",
+      "renderer_mode": "official",
+      "variant": "production",
+      "host_source_commit_label": "5ddb16ece0b69054a80bcfa18133a5fce58ee77f",
+      "host_sha256": "c9afc994342bae52d21a98663db9dbcaa4d0361af6b2c546430c45c90e99a36b",
+      "host_files": 111,
+      "core_source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+      "runtime_manifest_sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+      "runtime_wasm_sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+      "runtime_javascript_sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+      "project": {
+        "config_sha256": "3f84a974004e545a5e4fbe8a7d96fc03d83face9ecd723d8a54043216e85f6fe",
+        "script_sha256": "9bcf287b5aef6e7f019fe56849e43de322b23c3a8c2bceb8405ad000dc5b1012",
+        "module_sources": []
+      },
+      "preload": {
+        "sha256": "7f6d656abfdca825f9dae80e6f8dbdad9b524862c63e63985847504d874c1508",
+        "required_entries": 1,
+        "required_rgba_estimate": 128
+      },
+      "actual_core_validation": {
+        "status": "passed",
+        "scope": "Actual pinned production WASM HostProject ABI parse, source/module compilation, data staging and Game.start; raw validation envelope only, no UI/presentation transport decoding, gameplay ticks or renderer",
+        "seed": 42,
+        "initial_frame": 0,
+        "initial_digest": "sha256:ffd04977cfc910c903295e91159ae4cc3914659d4195de73f33b721c8c9d9035",
+        "diagnostics": []
+      }
+    },
+    "after": {
+      "manifest": {
+        "path": "artifacts/web-sprite-auto-after-08c4f51-20261103/export.json",
+        "bytes": 68566,
+        "sha256": "b2fc1602219fc29290e43d5ab38682b87d0b046a7cbc6b769b051815b63fa3ca"
+      },
+      "release_root": "releases/217cb2eb6af2b61afa442a10dbbfe5ac55c2b9577d646e66d1f4ec84bdb88d74/",
+      "indexed_files": 221,
+      "renderer": "three-webgl",
+      "renderer_mode": "official",
+      "variant": "production",
+      "host_source_commit_label": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+      "host_sha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+      "host_files": 111,
+      "core_source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+      "runtime_manifest_sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+      "runtime_wasm_sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+      "runtime_javascript_sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+      "project": {
+        "config_sha256": "3f84a974004e545a5e4fbe8a7d96fc03d83face9ecd723d8a54043216e85f6fe",
+        "script_sha256": "9bcf287b5aef6e7f019fe56849e43de322b23c3a8c2bceb8405ad000dc5b1012",
+        "module_sources": []
+      },
+      "preload": {
+        "sha256": "7f6d656abfdca825f9dae80e6f8dbdad9b524862c63e63985847504d874c1508",
+        "required_entries": 1,
+        "required_rgba_estimate": 128
+      },
+      "actual_core_validation": {
+        "status": "passed",
+        "scope": "Actual pinned production WASM HostProject ABI parse, source/module compilation, data staging and Game.start; raw validation envelope only, no UI/presentation transport decoding, gameplay ticks or renderer",
+        "seed": 42,
+        "initial_frame": 0,
+        "initial_digest": "sha256:ffd04977cfc910c903295e91159ae4cc3914659d4195de73f33b721c8c9d9035",
+        "diagnostics": []
+      }
+    },
+    "advertised_flat_content_and_runtime_inventory_comparison": {
+      "matched_records": 9,
+      "mismatches": 0,
+      "extra_records": 0,
+      "scope": "Compared export inventory bytes/hash records for flat content/ and runtime/; did not independently hash every served runtime/asset byte in this evidence-writing task."
+    },
+    "core_change": false,
+    "sdk_delivery_claim": false
+  },
+  "actual_gpu": {
+    "before_main": {
+      "status": "actual-old-behavior-endpoint-recorded",
+      "raw": {
+        "path": ".cache/sprite-auto-before-main-20261103.json",
+        "bytes": 64759,
+        "sha256": "6cd4f3b331b0ae1230a7c24db26ad8bb8b038ee205b52fe77675b62d3ad66a08"
+      },
+      "observed_utc": "2026-11-02T20:49:01.354Z",
+      "observer_frame": "4299",
+      "cached_performance_simulation_frame": 4286,
+      "error": null,
+      "backend": "main",
+      "bloom": true,
+      "wasm_linear_bytes": 16777216,
+      "sprite_resources": {
+        "builds": 202,
+        "cpu_reserved_bytes_estimate": 0,
+        "entries": 0,
+        "epoch": 1,
+        "errors": 0,
+        "gpu_reserved_bytes_estimate": 0,
+        "handles": 0,
+        "image_leases": 0,
+        "legacy_fallback_sprites": 0,
+        "limits": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        },
+        "live_textures": 0,
+        "pending": 0,
+        "ready": 0,
+        "retired": 202,
+        "scope": "Unique managed asset/sampler texture RGBA reservations; material entries/programs, broker/browser copies and other renderer owners are separate. No unowned GPU idle cache",
+        "supported": true,
+        "texture_builds": 101,
+        "texture_entries": 0,
+        "texture_retired": 101
+      },
+      "texture_cache": {
+        "decoded_texture_bytes_estimate": 0,
+        "enabled": true,
+        "entries": 0,
+        "estimate_excludes": "driver allocation, encoded files, browser decode copies and render targets",
+        "evicted": 0,
+        "loading": 0,
+        "pinned_bytes_estimate": 0,
+        "policy": {
+          "idle_frames": 16,
+          "max_bytes": 512,
+          "max_entries": 2
+        },
+        "pressure_bytes": 0,
+        "pressure_entries": 0,
+        "released_bytes_estimate": 0,
+        "scope": "2D sprite textures; active and non-sprite dependencies are protected"
+      },
+      "decoded_images": {
+        "loads": 1,
+        "reuses": 101,
+        "resident_entries": 1,
+        "resident_bytes_estimate": 128,
+        "scene_entries": 1,
+        "scene_bytes_estimate": 128,
+        "active_entries": 0,
+        "active_bytes_estimate": 0,
+        "loading": 0,
+        "evictions": 0,
+        "closed_images": 0
+      },
+      "completion": {
+        "world_assets_pending": 101,
+        "error_draws": 0,
+        "dropped_steps_total": 0
+      },
+      "scope": "Observer endpoint plus cached host metrics; observer frame and performance frame differ. Not an exact same-row Core/render sample, per-cycle series, FPS measurement, or native memory reclamation proof.",
+      "interpretation": "After the100-cycle protocol, material-entry builds202 and texture_builds101 accompany101world_assets_pending skips, while one decoded image/128B remains scene-pinned. Final world pool/cache owners are zero. This demonstrates repeated GPU preparation, not repeated browser image decoding; builds is not an independently counted driver shader-program compilation total."
+    },
+    "after_main_midpoint": {
+      "status": "actual-in-cycle-capture",
+      "raw": {
+        "path": ".cache/sprite-auto-after-main-mid-20261103.json",
+        "bytes": 19907,
+        "sha256": "9482c7995faf6b09e00699e93cb220d2ff4e3c5e740e623713ee4e5c3e8e07d1"
+      },
+      "observed_utc": "2026-11-02T20:55:57.824Z",
+      "observer_frame": "862",
+      "cached_performance_simulation_frame": 836,
+      "error": null,
+      "backend": "main",
+      "bloom": true,
+      "wasm_linear_bytes": 16777216,
+      "sprite_resources": {
+        "builds": 2,
+        "cpu_reserved_bytes_estimate": 128,
+        "entries": 2,
+        "epoch": 1,
+        "errors": 0,
+        "gpu_reserved_bytes_estimate": 128,
+        "handles": 0,
+        "idle_material_entries": 2,
+        "idle_material_limit": 2,
+        "image_leases": 1,
+        "legacy_fallback_sprites": 0,
+        "limits": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        },
+        "live_textures": 1,
+        "pending": 0,
+        "ready": 2,
+        "retired": 0,
+        "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+        "supported": true,
+        "texture_builds": 1,
+        "texture_entries": 1,
+        "texture_retired": 0
+      },
+      "texture_cache": {
+        "decoded_texture_bytes_estimate": 128,
+        "enabled": true,
+        "entries": 1,
+        "estimate_excludes": "driver allocation, encoded files, browser decode copies, UI/data textures and render targets",
+        "evicted": 0,
+        "loading": 0,
+        "pinned_bytes_estimate": 0,
+        "policy": {
+          "idle_frames": 16,
+          "max_bytes": 512,
+          "max_entries": 2
+        },
+        "policy_source": "authored",
+        "pressure_bytes": 0,
+        "pressure_entries": 0,
+        "released_bytes_estimate": 0,
+        "scope": "Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected."
+      },
+      "decoded_images": {
+        "loads": 1,
+        "reuses": 1,
+        "resident_entries": 1,
+        "resident_bytes_estimate": 128,
+        "scene_entries": 1,
+        "scene_bytes_estimate": 128,
+        "active_entries": 1,
+        "active_bytes_estimate": 128,
+        "loading": 0,
+        "evictions": 0,
+        "closed_images": 0
+      },
+      "completion": {
+        "world_assets_pending": 1,
+        "error_draws": 0,
+        "dropped_steps_total": 0
+      },
+      "scope": "Observer endpoint plus cached host metrics; observer frame and performance frame differ. Not an exact same-row Core/render sample, per-cycle series, FPS measurement, or native memory reclamation proof.",
+      "interpretation": "At observer frame862, two material entries and one shared128B texture have been built once; world_assets_pending is1. This row alone is not a complete-cycle/expiry claim."
+    },
+    "after_main_final": {
+      "status": "actual-bounded-gpu-lifecycle-passed",
+      "raw": {
+        "path": ".cache/sprite-auto-after-main-20261103.json",
+        "bytes": 64928,
+        "sha256": "f1a06573fedfed3977bc7d6f6eb0946801b53b3b7015bebc08351b64aced6af9"
+      },
+      "observed_utc": "2026-11-02T20:56:47.635Z",
+      "observer_frame": "3851",
+      "cached_performance_simulation_frame": 3836,
+      "error": null,
+      "backend": "main",
+      "bloom": true,
+      "wasm_linear_bytes": 16777216,
+      "sprite_resources": {
+        "builds": 2,
+        "cpu_reserved_bytes_estimate": 0,
+        "entries": 0,
+        "epoch": 1,
+        "errors": 0,
+        "gpu_reserved_bytes_estimate": 0,
+        "handles": 0,
+        "idle_material_entries": 0,
+        "idle_material_limit": 2,
+        "image_leases": 0,
+        "legacy_fallback_sprites": 0,
+        "limits": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        },
+        "live_textures": 0,
+        "pending": 0,
+        "ready": 0,
+        "retired": 2,
+        "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+        "supported": true,
+        "texture_builds": 1,
+        "texture_entries": 0,
+        "texture_retired": 1
+      },
+      "texture_cache": {
+        "decoded_texture_bytes_estimate": 0,
+        "enabled": true,
+        "entries": 0,
+        "estimate_excludes": "driver allocation, encoded files, browser decode copies, UI/data textures and render targets",
+        "evicted": 0,
+        "loading": 0,
+        "pinned_bytes_estimate": 0,
+        "policy": {
+          "idle_frames": 16,
+          "max_bytes": 512,
+          "max_entries": 2
+        },
+        "policy_source": "authored",
+        "pressure_bytes": 0,
+        "pressure_entries": 0,
+        "released_bytes_estimate": 0,
+        "scope": "Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected."
+      },
+      "decoded_images": {
+        "loads": 1,
+        "reuses": 1,
+        "resident_entries": 1,
+        "resident_bytes_estimate": 128,
+        "scene_entries": 1,
+        "scene_bytes_estimate": 128,
+        "active_entries": 0,
+        "active_bytes_estimate": 0,
+        "loading": 0,
+        "evictions": 0,
+        "closed_images": 0
+      },
+      "completion": {
+        "world_assets_pending": 1,
+        "error_draws": 0,
+        "dropped_steps_total": 0
+      },
+      "scope": "Observer endpoint plus cached host metrics; observer frame and performance frame differ. Not an exact same-row Core/render sample, per-cycle series, FPS measurement, or native memory reclamation proof.",
+      "screenshot": {
+        "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/after-main.png",
+        "bytes": 33794,
+        "sha256": "8b56a7d58b43b08f178333fc84b7055e66bc6373d5cde3395da61088d2a81243",
+        "original_path": ".cache/sprite-auto-after-main-20261103.png"
+      }
+    },
+    "after_worker_earlier_endpoint": {
+      "status": "actual-post-protocol-endpoint; filename-mid-does-not-imply-live-cycle",
+      "raw": {
+        "path": ".cache/sprite-auto-after-worker-mid-20261103.json",
+        "bytes": 20599,
+        "sha256": "8867be7ecae0c8199eae2072d181d46e4ec784042978109f19b98494b5d715e2"
+      },
+      "observed_utc": "2026-11-02T20:57:39.387Z",
+      "observer_frame": "2635",
+      "cached_performance_simulation_frame": 2606,
+      "error": null,
+      "backend": "worker",
+      "bloom": true,
+      "wasm_linear_bytes": 16777216,
+      "sprite_resources": {
+        "builds": 2,
+        "cpu_reserved_bytes_estimate": 0,
+        "entries": 0,
+        "epoch": 1,
+        "errors": 0,
+        "gpu_reserved_bytes_estimate": 0,
+        "handles": 0,
+        "idle_material_entries": 0,
+        "idle_material_limit": 2,
+        "image_leases": 0,
+        "legacy_fallback_sprites": 0,
+        "limits": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        },
+        "live_textures": 0,
+        "pending": 0,
+        "ready": 0,
+        "retired": 2,
+        "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+        "supported": true,
+        "texture_builds": 1,
+        "texture_entries": 0,
+        "texture_retired": 1
+      },
+      "texture_cache": {
+        "decoded_texture_bytes_estimate": 0,
+        "enabled": true,
+        "entries": 0,
+        "estimate_excludes": "driver allocation, encoded files, browser decode copies, UI/data textures and render targets",
+        "evicted": 0,
+        "loading": 0,
+        "pinned_bytes_estimate": 0,
+        "policy": {
+          "idle_frames": 16,
+          "max_bytes": 512,
+          "max_entries": 2
+        },
+        "policy_source": "authored",
+        "pressure_bytes": 0,
+        "pressure_entries": 0,
+        "released_bytes_estimate": 0,
+        "scope": "Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected."
+      },
+      "decoded_images": {
+        "loads": 1,
+        "reuses": 1,
+        "resident_entries": 1,
+        "resident_bytes_estimate": 128,
+        "scene_entries": 1,
+        "scene_bytes_estimate": 128,
+        "active_entries": 0,
+        "active_bytes_estimate": 0,
+        "loading": 0,
+        "evictions": 0,
+        "closed_images": 0
+      },
+      "completion": {
+        "world_assets_pending": 1,
+        "error_draws": 0,
+        "dropped_steps_total": 0
+      },
+      "scope": "Observer endpoint plus cached host metrics; observer frame and performance frame differ. Not an exact same-row Core/render sample, per-cycle series, FPS measurement, or native memory reclamation proof."
+    },
+    "after_worker_final": {
+      "status": "actual-bounded-gpu-lifecycle-passed",
+      "raw": {
+        "path": ".cache/sprite-auto-after-worker-20261103.json",
+        "bytes": 65962,
+        "sha256": "ce8c214c2f83f575ead159d28da5137fbec9bec261076aa25684adb4162c6e83"
+      },
+      "observed_utc": "2026-11-02T20:57:52.606Z",
+      "observer_frame": "3428",
+      "cached_performance_simulation_frame": 3416,
+      "error": null,
+      "backend": "worker",
+      "bloom": true,
+      "wasm_linear_bytes": 16777216,
+      "sprite_resources": {
+        "builds": 2,
+        "cpu_reserved_bytes_estimate": 0,
+        "entries": 0,
+        "epoch": 1,
+        "errors": 0,
+        "gpu_reserved_bytes_estimate": 0,
+        "handles": 0,
+        "idle_material_entries": 0,
+        "idle_material_limit": 2,
+        "image_leases": 0,
+        "legacy_fallback_sprites": 0,
+        "limits": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        },
+        "live_textures": 0,
+        "pending": 0,
+        "ready": 0,
+        "retired": 2,
+        "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+        "supported": true,
+        "texture_builds": 1,
+        "texture_entries": 0,
+        "texture_retired": 1
+      },
+      "texture_cache": {
+        "decoded_texture_bytes_estimate": 0,
+        "enabled": true,
+        "entries": 0,
+        "estimate_excludes": "driver allocation, encoded files, browser decode copies, UI/data textures and render targets",
+        "evicted": 0,
+        "loading": 0,
+        "pinned_bytes_estimate": 0,
+        "policy": {
+          "idle_frames": 16,
+          "max_bytes": 512,
+          "max_entries": 2
+        },
+        "policy_source": "authored",
+        "pressure_bytes": 0,
+        "pressure_entries": 0,
+        "released_bytes_estimate": 0,
+        "scope": "Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected."
+      },
+      "decoded_images": {
+        "loads": 1,
+        "reuses": 1,
+        "resident_entries": 1,
+        "resident_bytes_estimate": 128,
+        "scene_entries": 1,
+        "scene_bytes_estimate": 128,
+        "active_entries": 0,
+        "active_bytes_estimate": 0,
+        "loading": 0,
+        "evictions": 0,
+        "closed_images": 0
+      },
+      "completion": {
+        "world_assets_pending": 1,
+        "error_draws": 0,
+        "dropped_steps_total": 0
+      },
+      "scope": "Observer endpoint plus cached host metrics; observer frame and performance frame differ. Not an exact same-row Core/render sample, per-cycle series, FPS measurement, or native memory reclamation proof.",
+      "screenshot": {
+        "path": "docs/evidence/2026-11-03-shared-ui/sprite-auto-cache/after-worker.png",
+        "bytes": 33806,
+        "sha256": "c928c52d4d5b733c8a0352858609c9fdf1b459891e454e56732f71fea53efe40",
+        "original_path": ".cache/sprite-auto-after-worker-20261103.png"
+      }
+    },
+    "adjudication": {
+      "scope": "Root executed the official three-webgl player in main and worker modes, observed protocol PASS (100cycles/hide101/show100/failures0) and supplied immutable observer/screenshot files. This evidence writer did not execute either browser run.",
+      "observed_result": "Both new endpoints retain total material-entry builds2, texture_builds1 and only1startup world_assets_pending skip. After final hide/expiry they report retired2/texture_retired1, pool/texture/cache entries0, pending0, handles/imageleases/reservations0, zero pressure/errors; all other pending/skip reasons are0.",
+      "scope_of_build_counts": "These are engine material-entry and texture-init counters, not independently measured driver shader compiler invocations or native allocation counts.",
+      "retained_decoded_owner": "The broker intentionally keeps one128B scene-pinned decoded image, with loads1 and active_entries0; UI/Bloom and render targets are outside world cache-zero acceptance.",
+      "interpretation": "The bounded fixture demonstrates ordinary ready-resource reuse across short100-cycle hide/show and eventual explicit GPU-owner retirement in both host modes. It does not establish seven-scene Game FPS, absence of GC, process leak freedom, or arbitrary workload memory bounds."
+    }
+  },
+  "limitations": [
+    "Windows Native/CLI execution remains App-Control4551-blocked in the current local delivery scope; no retry, rename, policy workaround or Native GPU test was performed for this change.",
+    "Actual main/worker acceptance is limited to this ordinary-sprite ownership fixture. No global no-leak/no-GC, stable-FPS or seven-scene Game acceptance follows from source, Node, endpoint counts or logical retirement.",
+    "The natural decoded scene pin is intentionally retained independently of GPU idle expiry; final pool zero does not mean all UI/Bloom/broker/driver memory is zero.",
+    "This writer only reads existing source, small JSON/logs and copies bounded evidence. It does not execute the tests, browser, Core, Native or Cargo."
+  ]
+}

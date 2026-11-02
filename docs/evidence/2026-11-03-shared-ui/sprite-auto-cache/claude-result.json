@@ -1,0 +1,89 @@
+{
+  "status": "timed-out-incomplete",
+  "started_utc": "2026-11-02T20:41:13.995Z",
+  "base_revision": "25043834ca7006d67bf0fd08e400868abe817088",
+  "captured_head": "25043834ca7006d67bf0fd08e400868abe817088",
+  "fixed_diff_sha256": "b49aa7225683a8941f9765d688f9fc562cf9efae5fe9be939799fde4d3d8eb72",
+  "paths": [
+    {
+      "path": "web/renderer/texture-cache-policy.js",
+      "bytes": 6809,
+      "sha256": "208d0841265d4d35e9da47fe03c568e4e13e4702d4ea2d1e670b7733ea220692"
+    },
+    {
+      "path": "web/renderer/sprite-resources.js",
+      "bytes": 19160,
+      "sha256": "c5f93f0dbd1cbe01449cf4ed8da53b5fd6bcfaa35501682db4f089ffe3e924dd"
+    },
+    {
+      "path": "web/renderer/sprite-presentation.js",
+      "bytes": 11351,
+      "sha256": "cbe0e451f8b7f0858bddd74b45bbaafb01acf1500d4fa513ca650b2170273d70"
+    },
+    {
+      "path": "docs/texture-cache.md",
+      "bytes": 4538,
+      "sha256": "e19862de8af196cb67dd492da93e3db30d6bb8ef2f07a0a981c5bf4b2fb7a53f"
+    },
+    {
+      "path": "docs/sprite-resources.md",
+      "bytes": 6376,
+      "sha256": "0ec220f41fefbefae4f2e22cb5c5a421b211072146fe912ace30d569184d4aeb"
+    }
+  ],
+  "cli": {
+    "path": "C:/Users/liNao/.local/bin/claude.exe",
+    "version": "2.1.308 (Claude Code)",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version_exit": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 45000
+  },
+  "prompt_sha256": "c7a2cb20fcc3ee2795c0170d996918a8007fc902f267aa5207bcf964485bfbb8",
+  "finished_utc": "2026-11-02T20:41:59.346Z",
+  "elapsed_ms": 45302.4969,
+  "exit_code": 1,
+  "signal": null,
+  "timed_out": true,
+  "launch_error": null,
+  "termination": {
+    "command": [
+      "taskkill.exe",
+      "/PID",
+      "74908",
+      "/T",
+      "/F"
+    ],
+    "exit": 0,
+    "stdout": "���\\: PID �� 35632 (PID �� 74908 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n���\\: PID �� 74908 (PID �� 64632 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n",
+    "stderr": "",
+    "error": null
+  },
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

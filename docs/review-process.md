@@ -50,6 +50,17 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-11-03: one bounded world-texture cache authority now covers ordinary
+  sprite-pool resources and legacy records. Independent Codex review closed a
+  retirement-reentrancy defect and found no remaining concrete P1/P2. Focused
+  86, full Node 847/852 (five skipped), and actual source-refresh 22 checks
+  passed. Official WebGL main/worker 100-cycle fixtures reduce texture builds
+  and world-pending skips from 101/101 to 1/1 and retire final world GPU owners.
+  The separate 45-second tool-free Claude attempt remains incomplete with no
+  output. Seven-scene FPS/GC/process-memory acceptance and Windows Native
+  final validation are separate; App Control4551 still blocks the latter. See
+  [the scoped review](reviews/2026-11-03-unified-sprite-cache.md).
+
 - 2026-11-03: immutable shared Rust UI snapshot generations passed actual Linux
   Core ownership/library/retained-resource tests and matching production/phase
   WASM parity. Candidate bytes/span and Sprite functional regressions passed.

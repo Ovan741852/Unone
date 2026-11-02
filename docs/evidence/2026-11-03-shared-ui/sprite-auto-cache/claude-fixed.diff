@@ -1,0 +1,818 @@
+diff --git a/docs/sprite-resources.md b/docs/sprite-resources.md
+index b844ec5..9cc548c 100644
+--- a/docs/sprite-resources.md
++++ b/docs/sprite-resources.md
+@@ -57,24 +57,48 @@ a globally suppressed visible sprite cannot claim submission.
+ `release(resource)` is idempotent and relinquishes that handle's caller lease.
+ Entities that committed it retain their own ownership until hidden or replaced.
+ Several entities may share one handle. Several Luau aliases of that same handle
+ share one caller lease; call `prepare` separately for independent caller release.
+ The Web host shares physical image/texture storage across material preparations
+ for the same catalog asset and sampling settings. Program readiness remains
+ specific to its shader and render-target variants.
+ 
++Ordinary sprite presentation can retain a ready resource through an explicit
++renderer-owned idle cache lease. This is separate from caller and committed
++entity leases. A managed-only resource still retires on its final release;
++managed use does not grant or refresh ordinary-sprite idle retention. Pending
++loads and failed preparation do not become ready cache entries. The renderer
++continues to hold the preceding complete appearance while a true cold resource
++is pending.
++
++One registered GPU texture-cache controller covers legacy world texture records
++and sprite-pool owners. Its omitted policy is 64 MiB / 128 entries / 1800 renderer
++frames, configurable through `texture_cache` in `player.presentation.json`.
++Shared material variants count a physical asset/sampler/catalog/epoch texture
++owner once. Idle material/program entries are separately bounded by
++`min(texture_cache.max_entries, 4096)` and their idle TTL. Context loss retires
++idle cache owners while active CPU image leases remain available for restoration;
++old-epoch completions cannot restore retired resources. See the
++[texture-cache contract](texture-cache.md) for eviction and pressure semantics.
++
+ Host resource plans and scalar receipts travel outside the canonical World.
+ `presentation_resources` is recorded input, containing resource and appearance
+ receipts. Manual/replay input stays authoritative. Failed ticks retain admitted
+ feedback and roll back the appearance transaction. GPU/image objects never cross
+ the worker boundary. Reload/session/context epochs fence late completions.
+ 
+ Generic safety limits are 4096 live resource handles/owners, at most 256 resource
+ and 256 appearance receipts per input batch, exact positive safe-integer epochs
+-and revisions, and at most 1 GiB reported bytes per resource. Actual Web texture
+-admission uses the authored image budget (default 64 MiB / 128 unique textures),
+-including both outgoing and incoming owners. A larger hard limit is not a memory
+-budget. Other renderer allocations, render targets, browser copies and broker
+-unused-image caches have separately reported scopes.
++and revisions, and at most 1 GiB reported bytes per resource. The sprite pool's
++existing hard admission limit still covers active, incoming and reserved unique
++textures, including outgoing owners retained during a transition. The official
++player currently takes these byte/count limits from the authored image preload
++plan budget (default 64 MiB / 128 entries). This check remains distinct from the
++single idle `texture_cache` policy. Admission can reclaim eligible pool idle
++owners through that controller before reporting a budget error; it cannot evict
++live owners, bypass the limit or increase the authored budget. A larger generic
++safety limit is not a memory budget. Decoded-image broker residency, other
++renderer allocations, render targets and browser copies have separately reported
++scopes; none of these estimates is total process memory or VRAM.
+ 
+ See [immutable byte views](decisions/0049-bounded-immutable-byte-views.md) for
+ binary buffer ownership. Sprite resources do not expose a writable buffer alias.
+diff --git a/docs/texture-cache.md b/docs/texture-cache.md
+index 924ea2e..7e1726f 100644
+--- a/docs/texture-cache.md
++++ b/docs/texture-cache.md
+@@ -1,44 +1,78 @@
+ # Official Web sprite texture cache
+ 
+-This reusable renderer policy controls idle GPU textures used by ordinary 2D
+-sprites. It contains no map, chunk, character or game-specific behavior. UI
+-Canvas images already close/delete resources no longer referenced by their UI
+-tree; they are a separate cache.
++This reusable renderer policy controls registered world asset-texture GPU
++owners, including legacy texture records and the sprite resource pool. They
++share one controller and one byte/count policy. It contains no map, chunk,
++character or game-specific behavior. The decoded-image broker, UI image
++presentation, data textures and render targets have separate ownership scopes.
+ 
+ Declare an optional policy in `player.presentation.json`:
+ 
+ ```json
+ "texture_cache": {
+   "max_bytes": 67108864,
+   "max_entries": 128,
+   "idle_frames": 1800
+ }
+ ```
+ 
+ All three fields are required positive integers. `max_bytes` is at most 1 GiB,
+ `max_entries` at most 65,536, and `idle_frames` at most 36,000 rendered frames.
+ Unknown fields, null, fractions and invalid ranges fail explicitly. Omission
+-preserves the previous keep-warm behavior. The policy is official Web only;
++uses the bounded defaults shown above: 64 MiB, 128 entries and 1800 renderer
++frames. The policy is official Web only;
+ custom renderers and native wgpu reject it instead of silently ignoring it.
+ 
+-Each draw protects current sprite references. Idle records are evicted oldest
+-first under byte/count pressure, or after the idle grace period even without
+-pressure. A texture also requested by mesh, heightfield or projected geometry
+-is conservatively protected until the owning renderer clears its shared caches.
+-This initial policy does not claim to evict those 3D dependencies.
++Each draw protects current sprite references. Active entity leases and explicit
++prepared-resource leases pin their textures. Several material/program variants
++of the same catalog asset and sampling configuration share one physical texture
++owner in the current epoch; that owner is counted once, rather than once per
++material. A texture requested by mesh, heightfield or projected geometry remains
++conservatively protected until the owning renderer clears its shared caches.
+ 
+-Disposal releases the Three texture allocation and removes its cache record.
+-Pending loads carry record identity checks: a completed load for an evicted or
+-cleared record disposes its result rather than resurrecting an old resource.
++An ordinary sprite's ready resource may retain an explicit idle cache owner
++after it becomes hidden or leaves the current set. Its last ordinary-sprite use
++starts the idle grace period. Managed preparation or managed entity activity
++does not create or refresh that permission. A resource used only by managed
++leases retires immediately when its final owner releases it. Pending or failed
++preparations are not promoted into ready idle entries.
++
++Idle GPU owners are reclaimed oldest first under the shared byte/count pressure,
++or when their idle TTL expires even without pressure. Idle material/program
++entries also have a separate count bound of `min(max_entries, 4096)` and an idle
++TTL; sharing one atlas does not permit unbounded cached shader variants. This is
++a metadata/program bound, not a second texture allocation budget.
++
++Retirement disposes the GPU allocation and releases its decoded-image lease.
++The broker may still retain that decoded image under its own policy. Pending
++loads carry generation and record identity checks: a completed load for an
++evicted, reset or disposed record cannot resurrect its old GPU owner. A real
++cold preparation remains pending; the cache does not manufacture readiness or
++replace the previous complete appearance with a partial texture/UV/uniform tuple.
+ Visible textures are never evicted to satisfy a budget. If the active set alone
+ exceeds the limits, metrics report pressure; the renderer does not introduce
+ missing sprites or claim the limits are a hard memory cap.
+ 
++The sprite pool also retains its existing hard admission check for active,
++incoming and reserved unique textures. The official player currently takes
++those byte/count limits from the image preload plan's budget, independently of
++the idle `texture_cache` policy. Before rejecting admission, the pool can reclaim
++its eligible idle owners through the same controller. It cannot evict live
++owners, bypass admission, or raise the authored limits. This is not another idle
++texture cache; the CPU decoded-image broker's residency accounting is separate.
++
++Context loss retires idle cache owners and invalidates GPU readiness. Active
++owners retain the CPU image leases needed for restoration into the new epoch.
++Reset and disposal retire all registered owners once and fence late completions.
++
+ `renderer.metrics().texture_cache` reports entries, loading, releases, estimated
+-decoded bytes, protected bytes, and unresolved budget pressure. Estimates count
+-RGBA pixels and mipmaps, excluding driver overhead, encoded files, browser
+-decode copies, render targets and non-texture resources. These are not a process
+-RSS or total GPU memory measurement.
++decoded texture byte estimates, protected bytes, the effective default/authored
++policy, and unresolved budget pressure. Estimates count RGBA pixels and mipmaps
++for the registered GPU owners, excluding driver overhead, encoded files, browser
++decode copies, UI/data textures, render targets and non-texture resources. A
++field named `decoded_texture_bytes_estimate` here describes this texture
++estimate; the image broker's decoded-image residency is a separate report.
++Neither is a process RSS or total GPU memory measurement.
+ 
+ Games should still share atlases and retire unused entities. This policy is a
+ resource lifetime primitive, not a world streaming or navigation service.
+diff --git a/web/renderer/sprite-presentation.js b/web/renderer/sprite-presentation.js
+index 735d08a..c21d992 100644
+--- a/web/renderer/sprite-presentation.js
++++ b/web/renderer/sprite-presentation.js
+@@ -51,18 +51,19 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
+    if(record.candidateResource===meta.resource&&candidate?.asset===entity.sprite.asset)return record.candidateLease;
+    const caller=resources.fromId(meta.resource);if(!caller)return null;const entry=resources.read(caller);
+    if(!entry||entry.asset!==entity.sprite.asset)throw Error('SPRITE_APPEARANCE_RESOURCE_MISMATCH');
+    if(resources.read(record.committedLease)===entry){record.candidateLease?.release();record.candidateLease=null;return record.committedLease;}
+    if(resources.read(record.candidateLease)===entry)return record.candidateLease;
+    const next=resources.retain(caller);record.candidateLease?.release();record.candidateLease=next;record.candidateResource=meta.resource;return next;
+   }
+   const descriptor=descriptorFor(entity,world),current=resources.read(record.candidateLease??record.committedLease);
+-  if(current?.asset===entity.sprite.asset&&current.descriptor.signature===descriptor.signature)return record.candidateLease??record.committedLease;
+-  const next=resources.acquire({asset:entity.sprite.asset,descriptor});record.candidateLease?.release();record.candidateLease=next;return next;
++  const managed=record.candidateLease?record.candidateResource:record.committedResource;
++  if(!managed&&current?.asset===entity.sprite.asset&&current.descriptor.signature===descriptor.signature)return record.candidateLease??record.committedLease;
++  const next=resources.acquire({asset:entity.sprite.asset,descriptor});record.candidateLease?.release();record.candidateLease=next;record.candidateResource=null;return next;
+  }
+  function adopt(record,lease,entry,desired){
+   const previous=record.committedLease,oldMaterial=record.material;
+   const material=record.committedSignature===entry.descriptor.signature&&oldMaterial?oldMaterial:createSpriteMaterial(THREE,entry.descriptor,entry.texture);
+   // Allocate a first cell geometry before touching the displayed material.
+   // Creation failure must leave its old pixels, UVs and uniforms together.
+   try{syncSpriteCell(record,desired.sprite,geometry);}catch(error){if(material!==oldMaterial)material.dispose();throw error;}
+   applySpriteMaterialValues(material,entry.descriptor,entry.texture,desired.uniforms,desired);
+@@ -73,34 +74,34 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
+   record.committedResource=desired.meta?.resource??null;record.candidateResource=null;
+   try{if(oldMaterial&&oldMaterial!==material){if(oldMaterial.uniforms?.unone_texture)oldMaterial.uniforms.unone_texture.value=null;oldMaterial.map=null;oldMaterial.dispose();}}
+   finally{if(previous&&previous!==lease)previous.release();}
+  }
+  function update(entity,world){
+   const record=recordFor(entity);record.id=String(entity.id);
+   if(record.legacyAsset===entity.sprite.asset&&!entity.sprite_appearance){if(!legacy(record,entity,world))pending=true;return;}
+   record.legacyAsset=null;
+-  try{const lease=selectLease(record,entity,world),entry=resources.read(lease);
++  try{const lease=selectLease(record,entity,world),entry=resources.read(lease);if(!entity.sprite_appearance){resources.touchAuto(lease);if(record.committedLease!==lease)resources.touchAuto(record.committedLease);}
+    if(!entry){pending=true;if(!record.committedLease)record.mesh.visible=false;return;}
+    const values=entity.sprite_uniforms??(entity.sprite_appearance?entry.descriptor.defaults:world.shader_materials?.[entity.shader_material]?.uniforms??entry.descriptor.defaults);
+    const desired=capture(record,entity,world,entry.descriptor,values);
+    if(lease.state==='error'){
+     // Unsupported speculative dimensions (notably SVG) retain the ordinary
+     // decoded-on-demand path. It is explicitly outside managed atomic readiness.
+     if(!desired.meta&&legacy&&lease.error?.startsWith('IMAGE_ASSET_DIMENSIONS_UNAVAILABLE')){
+      detach(record);record.legacyAsset=entity.sprite.asset;if(!legacy(record,entity,world))pending=true;return;
+     }
+     failure(record,desired.meta,lease.error);return;
+    }
+    if(lease.state!=='ready'){pending=true;if(!record.committedLease||record.committedLease.state!=='ready')record.mesh.visible=false;return;}
+    adopt(record,lease,entry,desired);stage(record.id,desired.meta);
+   }catch(error){failure(record,metadata(entity),error);if(!entity.sprite_appearance)throw error;}
+  }
+  function draw(world,visible=true){
+-  if(disposed)throw Error('SPRITE_PRESENTATION_DISPOSED');pending=false;frameCandidates.length=0;alive.clear();usedMaterials.clear();legacyIds.clear();visibleEntities.length=0;
++  if(disposed)throw Error('SPRITE_PRESENTATION_DISPOSED');resources.beginFrame();pending=false;frameCandidates.length=0;alive.clear();usedMaterials.clear();legacyIds.clear();visibleEntities.length=0;
+   const entities=world.entities??{};
+   for(const id in entities)if(Object.hasOwn(entities,id)){const e=entities[id];if(e.sprite&&visible&&e.sprite.visible!==false)visibleEntities.push(e);}
+   visibleEntities.sort(compareSpriteEntities);
+   for(const entity of visibleEntities){const id=String(entity.id);alive.add(id);if(entity.shader_material)usedMaterials.add(entity.shader_material);update(entity,world);if(records.get(id)?.legacyAsset)legacyIds.add(id);}
+   for(const [id,record]of records)if(!alive.has(id)){const entity=entities[id];detach(record,!entity?.sprite);if(entity?.sprite)stage(id,metadata(entity),entity.sprite.visible===false);}
+   for(const id in entities)if(Object.hasOwn(entities,id)){const entity=entities[id];if(entity.sprite&&!alive.has(String(entity.id))&&!records.has(String(entity.id)))stage(String(entity.id),metadata(entity),entity.sprite.visible===false);}
+   for(const id of descriptorCache.keys())if(!usedMaterials.has(id))descriptorCache.delete(id);return !pending;
+  }
+diff --git a/web/renderer/sprite-resources.js b/web/renderer/sprite-resources.js
+index 314220b..494bdee 100644
+--- a/web/renderer/sprite-resources.js
++++ b/web/renderer/sprite-resources.js
+@@ -10,44 +10,69 @@ export function parseSpriteResourceBudget(value={max_bytes:64*1024*1024,max_entr
+   ||!Number.isSafeInteger(value.max_bytes)||value.max_bytes<1||value.max_bytes>1073741824
+   ||!Number.isSafeInteger(value.max_entries)||value.max_entries<1||value.max_entries>65536)throw error('SPRITE_RESOURCE_BUDGET_INVALID');
+  return Object.freeze({...value});
+ }
+ 
+ /** Material/program entries retain independent shared texture owners.
+  * A private catalog + asset + fixed sampler identifies image/texture ownership;
+  * source/type layout identifies material readiness. Uniform values are not keys.
+- * The budget counts unique textures, not material variants. No unowned GPU idle
+- * cache: prepare handles and committed entities retain resources explicitly.
++ * The hard admission budget counts unique textures, not material variants.
++ * Automatic appearances can hold a bounded, explicit idle-cache owner under
++ * the same physical texture controller used by the ordinary renderer records.
+  * Public leases expose metadata only; readiness is scoped to the current epoch.
+  */
+-export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,budget,backend='webgl',onReset=()=>{},withPreparationTargets=fn=>fn()}) {
++export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,budget,textureCache,backend='webgl',onReset=()=>{},withPreparationTargets=fn=>fn()}) {
++ if(!textureCache||typeof textureCache.trackOwner!=='function'||typeof textureCache.reclaim!=='function')throw error('SPRITE_RESOURCE_CACHE_UNAVAILABLE');
+  const limits=parseSpriteResourceBudget(budget),entries=new Map(),textures=new Map(),requests=new Map(),privateLeases=new WeakMap(),updates=new Map(),appearanceUpdates=new Map();
+- let epoch=1,disposed=false,available=true,reserved=0,builds=0,retired=0,textureBuilds=0,textureRetired=0;
++ let epoch=1,disposed=false,retiring=false,available=true,reserved=0,builds=0,retired=0,textureBuilds=0,textureRetired=0;
+  const stageGeometry=new THREE.PlaneGeometry(1,1),stageCamera=new THREE.PerspectiveCamera();
+  const queueLimit=4096;
++ const cacheDomain=Object.freeze({}),idleMaterialLimit=Math.min(textureCache.policy.max_entries,queueLimit);
++ let idleHead=null,idleTail=null,idleCount=0;
++ function removeIdle(entry){if(!entry.cacheOwner)return;entry.cacheOwner=null;if(entry.idlePrevious)entry.idlePrevious.idleNext=entry.idleNext;else idleHead=entry.idleNext;if(entry.idleNext)entry.idleNext.idlePrevious=entry.idlePrevious;else idleTail=entry.idlePrevious;entry.idlePrevious=entry.idleNext=null;idleCount--;}
++ function updatePin(owner){if(!owner||owner.retired||!owner.cacheTracked)return;let live=false;for(const entry of owner.entries)if(entry.leases.size){live=true;break;}textureCache.pinOwner(owner,live);}
++ function evictIdleMaterial(entry){removeIdle(entry);if(!entry.leases.size)drop(entry);}
++ function sweepIdleMaterials(){let failure;while(idleHead&&(idleCount>idleMaterialLimit||textureCache.frame-idleHead.lastAutoUse>=textureCache.policy.idle_frames))try{evictIdleMaterial(idleHead);}catch(error){failure??=error;}if(failure)throw failure;}
++ function cacheAuto(entry){
++  if(entry.cacheOwner||entry.retired||entry.state!=='ready'||disposed||retiring||!available)return;
++  entry.cacheOwner=Object.freeze({});entry.idlePrevious=idleTail;entry.idleNext=null;if(idleTail)idleTail.idleNext=entry;else idleHead=entry;idleTail=entry;idleCount++;sweepIdleMaterials();
++ }
++ function clearIdleMaterials(){let failure;while(idleHead)try{evictIdleMaterial(idleHead);}catch(error){failure??=error;}if(failure)throw failure;}
++ function retireCachedTexture(owner){
++  owner.cacheTracked=false;const wasRetiring=retiring;retiring=true;
++  const values=[...owner.entries];let failure;
++  try{for(const entry of values)try{removeIdle(entry);if(entry.leases.size)throw error('SPRITE_RESOURCE_CACHE_PIN_VIOLATION');drop(entry);}catch(error){failure??=error;}}
++  finally{retiring=wasRetiring;}
++  if(failure)throw failure;
++ }
+  function event(id,value,map=updates){if(!map.has(id)&&map.size>=queueLimit)throw error('SPRITE_RECEIPT_QUEUE_FULL');map.set(id,value);}
+  function publish(entry){for(const lease of entry.leases)if(lease.id&&!lease.released)event(lease.id,{id:lease.id,state:entry.state,epoch,bytes:entry.bytes,...(entry.error?{error:spriteResourceError(entry.error)}:{})});}
+  function attemptAll(actions){let failure;for(const action of actions)try{action();}catch(error){failure??=error;}if(failure)throw failure;}
+  function destroyMaterial(entry){const material=entry.material;entry.material=null;material?.dispose();}
+  function destroyTextureBinding(owner){const texture=owner.texture;owner.texture=null;if(texture)textureRetired++;texture?.dispose();}
+  function dropTexture(owner){
+   if(owner.retired)return;owner.retired=true;owner.generation++;owner.state='released';
+   if(textures.get(owner.key)===owner)textures.delete(owner.key);
++  owner.cacheTracked=false;textureCache.untrackOwner(owner);
+   const lease=owner.imageLease;owner.imageLease=null;reserved-=owner.bytes;owner.bytes=0;
+   attemptAll([()=>owner.controller.abort(),()=>destroyTextureBinding(owner),()=>lease?.release()]);
+  }
+- function releaseTexture(entry){const owner=entry.textureOwner;entry.textureOwner=null;if(!owner)return;owner.entries.delete(entry);if(!owner.entries.size)dropTexture(owner);}
++ function releaseTexture(entry){const owner=entry.textureOwner;entry.textureOwner=null;if(!owner)return;owner.entries.delete(entry);if(!owner.entries.size)dropTexture(owner);else updatePin(owner);}
+  function releasePayload(entry){attemptAll([()=>destroyMaterial(entry),()=>releaseTexture(entry)]);}
+  function drop(entry){
+-  if(entry.retired)return;entry.retired=true;entry.generation++;
++  if(entry.retired)return;removeIdle(entry);entry.retired=true;entry.generation++;
+   if(entries.get(entry.key)===entry)entries.delete(entry.key);
+   retired++;releasePayload(entry);
+  }
+- function textureRoom(bytes,extra=0){if(reserved+bytes>limits.max_bytes||textures.size+extra>limits.max_entries)throw error('SPRITE_RESOURCE_BUDGET_EXCEEDED');}
++ function textureRoom(bytes,extra=0){
++  const fits=()=>reserved+bytes<=limits.max_bytes&&textures.size+extra<=limits.max_entries;
++  if(!fits())textureCache.reclaim(fits,{eligible:key=>key?.cacheDomain===cacheDomain});
++  if(!fits())throw error('SPRITE_RESOURCE_BUDGET_EXCEEDED');
++ }
+  function current(entry,generation){return !disposed&&!entry.retired&&entry.generation===generation&&entries.get(entry.key)===entry;}
+  function currentTexture(owner,generation){return !disposed&&!owner.retired&&owner.generation===generation&&textures.get(owner.key)===owner;}
+  function compileMaterial(material){
+   if(typeof renderer.compile!=='function')throw error('SPRITE_RESOURCE_COMPILE_UNAVAILABLE');
+   const scene=new THREE.Scene();scene.add(new THREE.Mesh(stageGeometry,material));
+   // In this pinned Three revision compile() defers link diagnostics until
+   // first program use. Check after compile's render-state stack has unwound;
+   // malformed shaders must fail preparation, never the first committed draw.
+@@ -85,18 +110,19 @@ export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,bu
+    if(currentTexture(owner,generation)){try{dropTexture(owner);}catch{/* original preparation error remains authoritative after retirement */}}
+    throw failure;
+   });owner.promise.catch(()=>{});
+  }
+  function textureFor(entry){
+   let owner=entry.textureOwner;
+   if(!owner){
+    owner=textures.get(entry.textureKey);
+-   if(!owner){textureRoom(0,1);owner={key:entry.textureKey,asset:entry.asset,entries:new Set(),bytes:0,generation:0,epoch,state:'loading',retired:false,controller:new AbortController(),promise:null};textures.set(owner.key,owner);}
++   if(!owner){textureRoom(0,1);owner={key:entry.textureKey,cacheDomain,asset:entry.asset,entries:new Set(),bytes:0,generation:0,epoch,state:'loading',retired:false,cacheTracked:false,controller:new AbortController(),promise:null};textureCache.trackOwner(owner,{bytes:()=>owner.texture?owner.bytes:0,loading:()=>owner.state==='loading',retire:()=>retireCachedTexture(owner)});owner.cacheTracked=true;textures.set(owner.key,owner);}
+    owner.entries.add(entry);entry.textureOwner=owner;
++   updatePin(owner);
+   }
+   if(!owner.promise&&available)launchTexture(owner);return owner;
+  }
+  async function prepareGpu(entry,generation){
+   const owner=textureFor(entry);await owner.promise;
+   if(!current(entry,generation)||!available||owner.retired||owner.state!=='ready')throw error('SPRITE_RESOURCE_CANCELLED');
+   entry.material=createSpriteMaterial(THREE,entry.descriptor,owner.texture);
+   // Pinned Three's compileAsync owns an uncancellable timer that reads mutable
+@@ -111,71 +137,85 @@ export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,bu
+   entry.promise=prepareGpu(entry,generation).then(()=>undefined,error=>{
+    const failure=new Error(spriteResourceError(error));
+    if(current(entry,generation)){entry.state='error';entry.error=failure;attemptAll([()=>releasePayload(entry),()=>publish(entry)]);}
+    throw failure;
+   });entry.promise.catch(()=>{});
+  }
+  function acquire(spec,{notify=false}={}) {
+   if(disposed)throw error('SPRITE_RESOURCES_DISPOSED');
++  if(retiring)throw error('SPRITE_RESOURCES_RETIRING');
+   if(!spec||typeof spec.asset!=='string'||!spec.asset)throw error('SPRITE_RESOURCE_INVALID');
+   const catalog=getCatalog(),asset=assetCatalogSpecs(catalog).get(spec.asset);
+   if(asset?.kind!=='texture2d')throw error('SPRITE_RESOURCE_ASSET_INVALID',spec.asset);
+   const descriptor=spec.descriptor??spriteMaterialDescriptor(spec.material_id,spec.material);
+   const textureKey=JSON.stringify([catalog.generation,spec.asset,SAMPLER_KEY]),key=JSON.stringify([textureKey,descriptor.signature]);
+   let entry=entries.get(key);
+   if(entry?.state==='error'){drop(entry);entry=null;}
+   if(!entry){
++   while(entries.size>=queueLimit&&idleHead)evictIdleMaterial(idleHead);
+    if(entries.size>=queueLimit)throw error('SPRITE_RESOURCE_HANDLE_LIMIT');
+    entry={key,textureKey,asset:spec.asset,descriptor,textureOwner:null,leases:new Set(),state:'loading',error:null,epoch,generation:0,retired:false,
++    autoRefs:0,lastAutoUse:textureCache.frame,cacheOwner:null,idlePrevious:null,idleNext:null,
+     get bytes(){return this.textureOwner?.bytes??0;},get texture(){return this.textureOwner?.texture??null;}};entries.set(key,entry);
+   }
+   return own(entry,notify?String(spec.id):null,!notify);
+  }
+  function own(entry,id,unmanaged=false){
+   const state={entry,id,unmanaged,released:false};
+   const lease=Object.freeze({get state(){return state.released?'released':entry.state;},get epoch(){return epoch;},get bytes(){return entry.bytes;},get error(){return entry.error?spriteResourceError(entry.error):null;},get readyPromise(){const expectedEpoch=epoch;const promise=Promise.resolve(entry.promise).then(()=>{if(state.released)throw error('SPRITE_RESOURCE_RELEASED');if(epoch!==expectedEpoch||entry.state!=='ready')throw error('SPRITE_RESOURCE_NOT_READY');return Object.freeze({epoch,bytes:entry.bytes});});promise.catch(()=>{});return promise;},release(){release(state);}});
+   state.lease=lease;privateLeases.set(lease,state);entry.leases.add(state);
++  if(unmanaged){entry.autoRefs++;entry.lastAutoUse=textureCache.frame;removeIdle(entry);}
++  updatePin(entry.textureOwner);
+   if(!entry.promise&&available)launch(entry);else if(id)publish(entry);
+   return lease;
+  }
+- function release(state){if(state.released)return;state.released=true;state.entry.leases.delete(state);if(state.id){if(requests.get(state.id)===state.lease)requests.delete(state.id);updates.delete(state.id);}if(!state.entry.leases.size)drop(state.entry);}
++ function release(state){
++  if(state.released)return;state.released=true;const entry=state.entry;entry.leases.delete(state);if(state.unmanaged)entry.autoRefs--;
++  if(state.id){if(requests.get(state.id)===state.lease)requests.delete(state.id);updates.delete(state.id);}
++  if(state.unmanaged&&entry.autoRefs===0)cacheAuto(entry);
++  if(!entry.leases.size&&!entry.cacheOwner)drop(entry);else updatePin(entry.textureOwner);
++ }
+  function prepare(spec){
+   if(!spec||typeof spec.id!=='string'||!spec.id.trim()||new TextEncoder().encode(spec.id).length>1024||Object.keys(spec).some(k=>!['id','asset','material_id','material'].includes(k)))throw error('SPRITE_RESOURCE_INVALID');
+   const descriptor=spriteMaterialDescriptor(spec.material_id,spec.material),fingerprint=JSON.stringify([spec.asset,descriptor.id,descriptor.signature,descriptor.defaults]);
+   const existing=requests.get(spec.id);if(existing){if(privateLeases.get(existing).fingerprint!==fingerprint)throw error('SPRITE_RESOURCE_ID_REDEFINED');return existing;}
+   if(requests.size>=queueLimit)throw error('SPRITE_RESOURCE_HANDLE_LIMIT');
+   const lease=acquire({...spec,descriptor},{notify:true});privateLeases.get(lease).fingerprint=fingerprint;requests.set(spec.id,lease);return lease;
+  }
+  function invalidate(){
+-  epoch++;available=false;updates.clear();appearanceUpdates.clear();const values=[...entries.values()],owners=[...textures.values()];
++  if(disposed||retiring||!available)return;retiring=true;epoch++;available=false;
++  updates.clear();appearanceUpdates.clear();const values=[...entries.values()],owners=[...textures.values()];
+   // Fence all material entries and shared texture bindings before callbacks.
+   for(const entry of values){entry.generation++;entry.state='loading';entry.error=null;entry.promise=null;entry.epoch=epoch;}
+   for(const owner of owners){owner.generation++;owner.state='loading';owner.promise=null;owner.epoch=epoch;}
+-  attemptAll([...values.map(entry=>()=>attemptAll([()=>destroyMaterial(entry),()=>publish(entry)])),...owners.map(owner=>()=>destroyTextureBinding(owner))]);
++  let failure;try{clearIdleMaterials();}catch(error){failure=error;}
++  try{attemptAll([...values.map(entry=>()=>{if(!entry.retired)attemptAll([()=>destroyMaterial(entry),()=>publish(entry)]);}),...owners.map(owner=>()=>{if(!owner.retired)destroyTextureBinding(owner);})]);}catch(error){failure??=error;}finally{retiring=false;}
++  if(failure)throw failure;
+  }
+  function reset(){
+-  if(disposed)return;let failure;try{onReset();}catch(error){failure=error;}
+-  epoch++;const values=[...entries.values()];
++  if(disposed||retiring)return;retiring=true;epoch++;const values=[...entries.values()];
+   for(const lease of requests.values())privateLeases.get(lease).released=true;
+   for(const entry of values){for(const state of entry.leases)state.released=true;entry.leases.clear();}
+   requests.clear();updates.clear();appearanceUpdates.clear();
+-  try{attemptAll([...values.map(entry=>()=>drop(entry)),...[...textures.values()].map(owner=>()=>dropTexture(owner))]);}catch(error){failure??=error;}finally{entries.clear();textures.clear();}
++  let failure;try{onReset();}catch(error){failure=error;}
++  try{attemptAll([...values.map(entry=>()=>drop(entry)),...[...textures.values()].map(owner=>()=>dropTexture(owner))]);}catch(error){failure??=error;}finally{entries.clear();textures.clear();retiring=false;}
++  idleHead=idleTail=null;idleCount=0;
+   if(failure)throw failure;
+  }
+  function takeUpdates(){
+   const resources=[],appearances=[];
+   for(const [id,value]of updates){updates.delete(id);resources.push(value);if(resources.length===256)break;}
+   for(const [id,value]of appearanceUpdates){
+    appearanceUpdates.delete(id);const {resource,...receipt}=value;appearances.push(receipt);if(appearances.length===256)break;
+   }
+   return {resources,appearances};
+  }
+  const publicApi=Object.freeze({prepare,reset,takeUpdates});
+- return {public:publicApi,acquire,read(lease){const state=privateLeases.get(lease);return state&&!state.released&&!state.entry.retired?state.entry:null;},
++ return {public:publicApi,acquire,beginFrame:sweepIdleMaterials,touchAuto(lease){const state=privateLeases.get(lease);if(!state||state.released||!state.unmanaged)return;state.entry.lastAutoUse=textureCache.frame;removeIdle(state.entry);if(state.entry.textureOwner)textureCache.touchOwner(state.entry.textureOwner);},read(lease){const state=privateLeases.get(lease);return state&&!state.released&&!state.entry.retired?state.entry:null;},
+   fromId(id){return requests.get(id);},retain(lease){const state=privateLeases.get(lease);if(!state||state.released||state.entry.retired)throw error('SPRITE_RESOURCE_RELEASED');return own(state.entry,null);},appearance(value){event(value.entity,value,appearanceUpdates);},
+-  contextLost:invalidate,contextRestored(){available=true;attemptAll([...entries.values()].filter(entry=>entry.leases.size).map(entry=>()=>launch(entry)));},
++  contextLost:invalidate,contextRestored(){if(disposed||retiring||available)return;available=true;attemptAll([...entries.values()].filter(entry=>entry.leases.size).map(entry=>()=>launch(entry)));},
+   async ready(){await Promise.all([...entries.values()].filter(entry=>[...entry.leases].some(lease=>!lease.id)).map(entry=>entry.promise?.catch(error=>{
+    if(error.message.startsWith('IMAGE_ASSET_DIMENSIONS_UNAVAILABLE')&&[...entry.leases].some(lease=>lease.unmanaged))return;throw error;
+   })));},
+-  metrics(){let liveTextures=0,images=0,pending=0,ready=0,errors=0;for(const owner of textures.values()){if(owner.texture)liveTextures++;if(owner.imageLease)images++;}for(const e of entries.values()){if(e.state==='loading')pending++;if(e.state==='ready')ready++;if(e.state==='error')errors++;}return {supported:true,epoch,entries:entries.size,texture_entries:textures.size,handles:requests.size,live_textures:liveTextures,image_leases:images,pending,ready,errors,cpu_reserved_bytes_estimate:reserved,gpu_reserved_bytes_estimate:reserved,builds,retired,texture_builds:textureBuilds,texture_retired:textureRetired,limits,scope:'Unique managed asset/sampler texture RGBA reservations; material entries/programs, broker/browser copies and other renderer owners are separate. No unowned GPU idle cache'};},
+-  dispose(){if(disposed)return;try{reset();}finally{disposed=true;stageGeometry.dispose();}},get epoch(){return epoch;}};
++  metrics(){let liveTextures=0,images=0,pending=0,ready=0,errors=0;for(const owner of textures.values()){if(owner.texture)liveTextures++;if(owner.imageLease)images++;}for(const e of entries.values()){if(e.state==='loading')pending++;if(e.state==='ready')ready++;if(e.state==='error')errors++;}return {supported:true,epoch,entries:entries.size,texture_entries:textures.size,handles:requests.size,live_textures:liveTextures,image_leases:images,pending,ready,errors,cpu_reserved_bytes_estimate:reserved,gpu_reserved_bytes_estimate:reserved,builds,retired,texture_builds:textureBuilds,texture_retired:textureRetired,idle_material_entries:idleCount,idle_material_limit:idleMaterialLimit,limits,scope:'Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.'};},
++  dispose(){if(disposed)return;if(retiring)throw error('SPRITE_RESOURCES_RETIRING');try{reset();}finally{disposed=true;stageGeometry.dispose();}},get epoch(){return epoch;}};
+ }
+diff --git a/web/renderer/sprite-resources.test.mjs b/web/renderer/sprite-resources.test.mjs
+index 6064115..3c4dcc9 100644
+--- a/web/renderer/sprite-resources.test.mjs
++++ b/web/renderer/sprite-resources.test.mjs
+@@ -1,30 +1,32 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+ import * as THREE from '../vendor/three/three.module.js';
+ import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
+ const {createSpriteResourcePool}=await import(process.env.UNONE_SPRITE_RESOURCE_MODULE??'./sprite-resources.js');
+ import {createSpritePresentation} from './sprite-presentation.js';
++import {createTextureCachePolicy} from './texture-cache-policy.js';
+ 
+ const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
+ const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
+ const definition=value=>({fragment:'vec4 unoneShade(vec2 uv,vec4 color){return color*strength;}',uniforms:{strength:value,tint:[1,.5,.25]}});
+-function fixture({pending=[],budget={max_bytes:128,max_entries:8},failCompile=false,failMaterialId=null,failUpload=false,failFirstUse=false,inspectImage=async()=>({format:'png',width:2,height:2}),imageSize={width:2,height:2},legacy=null,throwImageRelease=false,withPreparationTargets}={}){
++function fixture({pending=[],budget={max_bytes:128,max_entries:8},texturePolicy,failCompile=false,failMaterialId=null,failUpload=false,failFirstUse=false,inspectImage=async()=>({format:'png',width:2,height:2}),imageSize={width:2,height:2},legacy=null,throwImageRelease=false,withPreparationTargets}={}){
+  const catalog=createAssetCatalog({assets:['a','b','c'].map(id=>({id,kind:'texture2d',source:id+'.png',encoding:{decoder:'image',format:'png',mime:'image/png'}}))});
+  const waits=new Map(pending.map(id=>[id,deferred()])),loads=[],closed=[],uploads=[],compiles=[];
+  const image=id=>({...imageSize,id,close(){closed.push(id);}});
+  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.id,inspectImage,loadImage:async(id)=>{loads.push(id);return waits.has(id)?waits.get(id).promise:image(id);},unusedMaxBytes:0,unusedMaxEntries:0});
+  const renderer={capabilities:{maxTextureSize:2048},initTexture:texture=>{uploads.push(texture);if(failUpload)throw Error('TEXTURE_UPLOAD_FAILED');},compile:scene=>{const material=scene.children[0].material;compiles.push(material);if(failCompile||material.name===`unone-shader:${failMaterialId}`)throw Error('SHADER_COMPILE_FAILED');},properties:{get(){return {currentProgram:{getUniforms(){if(failFirstUse)throw Error('SHADER_LINK_FAILED_ON_FIRST_USE');}}};}}};
+  const root=new THREE.Group(),geometry=new THREE.PlaneGeometry(1,1),records=new Map();let presenter;
+  const images=throwImageRelease?{inspect:broker.inspect,acquire(id){const lease=broker.acquire(id);return {get state(){return lease.state;},get image(){return lease.image;},get error(){return lease.error;},promise:lease.promise,release(){lease.release();if(id==='a')throw Error('IMAGE_RELEASE_HOOK_FAILED');}};}}:broker;
+- const pool=createSpriteResourcePool({THREE,renderer,getCatalog:()=>catalog,getImages:()=>images,budget,onReset:()=>presenter?.reset(),withPreparationTargets});
++ const textureCache=createTextureCachePolicy(new Map(),texturePolicy);
++ const pool=createSpriteResourcePool({THREE,renderer,textureCache,getCatalog:()=>catalog,getImages:()=>images,budget,onReset:()=>presenter?.reset(),withPreparationTargets});
+  const recordFor=entity=>{let record=records.get(entity.id);if(!record){const material=new THREE.MeshBasicMaterial(),mesh=new THREE.Mesh(geometry,material);record={mesh,material};records.set(entity.id,record);root.add(mesh);}return record;};
+  presenter=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:pool,legacy});
+- return {pool,presenter,records,geometry,broker,loads,closed,uploads,compiles,resolve:id=>waits.get(id).resolve(image(id)),
++ return {pool,presenter,textureCache,records,geometry,broker,loads,closed,uploads,compiles,resolve:id=>waits.get(id).resolve(image(id)),
+   dispose(){pool.dispose();geometry.dispose();broker.dispose();}};
+ }
+ const entity=(asset='a',extra={})=>({id:'slot',transform:{x:0,y:0},sprite:{asset,sheet:{columns:2,rows:1},frame:0},shader_material:'test',...extra});
+ const world=(e,value=.25)=>({frame:1,time_seconds:0,entities:{[e.id]:e},shader_materials:{test:definition(value)}});
+ const uv=record=>Array.from(record.mesh.geometry.attributes.uv.array);
+ 
+ test('real broker + presenter retain COMPLETE old appearance until replacement GPU preparation and use latest values',async()=>{
+  const f=fixture({pending:['b']});try{
+@@ -105,17 +107,17 @@ test('hidden appearance receipts wait for completed submission and context loss
+ 
+ test('resource errors are nonempty bounded UTF8 metadata without leaking host error fields',async()=>{
+  const f=fixture();try{
+   const lease=f.pool.public.prepare({id:'1',asset:'missing'});
+   assert.fail('unknown catalog asset must reject synchronously');
+  }catch(error){assert.match(error.message,/ASSET_INVALID/);}finally{f.dispose();}
+  const catalog=createAssetCatalog({assets:[{id:'a',kind:'texture2d',source:'a.png'}]});
+  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.id,inspectImage:async()=>({format:'png',width:2,height:2}),loadImage:async()=>({width:2,height:2})});
+- const pool=createSpriteResourcePool({THREE,renderer:{capabilities:{maxTextureSize:2048},initTexture(){},compile(){const e=Error('😀'.repeat(5000));e.glPrivate={};throw e;}},getCatalog:()=>catalog,getImages:()=>broker});
++ const pool=createSpriteResourcePool({THREE,renderer:{capabilities:{maxTextureSize:2048},initTexture(){},compile(){const e=Error('😀'.repeat(5000));e.glPrivate={};throw e;}},textureCache:createTextureCachePolicy(new Map()),getCatalog:()=>catalog,getImages:()=>broker});
+  try{const lease=pool.public.prepare({id:'1',asset:'a'});await assert.rejects(lease.readyPromise);assert.equal(typeof lease.error,'string');
+   const row=pool.public.takeUpdates().resources[0];assert(new TextEncoder().encode(row.error).length<=4096);assert(row.error.length>0);assert(!Object.hasOwn(row,'glPrivate'));
+  }finally{pool.dispose();broker.dispose();}
+ });
+ 
+ test('unknown header metadata uses explicit ordinary fallback but cannot mark a managed lease ready',async()=>{
+  let calls=0;const f=fixture({inspectImage:async()=>null,legacy(record){calls++;record.mesh.visible=true;return true;}});
+  try{
+@@ -245,8 +247,124 @@ test('shared upload failure retires exactly once and cannot leave either materia
+  const f=fixture({failUpload:true,budget:{max_bytes:16,max_entries:1}});try{
+   const a=f.pool.public.prepare({id:'1',asset:'a',material_id:'first',material:definition(.25)}),b=f.pool.public.prepare({id:'2',asset:'a',material_id:'second',material:definition(.75)});
+   await Promise.all([assert.rejects(a.readyPromise,/UPLOAD_FAILED/),assert.rejects(b.readyPromise,/UPLOAD_FAILED/)]);
+   assert.equal(a.state,'error');assert.equal(b.state,'error');assert.equal(f.loads.length,1);assert.equal(f.uploads.length,1);assert.equal(f.compiles.length,0);assert.deepEqual(f.closed,['a']);
+   assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,0);assert.equal(f.pool.metrics().texture_entries,0);assert.equal(f.pool.metrics().image_leases,0);
+   a.release();b.release();assert.equal(f.pool.metrics().entries,0);assert.deepEqual(f.closed,['a']);
+  }finally{f.dispose();}
+ });
++
++const cacheLimits={max_bytes:64,max_entries:4,idle_frames:3};
++function renderFrame(f,w){f.textureCache.begin();const complete=f.presenter.draw(w);f.textureCache.sweep();return complete;}
++const hidden=()=>world(entity('a',{sprite:{asset:'a',visible:false}}));
++
++test('auto idle expiry removes its material and texture, so a later true cold use remains pending',async()=>{
++ const f=fixture({texturePolicy:cacheLimits});try{
++  const shown=world(entity());assert.equal(renderFrame(f,shown),false);await f.pool.ready();assert(renderFrame(f,shown));
++  assert(renderFrame(f,hidden()));assert.equal(f.pool.metrics().idle_material_entries,1);assert.equal(f.textureCache.metrics().entries,1);
++  assert(renderFrame(f,hidden()));assert.equal(f.pool.metrics().texture_retired,0);
++  assert(renderFrame(f,hidden()));assert.equal(f.pool.metrics().texture_retired,1);assert.equal(f.textureCache.metrics().entries,0);assert.deepEqual(f.closed,['a']);
++  assert.equal(renderFrame(f,shown),false);await f.pool.ready();assert(renderFrame(f,shown));assert.equal(f.uploads.length,2);assert.equal(f.loads.length,2);
++ }finally{f.dispose();}
++});
++
++test('100 automatic A/B substitutions reuse both prepared tuples within one bounded cache',async()=>{
++ const f=fixture({texturePolicy:cacheLimits});try{
++  for(const asset of ['a','b']){assert.equal(renderFrame(f,world(entity(asset))),false);await f.pool.ready();assert(renderFrame(f,world(entity(asset))));}
++  for(let i=0;i<100;i++)assert(renderFrame(f,world(entity(i%2?'b':'a'))));
++  assert.deepEqual(f.loads,['a','b']);assert.equal(f.uploads.length,2);assert.equal(f.compiles.length,2);
++  assert.equal(f.textureCache.metrics().entries,2);assert.equal(f.textureCache.metrics().decoded_texture_bytes_estimate,32);assert.equal(f.textureCache.metrics().pinned_bytes_estimate,16);
++ }finally{f.dispose();}
++});
++
++test('managed activity cannot refresh an expired auto idle permission or create one on last release',async()=>{
++ const f=fixture({texturePolicy:cacheLimits});try{
++  const managed=f.pool.public.prepare({id:'managed',asset:'a',material_id:'test',material:definition(.25)});await managed.readyPromise;
++  assert(renderFrame(f,world(entity())));assert(renderFrame(f,hidden()));assert.equal(f.pool.metrics().idle_material_entries,1);
++  for(let i=0;i<4;i++){renderFrame(f,hidden());assert.equal(managed.state,'ready');}
++  assert.equal(f.pool.metrics().idle_material_entries,0);assert.equal(f.textureCache.metrics().pinned_bytes_estimate,16);
++  managed.release();assert.equal(f.pool.metrics().texture_entries,0);assert.equal(f.textureCache.metrics().entries,0);assert.deepEqual(f.closed,['a']);
++  const neverAuto=f.pool.public.prepare({id:'only',asset:'b'});await neverAuto.readyPromise;neverAuto.release();
++  assert.equal(f.pool.metrics().idle_material_entries,0);assert.equal(f.textureCache.metrics().entries,0);assert.deepEqual(f.closed,['a','b']);
++ }finally{f.dispose();}
++});
++
++test('switching a committed managed appearance to an ordinary sprite grants only the ordinary cache owner',async()=>{
++ const f=fixture({texturePolicy:cacheLimits});try{
++  const prepared=f.pool.public.prepare({id:'managed',asset:'a',material_id:'test',material:definition(.25)});await prepared.readyPromise;
++  assert(renderFrame(f,world(entity('a',{sprite_appearance:{resource:'managed',revision:1}}))));prepared.release();
++  assert(renderFrame(f,world(entity())));assert(renderFrame(f,hidden()));assert.equal(f.pool.metrics().idle_material_entries,1);
++  assert(renderFrame(f,world(entity())));assert.equal(f.loads.length,1);assert.equal(f.uploads.length,1);assert.equal(f.compiles.length,1);
++ }finally{f.dispose();}
++});
++
++test('idle material variants are independently bounded while their one physical texture is counted once',async()=>{
++ const f=fixture({texturePolicy:{...cacheLimits,max_entries:1},budget:{max_bytes:16,max_entries:1}});try{
++  const a=f.pool.acquire({asset:'a',material_id:'first',material:definition(.25)}),b=f.pool.acquire({asset:'a',material_id:'second',material:definition(.75)});
++  await Promise.all([a.readyPromise,b.readyPromise]);assert.equal(f.textureCache.metrics().entries,1);assert.equal(f.textureCache.metrics().decoded_texture_bytes_estimate,16);
++  a.release();b.release();assert.equal(f.pool.metrics().idle_material_entries,1);assert.equal(f.pool.metrics().entries,1);assert.equal(f.pool.metrics().texture_retired,0);
++  assert.equal(f.uploads.length,1);assert.equal(f.loads.length,1);f.textureCache.clear();assert.equal(f.pool.metrics().entries,0);assert.equal(f.pool.metrics().texture_retired,1);assert.deepEqual(f.closed,['a']);
++ }finally{f.dispose();}
++});
++
++test('hard pool admission reclaims eligible idle owners through the same controller without evicting live leases',async()=>{
++ const f=fixture({texturePolicy:{...cacheLimits,max_bytes:32,max_entries:2},budget:{max_bytes:16,max_entries:1}});try{
++  const a=f.pool.acquire({asset:'a'});await a.readyPromise;a.release();assert.equal(f.pool.metrics().idle_material_entries,1);
++  const b=f.pool.public.prepare({id:'next',asset:'b'});await b.readyPromise;assert.equal(b.state,'ready');assert.deepEqual(f.closed,['a']);
++  assert.equal(f.textureCache.metrics().entries,1);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,16);
++  const c=f.pool.public.prepare({id:'blocked',asset:'c'});await assert.rejects(c.readyPromise,/BUDGET_EXCEEDED/);
++  assert.equal(b.state,'ready');assert.deepEqual(f.loads,['a','b']);assert.equal(f.textureCache.metrics().entries,1);
++ }finally{f.dispose();}
++});
++
++test('hiding a pending auto appearance never admits idle ownership or resurrects a late decoded image',async()=>{
++ const f=fixture({pending:['a'],texturePolicy:cacheLimits});try{
++  assert.equal(renderFrame(f,world(entity())),false);await flush();assert.equal(f.loads.length,1);
++  assert(renderFrame(f,hidden()));assert.equal(f.pool.metrics().entries,0);assert.equal(f.textureCache.metrics().entries,0);
++  f.resolve('a');await flush();assert.equal(f.uploads.length,0);assert.equal(f.pool.metrics().idle_material_entries,0);assert.deepEqual(f.closed,['a']);
++ }finally{f.dispose();}
++});
++
++test('context loss retires all idle owners despite one release failure and fences every retained live owner',async()=>{
++ const f=fixture({texturePolicy:cacheLimits,throwImageRelease:true});try{
++  const idleA=f.pool.acquire({asset:'a'}),idleB=f.pool.acquire({asset:'b'}),active=f.pool.public.prepare({id:'live',asset:'c'});
++  await Promise.all([idleA.readyPromise,idleB.readyPromise,active.readyPromise]);idleA.release();idleB.release();
++  f.compiles[0].addEventListener('dispose',()=>assert.equal(active.state,'loading','Every live owner is fenced before the first idle disposal callback'));
++  const epoch=active.epoch;assert.throws(()=>f.pool.contextLost(),/IMAGE_RELEASE_HOOK_FAILED/);
++  assert(active.epoch>epoch);assert.equal(active.state,'loading');assert.equal(f.pool.metrics().idle_material_entries,0);assert.equal(f.pool.metrics().entries,1);
++  assert.equal(f.pool.metrics().live_textures,0);assert.equal(f.textureCache.metrics().entries,1);assert.deepEqual(f.closed,['a','b']);
++  await assert.rejects(active.readyPromise,/NOT_READY/);f.pool.contextRestored();await active.readyPromise;
++  assert.equal(f.loads.length,3);assert.equal(f.uploads.length,4);active.release();assert.equal(f.textureCache.metrics().entries,0);assert.deepEqual(f.closed,['a','b','c']);
++ }finally{f.dispose();}
++});
++
++test('physical controller retirement removes every cached material sharing one texture exactly once',async()=>{
++ const f=fixture({texturePolicy:cacheLimits});try{
++  const a=f.pool.acquire({asset:'a',material_id:'first',material:definition(.25)}),b=f.pool.acquire({asset:'a',material_id:'second',material:definition(.75)});
++  await Promise.all([a.readyPromise,b.readyPromise]);let disposed=0;f.pool.read(a).texture.addEventListener('dispose',()=>disposed++);
++  a.release();b.release();assert.equal(f.pool.metrics().idle_material_entries,2);assert.equal(f.textureCache.metrics().entries,1);
++  f.textureCache.clear();assert.equal(disposed,1);assert.equal(f.pool.metrics().entries,0);assert.equal(f.textureCache.metrics().entries,0);assert.deepEqual(f.closed,['a']);
++ }finally{f.dispose();}
++});
++
++test('reset and context retirement reject reentrant acquisition while completing every existing owner',async()=>{
++ for(const action of ['reset','contextLost']){
++  const f=fixture({texturePolicy:cacheLimits});try{
++   const a=f.pool.public.prepare({id:'old-a',asset:'a'}),b=f.pool.public.prepare({id:'old-b',asset:'b'});await Promise.all([a.readyPromise,b.readyPromise]);
++   let reentryError;f.compiles[0].addEventListener('dispose',()=>{try{f.pool.public.prepare({id:'reentrant',asset:'c'});}catch(error){reentryError=error;}});
++   if(action==='reset')f.pool.public.reset();else f.pool.contextLost();
++   assert.match(reentryError?.message??'',/SPRITE_RESOURCES_RETIRING/);assert.equal(f.pool.fromId('reentrant'),undefined);
++   if(action==='reset'){assert.equal(f.textureCache.metrics().entries,0);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,0);assert.equal(b.state,'released');}
++   else{assert.equal(a.state,'loading');assert.equal(b.state,'loading');f.pool.contextRestored();await Promise.all([a.readyPromise,b.readyPromise]);assert.equal(f.loads.length,2);}
++  }finally{f.dispose();}
++ }
++});
++
++test('cached physical retirement cannot reacquire an untracked texture from a material disposal callback',async()=>{
++ const f=fixture({texturePolicy:cacheLimits});try{
++  const a=f.pool.acquire({asset:'a'});await a.readyPromise;let reentryError;
++  f.pool.read(a).material.addEventListener('dispose',()=>{try{f.pool.acquire({asset:'a'});}catch(error){reentryError=error;}});a.release();
++  f.textureCache.clear();assert.match(reentryError?.message??'',/SPRITE_RESOURCES_RETIRING/);
++  assert.equal(f.pool.metrics().texture_entries,0);assert.equal(f.pool.metrics().entries,0);assert.equal(f.textureCache.metrics().entries,0);assert.deepEqual(f.closed,['a']);
++  const after=f.pool.acquire({asset:'a'});await after.readyPromise;assert.equal(f.textureCache.metrics().entries,1);assert.equal(f.loads.length,2);
++ }finally{f.dispose();}
++});
+diff --git a/web/renderer/texture-cache-policy.js b/web/renderer/texture-cache-policy.js
+index 4f708e8..06f4939 100644
+--- a/web/renderer/texture-cache-policy.js
++++ b/web/renderer/texture-cache-policy.js
+@@ -7,48 +7,72 @@ export function parseTextureCache(value) {
+   for(const [key,[min,max]] of Object.entries(ranges))if(!Number.isSafeInteger(value[key])||value[key]<min||value[key]>max)
+     throw Error(`TEXTURE_CACHE_INVALID: ${key} must be an integer in ${min}..${max}`);
+   return {...value};
+ }
+ export function textureBytes(texture) {
+   const image=texture?.image, width=image?.naturalWidth??image?.width??0,height=image?.naturalHeight??image?.height??0;
+   return Math.ceil(width*height*4*(texture?.generateMipmaps?4/3:1));
+ }
++export const DEFAULT_TEXTURE_CACHE=Object.freeze({max_bytes:64*1024*1024,max_entries:128,idle_frames:1800});
+ export function createTextureCachePolicy(records,value,{dispose=texture=>texture?.dispose?.()}={}) {
+-  const policy=parseTextureCache(value),active=new Set();let frame=0,evicted=0,releasedBytes=0;
+-  function drop(id,entry){
+-    records.delete(id);entry.discarded=true;
+-    releasedBytes+=textureBytes(entry.texture);
+-    // The GPU texture and decoded image have different owners. Only release
+-    // this record's broker lease; the shared image may still serve UI/cursors.
+-    try{dispose(entry.texture);}finally{entry.texture=null;const lease=entry.imageLease;entry.imageLease=null;evicted++;lease?.release();}
++  const authored=parseTextureCache(value),policy=Object.freeze(authored??{...DEFAULT_TEXTURE_CACHE});
++  const owners=new Map(),activeLegacy=new Set();let head=null,tail=null,frame=0,evicted=0,releasedBytes=0,mutation=0;
++  function unlink(node){if(!node.linked)return;if(node.previous)node.previous.next=node.next;else head=node.next;if(node.next)node.next.previous=node.previous;else tail=node.previous;node.previous=node.next=null;node.linked=false;}
++  function append(node){unlink(node);node.previous=tail;if(tail)tail.next=node;else head=node;tail=node;node.linked=true;}
++  function size(node){const bytes=node.adapter.bytes();if(!Number.isFinite(bytes)||bytes<0)throw Error('TEXTURE_CACHE_OWNER_INVALID: bytes');return bytes;}
++  function pin(node,pinned,preserveStamp=false){if(node.pinned===pinned)return;node.pinned=pinned;if(pinned)unlink(node);else{if(!preserveStamp)node.lastUsed=frame;append(node);}}
++  function untrackOwner(key){const node=owners.get(key);if(!node)return false;owners.delete(key);mutation++;activeLegacy.delete(key);unlink(node);return true;}
++  function trackOwner(key,adapter){
++    if(owners.has(key)||!adapter||typeof adapter.bytes!=='function'||typeof adapter.loading!=='function'||typeof adapter.retire!=='function')throw Error('TEXTURE_CACHE_OWNER_INVALID');
++    const node={key,adapter,pinned:true,lastUsed:frame,linked:false,previous:null,next:null,legacy:null};owners.set(key,node);mutation++;return key;
+   }
+-  function totals(){
+-    let bytes=0,pinnedBytes=0,loading=0;
+-    for(const [id,entry] of records){const size=textureBytes(entry.texture);bytes+=size;
+-      if(active.has(id)||entry.persistent)pinnedBytes+=size;
+-      if(entry.state==='loading')loading++;
+-    }
+-    return {bytes,pinnedBytes,loading};
++  function retire(node,bytes=size(node)){if(!untrackOwner(node.key))return;releasedBytes+=bytes;evicted++;node.adapter.retire();}
++  function legacyDrop(id,entry){
++    if(records.get(id)===entry)records.delete(id);entry.discarded=true;
++    // Physical GPU and decoded-image ownership retire independently.
++    try{dispose(entry.texture);}finally{entry.texture=null;const lease=entry.imageLease;entry.imageLease=null;lease?.release();}
+   }
++  function legacy(id,entry){
++    let node=owners.get(id);
++    if(node&&node.legacy!==entry){retire(node);node=null;}
++    if(!node){trackOwner(id,{bytes:()=>textureBytes(entry.texture),loading:()=>entry.state==='loading',retire:()=>legacyDrop(id,entry)});node=owners.get(id);node.legacy=entry;}
++    return node;
++  }
++  function totals(){let bytes=0,pinnedBytes=0,loading=0;for(const node of owners.values()){const n=size(node);bytes+=n;if(node.pinned)pinnedBytes+=n;if(node.adapter.loading())loading++;}return {bytes,pinnedBytes,loading,entries:owners.size};}
++  // Reclamation uses the existing intrusive idle list, not a per-draw
++  // filter/sort or a second texture budget. Domain admission can reclaim its
++  // own idle owners without evicting protected/independent live resources.
++  function reclaim(predicate,{eligible=()=>true}={}){
++    let node=head,failure,count=0;
++    while(node&&!predicate()){const next=node.next,key=node.key;if(eligible(key)){try{retire(node);count++;}catch(error){failure??=error;}}node=next?(owners.get(next.key)===next&&next.linked?next:head):(owners.has(key)?null:head);}
++    if(failure)throw failure;return count;
++  }
++  for(const [id,entry] of records){const node=legacy(id,entry);if(!entry.persistent)pin(node,false);}
+   return {
+-    begin(){frame++;active.clear();},
+-    touch(id,entry,{persistent=false}={}){active.add(id);entry.lastUsed=frame;if(persistent)entry.persistent=true;},
++    policy,policySource:authored?'authored':'default',get frame(){return frame;},trackOwner,untrackOwner,reclaim,
++    touchOwner(key){const node=owners.get(key);if(!node)throw Error('TEXTURE_CACHE_OWNER_UNKNOWN');mutation++;node.lastUsed=frame;if(!node.pinned)append(node);},
++    pinOwner(key,pinned){if(typeof pinned!=='boolean')throw Error('TEXTURE_CACHE_OWNER_INVALID: pin');const node=owners.get(key);if(!node)throw Error('TEXTURE_CACHE_OWNER_UNKNOWN');pin(node,pinned);},
++    begin(){frame++;for(const id of activeLegacy){const node=owners.get(id);if(node&&!node.legacy?.persistent)pin(node,false,true);}activeLegacy.clear();},
++    touch(id,entry,{persistent=false}={}){const node=legacy(id,entry);mutation++;entry.lastUsed=frame;if(persistent)entry.persistent=true;node.lastUsed=frame;pin(node,true);activeLegacy.add(id);},
+     sweep(){
+-      if(!policy)return;
+-      let {bytes}=totals(),entries=records.size;
+-      const candidates=[...records].filter(([id,entry])=>!active.has(id)&&!entry.persistent)
+-        .sort((a,b)=>(a[1].lastUsed??0)-(b[1].lastUsed??0));
+-      for(const [id,entry] of candidates){
+-        const expired=frame-(entry.lastUsed??0)>=policy.idle_frames;
++      let node=head,failure;let {bytes,entries}=totals();
++      while(node){const expired=frame-node.lastUsed>=policy.idle_frames;
+         if(!expired&&bytes<=policy.max_bytes&&entries<=policy.max_entries)break;
+-        bytes-=textureBytes(entry.texture);entries--;drop(id,entry);
++        const removed=size(node),before=mutation;
++        try{retire(node,removed);}catch(error){failure??=error;}
++        // Normal pressure retirement is linear. Callback registry changes (or
++        // explicit touches after changing an adapter) require an exact recount.
++        if(mutation===before+1){bytes-=removed;entries--;}else({bytes,entries}=totals());
++        node=head;
+       }
++      if(failure)throw failure;
++    },
++    clear(){const retiring=[...owners.values()];owners.clear();mutation++;activeLegacy.clear();head=tail=null;let failure;
++      for(const node of retiring){node.linked=false;node.previous=node.next=null;try{releasedBytes+=size(node);evicted++;node.adapter.retire();}catch(error){failure??=error;}}
++      if(failure)throw failure;
+     },
+-    clear(){for(const [id,entry] of records)drop(id,entry);active.clear();},
+-    metrics(){const {bytes,pinnedBytes,loading}=totals();return {enabled:!!policy,entries:records.size,
+-      decoded_texture_bytes_estimate:bytes,pinned_bytes_estimate:pinnedBytes,loading,evicted,released_bytes_estimate:releasedBytes,
+-      pressure_bytes:policy?Math.max(0,bytes-policy.max_bytes):0,
+-      pressure_entries:policy?Math.max(0,records.size-policy.max_entries):0,
+-      scope:'2D sprite textures; active and non-sprite dependencies are protected',
+-      policy,estimate_excludes:'driver allocation, encoded files, browser decode copies and render targets'};},
++    metrics(){const {bytes,pinnedBytes,loading,entries}=totals();return {enabled:true,entries,decoded_texture_bytes_estimate:bytes,pinned_bytes_estimate:pinnedBytes,loading,evicted,released_bytes_estimate:releasedBytes,
++      pressure_bytes:Math.max(0,bytes-policy.max_bytes),pressure_entries:Math.max(0,entries-policy.max_entries),
++      scope:'Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected.',
++      policy,policy_source:authored?'authored':'default',estimate_excludes:'driver allocation, encoded files, browser decode copies, UI/data textures and render targets'};},
+   };
+ }
+diff --git a/web/renderer/texture-cache-policy.test.mjs b/web/renderer/texture-cache-policy.test.mjs
+index a351d83..f7a511b 100644
+--- a/web/renderer/texture-cache-policy.test.mjs
++++ b/web/renderer/texture-cache-policy.test.mjs
+@@ -37,22 +37,76 @@ test('pending load eviction marks stale generation for the renderer guard',()=>{
+   const f=fixture();f.cache.begin();const pending={state:'loading',texture:null};f.records.set('pending',pending);f.cache.touch('pending',pending);
+   for(let i=0;i<3;i++){f.cache.begin();f.cache.sweep();}
+   assert(pending.discarded);assert(!f.records.has('pending'));assert.equal(f.released.length,0);
+ });
+ test('clear is idempotent and invalidates pending references',()=>{
+   const f=fixture();f.cache.begin();const a=f.add('a');f.cache.clear();f.cache.clear();
+   assert(a.discarded);assert.equal(a.texture,null);assert.deepEqual(f.released,['a']);
+ });
+-test('omitted policy preserves previous keep-warm behavior',()=>{
+-  const f=fixture(undefined); // Passing undefined uses JS default; construct explicitly below.
++test('omitted policy has an explicit bounded default and expires idle owners',()=>{
+   const records=new Map([['a',{state:'ready',texture:{image:{width:2,height:2}}}]]);
+-  const cache=createTextureCachePolicy(records,undefined);cache.begin();cache.sweep();assert.equal(records.size,1);
+-  assert.equal(cache.metrics().enabled,false);assert(f.cache);
++  const cache=createTextureCachePolicy(records,undefined);assert.equal(cache.metrics().policy_source,'default');assert.deepEqual(cache.metrics().policy,{max_bytes:67108864,max_entries:128,idle_frames:1800});
++  for(let i=1;i<1800;i++){cache.begin();cache.sweep();assert.equal(records.size,1);}
++  cache.begin();cache.sweep();assert.equal(records.size,0);assert.equal(cache.metrics().enabled,true);
+ });
+ test('texture accounting includes mip estimate, without claiming driver bytes',()=>{
+   assert.equal(textureBytes({image:{width:3,height:3},generateMipmaps:true}),48);
+   assert.equal(textureBytes(null),0);
+ });
+ test('decoded lease is released once even when local GPU disposal throws',()=>{
+  let released=0;const failure=Error('GPU dispose'),entry={state:'ready',texture:{dispose(){throw failure;}},imageLease:{release(){released++;}}},records=new Map([['shared',entry]]),cache=createTextureCachePolicy(records,undefined);
+  assert.throws(()=>cache.clear(),error=>error===failure);assert.equal(released,1);assert.equal(entry.texture,null);assert.equal(entry.imageLease,null);assert.equal(records.size,0);cache.clear();assert.equal(released,1);
+ });
++
++function owner(cache,id,bytes,retired,{domain='pool',loading=false}={}){
++ const key={id,domain};cache.trackOwner(key,{bytes:()=>bytes,loading:()=>loading,retire:()=>retired.push(id)});return key;
++}
++test('legacy and pool owners compete under one physical cache budget, with live owners protected',()=>{
++ const f=fixture({max_bytes:32,max_entries:2,idle_frames:10}),retired=[];f.cache.begin();f.add('legacy');
++ const active=owner(f.cache,'active',16,retired),idle=owner(f.cache,'idle',16,retired);f.cache.pinOwner(idle,false);
++ f.cache.sweep();assert.deepEqual(retired,['idle']);assert.equal(f.cache.metrics().entries,2);assert.equal(f.cache.metrics().pinned_bytes_estimate,32);
++ f.cache.begin();f.cache.touchOwner(active);const incoming=owner(f.cache,'incoming',16,retired);f.cache.sweep();
++ assert.deepEqual(f.released,['legacy']);assert.deepEqual(retired,['idle']);assert.equal(f.cache.metrics().entries,2);f.cache.untrackOwner(incoming);f.cache.untrackOwner(active);
++});
++test('domain reclamation skips unrelated idle owners and untrack never retires physical ownership',()=>{
++ const f=fixture(),retired=[];f.cache.begin();f.add('legacy');f.cache.begin();
++ const pooled=owner(f.cache,'pooled',16,retired);f.cache.pinOwner(pooled,false);
++ assert.equal(f.cache.reclaim(()=>retired.length===1,{eligible:key=>key?.domain==='pool'}),1);
++ assert.deepEqual(retired,['pooled']);assert(f.records.has('legacy'));assert.deepEqual(f.released,[]);
++ const borrowed=owner(f.cache,'borrowed',16,retired);assert(f.cache.untrackOwner(borrowed));assert(!f.cache.untrackOwner(borrowed));assert.deepEqual(retired,['pooled']);
++});
++test('clear attempts all physical owner retirements after removing their controller records',()=>{
++ const cache=createTextureCachePolicy(new Map()),calls=[];const a={},b={};
++ cache.trackOwner(a,{bytes:()=>16,loading:()=>false,retire(){calls.push(['a',cache.metrics().entries]);throw Error('FIRST_RETIRE_FAILED');}});
++ cache.trackOwner(b,{bytes:()=>16,loading:()=>false,retire(){calls.push(['b',cache.metrics().entries]);}});
++ assert.throws(()=>cache.clear(),/FIRST_RETIRE_FAILED/);assert.deepEqual(calls,[['a',0],['b',0]]);assert.equal(cache.metrics().entries,0);cache.clear();assert.equal(calls.length,2);
++});
++
++test('retirement callbacks removing another idle record do not strand the remaining pressure victims',()=>{
++ const cache=createTextureCachePolicy(new Map(),{max_bytes:16,max_entries:1,idle_frames:10}),a={},b={},c={},retired=[];
++ cache.trackOwner(a,{bytes:()=>16,loading:()=>false,retire(){retired.push('a');cache.untrackOwner(b);}});cache.pinOwner(a,false);
++ cache.trackOwner(b,{bytes:()=>16,loading:()=>false,retire(){retired.push('b');}});cache.pinOwner(b,false);
++ cache.trackOwner(c,{bytes:()=>16,loading:()=>false,retire(){retired.push('c');}});cache.pinOwner(c,false);
++ cache.reclaim(()=>cache.metrics().entries===0);assert.deepEqual(retired,['a','c']);assert.equal(cache.metrics().entries,0);
++});
++
++test('a large expiry sweep reads owner byte estimates a linear number of times',()=>{
++ const cache=createTextureCachePolicy(new Map(),{max_bytes:65536,max_entries:4096,idle_frames:1});let reads=0,retired=0;const count=1024;
++ for(let i=0;i<count;i++){const key={};cache.trackOwner(key,{bytes(){reads++;return 16;},loading:()=>false,retire(){retired++;}});cache.pinOwner(key,false);}
++ cache.begin();cache.sweep();assert.equal(retired,count);assert(reads<=count*2,`One aggregate pass plus one estimate per victim, received ${reads}`);assert.equal(cache.metrics().entries,0);
++});
++
++test('pressure recounts reentrant registration and removal instead of trusting stale aggregate estimates',()=>{
++ for(const register of [false,true]){
++  const cache=createTextureCachePolicy(new Map(),{max_bytes:16,max_entries:1,idle_frames:10}),a={},b={},c={},extra={},retired=[];
++  cache.trackOwner(a,{bytes:()=>16,loading:()=>false,retire(){retired.push('a');if(register)cache.trackOwner(extra,{bytes:()=>16,loading:()=>false,retire(){retired.push('extra');}});else cache.untrackOwner(b);}});cache.pinOwner(a,false);
++  cache.trackOwner(b,{bytes:()=>16,loading:()=>false,retire(){retired.push('b');}});cache.pinOwner(b,false);
++  cache.trackOwner(c,{bytes:()=>16,loading:()=>false,retire(){retired.push('c');}});cache.pinOwner(c,false);
++  cache.sweep();assert.deepEqual(retired,register?['a','b','c']:['a']);assert.equal(cache.metrics().entries,1);assert.equal(cache.metrics().pressure_bytes,0);
++ }
++});
++
++test('a callback admitting a new idle owner at the end of a sweep is still checked against the budget',()=>{
++ const cache=createTextureCachePolicy(new Map(),{max_bytes:16,max_entries:1,idle_frames:1}),a={},late={},retired=[];
++ cache.trackOwner(a,{bytes:()=>16,loading:()=>false,retire(){retired.push('a');cache.trackOwner(late,{bytes:()=>32,loading:()=>false,retire(){retired.push('late');}});cache.pinOwner(late,false);}});cache.pinOwner(a,false);
++ cache.begin();cache.sweep();assert.deepEqual(retired,['a','late']);assert.equal(cache.metrics().entries,0);assert.equal(cache.metrics().pressure_bytes,0);
++});
+diff --git a/web/renderer/three.js b/web/renderer/three.js
+index 86c4b2d..cb381bc 100644
+--- a/web/renderer/three.js
++++ b/web/renderer/three.js
+@@ -229,17 +229,17 @@ export async function createThreeRenderer(canvas, options = {}) {
+      ...(frameProfile?{material_profile:frameProfile,frame_revision:framePublication?.revision??null}:{})};}});
+   const camera = new THREE.OrthographicCamera(-8, 8, 4.5, -4.5, -1000, 1000);
+   camera.position.z = 10;
+   const geometry = new THREE.PlaneGeometry(1, 1);
+   const records = new Map();
+   const shaderMaterials = createShaderMaterials(THREE, renderer, backend);
+   const textureRecords = new Map();
+   const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
+-  spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,
++  spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,textureCache,
+     getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,
+     onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;
+   if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
+   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor);
+   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
+   const dataTextures = createDataTextures(THREE,{memory:options.instanceMemory});
+   const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature,dataTextures});
+   // A camera rect (normalized, lower-left origin) renders the world into part of

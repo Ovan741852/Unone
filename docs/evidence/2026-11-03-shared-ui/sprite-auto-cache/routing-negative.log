@@ -1,0 +1,46 @@
+✖ configured ordinary-sprite idle grace retains the auto GPU owner after hiding (4.6603ms)
+✖ a scene-decoded, GPU-warmed auto sprite reappears inside cache grace without another pending frame (1.0367ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 104.5491
+
+✖ failing tests:
+
+test at .cache\sprite-auto-cache-routing-red-20261103-r1.test.mjs:35:1
+✖ configured ordinary-sprite idle grace retains the auto GPU owner after hiding (4.6603ms)
+  AssertionError [ERR_ASSERTION]: Configured idle_frames=3 must not retire the texture immediately
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/.cache/sprite-auto-cache-routing-red-20261103-r1.test.mjs:36:72)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .cache\sprite-auto-cache-routing-red-20261103-r1.test.mjs:39:1
+✖ a scene-decoded, GPU-warmed auto sprite reappears inside cache grace without another pending frame (1.0367ms)
+  AssertionError [ERR_ASSERTION]: The ready cached appearance must be reusable in this draw, without waiting for a Promise microtask
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/.cache/sprite-auto-cache-routing-red-20261103-r1.test.mjs:40:72)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
