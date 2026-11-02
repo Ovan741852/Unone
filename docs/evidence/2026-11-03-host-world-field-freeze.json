@@ -1,0 +1,924 @@
+{
+  "schema": "unone.host-world-field-freeze-experiment.v1",
+  "document_date": "2026-11-03",
+  "recorded_at_utc": "2026-11-02T16:06:06.381Z",
+  "status": "rejected-not-promoted",
+  "decision": "Root declined promotion: modest1–4% fresh-process command benefit and no demonstrated GC-frequency improvement do not resolve the actual game tail.",
+  "scope": "Cache-only pure-host prototypes; identical actual bfcd production WASM and fixed battle payload. No Game edits, Native executable/build, browser or production source replacement.",
+  "runtime": [
+    {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\releases\\8e702771c1c3de0713bf639c429a63401add8b649a24e4b1f21777b0915b5535\\runtime\\runtime.json",
+      "sha256": "04b34b8eef606136f63853f5a185511e4cc81acd3d04341348b96798bd5c7007",
+      "bytes": 1250,
+      "label": "runtime_manifest"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\releases\\8e702771c1c3de0713bf639c429a63401add8b649a24e4b1f21777b0915b5535\\runtime\\unone-player.js",
+      "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+      "bytes": 102845,
+      "label": "javascript"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\target\\populous-r20-web2\\releases\\8e702771c1c3de0713bf639c429a63401add8b649a24e4b1f21777b0915b5535\\runtime\\unone_player.wasm",
+      "sha256": "dd30ee204e6faa5809625166dd4a02727218a35bd8273df7952d8a60da0f98f3",
+      "bytes": 5278087,
+      "label": "wasm"
+    }
+  ],
+  "inputs": {
+    "payload": "414f0d19952acc34e0d9ecab392844974fd20a7c0c5a42799ebac4774115480a",
+    "sequence": "0b10d68aaefb6806198b8f38bc13de01256c190981a9d350070f1f3b417b871c",
+    "baseline_publication": "fe0ff26fa6e7c40bb262c8e89d05c61cd2e0adfe9501392f468a6b08b9931090",
+    "candidate_publication": "19f6af823fa117a1c1c610fe11bdbaaa660a33bc9373ef9239479fdfe5e931b3"
+  },
+  "prototypes": [
+    {
+      "name": "keys",
+      "design": "Fresh JSON.parse only; dense array indices; Object.keys own records; freeze after discovering children. Private publication grant/epochs unchanged.",
+      "tradeoff": "Allocates an Object.keys array per record; does not avoid JSON.parse allocation."
+    },
+    {
+      "name": "guarded",
+      "design": "Captured parse/freeze/isArray/hasOwn; after parse mark inspect Object.prototype enumerables once. Dense array indices; record for-in skips hasOwn only when clean, otherwise checks own keys. No external callback during traversal; freeze before publishing.",
+      "tradeoff": "No explicit Object.keys arrays. Still performs complete JSON parse and freezes every owned container; no subrecord reuse or reduced-GC promise."
+    }
+  ],
+  "semantic_validation": {
+    "same_seed": 42,
+    "prefix_ticks": 6,
+    "warmup_ticks": 60,
+    "primary_measured_ticks_per_run": 600,
+    "diagnostic_measured_ticks_per_run": 300,
+    "per_tick_core_digests_equal": true,
+    "full_final_world_and_save_equal": true,
+    "deep_freeze_and_private_grant_tests": true,
+    "inherited_enumerable_foreign_objects_not_frozen": true,
+    "own_proto_constructor_and_nested_dense_arrays": true,
+    "guarded_intrinsics_and_parse_callback_prototype_mutation": [
+      "own __proto__/constructor",
+      "nested dense arrays",
+      "inherited enumerable guard fallback",
+      "captured intrinsics",
+      "prototype mutation in parse callback beforeguard",
+      "private grant and deepfreeze"
+    ],
+    "guarded_test_record": {
+      "path": ".cache/world-field-freeze-guarded-prototype-20261102-r1/source-and-tests.json",
+      "sha256": "b6ec2291ac699281c3600cb6b579ae400e6af3e40711fd2d792199255bab17f9"
+    },
+    "production_world_publication_unchanged": true
+  },
+  "experiments": [
+    {
+      "name": "same_process_keys",
+      "ok": true,
+      "raw": {
+        "path": ".cache/world-field-freeze-abba-20261102-r1/result.json",
+        "bytes": 97353,
+        "sha256": "7482211f7d49732ef64e50fde6072b35b28c02bef95dce5041143d2aadbed3a7",
+        "filesystem_mtime_utc": "2026-11-02T15:49:48.472Z",
+        "filesystem_mtime_taipei": "2026-11-02 23:49:48 GMT+8"
+      },
+      "runs": [
+        {
+          "variant": "baseline",
+          "index": 0,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2369.485900000004,
+            "median_ms": 3.4187000000001717,
+            "p95_ms": 7.432399999999916,
+            "max_ms": 16.44029999999998
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": null
+        },
+        {
+          "variant": "candidate",
+          "index": 1,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2740.66510000001,
+            "median_ms": 4.048700000000281,
+            "p95_ms": 9.139000000000124,
+            "max_ms": 23.91339999999991
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": null
+        },
+        {
+          "variant": "candidate",
+          "index": 2,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2929.3394000000053,
+            "median_ms": 4.341599999999744,
+            "p95_ms": 9.880600000000413,
+            "max_ms": 23.770800000000236
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": null
+        },
+        {
+          "variant": "baseline",
+          "index": 3,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 3186.828400000013,
+            "median_ms": 4.709899999999834,
+            "p95_ms": 10.179399999999077,
+            "max_ms": 29.404099999999744
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": null
+        }
+      ],
+      "pooled": {
+        "baseline": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 5556.314300000017,
+            "median_ms": 4.097400000000107,
+            "p95_ms": 9.301699999999983,
+            "max_ms": 29.404099999999744
+          },
+          "contained_gc_entries": null
+        },
+        "candidate": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 5670.0045000000155,
+            "median_ms": 4.231099999999969,
+            "p95_ms": 9.68249999999989,
+            "max_ms": 23.91339999999991
+          },
+          "contained_gc_entries": null
+        }
+      },
+      "phase_diagnostics": [
+        {
+          "variant": "baseline",
+          "closed": true,
+          "command": {
+            "samples": 300,
+            "total_ms": 1631.7078999999849,
+            "median_ms": 4.67029999999977,
+            "p95_ms": 12.719499999999243,
+            "max_ms": 25.347999999999956
+          },
+          "fields": {
+            "world_field/entities/parse": {
+              "samples": 300,
+              "total_ms": 138.8626000000022,
+              "median_ms": 0.4896999999982654,
+              "p95_ms": 0.577900000000227,
+              "max_ms": 2.660200000000259
+            },
+            "world_field/entities/freeze": {
+              "samples": 300,
+              "total_ms": 57.326199999983146,
+              "median_ms": 0.21199999999953434,
+              "p95_ms": 0.22990000000027067,
+              "max_ms": 0.3977999999988242
+            },
+            "world_field/observations/parse": {
+              "samples": 300,
+              "total_ms": 69.01230000000032,
+              "median_ms": 0.22439999999915017,
+              "p95_ms": 0.3440000000009604,
+              "max_ms": 0.5743000000002212
+            },
+            "world_field/observations/freeze": {
+              "samples": 300,
+              "total_ms": 60.73270000001321,
+              "median_ms": 0.21570000000065193,
+              "p95_ms": 0.25389999999970314,
+              "max_ms": 0.408900000000358
+            }
+          },
+          "gc_entries": null
+        },
+        {
+          "variant": "candidate",
+          "closed": true,
+          "command": {
+            "samples": 300,
+            "total_ms": 1601.1187999999984,
+            "median_ms": 4.493100000001505,
+            "p95_ms": 12.308399999998073,
+            "max_ms": 23.629799999998795
+          },
+          "fields": {
+            "world_field/entities/parse": {
+              "samples": 300,
+              "total_ms": 145.75910000003205,
+              "median_ms": 0.489000000001397,
+              "p95_ms": 0.5595999999986816,
+              "max_ms": 2.638600000000224
+            },
+            "world_field/entities/freeze": {
+              "samples": 300,
+              "total_ms": 47.30019999992692,
+              "median_ms": 0.1607000000003609,
+              "p95_ms": 0.18189999999958673,
+              "max_ms": 0.22699999999895226
+            },
+            "world_field/observations/parse": {
+              "samples": 300,
+              "total_ms": 78.3650000000307,
+              "median_ms": 0.21899999999914144,
+              "p95_ms": 0.33539999999993597,
+              "max_ms": 8.73660000000018
+            },
+            "world_field/observations/freeze": {
+              "samples": 300,
+              "total_ms": 31.668499999968844,
+              "median_ms": 0.1058999999986554,
+              "p95_ms": 0.11889999999948486,
+              "max_ms": 0.1617999999980384
+            }
+          },
+          "gc_entries": null
+        }
+      ],
+      "stderr_entries": 0
+    },
+    {
+      "name": "fresh_process_keys_ABBA",
+      "ok": true,
+      "raw": {
+        "path": ".cache/world-field-freeze-fresh-abba-20261102-r1/result.json",
+        "bytes": 2296509,
+        "sha256": "e823f37b05ae9eb87ab959c16393b0e5117dce746e43f5a668b8d120e44439c7",
+        "filesystem_mtime_utc": "2026-11-02T15:53:30.362Z",
+        "filesystem_mtime_taipei": "2026-11-02 23:53:30 GMT+8"
+      },
+      "runs": [
+        {
+          "variant": "baseline",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2190.047099999997,
+            "median_ms": 3.0414999999998145,
+            "p95_ms": 7.534600000000182,
+            "max_ms": 18.31600000000003
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 13,
+            "by_kind": {
+              "1": 9,
+              "4": 2,
+              "8": 2
+            },
+            "total_duration_ms": 82.88830006122589,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "candidate",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2280.956700000003,
+            "median_ms": 3.100099999999884,
+            "p95_ms": 7.113799999999628,
+            "max_ms": 21.043700000000058
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 15,
+            "by_kind": {
+              "1": 11,
+              "4": 2,
+              "8": 2
+            },
+            "total_duration_ms": 92.36409986019135,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "candidate",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2137.1176000000005,
+            "median_ms": 2.9540000000001783,
+            "p95_ms": 7.035000000000082,
+            "max_ms": 16.67240000000004
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 15,
+            "by_kind": {
+              "1": 11,
+              "4": 2,
+              "8": 2
+            },
+            "total_duration_ms": 84.65950000286102,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "baseline",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2145.0794999999976,
+            "median_ms": 2.991600000000062,
+            "p95_ms": 7.680000000000291,
+            "max_ms": 18.8920999999998
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 14,
+            "by_kind": {
+              "1": 10,
+              "4": 2,
+              "8": 2
+            },
+            "total_duration_ms": 84.05859971046448,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        }
+      ],
+      "pooled": {
+        "baseline": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 4335.1266,
+            "median_ms": 3.0085000000003674,
+            "p95_ms": 7.5452999999999975,
+            "max_ms": 18.8920999999998
+          },
+          "contained_gc_entries": 27
+        },
+        "candidate": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 4418.074299999995,
+            "median_ms": 3.0095999999999776,
+            "p95_ms": 7.113799999999628,
+            "max_ms": 21.043700000000058
+          },
+          "contained_gc_entries": 30
+        }
+      },
+      "phase_diagnostics": [
+        {
+          "variant": "baseline",
+          "closed": true,
+          "command": {
+            "samples": 300,
+            "total_ms": 1151.016100000001,
+            "median_ms": 3.080699999999979,
+            "p95_ms": 8.341599999999971,
+            "max_ms": 17.717700000000036
+          },
+          "fields": {
+            "world_field/entities/parse": {
+              "samples": 300,
+              "total_ms": 97.49669999999969,
+              "median_ms": 0.31379999999990105,
+              "p95_ms": 0.4036999999998443,
+              "max_ms": 2.042799999999943
+            },
+            "world_field/entities/freeze": {
+              "samples": 300,
+              "total_ms": 39.90309999999977,
+              "median_ms": 0.12630000000012842,
+              "p95_ms": 0.18070000000000164,
+              "max_ms": 0.38840000000004693
+            },
+            "world_field/observations/parse": {
+              "samples": 300,
+              "total_ms": 52.118700000000445,
+              "median_ms": 0.1590999999999667,
+              "p95_ms": 0.259900000000016,
+              "max_ms": 0.9276000000000977
+            },
+            "world_field/observations/freeze": {
+              "samples": 300,
+              "total_ms": 43.52440000000104,
+              "median_ms": 0.13949999999999818,
+              "p95_ms": 0.18050000000016553,
+              "max_ms": 0.30329999999992197
+            }
+          },
+          "gc_entries": 6
+        },
+        {
+          "variant": "candidate",
+          "closed": true,
+          "command": {
+            "samples": 300,
+            "total_ms": 1078.5937999999996,
+            "median_ms": 2.878600000000006,
+            "p95_ms": 9.255999999999972,
+            "max_ms": 15.896100000000047
+          },
+          "fields": {
+            "world_field/entities/parse": {
+              "samples": 300,
+              "total_ms": 94.29290000000026,
+              "median_ms": 0.3079000000000178,
+              "p95_ms": 0.3687999999999647,
+              "max_ms": 1.6648000000000138
+            },
+            "world_field/entities/freeze": {
+              "samples": 300,
+              "total_ms": 34.33909999999912,
+              "median_ms": 0.1068000000000211,
+              "p95_ms": 0.1472999999999729,
+              "max_ms": 0.2400000000000091
+            },
+            "world_field/observations/parse": {
+              "samples": 300,
+              "total_ms": 48.68199999999956,
+              "median_ms": 0.14870000000007622,
+              "p95_ms": 0.23450000000002547,
+              "max_ms": 1.574700000000007
+            },
+            "world_field/observations/freeze": {
+              "samples": 300,
+              "total_ms": 23.966699999998923,
+              "median_ms": 0.07719999999994798,
+              "p95_ms": 0.09159999999997126,
+              "max_ms": 0.17669999999998254
+            }
+          },
+          "gc_entries": 8
+        }
+      ],
+      "stderr_entries": 0
+    },
+    {
+      "name": "fresh_process_guarded_ABBA",
+      "ok": true,
+      "raw": {
+        "path": ".cache/world-field-freeze-guarded-fresh-abba-20261102-r1/result.json",
+        "bytes": 2296904,
+        "sha256": "ced1826a2add79f80200470678af5c5747da3fa64ff34b82298c222812ddc5f3",
+        "filesystem_mtime_utc": "2026-11-02T15:56:37.946Z",
+        "filesystem_mtime_taipei": "2026-11-02 23:56:37 GMT+8"
+      },
+      "runs": [
+        {
+          "variant": "baseline",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2250.7709999999943,
+            "median_ms": 3.0663999999999305,
+            "p95_ms": 8.193300000000022,
+            "max_ms": 21.48160000000007
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 14,
+            "by_kind": {
+              "1": 10,
+              "4": 2,
+              "8": 2
+            },
+            "total_duration_ms": 82.73949992656708,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "candidate",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2177.0089000000003,
+            "median_ms": 2.986599999999953,
+            "p95_ms": 7.317600000000311,
+            "max_ms": 22.428600000000074
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 16,
+            "by_kind": {
+              "1": 10,
+              "4": 3,
+              "8": 3
+            },
+            "total_duration_ms": 87.30520033836365,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "candidate",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2056.262799999998,
+            "median_ms": 2.842999999999847,
+            "p95_ms": 7.3762000000001535,
+            "max_ms": 20.739000000000033
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 16,
+            "by_kind": {
+              "1": 10,
+              "4": 3,
+              "8": 3
+            },
+            "total_duration_ms": 79.33440017700195,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "baseline",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2170.569299999995,
+            "median_ms": 2.974899999999934,
+            "p95_ms": 7.333000000000084,
+            "max_ms": 20.921799999999962
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 16,
+            "by_kind": {
+              "1": 10,
+              "4": 3,
+              "8": 3
+            },
+            "total_duration_ms": 79.29320013523102,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        }
+      ],
+      "pooled": {
+        "baseline": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 4421.340299999993,
+            "median_ms": 3.017599999999902,
+            "p95_ms": 7.747199999999793,
+            "max_ms": 21.48160000000007
+          },
+          "contained_gc_entries": 30
+        },
+        "candidate": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 4233.271699999998,
+            "median_ms": 2.921400000000176,
+            "p95_ms": 7.330700000000206,
+            "max_ms": 22.428600000000074
+          },
+          "contained_gc_entries": 32
+        }
+      },
+      "phase_diagnostics": [
+        {
+          "variant": "baseline",
+          "closed": true,
+          "command": {
+            "samples": 300,
+            "total_ms": 1074.5215000000014,
+            "median_ms": 2.8900000000001,
+            "p95_ms": 8.23580000000004,
+            "max_ms": 15.846200000000067
+          },
+          "fields": {
+            "world_field/entities/parse": {
+              "samples": 300,
+              "total_ms": 92.69819999999845,
+              "median_ms": 0.3006000000000313,
+              "p95_ms": 0.36540000000013606,
+              "max_ms": 1.4490000000000691
+            },
+            "world_field/entities/freeze": {
+              "samples": 300,
+              "total_ms": 37.311000000000035,
+              "median_ms": 0.12189999999998236,
+              "p95_ms": 0.14350000000001728,
+              "max_ms": 0.24979999999993652
+            },
+            "world_field/observations/parse": {
+              "samples": 300,
+              "total_ms": 47.49779999999873,
+              "median_ms": 0.14689999999995962,
+              "p95_ms": 0.2437999999999647,
+              "max_ms": 0.41449999999997544
+            },
+            "world_field/observations/freeze": {
+              "samples": 300,
+              "total_ms": 40.708200000001625,
+              "median_ms": 0.13229999999998654,
+              "p95_ms": 0.15990000000010696,
+              "max_ms": 0.32970000000000255
+            }
+          },
+          "gc_entries": 6
+        },
+        {
+          "variant": "candidate",
+          "closed": true,
+          "command": {
+            "samples": 300,
+            "total_ms": 1108.7161,
+            "median_ms": 2.9005999999999403,
+            "p95_ms": 8.893199999999979,
+            "max_ms": 20.1961
+          },
+          "fields": {
+            "world_field/entities/parse": {
+              "samples": 300,
+              "total_ms": 95.71079999999995,
+              "median_ms": 0.3068000000000666,
+              "p95_ms": 0.397199999999998,
+              "max_ms": 1.538599999999974
+            },
+            "world_field/entities/freeze": {
+              "samples": 300,
+              "total_ms": 30.39729999999861,
+              "median_ms": 0.09800000000018372,
+              "p95_ms": 0.11779999999998836,
+              "max_ms": 0.2117000000000644
+            },
+            "world_field/observations/parse": {
+              "samples": 300,
+              "total_ms": 49.97730000000047,
+              "median_ms": 0.15250000000014552,
+              "p95_ms": 0.25890000000003965,
+              "max_ms": 0.44810000000006767
+            },
+            "world_field/observations/freeze": {
+              "samples": 300,
+              "total_ms": 25.46950000000072,
+              "median_ms": 0.0829999999998563,
+              "p95_ms": 0.10210000000006403,
+              "max_ms": 0.15629999999998745
+            }
+          },
+          "gc_entries": 6
+        }
+      ],
+      "stderr_entries": 0
+    },
+    {
+      "name": "fresh_process_guarded_BAAB",
+      "ok": true,
+      "raw": {
+        "path": ".cache/world-field-freeze-guarded-fresh-baab-20261102-r2/result.json",
+        "bytes": 1598119,
+        "sha256": "18f05ae9c25ee09e38b8b8621269dcac48b078647f20b43bf1bfec288df91452",
+        "filesystem_mtime_utc": "2026-11-02T15:58:22.905Z",
+        "filesystem_mtime_taipei": "2026-11-02 23:58:22 GMT+8"
+      },
+      "runs": [
+        {
+          "variant": "candidate",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2043.5787000000012,
+            "median_ms": 2.843699999999899,
+            "p95_ms": 7.119999999999891,
+            "max_ms": 15.384199999999964
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 16,
+            "by_kind": {
+              "1": 10,
+              "4": 3,
+              "8": 3
+            },
+            "total_duration_ms": 81.70639991760254,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "baseline",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2038.8965000000019,
+            "median_ms": 2.8850000000002183,
+            "p95_ms": 6.5021999999999025,
+            "max_ms": 16.15039999999999
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 13,
+            "by_kind": {
+              "1": 9,
+              "4": 2,
+              "8": 2
+            },
+            "total_duration_ms": 69.13769972324371,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "baseline",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 2054.4055000000008,
+            "median_ms": 2.885400000000118,
+            "p95_ms": 7.469299999999976,
+            "max_ms": 15.449799999999982
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 12,
+            "by_kind": {
+              "1": 8,
+              "4": 2,
+              "8": 2
+            },
+            "total_duration_ms": 65.09600007534027,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        },
+        {
+          "variant": "candidate",
+          "index": null,
+          "profile": false,
+          "command": {
+            "samples": 600,
+            "total_ms": 1995.264,
+            "median_ms": 2.7842000000000553,
+            "p95_ms": 6.802499999999782,
+            "max_ms": 14.893299999999954
+          },
+          "closed": true,
+          "endpoint": {
+            "frame": 666,
+            "world_sha256": "cb6b470c2533e81a1d376ca0ea30d64fff3f6674ad4615a2262a0c1ed2249f31",
+            "save_sha256": "90db196f7c937485faba246c84aec14cf1f1751f448cfe0d45abcf11001fc9e9"
+          },
+          "digest_sequence_sha256": "11db42888c09314869ed5bf36152a1a1fbddb96f52b2a6f252628dddf7a4cab1",
+          "gc": {
+            "contained_entries": 16,
+            "by_kind": {
+              "1": 10,
+              "4": 3,
+              "8": 3
+            },
+            "total_duration_ms": 72.15500032901764,
+            "cross_boundary": 0,
+            "scope": "Natural Node V8 PerformanceEntry records wholly within measured window; not Lua GC, allocation bytes, browser memory, OS pauses or no-GC proof."
+          }
+        }
+      ],
+      "pooled": {
+        "baseline": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 4093.302000000006,
+            "median_ms": 2.8850000000002183,
+            "p95_ms": 6.569700000000012,
+            "max_ms": 16.15039999999999
+          },
+          "contained_gc_entries": 25
+        },
+        "candidate": {
+          "pooled_command": {
+            "samples": 1200,
+            "total_ms": 4038.842700000003,
+            "median_ms": 2.8152000000000044,
+            "p95_ms": 6.94600000000014,
+            "max_ms": 15.384199999999964
+          },
+          "contained_gc_entries": 32
+        }
+      },
+      "phase_diagnostics": [],
+      "stderr_entries": 0
+    }
+  ],
+  "interpretation": [
+    "The first in-process ABBA drifted monotonically; it was retained and not used to claim advantage. Fresh-process runs use one actual WASM instance each.",
+    "Fresh ABBA and reverse BAAB agree on small guarded traversal CPU-wall improvements, but tail/max and diagnostic whole-command results remain variable.",
+    "Passive Node V8 GC PerformanceEntry counts/durations are naturally observed and flushed after timing; they are not Luau GC, allocation bytes, browser collection, OS pauses or leak proof. No forced GC occurred.",
+    "Other chats may run concurrently by user preference. There is no exclusive-machine or renderer/FPS acceptance claim.",
+    "The run files have Nov2 UTC timestamps (shown also in Asia/Taipei); the evidence document was prepared on client date Nov3. Filesystem timestamps are provenance, not instrumented precise execution intervals."
+  ],
+  "next": "Keep production unchanged. Focus the separately owned Core UI Arc/COW allocation work; require actual matched runtimes and full-state parity before performance claims."
+}

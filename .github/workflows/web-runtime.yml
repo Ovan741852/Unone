@@ -48,7 +48,7 @@ jobs:
           path: ${{ runner.temp }}/core-evidence/
 
   runtimes:
-    name: ${{ matrix.source }} production and phase runtimes
+    name: ${{ matrix.source }} official Web runtimes
     needs: core
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -108,12 +108,16 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/runtime-evidence/${{ matrix.source }}"
           cargo build --locked --release -p unone-cli 2>&1 | tee "$RUNNER_TEMP/runtime-evidence/${{ matrix.source }}/cli-build.log"
-      - name: Build and verify official production and phase artifacts
+      - name: Build and verify selected official runtime variants
         shell: bash
         run: |
           set -euo pipefail
           source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
-          for variant in production phase-profile; do
+          variants=(production phase-profile)
+          if [ '${{ matrix.source }}' = candidate ]; then
+            variants+=(sampling-profile)
+          fi
+          for variant in "${variants[@]}"; do
             base="$RUNNER_TEMP/runtime-evidence/${{ matrix.source }}/$variant"
             "$UNONE_CI_NODE" "$RUNNER_TEMP/verification/scripts/build-web-runtime.mjs" \
               --repo "$GITHUB_WORKSPACE" --cli "$GITHUB_WORKSPACE/target/release/game" \
@@ -121,7 +125,7 @@ jobs:
               --python "$UNONE_CI_PYTHON" --target-dir "$GITHUB_WORKSPACE/target/web-runtime-ci" \
               --output "$base/runtime" --log-dir "$base/build" --variant "$variant"
             diagnostic=()
-            if [ "$variant" = phase-profile ]; then diagnostic=(--development); fi
+            if [ "$variant" != production ]; then diagnostic=(--development); fi
             "$UNONE_CI_NODE" "$RUNNER_TEMP/verification/scripts/verify-player-parity.mjs" \
               --source-root "$GITHUB_WORKSPACE" \
               --cli "$GITHUB_WORKSPACE/target/release/game" --runtime "$base/runtime" \

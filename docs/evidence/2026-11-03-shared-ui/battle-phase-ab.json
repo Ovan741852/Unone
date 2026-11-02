@@ -1,0 +1,1282 @@
+{
+  "version": 1,
+  "created_utc": "2026-11-02T18:01:55.315Z",
+  "status": "actual-matching-phase-diagnostic-pass",
+  "scope": "Actual emitted Linux-CI phase-only opt2 WASM on Node, frozen JYR2 battle inputs; phase attribution and semantic parity only. No FPS, GPU, GC-frequency or leak acceptance.",
+  "provenance": {
+    "ci_run": "41490065996",
+    "artifact_root": "artifacts/ui-shared-ci-9c773e3",
+    "raw_summary": {
+      "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/result.json",
+      "bytes": 303747,
+      "sha256": "2dfdb51b6b8b4453d80ed61043c218d3fd099a0beb0a085aca2056000b961752"
+    },
+    "harness": {
+      "path": ".cache/profile-battle-ci-phase-20261103-r1.mjs",
+      "bytes": 14899,
+      "sha256": "e59d621f1b36030ba9be8fda777333d8700601ea23e279743bfeda8fc2de1bcf"
+    },
+    "captured_harness": {
+      "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/harness.mjs",
+      "bytes": 14899,
+      "sha256": "e59d621f1b36030ba9be8fda777333d8700601ea23e279743bfeda8fc2de1bcf"
+    },
+    "execution_command": {
+      "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "args": [
+        ".cache/profile-battle-ci-phase-20261103-r1.mjs"
+      ],
+      "cwd": "D:\\Projects\\Unone"
+    },
+    "stdout": {
+      "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1-execution/stdout.log",
+      "bytes": 3273,
+      "sha256": "df265bd254b3ee397828b5fb2e609caa08d0d0c16c900559d6565994e1b22994"
+    },
+    "stderr": {
+      "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1-execution/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "fixture": {
+    "payload": {
+      "path": ".cache/world-fields-battle-20261102-inputs-r2/payload.json",
+      "bytes": 1643162,
+      "sha256": "414f0d19952acc34e0d9ecab392844974fd20a7c0c5a42799ebac4774115480a"
+    },
+    "inputs": {
+      "path": ".cache/world-fields-battle-20261102-inputs-r2/input-sequence.json",
+      "bytes": 141,
+      "sha256": "0b10d68aaefb6806198b8f38bc13de01256c190981a9d350070f1f3b417b871c"
+    },
+    "preparation": {
+      "path": ".cache/world-fields-battle-20261102-inputs-r2/preparation.json",
+      "bytes": 3072,
+      "sha256": "ad18e592b9db1134d6767f7facd3f580695e55ade6891870f2e2a2c67bffde03"
+    },
+    "game_source_sha256": "2ee7eb9caada8866909006df43fb81fcdeddc4cb730f937150880c29befa368e",
+    "private_payload_or_game_sources_in_this_record": false,
+    "game_files_written": false
+  },
+  "protocol": {
+    "seed": 42,
+    "prefix_ticks": 6,
+    "battle_warmup": 60,
+    "measured_ticks": 300,
+    "profile_start": "sampling:false after frame66",
+    "order": [
+      "baseline",
+      "candidate",
+      "candidate",
+      "baseline"
+    ],
+    "per_tick_validation": "Core digest strings only; no full state stringify in timed loop",
+    "full_state_validation": "after measured ticks, all World/UI/save values and authoritative digests exact"
+  },
+  "source_review": {
+    "status": "independent-source-read-clear",
+    "reviewer": "/root/runtime_audit",
+    "reviewer_executed_workload": false
+  },
+  "variants": {
+    "baseline": {
+      "source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+      "source_dirty": false,
+      "profile": "release",
+      "bytecode_optimization_level": 2,
+      "phase_profile": true,
+      "sampling_profile": false,
+      "preview_tools": true,
+      "dev_tools": false,
+      "profile_mode": "phase-only",
+      "runtime_packages": {
+        "@unone/ui": "0.6.0"
+      },
+      "cargo_features": [
+        "all-systems",
+        "phase-profile"
+      ],
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "effekseer",
+        "input",
+        "jobs",
+        "observation",
+        "particle",
+        "physics2d",
+        "physics3d",
+        "random",
+        "save",
+        "spine",
+        "ui",
+        "world"
+      ],
+      "actual_developer_abi": true,
+      "runtime_pins": [
+        {
+          "label": "runtime_manifest",
+          "path": "artifacts/ui-shared-ci-9c773e3/baseline/phase-profile/runtime/runtime.json",
+          "bytes": 1493,
+          "sha256": "c12839e8f58d66ddc5f255372ff7274e1de9c2e9575b84eddcfb818f087d02f6"
+        },
+        {
+          "label": "runtime_javascript",
+          "path": "artifacts/ui-shared-ci-9c773e3/baseline/phase-profile/runtime/unone-player.js",
+          "bytes": 102968,
+          "sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f"
+        },
+        {
+          "label": "runtime_wasm",
+          "path": "artifacts/ui-shared-ci-9c773e3/baseline/phase-profile/runtime/unone_player.wasm",
+          "bytes": 5626071,
+          "sha256": "d3f00a90f39c1c88f72eb95549d21af662ef10fe1c17b3f8e5563bc393280742"
+        }
+      ]
+    },
+    "candidate": {
+      "source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+      "source_dirty": false,
+      "profile": "release",
+      "bytecode_optimization_level": 2,
+      "phase_profile": true,
+      "sampling_profile": false,
+      "preview_tools": true,
+      "dev_tools": false,
+      "profile_mode": "phase-only",
+      "runtime_packages": {
+        "@unone/ui": "0.6.0"
+      },
+      "cargo_features": [
+        "all-systems",
+        "phase-profile"
+      ],
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "effekseer",
+        "input",
+        "jobs",
+        "observation",
+        "particle",
+        "physics2d",
+        "physics3d",
+        "random",
+        "save",
+        "spine",
+        "ui",
+        "world"
+      ],
+      "actual_developer_abi": true,
+      "runtime_pins": [
+        {
+          "label": "runtime_manifest",
+          "path": "artifacts/ui-shared-ci-9c773e3/candidate/phase-profile/runtime/runtime.json",
+          "bytes": 1493,
+          "sha256": "c3be1bca87fcf4267a2aacf320724ec1ee7e133a8d2575e7373cca61e5d206a9"
+        },
+        {
+          "label": "runtime_javascript",
+          "path": "artifacts/ui-shared-ci-9c773e3/candidate/phase-profile/runtime/unone-player.js",
+          "bytes": 102968,
+          "sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f"
+        },
+        {
+          "label": "runtime_wasm",
+          "path": "artifacts/ui-shared-ci-9c773e3/candidate/phase-profile/runtime/unone_player.wasm",
+          "bytes": 5626608,
+          "sha256": "8c8d1bad503e9e7076e3ad5a724dcfca9fbc9166cf2e81d1dece4c8539f73f9f"
+        }
+      ]
+    }
+  },
+  "runs": [
+    {
+      "name": "0-baseline",
+      "raw_report": {
+        "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/0-baseline/result.json",
+        "bytes": 1737458,
+        "sha256": "f05caa85ad4039447767b577a58d9c7da7691030be9af3f892c7b1ccedf77a03"
+      },
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "started_utc": "2026-11-02T17:54:42.676Z"
+      },
+      "frame_coverage": {
+        "first": 67,
+        "last": 366,
+        "measured": 300,
+        "core_unique_joined": 300,
+        "publication_unique_joined": 300
+      },
+      "command": {
+        "samples": 300,
+        "total_ms": 1058.4115000000008,
+        "median_ms": 2.8357999999999493,
+        "p95_ms": 7.804999999999836,
+        "max_ms": 17.094299999999976
+      },
+      "tick_abi_atomic": {
+        "samples": 300,
+        "total_ms": 763.8908999999979,
+        "median_ms": 1.9912999999999101,
+        "p95_ms": 5.193700000000035,
+        "max_ms": 15.397100000000023
+      },
+      "core_phases": {
+        "image_batch_convert_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_remove_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_validate_commit_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "observations_clone_ms": {
+          "total_ms": 14.593914999999985,
+          "p50_ms": 0.043998999999999996,
+          "p95_ms": 0.08069899999999999,
+          "max_ms": 0.1308,
+          "calls": 300
+        },
+        "observe_host_state_ms": {
+          "total_ms": 0.16799800000000026,
+          "p50_ms": 0.0005,
+          "p95_ms": 0.0009,
+          "max_ms": 0.003799,
+          "calls": 300
+        },
+        "observe_total_ms": {
+          "total_ms": 35.482512,
+          "p50_ms": 0.10579999999999999,
+          "p95_ms": 0.189201,
+          "max_ms": 0.38939999999999997,
+          "calls": 300
+        },
+        "physics_ms": {
+          "total_ms": 0.27132000000000017,
+          "p50_ms": 0.0006010000000000001,
+          "p95_ms": 0.0015,
+          "max_ms": 0.029399,
+          "calls": 300
+        },
+        "script_total_ms": {
+          "total_ms": 533.6462969999997,
+          "p50_ms": 1.2423,
+          "p95_ms": 4.463399,
+          "max_ms": 14.4269,
+          "calls": 300
+        },
+        "tick_total_ms": {
+          "total_ms": 571.5812970000001,
+          "p50_ms": 1.3609010000000001,
+          "p95_ms": 4.5746,
+          "max_ms": 14.700299999999999,
+          "calls": 300
+        },
+        "ui_clone_ms": {
+          "total_ms": 2.4307030000000034,
+          "p50_ms": 0.007499,
+          "p95_ms": 0.0125,
+          "max_ms": 0.018199999999999997,
+          "calls": 300
+        },
+        "ui_commit_drop_ms": {
+          "total_ms": 1.0352100000000009,
+          "p50_ms": 0.003,
+          "p95_ms": 0.0065,
+          "max_ms": 0.011899999999999999,
+          "calls": 300
+        },
+        "ui_convert_ms": {
+          "total_ms": 49.30890599999995,
+          "p50_ms": 0.156301,
+          "p95_ms": 0.2174,
+          "max_ms": 0.4038,
+          "calls": 300
+        },
+        "ui_parse_validate_ms": {
+          "total_ms": 22.553995999999987,
+          "p50_ms": 0.06999999999999999,
+          "p95_ms": 0.1051,
+          "max_ms": 0.384599,
+          "calls": 300
+        },
+        "world_snapshot_ms": {
+          "total_ms": 17.467584999999993,
+          "p50_ms": 0.0518,
+          "p95_ms": 0.09780000000000001,
+          "max_ms": 0.240699,
+          "calls": 300
+        }
+      },
+      "publication": {
+        "canonical_encode_ms": {
+          "total_ms": 76.34339200000004,
+          "p50_ms": 0.24820099999999998,
+          "p95_ms": 0.28949899999999995,
+          "max_ms": 0.398899
+        },
+        "canonical_hash_ms": {
+          "total_ms": 80.88060200000005,
+          "p50_ms": 0.248899,
+          "p95_ms": 0.3905,
+          "max_ms": 0.569
+        },
+        "presentation_ms": {
+          "total_ms": 3.487190000000001,
+          "p50_ms": 0.011399000000000001,
+          "p95_ms": 0.017201,
+          "max_ms": 0.0236
+        },
+        "envelope_ms": {
+          "total_ms": 3.926894,
+          "p50_ms": 0.011600000000000001,
+          "p95_ms": 0.023201,
+          "max_ms": 0.0569
+        }
+      },
+      "publication_paths": [
+        "retained"
+      ],
+      "tails": {
+        "selection": "command_ms >=this run p95 (16 rows); majority means same-row named interval >half command wall, not isolated CPU cause.",
+        "count": 16,
+        "script_outside_ui_majority": 13,
+        "outer_minus_tick_abi_majority": 3,
+        "frames": [
+          272,
+          146,
+          167,
+          162,
+          124,
+          140,
+          173,
+          151,
+          135,
+          242,
+          129,
+          121,
+          294,
+          119,
+          156,
+          301
+        ],
+        "recurring_frame146": {
+          "frame": 146,
+          "command_ms": 16.590100000000007,
+          "tick_abi_atomic_ms": 15.397100000000023,
+          "script_total_ms": 14.4269,
+          "script_outside_measured_ui_ms": 14.104999999999999,
+          "ui_convert_ms": 0.20670000000000002,
+          "ui_parse_validate_ms": 0.10679999999999999,
+          "ui_commit_drop_ms": 0.0084,
+          "observe_total_ms": 0.2542,
+          "ui_clone_ms": 0.018199999999999997,
+          "publication": {
+            "canonical_encode_ms": 0.2919,
+            "canonical_hash_ms": 0.24869999999999998,
+            "presentation_ms": 0.0188,
+            "envelope_ms": 0.026201
+          },
+          "entities_utf8_interval_ms": 0.006200000000035288,
+          "observations_utf8_interval_ms": 0.03449999999997999,
+          "outer_minus_tick_abi_ms": 1.1929999999999836,
+          "abi_residual_signed_ms": 0.11119900000002447
+        },
+        "largest_entity_utf8_example": {
+          "frame": 272,
+          "command_ms": 17.094299999999976,
+          "tick_abi_atomic_ms": 6.0094000000001415,
+          "script_total_ms": 5.199699000000001,
+          "script_outside_measured_ui_ms": 4.935299,
+          "ui_convert_ms": 0.1806,
+          "ui_parse_validate_ms": 0.07880000000000001,
+          "ui_commit_drop_ms": 0.005,
+          "observe_total_ms": 0.1412,
+          "ui_clone_ms": 0.0088,
+          "publication": {
+            "canonical_encode_ms": 0.2877,
+            "canonical_hash_ms": 0.2473,
+            "presentation_ms": 0.0112,
+            "envelope_ms": 0.024300000000000002
+          },
+          "entities_utf8_interval_ms": 9.479100000000017,
+          "observations_utf8_interval_ms": 0.03209999999990032,
+          "outer_minus_tick_abi_ms": 11.084899999999834,
+          "abi_residual_signed_ms": 0.09080000000014188
+        }
+      },
+      "vm": {
+        "allocation_growth_bytes": null,
+        "incremental_gc_ms": null,
+        "availability": {
+          "allocation_growth": "not-collected",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "not-collected",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        },
+        "reason": "phase-profile deliberately installs no function, allocation or GC callbacks"
+      },
+      "capacity_before_bytes": 29097984,
+      "capacity_after_bytes": 29097984,
+      "final": {
+        "frame": 366,
+        "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+        "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+        "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+        "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+      },
+      "closed": true,
+      "stderr": 0,
+      "aborts": 0
+    },
+    {
+      "name": "1-candidate",
+      "raw_report": {
+        "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/1-candidate/result.json",
+        "bytes": 1740678,
+        "sha256": "a9dd49e90f86e018dd85405840f5eb4775a73ff3818917004d35aca8d968ac25"
+      },
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "started_utc": "2026-11-02T17:54:44.402Z"
+      },
+      "frame_coverage": {
+        "first": 67,
+        "last": 366,
+        "measured": 300,
+        "core_unique_joined": 300,
+        "publication_unique_joined": 300
+      },
+      "command": {
+        "samples": 300,
+        "total_ms": 1037.9859000000013,
+        "median_ms": 2.812599999999975,
+        "p95_ms": 8.160199999999918,
+        "max_ms": 16.418000000000006
+      },
+      "tick_abi_atomic": {
+        "samples": 300,
+        "total_ms": 744.0198999999994,
+        "median_ms": 1.9501000000000204,
+        "p95_ms": 5.174600000000055,
+        "max_ms": 14.88919999999996
+      },
+      "core_phases": {
+        "image_batch_convert_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_remove_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_validate_commit_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "observations_clone_ms": {
+          "total_ms": 14.818868999999998,
+          "p50_ms": 0.045099,
+          "p95_ms": 0.0751,
+          "max_ms": 0.18049900000000002,
+          "calls": 300
+        },
+        "observe_host_state_ms": {
+          "total_ms": 0.1674900000000001,
+          "p50_ms": 0.0005,
+          "p95_ms": 0.000999,
+          "max_ms": 0.009099000000000001,
+          "calls": 300
+        },
+        "observe_total_ms": {
+          "total_ms": 34.09258600000002,
+          "p50_ms": 0.101,
+          "p95_ms": 0.188001,
+          "max_ms": 0.4503,
+          "calls": 300
+        },
+        "physics_ms": {
+          "total_ms": 0.25341600000000025,
+          "p50_ms": 0.000599,
+          "p95_ms": 0.0014,
+          "max_ms": 0.0322,
+          "calls": 300
+        },
+        "script_total_ms": {
+          "total_ms": 521.4818070000003,
+          "p50_ms": 1.2298,
+          "p95_ms": 4.3733,
+          "max_ms": 13.9114,
+          "calls": 300
+        },
+        "tick_total_ms": {
+          "total_ms": 558.0131890000002,
+          "p50_ms": 1.344301,
+          "p95_ms": 4.490799,
+          "max_ms": 14.1131,
+          "calls": 300
+        },
+        "ui_clone_ms": {
+          "total_ms": 0.07098800000000012,
+          "p50_ms": 0.00019999999999999998,
+          "p95_ms": 0.0005,
+          "max_ms": 0.0009,
+          "calls": 300
+        },
+        "ui_commit_drop_ms": {
+          "total_ms": 1.1456970000000004,
+          "p50_ms": 0.0033009999999999997,
+          "p95_ms": 0.007501,
+          "max_ms": 0.0171,
+          "calls": 300
+        },
+        "ui_convert_ms": {
+          "total_ms": 48.61159099999999,
+          "p50_ms": 0.1555,
+          "p95_ms": 0.201501,
+          "max_ms": 0.4193,
+          "calls": 300
+        },
+        "ui_parse_validate_ms": {
+          "total_ms": 21.712603999999992,
+          "p50_ms": 0.06760000000000001,
+          "p95_ms": 0.09890099999999999,
+          "max_ms": 0.2164,
+          "calls": 300
+        },
+        "world_snapshot_ms": {
+          "total_ms": 18.256404000000007,
+          "p50_ms": 0.0533,
+          "p95_ms": 0.0942,
+          "max_ms": 0.340201,
+          "calls": 300
+        }
+      },
+      "publication": {
+        "canonical_encode_ms": {
+          "total_ms": 75.53149500000008,
+          "p50_ms": 0.240401,
+          "p95_ms": 0.3235,
+          "max_ms": 0.4319
+        },
+        "canonical_hash_ms": {
+          "total_ms": 76.23158099999996,
+          "p50_ms": 0.24459999999999998,
+          "p95_ms": 0.2934,
+          "max_ms": 0.4456
+        },
+        "presentation_ms": {
+          "total_ms": 3.572099,
+          "p50_ms": 0.011498999999999999,
+          "p95_ms": 0.017499,
+          "max_ms": 0.052
+        },
+        "envelope_ms": {
+          "total_ms": 3.761792,
+          "p50_ms": 0.0108,
+          "p95_ms": 0.0204,
+          "max_ms": 0.057801
+        }
+      },
+      "publication_paths": [
+        "retained"
+      ],
+      "tails": {
+        "selection": "command_ms >=this run p95 (16 rows); majority means same-row named interval >half command wall, not isolated CPU cause.",
+        "count": 16,
+        "script_outside_ui_majority": 12,
+        "outer_minus_tick_abi_majority": 4,
+        "frames": [
+          146,
+          124,
+          162,
+          167,
+          140,
+          129,
+          173,
+          135,
+          151,
+          251,
+          131,
+          360,
+          294,
+          271,
+          119,
+          156
+        ],
+        "recurring_frame146": {
+          "frame": 146,
+          "command_ms": 16.418000000000006,
+          "tick_abi_atomic_ms": 14.88919999999996,
+          "script_total_ms": 13.9114,
+          "script_outside_measured_ui_ms": 13.616,
+          "ui_convert_ms": 0.1865,
+          "ui_parse_validate_ms": 0.1013,
+          "ui_commit_drop_ms": 0.0076,
+          "observe_total_ms": 0.1881,
+          "ui_clone_ms": 0.000099,
+          "publication": {
+            "canonical_encode_ms": 0.2761,
+            "canonical_hash_ms": 0.3105,
+            "presentation_ms": 0.022099999999999998,
+            "envelope_ms": 0.030000000000000002
+          },
+          "entities_utf8_interval_ms": 0.007100000000036744,
+          "observations_utf8_interval_ms": 0.05269999999995889,
+          "outer_minus_tick_abi_ms": 1.5288000000000466,
+          "abi_residual_signed_ms": 0.13739999999996044
+        },
+        "largest_entity_utf8_example": {
+          "frame": 251,
+          "command_ms": 11.37909999999988,
+          "tick_abi_atomic_ms": 1.9205000000001746,
+          "script_total_ms": 1.2583,
+          "script_outside_measured_ui_ms": 1.0449000000000002,
+          "ui_convert_ms": 0.148399,
+          "ui_parse_validate_ms": 0.0618,
+          "ui_commit_drop_ms": 0.003201,
+          "observe_total_ms": 0.088401,
+          "ui_clone_ms": 0.0003,
+          "publication": {
+            "canonical_encode_ms": 0.232299,
+            "canonical_hash_ms": 0.236099,
+            "presentation_ms": 0.0111,
+            "envelope_ms": 0.009000000000000001
+          },
+          "entities_utf8_interval_ms": 8.302400000000034,
+          "observations_utf8_interval_ms": 0.03899999999998727,
+          "outer_minus_tick_abi_ms": 9.458599999999706,
+          "abi_residual_signed_ms": 0.08020200000017452
+        }
+      },
+      "vm": {
+        "allocation_growth_bytes": null,
+        "incremental_gc_ms": null,
+        "availability": {
+          "allocation_growth": "not-collected",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "not-collected",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        },
+        "reason": "phase-profile deliberately installs no function, allocation or GC callbacks"
+      },
+      "capacity_before_bytes": 29097984,
+      "capacity_after_bytes": 29097984,
+      "final": {
+        "frame": 366,
+        "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+        "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+        "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+        "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+      },
+      "closed": true,
+      "stderr": 0,
+      "aborts": 0
+    },
+    {
+      "name": "2-candidate",
+      "raw_report": {
+        "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/2-candidate/result.json",
+        "bytes": 1739726,
+        "sha256": "36bbe585bf9714693a146a8a6ad1bcecceb628e81a4f1fd2ca49e633329be650"
+      },
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "started_utc": "2026-11-02T17:54:46.091Z"
+      },
+      "frame_coverage": {
+        "first": 67,
+        "last": 366,
+        "measured": 300,
+        "core_unique_joined": 300,
+        "publication_unique_joined": 300
+      },
+      "command": {
+        "samples": 300,
+        "total_ms": 1048.6786000000002,
+        "median_ms": 2.8127999999999247,
+        "p95_ms": 8.033900000000017,
+        "max_ms": 16.19900000000007
+      },
+      "tick_abi_atomic": {
+        "samples": 300,
+        "total_ms": 746.882099999999,
+        "median_ms": 1.948799999999892,
+        "p95_ms": 5.420399999999972,
+        "max_ms": 14.844999999999914
+      },
+      "core_phases": {
+        "image_batch_convert_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_remove_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_validate_commit_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "observations_clone_ms": {
+          "total_ms": 14.69921000000001,
+          "p50_ms": 0.0445,
+          "p95_ms": 0.0769,
+          "max_ms": 0.2255,
+          "calls": 300
+        },
+        "observe_host_state_ms": {
+          "total_ms": 0.18108500000000008,
+          "p50_ms": 0.000599,
+          "p95_ms": 0.001,
+          "max_ms": 0.0046,
+          "calls": 300
+        },
+        "observe_total_ms": {
+          "total_ms": 33.245605000000005,
+          "p50_ms": 0.100201,
+          "p95_ms": 0.17350100000000002,
+          "max_ms": 0.32699999999999996,
+          "calls": 300
+        },
+        "physics_ms": {
+          "total_ms": 0.23621200000000017,
+          "p50_ms": 0.0006010000000000001,
+          "p95_ms": 0.0012,
+          "max_ms": 0.023400999999999998,
+          "calls": 300
+        },
+        "script_total_ms": {
+          "total_ms": 524.6289079999998,
+          "p50_ms": 1.2301,
+          "p95_ms": 4.693700000000001,
+          "max_ms": 13.9382,
+          "calls": 300
+        },
+        "tick_total_ms": {
+          "total_ms": 560.3839090000002,
+          "p50_ms": 1.338201,
+          "p95_ms": 4.81,
+          "max_ms": 14.1501,
+          "calls": 300
+        },
+        "ui_clone_ms": {
+          "total_ms": 0.07579800000000012,
+          "p50_ms": 0.00019999999999999998,
+          "p95_ms": 0.0005,
+          "max_ms": 0.002001,
+          "calls": 300
+        },
+        "ui_commit_drop_ms": {
+          "total_ms": 1.1500019999999993,
+          "p50_ms": 0.0034000000000000002,
+          "p95_ms": 0.0066,
+          "max_ms": 0.023801000000000003,
+          "calls": 300
+        },
+        "ui_convert_ms": {
+          "total_ms": 48.109401999999996,
+          "p50_ms": 0.1521,
+          "p95_ms": 0.2069,
+          "max_ms": 0.27349999999999997,
+          "calls": 300
+        },
+        "ui_parse_validate_ms": {
+          "total_ms": 22.219011,
+          "p50_ms": 0.0679,
+          "p95_ms": 0.105201,
+          "max_ms": 0.20969900000000002,
+          "calls": 300
+        },
+        "world_snapshot_ms": {
+          "total_ms": 17.43230899999999,
+          "p50_ms": 0.0526,
+          "p95_ms": 0.0921,
+          "max_ms": 0.24769899999999997,
+          "calls": 300
+        }
+      },
+      "publication": {
+        "canonical_encode_ms": {
+          "total_ms": 77.80849199999999,
+          "p50_ms": 0.2484,
+          "p95_ms": 0.3169,
+          "max_ms": 0.506599
+        },
+        "canonical_hash_ms": {
+          "total_ms": 74.58460099999998,
+          "p50_ms": 0.241699,
+          "p95_ms": 0.27799999999999997,
+          "max_ms": 0.37270000000000003
+        },
+        "presentation_ms": {
+          "total_ms": 3.559275000000001,
+          "p50_ms": 0.011601,
+          "p95_ms": 0.0171,
+          "max_ms": 0.0206
+        },
+        "envelope_ms": {
+          "total_ms": 4.1791849999999995,
+          "p50_ms": 0.012499,
+          "p95_ms": 0.0233,
+          "max_ms": 0.059099
+        }
+      },
+      "publication_paths": [
+        "retained"
+      ],
+      "tails": {
+        "selection": "command_ms >=this run p95 (16 rows); majority means same-row named interval >half command wall, not isolated CPU cause.",
+        "count": 16,
+        "script_outside_ui_majority": 12,
+        "outer_minus_tick_abi_majority": 4,
+        "frames": [
+          146,
+          162,
+          167,
+          140,
+          124,
+          173,
+          300,
+          135,
+          363,
+          151,
+          245,
+          129,
+          294,
+          174,
+          119,
+          156
+        ],
+        "recurring_frame146": {
+          "frame": 146,
+          "command_ms": 16.19900000000007,
+          "tick_abi_atomic_ms": 14.844999999999914,
+          "script_total_ms": 13.9382,
+          "script_outside_measured_ui_ms": 13.6273,
+          "ui_convert_ms": 0.1975,
+          "ui_parse_validate_ms": 0.1048,
+          "ui_commit_drop_ms": 0.0086,
+          "observe_total_ms": 0.19560000000000002,
+          "ui_clone_ms": 0.0003,
+          "publication": {
+            "canonical_encode_ms": 0.2906,
+            "canonical_hash_ms": 0.251601,
+            "presentation_ms": 0.018099999999999998,
+            "envelope_ms": 0.024
+          },
+          "entities_utf8_interval_ms": 0.0061999999999216016,
+          "observations_utf8_interval_ms": 0.02909999999997126,
+          "outer_minus_tick_abi_ms": 1.3540000000001555,
+          "abi_residual_signed_ms": 0.1105989999999134
+        },
+        "largest_entity_utf8_example": {
+          "frame": 300,
+          "command_ms": 12.630400000000009,
+          "tick_abi_atomic_ms": 1.9845000000000255,
+          "script_total_ms": 1.261201,
+          "script_outside_measured_ui_ms": 1.0196,
+          "ui_convert_ms": 0.159901,
+          "ui_parse_validate_ms": 0.077601,
+          "ui_commit_drop_ms": 0.004099,
+          "observe_total_ms": 0.1077,
+          "ui_clone_ms": 0.00019899999999999999,
+          "publication": {
+            "canonical_encode_ms": 0.2551,
+            "canonical_hash_ms": 0.243099,
+            "presentation_ms": 0.0083,
+            "envelope_ms": 0.015999
+          },
+          "entities_utf8_interval_ms": 9.499000000000024,
+          "observations_utf8_interval_ms": 0.021299999999882857,
+          "outer_minus_tick_abi_ms": 10.645899999999983,
+          "abi_residual_signed_ms": 0.0864010000000256
+        }
+      },
+      "vm": {
+        "allocation_growth_bytes": null,
+        "incremental_gc_ms": null,
+        "availability": {
+          "allocation_growth": "not-collected",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "not-collected",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        },
+        "reason": "phase-profile deliberately installs no function, allocation or GC callbacks"
+      },
+      "capacity_before_bytes": 29097984,
+      "capacity_after_bytes": 29097984,
+      "final": {
+        "frame": 366,
+        "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+        "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+        "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+        "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+      },
+      "closed": true,
+      "stderr": 0,
+      "aborts": 0
+    },
+    {
+      "name": "3-baseline",
+      "raw_report": {
+        "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/3-baseline/result.json",
+        "bytes": 1735216,
+        "sha256": "cae5583e90de2cafad19ca9ece0b38a15137bb9d280b891970e5fb1c6cd84525"
+      },
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "started_utc": "2026-11-02T17:54:47.779Z"
+      },
+      "frame_coverage": {
+        "first": 67,
+        "last": 366,
+        "measured": 300,
+        "core_unique_joined": 300,
+        "publication_unique_joined": 300
+      },
+      "command": {
+        "samples": 300,
+        "total_ms": 1065.0656999999994,
+        "median_ms": 2.8310999999998785,
+        "p95_ms": 8.580500000000029,
+        "max_ms": 15.762299999999982
+      },
+      "tick_abi_atomic": {
+        "samples": 300,
+        "total_ms": 757.0796999999986,
+        "median_ms": 1.9680000000000746,
+        "p95_ms": 5.048399999999901,
+        "max_ms": 14.571100000000001
+      },
+      "core_phases": {
+        "image_batch_convert_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_remove_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "image_batch_validate_commit_ms": {
+          "total_ms": 0,
+          "p50_ms": 0,
+          "p95_ms": 0,
+          "max_ms": 0,
+          "calls": 0
+        },
+        "observations_clone_ms": {
+          "total_ms": 14.739881000000013,
+          "p50_ms": 0.0435,
+          "p95_ms": 0.0813,
+          "max_ms": 0.11660100000000001,
+          "calls": 300
+        },
+        "observe_host_state_ms": {
+          "total_ms": 0.17370400000000025,
+          "p50_ms": 0.0005,
+          "p95_ms": 0.001,
+          "max_ms": 0.0025,
+          "calls": 300
+        },
+        "observe_total_ms": {
+          "total_ms": 36.62929099999999,
+          "p50_ms": 0.1094,
+          "p95_ms": 0.2043,
+          "max_ms": 0.3261,
+          "calls": 300
+        },
+        "physics_ms": {
+          "total_ms": 0.277685,
+          "p50_ms": 0.0007,
+          "p95_ms": 0.0013009999999999999,
+          "max_ms": 0.032,
+          "calls": 300
+        },
+        "script_total_ms": {
+          "total_ms": 529.2759930000001,
+          "p50_ms": 1.240599,
+          "p95_ms": 4.3037,
+          "max_ms": 13.647599999999999,
+          "calls": 300
+        },
+        "tick_total_ms": {
+          "total_ms": 568.6693120000004,
+          "p50_ms": 1.358099,
+          "p95_ms": 4.426000999999999,
+          "max_ms": 13.876100000000001,
+          "calls": 300
+        },
+        "ui_clone_ms": {
+          "total_ms": 2.634487,
+          "p50_ms": 0.0083,
+          "p95_ms": 0.013899,
+          "max_ms": 0.0192,
+          "calls": 300
+        },
+        "ui_commit_drop_ms": {
+          "total_ms": 1.0524080000000007,
+          "p50_ms": 0.0030989999999999998,
+          "p95_ms": 0.007,
+          "max_ms": 0.0157,
+          "calls": 300
+        },
+        "ui_convert_ms": {
+          "total_ms": 50.46119399999997,
+          "p50_ms": 0.1591,
+          "p95_ms": 0.219,
+          "max_ms": 0.372,
+          "calls": 300
+        },
+        "ui_parse_validate_ms": {
+          "total_ms": 22.90140200000001,
+          "p50_ms": 0.070699,
+          "p95_ms": 0.1051,
+          "max_ms": 0.2122,
+          "calls": 300
+        },
+        "world_snapshot_ms": {
+          "total_ms": 18.263616000000006,
+          "p50_ms": 0.0532,
+          "p95_ms": 0.1037,
+          "max_ms": 0.277601,
+          "calls": 300
+        }
+      },
+      "publication": {
+        "canonical_encode_ms": {
+          "total_ms": 77.90519599999999,
+          "p50_ms": 0.24449999999999997,
+          "p95_ms": 0.32039900000000004,
+          "max_ms": 0.716799
+        },
+        "canonical_hash_ms": {
+          "total_ms": 74.77228799999995,
+          "p50_ms": 0.2418,
+          "p95_ms": 0.273299,
+          "max_ms": 0.44460099999999997
+        },
+        "presentation_ms": {
+          "total_ms": 3.6535060000000015,
+          "p50_ms": 0.011600000000000001,
+          "p95_ms": 0.019701,
+          "max_ms": 0.0316
+        },
+        "envelope_ms": {
+          "total_ms": 4.303993000000002,
+          "p50_ms": 0.012801,
+          "p95_ms": 0.024100999999999997,
+          "max_ms": 0.0538
+        }
+      },
+      "publication_paths": [
+        "retained"
+      ],
+      "tails": {
+        "selection": "command_ms >=this run p95 (16 rows); majority means same-row named interval >half command wall, not isolated CPU cause.",
+        "count": 16,
+        "script_outside_ui_majority": 11,
+        "outer_minus_tick_abi_majority": 5,
+        "frames": [
+          146,
+          167,
+          124,
+          162,
+          173,
+          140,
+          129,
+          245,
+          300,
+          135,
+          362,
+          151,
+          174,
+          113,
+          294,
+          119
+        ],
+        "recurring_frame146": {
+          "frame": 146,
+          "command_ms": 15.762299999999982,
+          "tick_abi_atomic_ms": 14.571100000000001,
+          "script_total_ms": 13.647599999999999,
+          "script_outside_measured_ui_ms": 13.323699,
+          "ui_convert_ms": 0.210201,
+          "ui_parse_validate_ms": 0.10629999999999999,
+          "ui_commit_drop_ms": 0.0074,
+          "observe_total_ms": 0.210901,
+          "ui_clone_ms": 0.0148,
+          "publication": {
+            "canonical_encode_ms": 0.29819999999999997,
+            "canonical_hash_ms": 0.2454,
+            "presentation_ms": 0.018199999999999997,
+            "envelope_ms": 0.0234
+          },
+          "entities_utf8_interval_ms": 0.012600000000020373,
+          "observations_utf8_interval_ms": 0.028400000000033288,
+          "outer_minus_tick_abi_ms": 1.1911999999999807,
+          "abi_residual_signed_ms": 0.10980000000000034
+        },
+        "largest_entity_utf8_example": {
+          "frame": 245,
+          "command_ms": 12.379100000000108,
+          "tick_abi_atomic_ms": 1.9170999999998912,
+          "script_total_ms": 1.2407,
+          "script_outside_measured_ui_ms": 1.0173969999999999,
+          "ui_convert_ms": 0.155301,
+          "ui_parse_validate_ms": 0.065001,
+          "ui_commit_drop_ms": 0.003001,
+          "observe_total_ms": 0.0948,
+          "ui_clone_ms": 0.005199,
+          "publication": {
+            "canonical_encode_ms": 0.23809999999999998,
+            "canonical_hash_ms": 0.2378,
+            "presentation_ms": 0.011600000000000001,
+            "envelope_ms": 0.0089
+          },
+          "entities_utf8_interval_ms": 9.423900000000003,
+          "observations_utf8_interval_ms": 0.022199999999884312,
+          "outer_minus_tick_abi_ms": 10.462000000000216,
+          "abi_residual_signed_ms": 0.07970099999989116
+        }
+      },
+      "vm": {
+        "allocation_growth_bytes": null,
+        "incremental_gc_ms": null,
+        "availability": {
+          "allocation_growth": "not-collected",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "not-collected",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        },
+        "reason": "phase-profile deliberately installs no function, allocation or GC callbacks"
+      },
+      "capacity_before_bytes": 29097984,
+      "capacity_after_bytes": 29097984,
+      "final": {
+        "frame": 366,
+        "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+        "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+        "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+        "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+      },
+      "closed": true,
+      "stderr": 0,
+      "aborts": 0
+    }
+  ],
+  "parity": {
+    "every_run_digest_checkpoints": 367,
+    "all_four_runs_digest_sequences_exact": true,
+    "full_final_world_ui_save_exact": true,
+    "allowlist": [],
+    "historical_bfcd_endpoint": {
+      "record": {
+        "path": ".cache/world-fields-battle-bfcd916-20261102-run1/result.json",
+        "bytes": 1166638,
+        "sha256": "4efae594157f5a8cc6e46b4d31af390bdcb436366834ac4da0409ccd39587f6b"
+      },
+      "authoritative_final_digest_exact": true,
+      "full_world_field_or_save_hash_pairing": "not-available-in-original-historical-record"
+    }
+  },
+  "limits": [
+    "Core phase parents contain child spans; do not add parents and children.",
+    "Publication four spans are disjoint and exclude simulation/initial world capture.",
+    "Signed ABI residual includes unmeasured Core/publication work and timing overhead; it is not Luau/GC or OS time.",
+    "Command includes host decode/restoration, jobs/spatial dispatch and resource-plan polling in addition to tick ABI.",
+    "Coarse phase clocks/storage are active; no function sampler or Luau allocation/GC callbacks.",
+    "Parallel chats/Root production work may be concurrent; ABBA is not exclusive-machine or production acceptance.",
+    "Phase parents include children: measured UI bindings are inside script_total; UI clone/world snapshot/observation clone/host-state spans are inside observe_total. Do not add parents and children.",
+    "WASM capacity is linear-memory reservation/high-water information, not live memory, Rust/Luau allocation or GC frequency.",
+    "No new native executable, local build, browser, Game source edit or forced GC was used."
+  ],
+  "findings": {
+    "ui_clone_average_total_per300_ms": {
+      "baseline": 2.5325950000000015,
+      "candidate": 0.07339300000000012,
+      "absolute_reduction_ms": 2.459202000000001,
+      "absolute_reduction_per_tick_ms": 0.008197340000000004,
+      "percent_reduction": 97.1020632987114
+    },
+    "command_p95_ms": {
+      "baseline": [
+        7.804999999999836,
+        8.580500000000029
+      ],
+      "candidate": [
+        8.160199999999918,
+        8.033900000000017
+      ]
+    },
+    "recurring_slow_frames": [
+      146,
+      162,
+      167,
+      124,
+      140,
+      173
+    ],
+    "interpretation": [
+      "Arc removes most measured UiTree capture-clone wall time, but the baseline real-game clone costs only about2.5ms per300ticks. This small absolute cost does not account for multi-ms tails.",
+      "11–13 of16 per-run command-tail rows have a majority in script_outside_measured_ui. That span includes Luau wrappers, gameplay and other engine bindings; no particular function or GC cause is established.",
+      "At recurring frame146, script_total is13.65–14.43ms while measured UI conversion/validation/commit is0.295–0.324ms; baseline ui_clone is0.0148–0.0182ms and candidate0.0001–0.0003ms.",
+      "Other tail rows mostly sit outside tick ABI and can include8.9–9.5ms entities UTF8 intervals. The span does not isolate TextDecoder CPU, V8 GC or OS scheduling.",
+      "Canonical encode and hash remain roughly quarter-millisecond each without a large systematic change. There is no reliable production-tail fix demonstrated by this phase-active four-run diagnostic."
+    ]
+  }
+}

@@ -1,0 +1,580 @@
+diff --git a/crates/unone-engine/Cargo.toml b/crates/unone-engine/Cargo.toml
+index ba15ee4..cca86b5 100644
+--- a/crates/unone-engine/Cargo.toml
++++ b/crates/unone-engine/Cargo.toml
+@@ -32,17 +32,17 @@ spine = []
+ particle = []
+ effekseer = []
+ 
+ [dependencies]
+ anyhow = "1"
+ base64 = "0.23"
+ mlua = { version = "0.11", features = ["luau", "vendored"] }
+ schemars = { version = "1", optional = true }
+-serde = { version = "1", features = ["derive"] }
++serde = { version = "1", features = ["derive", "rc"] }
+ # Canonical snapshots, saves and host presentation envelopes must preserve every
+ # finite binary64 value through a JSON parse/serialize cycle on every host.
+ serde_json = { version = "1", features = ["raw_value", "float_roundtrip"] }
+ sha2 = "0.10"
+ # Import products are written as PNG by the build-time import pipeline (dev-tools).
+ png = { version = "0.18", optional = true }
+ thiserror = "2"
+ rapier3d = { optional = true, version = "=0.26.1", default-features = false, features = ["dim3", "f32", "enhanced-determinism"] }
+diff --git a/crates/unone-engine/src/developer.rs b/crates/unone-engine/src/developer.rs
+index 1e92882..151af48 100644
+--- a/crates/unone-engine/src/developer.rs
++++ b/crates/unone-engine/src/developer.rs
+@@ -1,14 +1,15 @@
+ //! Stateful, host-independent developer operations. Hosts own scheduling and transport.
+ //! Runtime edits are transient; authoring files and active bundles are never rewritten.
+ use std::{
+     collections::VecDeque,
+     path::Path,
+     sync::atomic::{AtomicU64, Ordering},
++    sync::Arc,
+ };
+ 
+ use serde::{Deserialize, Serialize};
+ use serde_json::{Value, json};
+ 
+ use crate::{Diagnostic, EngineResult, EngineRuntime, InputFrame, Transform2DData, Vec2};
+ use crate::{systems::SystemSettings, ui::UiTree, world::World};
+ 
+@@ -103,17 +104,17 @@ fn error(code: &str, detail: impl Into<String>) -> Box<Diagnostic> {
+         "Developer operation rejected",
+         detail,
+     ))
+ }
+ 
+ /// Runs only against candidate Rust state. No Lua callback, I/O or host side effect.
+ pub(crate) fn apply_operations(
+     world: &mut World,
+-    ui: &mut Option<UiTree>,
++    ui: &mut Option<Arc<UiTree>>,
+     systems: &SystemSettings,
+     operations: &[EnactOperation],
+ ) -> Result<Vec<Value>, Box<Diagnostic>> {
+     if operations.is_empty() || operations.len() > 64 {
+         return Err(error(
+             "ENACT_INVALID",
+             "operations must contain 1..64 entries",
+         ));
+@@ -219,17 +220,17 @@ pub(crate) fn apply_operations(
+                     if !world.stop_effect(handle)? {
+                         return Err(format!("Effect '{handle}' does not exist"));
+                     }
+                 }
+                 (
+                     Selector::Ui { id },
+                     change @ (Change::SetText { .. } | Change::SetRect { .. }),
+                 ) => {
+-                    let tree = ui.as_mut().ok_or("No UI tree is published")?;
++                    let tree = Arc::make_mut(ui.as_mut().ok_or("No UI tree is published")?);
+                     let node = tree
+                         .children
+                         .iter_mut()
+                         .find_map(|node| node.find_mut(id))
+                         .ok_or_else(|| format!("UI node '{id}' does not exist"))?;
+                     match (node, change) {
+                         (node, Change::SetText { text: value }) => {
+                             let text = node.text_mut().ok_or_else(|| {
+diff --git a/crates/unone-engine/src/runtime.rs b/crates/unone-engine/src/runtime.rs
+index 4b0e219..a815c4a 100644
+--- a/crates/unone-engine/src/runtime.rs
++++ b/crates/unone-engine/src/runtime.rs
+@@ -1,11 +1,11 @@
+ #[cfg(feature = "dev-tools")]
+ use crate::project::TestSpec;
+-use std::{cell::RefCell, collections::{BTreeMap, BTreeSet}, path::PathBuf, rc::Rc};
++use std::{cell::RefCell, collections::{BTreeMap, BTreeSet}, path::PathBuf, rc::Rc, sync::Arc};
+ #[cfg(feature = "dev-tools")]
+ use std::{env, fs, path::Path, process::Command, time::SystemTime};
+ 
+ use mlua::{Function, Lua, Table, Value};
+ use serde::Serialize;
+ use sha2::{Digest, Sha256};
+ 
+ use crate::{
+@@ -17,16 +17,18 @@ use crate::{
+     world::{SceneFile, Vec2, World, WorldSnapshot},
+ };
+ 
+ const FIXED_DT: f64 = 1.0 / 60.0;
+ mod bindings;
+ mod host_time;
+ mod save_state;
+ mod sprite_resources;
++#[cfg(all(test, feature = "ui"))]
++mod ui_snapshot_tests;
+ use save_state::SaveState;
+ mod spatial;
+ mod spatial_metrics;
+ pub use spatial::SpatialTask;
+ mod determinism;
+ mod script_modules;
+ pub use script_modules::{MAX_SCRIPT_MODULES, ScriptModuleSources};
+ use script_modules::ScriptModules;
+@@ -245,17 +247,17 @@ struct ApiState {
+     jobs: Rc<RefCell<jobs::Jobs>>,
+     #[cfg(feature = "preview-tools")]
+     debug_tools: Rc<RefCell<preview::DebugTools>>,
+     world: Rc<RefCell<World>>,
+     input: Rc<RefCell<InputState>>,
+     random: Rc<RefCell<DeterministicRng>>,
+     trace: Rc<RefCell<Vec<TraceEvent>>>,
+     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+-    ui: Rc<RefCell<Option<UiTree>>>,
++    ui: Rc<RefCell<Option<Arc<UiTree>>>>,
+     viewport_aspect: Rc<RefCell<f64>>,
+     save_payload: Rc<RefCell<SaveState>>,
+     data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
+     script_profile: Rc<RefCell<crate::performance::ScriptProfile>>,
+     /// Depth of host-driven UI view callbacks (virtual renderItem). Simulation
+     /// mutators refuse to run while it is nonzero.
+     pure_view: Rc<std::cell::Cell<usize>>,
+ }
+@@ -312,17 +314,17 @@ struct ScriptStamp {
+ }
+ 
+ #[cfg(feature = "dev-tools")]
+ struct ReloadRollbackState {
+     input: InputState,
+     random: DeterministicRng,
+     trace: Vec<TraceEvent>,
+     observations: BTreeMap<String, serde_json::Value>,
+-    ui: Option<UiTree>,
++    ui: Option<Arc<UiTree>>,
+     viewport_aspect: f64,
+     save_payload: SaveState,
+     generation: u64,
+     last_seen_script_stamp: Option<ScriptStamp>,
+     script_source: Option<String>,
+ }
+ 
+ pub struct EngineRuntime {
+@@ -340,17 +342,17 @@ pub struct EngineRuntime {
+     input: Rc<RefCell<InputState>>,
+     #[cfg(feature = "dev-tools")]
+     random: Rc<RefCell<DeterministicRng>>,
+     lua: Lua,
+     api: Table,
+     update_fn: Function,
+     trace: Rc<RefCell<Vec<TraceEvent>>>,
+     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+-    ui: Rc<RefCell<Option<UiTree>>>,
++    ui: Rc<RefCell<Option<Arc<UiTree>>>>,
+     viewport_aspect: Rc<RefCell<f64>>,
+     save_payload: Rc<RefCell<SaveState>>,
+     /// Shared with a hot-reloaded VM, which decodes data assets afresh.
+     #[cfg(feature = "preview-tools")]
+     data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
+     #[cfg(feature = "dev-tools")]
+     generation: u64,
+     #[cfg(feature = "dev-tools")]
+@@ -1520,16 +1522,18 @@ impl EngineRuntime {
+         #[cfg(not(feature = "phase-profile"))]
+         { let mut host_state=host_state;host_state(); }
+         #[cfg(feature = "phase-profile")]
+         { snapshot.observations = phase_profile::measure(&self.lua,phase_profile::Phase::ObservationsClone,||self.observations.borrow().clone());
+           snapshot.ui = phase_profile::measure(&self.lua,phase_profile::Phase::UiClone,||self.ui.borrow().clone()); }
+         #[cfg(not(feature = "phase-profile"))]
+         {
+         snapshot.observations = self.observations.borrow().clone();
++        // The validated Rust tree has no authored/live Lua aliases. A snapshot
++        // retains its immutable generation; writers detach with Arc::make_mut.
+         snapshot.ui = self.ui.borrow().clone();
+         }
+         snapshot
+     }
+ 
+     pub fn physical_input_report(&self)->serde_json::Value {self.input.borrow().physical.report()}
+ 
+     /// Return only the semantic observations used by host-side agents.
+@@ -2328,17 +2332,17 @@ fn integral(number: &serde_json::Number) -> Option<i128> {
+ #[cfg(feature = "dev-tools")]
+ fn evaluate_assertion(
+     world: &WorldSnapshot,
+     assertion: &crate::project::TestAssertion,
+ ) -> Result<(), String> {
+     if let Some(ui) = &assertion.ui {
+         let actual = world
+             .ui
+-            .as_ref()
++            .as_deref()
+             .ok_or_else(|| "UI tree does not exist.".to_string())?;
+         let expected = UiTree::from_json_for_viewport_with_resources(ui.equals.clone(),crate::ui::UI_REFERENCE_ASPECT,&world.ui_image_batches)
+             .map_err(|error| format!("UI assertion is not a valid UI tree: {error}"))?;
+         if actual != &expected {
+             return Err(format!(
+                 "UI tree does not equal the expected value; actual={} expected={}",
+                 serde_json::to_string(actual).unwrap_or_else(|_| "<unserializable>".to_string()),
+                 serde_json::to_string(&expected).unwrap_or_else(|_| "<unserializable>".to_string())
+@@ -3494,25 +3498,25 @@ function Game.start(api)
+ end
+ function Game.update(_api, _dt) end
+ return Game
+ "#;
+         let runtime = EngineRuntime::load_source("UiSmoke", "main.luau", source, None).unwrap();
+ 
+         assert_eq!(
+             runtime.observe().ui,
+-            Some(UiTree::from_json(serde_json::json!({
++            Some(std::sync::Arc::new(UiTree::from_json(serde_json::json!({
+                 "kind": "screen",
+                 "id": "dialogue",
+                 "node": "intro",
+                 "children": [
+                     {"kind": "text", "id": "speaker", "rect": {"x": 10, "y": 70, "width": 80, "height": 10}, "text": "Mira"},
+                     {"kind": "button", "id": "choice", "rect": {"x": 10, "y": 10, "width": 35, "height": 10}, "text": "Listen", "action": "Continue"}
+                 ]
+-            })).unwrap())
++            })).unwrap()))
+         );
+     }
+ 
+     #[test]
+     fn ui_set_root_rejects_unknown_nodes_with_runtime_diagnostic() {
+         let source = r#"
+ local Game = {}
+ function Game.start(api)
+diff --git a/crates/unone-engine/src/runtime/bindings/state.rs b/crates/unone-engine/src/runtime/bindings/state.rs
+index 4a1d791..37adbdf 100644
+--- a/crates/unone-engine/src/runtime/bindings/state.rs
++++ b/crates/unone-engine/src/runtime/bindings/state.rs
+@@ -1,13 +1,13 @@
+ use super::super::TraceEvent;
+ use super::value::{json_to_lua, lua_value_to_json, observation_value_to_json, observation_array, portable_value_to_json};
+ use super::{ApiState, Lua, Table, Value};
+ use crate::ui::UiTree;
+-use std::rc::Rc;
++use std::{rc::Rc, sync::Arc};
+ #[cfg(feature = "phase-profile")]
+ use super::super::phase_profile::{self, Phase};
+ 
+ pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
+     let observations = Rc::clone(&state.observations);
+     let observation_api = lua.create_table()?;
+     observation_api.set("array", lua.create_function(observation_array)?)?;
+     let array_observations = Rc::clone(&observations);
+@@ -75,32 +75,32 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
+         #[cfg(not(feature = "phase-profile"))]
+         { admit() }
+     })?)?;
+     let remove_world=Rc::clone(&state.world);
+     let remove_ui=Rc::clone(&ui);
+     let remove_pure=Rc::clone(&pure_depth);
+     resources.set("remove",lua.create_function(move |_lua,id:String| {
+         if remove_pure.get()>0 { return Err(mlua::Error::RuntimeError("UI_PURE_VIEW: image batch resources cannot be removed inside renderItem".into())); }
+-        let remove=|| remove_world.borrow_mut().remove_ui_image_batch(&id,remove_ui.borrow().as_ref()).map_err(mlua::Error::RuntimeError);
++        let remove=|| remove_world.borrow_mut().remove_ui_image_batch(&id,remove_ui.borrow().as_deref()).map_err(mlua::Error::RuntimeError);
+         #[cfg(feature = "phase-profile")]
+         { phase_profile::measure(_lua,Phase::ImageBatchRemove,remove) }
+         #[cfg(not(feature = "phase-profile"))]
+         { remove() }
+     })?)?;
+     ui_api.set("imageBatch",resources)?;
+     super::ui_cursor::install(lua,state,&ui_api)?;
+     let viewport_state = Rc::clone(&viewport_aspect);
+     ui_api.set("getViewport", lua.create_function(move |lua, ()| {
+         json_to_lua(lua, serde_json::json!({"aspect": *viewport_state.borrow()}))
+     })?)?;
+     let ui_state = Rc::clone(&ui);
+     let inspect_state = Rc::clone(&ui);
+     ui_api.set("inspect", lua.create_function(move |lua, ()| {
+-        json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_ref().map(UiTree::usage)}))
++        json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_deref().map(UiTree::usage)}))
+     })?)?;
+     let ui_aspect = Rc::clone(&viewport_aspect);
+     let resource_world=Rc::clone(&state.world);
+     // The last immutable root and the publication stamp of the tree built from it.
+     let published: std::cell::RefCell<Option<(Table, u64)>> = std::cell::RefCell::new(None);
+     let stamps = std::cell::Cell::new(0_u64);
+     ui_api.set(
+         "setRoot",
+@@ -136,17 +136,17 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
+             );
+             #[cfg(feature = "phase-profile")]
+             let mut tree=phase_profile::measure(_lua,Phase::UiValidate,parse)?;
+             #[cfg(not(feature = "phase-profile"))]
+             let mut tree=parse()?;
+             stamps.set(stamps.get() + 1);
+             tree.publication = stamps.get();
+             *published.borrow_mut() = root.map(|root| (root, stamps.get()));
+-            let commit=|| { *ui_state.borrow_mut() = Some(tree); };
++            let commit=|| { *ui_state.borrow_mut() = Some(Arc::new(tree)); };
+             #[cfg(feature = "phase-profile")]
+             phase_profile::measure(_lua,Phase::UiCommitDrop,commit);
+             #[cfg(not(feature = "phase-profile"))]
+             commit();
+             Ok(())
+         })?,
+     )?;
+     let pure=lua.create_function(move |_,(callback,args):(mlua::Function,mlua::Variadic<Value>)| {
+diff --git a/crates/unone-engine/src/runtime/ui_snapshot_tests.rs b/crates/unone-engine/src/runtime/ui_snapshot_tests.rs
+new file mode 100644
+index 0000000..c7daf7e
+--- /dev/null
++++ b/crates/unone-engine/src/runtime/ui_snapshot_tests.rs
+@@ -0,0 +1,194 @@
++//! Shared validated UI generations: no authored aliases and no snapshot mutation.
++use super::{EngineRuntime, UiTree, observation_digest};
++use std::sync::Arc;
++use serde_json::json;
++use sha2::{Digest, Sha256};
++
++const ROOT: &str = r#"
++local root={kind='screen',id='screen',node='screen',children={
++ {kind='text',id='label',text='before',rect={x=1,y=2,width=30,height=10}}
++}}
++"#;
++
++fn game(body: &str) -> EngineRuntime {
++    EngineRuntime::load_source("SharedUi", "main.luau", format!("{ROOT}\n{body}"), None).unwrap()
++}
++
++fn text(tree: &UiTree) -> String {
++    serde_json::to_value(tree).unwrap()["children"][0]["text"].as_str().unwrap().to_owned()
++}
++
++#[test]
++fn unchanged_observation_and_snapshot_clones_share_the_validated_generation() {
++    let mut runtime=game("return {start=function(api)api.ui.setRoot(root)end,update=function()end}");
++    let before=runtime.observe();
++    let tree=before.ui.as_ref().unwrap();
++    assert!(Arc::ptr_eq(tree,runtime.ui.borrow().as_ref().unwrap()));
++    for _ in 0..4 {
++        let observed=runtime.observe();
++        assert!(Arc::ptr_eq(tree,observed.ui.as_ref().unwrap()));
++        assert!(Arc::ptr_eq(tree,observed.clone().ui.as_ref().unwrap()));
++        assert!(Arc::ptr_eq(tree,runtime.tick().unwrap().ui.as_ref().unwrap()));
++    }
++    // Arc must serialize the exact existing validated tree, not an ownership wrapper.
++    let owned=UiTree::from_json(json!({"kind":"screen","id":"screen","node":"screen","children":[
++        {"kind":"text","id":"label","text":"before","rect":{"x":1,"y":2,"width":30,"height":10}}
++    ]})).unwrap();
++    assert_eq!(serde_json::to_vec(tree).unwrap(),serde_json::to_vec(&owned).unwrap());
++    let bytes=serde_json::to_vec(&before).unwrap();
++    assert_eq!(observation_digest(&before).unwrap(),format!("sha256:{:x}",Sha256::digest(bytes)));
++}
++
++#[test]
++fn authored_changes_republish_without_mutating_earlier_snapshots() {
++    let mut runtime=game(r#"
++return {start=function(api)
++ api.ui.setRoot(root);root.children[1].text='next'
++end,update=function(api)
++ api.ui.setRoot(root);root.children[1].text='not published'
++ root.children[1].rect.width=0
++ assert(not pcall(api.ui.setRoot,root))
++end}
++"#);
++    let old=runtime.observe();
++    let old_bytes=serde_json::to_vec(&old).unwrap();
++    let old_digest=observation_digest(&old).unwrap();
++    let next=runtime.tick().unwrap();
++    assert!(!Arc::ptr_eq(old.ui.as_ref().unwrap(),next.ui.as_ref().unwrap()));
++    assert_eq!(text(old.ui.as_deref().unwrap()),"before");
++    assert_eq!(text(next.ui.as_deref().unwrap()),"next");
++    assert_eq!(serde_json::to_vec(&old).unwrap(),old_bytes);
++    assert_eq!(observation_digest(&old).unwrap(),old_digest);
++    assert_eq!(text(runtime.observe().ui.as_deref().unwrap()),"next");
++}
++
++#[test]
++fn detached_snapshot_edits_and_runtime_clear_do_not_mutate_or_retain_other_generations() {
++    let runtime=game("return {start=function(api)api.ui.setRoot(root)end,update=function()end}");
++    let mut detached=runtime.observe();
++    let saved=runtime.observe();
++    let weak=Arc::downgrade(saved.ui.as_ref().unwrap());
++    Arc::make_mut(detached.ui.as_mut().unwrap()).id="detached".into();
++    assert_eq!(runtime.observe().ui.as_ref().unwrap().id,"screen");
++    assert_eq!(saved.ui.as_ref().unwrap().id,"screen");
++    assert!(!Arc::ptr_eq(detached.ui.as_ref().unwrap(),saved.ui.as_ref().unwrap()));
++    *runtime.ui.borrow_mut()=None;
++    assert!(runtime.observe().ui.is_none());
++    drop(runtime);
++    assert!(weak.upgrade().is_some(),"a snapshot owns its tree after runtime reset/drop");
++    assert_eq!(text(saved.ui.as_deref().unwrap()),"before");
++    drop(saved);
++    assert!(weak.upgrade().is_none(),"no retired-tree history retains the old generation");
++}
++
++#[test]
++fn resource_refresh_is_cow_and_rejected_replacement_keeps_the_live_generation() {
++    let mut runtime=game(r#"
++local bounds={x=0,y=0,width=10,height=10}
++local q={asset='texture://tile',rect=bounds}
++root.children={{kind='image_batch',id='art',rect=bounds,content='shared'}}
++root.budget={max_nodes=3}
++local turn=0
++return {start=function(api)
++ api.ui.imageBatch.define('shared',{bounds=bounds,quads={q}});api.ui.setRoot(root)
++end,update=function(api)
++ turn+=1
++ if turn==1 then api.ui.imageBatch.define('shared',{bounds=bounds,quads={q,q}})
++ elseif turn==2 then
++  local ok,err=pcall(api.ui.imageBatch.define,'shared',{bounds=bounds,quads={q,q,q}})
++  assert(not ok and string.find(tostring(err),'UI_NODE_LIMIT',1,true))
++ else
++  root.children={{kind='panel',id='empty',rect=bounds}};api.ui.setRoot(root)
++  assert(api.ui.imageBatch.remove('shared'))
++ end
++end}
++"#);
++    let old=runtime.observe();
++    let old_bytes=serde_json::to_vec(&old).unwrap();
++    let old_tree=old.ui.as_ref().unwrap();
++    let accepted=runtime.tick().unwrap();
++    assert!(!Arc::ptr_eq(old_tree,accepted.ui.as_ref().unwrap()));
++    assert_eq!(old_tree.usage().image_quads,1);
++    assert_eq!(accepted.ui.as_ref().unwrap().usage().image_quads,2);
++    let rejected=runtime.tick().unwrap();
++    assert!(Arc::ptr_eq(accepted.ui.as_ref().unwrap(),rejected.ui.as_ref().unwrap()));
++    assert_eq!(accepted.ui_image_batches,rejected.ui_image_batches);
++    assert!(runtime.tick().unwrap().ui_image_batches.is_empty());
++    drop(runtime);
++    assert_eq!(old.ui_image_batches["shared"].quads().len(),1);
++    assert_eq!(accepted.ui_image_batches["shared"].quads().len(),2);
++    assert_eq!(serde_json::to_vec(&old).unwrap(),old_bytes);
++}
++
++#[cfg(feature="dev-tools")]
++#[test]
++fn developer_edits_detach_candidates_and_rejections_keep_identity_and_digest() {
++    use crate::developer::{Change,EnactOperation,Selector};
++    let mut runtime=game("return {start=function(api)api.ui.setRoot(root)end,update=function()end}");
++    let old=runtime.observe();
++    let old_bytes=serde_json::to_vec(&old).unwrap();
++    let edit=EnactOperation{selector:Selector::Ui{id:"label".into()},change:Change::SetText{text:"edited".into()}};
++    let (dry,_)=runtime.enact_developer(std::slice::from_ref(&edit),true).unwrap();
++    assert_eq!(text(dry.ui.as_deref().unwrap()),"edited");
++    assert!(Arc::ptr_eq(old.ui.as_ref().unwrap(),runtime.observe().ui.as_ref().unwrap()));
++    let (accepted,_)=runtime.enact_developer(&[edit.clone()],false).unwrap();
++    assert!(!Arc::ptr_eq(old.ui.as_ref().unwrap(),accepted.ui.as_ref().unwrap()));
++    assert_eq!(text(old.ui.as_deref().unwrap()),"before");
++    assert_eq!(text(accepted.ui.as_deref().unwrap()),"edited");
++    let digest=observation_digest(&accepted).unwrap();
++    let transient=EnactOperation{selector:Selector::Ui{id:"label".into()},change:Change::SetText{text:"transient".into()}};
++    let invalid=EnactOperation{selector:Selector::Ui{id:"label".into()},change:Change::SetRect{
++        rect:crate::UiRect{x:0.,y:0.,width:-1.,height:10.}}};
++    assert!(runtime.enact_developer(&[transient,invalid],false).is_err());
++    let after=runtime.observe();
++    assert!(Arc::ptr_eq(accepted.ui.as_ref().unwrap(),after.ui.as_ref().unwrap()));
++    assert_eq!(observation_digest(&after).unwrap(),digest);
++    assert_eq!(serde_json::to_vec(&old).unwrap(),old_bytes);
++}
++
++#[cfg(feature="dev-tools")]
++#[test]
++fn reload_without_ui_edits_preserves_the_current_generation() {
++    let mut runtime=game("return {start=function(api)api.ui.setRoot(root)end,update=function()end}");
++    let old=runtime.observe();
++    runtime.reload_source("return {start=function()end,update=function()end}").unwrap();
++    assert!(Arc::ptr_eq(old.ui.as_ref().unwrap(),runtime.observe().ui.as_ref().unwrap()));
++    assert!(Arc::ptr_eq(old.ui.as_ref().unwrap(),runtime.tick().unwrap().ui.as_ref().unwrap()));
++}
++
++#[cfg(feature="dev-tools")]
++#[test]
++fn reload_replacement_and_failure_preserve_old_tree_and_resource_associations() {
++    let mut runtime=game(r#"
++local bounds={x=0,y=0,width=10,height=10}
++return {start=function(api)
++ api.ui.imageBatch.define('shared',{bounds=bounds,quads={{asset='texture://old',rect=bounds}}})
++ root.children={{kind='image_batch',id='art',rect=bounds,content='shared'}}
++ api.ui.setRoot(root)
++end,update=function()end}
++"#);
++    let old=runtime.observe();
++    let bytes=serde_json::to_vec(&old).unwrap();
++    let digest=observation_digest(&old).unwrap();
++    let candidate=r#"
++local bounds={x=0,y=0,width=10,height=10}
++local q={asset='texture://new',rect=bounds}
++return {start=function()end,update=function()end,onReload=function(api)
++ api.ui.imageBatch.define('shared',{bounds=bounds,quads={q,q}})
++ ERROR_POINT
++end}
++"#;
++    assert!(runtime.reload_source(candidate.replace("ERROR_POINT","error('reject candidate')")).is_err());
++    let failed=runtime.observe();
++    assert!(Arc::ptr_eq(old.ui.as_ref().unwrap(),failed.ui.as_ref().unwrap()));
++    assert_eq!(observation_digest(&failed).unwrap(),digest);
++    assert_eq!(failed.ui_image_batches["shared"].quads().len(),1);
++    runtime.reload_source(candidate.replace("ERROR_POINT","")).unwrap();
++    let current=runtime.observe();
++    assert!(!Arc::ptr_eq(old.ui.as_ref().unwrap(),current.ui.as_ref().unwrap()));
++    assert_eq!(current.ui.as_ref().unwrap().usage().image_quads,2);
++    assert_eq!(current.ui_image_batches["shared"].quads()[0].asset,"texture://new");
++    assert_eq!(old.ui.as_ref().unwrap().usage().image_quads,1);
++    assert_eq!(old.ui_image_batches["shared"].quads()[0].asset,"texture://old");
++    assert_eq!(serde_json::to_vec(&old).unwrap(),bytes);
++}
+diff --git a/crates/unone-engine/src/ui/image_batch.rs b/crates/unone-engine/src/ui/image_batch.rs
+index b5cba53..710e53b 100644
+--- a/crates/unone-engine/src/ui/image_batch.rs
++++ b/crates/unone-engine/src/ui/image_batch.rs
+@@ -99,17 +99,17 @@ impl Serialize for UiImageBatchResource {
+     fn serialize<S:serde::Serializer>(&self,s:S)->Result<S::Ok,S::Error> {
+         self.encoded_json().serialize(s)
+     }
+ }
+ 
+ pub(crate) type Resources=BTreeMap<String,UiImageBatchResource>;
+ 
+ impl crate::world::World {
+-    pub(crate) fn define_ui_image_batch(&mut self,id:String,definition:UiImageBatchDefinition,tree:Option<&mut UiTree>)->Result<(),String> {
++    pub(crate) fn define_ui_image_batch(&mut self,id:String,definition:UiImageBatchDefinition,tree:Option<&mut Arc<UiTree>>)->Result<(),String> {
+         if id.trim().is_empty() || id.len()>1024 { return Err("UI_IMAGE_BATCH_ID: resource id must contain 1..1024 bytes and non-whitespace text".into()); }
+         definition.validate()?;
+         if self.ui_image_batches.get(&id).is_some_and(|r|r.definition()==&definition) { return Ok(()); }
+         let revision=self.ui_image_batch_revision.checked_add(1).filter(|v|*v<=9_007_199_254_740_991)
+             .ok_or("UI_IMAGE_BATCH_REVISION: generation exhausted")?;
+         let asset_string_bytes=definition.quads.iter().map(|q|q.asset.len()).sum();
+         let resource=UiImageBatchResource(Arc::new(Generation {revision,definition,asset_string_bytes,encoded:OnceLock::new()}));
+         let encoded_bytes=resource.encoded_json().get().len();
+@@ -124,17 +124,17 @@ impl crate::world::World {
+         let bytes=candidate.iter().map(|(id,r)|id.len()+r.asset_string_bytes()).sum::<usize>();
+         if bytes>ui_contract().max_string_bytes { return Err("UI_STRING_LIMIT: retained image registry exceeds string budget".into()); }
+         let encoded_bytes=candidate.values().map(|r|r.encoded_json().get().len()).sum::<usize>();
+         if encoded_bytes>MAX_ENCODED_REGISTRY_BYTES {
+             return Err(format!("UI_IMAGE_BATCH_ENCODED_LIMIT: registry JSON definitions use {encoded_bytes} bytes, limit={MAX_ENCODED_REGISTRY_BYTES}"));
+         }
+         if let Some(tree)=tree {
+             tree.validate_image_batch_resources(&candidate)?;
+-            tree.refresh_image_batch_counts(&candidate);
++            Arc::make_mut(tree).refresh_image_batch_counts(&candidate);
+         }
+         self.ui_image_batches=candidate;
+         self.ui_image_batch_revision=revision;
+         Ok(())
+     }
+ 
+     pub(crate) fn remove_ui_image_batch(&mut self,id:&str,tree:Option<&UiTree>)->Result<bool,String> {
+         if tree.is_some_and(|tree|tree.references_image_batch(id)) {
+diff --git a/crates/unone-engine/src/world.rs b/crates/unone-engine/src/world.rs
+index 0dc28b4..5dc70bb 100644
+--- a/crates/unone-engine/src/world.rs
++++ b/crates/unone-engine/src/world.rs
+@@ -993,17 +993,19 @@ pub struct WorldSnapshot {
+     pub frame: u64,
+     pub time_seconds: f64,
+     pub camera: Camera2DData,
+     #[serde(default, skip_serializing_if = "Option::is_none")]
+     pub camera3d: Option<Camera3DData>,
+     pub entities: BTreeMap<String, EntitySnapshot>,
+     pub observations: BTreeMap<String, serde_json::Value>,
+     #[serde(default, skip_serializing_if = "Option::is_none")]
+-    pub ui: Option<crate::ui::UiTree>,
++    /// Validated immutable publication. Clones retain this generation; mutating
++    /// candidate UI uses copy-on-write instead of changing existing snapshots.
++    pub ui: Option<std::sync::Arc<crate::ui::UiTree>>,
+     #[serde(default,skip_serializing_if="Option::is_none")]
+     pub ui_cursor: Option<crate::UiCursor>,
+     #[serde(default, skip_serializing_if = "Vec::is_empty")]
+     pub effects: Vec<EffectInstance>,
+     /// Bodies that touched each other this frame.
+     #[serde(default, skip_serializing_if = "Vec::is_empty")]
+     pub contacts: Vec<Contact>,
+     /// Bodies resting on or striking the ground plane this frame.

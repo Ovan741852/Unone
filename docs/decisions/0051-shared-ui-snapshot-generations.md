@@ -1,6 +1,6 @@
 # 0051: Share validated Rust UI snapshot generations
 
-Status: accepted design; execution and performance evidence required separately
+Status: implemented; actual Linux Core and matching WASM validation passed
 
 The UI package already owns immutable authored values and the host already
 leases unchanged encoded publications. `EngineRuntime::observe` nevertheless
@@ -25,3 +25,9 @@ Actual compilation/tests and paired emitted-WASM measurements must pass before
 claiming this removes measured frame time. Rust Vec/String clone allocation,
 Luau allocator growth, V8 GC and WASM linear capacity are different metrics.
 This change alone does not certify all gameplay scenes at 60 FPS or GC frequency.
+
+Actual execution and the bounded performance result are recorded in the
+[validation review](../reviews/2026-11-03-shared-ui-snapshots.md). The battle
+workload saves about 0.0082 ms per tick in UI cloning; its tail regression remains
+open. A private immutable generation is useful ownership, but that result does
+not justify presenting it as the solution to the reported frame-rate problem.

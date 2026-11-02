@@ -1,0 +1,1384 @@
+{
+  "schema": "unone.shared-ui.synthetic-production-ab.v1",
+  "status": "actual-80-run-synthetic-comparison-completed",
+  "recorded_by": "/root/native_performance",
+  "scope": "Actual production WASM +bundled UI0.6, fresh child process/VM. No renderer/GPU/FPS/isolated-clone claim.",
+  "measurement_record": {
+    "path": ".cache/ui-arc-ci-0e-production-ab-r1/result.json",
+    "bytes": 367090,
+    "sha256": "cb8b1c13a210b5e5a40510cc27732259d9256ed31a44a80ea434bd5c7977e64a"
+  },
+  "benchmark_source": {
+    "path": ".cache/ui-arc-ci-0e-production-ab-r1/benchmark-script.mjs",
+    "bytes": 20977,
+    "sha256": "a005dba5aeaf820f282245b92719f8cc1bd3b2c2c95b1774f5165b326d763d94"
+  },
+  "measurement_stdout": {
+    "path": ".cache/ui-arc-ci-0e-production-ab-r1.log",
+    "bytes": 133,
+    "sha256": "cdde9e7d67891d678cedbd9c9067aa1f2c9ae59434157ea06dd370849d79f887"
+  },
+  "measurement_ci": {
+    "run_id": 41486160282,
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41486160282",
+    "candidate_commit": "0e75031dcb42498723fab147e710f11a20847936",
+    "overall_result": "failed",
+    "production_builds_and_actual_abi_checks": "passed",
+    "export_parity": "failed before parity because copied verifier CLI cwd caused SDK_NOT_FOUND",
+    "phase_variants": "not reached",
+    "note": "These historical measurements are not relabelled as executions of the later CI metadata. Their production JS/WASM bytes match the successful later artifacts exactly."
+  },
+  "successful_ci": {
+    "run_id": 41490065996,
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41490065996",
+    "head_sha": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+    "conclusion": "success",
+    "source_record": {
+      "path": "docs/evidence/2026-11-03-shared-ui/core-ci-summary.json",
+      "bytes": 13130,
+      "sha256": "96c542edca7c5350c7431e3223512840e711410ae1f2ebf36b52e8159553edd0"
+    },
+    "extraction_record": {
+      "path": "artifacts/ui-shared-ci-9c773e3/validation-status.json",
+      "bytes": 284,
+      "sha256": "fb6e685af4dc8b51702a2aa140f750245470f402ae124aa16fa80d0e1e84ead6"
+    },
+    "variants": [
+      {
+        "side": "baseline",
+        "variant": "production",
+        "source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+        "manifest": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\production\\runtime\\runtime.json",
+          "bytes": 1443,
+          "sha256": "80a66e9bcda08c19421d68e2c6489501083c3c52c84eeba1ecd865a87eec4204"
+        },
+        "wasm": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\production\\runtime\\unone_player.wasm",
+          "bytes": 5300965,
+          "sha256": "d94c3705333c0e63fe3a77c6856150f1089d9e58a770c7b3a09167e73eeaaef8"
+        },
+        "javascript": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\production\\runtime\\unone-player.js",
+          "bytes": 102845,
+          "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+        },
+        "ci_parity": "passed",
+        "browser_visual_acceptance": false
+      },
+      {
+        "side": "baseline",
+        "variant": "phase-profile",
+        "source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+        "manifest": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\phase-profile\\runtime\\runtime.json",
+          "bytes": 1493,
+          "sha256": "c12839e8f58d66ddc5f255372ff7274e1de9c2e9575b84eddcfb818f087d02f6"
+        },
+        "wasm": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\phase-profile\\runtime\\unone_player.wasm",
+          "bytes": 5626071,
+          "sha256": "d3f00a90f39c1c88f72eb95549d21af662ef10fe1c17b3f8e5563bc393280742"
+        },
+        "javascript": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\phase-profile\\runtime\\unone-player.js",
+          "bytes": 102968,
+          "sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f"
+        },
+        "ci_parity": "passed",
+        "browser_visual_acceptance": false
+      },
+      {
+        "side": "candidate",
+        "variant": "production",
+        "source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+        "manifest": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\runtime.json",
+          "bytes": 1443,
+          "sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6"
+        },
+        "wasm": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\unone_player.wasm",
+          "bytes": 5301301,
+          "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+        },
+        "javascript": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\unone-player.js",
+          "bytes": 102845,
+          "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+        },
+        "ci_parity": "passed",
+        "browser_visual_acceptance": false
+      },
+      {
+        "side": "candidate",
+        "variant": "phase-profile",
+        "source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+        "manifest": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\phase-profile\\runtime\\runtime.json",
+          "bytes": 1493,
+          "sha256": "c3be1bca87fcf4267a2aacf320724ec1ee7e133a8d2575e7373cca61e5d206a9"
+        },
+        "wasm": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\phase-profile\\runtime\\unone_player.wasm",
+          "bytes": 5626608,
+          "sha256": "8c8d1bad503e9e7076e3ad5a724dcfca9fbc9166cf2e81d1dece4c8539f73f9f"
+        },
+        "javascript": {
+          "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\phase-profile\\runtime\\unone-player.js",
+          "bytes": 102968,
+          "sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f"
+        },
+        "ci_parity": "passed",
+        "browser_visual_acceptance": false
+      }
+    ],
+    "archives": [
+      {
+        "path": ".cache/official-web-runtimes-baseline-9c773e3.zip",
+        "bytes": 4000526,
+        "sha256": "9e713d2bbe7cf87ca9744fd4ec7527c1aa6f0486f33503c1444d25c84d202a70"
+      },
+      {
+        "path": ".cache/official-web-runtimes-candidate-9c773e3.zip",
+        "bytes": 3999942,
+        "sha256": "801dd4ed29b69980c25011a8795087317a8c2da76237d93529f818bac098f9e6"
+      },
+      {
+        "path": ".cache/core-ownership-logs-9c773e3.zip",
+        "bytes": 11444,
+        "sha256": "3b7f83e508923c02e8dbe08b61a5d91dc142a3b1527072676de0e3166478589f"
+      }
+    ],
+    "archive_digest_scope": "Local Root-downloaded ZIP bytes rehashed in this offline record; this writer did not independently query GitHub advertised archive digests."
+  },
+  "production_artifact_equivalence": [
+    {
+      "side": "baseline",
+      "measured_source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+      "successful_ci_source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+      "metadata_differences": [],
+      "measured_manifest": {
+        "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-0e75031-unverified\\baseline\\production\\runtime\\runtime.json",
+        "bytes": 1443,
+        "sha256": "80a66e9bcda08c19421d68e2c6489501083c3c52c84eeba1ecd865a87eec4204"
+      },
+      "successful_ci_manifest": {
+        "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\production\\runtime\\runtime.json",
+        "bytes": 1443,
+        "sha256": "80a66e9bcda08c19421d68e2c6489501083c3c52c84eeba1ecd865a87eec4204"
+      },
+      "files": [
+        {
+          "kind": "javascript",
+          "byte_identical": true,
+          "measured_file": {
+            "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-0e75031-unverified\\baseline\\production\\runtime\\unone-player.js",
+            "bytes": 102845,
+            "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+          },
+          "successful_ci_file": {
+            "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\production\\runtime\\unone-player.js",
+            "bytes": 102845,
+            "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+          }
+        },
+        {
+          "kind": "wasm",
+          "byte_identical": true,
+          "measured_file": {
+            "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-0e75031-unverified\\baseline\\production\\runtime\\unone_player.wasm",
+            "bytes": 5300965,
+            "sha256": "d94c3705333c0e63fe3a77c6856150f1089d9e58a770c7b3a09167e73eeaaef8"
+          },
+          "successful_ci_file": {
+            "path": "artifacts\\ui-shared-ci-9c773e3\\baseline\\production\\runtime\\unone_player.wasm",
+            "bytes": 5300965,
+            "sha256": "d94c3705333c0e63fe3a77c6856150f1089d9e58a770c7b3a09167e73eeaaef8"
+          }
+        }
+      ]
+    },
+    {
+      "side": "candidate",
+      "measured_source_commit": "0e75031dcb42498723fab147e710f11a20847936",
+      "successful_ci_source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+      "metadata_differences": [
+        "source_commit"
+      ],
+      "measured_manifest": {
+        "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-0e75031-unverified\\candidate\\production\\runtime\\runtime.json",
+        "bytes": 1443,
+        "sha256": "7bf39cfc547ad1f4005ab311250747fb44fd7e96f9aba782d6400b16cfe66e93"
+      },
+      "successful_ci_manifest": {
+        "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\runtime.json",
+        "bytes": 1443,
+        "sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6"
+      },
+      "files": [
+        {
+          "kind": "javascript",
+          "byte_identical": true,
+          "measured_file": {
+            "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-0e75031-unverified\\candidate\\production\\runtime\\unone-player.js",
+            "bytes": 102845,
+            "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+          },
+          "successful_ci_file": {
+            "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\unone-player.js",
+            "bytes": 102845,
+            "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+          }
+        },
+        {
+          "kind": "wasm",
+          "byte_identical": true,
+          "measured_file": {
+            "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-0e75031-unverified\\candidate\\production\\runtime\\unone_player.wasm",
+            "bytes": 5301301,
+            "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+          },
+          "successful_ci_file": {
+            "path": "artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\unone_player.wasm",
+            "bytes": 5301301,
+            "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+          }
+        }
+      ]
+    }
+  ],
+  "protocol": {
+    "sizes_are_inline_image_batch_quads": [
+      0,
+      256,
+      2048,
+      8192
+    ],
+    "modes": {
+      "static": "Start-built tree retained; no per-tick kit construction, conversion or setRoot.",
+      "changing": "Text alternates 0/1 and a new screen root is built/set each tick; the same immutable image batch remains a child."
+    },
+    "viewport": [
+      1600,
+      900
+    ],
+    "seed": 42,
+    "package": "@unone/ui@0.6.0",
+    "total_fresh_process_vm_runs": 80,
+    "closed_runs": 80,
+    "primary": {
+      "runs": 64,
+      "runs_per_variant_per_case": 4,
+      "order_per_case": [
+        "before",
+        "after",
+        "after",
+        "before",
+        "after",
+        "before",
+        "before",
+        "after"
+      ],
+      "warmup_ticks_each": 30,
+      "measured_ticks_each": 90,
+      "total_measured_ticks": 5760,
+      "host_profiler": false,
+      "core_phase_or_sampling_profiler": false,
+      "timer_scope": "Complete await core.execute({kind:tick,input:{}}) command, including input admission, tick ABI, official host observation restoration and dispatch; not an isolated Rust clone scope."
+    },
+    "secondary": {
+      "runs": 16,
+      "runs_per_variant_per_case": 1,
+      "warmup_ticks_each": 30,
+      "measured_ticks_each": 10,
+      "total_measured_ticks": 160,
+      "host_profiler": true,
+      "core_phase_or_sampling_profiler": false,
+      "scope": "Existing host clock marks of production Core tick ABI and UI/world restoration; not phase-profile Core or isolated clone timing."
+    },
+    "median_definition": "The raw runner sorts values and selects floor(n/2); for four run medians this is the upper-middle value, not the average of the central pair.",
+    "fixture_counting": "8192 means 8192 inline image_batch quads plus a text leaf and batch node (8194 logical entries excluding root), not 8192 ordinary UI leaves.",
+    "timing_pass_gate": false
+  },
+  "fixture_pins": [
+    {
+      "size": 0,
+      "mode": "static",
+      "sha256": "abc6897569204418bedd1b09887d4cec53f9aaf5465f5ead06ddda7e2ca492be"
+    },
+    {
+      "size": 0,
+      "mode": "changing",
+      "sha256": "3ca11c8ead079d945d948ea2d1f7105d63203a3182c9c5e717717b35819873c6"
+    },
+    {
+      "size": 256,
+      "mode": "static",
+      "sha256": "bf32ab7f9e1df643bd3c93a085e781365c631b69d8be8fa15d3d2746195bac19"
+    },
+    {
+      "size": 256,
+      "mode": "changing",
+      "sha256": "1c0dabd9878ad9abfc6c7e50df6f6faee3cba72fcae693f57cd58cbcd9b1b447"
+    },
+    {
+      "size": 2048,
+      "mode": "static",
+      "sha256": "c76e3064bc0d81f47782dca5fd9b5707452024c62be874d1c5e5e5df522a4bea"
+    },
+    {
+      "size": 2048,
+      "mode": "changing",
+      "sha256": "f500bf4e4ee0da2b4e004fc0df9f0e1dfcbe907ec3674e8763c5cd98fbfb425a"
+    },
+    {
+      "size": 8192,
+      "mode": "static",
+      "sha256": "fcf5e1f93536af27a90e577fb85cab9b9534bd4b7b6cceda7c93ecacb4843e81"
+    },
+    {
+      "size": 8192,
+      "mode": "changing",
+      "sha256": "54bd6e644deb684f42a57dd6db82781f7dd72a9f0ec455b871e9a786608fe481"
+    }
+  ],
+  "host_pins": [
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+      "bytes": 14120,
+      "sha256": "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\retained-image-generation.mjs",
+      "bytes": 1452,
+      "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\runtime-core.mjs",
+      "bytes": 10218,
+      "sha256": "f38a5dce3ee3f161e25c18c8f598863e475780a6c0976ec69eb6baaec5f175b1"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\save-publication.mjs",
+      "bytes": 1266,
+      "sha256": "f559315d6ec4e75134ddda340db40e34a554b2b04bf57a1016a3c3578dcb0f66"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\spatial-host.mjs",
+      "bytes": 5312,
+      "sha256": "4ae64136e03f490e967dad3d4eca0721e03172a5be30865b52c837b24e100e05"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\spatial-metrics.mjs",
+      "bytes": 1939,
+      "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\ui-tree-publication.mjs",
+      "bytes": 1913,
+      "sha256": "1a83c34391c60906da1c599429266ae448fdea8a295dbeb6cb373ec9771b75ba"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\web\\shared\\world-field-publication.mjs",
+      "bytes": 1151,
+      "sha256": "fe0ff26fa6e7c40bb262c8e89d05c61cd2e0adfe9501392f468a6b08b9931090"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\scripts\\immutable-bytes-emitted-runtime.mjs",
+      "bytes": 3825,
+      "sha256": "c937d4536fe352cc2b4132b711a85f5b14737ab99a5a10baa26f9fb0f9312720"
+    },
+    {
+      "path": "D:\\Projects\\Unone\\scripts\\benchmark-ui-snapshots-wasm.mjs",
+      "bytes": 20977,
+      "sha256": "a005dba5aeaf820f282245b92719f8cc1bd3b2c2c95b1774f5165b326d763d94"
+    }
+  ],
+  "comparisons": [
+    {
+      "image_quad_count": 0,
+      "mode": "static",
+      "logical_nodes_excluding_root": 1,
+      "authored_leaves_excluding_root": 1,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.022999999999996135,
+          0.025199999999998113,
+          0.02580000000000382,
+          0.024599999999992406
+        ],
+        "reported_run_median_ms": 0.025199999999998113,
+        "run_p95s_ms": [
+          0.05839999999999179,
+          0.06260000000000332,
+          0.07500000000000284,
+          0.052599999999998204
+        ],
+        "reported_run_p95_median_ms": 0.06260000000000332
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.024500000000003297,
+          0.025999999999982037,
+          0.026099999999999568,
+          0.025199999999998113
+        ],
+        "reported_run_median_ms": 0.025999999999982037,
+        "run_p95s_ms": [
+          0.05159999999999343,
+          0.06840000000002533,
+          0.09000000000000341,
+          0.061499999999995225
+        ],
+        "reported_run_p95_median_ms": 0.06840000000002533
+      },
+      "reported_median_delta_ms": 0.0007999999999839247,
+      "reported_median_delta_percent": 3.174603174539614,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "000",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "001",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "002",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "003",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "004",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "005",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "006",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "007",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "008",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        },
+        {
+          "name": "009",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        }
+      ]
+    },
+    {
+      "image_quad_count": 0,
+      "mode": "changing",
+      "logical_nodes_excluding_root": 1,
+      "authored_leaves_excluding_root": 1,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.07519999999999527,
+          0.07320000000001414,
+          0.07110000000000127,
+          0.07580000000000098
+        ],
+        "reported_run_median_ms": 0.07519999999999527,
+        "run_p95s_ms": [
+          0.1688000000000045,
+          0.1524000000000001,
+          0.1688000000000045,
+          0.16229999999998768
+        ],
+        "reported_run_p95_median_ms": 0.1688000000000045
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.08340000000001169,
+          0.07620000000000005,
+          0.08379999999999654,
+          0.07399999999998386
+        ],
+        "reported_run_median_ms": 0.08340000000001169,
+        "run_p95s_ms": [
+          0.2808999999999884,
+          0.2102000000000004,
+          0.25430000000000064,
+          0.21719999999999118
+        ],
+        "reported_run_p95_median_ms": 0.25430000000000064
+      },
+      "reported_median_delta_ms": 0.008200000000016416,
+      "reported_median_delta_percent": 10.904255319171451,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "010",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "011",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "012",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "013",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "014",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "015",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "016",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "017",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "018",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        },
+        {
+          "name": "019",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        }
+      ]
+    },
+    {
+      "image_quad_count": 256,
+      "mode": "static",
+      "logical_nodes_excluding_root": 258,
+      "authored_leaves_excluding_root": 2,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.11619999999999209,
+          0.11759999999998172,
+          0.11730000000000018,
+          0.11809999999999832
+        ],
+        "reported_run_median_ms": 0.11759999999998172,
+        "run_p95s_ms": [
+          0.16240000000001942,
+          0.3094000000000108,
+          0.1717999999999904,
+          0.16800000000000637
+        ],
+        "reported_run_p95_median_ms": 0.1717999999999904
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.10900000000000887,
+          0.11639999999999873,
+          0.11069999999998004,
+          0.11109999999999332
+        ],
+        "reported_run_median_ms": 0.11109999999999332,
+        "run_p95s_ms": [
+          0.2641000000000133,
+          0.22039999999998372,
+          0.16169999999999618,
+          0.1670999999999765
+        ],
+        "reported_run_p95_median_ms": 0.22039999999998372
+      },
+      "reported_median_delta_ms": -0.006499999999988404,
+      "reported_median_delta_percent": -5.527210884344735,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "020",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "021",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "022",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "023",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "024",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "025",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "026",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "027",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "028",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        },
+        {
+          "name": "029",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        }
+      ]
+    },
+    {
+      "image_quad_count": 256,
+      "mode": "changing",
+      "logical_nodes_excluding_root": 258,
+      "authored_leaves_excluding_root": 2,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.6306000000000154,
+          0.6203999999999894,
+          0.6555999999999926,
+          0.6910000000000025
+        ],
+        "reported_run_median_ms": 0.6555999999999926,
+        "run_p95s_ms": [
+          1.4081999999999937,
+          1.0617000000000019,
+          0.9448999999999899,
+          1.0511999999999944
+        ],
+        "reported_run_p95_median_ms": 1.0617000000000019
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.6337000000000046,
+          0.6298000000000172,
+          0.6332999999999913,
+          0.6274999999999977
+        ],
+        "reported_run_median_ms": 0.6332999999999913,
+        "run_p95s_ms": [
+          1.1185999999999865,
+          1.4466999999999928,
+          1.2624999999999886,
+          1.3452000000000055
+        ],
+        "reported_run_p95_median_ms": 1.3452000000000055
+      },
+      "reported_median_delta_ms": -0.02230000000000132,
+      "reported_median_delta_percent": -3.40146430750482,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "030",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "031",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "032",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "033",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "034",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "035",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "036",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "037",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "038",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        },
+        {
+          "name": "039",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        }
+      ]
+    },
+    {
+      "image_quad_count": 2048,
+      "mode": "static",
+      "logical_nodes_excluding_root": 2050,
+      "authored_leaves_excluding_root": 2,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.7797000000000196,
+          0.7913000000000068,
+          0.7658000000000129,
+          0.7768999999999835
+        ],
+        "reported_run_median_ms": 0.7797000000000196,
+        "run_p95s_ms": [
+          0.9060000000000059,
+          1.2231999999999914,
+          0.914999999999992,
+          1.1479999999999961
+        ],
+        "reported_run_p95_median_ms": 1.1479999999999961
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          0.7639000000000067,
+          0.7434000000000083,
+          0.7461000000000126,
+          0.7409999999999854
+        ],
+        "reported_run_median_ms": 0.7461000000000126,
+        "run_p95s_ms": [
+          0.8240999999999872,
+          0.8507000000000176,
+          0.8789999999999907,
+          0.8230000000000075
+        ],
+        "reported_run_p95_median_ms": 0.8507000000000176
+      },
+      "reported_median_delta_ms": -0.03360000000000696,
+      "reported_median_delta_percent": -4.309349749904589,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "040",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "041",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "042",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "043",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "044",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "045",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "046",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "047",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "048",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        },
+        {
+          "name": "049",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        }
+      ]
+    },
+    {
+      "image_quad_count": 2048,
+      "mode": "changing",
+      "logical_nodes_excluding_root": 2050,
+      "authored_leaves_excluding_root": 2,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          4.410799999999995,
+          4.381599999999992,
+          4.402400000000057,
+          4.380700000000047
+        ],
+        "reported_run_median_ms": 4.402400000000057,
+        "run_p95s_ms": [
+          5.990299999999991,
+          5.453599999999938,
+          5.410800000000108,
+          5.787300000000016
+        ],
+        "reported_run_p95_median_ms": 5.787300000000016
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          4.352800000000002,
+          4.494799999999998,
+          4.336500000000001,
+          4.437999999999988
+        ],
+        "reported_run_median_ms": 4.437999999999988,
+        "run_p95s_ms": [
+          5.470699999999965,
+          5.424500000000023,
+          5.2894000000000005,
+          5.843299999999999
+        ],
+        "reported_run_p95_median_ms": 5.470699999999965
+      },
+      "reported_median_delta_ms": 0.03559999999993124,
+      "reported_median_delta_percent": 0.8086498273653264,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "050",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "051",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "052",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "053",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "054",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "055",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "056",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "057",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "058",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        },
+        {
+          "name": "059",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        }
+      ]
+    },
+    {
+      "image_quad_count": 8192,
+      "mode": "static",
+      "logical_nodes_excluding_root": 8194,
+      "authored_leaves_excluding_root": 2,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          3.156400000000019,
+          3.1534000000000333,
+          3.095799999999997,
+          3.1100999999999885
+        ],
+        "reported_run_median_ms": 3.1534000000000333,
+        "run_p95s_ms": [
+          3.5698000000000434,
+          3.828899999999976,
+          3.3326000000000136,
+          4.1375000000000455
+        ],
+        "reported_run_p95_median_ms": 3.828899999999976
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          2.9861000000000217,
+          3.016200000000026,
+          3.0219000000000733,
+          3.0010999999999513
+        ],
+        "reported_run_median_ms": 3.016200000000026,
+        "run_p95s_ms": [
+          4.0563999999999965,
+          3.294499999999971,
+          3.5091000000000463,
+          3.2316000000000145
+        ],
+        "reported_run_p95_median_ms": 3.5091000000000463
+      },
+      "reported_median_delta_ms": -0.1372000000000071,
+      "reported_median_delta_percent": -4.350859389865091,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "060",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "061",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "062",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "063",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "064",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "065",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "066",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "067",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 90,
+          "changed": 0
+        },
+        {
+          "name": "068",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        },
+        {
+          "name": "069",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 10,
+          "changed": 0
+        }
+      ]
+    },
+    {
+      "image_quad_count": 8192,
+      "mode": "changing",
+      "logical_nodes_excluding_root": 8194,
+      "authored_leaves_excluding_root": 2,
+      "before": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          18.988900000000058,
+          22.50590000000011,
+          18.521099999999933,
+          18.620499999999993
+        ],
+        "reported_run_median_ms": 18.988900000000058,
+        "run_p95s_ms": [
+          25.987699999999904,
+          30.785199999999804,
+          27.196800000000167,
+          26.526399999999967
+        ],
+        "reported_run_p95_median_ms": 27.196800000000167
+      },
+      "after": {
+        "runs": 4,
+        "measured_ticks": 360,
+        "run_medians_ms": [
+          19.05690000000004,
+          18.69959999999992,
+          18.777500000000032,
+          18.66599999999994
+        ],
+        "reported_run_median_ms": 18.777500000000032,
+        "run_p95s_ms": [
+          25.6391000000001,
+          25.28989999999976,
+          25.745899999999892,
+          26.284800000000132
+        ],
+        "reported_run_p95_median_ms": 25.745899999999892
+      },
+      "reported_median_delta_ms": -0.211400000000026,
+      "reported_median_delta_percent": -1.1132819699931296,
+      "phase_core_used": false,
+      "secondary_host_profile_runs": 2,
+      "full_final_world_ui_save_exact": true,
+      "ui_generation_counts": [
+        {
+          "name": "070",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "071",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "072",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "073",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "074",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "075",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "076",
+          "variant": "before",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "077",
+          "variant": "after",
+          "host_profile": false,
+          "preserved": 0,
+          "changed": 90
+        },
+        {
+          "name": "078",
+          "variant": "before",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        },
+        {
+          "name": "079",
+          "variant": "after",
+          "host_profile": true,
+          "preserved": 0,
+          "changed": 10
+        }
+      ]
+    }
+  ],
+  "correctness": {
+    "runner_report": "Every matched run: load +warmup +measured Core digests and full final World/UI/save exact",
+    "all_runs_ok": true,
+    "all_runs_closed": true,
+    "unexpected_stderr": 0,
+    "aborts": 0,
+    "matched_full_final_hashes_rechecked_offline": true,
+    "digest_checkpoints_each_primary": 121,
+    "digest_checkpoints_each_secondary": 41
+  },
+  "limits": [
+    "Primary host profiler is disabled; secondary tick_abi_atomic includes update, observe/capture, canonical serialization and publication.",
+    "Only matching actual phase-profile runtimes can expose ui_clone_ms; no such per-clone timing is fabricated here.",
+    "WASM linear memory capacity is not live memory, allocator growth, Luau allocation or GC frequency. No forced GC.",
+    "Hashing full final state occurs after timing. Static fixture does not setRoot/update UI during measured ticks. Changing fixture includes actual UI kit/conversion/validation.",
+    "Other chats/system activity may be concurrent; ABBA+reverse does not create an exclusive-machine benchmark.",
+    "Possible concurrent chats/system activity remains a limitation; ABBA plus reverse order does not establish CPU isolation.",
+    "The later passing CI establishes build/ABI/parity provenance for byte-identical production binaries, not that the old timing window was rerun or that metadata identities are equal.",
+    "These are headless synthetic image-batch cases; they do not establish gameplay/browser FPS, GPU cost, isolated clone savings, allocation counts, collector frequency or leak freedom.",
+    "The 8192 changing-quads full-command result remains about 19 ms per tick in this synthetic fixture; this is not a 60 FPS acceptance result.",
+    "No new measurement, runtime execution, Native/Cargo command, forced collector or browser was run while assembling this record."
+  ]
+}

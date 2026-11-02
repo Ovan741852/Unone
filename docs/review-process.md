@@ -50,6 +50,16 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-11-03: immutable shared Rust UI snapshot generations passed actual Linux
+  Core ownership/library/retained-resource tests and matching production/phase
+  WASM parity. Candidate bytes/span and Sprite functional regressions passed.
+  Phase evidence measures only about 0.0082 ms/tick saved in battle UI capture;
+  the tail regression and seven-scene 60 FPS acceptance remain open. Independent
+  Codex reviews found no remaining concrete P1/P2; the separate 45-second
+  tool-free Claude attempt timed out without output and remains incomplete.
+  Windows Native final validation is still blocked by App Control4551. See
+  [the review and execution limits](reviews/2026-11-03-shared-ui-snapshots.md).
+
 - 2026-10-30/31: immutable bounded byte views, checked safe mlua writes, strict
   buffer ranges and vendored C++ build tracking. Native production and reload
   gates passed; clean `905e20e` WASM passed 353 checks/69 rejection cases, an

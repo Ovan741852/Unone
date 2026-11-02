@@ -1,0 +1,326 @@
+{
+  "schema": "unone.shared-ui.actual-wasm-regressions.v1",
+  "status": "passed",
+  "recorded_by": "/root/native_performance",
+  "scope": "Actual emitted production WASM functional execution in Node. No local Native, Cargo, browser, renderer, benchmark or forced collector was executed.",
+  "runtime": {
+    "directory": "artifacts/ui-shared-ci-9c773e3/candidate/production/runtime",
+    "source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+    "source_dirty": false,
+    "profile": "release",
+    "bytecode_optimization_level": 2,
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "input",
+      "jobs",
+      "observation",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui",
+      "world"
+    ],
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "preview_tools": false,
+    "dev_tools": false,
+    "phase_profile": false,
+    "sampling_profile": false,
+    "manifest": {
+      "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\runtime.json",
+      "bytes": 1443,
+      "sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6"
+    },
+    "javascript": {
+      "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\unone-player.js",
+      "bytes": 102845,
+      "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+    },
+    "wasm": {
+      "path": "D:\\Projects\\Unone\\artifacts\\ui-shared-ci-9c773e3\\candidate\\production\\runtime\\unone_player.wasm",
+      "bytes": 5301301,
+      "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+    }
+  },
+  "host": {
+    "node": "v24.19.0",
+    "emitted_loader": {
+      "path": "D:\\Projects\\Unone\\scripts\\immutable-bytes-emitted-runtime.mjs",
+      "bytes": 3825,
+      "sha256": "c937d4536fe352cc2b4132b711a85f5b14737ab99a5a10baa26f9fb0f9312720"
+    },
+    "observation_reader": {
+      "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+      "bytes": 14120,
+      "sha256": "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c"
+    }
+  },
+  "immutable_bytes": {
+    "status": "passed",
+    "fixture": {
+      "path": "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes.luau",
+      "bytes": 13378,
+      "sha256": "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848"
+    },
+    "checks_per_fixture_initialization": 353,
+    "expected_rejections_per_fixture_initialization": 69,
+    "checkpoint_frames": [
+      0,
+      1,
+      2,
+      3,
+      0
+    ],
+    "checkpoint_digests": [
+      {
+        "label": "initial",
+        "frame": 0,
+        "observation_digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a"
+      },
+      {
+        "label": "tick-1",
+        "frame": 1,
+        "observation_digest": "sha256:fbbb572ee3b61631583dbda981d6af74f8dded670dc374474a78ae06ff880bd5"
+      },
+      {
+        "label": "tick-2",
+        "frame": 2,
+        "observation_digest": "sha256:5141a686af9ea250d43f7b4b6cd952c3f7c292e08720275ea2eaca50adfd281c"
+      },
+      {
+        "label": "tick-3",
+        "frame": 3,
+        "observation_digest": "sha256:b73895bb0cae4c4cdf53a013222413f77cd3e2b31c3a6909cb0a4cf6ff59fbb5"
+      },
+      {
+        "label": "fresh-after-unload",
+        "frame": 0,
+        "observation_digest": "sha256:d525691ce643c4698e4b1b7409c6e6f74a72892427759e538a6b851355681d6a"
+      }
+    ],
+    "signature": "bytes-v2:256:32640:4294967295",
+    "save_payload": {
+      "immutable_bytes": "portable-only",
+      "revision": 1
+    },
+    "gate_assertions": [
+      "Actual emitted module exposes Core ABI",
+      "Shared expanded fixture passes at load and frames 1..3",
+      "Unload and new runtime reproduce the complete initial canonical result"
+    ],
+    "unload_and_fresh_initial_world_exact": true,
+    "native_pairing": {
+      "status": "outside-this-record",
+      "reason": "No executed native report supplied"
+    },
+    "cleanup": {
+      "attempted": true,
+      "unloaded": true,
+      "decoder_released": true
+    },
+    "raw": {
+      "path": ".cache/immutable-bytes-9c773e3-functional-r1/report.json",
+      "bytes": 15728,
+      "sha256": "7ba59de6642dc81dbbe7ab46f39258d86b339057c714f166d773821ca06c118f"
+    },
+    "command": {
+      "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "argv": [
+        "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-functional-wasm.mjs",
+        "--runtime",
+        "artifacts/ui-shared-ci-9c773e3/candidate/production/runtime",
+        "--expected-manifest",
+        "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+        "--expected-source",
+        "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+        "--expected-javascript",
+        "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+        "--expected-wasm",
+        "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+        "--expected-loader",
+        "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c",
+        "--expected-fixture",
+        "f1165619a599cbba98835b4b5ce1fb9c0a863cb22dfdbead72a5dc8551881848",
+        "--out",
+        ".cache/immutable-bytes-9c773e3-functional-r1"
+      ],
+      "cwd": "D:\\Projects\\Unone"
+    }
+  },
+  "natural_collection": {
+    "status": "passed",
+    "scope": "Bounded synthetic allocation pressure with normal VM collection; no force-GC call. Weak-value witnesses concern these root/view objects only.",
+    "fixture": {
+      "path": "D:\\Projects\\Unone\\crates\\unone-engine\\tests\\fixtures\\immutable-bytes-natural-gc.luau",
+      "bytes": 3591,
+      "sha256": "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0"
+    },
+    "retained_root_witness": {
+      "frame": 2,
+      "root_alive": true,
+      "intermediate_collected": true,
+      "child_valid": true,
+      "child_collected": false,
+      "cumulative_requested_pressure_bytes": 4194304
+    },
+    "release_action_frame": 3,
+    "final_collection_witness": {
+      "frame": 5,
+      "root_alive": false,
+      "intermediate_collected": true,
+      "child_valid": false,
+      "child_collected": true,
+      "cumulative_requested_pressure_bytes": 10485760
+    },
+    "observed_frames": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "maximum_fixed_ticks": 100,
+    "ephemeral_buffers_per_tick": 32,
+    "ephemeral_buffer_bytes": 65536,
+    "pressure_is_cumulative_requested_payload_not_live_memory": true,
+    "cleanup": {
+      "attempted": true,
+      "unloaded": true,
+      "decoder_released": true
+    },
+    "raw": {
+      "path": ".cache/immutable-bytes-9c773e3-natural-gc-r1/report.json",
+      "bytes": 9023,
+      "sha256": "5bdbef3bf94fd1e4da94fc4686716f452988740a0c2765cb7f722992c705e44b"
+    },
+    "command": {
+      "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "argv": [
+        "D:\\Projects\\Unone\\scripts\\verify-immutable-bytes-natural-gc-wasm.mjs",
+        "--runtime",
+        "artifacts/ui-shared-ci-9c773e3/candidate/production/runtime",
+        "--expected-manifest",
+        "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+        "--expected-source",
+        "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+        "--expected-javascript",
+        "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+        "--expected-wasm",
+        "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+        "--expected-loader",
+        "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c",
+        "--expected-fixture",
+        "3bf1a3346274ee165c636d862bd389e2ebf1674a4d99505637ea0909f70060b0",
+        "--out",
+        ".cache/immutable-bytes-9c773e3-natural-gc-r1"
+      ],
+      "cwd": "D:\\Projects\\Unone"
+    }
+  },
+  "sprite_resources": {
+    "status": "passed",
+    "check_count": 10,
+    "assertions": [
+      "opaque lease prepares a typed captured material plan",
+      "loading cannot publish partial appearance and unchanged plan is omitted",
+      "prepared receipt atomically publishes UV pose size and independent uniforms",
+      "invalid instance uniform cannot mutate the accepted revision",
+      "submission is distinct and live movement retains ownership",
+      "new epoch invalidates prior submission receipt",
+      "idempotent caller release preserves visible entity demand",
+      "hide drops last entity demand and invalidates commit",
+      "failed tick keeps admitted feedback and rolls back appearance revision",
+      "fractional epoch input is rejected by actual Core"
+    ],
+    "fixture": {
+      "sha256": "ff4e39e4ae632f8c1310bd3023e54d9cb6d434e33a738b5c6d3b5a3f768e4607",
+      "bytes": 1206
+    },
+    "receipt_scope": "Recorded presentation-resource receipts enter through the real Core input contract; this does not establish actual GPU upload or rendering.",
+    "core_close_completed": true,
+    "raw": {
+      "path": ".cache/sprite-resources-9c773e3-functional-r1/result.json",
+      "bytes": 1998,
+      "sha256": "754273caac1f345e1753df0e9e7a99c0dc9f43c474c64a320e4e3ce3064d2f1a"
+    },
+    "command": {
+      "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "argv": [
+        "scripts/verify-sprite-resources-wasm.mjs",
+        "--runtime",
+        "artifacts/ui-shared-ci-9c773e3/candidate/production/runtime",
+        "--expected-source",
+        "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+        "--expected-wasm",
+        "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+        "--out",
+        ".cache/sprite-resources-9c773e3-functional-r1"
+      ],
+      "cwd": "D:\\Projects\\Unone"
+    }
+  },
+  "diagnostics": {
+    "stderr": 0,
+    "stderr_overflow": 0,
+    "aborts": 0,
+    "errors": 0,
+    "all_verifiers_exit_code": 0
+  },
+  "executed_at": {
+    "bytes_started": "2026-11-02T17:50:24.720Z",
+    "bytes_finished": "2026-11-02T17:50:24.833Z",
+    "natural_started": "2026-11-02T17:50:25.259Z",
+    "natural_finished": "2026-11-02T17:50:25.360Z"
+  },
+  "execution_logs": [
+    {
+      "path": ".cache/wasm-regression-9c773e3-functional-r1.log",
+      "bytes": 366,
+      "sha256": "9fb1406c740ace6afe06b4adaa052c745dde4cd77cea8185269d1c9fd73f7c9f"
+    },
+    {
+      "path": ".cache/wasm-regression-9c773e3-natural-gc-r1.log",
+      "bytes": 249,
+      "sha256": "4aac65cd602d7b9b63f81c04678f2d126966a711f0064006beff4ea39b742407"
+    },
+    {
+      "path": ".cache/wasm-regression-9c773e3-sprite-r1.log",
+      "bytes": 114,
+      "sha256": "f17ab956f2d6308b2d9f05c9872547fb49d72522896da909b1dd8fbb72a0b96e"
+    }
+  ],
+  "verifier_sources": [
+    {
+      "path": "scripts/verify-immutable-bytes-functional-wasm.mjs",
+      "bytes": 12178,
+      "sha256": "c04986e26e63756dd9f99850526e89812ee6c5ec1aece67b8cc7a620c536d82f"
+    },
+    {
+      "path": "scripts/verify-immutable-bytes-natural-gc-wasm.mjs",
+      "bytes": 9212,
+      "sha256": "a13c5c05f0544e02ebf38fdb02622269e88c8a704e280ae2874b5c89b3eb037b"
+    },
+    {
+      "path": "scripts/verify-sprite-resources-wasm.mjs",
+      "bytes": 7622,
+      "sha256": "616366e86798f2f5a4231c6fc8ce6cf7d4c845e518a8ae1dca3e1c7ab43e639f"
+    }
+  ],
+  "limits": [
+    "This record does not certify browser presentation, GPU/scanout readiness, gameplay FPS, allocation-free operation, GC frequency, or global memory-leak freedom.",
+    "The collection witness is not a production-game GC frequency or timing measurement; the fixture deliberately creates bounded ephemeral allocation pressure.",
+    "No new Native/WASM canonical pairing is claimed. No executed Native report was supplied to this functional verifier; Linux Core results are recorded separately.",
+    "Windows local Native execution/build remains outside this record; no blocked helper or EXE was retried or relocated.",
+    "The selected directory is a CI runtime artifact. No complete SDK, CLI precompiler, export publication or official-player visual acceptance is claimed.",
+    "The observation-reader entry file is hash-pinned. Its current repository transitive modules were used without a separate dependency-graph pin in these existing verifiers.",
+    "Raw complete reports and exact original logs remain in the referenced .cache directories; this durable record preserves their hashes and compact results."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "status": "timed-out-incomplete",
+  "started_utc": "2026-11-02T18:03:31.065Z",
+  "base_revision": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+  "captured_head": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+  "fixed_diff_sha256": "d642ddee925b860e1edc2dde36f9838987928626273894a158c629e9006e615d",
+  "paths": [
+    {
+      "path": "crates/unone-engine/src/runtime/ui_snapshot_tests.rs",
+      "bytes": 9299,
+      "sha256": "9203284244fcbf438cf2e7632430cbf05e6b874324d2deee44f09a56caa94cae"
+    },
+    {
+      "path": "docs/decisions/0051-shared-ui-snapshot-generations.md",
+      "bytes": 1688,
+      "sha256": "d359672073f4154c06125d2e2f83671ad8266877e974239c4359be1f16dff915"
+    }
+  ],
+  "cli": {
+    "path": "C:/Users/liNao/.local/bin/claude.exe",
+    "version": "2.1.308 (Claude Code)",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version_exit": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 45000
+  },
+  "prompt_sha256": "2e51f5ebd62187a385c076357e5fbfd587321f88b8760a4eb0ab42bb5bc5c74f",
+  "finished_utc": "2026-11-02T18:04:16.471Z",
+  "elapsed_ms": 45334.1345,
+  "exit_code": 1,
+  "signal": null,
+  "timed_out": true,
+  "launch_error": null,
+  "termination": {
+    "command": [
+      "taskkill.exe",
+      "/PID",
+      "37856",
+      "/T",
+      "/F"
+    ],
+    "exit": 0,
+    "stdout": "���\\: PID �� 10840 (PID �� 37856 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n���\\: PID �� 37856 (PID �� 32576 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n",
+    "stderr": "",
+    "error": null
+  },
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

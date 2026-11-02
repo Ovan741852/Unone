@@ -1,0 +1,351 @@
+{
+  "schema": "unone.shared-ui.core-ci-summary.v2",
+  "status": "actual-linux-core-and-four-wasm-parity-passed",
+  "scope": "Actual GitHub Actions ubuntu-24.04 Core tests and matching baseline/candidate official production+phase WASM builds, ABI isolation and CLI/export/WASM parity. No browser/FPS/SDK acceptance claim.",
+  "run": {
+    "id": 41490065996,
+    "attempt": 1,
+    "event": "push",
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41490065996",
+    "head_sha": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "job": {
+    "id": 125430442725,
+    "name": "Core ownership and library tests",
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41490065996/job/125430442725",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-11-02T17:19:30Z",
+    "completed_at": "2026-11-02T17:21:25Z",
+    "runner_os": "ubuntu-24.04"
+  },
+  "checks": {
+    "builder_and_cwd_preflight": {
+      "status": "success",
+      "passed": 10,
+      "failed": 0
+    },
+    "arc_ownership": {
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 387,
+      "seconds": 0.05
+    },
+    "core_library": {
+      "passed": 391,
+      "failed": 0,
+      "ignored": 3,
+      "seconds": 4.94
+    },
+    "retained_image_batch": {
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "seconds": 0.07
+    }
+  },
+  "ignored_tests": [
+    {
+      "name": "rigid3d::tests::rigid3d_benchmark",
+      "reason": "manual optimized solver-only performance; not an end-to-end frame-rate claim"
+    },
+    {
+      "name": "runtime::jobs::tests::native_pool_benchmark",
+      "reason": "manual release-only throughput experiment, not a timing assertion"
+    },
+    {
+      "name": "world::tests::broadphase_benchmark",
+      "reason": "manual release physics-only timing; not an end-to-end FPS claim"
+    }
+  ],
+  "log_excerpts": {
+    "test_results": [
+      "2026-11-02T17:20:49.8678373Z test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 387 filtered out; finished in 0.05s",
+      "2026-11-02T17:20:54.9774392Z test result: ok. 391 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 4.94s",
+      "2026-11-02T17:21:16.2998747Z test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s"
+    ],
+    "ignored": [
+      "2026-11-02T17:20:51.7288407Z test rigid3d::tests::rigid3d_benchmark ... ignored, manual optimized solver-only performance; not an end-to-end frame-rate claim",
+      "2026-11-02T17:20:52.5848779Z test runtime::jobs::tests::native_pool_benchmark ... ignored, manual release-only throughput experiment, not a timing assertion",
+      "2026-11-02T17:20:53.9089298Z test world::tests::broadphase_benchmark ... ignored, manual release physics-only timing; not an end-to-end FPS claim"
+    ]
+  },
+  "provenance": {
+    "read_method": "GitHub connector GET run/jobs metadata and completed decoded job logs",
+    "full_logs": "Workflow artifacts core-ownership-logs and official-web-runtimes-{baseline,candidate}; Root downloads and verifies artifact bytes independently.",
+    "reviewer": "/root/runtime_audit"
+  },
+  "limits": [
+    "No local Windows blocked helper/EXE/Cargo build was retried.",
+    "Linux Native Core/player source checks do not certify Windows player execution.",
+    "Five reported parity cases/checkpoints per runtime are not a browser visual/input test or production FPS measurement.",
+    "Explicit fixture parity omits the verifier's default extra physics-lab branch and optional exercise-tools path.",
+    "Phase ABI/isolation/parity passed; this record does not start a phase timing window or establish clone-time savings.",
+    "Runtime hashes here are from actual CI build logs; artifact download/inventory and actual benchmark are independently handled by Root.",
+    "Ordinary CI failure remains recorded separately; this is not an all-CI-green claim."
+  ],
+  "runtimes": [
+    {
+      "job": {
+        "id": 125431543228,
+        "name": "candidate production and phase runtimes",
+        "url": "https://github.com/Ovan741852/Unone/actions/runs/41490065996/job/125431543228",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-02T17:21:29Z",
+        "completed_at": "2026-11-02T17:33:33Z"
+      },
+      "linux_cli_build": "success",
+      "variants": [
+        {
+          "variant": "production",
+          "source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+          "source_dirty": false,
+          "profile": "release",
+          "profile_mode": "none",
+          "bytecode_optimization_level": 2,
+          "cargo_features": [
+            "all-systems"
+          ],
+          "runtime_packages": {
+            "@unone/ui": "0.6.0"
+          },
+          "wasm": {
+            "file": "unone_player.wasm",
+            "bytes": 5301301,
+            "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+          },
+          "javascript": {
+            "file": "unone-player.js",
+            "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+          },
+          "actual_abi_check": "passed before emitted manifest was published",
+          "developer_abi_expected": false,
+          "parity": {
+            "ok": true,
+            "mode": "exported-player",
+            "compared_cases_or_checkpoints": 5,
+            "audio_omission_detected": true,
+            "variant_isolation": "passed actual WASM Developer ABI and shipped tool/template checks",
+            "fixture": "tests/host-parity-project",
+            "default_extra_physics_fixture_executed": false,
+            "browser_visual_acceptance": false
+          }
+        },
+        {
+          "variant": "phase-profile",
+          "source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+          "source_dirty": false,
+          "profile": "release",
+          "profile_mode": "phase-only",
+          "bytecode_optimization_level": 2,
+          "cargo_features": [
+            "all-systems",
+            "phase-profile"
+          ],
+          "runtime_packages": {
+            "@unone/ui": "0.6.0"
+          },
+          "wasm": {
+            "file": "unone_player.wasm",
+            "bytes": 5626608,
+            "sha256": "8c8d1bad503e9e7076e3ad5a724dcfca9fbc9166cf2e81d1dece4c8539f73f9f"
+          },
+          "javascript": {
+            "file": "unone-player.js",
+            "sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f"
+          },
+          "actual_abi_check": "passed before emitted manifest was published",
+          "developer_abi_expected": true,
+          "parity": {
+            "ok": true,
+            "mode": "exported-player",
+            "compared_cases_or_checkpoints": 5,
+            "audio_omission_detected": true,
+            "variant_isolation": "passed actual WASM Developer ABI and shipped tool/template checks",
+            "fixture": "tests/host-parity-project",
+            "default_extra_physics_fixture_executed": false,
+            "browser_visual_acceptance": false
+          }
+        }
+      ]
+    },
+    {
+      "job": {
+        "id": 125431543235,
+        "name": "baseline production and phase runtimes",
+        "url": "https://github.com/Ovan741852/Unone/actions/runs/41490065996/job/125431543235",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-02T17:21:28Z",
+        "completed_at": "2026-11-02T17:30:05Z"
+      },
+      "linux_cli_build": "success",
+      "variants": [
+        {
+          "variant": "production",
+          "source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+          "source_dirty": false,
+          "profile": "release",
+          "profile_mode": "none",
+          "bytecode_optimization_level": 2,
+          "cargo_features": [
+            "all-systems"
+          ],
+          "runtime_packages": {
+            "@unone/ui": "0.6.0"
+          },
+          "wasm": {
+            "file": "unone_player.wasm",
+            "bytes": 5300965,
+            "sha256": "d94c3705333c0e63fe3a77c6856150f1089d9e58a770c7b3a09167e73eeaaef8"
+          },
+          "javascript": {
+            "file": "unone-player.js",
+            "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+          },
+          "actual_abi_check": "passed before emitted manifest was published",
+          "developer_abi_expected": false,
+          "parity": {
+            "ok": true,
+            "mode": "exported-player",
+            "compared_cases_or_checkpoints": 5,
+            "audio_omission_detected": true,
+            "variant_isolation": "passed actual WASM Developer ABI and shipped tool/template checks",
+            "fixture": "tests/host-parity-project",
+            "default_extra_physics_fixture_executed": false,
+            "browser_visual_acceptance": false
+          }
+        },
+        {
+          "variant": "phase-profile",
+          "source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+          "source_dirty": false,
+          "profile": "release",
+          "profile_mode": "phase-only",
+          "bytecode_optimization_level": 2,
+          "cargo_features": [
+            "all-systems",
+            "phase-profile"
+          ],
+          "runtime_packages": {
+            "@unone/ui": "0.6.0"
+          },
+          "wasm": {
+            "file": "unone_player.wasm",
+            "bytes": 5626071,
+            "sha256": "d3f00a90f39c1c88f72eb95549d21af662ef10fe1c17b3f8e5563bc393280742"
+          },
+          "javascript": {
+            "file": "unone-player.js",
+            "sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f"
+          },
+          "actual_abi_check": "passed before emitted manifest was published",
+          "developer_abi_expected": true,
+          "parity": {
+            "ok": true,
+            "mode": "exported-player",
+            "compared_cases_or_checkpoints": 5,
+            "audio_omission_detected": true,
+            "variant_isolation": "passed actual WASM Developer ABI and shipped tool/template checks",
+            "fixture": "tests/host-parity-project",
+            "default_extra_physics_fixture_executed": false,
+            "browser_visual_acceptance": false
+          }
+        }
+      ]
+    }
+  ],
+  "common_runtime_contract": {
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "input",
+      "jobs",
+      "observation",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui",
+      "world"
+    ],
+    "dev_tools": false,
+    "sampling_profile": false,
+    "production_has_developer_abi": false,
+    "phase_has_developer_abi": true,
+    "abi_source": "Selected checkout official build-web-live.ps1 ABI/linker contract; actual WASM exports inspected before emitted manifest was published.",
+    "toolchain": {
+      "emsdk_commit": "e8b64774ff1a3ddb6a013203ced27a34e70c2d8b",
+      "emscripten": "3.1.39",
+      "binaryen": "131",
+      "node_major": 24,
+      "python": "3.11"
+    }
+  },
+  "prior_attempts": [
+    {
+      "run": {
+        "id": 41486160282,
+        "attempt": 1,
+        "event": "push",
+        "url": "https://github.com/Ovan741852/Unone/actions/runs/41486160282",
+        "head_sha": "0e75031dcb42498723fab147e710f11a20847936"
+      },
+      "core_counts": {
+        "builder_preflight": {
+          "status": "success"
+        },
+        "arc_ownership": {
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 387,
+          "seconds": 0.04
+        },
+        "core_library": {
+          "passed": 391,
+          "failed": 0,
+          "ignored": 3,
+          "seconds": 3.38
+        },
+        "retained_image_batch": {
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "seconds": 0.05
+        }
+      },
+      "runtime_result": "Production baseline/candidate compiled and passed actual ABI checks; copied verifier used its tools directory as CLI cwd and failed SDK_NOT_FOUND. Phase variants were not reached.",
+      "resolution": "9c773e3c threads selected source-root through both parity tools and each CLI child; regression preflights retained."
+    }
+  ],
+  "separate_normal_ci": {
+    "run_id": 41490065974,
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41490065974",
+    "status": "completed-failure",
+    "excluded_player_crates": "success: Native and player all-target source checks",
+    "workspace_check": "success",
+    "workspace_clippy": "not executed: cargo-clippy component missing",
+    "workspace_tests": "skipped after clippy command failure",
+    "rustfmt": "not executed: cargo-fmt component missing",
+    "web": {
+      "tests": 804,
+      "passed": 780,
+      "failed": 19,
+      "skipped": 5,
+      "failures": {
+        "publisher_validator_import_guard": 11,
+        "fresh_cache_parent_missing": 8
+      }
+    },
+    "scope": "Separate diagnosis; official runtime job success does not imply complete ordinary CI success."
+  }
+}
