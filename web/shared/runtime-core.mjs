@@ -9,7 +9,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  // Opt-in profiling: consecutive host-clock marks of the last executed command. The tick ABI
  // runs game update and observation serialization in one WASM call; it is reported unsplit.
  let lastTrace=null;
- const mark=(name,bytes)=>{lastTrace.marks.push([name,performance.now()]);if(bytes!==undefined)lastTrace.observation_bytes=bytes;};
+ const mark=(name,bytes,publication)=>{lastTrace.marks.push([name,performance.now()]);if(bytes!==undefined)lastTrace.observation_bytes=bytes;if(publication)(lastTrace.world_field_publications??=[]).push(publication);};
  const spatial=createSpatialHost(module,{backend:spatialBackend,createExecutor:createSpatialExecutor});
  const read=()=>readObservation(module),binary=createBinaryJobTransport(module);
  function send(name,value){const bytes=commandEncoder.encode(JSON.stringify(value)),p=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,p);if(module[name](p,bytes.length)!==0)throw Error(JSON.stringify(read()));}

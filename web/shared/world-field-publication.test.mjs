@@ -45,6 +45,20 @@ test('a publication without leases retires the cache, and release forces a repar
  assert.deepEqual(first,terrain());
 });
 
+test('profile marks identify changed field bytes and separate parse/freeze from unchanged reuse',()=>{
+ const r=runtime(),text=JSON.stringify(terrain()),events=[];
+ const mark=(name,bytes,publication)=>events.push({name,bytes,publication});
+ r.publish();const first=readObservation(r.module,mark).world.heightfields;
+ assert.deepEqual(events.filter(e=>e.publication).map(e=>e.publication),[{field:'heightfields',bytes:encoder.encode(text).length,changed:true}]);
+ assert.deepEqual(events.filter(e=>e.name.startsWith('world_field/')).map(e=>e.name),[
+  'world_field/heightfields/descriptor','world_field/heightfields/utf8','world_field/heightfields/parse','world_field/heightfields/freeze']);
+ events.length=0;r.publish({world:{frame:2}});
+ assert.equal(readObservation(r.module,mark).world.heightfields,first);
+ assert.deepEqual(events.filter(e=>e.publication).map(e=>e.publication),[{field:'heightfields',bytes:encoder.encode(text).length,changed:false}]);
+ assert.deepEqual(events.filter(e=>e.name.startsWith('world_field/')).map(e=>e.name),['world_field/heightfields/reuse']);
+ assert.equal(events.filter(e=>e.bytes!==undefined).length,1,'field metadata must not overwrite envelope byte accounting');
+});
+
 test('invalid descriptors fail closed without replacing the current generation',()=>{
  const r=runtime();r.publish();const first=readObservation(r.module).world.heightfields;
  const valid={text:JSON.stringify(terrain()),revision:'1'};

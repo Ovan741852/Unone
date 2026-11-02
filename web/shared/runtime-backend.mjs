@@ -27,6 +27,7 @@ export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobP
  function traceSpans(event,trace,parent,toHost){
   if(!trace)return;let at=toHost(trace.start_ms);for(const [name,t] of trace.marks){const end=toHost(t);profiler.span(event,name,at,end,parent);at=end;}
   if(trace.observation_bytes!==undefined)profiler.set(event,{observation_bytes:trace.observation_bytes});
+  if(trace.world_field_publications!==undefined)profiler.set(event,{world_field_publications:trace.world_field_publications});
   if(trace.marks.some(([name])=>name==='tick_abi_atomic'))profiler.set(event,{tick_abi:'atomic_update_and_serialization_unsplit'});
  }
  function coreSpans(event,at,done){profiler.span(event,'execute',at,done);traceSpans(event,core.trace(),'execute',t=>t);}

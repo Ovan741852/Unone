@@ -3,9 +3,9 @@
 // publications, so consumers may cache work by identity.
 const publications=new WeakMap();
 export const WORLD_FIELD_MAX_ENCODED_BYTES=64*1024*1024;
-export function createWorldFieldPublication(text){
+export function createWorldFieldPublication(text,mark){
  if(typeof text!=='string')throw Error('WORLD_FIELD_PUBLICATION_INVALID');
- const value=JSON.parse(text),stack=[];
+ const value=JSON.parse(text),stack=[];if(mark)mark('parse');
  if(value&&typeof value==='object')stack.push(value);
  while(stack.length){
   const current=stack.pop();
@@ -15,6 +15,7 @@ export function createWorldFieldPublication(text){
    const child=current[key];if(child&&typeof child==='object')stack.push(child);
   }
  }
+ if(mark)mark('freeze');
  const entry=Object.freeze({value,text,token:Object.freeze({})});
  if(value&&typeof value==='object')publications.set(value,entry);
  return entry;

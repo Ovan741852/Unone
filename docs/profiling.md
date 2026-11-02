@@ -33,6 +33,9 @@ are absent when profiling is off. A span named `jobs_dispatch` measures only
 work since the preceding mark; it must not be interpreted as job execution.
 Compare profiler-disabled runs for acceptance and use separate diagnostic runs
 to locate a tail. A long restore span alone does not establish GC as its cause.
+Changed leased fields additionally emit `world_field/<name>/utf8`, `/parse` and
+`/freeze` spans. `world_field_publications` records each field's encoded bytes
+and whether it changed; unchanged generations emit `/reuse` without reparsing.
 
 Engine 0.2.0's official Web player exposes a read-only endpoint without enabling
 the developer profiler:

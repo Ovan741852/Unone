@@ -47,7 +47,7 @@ const uint64=value=>typeof value==='string'&&/^[1-9][0-9]{0,19}$/.test(value)&&B
 export function releaseObservationResources(module){imageResources.delete(module);saves.delete(module);uiTrees.delete(module);worldFields.delete(module);}
 // Large world fields arrive as leased canonical JSON by revision. An unchanged
 // revision reuses the previous frozen value without decoding or parsing.
-function restoreWorldFields(module,value,staged){
+function restoreWorldFields(module,value,staged,mark){
  const wire=value?.world_transport;
  if(wire===undefined){staged.worldFields=null;return value;}
  const fields=wire?.fields,invalid=()=>{throw Error('WORLD_TRANSPORT_INVALID');};
@@ -62,9 +62,12 @@ function restoreWorldFields(module,value,staged){
    ||!Number.isSafeInteger(memory.byte_length)||memory.byte_length<1||memory.byte_length>WORLD_FIELD_MAX_ENCODED_BYTES
    ||memory.offset+memory.byte_length>module.HEAPU8.byteLength)invalid();
   let entry=old?.get(key);
-  if(!entry||entry.revision!==field.revision||entry.bytes!==memory.byte_length){
+  const changed=!entry||entry.revision!==field.revision||entry.bytes!==memory.byte_length;
+  if(mark)mark('world_field/'+key+(changed?'/descriptor':'/reuse'),undefined,{field:key,bytes:memory.byte_length,changed});
+  if(changed){
    let publication;
-   try{publication=createWorldFieldPublication(uiTreeDecoder.decode(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length)));}catch{invalid();}
+   try{const text=uiTreeDecoder.decode(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length));if(mark)mark('world_field/'+key+'/utf8');
+    publication=createWorldFieldPublication(text,mark?stage=>mark('world_field/'+key+'/'+stage):undefined);}catch{invalid();}
    entry={revision:field.revision,bytes:memory.byte_length,publication};
   }
   next.set(key,entry);value.world[key]=entry.publication.value;
@@ -146,7 +149,7 @@ export function readObservation(module,mark) {
   const text=observationDecoder.decode(bytes);if(mark)mark('observation_utf8');
   const value=JSON.parse(text);if(mark)mark('observation_parse');
   const staged={};
-  let restored=restoreWorldFields(module,value,staged);if(mark)mark('world_fields_restore');
+  let restored=restoreWorldFields(module,value,staged,mark);if(mark)mark('world_fields_restore');
   restored=restoreUiTree(module,restored,staged);if(mark)mark('ui_tree_restore');
   restored=restoreImages(module,restored,staged);if(mark)mark('ui_images_restore');
   restored=restoreSave(module,restored,staged);if(mark)mark('save_restore');

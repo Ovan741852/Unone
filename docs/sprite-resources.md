@@ -78,4 +78,3 @@ unused-image caches have separately reported scopes.
 
 See [immutable byte views](decisions/0049-bounded-immutable-byte-views.md) for
 binary buffer ownership. Sprite resources do not expose a writable buffer alias.
-
