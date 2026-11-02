@@ -5,8 +5,12 @@ import {dirname,resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {runWithEvidence} from './process-result.mjs';
 import {parseArgs} from 'node:util';
-const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'},fixture:{type:'string'},development:{type:'boolean',default:false},'timeout-ms':{type:'string'}}});
+const toolRoot=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const {values}=parseArgs({options:{cli:{type:'string'},runtime:{type:'string'},fixture:{type:'string'},development:{type:'boolean',default:false},'timeout-ms':{type:'string'},'source-root':{type:'string'}}});
+// CI preserves these verification tools outside the checked-out source so the
+// same verifier can test an older commit. The source CLI must still run from
+// that selected checkout; a copied tool directory is not an installed SDK.
+const root=resolve(values['source-root']??toolRoot);
 const cli=resolve(values.cli??join(root,'target/debug/game.exe'));
 const fixture=resolve(values.fixture??join(root,'tests/host-parity-project'));
 const scratch=mkdtempSync(join(tmpdir(),'unone-player-parity-'));
@@ -28,7 +32,7 @@ try {
   const playerScript=readFileSync(join(output,'web/player/main.js'),'utf8');
   if(/\/\* PROFILE_/.test(playerScript)||(!values.development&&/profileWindow|unoneDeveloper/.test(playerScript)))
     throw new Error('PLAYER_PROFILE_TEMPLATE_FAILED: unresolved instrumentation or production tool references');
-  const verifyArgs=[join(root,'scripts/verify-host-parity.mjs'),'--cli',cli,'--fixture',fixture,'--export',output];
+  const verifyArgs=[join(toolRoot,'scripts/verify-host-parity.mjs'),'--source-root',root,'--cli',cli,'--fixture',fixture,'--export',output];
   if(values.development&&!values.fixture)verifyArgs.push('--exercise-tools');
   const good=run(process.execPath,verifyArgs);
   if(good.status!==0)throw new Error(`PLAYER_PARITY_FAILED: ${good.stdout}\n${good.stderr}`);
@@ -54,7 +58,7 @@ try {
   if(values.runtime)physicsArgs.push('--runtime',resolve(values.runtime));
   const physicsExport=run(cli,physicsArgs);
   if(physicsExport.status!==0)throw new Error(`PHYSICS3D_EXPORT_FAILED: ${physicsExport.stdout}\n${physicsExport.stderr}`);
-  const physicsVerify=[join(root,'scripts/verify-host-parity.mjs'),'--cli',cli,'--fixture',physicsFixture,'--export',physicsOutput];
+  const physicsVerify=[join(toolRoot,'scripts/verify-host-parity.mjs'),'--source-root',root,'--cli',cli,'--fixture',physicsFixture,'--export',physicsOutput];
   const physicsGood=run(process.execPath,physicsVerify);
   if(physicsGood.status!==0)throw new Error(`PHYSICS3D_PARITY_FAILED: ${physicsGood.stdout}\n${physicsGood.stderr}`);
   console.log(physicsGood.stdout.trim());

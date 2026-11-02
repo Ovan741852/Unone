@@ -31,7 +31,7 @@ jobs:
       - name: Install pinned Luau analyzer
         run: sh scripts/install-luau-analyze.sh
       - name: Builder preflight tests
-        run: node --test scripts/build-web-runtime.test.mjs
+        run: node --test scripts/build-web-runtime.test.mjs scripts/player-parity-root.test.mjs
       - name: Arc ownership and complete Core library tests
         shell: bash
         run: |
@@ -82,6 +82,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: web-runtime-${{ matrix.source }}
+          cache-on-failure: true
           workspaces: |
             . -> target
             crates/unone-player -> ../../target/web-runtime-ci
@@ -122,6 +123,7 @@ jobs:
             diagnostic=()
             if [ "$variant" = phase-profile ]; then diagnostic=(--development); fi
             "$UNONE_CI_NODE" "$RUNNER_TEMP/verification/scripts/verify-player-parity.mjs" \
+              --source-root "$GITHUB_WORKSPACE" \
               --cli "$GITHUB_WORKSPACE/target/release/game" --runtime "$base/runtime" \
               --fixture "$GITHUB_WORKSPACE/tests/host-parity-project" --timeout-ms 300000 "${diagnostic[@]}" \
               2>&1 | tee "$base/parity.log"

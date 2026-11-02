@@ -8,16 +8,18 @@ import {webcrypto} from 'node:crypto';
 import {assembleProject} from '../web/shared/load-project.js';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const {values}=parseArgs({options:{cli:{type:'string'},wasm:{type:'string'},'wasm-binary':{type:'string'},fixture:{type:'string'},export:{type:'string'},'exercise-tools':{type:'boolean',default:false}}});
-const cli=resolve(values.cli??join(root,'target/debug/game.exe'));
+const {values}=parseArgs({options:{cli:{type:'string'},wasm:{type:'string'},'wasm-binary':{type:'string'},fixture:{type:'string'},export:{type:'string'},'exercise-tools':{type:'boolean',default:false},'source-root':{type:'string'}}});
+const sourceRoot=resolve(values['source-root']??root);
+const cli=resolve(values.cli??join(sourceRoot,'target/debug/game.exe'));
 const exported=values.export?resolve(values.export):null;
 const runtime=exported?JSON.parse(readFileSync(join(exported,'runtime/runtime.json'),'utf8')):null;
 const js=exported?join(exported,'runtime',runtime.javascript):resolve(values.wasm??join(root,'target/wasm32-unknown-emscripten/debug/deps/unone_web_live_smoke.js'));
 const {loadProject,readObservation,payloadDataSources}=await import(pathToFileURL(join(exported??root,'web/shared/load-project.js')).href);
-const fixture=resolve(values.fixture??join(root,'tests/host-parity-project'));
+const fixture=resolve(values.fixture??join(sourceRoot,'tests/host-parity-project'));
 const config=JSON.parse(readFileSync(join(fixture,'project.unone.json'),'utf8'));
 const hasTests=Boolean(config.test_files?.length);
-const native=spawnSync(cli,['--project',fixture,...(hasTests?['test']:['run','--frames','60']),'--json'],{encoding:'utf8',maxBuffer:16*1024*1024});
+function runNative(){return spawnSync(cli,['--project',fixture,...(hasTests?['test']:['run','--frames','60']),'--json'],{cwd:sourceRoot,encoding:'utf8',maxBuffer:16*1024*1024});}
+const native=runNative();
 if(native.status!==0)throw new Error(`CLI_PARITY_FAILED: ${native.stdout}\n${native.stderr}`);
 const nativeResult=JSON.parse(native.stdout);
 if(!nativeResult.ok)throw new Error(`CLI_PARITY_FAILED: ${native.stdout}`);
