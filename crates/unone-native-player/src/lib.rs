@@ -416,7 +416,7 @@ impl App {
         let mut input = if let Some(replay) = &self.input_replay {
             replay.frame()
         } else {
-            self.ui_input.reconcile(self.snapshot.ui.as_ref());
+            self.ui_input.reconcile(self.snapshot.ui.as_deref());
             if let Some(error) = self.ui_input.take_error() { return Err(error); }
             if let Some((action, down)) = self.ui_input.next_edge() {
                 self.host_input.actions.insert(action, down);
@@ -746,7 +746,7 @@ impl ApplicationHandler for App {
             } if self.input_replay.is_none() => {
                 if state == ElementState::Pressed {
                     if !self.ui_input.down(
-                        self.snapshot.ui.as_ref(),
+                        self.snapshot.ui.as_deref(),
                         0,
                         self.cursor[0],
                         self.cursor[1],
@@ -778,7 +778,7 @@ impl ApplicationHandler for App {
                 let id = touch.id.wrapping_add(1);
                 match touch.phase {
                     winit::event::TouchPhase::Started => {
-                        if !self.ui_input.down(self.snapshot.ui.as_ref(), id, x, y)
+                        if !self.ui_input.down(self.snapshot.ui.as_deref(), id, x, y)
                             && self.world_pointer_owner.is_none()
                         {
                             self.world_pointer_owner = Some(id);

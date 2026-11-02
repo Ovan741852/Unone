@@ -1,0 +1,136 @@
+name: Official Web runtimes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: web-runtime-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  CARGO_TERM_COLOR: always
+  BASELINE_COMMIT: 5d7da387b4b964eb80c6501a773ebaa06c3b33e5
+  EMSDK_COMMIT: e8b64774ff1a3ddb6a013203ced27a34e70c2d8b
+
+jobs:
+  core:
+    name: Core ownership and library tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install the pinned Rust toolchain
+        run: rustup show active-toolchain
+      - uses: Swatinem/rust-cache@v2
+      - name: Install pinned Luau analyzer
+        run: sh scripts/install-luau-analyze.sh
+      - name: Builder preflight tests
+        run: node --test scripts/build-web-runtime.test.mjs
+      - name: Arc ownership and complete Core library tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/core-evidence"
+          cargo test --locked -p unone-engine --lib ui_snapshot_tests 2>&1 | tee "$RUNNER_TEMP/core-evidence/arc-tests.log"
+          grep -Eq '7 passed; 0 failed' "$RUNNER_TEMP/core-evidence/arc-tests.log"
+          cargo test --locked -p unone-engine --lib 2>&1 | tee "$RUNNER_TEMP/core-evidence/library-tests.log"
+          cargo test --locked -p unone-engine --test retained_image_batch 2>&1 | tee "$RUNNER_TEMP/core-evidence/retained-image-tests.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-ownership-logs
+          path: ${{ runner.temp }}/core-evidence/
+
+  runtimes:
+    name: ${{ matrix.source }} production and phase runtimes
+    needs: core
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [baseline, candidate]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Capture verification tools outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "UNONE_CI_NODE=$(command -v node)" >> "$GITHUB_ENV"
+          echo "UNONE_CI_PYTHON=$(command -v python)" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/verification"
+          cp -R scripts web "$RUNNER_TEMP/verification/"
+          printf '{"type":"module"}\n' > "$RUNNER_TEMP/verification/package.json"
+          if [ '${{ matrix.source }}' = baseline ]; then git checkout --detach "$BASELINE_COMMIT"; fi
+          test -z "$(git status --porcelain)"
+      - name: Install pinned toolchain
+        run: rustup show active-toolchain
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: web-runtime-${{ matrix.source }}
+          workspaces: |
+            . -> target
+            crates/unone-player -> ../../target/web-runtime-ci
+      - name: Install the pinned Emscripten and Binaryen outside the source checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --no-checkout https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+          git -C "$RUNNER_TEMP/emsdk" checkout --detach "$EMSDK_COMMIT"
+          test "$(git -C "$RUNNER_TEMP/emsdk" rev-parse HEAD)" = "$EMSDK_COMMIT"
+          "$UNONE_CI_PYTHON" "$RUNNER_TEMP/emsdk/emsdk.py" install 3.1.39
+          "$UNONE_CI_PYTHON" "$RUNNER_TEMP/emsdk/emsdk.py" activate 3.1.39
+          curl --fail --location --retry 3 https://github.com/WebAssembly/binaryen/releases/download/version_131/binaryen-version_131-x86_64-linux.tar.gz -o "$RUNNER_TEMP/binaryen.tar.gz"
+          echo 'b5bf1f0eaf17c63ee588ff7a5954dc8f6ce2c26989051c66f24dfe9ece3e46db  '"$RUNNER_TEMP/binaryen.tar.gz" | sha256sum --check -
+          tar -xzf "$RUNNER_TEMP/binaryen.tar.gz" -C "$RUNNER_TEMP"
+      - name: Install Linux CLI platform libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libxkbcommon-dev libwayland-dev pkg-config
+      - name: Build the matching Linux CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/runtime-evidence/${{ matrix.source }}"
+          cargo build --locked --release -p unone-cli 2>&1 | tee "$RUNNER_TEMP/runtime-evidence/${{ matrix.source }}/cli-build.log"
+      - name: Build and verify official production and phase artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          for variant in production phase-profile; do
+            base="$RUNNER_TEMP/runtime-evidence/${{ matrix.source }}/$variant"
+            "$UNONE_CI_NODE" "$RUNNER_TEMP/verification/scripts/build-web-runtime.mjs" \
+              --repo "$GITHUB_WORKSPACE" --cli "$GITHUB_WORKSPACE/target/release/game" \
+              --emsdk "$RUNNER_TEMP/emsdk" --binaryen "$RUNNER_TEMP/binaryen-version_131" \
+              --python "$UNONE_CI_PYTHON" --target-dir "$GITHUB_WORKSPACE/target/web-runtime-ci" \
+              --output "$base/runtime" --log-dir "$base/build" --variant "$variant"
+            diagnostic=()
+            if [ "$variant" = phase-profile ]; then diagnostic=(--development); fi
+            "$UNONE_CI_NODE" "$RUNNER_TEMP/verification/scripts/verify-player-parity.mjs" \
+              --cli "$GITHUB_WORKSPACE/target/release/game" --runtime "$base/runtime" \
+              --fixture "$GITHUB_WORKSPACE/tests/host-parity-project" --timeout-ms 300000 "${diagnostic[@]}" \
+              2>&1 | tee "$base/parity.log"
+            printf '{"explicit_fixture":true,"default_extra_physics_fixture_executed":false,"browser_visual_acceptance":false}\n' > "$base/verification-scope.json"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: official-web-runtimes-${{ matrix.source }}
+          path: ${{ runner.temp }}/runtime-evidence/
+          if-no-files-found: warn
+          retention-days: 14

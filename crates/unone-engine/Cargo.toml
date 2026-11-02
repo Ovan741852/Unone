@@ -37,7 +37,7 @@ anyhow = "1"
 base64 = "0.23"
 mlua = { version = "0.11", features = ["luau", "vendored"] }
 schemars = { version = "1", optional = true }
-serde = { version = "1", features = ["derive"] }
+serde = { version = "1", features = ["derive", "rc"] }
 # Canonical snapshots, saves and host presentation envelopes must preserve every
 # finite binary64 value through a JSON parse/serialize cycle on every host.
 serde_json = { version = "1", features = ["raw_value", "float_roundtrip"] }

@@ -998,7 +998,9 @@ pub struct WorldSnapshot {
     pub entities: BTreeMap<String, EntitySnapshot>,
     pub observations: BTreeMap<String, serde_json::Value>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ui: Option<crate::ui::UiTree>,
+    /// Validated immutable publication. Clones retain this generation; mutating
+    /// candidate UI uses copy-on-write instead of changing existing snapshots.
+    pub ui: Option<std::sync::Arc<crate::ui::UiTree>>,
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub ui_cursor: Option<crate::UiCursor>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]

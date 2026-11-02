@@ -1,6 +1,6 @@
 #[cfg(feature = "dev-tools")]
 use crate::project::TestSpec;
-use std::{cell::RefCell, collections::{BTreeMap, BTreeSet}, path::PathBuf, rc::Rc};
+use std::{cell::RefCell, collections::{BTreeMap, BTreeSet}, path::PathBuf, rc::Rc, sync::Arc};
 #[cfg(feature = "dev-tools")]
 use std::{env, fs, path::Path, process::Command, time::SystemTime};
 
@@ -22,6 +22,8 @@ mod bindings;
 mod host_time;
 mod save_state;
 mod sprite_resources;
+#[cfg(all(test, feature = "ui"))]
+mod ui_snapshot_tests;
 use save_state::SaveState;
 mod spatial;
 mod spatial_metrics;
@@ -250,7 +252,7 @@ struct ApiState {
     random: Rc<RefCell<DeterministicRng>>,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
-    ui: Rc<RefCell<Option<UiTree>>>,
+    ui: Rc<RefCell<Option<Arc<UiTree>>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
     data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
@@ -317,7 +319,7 @@ struct ReloadRollbackState {
     random: DeterministicRng,
     trace: Vec<TraceEvent>,
     observations: BTreeMap<String, serde_json::Value>,
-    ui: Option<UiTree>,
+    ui: Option<Arc<UiTree>>,
     viewport_aspect: f64,
     save_payload: SaveState,
     generation: u64,
@@ -345,7 +347,7 @@ pub struct EngineRuntime {
     update_fn: Function,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
-    ui: Rc<RefCell<Option<UiTree>>>,
+    ui: Rc<RefCell<Option<Arc<UiTree>>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
     /// Shared with a hot-reloaded VM, which decodes data assets afresh.
@@ -1525,6 +1527,8 @@ impl EngineRuntime {
         #[cfg(not(feature = "phase-profile"))]
         {
         snapshot.observations = self.observations.borrow().clone();
+        // The validated Rust tree has no authored/live Lua aliases. A snapshot
+        // retains its immutable generation; writers detach with Arc::make_mut.
         snapshot.ui = self.ui.borrow().clone();
         }
         snapshot
@@ -2333,7 +2337,7 @@ fn evaluate_assertion(
     if let Some(ui) = &assertion.ui {
         let actual = world
             .ui
-            .as_ref()
+            .as_deref()
             .ok_or_else(|| "UI tree does not exist.".to_string())?;
         let expected = UiTree::from_json_for_viewport_with_resources(ui.equals.clone(),crate::ui::UI_REFERENCE_ASPECT,&world.ui_image_batches)
             .map_err(|error| format!("UI assertion is not a valid UI tree: {error}"))?;
@@ -3499,7 +3503,7 @@ return Game
 
         assert_eq!(
             runtime.observe().ui,
-            Some(UiTree::from_json(serde_json::json!({
+            Some(std::sync::Arc::new(UiTree::from_json(serde_json::json!({
                 "kind": "screen",
                 "id": "dialogue",
                 "node": "intro",
@@ -3507,7 +3511,7 @@ return Game
                     {"kind": "text", "id": "speaker", "rect": {"x": 10, "y": 70, "width": 80, "height": 10}, "text": "Mira"},
                     {"kind": "button", "id": "choice", "rect": {"x": 10, "y": 10, "width": 35, "height": 10}, "text": "Listen", "action": "Continue"}
                 ]
-            })).unwrap())
+            })).unwrap()))
         );
     }
 

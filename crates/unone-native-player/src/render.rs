@@ -2078,7 +2078,7 @@ impl Renderer {
         self.prepare(s)?;
         self.projected.prepare(&self.device,&self.queue,&self.textures,&s.projected_geometry)?;
         self.uploaded+=self.projected.uploaded;
-        self.ui.prepare(&self.device,&self.queue,s.ui.as_ref(),self.config.width,self.config.height)?;
+        self.ui.prepare(&self.device,&self.queue,s.ui.as_deref(),self.config.width,self.config.height)?;
         self.uploaded+=self.ui.upload_bytes;
         self.prepare_ms = started.elapsed().as_secs_f64() * 1000.;
         let started = std::time::Instant::now();

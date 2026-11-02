@@ -4,6 +4,7 @@ use std::{
     collections::VecDeque,
     path::Path,
     sync::atomic::{AtomicU64, Ordering},
+    sync::Arc,
 };
 
 use serde::{Deserialize, Serialize};
@@ -108,7 +109,7 @@ fn error(code: &str, detail: impl Into<String>) -> Box<Diagnostic> {
 /// Runs only against candidate Rust state. No Lua callback, I/O or host side effect.
 pub(crate) fn apply_operations(
     world: &mut World,
-    ui: &mut Option<UiTree>,
+    ui: &mut Option<Arc<UiTree>>,
     systems: &SystemSettings,
     operations: &[EnactOperation],
 ) -> Result<Vec<Value>, Box<Diagnostic>> {
@@ -224,7 +225,7 @@ pub(crate) fn apply_operations(
                     Selector::Ui { id },
                     change @ (Change::SetText { .. } | Change::SetRect { .. }),
                 ) => {
-                    let tree = ui.as_mut().ok_or("No UI tree is published")?;
+                    let tree = Arc::make_mut(ui.as_mut().ok_or("No UI tree is published")?);
                     let node = tree
                         .children
                         .iter_mut()

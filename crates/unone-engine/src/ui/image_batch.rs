@@ -104,7 +104,7 @@ impl Serialize for UiImageBatchResource {
 pub(crate) type Resources=BTreeMap<String,UiImageBatchResource>;
 
 impl crate::world::World {
-    pub(crate) fn define_ui_image_batch(&mut self,id:String,definition:UiImageBatchDefinition,tree:Option<&mut UiTree>)->Result<(),String> {
+    pub(crate) fn define_ui_image_batch(&mut self,id:String,definition:UiImageBatchDefinition,tree:Option<&mut Arc<UiTree>>)->Result<(),String> {
         if id.trim().is_empty() || id.len()>1024 { return Err("UI_IMAGE_BATCH_ID: resource id must contain 1..1024 bytes and non-whitespace text".into()); }
         definition.validate()?;
         if self.ui_image_batches.get(&id).is_some_and(|r|r.definition()==&definition) { return Ok(()); }
@@ -129,7 +129,7 @@ impl crate::world::World {
         }
         if let Some(tree)=tree {
             tree.validate_image_batch_resources(&candidate)?;
-            tree.refresh_image_batch_counts(&candidate);
+            Arc::make_mut(tree).refresh_image_batch_counts(&candidate);
         }
         self.ui_image_batches=candidate;
         self.ui_image_batch_revision=revision;

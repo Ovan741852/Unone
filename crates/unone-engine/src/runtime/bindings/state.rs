@@ -2,7 +2,7 @@ use super::super::TraceEvent;
 use super::value::{json_to_lua, lua_value_to_json, observation_value_to_json, observation_array, portable_value_to_json};
 use super::{ApiState, Lua, Table, Value};
 use crate::ui::UiTree;
-use std::rc::Rc;
+use std::{rc::Rc, sync::Arc};
 #[cfg(feature = "phase-profile")]
 use super::super::phase_profile::{self, Phase};
 
@@ -80,7 +80,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let remove_pure=Rc::clone(&pure_depth);
     resources.set("remove",lua.create_function(move |_lua,id:String| {
         if remove_pure.get()>0 { return Err(mlua::Error::RuntimeError("UI_PURE_VIEW: image batch resources cannot be removed inside renderItem".into())); }
-        let remove=|| remove_world.borrow_mut().remove_ui_image_batch(&id,remove_ui.borrow().as_ref()).map_err(mlua::Error::RuntimeError);
+        let remove=|| remove_world.borrow_mut().remove_ui_image_batch(&id,remove_ui.borrow().as_deref()).map_err(mlua::Error::RuntimeError);
         #[cfg(feature = "phase-profile")]
         { phase_profile::measure(_lua,Phase::ImageBatchRemove,remove) }
         #[cfg(not(feature = "phase-profile"))]
@@ -95,7 +95,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let ui_state = Rc::clone(&ui);
     let inspect_state = Rc::clone(&ui);
     ui_api.set("inspect", lua.create_function(move |lua, ()| {
-        json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_ref().map(UiTree::usage)}))
+        json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_deref().map(UiTree::usage)}))
     })?)?;
     let ui_aspect = Rc::clone(&viewport_aspect);
     let resource_world=Rc::clone(&state.world);
@@ -141,7 +141,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             stamps.set(stamps.get() + 1);
             tree.publication = stamps.get();
             *published.borrow_mut() = root.map(|root| (root, stamps.get()));
-            let commit=|| { *ui_state.borrow_mut() = Some(tree); };
+            let commit=|| { *ui_state.borrow_mut() = Some(Arc::new(tree)); };
             #[cfg(feature = "phase-profile")]
             phase_profile::measure(_lua,Phase::UiCommitDrop,commit);
             #[cfg(not(feature = "phase-profile"))]

@@ -11,7 +11,7 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -73,6 +73,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
       - name: Run colocated .test.mjs modules
         run: node --test $(git ls-files 'web/**/*.test.mjs' 'scripts/*.test.mjs')
