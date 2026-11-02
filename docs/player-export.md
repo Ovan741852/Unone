@@ -67,6 +67,13 @@ node scripts/build-three-player.mjs
 python scripts/serve-export.py _Games/dragon-tycoon3/dist/release --port 8176 --gzip
 ```
 
+The official Python servers support Windows filesystem paths longer than 260
+characters, including hashed release files and directory `index.html` requests,
+without changing the registry. `serve-export.py` shares `serve-player.py`'s
+resolved-root confinement and link/traversal rejection. Use these official
+helpers instead of adding a separate server to each game. The real Windows
+HTTP check is recorded in [the long-path evidence](evidence/2026-11-03-player-long-path.json).
+
 Emscripten selection follows [platform toolchain](platform-toolchain.md).
 Binaryen 131 is checksum pinned. The tested Unity Emscripten expects an older
 Binaryen name-map format; release builds retain ABI names by enabling Emscripten

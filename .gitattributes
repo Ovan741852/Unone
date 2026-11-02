@@ -9,3 +9,4 @@ docs/evidence/2026-10-16-json-float-roundtrip/* -text -whitespace
 tests/data-assets-project/data/* -text -whitespace
 # Exact Web/VM/browser validation captures and their SHA-addressed index.
 docs/evidence/2026-11-02-sprite-resources/* -text -whitespace
+docs/evidence/2026-11-03-player-long-path* -text -whitespace

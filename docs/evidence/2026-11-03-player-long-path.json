@@ -1,0 +1,24 @@
+{
+  "scope": "Real existing JYRogue export; HTTP only, no source or export mutation",
+  "request": "releases/dcefc19112a3275d304135e639f0b4940d06684064d184db892bb809f56695cd/content/assets/imported/jyonline-fx/all/pages/002752b005a660767b04d4d85840e027abaa8615005119de4caf2b9ff5d72fdd.png",
+  "windows_path_characters": 263,
+  "expected_bytes": 185730,
+  "expected_sha256": "d7aa0befaaaff34f2966af0cffbd6ce3a310c402f0c5f9ef7a81e6e2eb400e95",
+  "servers": [
+    {
+      "script": "serve-player.py",
+      "get": 200,
+      "head": 200,
+      "directory_index": 200,
+      "bytes_hash_match": true
+    },
+    {
+      "script": "serve-export.py",
+      "get": 200,
+      "head": 200,
+      "directory_index": 200,
+      "bytes_hash_match": true
+    }
+  ],
+  "ok": true
+}

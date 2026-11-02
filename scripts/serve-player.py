@@ -9,7 +9,22 @@ import argparse
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import os
 import re
+import stat
+from urllib.parse import unquote, urlsplit
+
+
+def filesystem_path(value):
+    """Use extended Win32 file paths without changing the machine's path policy."""
+    value = os.path.abspath(os.path.normpath(os.fspath(value)))
+    if os.name != "nt":
+        return value
+    if value.startswith("\\\\?\\"):
+        return value
+    if value.startswith("\\\\"):
+        return "\\\\?\\UNC\\" + value[2:]
+    return "\\\\?\\" + value
 
 
 class PlayerHandler(SimpleHTTPRequestHandler):
@@ -35,7 +50,53 @@ class PlayerHandler(SimpleHTTPRequestHandler):
 
     def __init__(self, *args, cache_releases=True, **kwargs):
         self.cache_releases = cache_releases
+        kwargs["directory"] = filesystem_path(kwargs.get("directory") or os.getcwd())
         super().__init__(*args, **kwargs)
+
+    def request_path(self, url):
+        # Decode the original URL once. A literal encoded '%' is a filename,
+        # never another opportunity to interpret traversal or separators.
+        decoded = unquote(urlsplit(url).path, errors="strict")
+        parts = decoded.split("/")
+        if "\\" in decoded or ":" in decoded or "\0" in decoded or any(p in (".", "..") for p in parts):
+            raise ValueError("Invalid player URL path")
+        path = Path(self.directory).joinpath(*(part for part in parts if part))
+        return filesystem_path(path), decoded
+
+    def translate_path(self, path):
+        # stdlib send_head calls this again for open/isdir/index selection.
+        # Normalize separators too: extended Win32 paths reject '/' suffixes.
+        return self.request_path(path)[0]
+
+    def checked_path(self, value):
+        root = Path(self.directory).resolve()
+        candidate = Path(value)
+        relative = candidate.relative_to(root)
+        current = root
+        for part in relative.parts:
+            current = current / part
+            info = current.lstat()
+            if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0):
+                raise ValueError("Linked player paths are not served")
+        target = candidate.resolve()
+        target.relative_to(root)
+        return target
+
+    def checked_request_target(self):
+        """Shared GET/HEAD path admission, including the selected directory index."""
+        try:
+            path, decoded = self.request_path(self.path)
+            target = self.checked_path(path)
+            if decoded.endswith("/") and target.is_file():
+                raise ValueError("A file URL cannot end with a slash")
+            if target.is_dir() and urlsplit(self.path).path.endswith("/"):
+                for index in self.index_pages:
+                    if (target / index).is_file():
+                        return self.checked_path(target / index)
+            return target
+        except (OSError, ValueError, UnicodeError):
+            self.send_error(404, "File not found")
+            return None
 
     def immutable_generation(self):
         return self.cache_releases and re.search(r"/releases/[0-9a-f]{64}/", self.path.split("?", 1)[0]) is not None
@@ -51,11 +112,7 @@ class PlayerHandler(SimpleHTTPRequestHandler):
             for name in ("If-Modified-Since", "If-None-Match"):
                 if name in self.headers:
                     del self.headers[name]
-        target = Path(self.translate_path(self.path)).resolve()
-        try:
-            target.relative_to(Path(self.directory).resolve())
-        except ValueError:
-            self.send_error(404, "File not found")
+        if self.checked_request_target() is None:
             return None
         return super().send_head()
 
@@ -69,7 +126,7 @@ class PlayerServer(ThreadingHTTPServer):
 
 
 def create_server(directory, bind="127.0.0.1", port=8190, cache_releases=True):
-    root = Path(directory).resolve(strict=True)
+    root = Path(filesystem_path(directory)).resolve(strict=True)
     if not root.is_dir():
         raise ValueError("--directory must name an existing directory")
     return PlayerServer((bind, port), partial(PlayerHandler, directory=str(root), cache_releases=cache_releases))

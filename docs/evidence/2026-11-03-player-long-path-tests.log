@@ -1,0 +1,108 @@
+127.0.0.1 - - [02/Nov/2026 23:53:16] "GET /nested?query=1 HTTP/1.1" 301 -
+127.0.0.1 - - [02/Nov/2026 23:53:16] "GET /nested/ HTTP/1.1" 200 -
+{"path": "/nested/", "raw_bytes": 13, "body_bytes": 13}
+127.0.0.1 - - [02/Nov/2026 23:53:16] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:16] "GET /nested/index.html/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:16] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:16] "GET /empty/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:16] "HEAD /nested?query=1 HTTP/1.1" 301 -
+127.0.0.1 - - [02/Nov/2026 23:53:16] "HEAD /nested/ HTTP/1.1" 200 -
+{"path": "/nested/", "raw_bytes": 13, "body_bytes": 13}
+127.0.0.1 - - [02/Nov/2026 23:53:16] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:16] "HEAD /nested/index.html/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:16] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:16] "HEAD /empty/ HTTP/1.1" 404 -
+.s127.0.0.1 - - [02/Nov/2026 23:53:17] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:17] "GET /external/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:17] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:17] "GET /alias/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:17] "GET /actual/ HTTP/1.1" 200 -
+{"path": "/actual/", "raw_bytes": 13, "body_bytes": 13}
+.127.0.0.1 - - [02/Nov/2026 23:53:17] "GET / HTTP/1.1" 200 -
+{"path": "/", "raw_bytes": 3600, "body_bytes": 84}
+127.0.0.1 - - [02/Nov/2026 23:53:17] "HEAD / HTTP/1.1" 200 -
+{"path": "/", "raw_bytes": 3600, "body_bytes": 84}
+127.0.0.1 - - [02/Nov/2026 23:53:17] "GET / HTTP/1.1" 200 -
+{"path": "/", "raw_bytes": 3600, "body_bytes": 3600}
+.127.0.0.1 - - [02/Nov/2026 23:53:18] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png HTTP/1.1" 200 -
+{"path": "/releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png", "raw_bytes": 32, "body_bytes": 32}
+127.0.0.1 - - [02/Nov/2026 23:53:18] "HEAD /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png HTTP/1.1" 200 -
+{"path": "/releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png", "raw_bytes": 32, "body_bytes": 32}
+127.0.0.1 - - [02/Nov/2026 23:53:18] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy?v=1 HTTP/1.1" 301 -
+127.0.0.1 - - [02/Nov/2026 23:53:18] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/ HTTP/1.1" 200 -
+{"path": "/releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/", "raw_bytes": 35, "body_bytes": 35}
+127.0.0.1 - - [02/Nov/2026 23:53:18] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:18] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /image.png HTTP/1.1" 200 -
+{"path": "/image.png", "raw_bytes": 32, "body_bytes": 32}
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET / HTTP/1.1" 200 -
+{"path": "/", "raw_bytes": 35, "body_bytes": 35}
+.127.0.0.1 - - [02/Nov/2026 23:53:19] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /../index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:19] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /%2e%2e/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:19] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /%2e%2e%2findex.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:19] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /%2e%2e%5cindex.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:19] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /nested/../../index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:19] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /C:/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:19] "GET /%252e%252e/index.html HTTP/1.1" 200 -
+{"path": "/%252e%252e/index.html", "raw_bytes": 25, "body_bytes": 25}
+.127.0.0.1 - - [02/Nov/2026 23:53:20] "GET /nested?query=1 HTTP/1.1" 301 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] "GET /nested/ HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:20] "GET /nested/index.html/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:20] "GET /empty/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] "HEAD /nested?query=1 HTTP/1.1" 301 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] "HEAD /nested/ HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:20] "HEAD /nested/index.html/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:20] "HEAD /empty/ HTTP/1.1" 404 -
+.s127.0.0.1 - - [02/Nov/2026 23:53:20] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:20] "GET /external/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:20] "GET /alias/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:20] "GET /actual/ HTTP/1.1" 200 -
+.127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /module.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "HEAD /module.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /module.js HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "HEAD /module.js HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /UPPER.MJS HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "HEAD /UPPER.MJS HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /player.wasm HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "HEAD /player.wasm HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /config.json HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "HEAD /config.json HTTP/1.1" 200 -
+.127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "HEAD /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy?v=1 HTTP/1.1" 301 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/ HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:21] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:21] "GET /releases/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/nested-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/page-yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/image.png/ HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:22] "GET /image.png HTTP/1.1" 200 -
+127.0.0.1 - - [02/Nov/2026 23:53:22] "GET / HTTP/1.1" 200 -
+..127.0.0.1 - - [02/Nov/2026 23:53:22] "GET /releases/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/module.mjs HTTP/1.1" 304 -
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /releases/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/module.mjs HTTP/1.1" 200 -
+.127.0.0.1 - - [02/Nov/2026 23:53:23] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /../index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:23] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /%2e%2e/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:23] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /%2e%2e%2findex.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:23] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /%2e%2e%5cindex.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:23] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /nested/../../index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:23] code 404, message File not found
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /C:/index.html HTTP/1.1" 404 -
+127.0.0.1 - - [02/Nov/2026 23:53:23] "GET /%252e%252e/index.html HTTP/1.1" 200 -
+.
+----------------------------------------------------------------------
+Ran 14 tests in 7.363s
+
+OK (skipped=2)
