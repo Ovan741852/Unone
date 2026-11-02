@@ -140,7 +140,9 @@ test('actual tick persistence skips unchanged saves and commits the marker only 
 
 test('actual public accessor forwards opt-in paired RAF samples and rejects unknown or malformed options without backend work',()=>{
  const context={window:{},playerCompletion:createPlayerCompletionMetrics({now:()=>10}),installPlayerPerformanceAccessor,scheduler:null,frozen:false,backend:{kind:'worker'}};
- vm.createContext(context);vm.runInContext(source.slice(source.indexOf('const removePerformanceAccessor='),source.indexOf('let orderedQueue=')),context);
+ const begin=source.indexOf('function readPlayerPerformance('),end=source.indexOf('let performanceFeed=',begin);
+ assert(begin>=0&&end>begin,'execute the actual shared read function and accessor installation');
+ vm.createContext(context);vm.runInContext(source.slice(begin,end),context);
  const read=context.window.unonePlayerPerformance.snapshot;
  for(const options of [null,1,[],{unknown:true},{includeRafSamples:null},{includeRafSamples:1},{windowMs:null}])assert.throws(()=>read(options),/PLAYER_PERFORMANCE/);
  const done={status:'completed'};context.playerCompletion.finish(done,done,done,1,9,'scheduler_raf',5,6);context.playerCompletion.rafEnd(5,6,10);

@@ -9,7 +9,7 @@ import {spawnSync} from 'node:child_process';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const run=args=>spawnSync(process.execPath,['scripts/profile-world-fields-wasm.mjs',...args],{cwd:root,encoding:'utf8',timeout:10000});
-function fixture(){const base=fs.mkdtempSync(path.join(root,'.cache/world-field-profile-preflight-')),runtime=path.join(base,'runtime');fs.mkdirSync(runtime);return {base,runtime};}
+function fixture(){fs.mkdirSync(path.join(root,'.cache'),{recursive:true});const base=fs.mkdtempSync(path.join(root,'.cache/world-field-profile-preflight-')),runtime=path.join(base,'runtime');fs.mkdirSync(runtime);return {base,runtime};}
 test('help documents actual-runtime inputs without creating an output',()=>{const result=run(['--help']);assert.equal(result.status,0);assert.match(result.stdout,/input-sequence/);assert.match(result.stdout,/No GPU/);});
 test('output inside runtime is rejected before reading or writing immutable artifact contents',()=>{
  const f=fixture(),manifest=path.join(f.runtime,'runtime.json');fs.writeFileSync(manifest,'intentionally not JSON');const out=path.join(f.runtime,'forbidden');

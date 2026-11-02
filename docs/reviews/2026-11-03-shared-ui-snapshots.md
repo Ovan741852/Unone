@@ -43,6 +43,27 @@ host UTF-8 wall spans remain unattributed. These observations do not identify a
 particular function or establish GC as the cause. See
 [phase measurements](../evidence/2026-11-03-shared-ui/battle-phase-ab.json).
 
+An additional matching opt2 sampling artifact from successful CI run
+`41498233443` completed three fresh VMs with profiling off, VM probes, and function
+sampling. Every digest and full final state also match all four earlier phase
+runs. On the same **old frozen R2** workload, safe-point stacks identify
+`Settlement.passable -> sbPath -> sbAgentStep` as an allocation-review candidate.
+The probes record about 98.4 MB of cumulative positive allocation requests in
+300 ticks. Several slow frames contain 2–4 ms of summed incremental-step wall
+time, despite short individual steps. Step counts are not collection counts;
+growth is not live heap; full collections, Rust allocations and JS GC remain
+unmeasured. Instrumentation changes timings and this old workload cannot identify
+current Game bottlenecks. See [sampler evidence](../evidence/2026-11-03-shared-ui/battle-sampler.json).
+
+The official host adds an optional `unone_performance_feed=1` DOM-only diagnostic
+for tools that cannot access page JS globals. It publishes bounded, paired RAF
+samples after the existing callback endpoint, at most twice per second. Its own
+wall cost is reported in the next envelope. It installs no timer, runtime control
+or gameplay API; the default remains off. Feed failure or teardown cannot block
+game cleanup, including a throwing diagnostic DOM sink. This is a reusable host
+observation primitive, not Game presentation or an FPS acceptance result. The
+[export contract](../player-export.md) specifies freshness and observer limits.
+
 Independent Codex source reviews found no remaining concrete P1/P2 in the Arc/COW
 change. A separate tool-free Claude Code 2.1.308 review of the fixed Core diff
 `5d7da387..0e75031` timed out at 45 seconds with empty stdout/stderr and remains

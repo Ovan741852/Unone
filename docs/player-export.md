@@ -153,6 +153,36 @@ they are not a complete history or an inferred FPS. Existing `playerPerformance`
 dataset publication keeps its 30-draw cadence and includes a completion summary.
 An absent accessor is an older host, not evidence of successful presentation.
 
+For tools restricted to reading the DOM, opt in with exactly one query parameter
+`unone_performance_feed=1`. The official host writes a JSON envelope to
+`document.body.dataset.playerCompletion` (`data-player-completion`). Version 1
+contains `completion`, the same read-only snapshot with `windowMs:1500` and
+`includeRafSamples:true`, plus a monotonic sequence and query/publication times.
+Read `completion.time_origin_ms` and `completion.queried_at_ms` together when
+checking freshness. The existing completion/session/source/outcome semantics
+still apply; the feed is not a game control interface or a scanout measurement.
+
+The feed publishes after the scheduler has recorded its RAF callback, at most
+once per 500 ms, and once at startup. It creates no timer and publishes nothing
+while callbacks are stalled. Stale data, incomplete window coverage, missing
+paired samples or a non-advancing sequence are not evidence of smooth playback.
+Each report retains at most 512 rows and its serialized UTF-8 size is limited to
+256 KiB. A feed error stops observation, retires its owned report and sets
+`data-player-completion-feed-error` when the DOM sink remains writable; it does
+not stop the game. A failed DOM cleanup can leave a stale report, so freshness
+checks are required even when no error attribute is available. Teardown retires
+the feed. Without the opt-in, it reads no snapshot/clock and writes no feed.
+
+Reporting copies/sorts metrics, creates JSON and updates a DOM attribute. It can
+perturb the measured program. `previous_completed_publication_ms` and
+`max_completed_publication_ms` describe completed earlier feed publications,
+including snapshot, encoding and attribute-write cost; the first report has no
+previous cost. The maximum covers the feed's lifetime, rather than the 1500 ms
+sample window. These are wall durations, not CPU or allocation/GC measurements.
+The feed runs after the recorded callback endpoint, so its own cost is excluded
+from that callback's stored duration and can delay a later RAF callback.
+Compare instrumented and ordinary runs separately when attributing performance.
+
 `UNONE_PLAYER_READY` waits abortably for the renderer, current Canvas assets and
 required cursor artwork, then verifies a fresh complete submission at the final
 frame barrier. Startup does not tick simulation or poll RAF while assets are

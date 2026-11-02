@@ -123,7 +123,7 @@ test('actual player start cannot create a late image broker after pagehide while
 
 test('actual failure cleanup accepts the exported UI-disabled stub and retires the broker/backend',()=>{
   const trace=[],retire=name=>({dispose:()=>trace.push(name)}),error=Error('intentional failure');
-  const context={profiler:null,startupAbort:new AbortController(),cursorHost:retire('cursor'),textInputs:retire('text'),
+  const context={profiler:null,performanceFeed:retire('feed'),startupAbort:new AbortController(),cursorHost:retire('cursor'),textInputs:retire('text'),
     uiScroll:retire('scroll'),uiRenderer:null,orderedQueue:null,orderedRouter:null,publishPhysical:()=>trace.push('physical'),
     scheduler:{stop:()=>trace.push('scheduler')},resourceHost:{close:()=>trace.push('resources')},renderer:{},disposeRenderer:()=>trace.push('renderer'),
     imageAssets:retire('images'),audio:retire('audio'),backend:{close:()=>trace.push('backend')},
@@ -133,9 +133,12 @@ test('actual failure cleanup accepts the exported UI-disabled stub and retires t
   assert(line,'use the real exporter stub, not an invented disabled-host contract');
   const disabled=JSON.parse(line.trim().replace(/,$/,''));
   const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
+  const feedBegin=source.indexOf('function publishPerformanceFeed(){'),feedEnd=source.indexOf('let orderedQueue=',feedBegin);
+  assert(feedBegin>=0&&feedEnd>feedBegin,'execute the actual fenced feed consumer cleanup');
   const begin=source.indexOf('function fail('),end=source.indexOf('\nfunction publishPhysical(',begin);
-  assert(begin>=0&&end>begin);vm.createContext(context);vm.runInContext(disabled+';uiRenderer=createCanvasUi();'+source.slice(begin,end),context);
+  assert(begin>=0&&end>begin);vm.createContext(context);vm.runInContext(disabled+';uiRenderer=createCanvasUi();'+source.slice(feedBegin,feedEnd)+source.slice(begin,end),context);
   assert.doesNotThrow(()=>context.fail(error));assert.equal(context.startupAbort.signal.aborted,true);
-  assert.deepEqual(trace,['cursor','text','scroll','physical','scheduler','resources','renderer','images','audio','backend']);
+  assert.deepEqual(trace,['feed','cursor','text','scroll','physical','scheduler','resources','renderer','images','audio','backend']);
+  assert.equal(context.performanceFeed,null);context.disposePerformanceFeed();assert.equal(trace.filter(name=>name==='feed').length,1);
   assert.match(context.document.body.dataset.playerError,/intentional failure/);
 });

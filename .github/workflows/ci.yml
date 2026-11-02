@@ -25,7 +25,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install the pinned toolchain
-        run: rustup show active-toolchain || rustup toolchain install
+        run: |
+          rustup show active-toolchain || rustup toolchain install
+          rustup component add clippy
       - uses: Swatinem/rust-cache@v2
       - name: Install luau-analyze
         run: sh scripts/install-luau-analyze.sh
@@ -43,7 +45,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install the pinned toolchain
-        run: rustup show active-toolchain || rustup toolchain install
+        run: |
+          rustup show active-toolchain || rustup toolchain install
+          rustup component add rustfmt
       - run: cargo fmt --all -- --check
 
   excluded-crates:

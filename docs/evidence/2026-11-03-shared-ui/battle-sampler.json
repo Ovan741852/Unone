@@ -1,0 +1,1922 @@
+{
+  "schema": "unone.shared-ui.actual-battle-sampler.v1",
+  "status": "completed",
+  "recorded_by": "/root/native_performance",
+  "scope": "Actual emitted opt2 sampling-profile Core, frozen old JYR2 battle payload. Three fresh VMs: inactive window, VM probes, then function sampling plus probes. Diagnostic attribution only; not a production/FPS acceptance run.",
+  "ci": {
+    "run_id": 41498233443,
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41498233443",
+    "head_sha": "2093abf9995297e8753b9703e3e7a3614a71cba9",
+    "status": "completed",
+    "conclusion": "success",
+    "core_job": 125458705037,
+    "baseline_job": 125459867861,
+    "candidate_job": 125459867972,
+    "all_five_variants_build_abi_parity_passed": true,
+    "parity_scope": "Explicit tests/host-parity-project; 5 compared frames/checkpoints per variant, audio omission detected. No browser visual acceptance/default extra physics fixture claim.",
+    "baseline_ci_log_variants": [
+      {
+        "variant": "production",
+        "source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+        "wasm_bytes": 5300965,
+        "wasm_sha256": "d94c3705333c0e63fe3a77c6856150f1089d9e58a770c7b3a09167e73eeaaef8",
+        "javascript_sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+      },
+      {
+        "variant": "phase-profile",
+        "source_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+        "wasm_bytes": 5626071,
+        "wasm_sha256": "d3f00a90f39c1c88f72eb95549d21af662ef10fe1c17b3f8e5563bc393280742",
+        "javascript_sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f"
+      }
+    ],
+    "candidate_extracted_variants": [
+      {
+        "variant": "production",
+        "manifest_sha256": "58e55c0617a06ce8c205174d6e74683b59b8caec44f2548b0237b8824efea59c",
+        "wasm_sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+        "wasm_bytes": 5301301,
+        "javascript_sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+        "actual_export_count": 48,
+        "metadata_and_hashes_verified": true,
+        "actual_abi_verified": true
+      },
+      {
+        "variant": "phase-profile",
+        "manifest_sha256": "7452a292f86fc67359fd4e22ab085e3877c0548fa82b0582a640370014cf52f3",
+        "wasm_sha256": "8c8d1bad503e9e7076e3ad5a724dcfca9fbc9166cf2e81d1dece4c8539f73f9f",
+        "wasm_bytes": 5626608,
+        "javascript_sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+        "actual_export_count": 49,
+        "metadata_and_hashes_verified": true,
+        "actual_abi_verified": true
+      },
+      {
+        "variant": "sampling-profile",
+        "manifest_sha256": "cee5c6e99c708078e7ac19ce063f2076b8f6c552c8847c6f99ea7f7a8f47e44e",
+        "wasm_sha256": "b4fd6ab3b4d78ca29acd8921eaa770747894a6aad251dafe8c892c19e8eba15d",
+        "wasm_bytes": 5616391,
+        "javascript_sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+        "actual_export_count": 49,
+        "metadata_and_hashes_verified": true,
+        "actual_abi_verified": true
+      }
+    ],
+    "archives": [
+      {
+        "artifact_id": 13166889459,
+        "name": "official-web-runtimes-candidate",
+        "advertised_bytes": 6041940,
+        "advertised_digest": "sha256:f3b79ae9ef9240e08765635f7d79dfc1e0f3846ffb3062393f2bfbf83cf2c470",
+        "local": {
+          "path": ".cache/official-web-runtimes-candidate-2093abf.zip",
+          "bytes": 6041940,
+          "sha256": "f3b79ae9ef9240e08765635f7d79dfc1e0f3846ffb3062393f2bfbf83cf2c470"
+        }
+      },
+      {
+        "artifact_id": 13166769572,
+        "name": "official-web-runtimes-baseline",
+        "advertised_bytes": 3994657,
+        "advertised_digest": "sha256:ed1e7f4dcef67bcde1b089e48ccd78c638edcf73b8f55b49fa06fef674713f19",
+        "local_download_verified_in_this_record": false
+      },
+      {
+        "artifact_id": 13167501914,
+        "name": "core-ownership-logs",
+        "advertised_bytes": 11436,
+        "advertised_digest": "sha256:f920bbc2d3a6def50b08bb60be07d222352225d1d8814046fa03e7c8fc8b971b",
+        "local_download_verified_in_this_record": false
+      }
+    ],
+    "provenance": "Read-only GitHub connector run/jobs, completed decoded baseline/candidate job logs and artifact metadata; candidate ZIP locally rehashed/extracted. Baseline/core archive bytes were not downloaded by this recorder."
+  },
+  "extraction": {
+    "record": {
+      "path": "artifacts/ui-shared-ci-2093abf/validation-status.json",
+      "bytes": 2033,
+      "sha256": "d1031337c0ddb892916773c9bb4981b17e884b54630e6e034be78a12cc2def3c"
+    },
+    "script": {
+      "path": ".cache/extract-ui-ci-candidate-2093abf.py",
+      "bytes": 6331,
+      "sha256": "1f1a690add420b9dba8bac7910e4b7267200ffd5bef5e16e05e492160bc71cab"
+    },
+    "fresh_root": "artifacts/ui-shared-ci-2093abf",
+    "entries": 79,
+    "policy": "100MiB total uncompressed bound; candidate-only relative paths; no traversal/backslashes/drive syntax/casefold duplicates/symlinks; file suffix allowlist log/json/js/wasm; exclusive file creation; no native executable extraction.",
+    "accepted_9c_artifacts_not_modified": true
+  },
+  "sampler": {
+    "pins": {
+      "manifest": "cee5c6e99c708078e7ac19ce063f2076b8f6c552c8847c6f99ea7f7a8f47e44e",
+      "source": "2093abf9995297e8753b9703e3e7a3614a71cba9",
+      "javascript": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+      "wasm": "b4fd6ab3b4d78ca29acd8921eaa770747894a6aad251dafe8c892c19e8eba15d"
+    },
+    "pins_file": {
+      "path": ".cache/ui-sampler-2093abf-pins.json",
+      "bytes": 309,
+      "sha256": "fb335c7782f10878a300b00fd230fa9537ad9b622a0a7a589919f27a3bff034c"
+    },
+    "metadata": {
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "effekseer",
+        "input",
+        "jobs",
+        "observation",
+        "particle",
+        "physics2d",
+        "physics3d",
+        "random",
+        "save",
+        "spine",
+        "ui",
+        "world"
+      ],
+      "runtime_packages": {
+        "@unone/ui": "0.6.0"
+      },
+      "cargo_features": [
+        "all-systems",
+        "sampling-profile"
+      ],
+      "profile": "release",
+      "dev_tools": false,
+      "preview_tools": true,
+      "phase_profile": false,
+      "sampling_profile": true,
+      "bytecode_optimization_level": 2,
+      "profile_mode": "opt2-sampling",
+      "javascript": "unone-player.js",
+      "wasm": "unone_player.wasm",
+      "wasm_bytes": 5616391,
+      "wasm_sha256": "b4fd6ab3b4d78ca29acd8921eaa770747894a6aad251dafe8c892c19e8eba15d",
+      "javascript_sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+      "exports": [
+        "init",
+        "alloc",
+        "stage_data",
+        "load_project",
+        "unload_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_viewport_size",
+        "set_instance_transport",
+        "set_ui_transport",
+        "tick",
+        "ui_request",
+        "jobs_request",
+        "jobs_binary",
+        "spatial_request",
+        "host_time_request",
+        "sprite_resources_request",
+        "observation_ptr",
+        "observation_len",
+        "developer_request",
+        "particle_alloc",
+        "particle_sample",
+        "particle_output_ptr",
+        "particle_output_len"
+      ],
+      "source_commit": "2093abf9995297e8753b9703e3e7a3614a71cba9",
+      "source_dirty": false
+    }
+  },
+  "protocol": {
+    "warmup_ticks": 66,
+    "measured_ticks": 300,
+    "frame_range": [
+      67,
+      366
+    ],
+    "seed": 42,
+    "viewport": [
+      1600,
+      900
+    ],
+    "order": [
+      "off",
+      "probes",
+      "sampling"
+    ],
+    "fresh_process_vm_per_mode": true,
+    "host_profiler": false,
+    "command_timer_scope": "Complete await official core.execute(tick), including input admission, Core tick ABI, host restoration and dispatch. Per-frame digest checks occur after timing; full final canonical comparisons and profile query occur afterward.",
+    "mode_interpretation": "All modes use the same diagnostic-capable sampler binary. OFF is not a separate production binary or a trustworthy production cost counterpart. Modes and sequential order may affect timing/GC schedules.",
+    "concurrent_load": "Other chats/system activity not isolated; a feed-module unit test/Web test workload may have overlapped. Raw mode wall differences are descriptive, not causal overhead estimates.",
+    "forced_gc": false,
+    "game_api_or_clock_replaced": false,
+    "local_native_or_cargo_executed": false
+  },
+  "pins": {
+    "input_files": [
+      {
+        "label": "payload",
+        "path": "D:\\Projects\\Unone\\.cache\\world-fields-battle-20261102-inputs-r2\\payload.json",
+        "bytes": 1643162,
+        "sha256": "414f0d19952acc34e0d9ecab392844974fd20a7c0c5a42799ebac4774115480a"
+      },
+      {
+        "label": "input_sequence",
+        "path": "D:\\Projects\\Unone\\.cache\\world-fields-battle-20261102-inputs-r2\\input-sequence.json",
+        "bytes": 141,
+        "sha256": "0b10d68aaefb6806198b8f38bc13de01256c190981a9d350070f1f3b417b871c"
+      }
+    ],
+    "frozen_script_sha256": "2ee7eb9caada8866909006df43fb81fcdeddc4cb730f937150880c29befa368e",
+    "host_graph": [
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\runtime-core.mjs",
+        "bytes": 10218,
+        "sha256": "f38a5dce3ee3f161e25c18c8f598863e475780a6c0976ec69eb6baaec5f175b1"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\spatial-host.mjs",
+        "bytes": 5312,
+        "sha256": "4ae64136e03f490e967dad3d4eca0721e03172a5be30865b52c837b24e100e05"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\spatial-metrics.mjs",
+        "bytes": 1939,
+        "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+        "bytes": 14120,
+        "sha256": "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\world-field-publication.mjs",
+        "bytes": 1151,
+        "sha256": "fe0ff26fa6e7c40bb262c8e89d05c61cd2e0adfe9501392f468a6b08b9931090"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\ui-tree-publication.mjs",
+        "bytes": 1913,
+        "sha256": "1a83c34391c60906da1c599429266ae448fdea8a295dbeb6cb373ec9771b75ba"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\save-publication.mjs",
+        "bytes": 1266,
+        "sha256": "f559315d6ec4e75134ddda340db40e34a554b2b04bf57a1016a3c3578dcb0f66"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\retained-image-generation.mjs",
+        "bytes": 1452,
+        "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\job-pool.mjs",
+        "bytes": 6787,
+        "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+      },
+      {
+        "label": "host_source",
+        "path": "D:\\Projects\\Unone\\web\\shared\\job-binary.mjs",
+        "bytes": 6407,
+        "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+      }
+    ],
+    "harness": {
+      "path": ".cache/profile-core-sampler-wasm-20261103-r1.mjs",
+      "bytes": 20089,
+      "sha256": "0f992ee61830cb8a734107306a495eb6dee98e99d65c23f61dd09c1fe5079a13"
+    },
+    "aggregate": {
+      "path": ".cache/world-fields-battle-sampler-2093abf-20261103-r1/result.json",
+      "bytes": 81739,
+      "sha256": "02e89a19be9db07edb4527f5fbddaed27e1c353a5b0b0eb67f8313953e5d2f5c"
+    },
+    "execution_log": {
+      "path": ".cache/world-fields-battle-sampler-2093abf-20261103-r1-execution.log",
+      "bytes": 2252,
+      "sha256": "7f12086676ca8cd8613f86fa25f1a223578def7e3738c148b05e0ca5d7906937"
+    }
+  },
+  "correctness": {
+    "all_three_runs_ok_and_closed": true,
+    "unexpected_stderr": 0,
+    "aborts": 0,
+    "digest_checkpoints_per_mode": 367,
+    "all_digests_exact_across_modes": true,
+    "full_final_world_ui_save_exact": true,
+    "final": {
+      "frame": 366,
+      "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+      "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+      "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+      "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+    },
+    "phase4_raw_crosscheck": {
+      "all_four_phase_runs_same_frozen_payload_inputs": true,
+      "all_367_digests_and_full_final_world_ui_save_exact": true,
+      "records": [
+        {
+          "raw": {
+            "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/0-baseline/result.json",
+            "bytes": 1737458,
+            "sha256": "f05caa85ad4039447767b577a58d9c7da7691030be9af3f892c7b1ccedf77a03"
+          },
+          "digest_checkpoints": 367,
+          "full_final_world_ui_save_exact": true,
+          "final": {
+            "frame": 366,
+            "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+            "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+            "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+            "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+          }
+        },
+        {
+          "raw": {
+            "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/1-candidate/result.json",
+            "bytes": 1740678,
+            "sha256": "a9dd49e90f86e018dd85405840f5eb4775a73ff3818917004d35aca8d968ac25"
+          },
+          "digest_checkpoints": 367,
+          "full_final_world_ui_save_exact": true,
+          "final": {
+            "frame": 366,
+            "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+            "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+            "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+            "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+          }
+        },
+        {
+          "raw": {
+            "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/2-candidate/result.json",
+            "bytes": 1739726,
+            "sha256": "36bbe585bf9714693a146a8a6ad1bcecceb628e81a4f1fd2ca49e633329be650"
+          },
+          "digest_checkpoints": 367,
+          "full_final_world_ui_save_exact": true,
+          "final": {
+            "frame": 366,
+            "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+            "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+            "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+            "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+          }
+        },
+        {
+          "raw": {
+            "path": ".cache/world-fields-battle-phase-ci-9c773e3-20261103-r1/3-baseline/result.json",
+            "bytes": 1735216,
+            "sha256": "cae5583e90de2cafad19ca9ece0b38a15137bb9d280b891970e5fb1c6cd84525"
+          },
+          "digest_checkpoints": 367,
+          "full_final_world_ui_save_exact": true,
+          "final": {
+            "frame": 366,
+            "core_digest": "sha256:7670adcbf4a4e35bb027ac73bbbbb15519932ada2b384791d98538b81537c820",
+            "world_sha256": "b8b1e25017ac5078a55037f2967552cef8a5bcdab5e7d3ca4138eb9212d252c6",
+            "ui_sha256": "8fd09ef4569a49fef8f5b0e05f38a4ab9075cde2677966c37bb3cb99cc352290",
+            "save_sha256": "3d8c8b7c99dcc324ef3fdf66130a8a6afd003ead50d6e68f2973a53e6ebccc8c"
+          }
+        }
+      ]
+    }
+  },
+  "modes": [
+    {
+      "mode": "off",
+      "raw": {
+        "path": ".cache/world-fields-battle-sampler-2093abf-20261103-r1/0-off/result.json",
+        "bytes": 382923,
+        "sha256": "56c5774f29dc2fa8af0d7eed376a902c14ba0e3f7b7cb43fbcd8956a75553bcb"
+      },
+      "options": {
+        "warmup": 66,
+        "frames": 300,
+        "seed": "42",
+        "input_sequence_frames": 6,
+        "data_sources": 0,
+        "mode": "off",
+        "profile_window": false,
+        "function_sampling": false
+      },
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "started_utc": "2026-11-02T18:31:35.759Z"
+      },
+      "command_wall_ms": {
+        "samples": 300,
+        "total_ms": 1093.005,
+        "p50_ms": 2.9420000000000073,
+        "p95_ms": 8.091200000000072,
+        "max_ms": 18.86080000000004
+      },
+      "closed": true,
+      "execution": {
+        "build_intent": "sampling-diagnostic",
+        "bytecode_optimization_level": 2,
+        "bytecode_type_info_level": 0,
+        "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+        "host_binding": "rust-mlua",
+        "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        "luau_execution": "interpreter",
+        "native_codegen_compiled": false,
+        "native_codegen_fallback": "interpreter",
+        "native_codegen_requested": false,
+        "native_codegen_supported": false,
+        "phase_profile": false,
+        "preview_tools": true,
+        "runtime": "luau",
+        "rust_profile": "release",
+        "sampling_profile": true,
+        "schema_version": 2,
+        "target_arch": "wasm32",
+        "target_os": "emscripten",
+        "vm_implementation": "luau-upstream-vendored",
+        "wasm_host_compilation": "host-managed-not-probed"
+      },
+      "vm_metrics": null,
+      "off_counter_availability": "Profiling window disabled; zero raw counters do not mean zero allocation/GC.",
+      "luau_allocated_bytes_at_final_profile_query": 11824700,
+      "heap_scope": "Passive current allocated bytes when the final profile report is queried; not a window peak or reachable/live heap.",
+      "wasm_linear_capacity_bytes": {
+        "before": 29097984,
+        "after": 29097984
+      },
+      "function_metadata": {
+        "samples": 0,
+        "dropped_samples": 0,
+        "truncated_stacks": 0,
+        "limits": {
+          "depth": 32,
+          "functions": 1024,
+          "minimum_interval_ms": 1,
+          "stacks": 4096
+        },
+        "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+      },
+      "per_frame_counter_scope": null,
+      "p95_slow_frames": [
+        116,
+        119,
+        124,
+        129,
+        134,
+        135,
+        140,
+        146,
+        151,
+        156,
+        162,
+        167,
+        173,
+        260,
+        276,
+        294
+      ],
+      "p95_slow_rows": [
+        {
+          "frame": 116,
+          "command_ms": 8.091200000000072
+        },
+        {
+          "frame": 119,
+          "command_ms": 9.030399999999986
+        },
+        {
+          "frame": 124,
+          "command_ms": 15.119699999999966
+        },
+        {
+          "frame": 129,
+          "command_ms": 13.4606
+        },
+        {
+          "frame": 134,
+          "command_ms": 10.7346
+        },
+        {
+          "frame": 135,
+          "command_ms": 15.403099999999995
+        },
+        {
+          "frame": 140,
+          "command_ms": 15.273599999999988
+        },
+        {
+          "frame": 146,
+          "command_ms": 18.86080000000004
+        },
+        {
+          "frame": 151,
+          "command_ms": 13.546400000000062
+        },
+        {
+          "frame": 156,
+          "command_ms": 9.050500000000056
+        },
+        {
+          "frame": 162,
+          "command_ms": 15.625999999999976
+        },
+        {
+          "frame": 167,
+          "command_ms": 15.255600000000072
+        },
+        {
+          "frame": 173,
+          "command_ms": 13.663099999999986
+        },
+        {
+          "frame": 260,
+          "command_ms": 17.707599999999957
+        },
+        {
+          "frame": 276,
+          "command_ms": 9.616199999999935
+        },
+        {
+          "frame": 294,
+          "command_ms": 9.89910000000009
+        }
+      ]
+    },
+    {
+      "mode": "probes",
+      "raw": {
+        "path": ".cache/world-fields-battle-sampler-2093abf-20261103-r1/1-probes/result.json",
+        "bytes": 628781,
+        "sha256": "3e256ddc426d24bd1d2eb9d6c4886253e2e874d4ad0462d8375aa1d4443126ee"
+      },
+      "options": {
+        "warmup": 66,
+        "frames": 300,
+        "seed": "42",
+        "input_sequence_frames": 6,
+        "data_sources": 0,
+        "mode": "probes",
+        "profile_window": true,
+        "function_sampling": false
+      },
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "started_utc": "2026-11-02T18:31:37.554Z"
+      },
+      "command_wall_ms": {
+        "samples": 300,
+        "total_ms": 1204.1311000000012,
+        "p50_ms": 3.1339000000000397,
+        "p95_ms": 9.024000000000001,
+        "max_ms": 24.907600000000002
+      },
+      "closed": true,
+      "execution": {
+        "build_intent": "sampling-diagnostic",
+        "bytecode_optimization_level": 2,
+        "bytecode_type_info_level": 0,
+        "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+        "host_binding": "rust-mlua",
+        "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        "luau_execution": "interpreter",
+        "native_codegen_compiled": false,
+        "native_codegen_fallback": "interpreter",
+        "native_codegen_requested": false,
+        "native_codegen_supported": false,
+        "phase_profile": false,
+        "preview_tools": true,
+        "runtime": "luau",
+        "rust_profile": "release",
+        "sampling_profile": true,
+        "schema_version": 2,
+        "target_arch": "wasm32",
+        "target_os": "emscripten",
+        "vm_implementation": "luau-upstream-vendored",
+        "wasm_host_compilation": "host-managed-not-probed"
+      },
+      "vm_metrics": {
+        "tick_count": 300,
+        "allocation_growth_bytes": 98421922,
+        "allocation_growth_events": 802402,
+        "incremental_gc_steps": 66073,
+        "incremental_gc_ms": 84.46306999999992,
+        "incremental_gc_max_step_ms": 0.1583,
+        "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+        "availability": {
+          "allocation_growth": "measured",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "measured",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        },
+        "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+        "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead"
+      },
+      "off_counter_availability": null,
+      "luau_allocated_bytes_at_final_profile_query": 11063028,
+      "heap_scope": "Passive current allocated bytes when the final profile report is queried; not a window peak or reachable/live heap.",
+      "wasm_linear_capacity_bytes": {
+        "before": 29097984,
+        "after": 29097984
+      },
+      "function_metadata": {
+        "samples": 0,
+        "dropped_samples": 0,
+        "truncated_stacks": 0,
+        "limits": {
+          "depth": 32,
+          "functions": 1024,
+          "minimum_interval_ms": 1,
+          "stacks": 4096
+        },
+        "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+      },
+      "per_frame_counter_scope": {
+        "frames": 300,
+        "first_frame": 67,
+        "last_frame": 366,
+        "all_completed_and_joined": true,
+        "sum_reconciled_with_window": true,
+        "allocation_growth_bytes_distribution": {
+          "samples": 300,
+          "min": 160304,
+          "p50": 169312,
+          "p95": 1110661,
+          "max": 4390246
+        },
+        "incremental_step_wall_ms_distribution": {
+          "samples": 300,
+          "min": 0.07060299999999999,
+          "p50": 0.12939300000000004,
+          "p95": 0.9259940000000001,
+          "max": 3.6421430000000177
+        },
+        "requested_cadence_totals": {
+          "allocation_growth_bytes": 38557925,
+          "allocation_growth_events": 267754,
+          "incremental_gc_steps": 26517,
+          "incremental_gc_ms": 29.172970999999954
+        }
+      },
+      "p95_slow_frames": [
+        119,
+        124,
+        129,
+        135,
+        136,
+        140,
+        146,
+        151,
+        156,
+        162,
+        167,
+        173,
+        248,
+        276,
+        294,
+        314
+      ],
+      "p95_slow_rows": [
+        {
+          "frame": 119,
+          "command_ms": 10.341599999999971,
+          "vm": {
+            "allocation_growth_bytes": 2144527,
+            "allocation_growth_events": 14604,
+            "completed": true,
+            "frame": 119,
+            "incremental_gc_max_step_ms": 0.0245,
+            "incremental_gc_ms": 1.3422759999999883,
+            "incremental_gc_steps": 1547
+          }
+        },
+        {
+          "frame": 124,
+          "command_ms": 24.907600000000002,
+          "vm": {
+            "allocation_growth_bytes": 3763532,
+            "allocation_growth_events": 27215,
+            "completed": true,
+            "frame": 124,
+            "incremental_gc_max_step_ms": 0.0268,
+            "incremental_gc_ms": 2.712973999999977,
+            "incremental_gc_steps": 2570
+          }
+        },
+        {
+          "frame": 129,
+          "command_ms": 15.133499999999913,
+          "vm": {
+            "allocation_growth_bytes": 3422527,
+            "allocation_growth_events": 23103,
+            "completed": true,
+            "frame": 129,
+            "incremental_gc_max_step_ms": 0.0264,
+            "incremental_gc_ms": 2.510052999999996,
+            "incremental_gc_steps": 2300
+          }
+        },
+        {
+          "frame": 135,
+          "command_ms": 14.44780000000003,
+          "vm": {
+            "allocation_growth_bytes": 3364803,
+            "allocation_growth_events": 22761,
+            "completed": true,
+            "frame": 135,
+            "incremental_gc_max_step_ms": 0.0275,
+            "incremental_gc_ms": 2.4135040000000156,
+            "incremental_gc_steps": 2290
+          }
+        },
+        {
+          "frame": 136,
+          "command_ms": 9.024000000000001,
+          "vm": {
+            "allocation_growth_bytes": 164912,
+            "allocation_growth_events": 1501,
+            "completed": true,
+            "frame": 136,
+            "incremental_gc_max_step_ms": 0.004399,
+            "incremental_gc_ms": 0.13080300000000003,
+            "incremental_gc_steps": 114
+          }
+        },
+        {
+          "frame": 140,
+          "command_ms": 17.594299999999976,
+          "vm": {
+            "allocation_growth_bytes": 3753815,
+            "allocation_growth_events": 27831,
+            "completed": true,
+            "frame": 140,
+            "incremental_gc_max_step_ms": 0.0286,
+            "incremental_gc_ms": 2.949113000000025,
+            "incremental_gc_steps": 2563
+          }
+        },
+        {
+          "frame": 146,
+          "command_ms": 19.65390000000002,
+          "vm": {
+            "allocation_growth_bytes": 4260357,
+            "allocation_growth_events": 30002,
+            "completed": true,
+            "frame": 146,
+            "incremental_gc_max_step_ms": 0.0401,
+            "incremental_gc_ms": 3.6421430000000177,
+            "incremental_gc_steps": 2933
+          }
+        },
+        {
+          "frame": 151,
+          "command_ms": 14.377599999999916,
+          "vm": {
+            "allocation_growth_bytes": 3242872,
+            "allocation_growth_events": 21678,
+            "completed": true,
+            "frame": 151,
+            "incremental_gc_max_step_ms": 0.052500000000000005,
+            "incremental_gc_ms": 2.13388599999998,
+            "incremental_gc_steps": 2398
+          }
+        },
+        {
+          "frame": 156,
+          "command_ms": 12.464500000000044,
+          "vm": {
+            "allocation_growth_bytes": 2215586,
+            "allocation_growth_events": 15112,
+            "completed": true,
+            "frame": 156,
+            "incremental_gc_max_step_ms": 0.0252,
+            "incremental_gc_ms": 1.5400069999999886,
+            "incremental_gc_steps": 1647
+          }
+        },
+        {
+          "frame": 162,
+          "command_ms": 17.625999999999863,
+          "vm": {
+            "allocation_growth_bytes": 4264562,
+            "allocation_growth_events": 29748,
+            "completed": true,
+            "frame": 162,
+            "incremental_gc_max_step_ms": 0.031198999999999998,
+            "incremental_gc_ms": 3.322448999999989,
+            "incremental_gc_steps": 2716
+          }
+        },
+        {
+          "frame": 167,
+          "command_ms": 18.644900000000007,
+          "vm": {
+            "allocation_growth_bytes": 4390246,
+            "allocation_growth_events": 30553,
+            "completed": true,
+            "frame": 167,
+            "incremental_gc_max_step_ms": 0.027001,
+            "incremental_gc_ms": 3.045990999999982,
+            "incremental_gc_steps": 3013
+          }
+        },
+        {
+          "frame": 173,
+          "command_ms": 21.314599999999928,
+          "vm": {
+            "allocation_growth_bytes": 3735098,
+            "allocation_growth_events": 25147,
+            "completed": true,
+            "frame": 173,
+            "incremental_gc_max_step_ms": 0.0356,
+            "incremental_gc_ms": 3.560574999999995,
+            "incremental_gc_steps": 2540
+          }
+        },
+        {
+          "frame": 248,
+          "command_ms": 13.00689999999986,
+          "vm": {
+            "allocation_growth_bytes": 174192,
+            "allocation_growth_events": 1618,
+            "completed": true,
+            "frame": 248,
+            "incremental_gc_max_step_ms": 0.036001000000000005,
+            "incremental_gc_ms": 0.20530099999999998,
+            "incremental_gc_steps": 51
+          }
+        },
+        {
+          "frame": 276,
+          "command_ms": 16.554799999999886,
+          "vm": {
+            "allocation_growth_bytes": 181112,
+            "allocation_growth_events": 1710,
+            "completed": true,
+            "frame": 276,
+            "incremental_gc_max_step_ms": 0.0144,
+            "incremental_gc_ms": 0.18341299999999996,
+            "incremental_gc_steps": 117
+          }
+        },
+        {
+          "frame": 294,
+          "command_ms": 11.06230000000005,
+          "vm": {
+            "allocation_growth_bytes": 1856349,
+            "allocation_growth_events": 15623,
+            "completed": true,
+            "frame": 294,
+            "incremental_gc_max_step_ms": 0.035500000000000004,
+            "incremental_gc_ms": 1.8499010000000011,
+            "incremental_gc_steps": 1194
+          }
+        },
+        {
+          "frame": 314,
+          "command_ms": 9.861200000000053,
+          "vm": {
+            "allocation_growth_bytes": 1089305,
+            "allocation_growth_events": 9194,
+            "completed": true,
+            "frame": 314,
+            "incremental_gc_max_step_ms": 0.043501000000000005,
+            "incremental_gc_ms": 1.0630950000000001,
+            "incremental_gc_steps": 751
+          }
+        }
+      ]
+    },
+    {
+      "mode": "sampling",
+      "raw": {
+        "path": ".cache/world-fields-battle-sampler-2093abf-20261103-r1/2-sampling/result.json",
+        "bytes": 710805,
+        "sha256": "056340ac01f18526138d05ae2bb2572d99a767fa22de8c053b604fa9f95f1719"
+      },
+      "options": {
+        "warmup": 66,
+        "frames": 300,
+        "seed": "42",
+        "input_sequence_frames": 6,
+        "data_sources": 0,
+        "mode": "sampling",
+        "profile_window": true,
+        "function_sampling": true
+      },
+      "environment": {
+        "node": "v24.19.0",
+        "platform": "win32",
+        "arch": "x64",
+        "started_utc": "2026-11-02T18:31:39.463Z"
+      },
+      "command_wall_ms": {
+        "samples": 300,
+        "total_ms": 1300.2771999999998,
+        "p50_ms": 3.2596000000000913,
+        "p95_ms": 11.648500000000013,
+        "max_ms": 27.100900000000024
+      },
+      "closed": true,
+      "execution": {
+        "build_intent": "sampling-diagnostic",
+        "bytecode_optimization_level": 2,
+        "bytecode_type_info_level": 0,
+        "determinism_contract": "fixed-tick-seeded-replay;cross-target-float-policy-explicit",
+        "host_binding": "rust-mlua",
+        "limitation": "Eligibility is not per-function compilation proof. Preview diagnostics disable Luau codegen. Ordinary preview uses bytecode optimization 1; sampling-profile retains optimization 2 with safe-point/VM probes, whose overhead and optimized/inlined attribution require a separate unsampled comparison. Phase-profile takes precedence and uses optimization 2 without function or VM allocation/GC callbacks. Non-preview VMs default to optimization 2, including interpreters and Wasm. Source directives and cached job bytecode can differ. Wasm host JIT does not imply a Luau-to-Wasm JIT backend; pair diagnosis with unsampled production-mode replay.",
+        "luau_execution": "interpreter",
+        "native_codegen_compiled": false,
+        "native_codegen_fallback": "interpreter",
+        "native_codegen_requested": false,
+        "native_codegen_supported": false,
+        "phase_profile": false,
+        "preview_tools": true,
+        "runtime": "luau",
+        "rust_profile": "release",
+        "sampling_profile": true,
+        "schema_version": 2,
+        "target_arch": "wasm32",
+        "target_os": "emscripten",
+        "vm_implementation": "luau-upstream-vendored",
+        "wasm_host_compilation": "host-managed-not-probed"
+      },
+      "vm_metrics": {
+        "tick_count": 300,
+        "allocation_growth_bytes": 98413983,
+        "allocation_growth_events": 802425,
+        "incremental_gc_steps": 66082,
+        "incremental_gc_ms": 81.51010799999996,
+        "incremental_gc_max_step_ms": 0.1459,
+        "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+        "availability": {
+          "allocation_growth": "measured",
+          "full_gc_wall_time": "unsupported",
+          "incremental_gc_wall_time": "measured",
+          "js_gc": "not-applicable",
+          "rust_allocations": "not-collected"
+        },
+        "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+        "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead"
+      },
+      "off_counter_availability": null,
+      "luau_allocated_bytes_at_final_profile_query": 11095524,
+      "heap_scope": "Passive current allocated bytes when the final profile report is queried; not a window peak or reachable/live heap.",
+      "wasm_linear_capacity_bytes": {
+        "before": 29097984,
+        "after": 29097984
+      },
+      "function_metadata": {
+        "samples": 865,
+        "dropped_samples": 0,
+        "truncated_stacks": 0,
+        "limits": {
+          "depth": 32,
+          "functions": 1024,
+          "minimum_interval_ms": 1,
+          "stacks": 4096
+        },
+        "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+      },
+      "per_frame_counter_scope": {
+        "frames": 300,
+        "first_frame": 67,
+        "last_frame": 366,
+        "all_completed_and_joined": true,
+        "sum_reconciled_with_window": true,
+        "allocation_growth_bytes_distribution": {
+          "samples": 300,
+          "min": 160304,
+          "p50": 169312,
+          "p95": 1110661,
+          "max": 4390134
+        },
+        "incremental_step_wall_ms_distribution": {
+          "samples": 300,
+          "min": 0.072692,
+          "p50": 0.12629200000000002,
+          "p95": 0.7914819999999995,
+          "max": 4.0584179999999925
+        },
+        "requested_cadence_totals": {
+          "allocation_growth_bytes": 38554299,
+          "allocation_growth_events": 267734,
+          "incremental_gc_steps": 26518,
+          "incremental_gc_ms": 28.272831999999973
+        }
+      },
+      "p95_slow_frames": [
+        119,
+        124,
+        129,
+        131,
+        135,
+        140,
+        146,
+        151,
+        156,
+        162,
+        167,
+        173,
+        252,
+        273,
+        294,
+        364
+      ],
+      "p95_slow_rows": [
+        {
+          "frame": 119,
+          "command_ms": 14.538599999999974,
+          "vm": {
+            "allocation_growth_bytes": 2144527,
+            "allocation_growth_events": 14604,
+            "completed": true,
+            "frame": 119,
+            "incremental_gc_max_step_ms": 0.0245,
+            "incremental_gc_ms": 1.3744779999999912,
+            "incremental_gc_steps": 1547
+          }
+        },
+        {
+          "frame": 124,
+          "command_ms": 22.80989999999997,
+          "vm": {
+            "allocation_growth_bytes": 3760690,
+            "allocation_growth_events": 27195,
+            "completed": true,
+            "frame": 124,
+            "incremental_gc_max_step_ms": 0.0307,
+            "incremental_gc_ms": 2.76062999999997,
+            "incremental_gc_steps": 2571
+          }
+        },
+        {
+          "frame": 129,
+          "command_ms": 19.84349999999995,
+          "vm": {
+            "allocation_growth_bytes": 3422415,
+            "allocation_growth_events": 23103,
+            "completed": true,
+            "frame": 129,
+            "incremental_gc_max_step_ms": 0.0262,
+            "incremental_gc_ms": 2.528722999999995,
+            "incremental_gc_steps": 2300
+          }
+        },
+        {
+          "frame": 131,
+          "command_ms": 11.81009999999992,
+          "vm": {
+            "allocation_growth_bytes": 164912,
+            "allocation_growth_events": 1501,
+            "completed": true,
+            "frame": 131,
+            "incremental_gc_max_step_ms": 0.0039,
+            "incremental_gc_ms": 0.0940020000000001,
+            "incremental_gc_steps": 140
+          }
+        },
+        {
+          "frame": 135,
+          "command_ms": 19.74440000000004,
+          "vm": {
+            "allocation_growth_bytes": 3364691,
+            "allocation_growth_events": 22761,
+            "completed": true,
+            "frame": 135,
+            "incremental_gc_max_step_ms": 0.0371,
+            "incremental_gc_ms": 2.5038860000000134,
+            "incremental_gc_steps": 2287
+          }
+        },
+        {
+          "frame": 140,
+          "command_ms": 22.737700000000018,
+          "vm": {
+            "allocation_growth_bytes": 3753703,
+            "allocation_growth_events": 27831,
+            "completed": true,
+            "frame": 140,
+            "incremental_gc_max_step_ms": 0.0337,
+            "incremental_gc_ms": 2.7694240000000376,
+            "incremental_gc_steps": 2563
+          }
+        },
+        {
+          "frame": 146,
+          "command_ms": 27.100900000000024,
+          "vm": {
+            "allocation_growth_bytes": 4260245,
+            "allocation_growth_events": 30002,
+            "completed": true,
+            "frame": 146,
+            "incremental_gc_max_step_ms": 0.043000000000000003,
+            "incremental_gc_ms": 4.0584179999999925,
+            "incremental_gc_steps": 2933
+          }
+        },
+        {
+          "frame": 151,
+          "command_ms": 18.58179999999993,
+          "vm": {
+            "allocation_growth_bytes": 3242872,
+            "allocation_growth_events": 21678,
+            "completed": true,
+            "frame": 151,
+            "incremental_gc_max_step_ms": 0.0269,
+            "incremental_gc_ms": 1.8710539999999989,
+            "incremental_gc_steps": 2399
+          }
+        },
+        {
+          "frame": 156,
+          "command_ms": 13.514100000000099,
+          "vm": {
+            "allocation_growth_bytes": 2215586,
+            "allocation_growth_events": 15112,
+            "completed": true,
+            "frame": 156,
+            "incremental_gc_max_step_ms": 0.0428,
+            "incremental_gc_ms": 1.2666850000000005,
+            "incremental_gc_steps": 1647
+          }
+        },
+        {
+          "frame": 162,
+          "command_ms": 24.594299999999976,
+          "vm": {
+            "allocation_growth_bytes": 4264450,
+            "allocation_growth_events": 29748,
+            "completed": true,
+            "frame": 162,
+            "incremental_gc_max_step_ms": 0.0299,
+            "incremental_gc_ms": 3.4231409999999904,
+            "incremental_gc_steps": 2716
+          }
+        },
+        {
+          "frame": 167,
+          "command_ms": 25.14560000000006,
+          "vm": {
+            "allocation_growth_bytes": 4390134,
+            "allocation_growth_events": 30553,
+            "completed": true,
+            "frame": 167,
+            "incremental_gc_max_step_ms": 0.0266,
+            "incremental_gc_ms": 2.9996119999999853,
+            "incremental_gc_steps": 3014
+          }
+        },
+        {
+          "frame": 173,
+          "command_ms": 21.451499999999896,
+          "vm": {
+            "allocation_growth_bytes": 3734986,
+            "allocation_growth_events": 25147,
+            "completed": true,
+            "frame": 173,
+            "incremental_gc_max_step_ms": 0.0497,
+            "incremental_gc_ms": 2.7167810000000028,
+            "incremental_gc_steps": 2541
+          }
+        },
+        {
+          "frame": 252,
+          "command_ms": 13.117600000000039,
+          "vm": {
+            "allocation_growth_bytes": 170944,
+            "allocation_growth_events": 1617,
+            "completed": true,
+            "frame": 252,
+            "incremental_gc_max_step_ms": 0.008,
+            "incremental_gc_ms": 0.09130899999999997,
+            "incremental_gc_steps": 146
+          }
+        },
+        {
+          "frame": 273,
+          "command_ms": 11.648500000000013,
+          "vm": {
+            "allocation_growth_bytes": 179288,
+            "allocation_growth_events": 1668,
+            "completed": true,
+            "frame": 273,
+            "incremental_gc_max_step_ms": 0.003,
+            "incremental_gc_ms": 0.1521100000000001,
+            "incremental_gc_steps": 120
+          }
+        },
+        {
+          "frame": 294,
+          "command_ms": 13.860699999999952,
+          "vm": {
+            "allocation_growth_bytes": 1856237,
+            "allocation_growth_events": 15623,
+            "completed": true,
+            "frame": 294,
+            "incremental_gc_max_step_ms": 0.0359,
+            "incremental_gc_ms": 1.8566869999999895,
+            "incremental_gc_steps": 1195
+          }
+        },
+        {
+          "frame": 364,
+          "command_ms": 12.364199999999983,
+          "vm": {
+            "allocation_growth_bytes": 176411,
+            "allocation_growth_events": 1656,
+            "completed": true,
+            "frame": 364,
+            "incremental_gc_max_step_ms": 0.0346,
+            "incremental_gc_ms": 0.280795,
+            "incremental_gc_steps": 37
+          }
+        }
+      ]
+    }
+  ],
+  "previously_observed_slow_cadence_frames": [
+    119,
+    124,
+    129,
+    135,
+    140,
+    146,
+    151,
+    156,
+    162,
+    167,
+    173
+  ],
+  "requested_cadence_rows": [
+    {
+      "frame": 119,
+      "off": {
+        "command_ms": 9.030399999999986
+      },
+      "probes": {
+        "command_ms": 10.341599999999971,
+        "vm": {
+          "allocation_growth_bytes": 2144527,
+          "allocation_growth_events": 14604,
+          "completed": true,
+          "frame": 119,
+          "incremental_gc_max_step_ms": 0.0245,
+          "incremental_gc_ms": 1.3422759999999883,
+          "incremental_gc_steps": 1547
+        }
+      },
+      "sampling": {
+        "command_ms": 14.538599999999974,
+        "vm": {
+          "allocation_growth_bytes": 2144527,
+          "allocation_growth_events": 14604,
+          "completed": true,
+          "frame": 119,
+          "incremental_gc_max_step_ms": 0.0245,
+          "incremental_gc_ms": 1.3744779999999912,
+          "incremental_gc_steps": 1547
+        }
+      }
+    },
+    {
+      "frame": 124,
+      "off": {
+        "command_ms": 15.119699999999966
+      },
+      "probes": {
+        "command_ms": 24.907600000000002,
+        "vm": {
+          "allocation_growth_bytes": 3763532,
+          "allocation_growth_events": 27215,
+          "completed": true,
+          "frame": 124,
+          "incremental_gc_max_step_ms": 0.0268,
+          "incremental_gc_ms": 2.712973999999977,
+          "incremental_gc_steps": 2570
+        }
+      },
+      "sampling": {
+        "command_ms": 22.80989999999997,
+        "vm": {
+          "allocation_growth_bytes": 3760690,
+          "allocation_growth_events": 27195,
+          "completed": true,
+          "frame": 124,
+          "incremental_gc_max_step_ms": 0.0307,
+          "incremental_gc_ms": 2.76062999999997,
+          "incremental_gc_steps": 2571
+        }
+      }
+    },
+    {
+      "frame": 129,
+      "off": {
+        "command_ms": 13.4606
+      },
+      "probes": {
+        "command_ms": 15.133499999999913,
+        "vm": {
+          "allocation_growth_bytes": 3422527,
+          "allocation_growth_events": 23103,
+          "completed": true,
+          "frame": 129,
+          "incremental_gc_max_step_ms": 0.0264,
+          "incremental_gc_ms": 2.510052999999996,
+          "incremental_gc_steps": 2300
+        }
+      },
+      "sampling": {
+        "command_ms": 19.84349999999995,
+        "vm": {
+          "allocation_growth_bytes": 3422415,
+          "allocation_growth_events": 23103,
+          "completed": true,
+          "frame": 129,
+          "incremental_gc_max_step_ms": 0.0262,
+          "incremental_gc_ms": 2.528722999999995,
+          "incremental_gc_steps": 2300
+        }
+      }
+    },
+    {
+      "frame": 135,
+      "off": {
+        "command_ms": 15.403099999999995
+      },
+      "probes": {
+        "command_ms": 14.44780000000003,
+        "vm": {
+          "allocation_growth_bytes": 3364803,
+          "allocation_growth_events": 22761,
+          "completed": true,
+          "frame": 135,
+          "incremental_gc_max_step_ms": 0.0275,
+          "incremental_gc_ms": 2.4135040000000156,
+          "incremental_gc_steps": 2290
+        }
+      },
+      "sampling": {
+        "command_ms": 19.74440000000004,
+        "vm": {
+          "allocation_growth_bytes": 3364691,
+          "allocation_growth_events": 22761,
+          "completed": true,
+          "frame": 135,
+          "incremental_gc_max_step_ms": 0.0371,
+          "incremental_gc_ms": 2.5038860000000134,
+          "incremental_gc_steps": 2287
+        }
+      }
+    },
+    {
+      "frame": 140,
+      "off": {
+        "command_ms": 15.273599999999988
+      },
+      "probes": {
+        "command_ms": 17.594299999999976,
+        "vm": {
+          "allocation_growth_bytes": 3753815,
+          "allocation_growth_events": 27831,
+          "completed": true,
+          "frame": 140,
+          "incremental_gc_max_step_ms": 0.0286,
+          "incremental_gc_ms": 2.949113000000025,
+          "incremental_gc_steps": 2563
+        }
+      },
+      "sampling": {
+        "command_ms": 22.737700000000018,
+        "vm": {
+          "allocation_growth_bytes": 3753703,
+          "allocation_growth_events": 27831,
+          "completed": true,
+          "frame": 140,
+          "incremental_gc_max_step_ms": 0.0337,
+          "incremental_gc_ms": 2.7694240000000376,
+          "incremental_gc_steps": 2563
+        }
+      }
+    },
+    {
+      "frame": 146,
+      "off": {
+        "command_ms": 18.86080000000004
+      },
+      "probes": {
+        "command_ms": 19.65390000000002,
+        "vm": {
+          "allocation_growth_bytes": 4260357,
+          "allocation_growth_events": 30002,
+          "completed": true,
+          "frame": 146,
+          "incremental_gc_max_step_ms": 0.0401,
+          "incremental_gc_ms": 3.6421430000000177,
+          "incremental_gc_steps": 2933
+        }
+      },
+      "sampling": {
+        "command_ms": 27.100900000000024,
+        "vm": {
+          "allocation_growth_bytes": 4260245,
+          "allocation_growth_events": 30002,
+          "completed": true,
+          "frame": 146,
+          "incremental_gc_max_step_ms": 0.043000000000000003,
+          "incremental_gc_ms": 4.0584179999999925,
+          "incremental_gc_steps": 2933
+        }
+      }
+    },
+    {
+      "frame": 151,
+      "off": {
+        "command_ms": 13.546400000000062
+      },
+      "probes": {
+        "command_ms": 14.377599999999916,
+        "vm": {
+          "allocation_growth_bytes": 3242872,
+          "allocation_growth_events": 21678,
+          "completed": true,
+          "frame": 151,
+          "incremental_gc_max_step_ms": 0.052500000000000005,
+          "incremental_gc_ms": 2.13388599999998,
+          "incremental_gc_steps": 2398
+        }
+      },
+      "sampling": {
+        "command_ms": 18.58179999999993,
+        "vm": {
+          "allocation_growth_bytes": 3242872,
+          "allocation_growth_events": 21678,
+          "completed": true,
+          "frame": 151,
+          "incremental_gc_max_step_ms": 0.0269,
+          "incremental_gc_ms": 1.8710539999999989,
+          "incremental_gc_steps": 2399
+        }
+      }
+    },
+    {
+      "frame": 156,
+      "off": {
+        "command_ms": 9.050500000000056
+      },
+      "probes": {
+        "command_ms": 12.464500000000044,
+        "vm": {
+          "allocation_growth_bytes": 2215586,
+          "allocation_growth_events": 15112,
+          "completed": true,
+          "frame": 156,
+          "incremental_gc_max_step_ms": 0.0252,
+          "incremental_gc_ms": 1.5400069999999886,
+          "incremental_gc_steps": 1647
+        }
+      },
+      "sampling": {
+        "command_ms": 13.514100000000099,
+        "vm": {
+          "allocation_growth_bytes": 2215586,
+          "allocation_growth_events": 15112,
+          "completed": true,
+          "frame": 156,
+          "incremental_gc_max_step_ms": 0.0428,
+          "incremental_gc_ms": 1.2666850000000005,
+          "incremental_gc_steps": 1647
+        }
+      }
+    },
+    {
+      "frame": 162,
+      "off": {
+        "command_ms": 15.625999999999976
+      },
+      "probes": {
+        "command_ms": 17.625999999999863,
+        "vm": {
+          "allocation_growth_bytes": 4264562,
+          "allocation_growth_events": 29748,
+          "completed": true,
+          "frame": 162,
+          "incremental_gc_max_step_ms": 0.031198999999999998,
+          "incremental_gc_ms": 3.322448999999989,
+          "incremental_gc_steps": 2716
+        }
+      },
+      "sampling": {
+        "command_ms": 24.594299999999976,
+        "vm": {
+          "allocation_growth_bytes": 4264450,
+          "allocation_growth_events": 29748,
+          "completed": true,
+          "frame": 162,
+          "incremental_gc_max_step_ms": 0.0299,
+          "incremental_gc_ms": 3.4231409999999904,
+          "incremental_gc_steps": 2716
+        }
+      }
+    },
+    {
+      "frame": 167,
+      "off": {
+        "command_ms": 15.255600000000072
+      },
+      "probes": {
+        "command_ms": 18.644900000000007,
+        "vm": {
+          "allocation_growth_bytes": 4390246,
+          "allocation_growth_events": 30553,
+          "completed": true,
+          "frame": 167,
+          "incremental_gc_max_step_ms": 0.027001,
+          "incremental_gc_ms": 3.045990999999982,
+          "incremental_gc_steps": 3013
+        }
+      },
+      "sampling": {
+        "command_ms": 25.14560000000006,
+        "vm": {
+          "allocation_growth_bytes": 4390134,
+          "allocation_growth_events": 30553,
+          "completed": true,
+          "frame": 167,
+          "incremental_gc_max_step_ms": 0.0266,
+          "incremental_gc_ms": 2.9996119999999853,
+          "incremental_gc_steps": 3014
+        }
+      }
+    },
+    {
+      "frame": 173,
+      "off": {
+        "command_ms": 13.663099999999986
+      },
+      "probes": {
+        "command_ms": 21.314599999999928,
+        "vm": {
+          "allocation_growth_bytes": 3735098,
+          "allocation_growth_events": 25147,
+          "completed": true,
+          "frame": 173,
+          "incremental_gc_max_step_ms": 0.0356,
+          "incremental_gc_ms": 3.560574999999995,
+          "incremental_gc_steps": 2540
+        }
+      },
+      "sampling": {
+        "command_ms": 21.451499999999896,
+        "vm": {
+          "allocation_growth_bytes": 3734986,
+          "allocation_growth_events": 25147,
+          "completed": true,
+          "frame": 173,
+          "incremental_gc_max_step_ms": 0.0497,
+          "incremental_gc_ms": 2.7167810000000028,
+          "incremental_gc_steps": 2541
+        }
+      }
+    }
+  ],
+  "function_sampling": {
+    "samples": 865,
+    "dropped_samples": 0,
+    "truncated_stacks": 0,
+    "function_count": 112,
+    "stack_count": 112,
+    "limits": {
+      "depth": 32,
+      "functions": 1024,
+      "minimum_interval_ms": 1,
+      "stacks": 4096
+    },
+    "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled.",
+    "line_semantics": "line_defined is the reported Lua function definition line in the frozen generated script or package, not the sampled instruction line.",
+    "per_frame_function_assignment_available": false,
+    "top20_functions": [
+      {
+        "key": "scripts/main.luau:5936:passable",
+        "source": "scripts/main.luau",
+        "line_defined": 5936,
+        "name": "passable",
+        "self_samples": 182,
+        "inclusive_samples": 206
+      },
+      {
+        "key": "scripts/main.luau:9512:snapshot",
+        "source": "scripts/main.luau",
+        "line_defined": 9512,
+        "name": "snapshot",
+        "self_samples": 92,
+        "inclusive_samples": 92
+      },
+      {
+        "key": "scripts/main.luau:17191:martial",
+        "source": "scripts/main.luau",
+        "line_defined": 17191,
+        "name": "martial",
+        "self_samples": 60,
+        "inclusive_samples": 63
+      },
+      {
+        "key": "scripts/main.luau:17135:exploration",
+        "source": "scripts/main.luau",
+        "line_defined": 17135,
+        "name": "exploration",
+        "self_samples": 44,
+        "inclusive_samples": 103
+      },
+      {
+        "key": "scripts/main.luau:7101:observe",
+        "source": "scripts/main.luau",
+        "line_defined": 7101,
+        "name": "observe",
+        "self_samples": 43,
+        "inclusive_samples": 67
+      },
+      {
+        "key": "scripts/main.luau:17696:processActions",
+        "source": "scripts/main.luau",
+        "line_defined": 17696,
+        "name": "processActions",
+        "self_samples": 41,
+        "inclusive_samples": 118
+      },
+      {
+        "key": "scripts/main.luau:17848:update",
+        "source": "scripts/main.luau",
+        "line_defined": 17848,
+        "name": "update",
+        "self_samples": 31,
+        "inclusive_samples": 865
+      },
+      {
+        "key": "scripts/main.luau:11910:release",
+        "source": "scripts/main.luau",
+        "line_defined": 11910,
+        "name": "release",
+        "self_samples": 27,
+        "inclusive_samples": 27
+      },
+      {
+        "key": "scripts/main.luau:5533:update",
+        "source": "scripts/main.luau",
+        "line_defined": 5533,
+        "name": "update",
+        "self_samples": 17,
+        "inclusive_samples": 39
+      },
+      {
+        "key": "scripts/main.luau:5893:assistCandidates",
+        "source": "scripts/main.luau",
+        "line_defined": 5893,
+        "name": "assistCandidates",
+        "self_samples": 15,
+        "inclusive_samples": 15
+      },
+      {
+        "key": "scripts/main.luau:17077:process",
+        "source": "scripts/main.luau",
+        "line_defined": 17077,
+        "name": "process",
+        "self_samples": 14,
+        "inclusive_samples": 28
+      },
+      {
+        "key": "scripts/main.luau:9706:blocksSceneInput",
+        "source": "scripts/main.luau",
+        "line_defined": 9706,
+        "name": "blocksSceneInput",
+        "self_samples": 12,
+        "inclusive_samples": 12
+      },
+      {
+        "key": "@packages/unone-ui:236:within",
+        "source": "@packages/unone-ui",
+        "line_defined": 236,
+        "name": "within",
+        "self_samples": 11,
+        "inclusive_samples": 11
+      },
+      {
+        "key": "scripts/main.luau:17647:processProgressActions",
+        "source": "scripts/main.luau",
+        "line_defined": 17647,
+        "name": "processProgressActions",
+        "self_samples": 10,
+        "inclusive_samples": 10
+      },
+      {
+        "key": "scripts/main.luau:4540:origin",
+        "source": "scripts/main.luau",
+        "line_defined": 4540,
+        "name": "origin",
+        "self_samples": 10,
+        "inclusive_samples": 13
+      },
+      {
+        "key": "scripts/main.luau:17597:processMartialSelectionActions",
+        "source": "scripts/main.luau",
+        "line_defined": 17597,
+        "name": "processMartialSelectionActions",
+        "self_samples": 9,
+        "inclusive_samples": 9
+      },
+      {
+        "key": "scripts/main.luau:3758:step",
+        "source": "scripts/main.luau",
+        "line_defined": 3758,
+        "name": "step",
+        "self_samples": 9,
+        "inclusive_samples": 9
+      },
+      {
+        "key": "scripts/main.luau:17578:processMapSelectionActions",
+        "source": "scripts/main.luau",
+        "line_defined": 17578,
+        "name": "processMapSelectionActions",
+        "self_samples": 8,
+        "inclusive_samples": 8
+      },
+      {
+        "key": "scripts/main.luau:2804:settlement",
+        "source": "scripts/main.luau",
+        "line_defined": 2804,
+        "name": "settlement",
+        "self_samples": 8,
+        "inclusive_samples": 8
+      },
+      {
+        "key": "scripts/main.luau:4238:nextRouteTile",
+        "source": "scripts/main.luau",
+        "line_defined": 4238,
+        "name": "nextRouteTile",
+        "self_samples": 8,
+        "inclusive_samples": 8
+      }
+    ],
+    "top12_stacks": [
+      {
+        "leaf_first": [
+          "scripts/main.luau:5936:passable",
+          "scripts/main.luau:5952:sbPath",
+          "scripts/main.luau:6583:sbLocalGoal",
+          "scripts/main.luau:6618:sbAgentStep",
+          "scripts/main.luau:6980:update",
+          "scripts/main.luau:17774:updateSettlement",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 137
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:9512:snapshot",
+          "scripts/main.luau:17774:updateSettlement",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 82
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:17191:martial",
+          "scripts/main.luau:17220:publish",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 60
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:17135:exploration",
+          "scripts/main.luau:17220:publish",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 44
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:5936:passable",
+          "scripts/main.luau:5952:sbPath",
+          "scripts/main.luau:6598:sbBeginOuting",
+          "scripts/main.luau:6618:sbAgentStep",
+          "scripts/main.luau:6980:update",
+          "scripts/main.luau:17774:updateSettlement",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 44
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:7101:observe",
+          "scripts/main.luau:17220:publish",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 43
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:17696:processActions",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 41
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 31
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:11910:release",
+          "scripts/main.luau:17280:publish",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 27
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:5533:update",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 17
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:5893:assistCandidates",
+          "scripts/main.luau:7101:observe",
+          "scripts/main.luau:17220:publish",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 15
+      },
+      {
+        "leaf_first": [
+          "scripts/main.luau:17077:process",
+          "scripts/main.luau:17696:processActions",
+          "scripts/main.luau:17848:update"
+        ],
+        "samples": 14
+      }
+    ]
+  },
+  "source_review_candidates": [
+    {
+      "name": "Settlement.passable / sbPath",
+      "line_defined": 5936,
+      "path_function_line_defined": 5952,
+      "facts": "passable loops building/workstation bounds. sbPath constructs a fresh four-Vec2 neighbor array inside the BFS node loop at line5968. Observed top stack includes sbLocalGoal6583 or sbBeginOuting6598, sbAgentStep6618, Settlement.update6980 and updateSettlement17774.",
+      "interpretation": "Concrete frozen-source allocation/work review target. Window-wide samples do not assign its exact cost to individual slow frames or prove this is the current Product bottleneck."
+    },
+    {
+      "name": "Battle.snapshot",
+      "line_defined": 9512,
+      "facts": "Builds a full snapshot record. An82-sample stack reaches it from updateSettlement17774; the battle guard at17775 requests snapshot.paused. The same snapshot is also requested by battle/update/observation paths.",
+      "interpretation": "Review repeated snapshot construction/scans while preserving behavior; samples are not call counts or exact milliseconds."
+    },
+    {
+      "name": "GameObservations.martial/exploration and Settlement.observe",
+      "lines_defined": [
+        17191,
+        17135,
+        7101
+      ],
+      "facts": "Sampled publication functions build observation values each tick; martial creates a loadout array, exploration a values map, Settlement.observe workstation rows.",
+      "interpretation": "Frozen R2 publication work is another review target, not authorization to alter gameplay or move its rules into Rust."
+    }
+  ],
+  "interpretation": [
+    "The11 previously identified slow frames have multi-megabyte positive allocation-growth bursts and elevated same-frame incremental-step sums. That supports allocation/automatic-assist correlation; it does not count collector cycles or prove all slow-frame causes.",
+    "For example, probes frame135:14.4478ms full command,3,364,803 positive-growth bytes,2.413504ms summed incremental steps,max single0.0275ms. Frame151:14.3776ms,3,242,872bytes,2.133886ms sum,max single0.0525ms. These sums are not an isolated OS/GC pause measure or a complete explanation of command wall.",
+    "Top window-wide stacks point to background settlement NPC path planning and repeated snapshots/observations. The captured stack map has no per-frame assignment; do not label these as exact per-slow-frame function timings.",
+    "No claim is made about a later/current JYRogue build; every function and cadence here belongs to the explicitly pinned old R2 payload."
+  ],
+  "limits": [
+    "OFF is the same sampling-capable artifact with profiling window inactive; it is not an ordinary production artifact. Raw OFF zero counters are unavailable observations, not zero allocation or GC.",
+    "Probes/sampling active VM counters cover Luau update including engine callbacks. Positive allocator growth is cumulative requests, not live heap, frees, Rust allocation or JavaScript allocation.",
+    "Incremental GC interrupt timing includes instrumentation/host scheduling overhead and excludes full collections. Per-frame overlap does not establish all GC causes or OS pause time.",
+    "Function counts are biased safe-point samples, not exact function milliseconds or call counts. Opt2 inlining, short functions and native bindings are not fully attributed; preserve dropped/truncated/sample metadata.",
+    "Three fixed-order runs do not establish causal performance improvement. Concurrent chats/machine work may overlap; no exclusive-window/FPS claim.",
+    "Only digest strings and frame scalars are checked after each timed command; full final World/UI/save encoding and profile report happen after timing.",
+    "WASM linear-memory capacity is not live memory, allocation growth, GC frequency or leak proof. No forced collection, replacement API, renderer or Native executable is used.",
+    "incremental_gc_steps counts instrumented incremental step/assist interrupts, never full collector cycles or collection frequency. Full-GC wall time is unsupported/null; JS GC and Rust allocation are outside these probes.",
+    "Positive requested allocator growth is cumulative growth traffic, not retained/live heap or WASM capacity. Do not relabel98.4MB as a live-memory footprint.",
+    "The largest single incremental step is distinct from the per-frame sum of many steps; neither establishes maximum application pause or OS scanout timing.",
+    "All3modes use the same sampler binary. No production-ABI counterfactual or causal profiler overhead estimate is claimed, particularly under possible concurrent unit/Web work.",
+    "No Game source, accepted9c artifact, production renderer, native executable, OS policy or clock was changed."
+  ]
+}

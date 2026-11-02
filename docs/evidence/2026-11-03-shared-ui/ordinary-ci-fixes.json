@@ -1,0 +1,131 @@
+{
+  "schema": "unone.shared-ui.ordinary-ci-fixes.v1",
+  "status": "focused-node-preflights-passed-ordinary-ci-rerun-pending",
+  "scope": "Focused Node publisher and rejected-runtime preflights only; no Core VM, Native CLI, Cargo, browser or performance acceptance.",
+  "execution": {
+    "command": {
+      "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "args": [
+        "--test",
+        "scripts/prepare-web-image-assets.test.mjs",
+        "scripts/profile-world-fields-wasm.test.mjs",
+        "scripts/verify-immutable-bytes-functional-wasm.test.mjs"
+      ],
+      "cwd": "D:\\Projects\\Unone"
+    },
+    "started_utc": "2026-11-02T18:23:19.784Z",
+    "finished_utc": "2026-11-02T18:23:34.708Z",
+    "status": 0,
+    "signal": null,
+    "error": null
+  },
+  "source_pins": [
+    {
+      "path": "scripts/prepare-web-image-assets.mjs",
+      "bytes": 23277,
+      "sha256": "301c2e6cceafd333bb6fba8e88fe1086ef04e54f864a4528bdca144705a891dd"
+    },
+    {
+      "path": "scripts/prepare-web-image-assets.test.mjs",
+      "bytes": 17743,
+      "sha256": "a1f8b3a14851eac45fbaf273c8c01188d112f7bb7a07dd54f9ea07e42331e763"
+    },
+    {
+      "path": "scripts/profile-world-fields-wasm.test.mjs",
+      "bytes": 2448,
+      "sha256": "8c1a83cd9352ab3b0bcab5ca626ae0552599a8f1415925f1518f2bb93360db5f"
+    },
+    {
+      "path": "scripts/verify-immutable-bytes-functional-wasm.test.mjs",
+      "bytes": 4730,
+      "sha256": "1673850329a6d17a9a9d30ce2fc9fc9e27e975e5e0077d16310755b7475196ae"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 2877,
+      "sha256": "2464997f0d896059aff260e533e9ca47f1dbd63d7f60422d9b797e640409efa5"
+    }
+  ],
+  "tests": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "skipped": 0,
+    "by_file": [
+      {
+        "path": "scripts/prepare-web-image-assets.test.mjs",
+        "passed": 19
+      },
+      {
+        "path": "scripts/profile-world-fields-wasm.test.mjs",
+        "passed": 3
+      },
+      {
+        "path": "scripts/verify-immutable-bytes-functional-wasm.test.mjs",
+        "passed": 6
+      }
+    ]
+  },
+  "raw_logs": {
+    "stdout": {
+      "path": "ordinary-ci-focused-stdout.log",
+      "bytes": 2612,
+      "sha256": "e0a45dffcd63423190df2c9bed46546c1db79ef04d17bc5adba81233636bcdd2"
+    },
+    "stderr": {
+      "path": "ordinary-ci-focused-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "cache_report": {
+    "path": ".cache/ordinary-ci-focused-20261103-r1/result.json",
+    "bytes": 1780,
+    "sha256": "f180163073bee75992860c1bfca8a730856fa29fe5bacda5ceb265fdcb2268e2"
+  },
+  "old_ci": {
+    "run_id": 41490065974,
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41490065974",
+    "head_sha": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+    "actual_failures": [
+      {
+        "family": "clippy",
+        "cause": "cargo-clippy was not installed for the pinned1.95.0 toolchain; linting never ran and workspace tests were skipped."
+      },
+      {
+        "family": "rustfmt",
+        "cause": "cargo-fmt was not installed for the pinned1.95.0 toolchain; formatting checks never ran."
+      },
+      {
+        "family": "web-publisher",
+        "cases": 11,
+        "cause": "Trusted asset-encoding.js now imports image-dimensions.mjs, but the publisher rejected every import before validation."
+      },
+      {
+        "family": "fresh-checkout-preflights",
+        "cases": 8,
+        "cause": "Two test helpers called mkdtemp under .cache without creating that parent."
+      }
+    ]
+  },
+  "fixes": [
+    "Ordinary CI explicitly installs clippy/rustfmt into its active pinned toolchain; gates remain enabled.",
+    "Each affected test helper creates its own .cache parent before mkdtemp.",
+    "Publisher allows only the exact fixed canonical named image-dimensions import. SDK index/byte/hash checks cover the dependency independently; export dependency bytes must match.",
+    "Only captured trusted SDK/repository bytes are imported through data URLs. Input-export JavaScript is not executed. Bare, escaping, dynamic, comment-separated imports and re-exports remain rejected."
+  ],
+  "source_review": {
+    "status": "clear-no-concrete-P1-P2",
+    "reviewers": [
+      "/root",
+      "/root/web_lifecycle"
+    ],
+    "scope": "Bounded source-only review; final comment-separated re-export guard re-read clear. Reviewers did not claim workload execution."
+  },
+  "limits": [
+    "These are Node publisher and rejected-runtime preflight tests, not Core VM/WASM or Native application tests.",
+    "No local Cargo, Native CLI, browser, full Web suite or performance measurement was run for this gate.",
+    "Rust component installation and actual formatter/clippy outcomes await ordinary CI; this record does not claim all CI green.",
+    "The source fixes were uncommitted at this gate. Root controls commit/push and pending sampler CI."
+  ]
+}

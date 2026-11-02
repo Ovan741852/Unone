@@ -10,6 +10,7 @@ import {spawnSync} from 'node:child_process';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const script = path.join(root, 'scripts/verify-immutable-bytes-functional-wasm.mjs');
 function setup(t) {
+  fs.mkdirSync(path.join(root, '.cache'), {recursive: true});
   const scratch = fs.mkdtempSync(path.join(root, '.cache/bytes-verifier-preflight-'));
   const runtime = path.join(scratch, 'runtime');
   fs.mkdirSync(runtime);

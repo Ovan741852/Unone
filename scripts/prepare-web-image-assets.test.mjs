@@ -11,6 +11,7 @@ import {prepareWebImageAssets,portablePath,webGeneration} from './prepare-web-im
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const encoding=fs.readFileSync(path.join(repo,'web/shared/asset-encoding.js'));
+const dimensions=fs.readFileSync(path.join(repo,'web/shared/image-dimensions.mjs'));
 const png=(width=2,height=3)=>{const b=Buffer.alloc(24);Buffer.from([137,80,78,71,13,10,26,10]).copy(b);b.writeUInt32BE(13,8);b.write('IHDR',12);b.writeUInt32BE(width,16);b.writeUInt32BE(height,20);return b;};
 const write=(root,name,bytes)=>{const file=path.join(root,...name.split('/'));fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);};
 function fixture(t,{html='<html><head><meta name="unone-image-preload-version" content="1"></head><body></body></html>',staleRoot=false}={}){
@@ -21,7 +22,7 @@ function fixture(t,{html='<html><head><meta name="unone-image-preload-version" c
  const assets={version:1,assets:[{id:'image://fixture/a',kind:'texture2d',source:'assets/a.png',files:[],encoding:{decoder:'image',format:'png',mime:'image/png'}},{id:'image://fixture/b',kind:'texture2d',source:'assets/b.webp',files:[],encoding:{decoder:'image',format:'webp',mime:'image/webp'}}]};
  const plan={version:1,groups:{map:['image://fixture/a'],ui:['image://fixture/a','image://fixture/b']},startup:['map']};
  const logical=new Map([
-  ['web/shared/asset-encoding.js',encoding],['web/player/main.js',Buffer.from('// authored wheel adapter stays intact\nfunction readImagePreloadPlan(){}\n')],
+  ['web/shared/asset-encoding.js',encoding],['web/shared/image-dimensions.mjs',dimensions],['web/player/main.js',Buffer.from('// authored wheel adapter stays intact\nfunction readImagePreloadPlan(){}\n')],
   ['runtime/runtime.wasm',Buffer.from([0,97,115,109,1,0,0,0])],['runtime/runtime.json',Buffer.from('{"variant":"production"}')],
   ['content/project.json',Buffer.from(JSON.stringify({config,script,scene:{version:1,entities:[]},job_sources:{}}))],
   ['content/assets.json',Buffer.from(JSON.stringify(assets))],['content/presentation.json',Buffer.from('{"renderer_mode":"official"}')],
@@ -42,6 +43,13 @@ function fixture(t,{html='<html><head><meta name="unone-image-preload-version" c
  return{root,project,input,output,logical,assets,plan,seal,reindex,get release(){return release},args:()=>({project,inputExport:input,output})};
 }
 async function rejectsBeforeOutput(f,error){await assert.rejects(prepareWebImageAssets(f.args()),error);assert.equal(fs.existsSync(f.output),false);}
+function relocatedSdk(f,{entry=encoding,leaf=dimensions,omitDependency=false}={}){
+ const sdk=path.join(f.root,'sdk'),script=fs.readFileSync(path.join(repo,'scripts/prepare-web-image-assets.mjs'));
+ const files=new Map([['scripts/prepare-web-image-assets.mjs',script],['templates/web/shared/asset-encoding.js',entry],['templates/web/shared/image-dimensions.mjs',leaf]]);
+ for(const [name,bytes]of files)write(sdk,name,bytes);
+ write(sdk,'sdk.json',JSON.stringify({version:1,templates:'templates',files:[...files].filter(([name])=>!omitDependency||!name.endsWith('/image-dimensions.mjs')).map(([name,bytes])=>({path:name,bytes:bytes.length,sha256:hash(bytes)}))}));
+ return{sdk,invoke:(output=f.output)=>spawnSync(process.execPath,[path.join(sdk,'scripts/prepare-web-image-assets.mjs'),'--project',f.project,'--input-export',f.input,'--output',output],{encoding:'utf8',windowsHide:true})};
+}
 
 test('fresh publication preserves every source byte and uses the exact engine hash primitive',async t=>{
  const f=fixture(t),before=hash(fs.readFileSync(path.join(f.input,'export.json'))),report=await prepareWebImageAssets(f.args());
@@ -57,6 +65,7 @@ test('fresh publication preserves every source byte and uses the exact engine ha
  for(const [name,bytes]of f.logical){assert.deepEqual(fs.readFileSync(path.join(f.output,name)),bytes);assert.deepEqual(fs.readFileSync(path.join(f.output,report.release_root,name)),bytes);}
  assert.deepEqual(report.image_assets.startup_preflight,{required_entries:1,known_rgba_bytes_estimate:24,unknown_dimension_assets:[],scope:'24-byte PNG IHDR estimate only; the official browser still validates decoding and admission before READY'});
  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(f.output,'content/image-assets.json'))),{...f.plan,budget:{max_bytes:67108864,max_entries:128}});
+ assert.deepEqual(report.image_assets.validator_dependencies,[{path:'web/shared/image-dimensions.mjs',bytes:dimensions.length,sha256:hash(dimensions)}]);
 });
 test('UTF-8 inventory ordering differs from UTF-16 and matches the explicit tuple',()=>{
  const a={path:'\uE000',sha256:'a'},b={path:'\u{10000}',sha256:'b'},html='<head>\n\u2028\\"</head>';
@@ -115,9 +124,35 @@ test('portable paths, fresh output and non-reparse roots are enforced',async t=>
  await assert.rejects(prepareWebImageAssets({...linked.args(),inputExport:junction}),/REPARSE_PATH/);
 });
 test('an SDK relocation imports only its indexed trusted template and tool',async t=>{
- const f=fixture(t),sdk=path.join(f.root,'sdk'),script=fs.readFileSync(path.join(repo,'scripts/prepare-web-image-assets.mjs'));
- write(sdk,'scripts/prepare-web-image-assets.mjs',script);write(sdk,'templates/web/shared/asset-encoding.js',encoding);
- write(sdk,'sdk.json',JSON.stringify({version:1,templates:'templates',files:[{path:'scripts/prepare-web-image-assets.mjs',bytes:script.length,sha256:hash(script)},{path:'templates/web/shared/asset-encoding.js',bytes:encoding.length,sha256:hash(encoding)}]}));
- const run=spawnSync(process.execPath,[path.join(sdk,'scripts/prepare-web-image-assets.mjs'),'--project',f.project,'--input-export',f.input,'--output',f.output],{encoding:'utf8',windowsHide:true});assert.equal(run.status,0,run.stderr);assert.equal(JSON.parse(fs.readFileSync(path.join(f.output,'export.json'))).image_assets.validator_origin,'sdk');
- write(sdk,'templates/web/shared/asset-encoding.js','throw Error("tampered trusted template")');const failed=spawnSync(process.execPath,[path.join(sdk,'scripts/prepare-web-image-assets.mjs'),'--project',f.project,'--input-export',f.input,'--output',path.join(f.root,'other')],{encoding:'utf8',windowsHide:true});assert.equal(failed.status,1);assert.match(failed.stderr,/HASH_MISMATCH/);
+ const f=fixture(t),s=relocatedSdk(f),run=s.invoke();assert.equal(run.status,0,run.stderr);assert.equal(JSON.parse(fs.readFileSync(path.join(f.output,'export.json'))).image_assets.validator_origin,'sdk');
+ write(s.sdk,'templates/web/shared/asset-encoding.js','throw Error("tampered trusted template")');const failed=s.invoke(path.join(f.root,'other'));assert.equal(failed.status,1);assert.match(failed.stderr,/HASH_MISMATCH/);
+});
+test('an export must contain the exact trusted dependency and never executes stale export code',async t=>{
+ for(const missing of [true,false]){
+  const f=fixture(t);
+  if(missing)f.logical.delete('web/shared/image-dimensions.mjs');
+  else f.logical.set('web/shared/image-dimensions.mjs',Buffer.from('throw Error("input dependency must never execute")'));
+  f.seal();await rejectsBeforeOutput(f,/HOST_UNSUPPORTED.*image-dimensions/);
+ }
+});
+test('SDK dependency needs its own exact index record, existing file and captured byte hash',t=>{
+ for(const kind of ['unlisted','missing','tampered']){
+  const f=fixture(t),s=relocatedSdk(f,{omitDependency:kind==='unlisted'}),file=path.join(s.sdk,'templates/web/shared/image-dimensions.mjs');
+  if(kind==='missing')fs.unlinkSync(file);if(kind==='tampered')fs.appendFileSync(file,'\n// changed after indexing');
+  const result=s.invoke();assert.equal(result.status,1);
+  assert.match(result.stderr,kind==='unlisted'?/SDK_FILE_UNLISTED/:kind==='missing'?/ENOENT/:/HASH_MISMATCH/);
+  assert(!fs.existsSync(f.output));
+ }
+});
+test('the fixed SDK closure rejects bare, escaping, dynamic and comment-separated imports',t=>{
+ for(const extra of ["import 'node:fs';","import {x} from '../escape.mjs';","const pending=import('node:fs');","import/* hidden */ 'node:fs';","export {readFileSync} from 'node:fs';"]){
+  const f=fixture(t),s=relocatedSdk(f,{entry:Buffer.concat([encoding,Buffer.from('\n'+extra)])}),result=s.invoke();
+  assert.equal(result.status,1);assert.match(result.stderr,/VALIDATOR_IMPORTS_UNSUPPORTED/);assert(!fs.existsSync(f.output));
+ }
+});
+test('the only permitted SDK dependency must itself remain import-free',t=>{
+ for(const extra of ["import('node:fs');","export * from 'node:fs';","export/* hidden */ * from 'node:fs';","export // hidden\n{readFileSync} from 'node:fs';"]){
+  const f=fixture(t),s=relocatedSdk(f,{leaf:Buffer.concat([dimensions,Buffer.from('\n'+extra)])}),result=s.invoke();
+  assert.equal(result.status,1);assert.match(result.stderr,/VALIDATOR_IMPORTS_UNSUPPORTED/);assert(!fs.existsSync(f.output));
+ }
 });

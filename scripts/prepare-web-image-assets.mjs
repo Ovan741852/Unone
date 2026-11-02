@@ -89,23 +89,46 @@ function assertConfigured(raw,actual,label){
  if(raw&&typeof raw==='object'){requireThat(actual&&typeof actual==='object'&&!Array.isArray(actual),'IMAGE_PRELOAD_PROJECT_STALE',label);for(const [key,value]of Object.entries(raw)){requireThat(Object.hasOwn(actual,key)||value===null,'IMAGE_PRELOAD_PROJECT_STALE',label+'/'+key);assertConfigured(value,actual[key],label+'/'+key);}return;}
  requireThat(Object.is(raw,actual),'IMAGE_PRELOAD_PROJECT_STALE',label);
 }
+const DIMENSIONS_MODULE='web/shared/image-dimensions.mjs';
+const DIMENSIONS_IMPORT=/^\s*import\s*\{\s*IMAGE_DIMENSIONS_MAX_PREFIX_BYTES\s*,\s*inspectImageDimensions\s*\}\s*from\s*(['"])\.\/image-dimensions\.mjs\1\s*;[ \t]*$/gm;
+function requireSelfContained(source){
+ // Fail closed even for comment-separated/dynamic imports. This is a fixed
+ // canonical closure, not a general JavaScript import resolver/parser.
+ const exportList=/\bexport\b(?:\s|\/\*[\s\S]*?\*\/|\/\/[^\r\n]*(?:\r?\n|$))*(?:\*|\{)/;
+ requireThat(!/\bimport\b/.test(source)&&!exportList.test(source),'IMAGE_PRELOAD_VALIDATOR_IMPORTS_UNSUPPORTED');
+}
 async function trustedValidator(checks){
- let relative='web/shared/asset-encoding.js',mode='repository';
+ let mode='repository',sdk=null;
  const sdkName=path.join(TOOL_ROOT,'sdk.json');
  if(fs.existsSync(sdkName)){
-  mode='sdk';guardExisting(sdkName,checks);const sdk=jsonFile(sdkName);requireThat(sdk.version===1&&Array.isArray(sdk.files),'IMAGE_PRELOAD_SDK_INVALID');portablePath(sdk.templates);
-  relative=sdk.templates+'/web/shared/asset-encoding.js';
+  mode='sdk';guardExisting(sdkName,checks);sdk=jsonFile(sdkName);requireThat(sdk.version===1&&Array.isArray(sdk.files),'IMAGE_PRELOAD_SDK_INVALID');portablePath(sdk.templates);
   const own=path.relative(TOOL_ROOT,TOOL_FILE).split(path.sep).join('/');
-  for(const name of [own,relative]){const records=sdk.files.filter(record=>record.path===name);requireThat(records.length===1,'IMAGE_PRELOAD_SDK_FILE_UNLISTED',name);indexedFile(TOOL_ROOT,records[0],checks);}
+  const records=sdk.files.filter(record=>record.path===own);requireThat(records.length===1,'IMAGE_PRELOAD_SDK_FILE_UNLISTED',own);indexedFile(TOOL_ROOT,records[0],checks);
  }
- const sourceFile=safeFile(TOOL_ROOT,relative,checks),bytes=fs.readFileSync(sourceFile),source=utf8(bytes,true);
+ function capture(logical){
+  const relative=sdk?sdk.templates+'/'+logical:logical;let record;
+  if(sdk){const records=sdk.files.filter(record=>record.path===relative);requireThat(records.length===1,'IMAGE_PRELOAD_SDK_FILE_UNLISTED',relative);record=indexedFile(TOOL_ROOT,records[0],checks);}
+  const sourceFile=safeFile(TOOL_ROOT,relative,checks),bytes=fs.readFileSync(sourceFile),sha256=sha(bytes);
+  requireThat(!record||(record.bytes===bytes.length&&record.sha256===sha256),'IMAGE_PRELOAD_HASH_MISMATCH',relative);
+  return{path:logical,sourceFile,bytes,sha256};
+ }
+ const entry=capture('web/shared/asset-encoding.js'),source=utf8(entry.bytes,true),imports=[...source.matchAll(DIMENSIONS_IMPORT)],dependencies=[];
+ requireThat(imports.length<=1,'IMAGE_PRELOAD_VALIDATOR_IMPORTS_UNSUPPORTED');
+ requireSelfContained(source.replace(DIMENSIONS_IMPORT,''));
+ let executable=source;
+ if(imports.length){
+  const dependency=capture(DIMENSIONS_MODULE),leaf=utf8(dependency.bytes,true);requireSelfContained(leaf);
+  dependencies.push({path:dependency.path,bytes:dependency.bytes.length,sha256:dependency.sha256});
+  // Only captured, verified SDK/repository bytes execute. Input-export modules
+  // are compared by hash below and are never imported or evaluated.
+  const url='data:text/javascript;base64,'+dependency.bytes.toString('base64');
+  executable=source.replace(DIMENSIONS_IMPORT,()=>`import {IMAGE_DIMENSIONS_MAX_PREFIX_BYTES,inspectImageDimensions} from ${JSON.stringify(url)};`);
+ }
  windowsReparseCheck(checks);
- // This trusted SDK module is deliberately self-contained. A data module keeps
- // its ES-module semantics even in a relocated SDK without package.json/type.
- requireThat(!/^\s*(?:import\s|export\s+[^\n]*\sfrom\s)/m.test(source),'IMAGE_PRELOAD_VALIDATOR_IMPORTS_UNSUPPORTED');
- const module=await import('data:text/javascript;base64,'+bytes.toString('base64'));
+ // Data modules retain ESM semantics in relocated SDKs without package.json.
+ const module=await import('data:text/javascript;base64,'+Buffer.from(executable,'utf8').toString('base64'));
  requireThat(module.IMAGE_PRELOAD_PLAN_VERSION===1&&module.IMAGE_PRELOAD_PLAN_MAX_BYTES===1048576&&typeof module.validateImagePreloadPlan==='function'&&typeof module.createAssetCatalog==='function','IMAGE_PRELOAD_HOST_UNSUPPORTED','SDK validator is missing');
- return{...module,sourceFile,sha256:sha(bytes),mode};
+ return{...module,sourceFile:entry.sourceFile,sha256:entry.sha256,dependencies,mode};
 }
 function validateProject(project,payload,assets,logical,checks){
  requireThat(payload&&payload.config&&typeof payload.config==='object'&&Array.isArray(assets?.assets),'IMAGE_PRELOAD_EXPORT_INVALID','project/catalog shape');
@@ -160,6 +183,7 @@ export async function prepareWebImageAssets({project,inputExport,output,plan}){
  const originalHtml=utf8(fs.readFileSync(indexed.get('index.html').source),true),htmlWithoutBase=unbase(originalHtml,release),oldGenerationMatches=webGeneration(htmlWithoutBase,[...logical.values()])===release;
  const validator=await trustedValidator(checks),hostEncoding=logical.get('web/shared/asset-encoding.js'),hostMain=logical.get('web/player/main.js');
  requireThat(hostEncoding?.sha256===validator.sha256&&hostMain,'IMAGE_PRELOAD_HOST_UNSUPPORTED','export must use matching SDK image-plan host');
+ for(const dependency of validator.dependencies)requireThat(logical.get(dependency.path)?.sha256===dependency.sha256,'IMAGE_PRELOAD_HOST_UNSUPPORTED','export must include matching SDK dependency '+dependency.path);
  const version=metadataTags(htmlWithoutBase,'unone-image-preload-version'),headStart=htmlWithoutBase.indexOf('<head>'),headEnd=htmlWithoutBase.indexOf('</head>');
  requireThat(version.length===1&&version[0].content==='1'&&version[0].at>headStart&&version[0].at<headEnd&&utf8(fs.readFileSync(hostMain.source),true).includes('readImagePreloadPlan'),'IMAGE_PRELOAD_HOST_UNSUPPORTED','image-plan loader/version marker missing');
  const assetFile=logical.get('content/assets.json'),projectFile=logical.get('content/project.json'),presentationFile=logical.get('content/presentation.json');requireThat(assetFile&&projectFile&&presentationFile,'IMAGE_PRELOAD_EXPORT_INVALID','missing content');
@@ -177,7 +201,7 @@ export async function prepareWebImageAssets({project,inputExport,output,plan}){
  const destinations=new Map();for(const file of files){destinations.set(file.path,file);destinations.set(newRelease+file.path,file);}destinations.set('index.html',{bytes:indexBytes.length,sha256:sha(indexBytes),data:indexBytes});
  const paths=[...destinations.keys()].sort(byteOrder),seen=new Set();for(const name of paths){portablePath(name);requireThat(!seen.has(name.toLowerCase()),'IMAGE_PRELOAD_OUTPUT_COLLISION',name);seen.add(name.toLowerCase());}
  windowsReparseCheck(checks);
- const report={...manifest,release_root:newRelease,total_bytes:paths.reduce((n,name)=>n+destinations.get(name).bytes,0),files:paths.map(name=>({path:name,bytes:destinations.get(name).bytes,sha256:destinations.get(name).sha256})),image_assets:{version:1,path:PLAN_PATH,plan_sha256:sha(planBytes),input_manifest_sha256:sha(manifestBytes),input_generation_matches_content:oldGenerationMatches,validator_sha256:validator.sha256,validator_origin:validator.mode,project:projectIdentity,startup_preflight:preflight,tool_sha256:sha(fs.readFileSync(TOOL_FILE)),publication:'fresh export, exact Rust seal_web_generation hash primitive; input is unchanged'}};
+ const report={...manifest,release_root:newRelease,total_bytes:paths.reduce((n,name)=>n+destinations.get(name).bytes,0),files:paths.map(name=>({path:name,bytes:destinations.get(name).bytes,sha256:destinations.get(name).sha256})),image_assets:{version:1,path:PLAN_PATH,plan_sha256:sha(planBytes),input_manifest_sha256:sha(manifestBytes),input_generation_matches_content:oldGenerationMatches,validator_sha256:validator.sha256,validator_dependencies:validator.dependencies,validator_origin:validator.mode,project:projectIdentity,startup_preflight:preflight,tool_sha256:sha(fs.readFileSync(TOOL_FILE)),publication:'fresh export, exact Rust seal_web_generation hash primitive; input is unchanged'}};
  try{
   fs.mkdirSync(out);
   for(const name of paths){const file=destinations.get(name),target=path.join(out,...name.split('/'));fs.mkdirSync(path.dirname(target),{recursive:true});if(file.data)fs.writeFileSync(target,file.data,{flag:'wx'});else fs.copyFileSync(file.source,target,fs.constants.COPYFILE_EXCL);

@@ -22,7 +22,7 @@ function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED
  const raf=f=>{frames.set(++id,f);return id;};
  const playerCompletion=createPlayerCompletionMetrics({now:()=>0}),ui=uiRenderer??{draw:()=>DRAW_COMPLETED,ready:async()=>{},releaseAll(){}},events=new Map();
  const canvas={addEventListener(name,fn){const list=events.get(name)??new Set();list.add(fn);events.set(name,list);},removeEventListener(name,fn){events.get(name)?.delete(fn);}};
- const context={renderer,canvas,playerCompletion,metrics,serializedSavePayload,startupAbort:abort,startupCancelled,assertRasterReady,renderCount:0,orderedRouter:null,publishPhysical(){},
+ const context={renderer,canvas,playerCompletion,performanceFeed:null,metrics,serializedSavePayload,startupAbort:abort,startupCancelled,assertRasterReady,renderCount:0,orderedRouter:null,publishPhysical(){},
   draw(at=null,start=null,inFlight=false,source='manual',budget=1000/60){draws++;context.renderCount++;const world=available()?worldOutcome:DRAW_SKIPPED.raster_unavailable;if(available()){cap.ensure(view);state.drawn();}playerCompletion.attempt();return playerCompletion.finish(world,ui.draw(context.snapshot,{width:100,height:100,dpr:1}),cursorOutcome(),0,0,source,at,start,inFlight,budget);},
   requestAnimationFrame:raf,completeStartupPresentation:opts=>completeStartupPresentation({...opts,nextFrame:raf,cancelFrame:n=>frames.delete(n)}),
   performance:{now:()=>0,getEntriesByType:()=>[]},window:{playerBoot:0,addEventListener(){}},URL,

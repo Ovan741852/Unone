@@ -1,0 +1,36 @@
+✔ fresh publication preserves every source byte and uses the exact engine hash primitive (838.7637ms)
+✔ UTF-8 inventory ordering differs from UTF-16 and matches the explicit tuple (0.2268ms)
+✔ validated old root mismatch is disclosed and resealed after host finalization (684.1455ms)
+✔ reapplying an owned sidecar is deterministic and creates no inner index (1355.5392ms)
+✔ stale script or asset project bytes fail before output (728.0469ms)
+✔ scene values must match while object key order and tool-only save fixtures do not matter (1067.2276ms)
+✔ hash tampering and self-consistently indexed alias drift both fail (86.2182ms)
+✔ unindexed files and missing indexed files fail closed (86.4166ms)
+✔ custom renderer and unsupported or mismatched host capability are rejected (1137.371ms)
+✔ plan is bounded before parsing and strict UTF-8 rejects replacement decoding (1814.9423ms)
+✔ required unique entry and known PNG byte budgets fail before writing (1074.3263ms)
+✔ unquoted sidecar metadata is recognized rather than duplicated (1447.3363ms)
+✔ duplicate or conflicting plan metadata and unowned content are rejected (1120.5791ms)
+✔ portable paths, fresh output and non-reparse roots are enforced (42.8529ms)
+✔ an SDK relocation imports only its indexed trusted template and tool (918.0046ms)
+✔ an export must contain the exact trusted dependency and never executes stale export code (704.6363ms)
+✔ SDK dependency needs its own exact index record, existing file and captured byte hash (425.0281ms)
+✔ the fixed SDK closure rejects bare, escaping, dynamic and comment-separated imports (693.222ms)
+✔ the only permitted SDK dependency must itself remain import-free (554.7885ms)
+✔ help documents actual-runtime inputs without creating an output (63.7565ms)
+✔ output inside runtime is rejected before reading or writing immutable artifact contents (69.5973ms)
+✔ invalid production metadata preserves a failed diagnostic before any VM or fake backend can run (63.6607ms)
+✔ a rejected runtime-contained output leaves its immutable runtime untouched (76.3676ms)
+✔ normalized traversal into the runtime is rejected before writes (76.1494ms)
+✔ manifest rejection preserves a fresh failed report without initializing a VM (76.8565ms)
+✔ an existing evidence directory is preserved instead of overwritten (72.3861ms)
+✔ native pairing cannot proceed with an unpinned report (68.0854ms)
+✔ malformed source pins fail before creating evidence (72.2855ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14860.3151
