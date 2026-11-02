@@ -21,7 +21,7 @@ test('observation decoding borrows the current heap without copying and releases
   module.HEAPU8.slice=()=>{copies++;throw Error('unexpected observation copy');};}
  const value={world:{text:'門派 🐉',data:'x'.repeat(415000)},save_payload:{coins:7}};publish(value);
  const marks=[],first=readObservation(module,(name,bytes)=>marks.push([name,bytes]));assert.deepEqual(first,value);
- assert.deepEqual(marks.map(([n])=>n),['observation_view','observation_utf8','observation_parse']);assert.equal(marks[0][1],length);
+ assert.deepEqual(marks.map(([n])=>n),['observation_view','observation_utf8','observation_parse','world_fields_restore','ui_tree_restore','ui_images_restore','save_restore','publication_commit']);assert.equal(marks[0][1],length);
  module.HEAPU8.fill(0);assert.deepEqual(first,value,'JSON result must not alias the borrowed heap');
  publish({world:{text:'new heap after WASM memory growth'}});assert.equal(readObservation(module).world.text,'new heap after WASM memory growth');
  assert.equal(pointerReads,2);assert.equal(lengthReads,2);assert.equal(copies,0);

@@ -2,18 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three/three.module.js';
 import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
-import {createSpriteResourcePool} from './sprite-resources.js';
+const {createSpriteResourcePool}=await import(process.env.UNONE_SPRITE_RESOURCE_MODULE??'./sprite-resources.js');
 import {createSpritePresentation} from './sprite-presentation.js';
 
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
 const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
 const definition=value=>({fragment:'vec4 unoneShade(vec2 uv,vec4 color){return color*strength;}',uniforms:{strength:value,tint:[1,.5,.25]}});
-function fixture({pending=[],budget={max_bytes:128,max_entries:8},failCompile=false,failFirstUse=false,inspectImage=async()=>({format:'png',width:2,height:2}),imageSize={width:2,height:2},legacy=null,throwImageRelease=false,withPreparationTargets}={}){
+function fixture({pending=[],budget={max_bytes:128,max_entries:8},failCompile=false,failMaterialId=null,failUpload=false,failFirstUse=false,inspectImage=async()=>({format:'png',width:2,height:2}),imageSize={width:2,height:2},legacy=null,throwImageRelease=false,withPreparationTargets}={}){
  const catalog=createAssetCatalog({assets:['a','b','c'].map(id=>({id,kind:'texture2d',source:id+'.png',encoding:{decoder:'image',format:'png',mime:'image/png'}}))});
  const waits=new Map(pending.map(id=>[id,deferred()])),loads=[],closed=[],uploads=[],compiles=[];
  const image=id=>({...imageSize,id,close(){closed.push(id);}});
  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.id,inspectImage,loadImage:async(id)=>{loads.push(id);return waits.has(id)?waits.get(id).promise:image(id);},unusedMaxBytes:0,unusedMaxEntries:0});
- const renderer={capabilities:{maxTextureSize:2048},initTexture:texture=>uploads.push(texture),compile:scene=>{compiles.push(scene.children[0].material);if(failCompile)throw Error('SHADER_COMPILE_FAILED');},properties:{get(){return {currentProgram:{getUniforms(){if(failFirstUse)throw Error('SHADER_LINK_FAILED_ON_FIRST_USE');}}};}}};
+ const renderer={capabilities:{maxTextureSize:2048},initTexture:texture=>{uploads.push(texture);if(failUpload)throw Error('TEXTURE_UPLOAD_FAILED');},compile:scene=>{const material=scene.children[0].material;compiles.push(material);if(failCompile||material.name===`unone-shader:${failMaterialId}`)throw Error('SHADER_COMPILE_FAILED');},properties:{get(){return {currentProgram:{getUniforms(){if(failFirstUse)throw Error('SHADER_LINK_FAILED_ON_FIRST_USE');}}};}}};
  const root=new THREE.Group(),geometry=new THREE.PlaneGeometry(1,1),records=new Map();let presenter;
  const images=throwImageRelease?{inspect:broker.inspect,acquire(id){const lease=broker.acquire(id);return {get state(){return lease.state;},get image(){return lease.image;},get error(){return lease.error;},promise:lease.promise,release(){lease.release();if(id==='a')throw Error('IMAGE_RELEASE_HOOK_FAILED');}};}}:broker;
  const pool=createSpriteResourcePool({THREE,renderer,getCatalog:()=>catalog,getImages:()=>images,budget,onReset:()=>presenter?.reset(),withPreparationTargets});
@@ -190,4 +190,63 @@ test('every known screen/offscreen preparation variant is compiled and first-use
  let visits=0;const f=fixture({withPreparationTargets:compile=>{for(const _target of ['screen','linear']){visits++;compile();}}});
  try{const lease=f.pool.public.prepare({id:'1',asset:'a'});await lease.readyPromise;assert.equal(visits,2);assert.equal(f.compiles.length,2);assert.equal(f.uploads.length,1);assert.equal(lease.state,'ready');}
  finally{f.dispose();}
+});
+
+test('two distinct materials share one asset texture and reservation; only the final owner retires pixels',async()=>{
+ const f=fixture({budget:{max_bytes:16,max_entries:1}});try{
+  const a=f.pool.public.prepare({id:'1',asset:'a',material_id:'first',material:definition(.25)});
+  const b=f.pool.public.prepare({id:'2',asset:'a',material_id:'second',material:definition(.75)});
+  await Promise.all([a.readyPromise,b.readyPromise]);assert.equal(f.loads.length,1);assert.equal(f.uploads.length,1);assert.equal(f.compiles.length,2);
+  const texture=f.pool.read(a).texture;assert.equal(f.pool.read(b).texture,texture);assert.notEqual(f.pool.read(a).material,f.pool.read(b).material);
+  assert.equal(f.pool.metrics().cpu_reserved_bytes_estimate,16);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,16);assert.equal(f.pool.metrics().image_leases,1);
+  let disposals=0;texture.addEventListener('dispose',()=>disposals++);a.release();assert.equal(disposals,0);assert.equal(b.state,'ready');assert.equal(f.pool.read(b).texture,texture);
+  assert.equal(f.pool.metrics().entries,1);assert.equal(f.pool.metrics().live_textures,1);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,16);
+  b.release();b.release();assert.equal(disposals,1);assert.deepEqual(f.closed,['a']);assert.equal(f.pool.metrics().entries,0);assert.equal(f.pool.metrics().texture_entries,0);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,0);
+ }finally{f.dispose();}
+});
+
+test('one material compilation failure cannot retire a shared texture used by another ready material',async()=>{
+ const f=fixture({budget:{max_bytes:16,max_entries:1},failMaterialId:'broken'});try{
+  const a=f.pool.public.prepare({id:'1',asset:'a',material_id:'valid',material:definition(.25)});await a.readyPromise;const texture=f.pool.read(a).texture;
+  let disposals=0;texture.addEventListener('dispose',()=>disposals++);
+  const b=f.pool.public.prepare({id:'2',asset:'a',material_id:'broken',material:definition(.75)});await assert.rejects(b.readyPromise,/COMPILE_FAILED/);
+  assert.equal(a.state,'ready');assert.equal(b.state,'error');assert.equal(f.pool.read(a).texture,texture);assert.equal(disposals,0);assert.equal(f.loads.length,1);assert.equal(f.uploads.length,1);
+  assert.equal(f.pool.metrics().image_leases,1);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,16);b.release();assert.equal(disposals,0);a.release();assert.equal(disposals,1);
+ }finally{f.dispose();}
+});
+
+test('context restore rebuilds one shared texture and both programs without redecoding or stale readiness',async()=>{
+ const f=fixture({budget:{max_bytes:16,max_entries:1}});try{
+  const a=f.pool.public.prepare({id:'1',asset:'a',material_id:'first',material:definition(.25)}),b=f.pool.public.prepare({id:'2',asset:'a',material_id:'second',material:definition(.75)});
+  await Promise.all([a.readyPromise,b.readyPromise]);const oldTexture=f.pool.read(a).texture,stale=b.readyPromise;let oldDisposals=0;oldTexture.addEventListener('dispose',()=>oldDisposals++);
+  f.pool.contextLost();assert.equal(oldDisposals,1);assert.equal(a.state,'loading');assert.equal(b.state,'loading');assert.equal(f.pool.metrics().live_textures,0);assert.equal(f.pool.metrics().image_leases,1);
+  await assert.rejects(stale,/NOT_READY/);f.pool.contextRestored();await Promise.all([a.readyPromise,b.readyPromise]);
+  const current=f.pool.read(a).texture;assert.notEqual(current,oldTexture);assert.equal(f.pool.read(b).texture,current);assert.equal(f.loads.length,1);assert.equal(f.uploads.length,2);assert.equal(f.compiles.length,4);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,16);
+  let currentDisposals=0;current.addEventListener('dispose',()=>currentDisposals++);a.release();assert.equal(currentDisposals,0);b.release();assert.equal(currentDisposals,1);assert.deepEqual(f.closed,['a']);
+ }finally{f.dispose();}
+});
+
+test('different material identities do not create duplicate Texture Sources even with ample admission budget',async()=>{
+ const f=fixture();try{
+  const a=f.pool.public.prepare({id:'1',asset:'a',material_id:'first',material:definition(.25)}),b=f.pool.public.prepare({id:'2',asset:'a',material_id:'second',material:definition(.75)});
+  await Promise.all([a.readyPromise,b.readyPromise]);assert.equal(f.uploads.length,1);assert.equal(f.pool.read(a).texture.source,f.pool.read(b).texture.source);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,16);
+ }finally{f.dispose();}
+});
+
+test('releasing one loading material never cancels shared pixels needed by a second owner',async()=>{
+ const f=fixture({pending:['a'],budget:{max_bytes:16,max_entries:1}});try{
+  const a=f.pool.public.prepare({id:'1',asset:'a',material_id:'first',material:definition(.25)}),b=f.pool.public.prepare({id:'2',asset:'a',material_id:'second',material:definition(.75)});
+  await flush();a.release();assert.equal(b.state,'loading');assert.equal(f.pool.metrics().image_leases,1);f.resolve('a');await b.readyPromise;
+  assert.equal(a.state,'released');assert.equal(b.state,'ready');assert.equal(f.loads.length,1);assert.equal(f.uploads.length,1);assert.equal(f.closed.length,0);b.release();assert.deepEqual(f.closed,['a']);
+ }finally{f.dispose();}
+});
+
+test('shared upload failure retires exactly once and cannot leave either material spuriously ready',async()=>{
+ const f=fixture({failUpload:true,budget:{max_bytes:16,max_entries:1}});try{
+  const a=f.pool.public.prepare({id:'1',asset:'a',material_id:'first',material:definition(.25)}),b=f.pool.public.prepare({id:'2',asset:'a',material_id:'second',material:definition(.75)});
+  await Promise.all([assert.rejects(a.readyPromise,/UPLOAD_FAILED/),assert.rejects(b.readyPromise,/UPLOAD_FAILED/)]);
+  assert.equal(a.state,'error');assert.equal(b.state,'error');assert.equal(f.loads.length,1);assert.equal(f.uploads.length,1);assert.equal(f.compiles.length,0);assert.deepEqual(f.closed,['a']);
+  assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,0);assert.equal(f.pool.metrics().texture_entries,0);assert.equal(f.pool.metrics().image_leases,0);
+  a.release();b.release();assert.equal(f.pool.metrics().entries,0);assert.deepEqual(f.closed,['a']);
+ }finally{f.dispose();}
 });

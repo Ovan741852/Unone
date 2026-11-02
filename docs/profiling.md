@@ -25,6 +25,15 @@ dropped and listed in the report's notes.
 
 ## Official production-player completion counters
 
+The opt-in Web host trace separates `observation_view`, `observation_utf8` and
+`observation_parse`, followed by `world_fields_restore`, `ui_tree_restore`,
+`ui_images_restore`, `save_restore` and `publication_commit`. Each restore span
+includes validation and any changed-generation decoding/freezing. These marks
+are absent when profiling is off. A span named `jobs_dispatch` measures only
+work since the preceding mark; it must not be interpreted as job execution.
+Compare profiler-disabled runs for acceptance and use separate diagnostic runs
+to locate a tail. A long restore span alone does not establish GC as its cause.
+
 Engine 0.2.0's official Web player exposes a read-only endpoint without enabling
 the developer profiler:
 

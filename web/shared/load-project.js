@@ -137,20 +137,26 @@ function restoreImages(module,value,staged){
 }
 // Decode synchronously from the current WASM heap. No WASM call or async boundary occurs
 // while the borrowed view is in use; returned objects never retain the heap or its bytes.
-// `mark` is the host profiler's synchronous callback and receives view/UTF-8/parse boundaries.
+// `mark` is the host profiler's synchronous callback. Restore phases include
+// their validation, leased reads and immutable publication construction.
 export function readObservation(module,mark) {
   const pointer=module._unone_web_observation_ptr(),length=module._unone_web_observation_len();
   const bytes=module.HEAPU8.subarray(pointer,pointer+length);
   if(mark)mark('observation_view',bytes.length);
   const text=observationDecoder.decode(bytes);if(mark)mark('observation_utf8');
   const value=JSON.parse(text);if(mark)mark('observation_parse');
-  const staged={},restored=restoreSave(module,restoreImages(module,restoreUiTree(module,restoreWorldFields(module,value,staged),staged),staged),staged);
+  const staged={};
+  let restored=restoreWorldFields(module,value,staged);if(mark)mark('world_fields_restore');
+  restored=restoreUiTree(module,restored,staged);if(mark)mark('ui_tree_restore');
+  restored=restoreImages(module,restored,staged);if(mark)mark('ui_images_restore');
+  restored=restoreSave(module,restored,staged);if(mark)mark('save_restore');
   // Advance no generation cache until every descriptor in this publication
   // has validated. A malformed companion resource/save cannot replace UI.
   if(Object.hasOwn(staged,'uiTree')){if(staged.uiTree)uiTrees.set(module,staged.uiTree);else uiTrees.delete(module);}
   if(Object.hasOwn(staged,'worldFields')){if(staged.worldFields)worldFields.set(module,staged.worldFields);else worldFields.delete(module);}
   if(Object.hasOwn(staged,'images')){if(staged.images)imageResources.set(module,staged.images);else imageResources.delete(module);}
   if(Object.hasOwn(staged,'save')){if(staged.save)saves.set(module,staged.save);else saves.delete(module);}
+  if(mark)mark('publication_commit');
   return restored;
 }
 // Data assets travel beside the JSON payload: each is copied once into a

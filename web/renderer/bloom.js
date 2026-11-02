@@ -86,6 +86,19 @@ export function createBloom(THREE,renderer,settings) {
     }
   }
   return {
+    // Three specializes world programs for screen sRGB versus an offscreen
+    // linear target. Prepare both existing destinations without submitting a
+    // frame; a later pipeline toggle must not discover an unchecked variant.
+    withWorldPreparationTargets(callback){
+      if(disposed)throw Error('POSTPROCESSING_DISPOSED');
+      if(typeof callback!=='function')throw Error('POSTPROCESSING_PREPARATION_INVALID: synchronous callback required');
+      const previous=renderer.getRenderTarget(),face=renderer.getActiveCubeFace(),mip=renderer.getActiveMipmapLevel();
+      try{
+        renderer.setRenderTarget(null);callback();
+        if(disposed)throw Error('POSTPROCESSING_DISPOSED');
+        renderer.setRenderTarget(base);callback();
+      }finally{renderer.setRenderTarget(previous,face,mip);}
+    },
     contextLost(retire){retire(base);retire(a);retire(b);retire(chain[0]);retire(chain[1]);retire(bright);retire(blur);retire(combine);retire(quad.geometry);},
     resetMeasurements(){timer.reset();},
     setEnabled(value){enabled=Boolean(value);},
