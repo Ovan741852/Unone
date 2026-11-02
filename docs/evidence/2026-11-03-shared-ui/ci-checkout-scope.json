@@ -1,6 +1,6 @@
 {
-  "schema": "unone.shared-ui.ci-checkout-scope.v1",
-  "status": "source-audited-change-awaiting-standard-ci",
+  "schema": "unone.shared-ui.ci-checkout-scope.v2",
+  "status": "actual-standard-ci-clean-checkouts-and-five-variant-parity-passed",
   "scope": "Official Web runtime matrix source checkout only. This record does not establish browser, FPS, SDK, or Native acceptance.",
   "source_before_change": "05d72e072836c71200ffbf00ebca29cd9ec0c61e",
   "baseline_commit": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
@@ -43,6 +43,60 @@
         {"variant": "sampling-profile", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:16:24.6223653Z"}
       ],
       "explicit_fixture": "tests/host-parity-project"
+    }
+  },
+  "actual_post_change_run": {
+    "id": 41511267766,
+    "url": "https://github.com/Ovan741852/Unone/actions/runs/41511267766",
+    "head_sha": "25043834ca7006d67bf0fd08e400868abe817088",
+    "status": "completed",
+    "conclusion": "success",
+    "updated_at_utc": "2026-11-02T19:48:02Z",
+    "core_job": {"id": 125503408902, "conclusion": "success"},
+    "baseline_job": {
+      "id": 125504734119,
+      "url": "https://github.com/Ovan741852/Unone/actions/runs/41511267766/job/125504734119",
+      "conclusion": "success",
+      "detached_baseline": "5d7da387b4b964eb80c6501a773ebaa06c3b33e5",
+      "capture_step_conclusion": "success",
+      "original_clean_gate_trace": "+ test -z ''",
+      "clean_gate_at_utc": "2026-11-02T19:37:46.2197246Z",
+      "non_pointer_warning_found_in_complete_job_log": false,
+      "variants": [
+        {"variant": "production", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:42:29.8458065Z"},
+        {"variant": "phase-profile", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:44:30.2785062Z"}
+      ]
+    },
+    "candidate_job": {
+      "id": 125504734230,
+      "url": "https://github.com/Ovan741852/Unone/actions/runs/41511267766/job/125504734230",
+      "conclusion": "success",
+      "capture_step_conclusion": "success",
+      "original_clean_gate_trace": "+ test -z ''",
+      "clean_gate_at_utc": "2026-11-02T19:37:38.6393096Z",
+      "non_pointer_warning_found_in_complete_job_log": false,
+      "variants": [
+        {"variant": "production", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:43:16.0010419Z"},
+        {"variant": "phase-profile", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:45:50.7306361Z"},
+        {"variant": "sampling-profile", "parity_compared_frames": 5, "parity_success_at_utc": "2026-11-02T19:47:56.9413748Z"}
+      ],
+      "upload_log_metadata": {
+        "artifact_id": 13173357642,
+        "zip_bytes": 6042150,
+        "zip_sha256": "88a9e0ccfbb2c60b78165bbd538daaacf8465410f23269b9edfa75349d3028f8",
+        "downloaded_for_this_record": false
+      }
+    },
+    "verification": {
+      "explicit_fixture": "tests/host-parity-project",
+      "runtime_variants_passed": 5,
+      "compared_frames_per_variant": 5,
+      "actual_abi_isolation": "Unchanged verify-player-parity.mjs checks manifest flags, actual emitted WASM developer ABI and shipped development modules for every variant before exported-player parity.",
+      "default_extra_physics_fixture_executed": false,
+      "source_checkout_excludes": ["/_Games/"],
+      "source_checkout_reason": "engine CI uses an explicit fixture, not repo-local Game projects",
+      "log_evidence": "GitHub run metadata and complete decoded job logs were read remotely. Scope-file contents and runtime binary hashes were not independently inspected by downloading the artifacts.",
+      "limits": "Confirms the unchanged clean gate and five standard build/ABI/parity gates on this source revision. Does not establish binary-byte identity with older artifacts or browser/FPS/SDK/Native acceptance."
     }
   },
   "raw_git_blob_audit": {
@@ -132,6 +186,7 @@
     },
     "unchanged": ["core job checkout", "ordinary CI workflow", "LFS filters and attributes", "Game asset blobs", "runtime variants", "ABI checks", "parity checks", "artifact upload gates"],
     "future_condition": "If an active engine CI test requires a repo-local Game project, declare that dependency and revise the checkout/fixture scope explicitly; do not silently skip the test.",
-    "validation": "Source inspection and diff review only. No local Node tests, Native execution, Cargo, browser, or timing run was performed for this checkout-only change. Its actual clean checkout and parity outcome require the next standard CI run."
+    "initial_validation": "Source inspection and diff review preceded the standard CI run. No local Node tests, Native execution, Cargo, browser, or timing run was performed for this checkout-only change.",
+    "actual_validation": "Standard CI run 41511267766 passed Core, both original clean gates and all five official runtime build/ABI/parity gates. The earlier failure and raw-blob audit above remain historical evidence."
   }
 }

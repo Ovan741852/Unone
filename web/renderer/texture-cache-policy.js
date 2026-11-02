@@ -12,43 +12,67 @@ export function textureBytes(texture) {
   const image=texture?.image, width=image?.naturalWidth??image?.width??0,height=image?.naturalHeight??image?.height??0;
   return Math.ceil(width*height*4*(texture?.generateMipmaps?4/3:1));
 }
+export const DEFAULT_TEXTURE_CACHE=Object.freeze({max_bytes:64*1024*1024,max_entries:128,idle_frames:1800});
 export function createTextureCachePolicy(records,value,{dispose=texture=>texture?.dispose?.()}={}) {
-  const policy=parseTextureCache(value),active=new Set();let frame=0,evicted=0,releasedBytes=0;
-  function drop(id,entry){
-    records.delete(id);entry.discarded=true;
-    releasedBytes+=textureBytes(entry.texture);
-    // The GPU texture and decoded image have different owners. Only release
-    // this record's broker lease; the shared image may still serve UI/cursors.
-    try{dispose(entry.texture);}finally{entry.texture=null;const lease=entry.imageLease;entry.imageLease=null;evicted++;lease?.release();}
+  const authored=parseTextureCache(value),policy=Object.freeze(authored??{...DEFAULT_TEXTURE_CACHE});
+  const owners=new Map(),activeLegacy=new Set();let head=null,tail=null,frame=0,evicted=0,releasedBytes=0,mutation=0;
+  function unlink(node){if(!node.linked)return;if(node.previous)node.previous.next=node.next;else head=node.next;if(node.next)node.next.previous=node.previous;else tail=node.previous;node.previous=node.next=null;node.linked=false;}
+  function append(node){unlink(node);node.previous=tail;if(tail)tail.next=node;else head=node;tail=node;node.linked=true;}
+  function size(node){const bytes=node.adapter.bytes();if(!Number.isFinite(bytes)||bytes<0)throw Error('TEXTURE_CACHE_OWNER_INVALID: bytes');return bytes;}
+  function pin(node,pinned,preserveStamp=false){if(node.pinned===pinned)return;node.pinned=pinned;if(pinned)unlink(node);else{if(!preserveStamp)node.lastUsed=frame;append(node);}}
+  function untrackOwner(key){const node=owners.get(key);if(!node)return false;owners.delete(key);mutation++;activeLegacy.delete(key);unlink(node);return true;}
+  function trackOwner(key,adapter){
+    if(owners.has(key)||!adapter||typeof adapter.bytes!=='function'||typeof adapter.loading!=='function'||typeof adapter.retire!=='function')throw Error('TEXTURE_CACHE_OWNER_INVALID');
+    const node={key,adapter,pinned:true,lastUsed:frame,linked:false,previous:null,next:null,legacy:null};owners.set(key,node);mutation++;return key;
   }
-  function totals(){
-    let bytes=0,pinnedBytes=0,loading=0;
-    for(const [id,entry] of records){const size=textureBytes(entry.texture);bytes+=size;
-      if(active.has(id)||entry.persistent)pinnedBytes+=size;
-      if(entry.state==='loading')loading++;
-    }
-    return {bytes,pinnedBytes,loading};
+  function retire(node,bytes=size(node)){if(!untrackOwner(node.key))return;releasedBytes+=bytes;evicted++;node.adapter.retire();}
+  function legacyDrop(id,entry){
+    if(records.get(id)===entry)records.delete(id);entry.discarded=true;
+    // Physical GPU and decoded-image ownership retire independently.
+    try{dispose(entry.texture);}finally{entry.texture=null;const lease=entry.imageLease;entry.imageLease=null;lease?.release();}
   }
+  function legacy(id,entry){
+    let node=owners.get(id);
+    if(node&&node.legacy!==entry){retire(node);node=null;}
+    if(!node){trackOwner(id,{bytes:()=>textureBytes(entry.texture),loading:()=>entry.state==='loading',retire:()=>legacyDrop(id,entry)});node=owners.get(id);node.legacy=entry;}
+    return node;
+  }
+  function totals(){let bytes=0,pinnedBytes=0,loading=0;for(const node of owners.values()){const n=size(node);bytes+=n;if(node.pinned)pinnedBytes+=n;if(node.adapter.loading())loading++;}return {bytes,pinnedBytes,loading,entries:owners.size};}
+  // Reclamation uses the existing intrusive idle list, not a per-draw
+  // filter/sort or a second texture budget. Domain admission can reclaim its
+  // own idle owners without evicting protected/independent live resources.
+  function reclaim(predicate,{eligible=()=>true}={}){
+    let node=head,failure,count=0;
+    while(node&&!predicate()){const next=node.next,key=node.key;if(eligible(key)){try{retire(node);count++;}catch(error){failure??=error;}}node=next?(owners.get(next.key)===next&&next.linked?next:head):(owners.has(key)?null:head);}
+    if(failure)throw failure;return count;
+  }
+  for(const [id,entry] of records){const node=legacy(id,entry);if(!entry.persistent)pin(node,false);}
   return {
-    begin(){frame++;active.clear();},
-    touch(id,entry,{persistent=false}={}){active.add(id);entry.lastUsed=frame;if(persistent)entry.persistent=true;},
+    policy,policySource:authored?'authored':'default',get frame(){return frame;},trackOwner,untrackOwner,reclaim,
+    touchOwner(key){const node=owners.get(key);if(!node)throw Error('TEXTURE_CACHE_OWNER_UNKNOWN');mutation++;node.lastUsed=frame;if(!node.pinned)append(node);},
+    pinOwner(key,pinned){if(typeof pinned!=='boolean')throw Error('TEXTURE_CACHE_OWNER_INVALID: pin');const node=owners.get(key);if(!node)throw Error('TEXTURE_CACHE_OWNER_UNKNOWN');pin(node,pinned);},
+    begin(){frame++;for(const id of activeLegacy){const node=owners.get(id);if(node&&!node.legacy?.persistent)pin(node,false,true);}activeLegacy.clear();},
+    touch(id,entry,{persistent=false}={}){const node=legacy(id,entry);mutation++;entry.lastUsed=frame;if(persistent)entry.persistent=true;node.lastUsed=frame;pin(node,true);activeLegacy.add(id);},
     sweep(){
-      if(!policy)return;
-      let {bytes}=totals(),entries=records.size;
-      const candidates=[...records].filter(([id,entry])=>!active.has(id)&&!entry.persistent)
-        .sort((a,b)=>(a[1].lastUsed??0)-(b[1].lastUsed??0));
-      for(const [id,entry] of candidates){
-        const expired=frame-(entry.lastUsed??0)>=policy.idle_frames;
+      let node=head,failure;let {bytes,entries}=totals();
+      while(node){const expired=frame-node.lastUsed>=policy.idle_frames;
         if(!expired&&bytes<=policy.max_bytes&&entries<=policy.max_entries)break;
-        bytes-=textureBytes(entry.texture);entries--;drop(id,entry);
+        const removed=size(node),before=mutation;
+        try{retire(node,removed);}catch(error){failure??=error;}
+        // Normal pressure retirement is linear. Callback registry changes (or
+        // explicit touches after changing an adapter) require an exact recount.
+        if(mutation===before+1){bytes-=removed;entries--;}else({bytes,entries}=totals());
+        node=head;
       }
+      if(failure)throw failure;
     },
-    clear(){for(const [id,entry] of records)drop(id,entry);active.clear();},
-    metrics(){const {bytes,pinnedBytes,loading}=totals();return {enabled:!!policy,entries:records.size,
-      decoded_texture_bytes_estimate:bytes,pinned_bytes_estimate:pinnedBytes,loading,evicted,released_bytes_estimate:releasedBytes,
-      pressure_bytes:policy?Math.max(0,bytes-policy.max_bytes):0,
-      pressure_entries:policy?Math.max(0,records.size-policy.max_entries):0,
-      scope:'2D sprite textures; active and non-sprite dependencies are protected',
-      policy,estimate_excludes:'driver allocation, encoded files, browser decode copies and render targets'};},
+    clear(){const retiring=[...owners.values()];owners.clear();mutation++;activeLegacy.clear();head=tail=null;let failure;
+      for(const node of retiring){node.linked=false;node.previous=node.next=null;try{releasedBytes+=size(node);evicted++;node.adapter.retire();}catch(error){failure??=error;}}
+      if(failure)throw failure;
+    },
+    metrics(){const {bytes,pinnedBytes,loading,entries}=totals();return {enabled:true,entries,decoded_texture_bytes_estimate:bytes,pinned_bytes_estimate:pinnedBytes,loading,evicted,released_bytes_estimate:releasedBytes,
+      pressure_bytes:Math.max(0,bytes-policy.max_bytes),pressure_entries:Math.max(0,entries-policy.max_entries),
+      scope:'Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected.',
+      policy,policy_source:authored?'authored':'default',estimate_excludes:'driver allocation, encoded files, browser decode copies, UI/data textures and render targets'};},
   };
 }

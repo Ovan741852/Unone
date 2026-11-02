@@ -56,8 +56,9 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
    const next=resources.retain(caller);record.candidateLease?.release();record.candidateLease=next;record.candidateResource=meta.resource;return next;
   }
   const descriptor=descriptorFor(entity,world),current=resources.read(record.candidateLease??record.committedLease);
-  if(current?.asset===entity.sprite.asset&&current.descriptor.signature===descriptor.signature)return record.candidateLease??record.committedLease;
-  const next=resources.acquire({asset:entity.sprite.asset,descriptor});record.candidateLease?.release();record.candidateLease=next;return next;
+  const managed=record.candidateLease?record.candidateResource:record.committedResource;
+  if(!managed&&current?.asset===entity.sprite.asset&&current.descriptor.signature===descriptor.signature)return record.candidateLease??record.committedLease;
+  const next=resources.acquire({asset:entity.sprite.asset,descriptor});record.candidateLease?.release();record.candidateLease=next;record.candidateResource=null;return next;
  }
  function adopt(record,lease,entry,desired){
   const previous=record.committedLease,oldMaterial=record.material;
@@ -78,7 +79,7 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
   const record=recordFor(entity);record.id=String(entity.id);
   if(record.legacyAsset===entity.sprite.asset&&!entity.sprite_appearance){if(!legacy(record,entity,world))pending=true;return;}
   record.legacyAsset=null;
-  try{const lease=selectLease(record,entity,world),entry=resources.read(lease);
+  try{const lease=selectLease(record,entity,world),entry=resources.read(lease);if(!entity.sprite_appearance){resources.touchAuto(lease);if(record.committedLease!==lease)resources.touchAuto(record.committedLease);}
    if(!entry){pending=true;if(!record.committedLease)record.mesh.visible=false;return;}
    const values=entity.sprite_uniforms??(entity.sprite_appearance?entry.descriptor.defaults:world.shader_materials?.[entity.shader_material]?.uniforms??entry.descriptor.defaults);
    const desired=capture(record,entity,world,entry.descriptor,values);
@@ -95,7 +96,7 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
   }catch(error){failure(record,metadata(entity),error);if(!entity.sprite_appearance)throw error;}
  }
  function draw(world,visible=true){
-  if(disposed)throw Error('SPRITE_PRESENTATION_DISPOSED');pending=false;frameCandidates.length=0;alive.clear();usedMaterials.clear();legacyIds.clear();visibleEntities.length=0;
+  if(disposed)throw Error('SPRITE_PRESENTATION_DISPOSED');resources.beginFrame();pending=false;frameCandidates.length=0;alive.clear();usedMaterials.clear();legacyIds.clear();visibleEntities.length=0;
   const entities=world.entities??{};
   for(const id in entities)if(Object.hasOwn(entities,id)){const e=entities[id];if(e.sprite&&visible&&e.sprite.visible!==false)visibleEntities.push(e);}
   visibleEntities.sort(compareSpriteEntities);

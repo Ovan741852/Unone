@@ -1,0 +1,4753 @@
+{
+  "schema": "unone.travel-host-profile.v1",
+  "status": "complete-limit64-reports-analyzed-with-explicit-ring-and-endpoint-coverage-limits",
+  "scopes": {
+    "formal_failure": "Original native-main/travel-capture-r1.json remains a formal failure and is not replaced or reclassified by these diagnostic runs.",
+    "r1": "Active profiler limit2048, reverse geographic route, independently evolved NPC state; every profile string is externally truncated. Only complete syntactic prefix values/events recovered.",
+    "r2": "Active official profiler limit64 diagnostic, not FPS acceptance. Same frozen source32fd/seed42, new normal28-tile route from381267, different NPC state from formal/r1. Every returned profileRaw JSON parsed; CUA transport/parse and per-read file I/O overhead remain included.",
+    "comparison": "Same declared frozen Game/source/host/seed, different routes/preexisting NPC state and instrumentation sizes. Neither run is a causal paired experiment, formal FPS acceptance, scanout proof or whole-engine bottleneck proof."
+  },
+  "producer": {
+    "hostSha256": "c9afc994342bae52d21a98663db9dbcaa4d0361af6b2c546430c45c90e99a36b",
+    "hostCommit": "5ddb16ece0b69054a80bcfa18133a5fce58ee77f",
+    "url": "http://127.0.0.1:8244/main-perf-feed-20261103-r4/index.html?seed=42&unone_performance_feed=1&unone_profile=1&unone_profile_limit=64",
+    "releaseRoot": "releases/51ff2028e8db96a7c39bfc6fa4ce94576491b6aeb53adfb2127680d1748d14d9/",
+    "sourceSha256": "32fdab2e4dffb32b9529d0301edff6be13e9cf8369798a3fc9b0105b62c15503"
+  },
+  "runtime_identity": {
+    "core_source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+    "source": "Root supplied matching production runtime identity. These DOM reports themselves expose backend/session/time-origin, not a cryptographic runtime attestation."
+  },
+  "harness": {
+    "source_available": true,
+    "command_available": false,
+    "source_hash": null,
+    "reason": "The original observer ran as interactive CUA code. This retrospective file was not executed by this analyzer and cannot establish pre-run identity.",
+    "capture_schema": "jy.native-profile-diagnostic.v1",
+    "offline_analyzers": [
+      {
+        "path": "D:/Projects/Unone/.cache/analyze-travel-host-profile.mjs",
+        "bytes": 6675,
+        "sha256": "db638190326b0a517b4e95a13901e0d1542497023d2ecbc78a3cb12acf02139a"
+      },
+      {
+        "path": "D:/Projects/Unone/.cache/analyze-travel-host-profile-r2.mjs",
+        "bytes": 7107,
+        "sha256": "801a94406ab4c196606c110c08ffbb1a8fa0f0411da546dd180751c8b5573127"
+      },
+      {
+        "path": "D:/Projects/Unone/.cache/record-travel-host-profile.mjs",
+        "bytes": 19967,
+        "sha256": "05e86541a39f85dc035c582e9f3d554ebdc7f9edc31db6a3e7985b7cfd61f125"
+      },
+      {
+        "path": "D:/Projects/Unone/.cache/extend-travel-ui-metrics.mjs",
+        "bytes": 9842,
+        "sha256": "63e24925e2535faaa924b0434c1bdea6d5e743bd7e7a7089a15ca48fe1bc7af5"
+      }
+    ],
+    "pre_run_source_available": false,
+    "pre_run_source_hash": null,
+    "retrospective_source": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/collector-review.js",
+      "bytes": 3503,
+      "sha256": "f0c9a939f201b4c25d74cda3ea3f5a8b6981382cba0547106c4d068e9aaa2439"
+    },
+    "source_status": "Post-collection retrospective reconstruction supplied by Game; not a pre-run pinned harness or proof of exact originally executed code."
+  },
+  "official_source_references": [
+    {
+      "path": "D:/Projects/Unone/web/shared/raster-diagnostics.mjs",
+      "bytes": 8000,
+      "sha256": "66920522be36283367fb62aa354ed01754c0c11b672f00aadf7e9b24cbacb033"
+    },
+    {
+      "path": "D:/Projects/Unone/web/player/main.js",
+      "bytes": 31486,
+      "sha256": "d99816bd9425f44cb106aa3155d19b4e8329f79880d2aa6ff626843789d5d2d1"
+    },
+    {
+      "path": "D:/Projects/Unone/web/shared/runtime-core.mjs",
+      "bytes": 10218,
+      "sha256": "f38a5dce3ee3f161e25c18c8f598863e475780a6c0976ec69eb6baaec5f175b1"
+    },
+    {
+      "path": "D:/Projects/Unone/web/shared/runtime-backend.mjs",
+      "bytes": 6033,
+      "sha256": "9e05c61a39ecf4a098b4ee7d179c933ceb49d3d0be13ddccc237865142bc99a5"
+    },
+    {
+      "path": "D:/Projects/Unone/web/shared/async-scheduler.mjs",
+      "bytes": 4315,
+      "sha256": "9d93682a427dd0544113309629881ec75559711c2b9e36e023ee053dd17b9dd0"
+    },
+    {
+      "path": "D:/Projects/Unone/artifacts/web-performance-feed-host-5ddb16e-20261103/host.json",
+      "bytes": 18838,
+      "sha256": "34cb4bd42d260526bd475ad82e75e9b499b979039bedce6d005a394e08adb66b"
+    }
+  ],
+  "r2_complete_limit64": {
+    "index": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/capture-index.json",
+      "bytes": 28459,
+      "sha256": "9fa8adc04c9f078725d21b3b692f2bebecc231f6d015caad5982f08f5911cf9c"
+    },
+    "raw_files": [
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-000.json",
+        "bytes": 203792,
+        "sha256": "6767d108efc4742a7fe590f8f871a6a9db03caec6693c95af1e59cfca9cca1bd"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-001.json",
+        "bytes": 182954,
+        "sha256": "c5a808378c2a78dd52478a0ebde7d394ed43e9b880abf3addb269e1ea31705f4"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-002.json",
+        "bytes": 183772,
+        "sha256": "196af59a2a510a40002d713a649bb56b381e966288e9bac1f4913afaeb01dbf7"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-003.json",
+        "bytes": 178971,
+        "sha256": "69e02fefe03ab528ae762e707cfa5ffc0ee2b38c3672aba2c7e6ca4fd02b8dfe"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-004.json",
+        "bytes": 178846,
+        "sha256": "3664fe5de2ab7fb7e265cf8773c2255a1e4cd2680fb4e8970641c25c07488223"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-005.json",
+        "bytes": 180443,
+        "sha256": "5356d036db35ab2ed80a614fe88c06574584a4a52fbbe18129200f23a63206c1"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-006.json",
+        "bytes": 178828,
+        "sha256": "38632f07bac8bbba57b8cc4f99a17f4d953961e9120e5304009bfcd5739491ef"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-007.json",
+        "bytes": 177805,
+        "sha256": "c9ecf679c8e80ba13c3cb21cded34fd5d9224685fe768e2ea219cf844f7be321"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-008.json",
+        "bytes": 179184,
+        "sha256": "ff02f4fccd002673865f86db1ef603ae733294e13679e1a656e183d9566f4f1c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-009.json",
+        "bytes": 179880,
+        "sha256": "19771196d43eb19923175b3056e83d0f210ac1200b24b4712fffdcf7bb97a62b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-010.json",
+        "bytes": 180098,
+        "sha256": "aa8ae12b68144b2e913ab442cacd9130567faf556899f9046cbb0d1fc17e7341"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-011.json",
+        "bytes": 179502,
+        "sha256": "f446da17ec76c43d52ef4e93964c42b923eebf6238bfd7f23c745eedf3a742ba"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-012.json",
+        "bytes": 179904,
+        "sha256": "f36f78e07e72a7706eca52d9a5b01649a6ef1256a70778532899cb60bb72ad72"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-013.json",
+        "bytes": 179971,
+        "sha256": "41637d4b732158d422f765d5d7147cddca41560702420d862a62ad77db8b12c5"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-014.json",
+        "bytes": 179452,
+        "sha256": "69b44ef5b22417188dea06ef5045cb5ef00dc8a43f7dabddb3c11db4d6d0aeb9"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-015.json",
+        "bytes": 178605,
+        "sha256": "230ec84d156305c1286a65f6318b1207513311caedc1a6358fe458672ac85c61"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-016.json",
+        "bytes": 178311,
+        "sha256": "f6a21d1c9ac83d5136e7a987fea3999e01c3d1a0fec82203a63b9433b01db0a6"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-017.json",
+        "bytes": 177356,
+        "sha256": "b8179edcbe7c2b50781e40a5af8ce1196ce6c039fb7cfd1c46bb06019d3ae971"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-018.json",
+        "bytes": 176926,
+        "sha256": "e044c6f5a4b695019e07ff758444b9737739758d5738af66d33ff84f6512e033"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-019.json",
+        "bytes": 177386,
+        "sha256": "13af55795387e3e986fb24679e10c673a4b262e215f6b7c91b8de41945832e78"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-020.json",
+        "bytes": 177475,
+        "sha256": "0b3fde2c7149b83de181ba82839698464e189f6ac05add8cbafba3b1eb5d4a6e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-021.json",
+        "bytes": 177732,
+        "sha256": "7cef59b3e1b13efca8c4864ec3bdad90f955e89b3e8cb05b33caaa86e5395160"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-022.json",
+        "bytes": 180647,
+        "sha256": "852783b530d6e312c43f331018c9a9cbd734434ec4ba624acf5af0620585f441"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-023.json",
+        "bytes": 180278,
+        "sha256": "4ea429eefe51c6fc24b68ae9529a4983e818c96cf69cd5431f4be9d6987b95b9"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-024.json",
+        "bytes": 182531,
+        "sha256": "1baceb4b2a3b8aced2bf97a392076e91a61cf4c0a1ed4eb4269f2ae9350b679d"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-025.json",
+        "bytes": 181348,
+        "sha256": "1e4ee5073a6f92d8276152034ee513e35ee7049d811fed814f631e95806f0b0c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-026.json",
+        "bytes": 179993,
+        "sha256": "a3d8959b77ef75380c8d958da5c869f536f26871340f82ebade3f3c7a11e30b0"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-027.json",
+        "bytes": 180459,
+        "sha256": "7006da0e97b556bb0a277678f56685f0eb4a52e3eaeba69020da0dcbc1168f2b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-028.json",
+        "bytes": 179359,
+        "sha256": "a9a3bb87711a5e3c23f4e1364ac9bf89ef90c34f4d846df8fc362d5748ec17c9"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-029.json",
+        "bytes": 178962,
+        "sha256": "9f6ead86707d286c01bae26afcfeff150c5cf699abe9a1b2178c941366dc4258"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-030.json",
+        "bytes": 180205,
+        "sha256": "1301a606b582e81c2192e2d06ade49e9fa8e5759859fbac8f26ae5d0feded3e0"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-031.json",
+        "bytes": 180137,
+        "sha256": "26321408f87ce50c337fd5ed51701edcb2e2e258295a48531a4a05194258da78"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-032.json",
+        "bytes": 181502,
+        "sha256": "abee0460135dbfb08099913cc733b1dfd7c705a2dac5616787e6c824092b982f"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-033.json",
+        "bytes": 181554,
+        "sha256": "10d0f6981ecf1eb438494c74add868519c1768508d481ed949ef65cebf50dced"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-034.json",
+        "bytes": 180912,
+        "sha256": "d80e4cf83463287cac11e33093002a4c305f1eb596499965e6a4d8de1111c805"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-035.json",
+        "bytes": 181689,
+        "sha256": "60f40a11c3dfa52b1086cf2b0a86b78fb6fc1690c57da3414135f5571c1750dd"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-036.json",
+        "bytes": 185575,
+        "sha256": "faf9c1c46a7f414798d33dffd221d9f6266701fa1dcff8948aa5eaebac3189b6"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-037.json",
+        "bytes": 185115,
+        "sha256": "4ab7f2ef42515bf966bde3358188fdf5c19446d17fbcad10c51d081e2e8108ec"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-038.json",
+        "bytes": 186745,
+        "sha256": "5e34f49ffc3856502176c3975f005dccd2c2a7783c076dd567160db41d0a537b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-039.json",
+        "bytes": 186033,
+        "sha256": "ec6c7357b0cf5ec666f4ff18ab5405f939cf5be36275642a4b437eeb410dbfae"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-040.json",
+        "bytes": 186033,
+        "sha256": "cef462364e699c6c4a0a6c680b3842385aec08557055374d5af37909ff0a4986"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-041.json",
+        "bytes": 186848,
+        "sha256": "121e5786409496ac05c49f67299bb82dd101a6ddc1f7a97ee741c11454b3250a"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-042.json",
+        "bytes": 193410,
+        "sha256": "415be528e7ed0c1dbb6ad6ddb6a5b1900a40f814223d98ee451688b6e3e1230e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-043.json",
+        "bytes": 193687,
+        "sha256": "07c90dfdaf01c2654f03d0d14bee2288886388fc980b693b8b86314713e86bd0"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-044.json",
+        "bytes": 194022,
+        "sha256": "3199fca6c78c4d4606fbe63c363b32c48e966f08205dad6a170eef6bf062a090"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-045.json",
+        "bytes": 196909,
+        "sha256": "b1adc80d323c6f139b563543319f482d5d393a998f3f1236b7f600690fdd5a6c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-046.json",
+        "bytes": 196469,
+        "sha256": "b817d3fb780f477427c0f6abe3b88258be390b3e1a30d8be1d7b97ef4ce48180"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-047.json",
+        "bytes": 195801,
+        "sha256": "9413a68327ea8a8000d8f6c1bfbf4bfba790f47b78879291373e574de8c86f34"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-048.json",
+        "bytes": 198695,
+        "sha256": "68d7508db332e903a689293c194534b923fdae4776e314cf04df62f904a17316"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-049.json",
+        "bytes": 199613,
+        "sha256": "ba87f347ab62065f42e60509b6c1aa1d7a70e2dc3109db651edcd6f498c75465"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-050.json",
+        "bytes": 199613,
+        "sha256": "82e7853d6aaf997219b0e78dbad64430b57bce5da43ef2ec09ac796b7fdfb3e6"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-051.json",
+        "bytes": 200163,
+        "sha256": "55b5cfe711882a24e0869f6e9f2b0a34afbf31673799c55432119620887111a9"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-052.json",
+        "bytes": 200931,
+        "sha256": "a82ac3964d6767c5228c3dae9edb3c74c0f01cb3ec7f2ba0ed8cd676fc5b7675"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-053.json",
+        "bytes": 201063,
+        "sha256": "5eafde6b72f97c36b36717d5dee981b6331cffcd1721425ab49882c58f5ed68b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-054.json",
+        "bytes": 199054,
+        "sha256": "2bafdad106f4ba55fb5bc93fb42199d1d8b10deba5a5e18e48edc53ba909f974"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-055.json",
+        "bytes": 191864,
+        "sha256": "ddeda1c30c00c12c061d5a7ca72266a59fe27d50de43fedf66ed3a169e90a163"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-056.json",
+        "bytes": 189854,
+        "sha256": "00dae7eba30f7cb7d29b2ed6595b04764658c4a43a53ec4ca4e79302c2a50df6"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-057.json",
+        "bytes": 187345,
+        "sha256": "b02093b465c753fa616a55e0ecbcf157a2de3b329cf9fa700aeb3263e8c76f8a"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-058.json",
+        "bytes": 183925,
+        "sha256": "7268c0c4b7d9dc665825529b042ac7d6ebf32db89f128160b340431f071ea083"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-059.json",
+        "bytes": 187612,
+        "sha256": "085770e85cd6dc3925bf8579148ec498fe7d23995a65074a1d0525ae053c7c26"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-060.json",
+        "bytes": 185727,
+        "sha256": "b1557e95ae0100080b4ba0f0b800d3d2b6d3cceb4c19512a1ecbb2339f074d8a"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-061.json",
+        "bytes": 191120,
+        "sha256": "bf4eed503a030cbd11d2aa35e7e56cc9b2cfe6291a2faa9f808fac2fc57be485"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-062.json",
+        "bytes": 192154,
+        "sha256": "323bb32c819b6f5deec70386f8c8ede9a0012ff16ffbf2659270a4c158cdcc55"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-063.json",
+        "bytes": 194468,
+        "sha256": "1b56d46273f78fc5e4dab91c2605eedacb061e3010fe1727f3ce7d9cabe709df"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-064.json",
+        "bytes": 192940,
+        "sha256": "33e490a512aa24404c6dfa386d426b784be67f5734f4d20752a7e6fd73551696"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-065.json",
+        "bytes": 190304,
+        "sha256": "64232fc573863897494cb0d11e1a29d1cd4b7c54a7bf9df2ac8c2bd6c87ffeb8"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-066.json",
+        "bytes": 188621,
+        "sha256": "0ac7c8c4347d9c54e3781b5f5ae0af3d11522f87e3f2cdefe5b7025c6060fabe"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-067.json",
+        "bytes": 184460,
+        "sha256": "147df5655ed839df0ff6c97640c7e4ed6deda5f73df7a9d8267cbaf80118e81f"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-068.json",
+        "bytes": 184580,
+        "sha256": "64fcbceeb90ec2ef58186cdd548078d7681c0be583af4495ad2fd20b571318cb"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-069.json",
+        "bytes": 185662,
+        "sha256": "6ac5d300bbab17637592053f0de1f7dcee58118b1c88574ebbda290aeea98821"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-070.json",
+        "bytes": 181091,
+        "sha256": "875b12117d7ad70c06b5b7d3541b47c1344b06dc72aec7d7a949f7d91509cbf1"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-071.json",
+        "bytes": 179848,
+        "sha256": "d4ff9122ffce9a017330eeb4edf064a2d21b22b720dda0340f1a264996c75412"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-072.json",
+        "bytes": 178493,
+        "sha256": "15ad66377cca2f651787f4fbc216bf872a2f681f4d4f97c8c6d2856b30a6789f"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-073.json",
+        "bytes": 179217,
+        "sha256": "d6a30f369d651519f72bc4bdfca1967dd6d253ebfd8505a7f12129904038e0f4"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-074.json",
+        "bytes": 179289,
+        "sha256": "0174a5932322689a7cd9405a3b620024ea9fc68697e98656624943c1077a24a3"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-075.json",
+        "bytes": 178652,
+        "sha256": "69e2b16b243dae7eefde82c2e2f89a2851cfecf2de1d2e589eff5f21870284a1"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-076.json",
+        "bytes": 178474,
+        "sha256": "6f882d2c85cd3f89f01eff162ba705bee7945b7c65d39b7d98ae0aa4e67275d2"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-077.json",
+        "bytes": 178028,
+        "sha256": "320c0045606ef20bfd2dbe2e38ea1e6fe695a6c7cd24e03348e52ca317cef470"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-078.json",
+        "bytes": 177777,
+        "sha256": "50ceb7676d4ad743693387d0ab5759f74d05532eeb91eb76408beea162868cd4"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-079.json",
+        "bytes": 178100,
+        "sha256": "f701f7cc9ab3be9da96064c9ffa6d40db82acac36896a0d7c850ceca19218cb6"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-080.json",
+        "bytes": 175253,
+        "sha256": "15a2d7cbc64c50f1977bd62ef1e59d7fdec9b455d4f19ada23ee4a42a9427eb3"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-081.json",
+        "bytes": 177881,
+        "sha256": "3c5500f49d82a52c2b732cce24e3ea42362757fe8efd89b4eebc6049285d0992"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-082.json",
+        "bytes": 177547,
+        "sha256": "5de7771aea87f87290489f60dadb7aac8be6d4996c6ad0a1cf25c34b1e8640f7"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-083.json",
+        "bytes": 177404,
+        "sha256": "3993e7382c244be8bcc063b98f40d60a940d8bf7e0f67bc3365420f948df349b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-084.json",
+        "bytes": 177858,
+        "sha256": "aacc69df4093998131abf3499ab9369a832db7b8757f36d256540a4608cc59ad"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-085.json",
+        "bytes": 177695,
+        "sha256": "82651b22389165aa62a71a2003ab25f68eb1b463ae90ff2a8c390511ae23f9ac"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-086.json",
+        "bytes": 178905,
+        "sha256": "5c31b795e8d94e21bddd3c5f3f50ca2e63326556d8e4717b9d38bb93a0da3109"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-087.json",
+        "bytes": 178689,
+        "sha256": "2f1d98f0f0887089f0d7b1765cdce59721e03d2c76d96daf05210247b38c5017"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-088.json",
+        "bytes": 178307,
+        "sha256": "a1b51b0ad852238d26a76cc4a9408b90cf3902c62a7221e4d650f3a3110938da"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-089.json",
+        "bytes": 177685,
+        "sha256": "1ebefa35065213aadcb0a638667151a6ae1fe2fd044ab00fe39287cf326e98a4"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-090.json",
+        "bytes": 175031,
+        "sha256": "28857b1ccacb4123764de3e899ea084d8718d90c5d0067ac35c68a2c715ff0d8"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-091.json",
+        "bytes": 177147,
+        "sha256": "259cf9aafd52ab80b998f005188faefcae07a2e37b85da5ef26753f3bde84875"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-092.json",
+        "bytes": 176176,
+        "sha256": "18a7e24a6c6b94dc6386ad17b23d3a54fbfe4d1aa7ca487fa43b99e705333ea2"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-093.json",
+        "bytes": 177190,
+        "sha256": "3d0ffa018657ec0b0c28899f812d3948482efa54c2c278961bc999fe21c39d10"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-094.json",
+        "bytes": 178037,
+        "sha256": "f1e490516e593f786b6f392fea424c32e9bf093470cf5a41c0fcc5aef7d6bb4e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-095.json",
+        "bytes": 177073,
+        "sha256": "bd2d7c9876f238ac5081b9b0d959debb8ee1b277aea0257843045851774eb076"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-096.json",
+        "bytes": 175931,
+        "sha256": "5aa8ad5b3b36d3381834f61860c6acb5ab04f6c1a1eb0ac8169f28da5b706961"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-097.json",
+        "bytes": 176484,
+        "sha256": "41c8998f2c814bc963fa2d696666a1c18eab981cf85ab5239fd918b18155bc7e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-098.json",
+        "bytes": 177307,
+        "sha256": "18615660aa2ae3b400bbc5a3368dd80fe3401363b0a242c103da64fe91340fc1"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-099.json",
+        "bytes": 178229,
+        "sha256": "c8fa447227ecbe8195fa13dd933c5bb6a6eaa85d2ecd5fe48d1463404bae9338"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-100.json",
+        "bytes": 175879,
+        "sha256": "b7552fd282dc0526f8ad5cef5635f452a4f8f1f1aa87df82940feea637620d10"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-101.json",
+        "bytes": 177851,
+        "sha256": "7d1a4435d5076bd4aefd048ccd9afa8c4432fd84a23f8759ac5d3c47260b118e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-102.json",
+        "bytes": 177276,
+        "sha256": "70dd56f9c1bb3ae54bbc15237cefa3cbaa9386cf152848deccc06f0157422b0e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-103.json",
+        "bytes": 176832,
+        "sha256": "a21a58ed1e901aedafda67019cb692cd9f03cf65c0f0d069791038aa5c7b693f"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-104.json",
+        "bytes": 177973,
+        "sha256": "66e2cd8663140aa6332947478a26dd5c3b6be7b45524c636822d0c6262c7a3eb"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-105.json",
+        "bytes": 177758,
+        "sha256": "8e14996fbf4bbee5691d18c9ebb22392829522b1a5ba3aaf6127132cf01b9901"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-106.json",
+        "bytes": 177796,
+        "sha256": "d0c3e0e9a037e6957e859ab9d413b13e324dcd8fa70eb119a7ff8b4953289240"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-107.json",
+        "bytes": 178620,
+        "sha256": "a5040d4bc69760b80a9f31c65e158316a79dfdd035f153b48a4ff9baaa3d4367"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-108.json",
+        "bytes": 178657,
+        "sha256": "a6bd62684c98449852469c769adffe9272bf5722d5c41fa5c6e0f4a4d4cf2470"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-109.json",
+        "bytes": 178054,
+        "sha256": "f7b38a587443ec5a755192d81fd0f4462df4dcf0c9c44ea3f6a2fdbbc2753f34"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-110.json",
+        "bytes": 175768,
+        "sha256": "82f58d29c2143b9786c86df759d621281d74d7c8dd7de5e4538a16dea37e1825"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-111.json",
+        "bytes": 179068,
+        "sha256": "edbc95b36b6268548b009a892748a7957e0ad05cde05e49838b9088093542808"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-112.json",
+        "bytes": 178561,
+        "sha256": "8d60e0a52f2399418a0ddb8b35a9f834c2b10035b6462582d45984c9e97a8c2c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-113.json",
+        "bytes": 177185,
+        "sha256": "f9ba286f781eb467546b0f32fb247368d224600101ac40f5980e09c6466f1341"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-114.json",
+        "bytes": 177893,
+        "sha256": "5dea619bf19c7aa5a9c4ea38f676a3b5e0fb505a70779e1f23a1d28a2c93cb5c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-115.json",
+        "bytes": 177609,
+        "sha256": "086270e0c4ed8adeae7e7d5a7de1d8ff9c8a8b96c4dc8530ff39b23b2f3a7c0b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-116.json",
+        "bytes": 176743,
+        "sha256": "e5120b0e01a50d0cff36c509e65525cc24f1fe7ba1d471e5c8f0fe006e12265f"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-117.json",
+        "bytes": 176253,
+        "sha256": "ee25a73e6914a70b2f775389277504e97ede59170d2ca3f0a136c49f583ceff2"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-118.json",
+        "bytes": 177696,
+        "sha256": "fb7cf23ae066ab4812b5c4f0e75818fb8423a59ede5fcbc455a2adc8bd759c8e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-119.json",
+        "bytes": 177444,
+        "sha256": "1f287915476d52f293745d20981be5dd071d27133c31d10d63029f9fd1472522"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-120.json",
+        "bytes": 174079,
+        "sha256": "bb13c9dc706cea40030fadb3c296ccd98e7a8128fdd91304b03054424aa1dd93"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-121.json",
+        "bytes": 177090,
+        "sha256": "7f8228c45dfa0ec9648c4deb23ca0a3b3c033e34215b83f9945d81acc71a2fb5"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-122.json",
+        "bytes": 177465,
+        "sha256": "81ccccbd2f1e1a7564e5ebb72858818437276618a5d816a44829df79fc1787ae"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-123.json",
+        "bytes": 178231,
+        "sha256": "d1af13cd35a339341b565cc63492cbc0b63f8f812043affe09697f01cce5c465"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-124.json",
+        "bytes": 178245,
+        "sha256": "184f70e8060c3fe7cef16f7210259b218cd255db56bf978415f5815aa69d7d97"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-125.json",
+        "bytes": 176641,
+        "sha256": "11774980570ce5cc36d432b010ff86cc74b80c1dbfbc2595a2354e0e00108d2c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-126.json",
+        "bytes": 177733,
+        "sha256": "d1f735a452096291cdd6de1f3664c32988428e4e7dc87f4cb565532f0faf56bd"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/read-after.json",
+        "bytes": 177728,
+        "sha256": "fe7eb89eed3c4ee76e3093b00ddd0263ab722919eadd81fad57e6695f2d8629f"
+      }
+    ],
+    "files": 128,
+    "profile_json_parse_success": 128,
+    "profile_json_parse_failures": 0,
+    "truncated": 0,
+    "profile_chars": {
+      "n": 128,
+      "sum": 17426488,
+      "min": 131312,
+      "p50": 135119,
+      "p95": 142941,
+      "p99": 143975,
+      "max": 144715
+    },
+    "native_clock": {
+      "origin_ms": 1793648925720.1,
+      "plan": {
+        "startUtcMs": 1793649147959,
+        "endUtcMs": 1793649177959
+      },
+      "actual": {
+        "startUtcMs": 1793649147959,
+        "endUtcMs": 1793649178281
+      },
+      "measurement_relative_ms": {
+        "start": 222238.89990234375,
+        "end": 252560.89990234375
+      },
+      "native_read_wall_ms": {
+        "n": 128,
+        "sum": 16684,
+        "min": 34,
+        "p50": 150,
+        "p95": 183,
+        "p99": 200,
+        "max": 213
+      },
+      "all_read_start_intervals_ms": {
+        "n": 127,
+        "sum": 32903,
+        "min": 141,
+        "p50": 254,
+        "p95": 298,
+        "p99": 315,
+        "max": 2748
+      },
+      "measured_poll_read_start_intervals_ms": {
+        "n": 125,
+        "sum": 29980,
+        "min": 141,
+        "p50": 254,
+        "p95": 297,
+        "p99": 315,
+        "max": 315
+      },
+      "measured_poll_interval_mean_ms": 239.84,
+      "clock_note": "Native UTC read intervals include CUA transport/parse and file-I/O workflow. Read start-to-end and start-to-next-start are distinct. Actual measured poll cadence averages239.84ms, not the requested100ms delay; these are not page CPU costs or an isolated engine stopwatch."
+    },
+    "integrity": {
+      "same_origin_for_all_three_domains": true,
+      "visible_rows": 128,
+      "feed_errors": 0,
+      "player_errors": 0,
+      "unique_closed_event_ids": 3959,
+      "unique_sequences": 3959,
+      "duplicate_identity_changes": 0,
+      "retained_capacity": 64,
+      "sequence_bounds": [
+        39296,
+        43617
+      ],
+      "missing_sequences_total": 363,
+      "missing_sequence_ranges": [
+        {
+          "first": 39359,
+          "last": 39359
+        },
+        {
+          "first": 39361,
+          "last": 39722
+        }
+      ],
+      "all_missing_sequences_precede_minimum_wholly_inside_event_sequence": true,
+      "minimum_wholly_inside_event_sequence": 39782,
+      "capture_gaps": [
+        {
+          "before": "read-000.json",
+          "after": "read-001.json",
+          "completed_delta": 427,
+          "overwritten_delta": 427,
+          "next_min_sequence": 39723,
+          "previous_max_sequence": 39360,
+          "potential_lost_sequences": 362
+        }
+      ],
+      "first_measurement_read_profile_latest_event_end_ms": 222307,
+      "scope": "The only between-read ring gap is before000 to001 across the premeasurement input interval and first capture. Missing sequence numbers precede the minimum wholly-inside event sequence; boundary-crossing lost events cannot be reconstructed. Later capture rings overlap, but complete JSON does not prove first-boundary or terminal unreported time coverage."
+    },
+    "coverage": {
+      "wholly_inside_window_events": 3836,
+      "by_kind": {
+        "command": 1694,
+        "update": 1694,
+        "draw": 448
+      },
+      "first_inside_event_start_ms": 222249.20000004768,
+      "last_inside_event_end_ms": 252375.20000004768,
+      "uncovered_terminal_ms": 185.69990229606628,
+      "no_extrapolation": true
+    },
+    "exact_command_update_join": {
+      "pairs": 1694,
+      "unpaired_updates": 0,
+      "join": "update.attrs.command == command.id AND command.attrs.owner == update.id; command start/end bounded by update; command_kind tick.",
+      "backend_minus_command_wall_ms": {
+        "n": 1694,
+        "sum": 109.79999947547913,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.8999999761581421,
+        "max": 7.700000047683716
+      },
+      "execute_minus_tick_ms": {
+        "n": 1694,
+        "sum": 2017.8000024557114,
+        "min": 0.5999999046325684,
+        "p50": 1,
+        "p95": 1.600000023841858,
+        "p99": 4.200000047683716,
+        "max": 13.5
+      },
+      "scope": "Differences are computed on matched event pairs, never differences of percentiles. They can include scheduling/instrumentation/host wrapper costs and are not exclusively a named subsystem."
+    },
+    "cost": {
+      "event_wall_ms": {
+        "command": {
+          "n": 1694,
+          "sum": 26405.699999809265,
+          "min": 9.399999976158142,
+          "p50": 15.900000095367432,
+          "p95": 19.5,
+          "p99": 23.100000023841858,
+          "max": 30.299999952316284
+        },
+        "update": {
+          "n": 1694,
+          "sum": 26609.59999668598,
+          "min": 9.399999976158142,
+          "p50": 16.100000023841858,
+          "p95": 19.699999928474426,
+          "p99": 23.200000047683716,
+          "max": 30.399999976158142
+        },
+        "draw": {
+          "n": 448,
+          "sum": 2818.9000005722046,
+          "min": 1.5,
+          "p50": 5.899999976158142,
+          "p95": 16.799999952316284,
+          "p99": 35.799999952316284,
+          "max": 40.10000002384186
+        }
+      },
+      "command_execute_ms": {
+        "n": 1694,
+        "sum": 26331.800000071526,
+        "min": 9.299999952316284,
+        "p50": 15.899999976158142,
+        "p95": 19.40000009536743,
+        "p99": 23.09999990463257,
+        "max": 30.299999952316284
+      },
+      "tick_abi_atomic_ms": {
+        "n": 1694,
+        "sum": 24313.999997615814,
+        "min": 8.100000023841858,
+        "p50": 14.899999976158142,
+        "p95": 18.100000023841858,
+        "p99": 20.699999928474426,
+        "max": 25.100000023841858
+      },
+      "tick_fraction_of_sampled_execute_sum": 0.9233702214641525,
+      "restore_siblings_ms": {
+        "observation_view": {
+          "n": 1694,
+          "sum": 9.600000858306885,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.09999990463256836,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "observation_utf8": {
+          "n": 1694,
+          "sum": 16.800000190734863,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582
+        },
+        "observation_parse": {
+          "n": 1694,
+          "sum": 42.700000166893005,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582
+        },
+        "world_field/entities/reuse": {
+          "n": 1672,
+          "sum": 22.600000023841858,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "world_field/observations/descriptor": {
+          "n": 1694,
+          "sum": 5.300000190734863,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "world_field/observations/utf8": {
+          "n": 1694,
+          "sum": 61.60000193119049,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.19999992847442627,
+          "max": 0.40000009536743164
+        },
+        "world_field/observations/parse": {
+          "n": 1694,
+          "sum": 390.4999974966049,
+          "min": 0.09999990463256836,
+          "p50": 0.20000004768371582,
+          "p95": 0.30000007152557373,
+          "p99": 0.3999999761581421,
+          "max": 12.600000023841858
+        },
+        "world_field/observations/freeze": {
+          "n": 1694,
+          "sum": 223.0999995470047,
+          "min": 0,
+          "p50": 0.10000002384185791,
+          "p95": 0.20000004768371582,
+          "p99": 0.20000004768371582,
+          "max": 0.3999999761581421
+        },
+        "world_field/particle_effects/reuse": {
+          "n": 1694,
+          "sum": 7.5000001192092896,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "world_field/shader_materials/descriptor": {
+          "n": 1694,
+          "sum": 2.0999999046325684,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.09999990463256836,
+          "max": 0.10000002384185791
+        },
+        "world_field/shader_materials/utf8": {
+          "n": 1694,
+          "sum": 32.599997997283936,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582
+        },
+        "world_field/shader_materials/parse": {
+          "n": 1694,
+          "sum": 117.90000224113464,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.20000004768371582,
+          "max": 7.200000047683716
+        },
+        "world_field/shader_materials/freeze": {
+          "n": 1694,
+          "sum": 52.600000977516174,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582
+        },
+        "world_fields_restore": {
+          "n": 1694,
+          "sum": 5.199999928474426,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "ui_tree_restore": {
+          "n": 1694,
+          "sum": 868.0999985933304,
+          "min": 0.09999990463256836,
+          "p50": 0.30000007152557373,
+          "p95": 0.8999999761581421,
+          "p99": 1.100000023841858,
+          "max": 12.200000047683716
+        },
+        "ui_images_restore": {
+          "n": 1694,
+          "sum": 12.200000286102295,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.09999990463256836,
+          "p99": 0.10000002384185791,
+          "max": 0.6000000238418579
+        },
+        "save_restore": {
+          "n": 1694,
+          "sum": 27.09999966621399,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.5
+        },
+        "publication_commit": {
+          "n": 1694,
+          "sum": 2.599999785423279,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        }
+      },
+      "update_root_siblings_ms": {
+        "update/root/input_consume": {
+          "n": 1694,
+          "sum": 37.49999821186066,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.5
+        },
+        "update/root/backend_request": {
+          "n": 1694,
+          "sum": 26515.499999284744,
+          "min": 9.399999976158142,
+          "p50": 16,
+          "p95": 19.600000023841858,
+          "p99": 23.100000023841858,
+          "max": 30.299999952316284
+        },
+        "update/root/accept_snapshot": {
+          "n": 1694,
+          "sum": 12.299999594688416,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582
+        },
+        "update/root/audio_sync": {
+          "n": 1694,
+          "sum": 37.29999923706055,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582
+        },
+        "update/root/save_persist": {
+          "n": 1694,
+          "sum": 4.600000381469727,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.3999999761581421
+        }
+      },
+      "draw_root_siblings_ms": {
+        "draw/root/interpolation_sample": {
+          "n": 448,
+          "sum": 2.300000309944153,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.09999990463256836,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "draw/root/renderer_draw": {
+          "n": 448,
+          "sum": 200.00000035762787,
+          "min": 0.20000004768371582,
+          "p50": 0.40000009536743164,
+          "p95": 0.6000000238418579,
+          "p99": 0.7000000476837158,
+          "max": 0.7000000476837158
+        },
+        "draw/root/ui_draw": {
+          "n": 448,
+          "sum": 2563.8000007867813,
+          "min": 1,
+          "p50": 5.300000071525574,
+          "p95": 16,
+          "p99": 35.10000002384186,
+          "max": 39.699999928474426
+        },
+        "draw/root/host_publish": {
+          "n": 448,
+          "sum": 51.999999046325684,
+          "min": 0,
+          "p50": 0.10000002384185791,
+          "p95": 0.20000004768371582,
+          "p99": 0.40000009536743164,
+          "max": 0.6000000238418579
+        }
+      },
+      "renderer_child_siblings_ms": {
+        "draw/renderer_draw/snapshot_policy": {
+          "n": 448,
+          "sum": 2.5999999046325684,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.09999990463256836,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "draw/renderer_draw/frame_decode_validate": {
+          "n": 448,
+          "sum": 2.0999996662139893,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "draw/renderer_draw/frame_identity": {
+          "n": 448,
+          "sum": 0.20000004768371582,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0.10000002384185791
+        },
+        "draw/renderer_draw/legacy_projected_terrain_validate": {
+          "n": 448,
+          "sum": 2.2000001668930054,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "draw/renderer_draw/presentation_hooks": {
+          "n": 448,
+          "sum": 1.4000002145767212,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "draw/renderer_draw/resize_raster_validate": {
+          "n": 448,
+          "sum": 15.7000013589859,
+          "min": 0,
+          "p50": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582
+        },
+        "draw/renderer_draw/scene_sync": {
+          "n": 448,
+          "sum": 74.20000088214874,
+          "min": 0,
+          "p50": 0.19999992847442627,
+          "p95": 0.30000007152557373,
+          "p99": 0.3999999761581421,
+          "max": 0.5
+        },
+        "draw/renderer_draw/subrenderer_prepare": {
+          "n": 448,
+          "sum": 1.5000001192092896,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "draw/renderer_draw/projected_prepare_texture_sweep": {
+          "n": 448,
+          "sum": 1.4999996423721313,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791
+        },
+        "draw/renderer_draw/ordinary_render_submit": {
+          "n": 448,
+          "sum": 92.49999821186066,
+          "min": 0.09999990463256836,
+          "p50": 0.20000004768371582,
+          "p95": 0.30000007152557373,
+          "p99": 0.3999999761581421,
+          "max": 0.40000009536743164
+        },
+        "draw/renderer_draw/projected_pass_submit": {
+          "n": 448,
+          "sum": 0.20000004768371582,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0.10000002384185791
+        }
+      },
+      "parent_exclusive_ms": {
+        "command": {
+          "execute": {
+            "n": 1694,
+            "sum": 60.60000157356262,
+            "min": 0,
+            "p50": 0,
+            "p95": 0.10000002384185791,
+            "p99": 0.20000004768371582,
+            "max": 0.5
+          }
+        },
+        "update": {},
+        "draw": {
+          "renderer_draw": {
+            "n": 448,
+            "sum": 5.900000095367432,
+            "min": 0,
+            "p50": 0,
+            "p95": 0.10000002384185791,
+            "p99": 0.10000002384185791,
+            "max": 0.19999992847442627
+          }
+        }
+      },
+      "semantics": [
+        "Do not add command/update/execute parents to their inclusive child spans. Sibling sums and per-event exclusive residuals are reported separately.",
+        "tick_abi_atomic is unsplit Core update and serialization; no attribution to Lua/GC/UI validation/publication is available from this host-only span.",
+        "ui_draw includes resourceHost.collect() plus scroll/text/Canvas UI work after renderer_draw; it is not an isolated Canvas renderer or GPU execution measurement.",
+        "Duration distributions are nearest-rank from complete captured events wholly within the window; clock resolution can produce zero-valued small spans."
+      ]
+    },
+    "profiler": {
+      "first_boundary_header": {
+        "schema": "unone.player-profile.v1",
+        "limit": 64,
+        "time_origin_ms": 1793648925720.1,
+        "counts": {
+          "begun": 39360,
+          "completed": 39359,
+          "open": 1,
+          "retained": 64,
+          "overwritten": 39295,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 13124,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "publish": {
+          "count": 1313,
+          "last_ms": 0.7999999523162842,
+          "max_ms": 1.600000023841858,
+          "total_ms": 1172.0000026226044
+        }
+      },
+      "last_boundary_header": {
+        "schema": "unone.player-profile.v1",
+        "limit": 64,
+        "time_origin_ms": 1793648925720.1,
+        "counts": {
+          "begun": 43617,
+          "completed": 43617,
+          "open": 0,
+          "retained": 64,
+          "overwritten": 43553,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 14975,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "publish": {
+          "count": 1460,
+          "last_ms": 0.7999999523162842,
+          "max_ms": 7.700000047683716,
+          "total_ms": 1299.600001692772
+        }
+      },
+      "first_measurement_read_header": {
+        "schema": "unone.player-profile.v1",
+        "limit": 64,
+        "time_origin_ms": 1793648925720.1,
+        "counts": {
+          "begun": 39786,
+          "completed": 39786,
+          "open": 0,
+          "retained": 64,
+          "overwritten": 39722,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 13283,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "publish": {
+          "count": 1328,
+          "last_ms": 0.6000000238418579,
+          "max_ms": 1.600000023841858,
+          "total_ms": 1184.4000029563904
+        }
+      },
+      "counter_delta_before_to_after": {
+        "begun": 4257,
+        "completed": 4258,
+        "open": -1,
+        "retained": 0,
+        "overwritten": 4258,
+        "cleared": 0,
+        "abandoned": 0,
+        "late_ends": 0,
+        "late_operations": 0,
+        "orphan_marks": 0,
+        "dropped_attrs": 1851,
+        "provider_errors": 0,
+        "publish_errors": 0
+      },
+      "publication_delta_before_to_after": {
+        "count": 147,
+        "last_ms": 0,
+        "max_ms": 6.100000023841858,
+        "total_ms": 127.59999907016754
+      },
+      "publication_delta_first_read_to_after": {
+        "count": 132,
+        "last_ms": 0.19999992847442627,
+        "max_ms": 6.100000023841858,
+        "total_ms": 115.19999873638153
+      },
+      "scope": "publish.count includes the report carrying it; cost fields describe already completed publications. Header counter deltas reflect captured reporting boundaries, not an exact isolated wall integral of the30.322s measurement. dropped_attrs are filtered unsupported profile attributes, not lost timed events."
+    },
+    "cached_performance": {
+      "age_from_completion_ms": {
+        "n": 128,
+        "sum": 102449.6000007391,
+        "min": -385.7999999523163,
+        "p50": 712.1000000238419,
+        "p95": 2157.399999976158,
+        "p99": 2329.600000023842,
+        "max": 2391.3000000715256
+      },
+      "different_frame_rows": 126,
+      "performance_newer_than_feed_rows": 18,
+      "note": "All domains share origin but have independent cached publication times. Same DOM read is not same-frame/time evidence; retain each completion query/frame. playerPerformance refreshes every30draws.",
+      "sampled_broker": {
+        "loads": {
+          "n": 128,
+          "sum": 21045,
+          "min": 103,
+          "p50": 164,
+          "p95": 178,
+          "p99": 178,
+          "max": 178
+        },
+        "reuses": {
+          "n": 128,
+          "sum": 21824,
+          "min": 20,
+          "p50": 169,
+          "p95": 208,
+          "p99": 208,
+          "max": 208
+        },
+        "closed_images": {
+          "n": 128,
+          "sum": 6376,
+          "min": 9,
+          "p50": 46,
+          "p95": 65,
+          "p99": 65,
+          "max": 65
+        },
+        "resident_entries": {
+          "n": 128,
+          "sum": 12052,
+          "min": 90,
+          "p50": 96,
+          "p95": 97,
+          "p99": 97,
+          "max": 97
+        },
+        "resident_bytes_estimate": {
+          "n": 128,
+          "sum": 16700461152,
+          "min": 111181036,
+          "p50": 131511660,
+          "p95": 143060332,
+          "p99": 143060332,
+          "max": 143060332
+        },
+        "active_entries": {
+          "n": 128,
+          "sum": 4398,
+          "min": 25,
+          "p50": 42,
+          "p95": 42,
+          "p99": 42,
+          "max": 42
+        },
+        "active_bytes_estimate": {
+          "n": 128,
+          "sum": 9647708064,
+          "min": 59965692,
+          "p50": 74715756,
+          "p95": 82301180,
+          "p99": 82301180,
+          "max": 82301180
+        },
+        "loading": {
+          "n": 128,
+          "sum": 84,
+          "min": 0,
+          "p50": 0,
+          "p95": 6,
+          "p99": 6,
+          "max": 6
+        },
+        "active_tasks": {
+          "n": 128,
+          "sum": 38,
+          "min": 0,
+          "p50": 0,
+          "p95": 2,
+          "p99": 2,
+          "max": 2
+        },
+        "queued_tasks": {
+          "n": 128,
+          "sum": 46,
+          "min": 0,
+          "p50": 0,
+          "p95": 4,
+          "p99": 4,
+          "max": 4
+        },
+        "scene_entries": {
+          "n": 128,
+          "sum": 8960,
+          "min": 70,
+          "p50": 70,
+          "p95": 70,
+          "p99": 70,
+          "max": 70
+        },
+        "scene_bytes_estimate": {
+          "n": 128,
+          "sum": 8564068352,
+          "min": 66906784,
+          "p50": 66906784,
+          "p95": 66906784,
+          "p99": 66906784,
+          "max": 66906784
+        },
+        "unused_entries": {
+          "n": 128,
+          "sum": 440,
+          "min": 2,
+          "p50": 3,
+          "p95": 8,
+          "p99": 8,
+          "max": 8
+        },
+        "unused_bytes_estimate": {
+          "n": 128,
+          "sum": 529503416,
+          "min": 1124700,
+          "p50": 1791852,
+          "p95": 15742976,
+          "p99": 15742976,
+          "max": 15742976
+        },
+        "pressure_bytes": {
+          "n": 128,
+          "sum": 5963042912,
+          "min": 27294956,
+          "p50": 47625580,
+          "p95": 59174252,
+          "p99": 59174252,
+          "max": 59174252
+        }
+      },
+      "sampled_sprite_pool": {
+        "entries": {
+          "n": 128,
+          "sum": 1028,
+          "min": 7,
+          "p50": 9,
+          "p95": 9,
+          "p99": 9,
+          "max": 9
+        },
+        "texture_entries": {
+          "n": 128,
+          "sum": 1028,
+          "min": 7,
+          "p50": 9,
+          "p95": 9,
+          "p99": 9,
+          "max": 9
+        },
+        "handles": {
+          "n": 128,
+          "sum": 128,
+          "min": 1,
+          "p50": 1,
+          "p95": 1,
+          "p99": 1,
+          "max": 1
+        },
+        "pending": {
+          "n": 128,
+          "sum": 0,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0
+        },
+        "ready": {
+          "n": 128,
+          "sum": 1028,
+          "min": 7,
+          "p50": 9,
+          "p95": 9,
+          "p99": 9,
+          "max": 9
+        },
+        "errors": {
+          "n": 128,
+          "sum": 0,
+          "min": 0,
+          "p50": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0
+        },
+        "builds": {
+          "n": 128,
+          "sum": 3710,
+          "min": 11,
+          "p50": 29,
+          "p95": 33,
+          "p99": 33,
+          "max": 33
+        },
+        "retired": {
+          "n": 128,
+          "sum": 2682,
+          "min": 4,
+          "p50": 20,
+          "p95": 26,
+          "p99": 26,
+          "max": 26
+        },
+        "texture_builds": {
+          "n": 128,
+          "sum": 3710,
+          "min": 11,
+          "p50": 29,
+          "p95": 33,
+          "p99": 33,
+          "max": 33
+        },
+        "texture_retired": {
+          "n": 128,
+          "sum": 2682,
+          "min": 4,
+          "p50": 20,
+          "p95": 26,
+          "p99": 26,
+          "max": 26
+        },
+        "cpu_reserved_bytes_estimate": {
+          "n": 128,
+          "sum": 761775936,
+          "min": 2165664,
+          "p50": 9507648,
+          "p95": 9507648,
+          "p99": 9507648,
+          "max": 9507648
+        },
+        "gpu_reserved_bytes_estimate": {
+          "n": 128,
+          "sum": 761775936,
+          "min": 2165664,
+          "p50": 9507648,
+          "p95": 9507648,
+          "p99": 9507648,
+          "max": 9507648
+        }
+      },
+      "wasm_linear_bytes": {
+        "n": 128,
+        "sum": 6442450944,
+        "min": 50331648,
+        "p50": 50331648,
+        "p95": 50331648,
+        "p99": 50331648,
+        "max": 50331648
+      },
+      "sampled_backend_execute_ms": {
+        "n": 128,
+        "sum": 1949.4000018835068,
+        "min": 5.5,
+        "p50": 15.299999952316284,
+        "p95": 20.40000009536743,
+        "p99": 20.40000009536743,
+        "max": 20.40000009536743
+      },
+      "cannot_prove": "Stable sampled aggregate owners do not identify asset IDs, prove absence of between-sample activity/native retention, or establish universal no-leak behavior."
+    },
+    "selected_endpoint_and_timeline_rows": [
+      {
+        "file": "read-000.json",
+        "read_start_utc_ms": 1793649145211,
+        "read_end_utc_ms": 1793649145245,
+        "feed_sequence": 430,
+        "feed_query_ms": 219152.20000004768,
+        "feed_query_utc_ms": 1793649144872.3,
+        "simulation_frame": 13104,
+        "presented_frame": 13104,
+        "last_draw_status": "completed",
+        "drop_total": 0,
+        "skip_counts": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 2,
+          "ui_assets_pending": 26,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "preparation_wall": {
+          "window_ms": 1500,
+          "retained": 91,
+          "capacity": 512,
+          "oldest_start_ms": 217644.5,
+          "oldest_end_ms": 217652.20000004768,
+          "newest_end_ms": 219150.80000007153,
+          "coverage_ms": 1498.6000000238419,
+          "window_coverage": 0.9990666666825613,
+          "min_ms": 5.200000047683716,
+          "max_ms": 8.899999976158142,
+          "p50_ms": 6.400000095367432,
+          "p95_ms": 7.800000071525574,
+          "p99_ms": 8.899999976158142
+        },
+        "submit_sync_wall": {
+          "window_ms": 1500,
+          "retained": 91,
+          "capacity": 512,
+          "oldest_start_ms": 217652.20000004768,
+          "oldest_end_ms": 217653.60000002384,
+          "newest_end_ms": 219152.20000004768,
+          "coverage_ms": 1500,
+          "window_coverage": 1,
+          "min_ms": 1.2999999523162842,
+          "max_ms": 2.100000023841858,
+          "p50_ms": 1.5,
+          "p95_ms": 1.7000000476837158,
+          "p99_ms": 2.100000023841858
+        },
+        "preparations": 13088,
+        "preparation_steps": 13104,
+        "performance_query_ms": 219451.70000004768,
+        "performance_frame": 13122,
+        "performance_age_from_feed_ms": -299.5,
+        "bridge_ms": 5.5,
+        "render_ms": 1.399999976158142,
+        "backend": {
+          "kind": "main",
+          "execute_ms": 5.5,
+          "pending": 0,
+          "wasm_linear_bytes": 50331648
+        },
+        "profile_last_event_ms": 219485.70000004768,
+        "profile_counts": {
+          "begun": 39360,
+          "completed": 39359,
+          "open": 1,
+          "retained": 64,
+          "overwritten": 39295,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 13124,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "profile_publish": {
+          "count": 1313,
+          "last_ms": 0.7999999523162842,
+          "max_ms": 1.600000023841858,
+          "total_ms": 1172.0000026226044
+        }
+      },
+      {
+        "file": "read-001.json",
+        "read_start_utc_ms": 1793649147959,
+        "read_end_utc_ms": 1793649148121,
+        "feed_sequence": 436,
+        "feed_query_ms": 222194.5,
+        "feed_query_utc_ms": 1793649147914.6,
+        "simulation_frame": 13278,
+        "presented_frame": 13273,
+        "last_draw_status": "skipped",
+        "drop_total": 4,
+        "skip_counts": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 3,
+          "ui_assets_pending": 33,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "preparation_wall": {
+          "window_ms": 1500,
+          "retained": 34,
+          "capacity": 512,
+          "oldest_start_ms": 220694.60000002384,
+          "oldest_end_ms": 220700.30000007153,
+          "newest_end_ms": 222190,
+          "coverage_ms": 1495.3999999761581,
+          "window_coverage": 0.9969333333174387,
+          "min_ms": 5.600000023841858,
+          "max_ms": 82.29999995231628,
+          "p50_ms": 7.399999976158142,
+          "p95_ms": 79.30000007152557,
+          "p99_ms": 82.29999995231628
+        },
+        "submit_sync_wall": {
+          "window_ms": 1500,
+          "retained": 34,
+          "capacity": 512,
+          "oldest_start_ms": 220700.30000007153,
+          "oldest_end_ms": 220702.20000004768,
+          "newest_end_ms": 222194.40000009537,
+          "coverage_ms": 1494.1000000238419,
+          "window_coverage": 0.9960666666825613,
+          "min_ms": 1.5,
+          "max_ms": 30.100000023841858,
+          "p50_ms": 1.899999976158142,
+          "p95_ms": 24.799999952316284,
+          "p99_ms": 30.100000023841858
+        },
+        "preparations": 13214,
+        "preparation_steps": 13278,
+        "performance_query_ms": 220952.80000007153,
+        "performance_frame": 13212,
+        "performance_age_from_feed_ms": 1241.6999999284744,
+        "bridge_ms": 6,
+        "render_ms": 1.899999976158142,
+        "backend": {
+          "kind": "main",
+          "execute_ms": 5.899999976158142,
+          "pending": 0,
+          "wasm_linear_bytes": 50331648
+        },
+        "profile_last_event_ms": 222307,
+        "profile_counts": {
+          "begun": 39786,
+          "completed": 39786,
+          "open": 0,
+          "retained": 64,
+          "overwritten": 39722,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 13283,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "profile_publish": {
+          "count": 1328,
+          "last_ms": 0.6000000238418579,
+          "max_ms": 1.600000023841858,
+          "total_ms": 1184.4000029563904
+        }
+      },
+      {
+        "file": "read-032.json",
+        "read_start_utc_ms": 1793649155706,
+        "read_end_utc_ms": 1793649155793,
+        "feed_sequence": 450,
+        "feed_query_ms": 229740.20000004768,
+        "feed_query_utc_ms": 1793649155460.3,
+        "simulation_frame": 13693,
+        "presented_frame": 13693,
+        "last_draw_status": "completed",
+        "drop_total": 42,
+        "skip_counts": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 11,
+          "ui_assets_pending": 68,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "preparation_wall": {
+          "window_ms": 1500,
+          "retained": 20,
+          "capacity": 512,
+          "oldest_start_ms": 228182.70000004768,
+          "oldest_end_ms": 228249.10000002384,
+          "newest_end_ms": 229733.60000002384,
+          "coverage_ms": 1493.3999999761581,
+          "window_coverage": 0.9955999999841054,
+          "min_ms": 54.5,
+          "max_ms": 76.89999997615814,
+          "p50_ms": 68.79999995231628,
+          "p95_ms": 73.19999992847443,
+          "p99_ms": 76.89999997615814
+        },
+        "submit_sync_wall": {
+          "window_ms": 1500,
+          "retained": 20,
+          "capacity": 512,
+          "oldest_start_ms": 228249.10000002384,
+          "oldest_end_ms": 228255.5,
+          "newest_end_ms": 229740.20000004768,
+          "coverage_ms": 1491.1000000238419,
+          "window_coverage": 0.9940666666825613,
+          "min_ms": 6.100000023841858,
+          "max_ms": 33.800000071525574,
+          "p50_ms": 7.100000023841858,
+          "p95_ms": 17.5,
+          "p99_ms": 33.800000071525574
+        },
+        "preparations": 13304,
+        "preparation_steps": 13693,
+        "performance_query_ms": 228329,
+        "performance_frame": 13609,
+        "performance_age_from_feed_ms": 1411.2000000476837,
+        "bridge_ms": 12.899999976158142,
+        "render_ms": 17.399999976158142,
+        "backend": {
+          "kind": "main",
+          "execute_ms": 12.899999976158142,
+          "pending": 0,
+          "wasm_linear_bytes": 50331648
+        },
+        "profile_last_event_ms": 229963.20000004768,
+        "profile_counts": {
+          "begun": 40729,
+          "completed": 40729,
+          "open": 0,
+          "retained": 64,
+          "overwritten": 40665,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 13708,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "profile_publish": {
+          "count": 1363,
+          "last_ms": 0.6999999284744263,
+          "max_ms": 2.8000000715255737,
+          "total_ms": 1213.700002670288
+        }
+      },
+      {
+        "file": "read-064.json",
+        "read_start_utc_ms": 1793649161308,
+        "read_end_utc_ms": 1793649161434,
+        "feed_sequence": 461,
+        "feed_query_ms": 235443.80000007153,
+        "feed_query_utc_ms": 1793649161163.9001,
+        "simulation_frame": 14037,
+        "presented_frame": 14037,
+        "last_draw_status": "completed",
+        "drop_total": 42,
+        "skip_counts": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 11,
+          "ui_assets_pending": 68,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "preparation_wall": {
+          "window_ms": 1500,
+          "retained": 41,
+          "capacity": 512,
+          "oldest_start_ms": 233946.70000004768,
+          "oldest_end_ms": 234005.60000002384,
+          "newest_end_ms": 235437,
+          "coverage_ms": 1490.2999999523163,
+          "window_coverage": 0.9935333333015441,
+          "min_ms": 10.799999952316284,
+          "max_ms": 62.299999952316284,
+          "p50_ms": 22.899999976158142,
+          "p95_ms": 58.89999997615814,
+          "p99_ms": 62.299999952316284
+        },
+        "submit_sync_wall": {
+          "window_ms": 1500,
+          "retained": 42,
+          "capacity": 512,
+          "oldest_start_ms": 233938.70000004768,
+          "oldest_end_ms": 233946.10000002384,
+          "newest_end_ms": 235443.70000004768,
+          "coverage_ms": 1499.8999999761581,
+          "window_coverage": 0.9999333333174387,
+          "min_ms": 5.699999928474426,
+          "max_ms": 11.100000023841858,
+          "p50_ms": 6.100000023841858,
+          "p95_ms": 9.100000023841858,
+          "p99_ms": 11.100000023841858
+        },
+        "preparations": 13471,
+        "preparation_steps": 14037,
+        "performance_query_ms": 235269.60000002384,
+        "performance_frame": 14027,
+        "performance_age_from_feed_ms": 174.20000004768372,
+        "bridge_ms": 20.200000047683716,
+        "render_ms": 6.900000095367432,
+        "backend": {
+          "kind": "main",
+          "execute_ms": 20.200000047683716,
+          "pending": 0,
+          "wasm_linear_bytes": 50331648
+        },
+        "profile_last_event_ms": 235580.40000009537,
+        "profile_counts": {
+          "begun": 41569,
+          "completed": 41569,
+          "open": 0,
+          "retained": 64,
+          "overwritten": 41505,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 14045,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "profile_publish": {
+          "count": 1391,
+          "last_ms": 0.6999999284744263,
+          "max_ms": 4.100000023841858,
+          "total_ms": 1238.500002503395
+        }
+      },
+      {
+        "file": "read-096.json",
+        "read_start_utc_ms": 1793649169885,
+        "read_end_utc_ms": 1793649170044,
+        "feed_sequence": 477,
+        "feed_query_ms": 244144.5,
+        "feed_query_utc_ms": 1793649169864.6,
+        "simulation_frame": 14515,
+        "presented_frame": 14515,
+        "last_draw_status": "completed",
+        "drop_total": 83,
+        "skip_counts": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 13,
+          "ui_assets_pending": 81,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "preparation_wall": {
+          "window_ms": 1500,
+          "retained": 16,
+          "capacity": 512,
+          "oldest_start_ms": 242605.90000009537,
+          "oldest_end_ms": 242707.10000002384,
+          "newest_end_ms": 244142.60000002384,
+          "coverage_ms": 1498.1000000238419,
+          "window_coverage": 0.9987333333492279,
+          "min_ms": 84.79999995231628,
+          "max_ms": 101.19999992847443,
+          "p50_ms": 93.60000002384186,
+          "p95_ms": 101.19999992847443,
+          "p99_ms": 101.19999992847443
+        },
+        "submit_sync_wall": {
+          "window_ms": 1500,
+          "retained": 16,
+          "capacity": 512,
+          "oldest_start_ms": 242707.10000002384,
+          "oldest_end_ms": 242709.5,
+          "newest_end_ms": 244144.5,
+          "coverage_ms": 1437.3999999761581,
+          "window_coverage": 0.9582666666507721,
+          "min_ms": 1.899999976158142,
+          "max_ms": 2.600000023841858,
+          "p50_ms": 2.100000023841858,
+          "p95_ms": 2.600000023841858,
+          "p99_ms": 2.600000023841858
+        },
+        "preparations": 13570,
+        "preparation_steps": 14515,
+        "performance_query_ms": 242808,
+        "performance_frame": 14445,
+        "performance_age_from_feed_ms": 1336.5,
+        "bridge_ms": 18.5,
+        "render_ms": 2.3000000715255737,
+        "backend": {
+          "kind": "main",
+          "execute_ms": 18.300000071525574,
+          "pending": 0,
+          "wasm_linear_bytes": 50331648
+        },
+        "profile_last_event_ms": 244318.40000009537,
+        "profile_counts": {
+          "begun": 42627,
+          "completed": 42627,
+          "open": 0,
+          "retained": 64,
+          "overwritten": 42563,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 14525,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "profile_publish": {
+          "count": 1427,
+          "last_ms": 0.7000000476837158,
+          "max_ms": 4.100000023841858,
+          "total_ms": 1266.9000016450882
+        }
+      },
+      {
+        "file": "read-after.json",
+        "read_start_utc_ms": 1793649178114,
+        "read_end_utc_ms": 1793649178281,
+        "feed_sequence": 492,
+        "feed_query_ms": 252192.90000009537,
+        "feed_query_utc_ms": 1793649177913,
+        "simulation_frame": 14965,
+        "presented_frame": 14965,
+        "last_draw_status": "completed",
+        "drop_total": 116,
+        "skip_counts": {
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "frame_resources_pending": 0,
+          "frame_pass_incomplete": 0,
+          "world_assets_pending": 13,
+          "ui_assets_pending": 81,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "other": 0
+        },
+        "preparation_wall": {
+          "window_ms": 1500,
+          "retained": 17,
+          "capacity": 512,
+          "oldest_start_ms": 250636.70000004768,
+          "oldest_end_ms": 250722.60000002384,
+          "newest_end_ms": 252191,
+          "coverage_ms": 1498.0999999046326,
+          "window_coverage": 0.998733333269755,
+          "min_ms": 83.19999992847443,
+          "max_ms": 100,
+          "p50_ms": 87.09999990463257,
+          "p95_ms": 100,
+          "p99_ms": 100
+        },
+        "submit_sync_wall": {
+          "window_ms": 1500,
+          "retained": 17,
+          "capacity": 512,
+          "oldest_start_ms": 250722.60000002384,
+          "oldest_end_ms": 250724.60000002384,
+          "newest_end_ms": 252192.90000009537,
+          "coverage_ms": 1470.3000000715256,
+          "window_coverage": 0.9802000000476837,
+          "min_ms": 1.7000000476837158,
+          "max_ms": 2.100000023841858,
+          "p50_ms": 1.9000000953674316,
+          "p95_ms": 2.100000023841858,
+          "p99_ms": 2.100000023841858
+        },
+        "preparations": 13660,
+        "preparation_steps": 14965,
+        "performance_query_ms": 250903.10000002384,
+        "performance_frame": 14895,
+        "performance_age_from_feed_ms": 1289.8000000715256,
+        "bridge_ms": 16.699999928474426,
+        "render_ms": 1.7000000476837158,
+        "backend": {
+          "kind": "main",
+          "execute_ms": 16.600000023841858,
+          "pending": 0,
+          "wasm_linear_bytes": 50331648
+        },
+        "profile_last_event_ms": 252375.20000004768,
+        "profile_counts": {
+          "begun": 43617,
+          "completed": 43617,
+          "open": 0,
+          "retained": 64,
+          "overwritten": 43553,
+          "cleared": 0,
+          "abandoned": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "orphan_marks": 0,
+          "dropped_attrs": 14975,
+          "provider_errors": 0,
+          "publish_errors": 0
+        },
+        "profile_publish": {
+          "count": 1460,
+          "last_ms": 0.7999999523162842,
+          "max_ms": 7.700000047683716,
+          "total_ms": 1299.600001692772
+        }
+      }
+    ],
+    "fresh_gap_examples": [
+      {
+        "gap_ms": 1533.5,
+        "crosses_measurement_start": true,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 222027.7,
+          "start_ms": 222108.40000009537,
+          "end_ms": 222115.40000009537,
+          "callback_end_ms": 222115.40000009537,
+          "snapshot_frame": 13273,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 223561.2,
+          "start_ms": 223631.20000004768,
+          "end_ms": 223660.90000009537,
+          "callback_end_ms": 223660.90000009537,
+          "snapshot_frame": 13357,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "matched_draw": {
+          "id": "draw:13234",
+          "frame": 13357,
+          "start_ms": 223631.20000004768,
+          "end_ms": 223660.90000009537,
+          "wall_ms": 29.700000047683716,
+          "root_siblings": [
+            {
+              "name": "interpolation_sample",
+              "ms": 0
+            },
+            {
+              "name": "renderer_draw",
+              "ms": 0.3999999761581421
+            },
+            {
+              "name": "ui_draw",
+              "ms": 29.100000023841858
+            },
+            {
+              "name": "host_publish",
+              "ms": 0.20000004768371582
+            }
+          ]
+        },
+        "complete_command_updates_between": {
+          "count": 76,
+          "execute_ms": {
+            "n": 76,
+            "sum": 1090.8000005483627,
+            "min": 9.799999952316284,
+            "p50": 13.900000095367432,
+            "p95": 18.700000047683716,
+            "p99": 25.399999976158142,
+            "max": 25.399999976158142
+          },
+          "tick_ms": {
+            "n": 76,
+            "sum": 982.8000009059906,
+            "min": 8.600000023841858,
+            "p50": 12.599999904632568,
+            "p95": 17.199999928474426,
+            "p99": 23.300000071525574,
+            "max": 23.300000071525574
+          },
+          "first": {
+            "update": "update:13282",
+            "command": "command:13283",
+            "frame": 13282,
+            "start_ms": 222249.20000004768,
+            "end_ms": 222264.60000002384,
+            "backend_ms": 15.399999976158142,
+            "command_ms": 15.299999952316284,
+            "execute_ms": 15.199999928474426,
+            "tick_ms": 14.399999976158142,
+            "backend_minus_command_ms": 0.10000002384185791,
+            "execute_minus_tick_ms": 0.7999999523162842
+          },
+          "last": {
+            "update": "update:13357",
+            "command": "command:13358",
+            "frame": 13357,
+            "start_ms": 223618.70000004768,
+            "end_ms": 223631.20000004768,
+            "backend_ms": 12.399999976158142,
+            "command_ms": 12.399999976158142,
+            "execute_ms": 12.399999976158142,
+            "tick_ms": 11,
+            "backend_minus_command_ms": 0,
+            "execute_minus_tick_ms": 1.399999976158142
+          }
+        },
+        "command_join_scope": "Only complete captured update-command pairs strictly between the displayed submission boundaries; not an inferred scheduler preparation identity."
+      },
+      {
+        "gap_ms": 1300.1000000000058,
+        "crosses_measurement_start": false,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 235828.1,
+          "start_ms": 235890.60000002384,
+          "end_ms": 235897.90000009537,
+          "callback_end_ms": 235898,
+          "snapshot_frame": 14063,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 237128.2,
+          "start_ms": 237207.90000009537,
+          "end_ms": 237238.60000002384,
+          "callback_end_ms": 237238.70000004768,
+          "snapshot_frame": 14136,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "matched_draw": {
+          "id": "draw:13498",
+          "frame": 14136,
+          "start_ms": 237207.90000009537,
+          "end_ms": 237238.60000002384,
+          "wall_ms": 30.699999928474426,
+          "root_siblings": [
+            {
+              "name": "interpolation_sample",
+              "ms": 0
+            },
+            {
+              "name": "renderer_draw",
+              "ms": 0.5
+            },
+            {
+              "name": "ui_draw",
+              "ms": 30
+            },
+            {
+              "name": "host_publish",
+              "ms": 0.19999992847442627
+            }
+          ]
+        },
+        "complete_command_updates_between": {
+          "count": 73,
+          "execute_ms": {
+            "n": 73,
+            "sum": 1069,
+            "min": 10.599999904632568,
+            "p50": 14.399999976158142,
+            "p95": 18.799999952316284,
+            "p99": 24.199999928474426,
+            "max": 24.199999928474426
+          },
+          "tick_ms": {
+            "n": 73,
+            "sum": 966.6999998092651,
+            "min": 9.399999976158142,
+            "p50": 12.899999976158142,
+            "p95": 17.699999928474426,
+            "p99": 22.199999928474426,
+            "max": 22.199999928474426
+          },
+          "first": {
+            "update": "update:14064",
+            "command": "command:14065",
+            "frame": 14064,
+            "start_ms": 235898.40000009537,
+            "end_ms": 235917.70000004768,
+            "backend_ms": 19.200000047683716,
+            "command_ms": 19.100000023841858,
+            "execute_ms": 19.100000023841858,
+            "tick_ms": 17.600000023841858,
+            "backend_minus_command_ms": 0.10000002384185791,
+            "execute_minus_tick_ms": 1.5
+          },
+          "last": {
+            "update": "update:14136",
+            "command": "command:14137",
+            "frame": 14136,
+            "start_ms": 237194.40000009537,
+            "end_ms": 237207.90000009537,
+            "backend_ms": 13.400000095367432,
+            "command_ms": 13.400000095367432,
+            "execute_ms": 13.300000071525574,
+            "tick_ms": 11.800000071525574,
+            "backend_minus_command_ms": 0,
+            "execute_minus_tick_ms": 1.5
+          }
+        },
+        "command_join_scope": "Only complete captured update-command pairs strictly between the displayed submission boundaries; not an inferred scheduler preparation identity."
+      },
+      {
+        "gap_ms": 1266.7000000000116,
+        "crosses_measurement_start": false,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 223894.5,
+          "start_ms": 223978.5,
+          "end_ms": 223985.70000004768,
+          "callback_end_ms": 223985.70000004768,
+          "snapshot_frame": 13377,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 225161.2,
+          "start_ms": 225267.20000004768,
+          "end_ms": 225304.20000004768,
+          "callback_end_ms": 225304.20000004768,
+          "snapshot_frame": 13445,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "matched_draw": {
+          "id": "draw:13252",
+          "frame": 13445,
+          "start_ms": 225267.20000004768,
+          "end_ms": 225304.20000004768,
+          "wall_ms": 37,
+          "root_siblings": [
+            {
+              "name": "interpolation_sample",
+              "ms": 0
+            },
+            {
+              "name": "renderer_draw",
+              "ms": 0.3999999761581421
+            },
+            {
+              "name": "ui_draw",
+              "ms": 36.39999997615814
+            },
+            {
+              "name": "host_publish",
+              "ms": 0.20000004768371582
+            }
+          ]
+        },
+        "complete_command_updates_between": {
+          "count": 68,
+          "execute_ms": {
+            "n": 68,
+            "sum": 1039.8999996185303,
+            "min": 10.5,
+            "p50": 14.799999952316284,
+            "p95": 19.699999928474426,
+            "p99": 22.699999928474426,
+            "max": 22.699999928474426
+          },
+          "tick_ms": {
+            "n": 68,
+            "sum": 945.5999995470047,
+            "min": 9.300000071525574,
+            "p50": 13.399999976158142,
+            "p95": 18.100000023841858,
+            "p99": 20.699999928474426,
+            "max": 20.699999928474426
+          },
+          "first": {
+            "update": "update:13378",
+            "command": "command:13379",
+            "frame": 13378,
+            "start_ms": 223986.10000002384,
+            "end_ms": 224002.40000009537,
+            "backend_ms": 16.200000047683716,
+            "command_ms": 15.5,
+            "execute_ms": 15.5,
+            "tick_ms": 14.100000023841858,
+            "backend_minus_command_ms": 0.7000000476837158,
+            "execute_minus_tick_ms": 1.399999976158142
+          },
+          "last": {
+            "update": "update:13445",
+            "command": "command:13446",
+            "frame": 13445,
+            "start_ms": 225249.40000009537,
+            "end_ms": 225267.20000004768,
+            "backend_ms": 17.600000023841858,
+            "command_ms": 17.600000023841858,
+            "execute_ms": 17.600000023841858,
+            "tick_ms": 16.90000009536743,
+            "backend_minus_command_ms": 0,
+            "execute_minus_tick_ms": 0.6999999284744263
+          }
+        },
+        "command_join_scope": "Only complete captured update-command pairs strictly between the displayed submission boundaries; not an inferred scheduler preparation identity."
+      },
+      {
+        "gap_ms": 750,
+        "crosses_measurement_start": false,
+        "before": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 227944.6,
+          "start_ms": 228015.20000004768,
+          "end_ms": 228054.10000002384,
+          "callback_end_ms": 228054.20000004768,
+          "snapshot_frame": 13595,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "after": {
+          "source": "scheduler_raf",
+          "raf_time_ms": 228694.6,
+          "start_ms": 228765,
+          "end_ms": 228798.80000007153,
+          "callback_end_ms": 228798.80000007153,
+          "snapshot_frame": 13636,
+          "outcome": "completed",
+          "new_snapshot": true,
+          "regression": false,
+          "in_flight": false
+        },
+        "matched_draw": {
+          "id": "draw:13296",
+          "frame": 13636,
+          "start_ms": 228765,
+          "end_ms": 228798.80000007153,
+          "wall_ms": 33.800000071525574,
+          "root_siblings": [
+            {
+              "name": "interpolation_sample",
+              "ms": 0
+            },
+            {
+              "name": "renderer_draw",
+              "ms": 0.40000009536743164
+            },
+            {
+              "name": "ui_draw",
+              "ms": 33.299999952316284
+            },
+            {
+              "name": "host_publish",
+              "ms": 0.10000002384185791
+            }
+          ]
+        },
+        "complete_command_updates_between": {
+          "count": 41,
+          "execute_ms": {
+            "n": 41,
+            "sum": 589.2999999523163,
+            "min": 12.100000023841858,
+            "p50": 13.899999976158142,
+            "p95": 17.899999976158142,
+            "p99": 21.600000023841858,
+            "max": 21.600000023841858
+          },
+          "tick_ms": {
+            "n": 41,
+            "sum": 528.2999999523163,
+            "min": 10.799999952316284,
+            "p50": 12.399999976158142,
+            "p95": 16.5,
+            "p99": 19.799999952316284,
+            "max": 19.799999952316284
+          },
+          "first": {
+            "update": "update:13596",
+            "command": "command:13597",
+            "frame": 13596,
+            "start_ms": 228055.60000002384,
+            "end_ms": 228076.10000002384,
+            "backend_ms": 20.5,
+            "command_ms": 20.5,
+            "execute_ms": 20.299999952316284,
+            "tick_ms": 19.5,
+            "backend_minus_command_ms": 0,
+            "execute_minus_tick_ms": 0.7999999523162842
+          },
+          "last": {
+            "update": "update:13636",
+            "command": "command:13637",
+            "frame": 13636,
+            "start_ms": 228750.10000002384,
+            "end_ms": 228765,
+            "backend_ms": 14.899999976158142,
+            "command_ms": 14.800000071525574,
+            "execute_ms": 14.600000023841858,
+            "tick_ms": 13.200000047683716,
+            "backend_minus_command_ms": 0.09999990463256836,
+            "execute_minus_tick_ms": 1.399999976158142
+          }
+        },
+        "command_join_scope": "Only complete captured update-command pairs strictly between the displayed submission boundaries; not an inferred scheduler preparation identity."
+      }
+    ],
+    "paired_raf_rows": 446
+  },
+  "r1_censored_limit2048": {
+    "index": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/capture-index.json",
+      "bytes": 7788,
+      "sha256": "ae532ad19cc24daf1ac6e93c99def46f9e8e09ec55d37f219e08ea44545441e3"
+    },
+    "raw_files": [
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-000.json",
+        "bytes": 270084,
+        "sha256": "1eb19de372bd2489d9baaa65f7d2a6e07228d82e6e727f25d0e2e396be4066dc"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-001.json",
+        "bytes": 260968,
+        "sha256": "72a72d2a8a3acf97e7e23f39d0e343119d335d66af025e7ffa1278749ca9b287"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-002.json",
+        "bytes": 253813,
+        "sha256": "80670432cd75cfc2e2752093093f590a9c738eb19aecac941238e5db47d31b72"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-003.json",
+        "bytes": 250782,
+        "sha256": "6aeb3f7b0c76a5c85ec15236268a1347191e937ae2f592df0c217775de7216de"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-004.json",
+        "bytes": 250335,
+        "sha256": "94dca4c58a18519e1f8616b35e6b16e7e394a1936799303e2e69990ec8d401f4"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-005.json",
+        "bytes": 250541,
+        "sha256": "d3eeb44d8de3a54a8ac942c62f0284654a5b77b9ec6b1189ffff7b9e950a1e95"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-006.json",
+        "bytes": 250547,
+        "sha256": "1dedbd8ea8d43de8bb53d0265a42b62369bfb660536cf3b3b8bb1b35badaa17d"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-007.json",
+        "bytes": 250336,
+        "sha256": "66db2bedb10150f332b25bdd40be3f9482e5a3e06837a6c03f9b8965ffda2fa0"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-008.json",
+        "bytes": 250567,
+        "sha256": "8032f5339e8b2fd9e1cf143a3ef30d3a33225903eadb82a62ba6f1c93a22b20d"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-009.json",
+        "bytes": 250958,
+        "sha256": "defe611314ca795c85901a1eb6eee8cf9d3facb370d1a0f32b685de124e3852c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-010.json",
+        "bytes": 250881,
+        "sha256": "0b7728dec38f2624460cdd2152e0480042076f3d95973769d008edf6fb84119e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-011.json",
+        "bytes": 250793,
+        "sha256": "a9b04b9b0498f01e783446772ddea2376c5a0668c94698ee56198d05c6ddb293"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-012.json",
+        "bytes": 250673,
+        "sha256": "1c226bc9a47074b65eafd2e4f785de4b795c312e47a4bf4e0eddb5f5343b3fd8"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-013.json",
+        "bytes": 250695,
+        "sha256": "4da5b87512837e3c3f5cc1ff688c8fa87fa43fc9eb43a2d0e8fd8400f996284d"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-014.json",
+        "bytes": 251060,
+        "sha256": "e3cbb269d9c64a798279646cbd9d5cf8b1cf9ae70274547fc5ed6e1bf3a6303d"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-015.json",
+        "bytes": 250939,
+        "sha256": "fbfe9179897d2afe6d5dacc4046886195f21a911d75f0c7b39a50017c101ef95"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-016.json",
+        "bytes": 250799,
+        "sha256": "1c70c3cbdbcf3c3ffaa573f355abac279ff0d7723c382faab4de612bc116d55b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-017.json",
+        "bytes": 250716,
+        "sha256": "b10148f975be11fbf5e3803d2648b6f587862fa47fe09b343343672a0facccd9"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-018.json",
+        "bytes": 250334,
+        "sha256": "1b00c03853954819013753614d39cd37b0176999484e4b3dcd3320fdf78cf1b6"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-019.json",
+        "bytes": 250771,
+        "sha256": "fc2c386bbbd3fa5f89e71ecb0bcd8975b36f980f134b98fad82e05a52c6b0012"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-020.json",
+        "bytes": 250859,
+        "sha256": "284e5c0b7fa40d1c4400833b4a3f234021e1f3dbb65d14f26dd2336de9c3f470"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-021.json",
+        "bytes": 250664,
+        "sha256": "3d6e3a445cf9080e107543ac33759072c45021a0c434cf27595905606927c4e8"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-022.json",
+        "bytes": 250869,
+        "sha256": "c6a72f17cb11fe60944efcba97f74cf7cc92993edbf6d68512e40071e2bf7c3e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-023.json",
+        "bytes": 250925,
+        "sha256": "65cef12c0fee9364fe37d43c311409c2b26ca9c05c8123eae9e44ca654cc5b9d"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-024.json",
+        "bytes": 250559,
+        "sha256": "3871852ef85ada3d8b68a9250df45ff1cab122eb7dd8ea9a3aae8a3d84523982"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-025.json",
+        "bytes": 250734,
+        "sha256": "7be546cbdf7270790bb8a392172f01c1a4cdcb1e0812860b3387a2202c3abaf3"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-026.json",
+        "bytes": 250745,
+        "sha256": "2ceeba35515b3a258cce838e46cfdb2fed6f01b5c12959f14b9d745e20ee7da6"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-027.json",
+        "bytes": 250746,
+        "sha256": "1f5f47c8d78b8fa7f715138b49589c4d1153f0cf6ccd9c39f8027f0019682e4f"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-028.json",
+        "bytes": 250685,
+        "sha256": "33c3378e26e756ee4eef7e81f3c77bccf8dcdaf5800cc8ea15a3e4e02a5fd00b"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-029.json",
+        "bytes": 250939,
+        "sha256": "3b4547076a01515e7816da3ccb2ebd81c7ff9f0351c48a477bff0ecae210da36"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-030.json",
+        "bytes": 250895,
+        "sha256": "80a32ed5638669d8fa370a777b294736ffca14c709b284156d18e36a86b989e0"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r1/read-after.json",
+        "bytes": 250905,
+        "sha256": "8658b2f3cb7a6c3961103970a4289c95aa9b90025ed9f20d6380850ad85adaa7"
+      }
+    ],
+    "captured_files": 32,
+    "full_profile_json_parse_success": 0,
+    "truncated_profile_strings": 32,
+    "capture_truncation": "Each string has200000captured JSON characters followed by literal [Truncated] (200011characters). Raw files are untouched.",
+    "complete_unique_prefix_events": 2926,
+    "wholly_inside_measurement_prefix_events": 1218,
+    "latest_recovered_event_end_ms": 274183.2000000477,
+    "measurement": {
+      "start": 261064.19995117188,
+      "end": 291275.1999511719
+    },
+    "terminal_phase_unavailable_ms": 17091.99995112419,
+    "first_header": {
+      "schema": "unone.player-profile.v1",
+      "enabled": true,
+      "limit": 2048,
+      "time_origin_ms": 1793648125173.8,
+      "clock": "host performance.now() milliseconds in the main realm; worker spans are converted with performance.timeOrigin and may skew by clock resolution",
+      "semantics": "One record per event identity. Sibling spans are disjoint and sequential; a span with parent P lies inside span P. Never add a parent and its children. CPU submission only: GPU execution and display presentation are not measured. An abandoned event (bounded open set) keeps its partial record; its later operations are counted in late_ends/late_operations only.",
+      "counts": {
+        "begun": 45873,
+        "completed": 45872,
+        "open": 1,
+        "retained": 2048,
+        "overwritten": 43824,
+        "cleared": 0,
+        "abandoned": 0,
+        "late_ends": 0,
+        "late_operations": 0,
+        "orphan_marks": 0,
+        "dropped_attrs": 15457,
+        "provider_errors": 0,
+        "publish_errors": 0
+      },
+      "publish": {
+        "count": 1530,
+        "last_ms": 22.799999952316284,
+        "max_ms": 36.39999997615814,
+        "total_ms": 35330.59999883175
+      }
+    },
+    "last_header": {
+      "schema": "unone.player-profile.v1",
+      "enabled": true,
+      "limit": 2048,
+      "time_origin_ms": 1793648125173.8,
+      "clock": "host performance.now() milliseconds in the main realm; worker spans are converted with performance.timeOrigin and may skew by clock resolution",
+      "semantics": "One record per event identity. Sibling spans are disjoint and sequential; a span with parent P lies inside span P. Never add a parent and its children. CPU submission only: GPU execution and display presentation are not measured. An abandoned event (bounded open set) keeps its partial record; its later operations are counted in late_ends/late_operations only.",
+      "counts": {
+        "begun": 49772,
+        "completed": 49772,
+        "open": 0,
+        "retained": 2048,
+        "overwritten": 47724,
+        "cleared": 0,
+        "abandoned": 0,
+        "late_ends": 0,
+        "late_operations": 0,
+        "orphan_marks": 0,
+        "dropped_attrs": 17183,
+        "provider_errors": 0,
+        "publish_errors": 0
+      },
+      "publish": {
+        "count": 1660,
+        "last_ms": 24.5,
+        "max_ms": 36.39999997615814,
+        "total_ms": 38268.799998641014
+      }
+    },
+    "prohibited_inference": "The complete prefix samples are censored/oldest-first and biased by payload size. They are not a full2048-event report, full30s phase coverage, or directly comparable performance to the64 run.",
+    "prefix_phase_statistics_adopted": false,
+    "prefix_phase_statistics_status": "Initial exploratory prefix timings are not adopted as evidence of representative stages. This durable record retains raw hashes, truncation/coverage facts and complete header publication values only."
+  },
+  "interpretation": {
+    "confirmed": [
+      "Within the complete recovered64-run command sample, the atomic Core ABI accounts for approximately92%of execute-span sum. Host restore/save do not explain most of that cost.",
+      "A meaningful additional sampled host cost is the combined ui_draw span; its p95/p99 are16/35.1ms while renderer_draw p95 is0.6ms.",
+      "Large2048-event profile serialization/publication is itself a major diagnostic observer;64 reduces observed publication costs but does not make observation free."
+    ],
+    "unknown": [
+      "Which Core/Luau subphase causes tick cost; no phase/sampler instrumentation was enabled by this host opt-in.",
+      "Whether changed UI/deep projection, resource-feedback collection, or another UI-host substage explains the ui_draw tail; those are not split here.",
+      "Causal performance changes between formal/r1/r2 or effect of later Game descriptor/controller fixes."
+    ],
+    "limitations": [
+      "Active instrumentation adds clocks, structuredClone, JSON/DOM publication. Native capture transfers strings and writes files; no CPU isolation or observer-free performance claim.",
+      "Independently evolved NPC state and newly authored geographic routes prevent same-state A/B claims.",
+      "Original formal failure, incomplete legacy endpoint coverage and all existing gates remain unchanged.",
+      "No browser/test/Core/Cargo execution was started by this offline evidence writer."
+    ]
+  },
+  "method_reconciliation": {
+    "independent_summary": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/independent-summary.json",
+      "bytes": 206093,
+      "sha256": "debc88088f30aacfbb97556d33c58d51c57bf23dd0363a87fa72532ac6374f5a"
+    },
+    "independent_markdown": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/travel-profile-diagnostic-r2-limit64/independent-summary.md",
+      "bytes": 2607,
+      "sha256": "0bbec21ab74cc121fdf536fb03c47a968a9cee9829742fd02df935763b0fafa9"
+    },
+    "same_raw_events": true,
+    "matched_groups": 49,
+    "exact_group_counts_and_sums_match": true,
+    "fixed_planned_window_ms": {
+      "start": 222238.89990234375,
+      "end": 252238.89990234375,
+      "duration": 30000
+    },
+    "fixed_window_span_statistics": {
+      "update/root/accept_snapshot": {
+        "n": 1687,
+        "sum": 12.299999594688416,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582
+      },
+      "update/root/audio_sync": {
+        "n": 1687,
+        "sum": 36.899999380111694,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582
+      },
+      "update/root/save_persist": {
+        "n": 1687,
+        "sum": 4.600000381469727,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.3999999761581421
+      },
+      "command/execute/observation_view": {
+        "n": 1687,
+        "sum": 9.500000953674316,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.09999990463256836,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/observation_utf8": {
+        "n": 1687,
+        "sum": 16.800000190734863,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582
+      },
+      "command/execute/observation_parse": {
+        "n": 1687,
+        "sum": 42.50000011920929,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582
+      },
+      "command/execute/world_field/entities/reuse": {
+        "n": 1665,
+        "sum": 22.50000011920929,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/world_field/observations/descriptor": {
+        "n": 1687,
+        "sum": 5.400000214576721,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/world_field/observations/utf8": {
+        "n": 1687,
+        "sum": 61.30000185966492,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.19999992847442627,
+        "max": 0.40000009536743164
+      },
+      "command/execute/world_field/observations/parse": {
+        "n": 1687,
+        "sum": 388.89999747276306,
+        "min": 0.09999990463256836,
+        "p50": 0.20000004768371582,
+        "p95": 0.30000007152557373,
+        "p99": 0.3999999761581421,
+        "max": 12.600000023841858
+      },
+      "command/execute/world_field/observations/freeze": {
+        "n": 1687,
+        "sum": 222.19999957084656,
+        "min": 0,
+        "p50": 0.10000002384185791,
+        "p95": 0.20000004768371582,
+        "p99": 0.20000004768371582,
+        "max": 0.3999999761581421
+      },
+      "command/execute/world_field/particle_effects/reuse": {
+        "n": 1687,
+        "sum": 7.5000001192092896,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/world_field/shader_materials/descriptor": {
+        "n": 1687,
+        "sum": 2.0999999046325684,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.09999990463256836,
+        "max": 0.10000002384185791
+      },
+      "command/execute/world_field/shader_materials/utf8": {
+        "n": 1687,
+        "sum": 32.49999797344208,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582
+      },
+      "command/execute/world_field/shader_materials/parse": {
+        "n": 1687,
+        "sum": 117.20000231266022,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.20000004768371582,
+        "max": 7.200000047683716
+      },
+      "command/execute/world_field/shader_materials/freeze": {
+        "n": 1687,
+        "sum": 52.40000092983246,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582
+      },
+      "command/execute/world_fields_restore": {
+        "n": 1687,
+        "sum": 5.199999928474426,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/ui_tree_restore": {
+        "n": 1687,
+        "sum": 866.7999986410141,
+        "min": 0.09999990463256836,
+        "p50": 0.30000007152557373,
+        "p95": 0.8999999761581421,
+        "p99": 1.100000023841858,
+        "max": 12.200000047683716
+      },
+      "command/execute/ui_images_restore": {
+        "n": 1687,
+        "sum": 12.200000286102295,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.09999990463256836,
+        "p99": 0.10000002384185791,
+        "max": 0.6000000238418579
+      },
+      "command/execute/save_restore": {
+        "n": 1687,
+        "sum": 26.99999964237213,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.5
+      },
+      "command/execute/publication_commit": {
+        "n": 1687,
+        "sum": 2.499999761581421,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/jobs_dispatch": {
+        "n": 1687,
+        "sum": 0.9999998807907104,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0.10000002384185791
+      },
+      "command/execute/spatial_dispatch": {
+        "n": 1687,
+        "sum": 0.5999999046325684,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0.10000002384185791
+      },
+      "command/root/queue_wait": {
+        "n": 1687,
+        "sum": 9.300000309944153,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.09999990463256836,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/root/execute": {
+        "n": 1686,
+        "sum": 26192.5,
+        "min": 9.299999952316284,
+        "p50": 15.899999976158142,
+        "p95": 19.40000009536743,
+        "p99": 23.09999990463257,
+        "max": 30.299999952316284
+      },
+      "command/execute/barrier_wait": {
+        "n": 1687,
+        "sum": 11.300000429153442,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.09999990463256836,
+        "p99": 0.10000002384185791,
+        "max": 2.399999976158142
+      },
+      "command/execute/input_abi": {
+        "n": 1687,
+        "sum": 34.90000081062317,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.19999992847442627
+      },
+      "command/execute/tick_abi_atomic": {
+        "n": 1686,
+        "sum": 24181.399997472763,
+        "min": 8.100000023841858,
+        "p50": 14.899999976158142,
+        "p95": 18.100000023841858,
+        "p99": 20.699999928474426,
+        "max": 25.100000023841858
+      },
+      "update/root/input_consume": {
+        "n": 1687,
+        "sum": 37.49999821186066,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.5
+      },
+      "update/root/backend_request": {
+        "n": 1686,
+        "sum": 26375.599999189377,
+        "min": 9.399999976158142,
+        "p50": 16,
+        "p95": 19.600000023841858,
+        "p99": 23.100000023841858,
+        "max": 30.299999952316284
+      },
+      "command/execute/world_field/entities/descriptor": {
+        "n": 22,
+        "sum": 0.20000004768371582,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/world_field/entities/utf8": {
+        "n": 22,
+        "sum": 0.20000004768371582,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "command/execute/world_field/entities/parse": {
+        "n": 22,
+        "sum": 5.899999499320984,
+        "min": 0.19999992847442627,
+        "p50": 0.2999999523162842,
+        "p95": 0.3999999761581421,
+        "p99": 0.3999999761581421,
+        "max": 0.3999999761581421
+      },
+      "command/execute/world_field/entities/freeze": {
+        "n": 22,
+        "sum": 2.9000003337860107,
+        "min": 0,
+        "p50": 0.10000002384185791,
+        "p95": 0.20000004768371582,
+        "p99": 0.20000004768371582,
+        "max": 0.20000004768371582
+      },
+      "draw/root/interpolation_sample": {
+        "n": 446,
+        "sum": 2.300000309944153,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.09999990463256836,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/snapshot_policy": {
+        "n": 446,
+        "sum": 2.5999999046325684,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.09999990463256836,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/frame_decode_validate": {
+        "n": 446,
+        "sum": 2.0999996662139893,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/frame_identity": {
+        "n": 446,
+        "sum": 0.20000004768371582,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/legacy_projected_terrain_validate": {
+        "n": 446,
+        "sum": 2.2000001668930054,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/presentation_hooks": {
+        "n": 446,
+        "sum": 1.4000002145767212,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/resize_raster_validate": {
+        "n": 446,
+        "sum": 15.7000013589859,
+        "min": 0,
+        "p50": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582
+      },
+      "draw/renderer_draw/scene_sync": {
+        "n": 446,
+        "sum": 73.90000081062317,
+        "min": 0,
+        "p50": 0.19999992847442627,
+        "p95": 0.30000007152557373,
+        "p99": 0.3999999761581421,
+        "max": 0.5
+      },
+      "draw/renderer_draw/subrenderer_prepare": {
+        "n": 446,
+        "sum": 1.4000002145767212,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/projected_prepare_texture_sweep": {
+        "n": 446,
+        "sum": 1.4999996423721313,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0.10000002384185791,
+        "max": 0.10000002384185791
+      },
+      "draw/renderer_draw/ordinary_render_submit": {
+        "n": 446,
+        "sum": 92.19999814033508,
+        "min": 0.09999990463256836,
+        "p50": 0.20000004768371582,
+        "p95": 0.30000007152557373,
+        "p99": 0.3999999761581421,
+        "max": 0.40000009536743164
+      },
+      "draw/renderer_draw/projected_pass_submit": {
+        "n": 446,
+        "sum": 0.20000004768371582,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0.10000002384185791
+      },
+      "draw/root/renderer_draw": {
+        "n": 446,
+        "sum": 199.00000035762787,
+        "min": 0.20000004768371582,
+        "p50": 0.40000009536743164,
+        "p95": 0.6000000238418579,
+        "p99": 0.7000000476837158,
+        "max": 0.7000000476837158
+      },
+      "draw/root/ui_draw": {
+        "n": 446,
+        "sum": 2561.000000834465,
+        "min": 1,
+        "p50": 5.300000071525574,
+        "p95": 16,
+        "p99": 35.10000002384186,
+        "max": 39.699999928474426
+      },
+      "draw/root/host_publish": {
+        "n": 446,
+        "sum": 51.69999897480011,
+        "min": 0,
+        "p50": 0.10000002384185791,
+        "p95": 0.20000004768371582,
+        "p99": 0.40000009536743164,
+        "max": 0.6000000238418579
+      }
+    },
+    "existing_r2_cost_method": "The original cost tables in r2_complete_limit64 use events wholly inside ACTUAL30.322s. The fixed-window tables here admit each complete span within PLANNED30.000s, including spans in boundary-crossing events.",
+    "examples": {
+      "tick_fixed": {
+        "n": 1686,
+        "sum": 24181.399997472763,
+        "min": 8.100000023841858,
+        "p50": 14.899999976158142,
+        "p95": 18.100000023841858,
+        "p99": 20.699999928474426,
+        "max": 25.100000023841858
+      },
+      "tick_actual": {
+        "n": 1694,
+        "sum": 24313.999997615814,
+        "min": 8.100000023841858,
+        "p50": 14.899999976158142,
+        "p95": 18.100000023841858,
+        "p99": 20.699999928474426,
+        "max": 25.100000023841858
+      },
+      "ui_draw_fixed": {
+        "n": 446,
+        "sum": 2561.000000834465,
+        "min": 1,
+        "p50": 5.300000071525574,
+        "p95": 16,
+        "p99": 35.10000002384186,
+        "max": 39.699999928474426
+      },
+      "ui_draw_actual": {
+        "n": 448,
+        "sum": 2563.8000007867813,
+        "min": 1,
+        "p50": 5.300000071525574,
+        "p95": 16,
+        "p99": 35.10000002384186,
+        "max": 39.699999928474426
+      }
+    },
+    "no_averaging_or_gate_change": true
+  },
+  "ui_gpu_raster_audit": {
+    "source_refs": [
+      {
+        "path": "D:/Projects/Unone/web/renderer/ui-gpu.js",
+        "bytes": 18831,
+        "sha256": "b10936d2c4c0ba5dbab992736ae548b5843ece8a8538dcc2c55bc3b1bef56327"
+      },
+      {
+        "path": "D:/Projects/Unone/web/shared/canvas-ui.mjs",
+        "bytes": 28783,
+        "sha256": "5322e4f2dc2ca4be236b78aaff6e617e7c63f6be3c211756d6bd081179d57e9c"
+      },
+      {
+        "path": "D:/Projects/Unone/web/shared/ui-style.mjs",
+        "bytes": 10619,
+        "sha256": "c3f22bf97b655bba42787c69c516bc253c89e22c6ed80c4949804ada4407bea0"
+      }
+    ],
+    "unique_cached_metric_rows": 17,
+    "timeline": [
+      {
+        "file": "read-000.json",
+        "native_read_utc_ms": [
+          1793649145211,
+          1793649145245
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 219451.70000004768,
+        "performance_query_utc_ms": 1793649145171.8,
+        "performance_frame": 13122,
+        "feed_query_ms": 219152.20000004768,
+        "feed_frame": 13104,
+        "performance_age_from_feed_ms": -299.5,
+        "ui": {
+          "nodes": 65,
+          "logical_nodes": 98,
+          "region_upper_bound": 151,
+          "render_regions": 129,
+          "cpu_render_ms": 0.10000002384185791,
+          "gpu": {
+            "text_rasters": 176,
+            "atlas_uploads": 176,
+            "atlas_compactions": 0,
+            "rebuilds": 8024,
+            "quads": 129,
+            "draw_calls": 45,
+            "last_rebuild_ms": 0.10000002384185791,
+            "text_slots": 31,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 19,
+            "submits": 13110
+          }
+        }
+      },
+      {
+        "file": "read-004.json",
+        "native_read_utc_ms": [
+          1793649148784,
+          1793649148888
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 220952.80000007153,
+        "performance_query_utc_ms": 1793649146672.9001,
+        "performance_frame": 13212,
+        "feed_query_ms": 222760.30000007153,
+        "feed_frame": 13308,
+        "performance_age_from_feed_ms": 1807.5,
+        "ui": {
+          "nodes": 70,
+          "logical_nodes": 90,
+          "region_upper_bound": 159,
+          "render_regions": 139,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 244,
+            "atlas_uploads": 244,
+            "atlas_compactions": 0,
+            "rebuilds": 8114,
+            "quads": 139,
+            "draw_calls": 48,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 20,
+            "submits": 13200
+          }
+        }
+      },
+      {
+        "file": "read-014.json",
+        "native_read_utc_ms": [
+          1793649151409,
+          1793649151604
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 223326.30000007153,
+        "performance_query_utc_ms": 1793649149046.4001,
+        "performance_frame": 13338,
+        "feed_query_ms": 225483.70000004768,
+        "feed_frame": 13455,
+        "performance_age_from_feed_ms": 2157.399999976158,
+        "ui": {
+          "nodes": 68,
+          "logical_nodes": 850,
+          "region_upper_bound": 855,
+          "render_regions": 860,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 274,
+            "atlas_uploads": 274,
+            "atlas_compactions": 0,
+            "rebuilds": 8144,
+            "quads": 860,
+            "draw_calls": 214,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 31,
+            "submits": 13230
+          }
+        }
+      },
+      {
+        "file": "read-024.json",
+        "native_read_utc_ms": [
+          1793649153891,
+          1793649153980
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 226101,
+        "performance_query_utc_ms": 1793649151821.1,
+        "performance_frame": 13485,
+        "feed_query_ms": 228164.60000002384,
+        "feed_frame": 13600,
+        "performance_age_from_feed_ms": 2063.600000023842,
+        "ui": {
+          "nodes": 70,
+          "logical_nodes": 93,
+          "region_upper_bound": 162,
+          "render_regions": 142,
+          "cpu_render_ms": 0.5999999046325684,
+          "gpu": {
+            "text_rasters": 314,
+            "atlas_uploads": 314,
+            "atlas_compactions": 0,
+            "rebuilds": 8174,
+            "quads": 142,
+            "draw_calls": 48,
+            "last_rebuild_ms": 0.5999999046325684,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 20,
+            "submits": 13260
+          }
+        }
+      },
+      {
+        "file": "read-033.json",
+        "native_read_utc_ms": [
+          1793649155908,
+          1793649155992
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 228329,
+        "performance_query_utc_ms": 1793649154049.1,
+        "performance_frame": 13609,
+        "feed_query_ms": 230268.10000002384,
+        "feed_frame": 13726,
+        "performance_age_from_feed_ms": 1939.1000000238419,
+        "ui": {
+          "nodes": 66,
+          "logical_nodes": 843,
+          "region_upper_bound": 850,
+          "render_regions": 593,
+          "cpu_render_ms": 0.3999999761581421,
+          "gpu": {
+            "text_rasters": 334,
+            "atlas_uploads": 334,
+            "atlas_compactions": 0,
+            "rebuilds": 8204,
+            "quads": 593,
+            "draw_calls": 187,
+            "last_rebuild_ms": 0.3999999761581421,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 28,
+            "submits": 13290
+          }
+        }
+      },
+      {
+        "file": "read-040.json",
+        "native_read_utc_ms": [
+          1793649157279,
+          1793649157318
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 230367.30000007153,
+        "performance_query_utc_ms": 1793649156087.4001,
+        "performance_frame": 13732,
+        "feed_query_ms": 231329.5,
+        "feed_frame": 13790,
+        "performance_age_from_feed_ms": 962.1999999284744,
+        "ui": {
+          "nodes": 66,
+          "logical_nodes": 834,
+          "region_upper_bound": 841,
+          "render_regions": 850,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 338,
+            "atlas_uploads": 338,
+            "atlas_compactions": 0,
+            "rebuilds": 8234,
+            "quads": 850,
+            "draw_calls": 223,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 34,
+            "submits": 13320
+          }
+        }
+      },
+      {
+        "file": "read-045.json",
+        "native_read_utc_ms": [
+          1793649158051,
+          1793649158086
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 231648.20000004768,
+        "performance_query_utc_ms": 1793649157368.3,
+        "performance_frame": 13810,
+        "feed_query_ms": 232361.10000002384,
+        "feed_frame": 13853,
+        "performance_age_from_feed_ms": 712.8999999761581,
+        "ui": {
+          "nodes": 63,
+          "logical_nodes": 835,
+          "region_upper_bound": 845,
+          "render_regions": 854,
+          "cpu_render_ms": 0.6000000238418579,
+          "gpu": {
+            "text_rasters": 341,
+            "atlas_uploads": 341,
+            "atlas_compactions": 0,
+            "rebuilds": 8264,
+            "quads": 854,
+            "draw_calls": 244,
+            "last_rebuild_ms": 0.6000000238418579,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 34,
+            "submits": 13350
+          }
+        }
+      },
+      {
+        "file": "read-050.json",
+        "native_read_utc_ms": [
+          1793649158807,
+          1793649158850
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 232392.40000009537,
+        "performance_query_utc_ms": 1793649158112.5,
+        "performance_frame": 13855,
+        "feed_query_ms": 232863,
+        "feed_frame": 13883,
+        "performance_age_from_feed_ms": 470.59999990463257,
+        "ui": {
+          "nodes": 63,
+          "logical_nodes": 850,
+          "region_upper_bound": 860,
+          "render_regions": 869,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 341,
+            "atlas_uploads": 341,
+            "atlas_compactions": 0,
+            "rebuilds": 8294,
+            "quads": 869,
+            "draw_calls": 245,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 34,
+            "submits": 13380
+          }
+        }
+      },
+      {
+        "file": "read-056.json",
+        "native_read_utc_ms": [
+          1793649159843,
+          1793649159995
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 233147.30000007153,
+        "performance_query_utc_ms": 1793649158867.4001,
+        "performance_frame": 13900,
+        "feed_query_ms": 233879.20000004768,
+        "feed_frame": 13942,
+        "performance_age_from_feed_ms": 731.8999999761581,
+        "ui": {
+          "nodes": 63,
+          "logical_nodes": 820,
+          "region_upper_bound": 830,
+          "render_regions": 839,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 343,
+            "atlas_uploads": 343,
+            "atlas_compactions": 0,
+            "rebuilds": 8324,
+            "quads": 839,
+            "draw_calls": 246,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 34,
+            "submits": 13410
+          }
+        }
+      },
+      {
+        "file": "read-061.json",
+        "native_read_utc_ms": [
+          1793649160806,
+          1793649160851
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 234336.20000004768,
+        "performance_query_utc_ms": 1793649160056.3,
+        "performance_frame": 13969,
+        "feed_query_ms": 234910.80000007153,
+        "feed_frame": 14006,
+        "performance_age_from_feed_ms": 574.6000000238419,
+        "ui": {
+          "nodes": 66,
+          "logical_nodes": 846,
+          "region_upper_bound": 853,
+          "render_regions": 862,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 344,
+            "atlas_uploads": 344,
+            "atlas_compactions": 0,
+            "rebuilds": 8354,
+            "quads": 862,
+            "draw_calls": 209,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 34,
+            "submits": 13440
+          }
+        }
+      },
+      {
+        "file": "read-070.json",
+        "native_read_utc_ms": [
+          1793649162803,
+          1793649162963
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 235269.60000002384,
+        "performance_query_utc_ms": 1793649160989.7002,
+        "performance_frame": 14027,
+        "feed_query_ms": 237051.70000004768,
+        "feed_frame": 14126,
+        "performance_age_from_feed_ms": 1782.1000000238419,
+        "ui": {
+          "nodes": 63,
+          "logical_nodes": 861,
+          "region_upper_bound": 871,
+          "render_regions": 880,
+          "cpu_render_ms": 0.8999999761581421,
+          "gpu": {
+            "text_rasters": 346,
+            "atlas_uploads": 346,
+            "atlas_compactions": 0,
+            "rebuilds": 8384,
+            "quads": 880,
+            "draw_calls": 230,
+            "last_rebuild_ms": 0.8999999761581421,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 34,
+            "submits": 13470
+          }
+        }
+      },
+      {
+        "file": "read-080.json",
+        "native_read_utc_ms": [
+          1793649165460,
+          1793649165643
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 237397.80000007153,
+        "performance_query_utc_ms": 1793649163117.9001,
+        "performance_frame": 14146,
+        "feed_query_ms": 239727.5,
+        "feed_frame": 14275,
+        "performance_age_from_feed_ms": 2329.6999999284744,
+        "ui": {
+          "nodes": 66,
+          "logical_nodes": 892,
+          "region_upper_bound": 899,
+          "render_regions": 908,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 356,
+            "atlas_uploads": 356,
+            "atlas_compactions": 0,
+            "rebuilds": 8414,
+            "quads": 908,
+            "draw_calls": 215,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 34,
+            "submits": 13500
+          }
+        }
+      },
+      {
+        "file": "read-090.json",
+        "native_read_utc_ms": [
+          1793649168157,
+          1793649168329
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 240103.20000004768,
+        "performance_query_utc_ms": 1793649165823.3,
+        "performance_frame": 14295,
+        "feed_query_ms": 242422.20000004768,
+        "feed_frame": 14425,
+        "performance_age_from_feed_ms": 2319,
+        "ui": {
+          "nodes": 70,
+          "logical_nodes": 102,
+          "region_upper_bound": 171,
+          "render_regions": 151,
+          "cpu_render_ms": 0.6000000238418579,
+          "gpu": {
+            "text_rasters": 435,
+            "atlas_uploads": 435,
+            "atlas_compactions": 0,
+            "rebuilds": 8444,
+            "quads": 151,
+            "draw_calls": 48,
+            "last_rebuild_ms": 0.6000000238418579,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 20,
+            "submits": 13530
+          }
+        }
+      },
+      {
+        "file": "read-100.json",
+        "native_read_utc_ms": [
+          1793649170952,
+          1793649171096
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 242808,
+        "performance_query_utc_ms": 1793649168528.1,
+        "performance_frame": 14445,
+        "feed_query_ms": 245199.30000007153,
+        "feed_frame": 14575,
+        "performance_age_from_feed_ms": 2391.3000000715256,
+        "ui": {
+          "nodes": 70,
+          "logical_nodes": 103,
+          "region_upper_bound": 172,
+          "render_regions": 152,
+          "cpu_render_ms": 0.7000000476837158,
+          "gpu": {
+            "text_rasters": 519,
+            "atlas_uploads": 519,
+            "atlas_compactions": 0,
+            "rebuilds": 8474,
+            "quads": 152,
+            "draw_calls": 48,
+            "last_rebuild_ms": 0.7000000476837158,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 20,
+            "submits": 13560
+          }
+        }
+      },
+      {
+        "file": "read-110.json",
+        "native_read_utc_ms": [
+          1793649173582,
+          1793649173749
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 245544.70000004768,
+        "performance_query_utc_ms": 1793649171264.8,
+        "performance_frame": 14595,
+        "feed_query_ms": 247842.70000004768,
+        "feed_frame": 14725,
+        "performance_age_from_feed_ms": 2298,
+        "ui": {
+          "nodes": 64,
+          "logical_nodes": 99,
+          "region_upper_bound": 152,
+          "render_regions": 130,
+          "cpu_render_ms": 0.3999999761581421,
+          "gpu": {
+            "text_rasters": 581,
+            "atlas_uploads": 581,
+            "atlas_compactions": 0,
+            "rebuilds": 8504,
+            "quads": 130,
+            "draw_calls": 43,
+            "last_rebuild_ms": 0.3999999761581421,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 18,
+            "submits": 13590
+          }
+        }
+      },
+      {
+        "file": "read-120.json",
+        "native_read_utc_ms": [
+          1793649176286,
+          1793649176450
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 248219.10000002384,
+        "performance_query_utc_ms": 1793649173939.2002,
+        "performance_frame": 14745,
+        "feed_query_ms": 250545.20000004768,
+        "feed_frame": 14875,
+        "performance_age_from_feed_ms": 2326.100000023842,
+        "ui": {
+          "nodes": 63,
+          "logical_nodes": 99,
+          "region_upper_bound": 153,
+          "render_regions": 131,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 605,
+            "atlas_uploads": 605,
+            "atlas_compactions": 0,
+            "rebuilds": 8534,
+            "quads": 131,
+            "draw_calls": 44,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 18,
+            "submits": 13620
+          }
+        }
+      },
+      {
+        "file": "read-after.json",
+        "native_read_utc_ms": [
+          1793649178114,
+          1793649178281
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 250903.10000002384,
+        "performance_query_utc_ms": 1793649176623.2002,
+        "performance_frame": 14895,
+        "feed_query_ms": 252192.90000009537,
+        "feed_frame": 14965,
+        "performance_age_from_feed_ms": 1289.8000000715256,
+        "ui": {
+          "nodes": 66,
+          "logical_nodes": 101,
+          "region_upper_bound": 163,
+          "render_regions": 142,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 646,
+            "atlas_uploads": 646,
+            "atlas_compactions": 0,
+            "rebuilds": 8564,
+            "quads": 142,
+            "draw_calls": 46,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 19,
+            "submits": 13650
+          }
+        }
+      }
+    ],
+    "counter_boundaries": {
+      "first": {
+        "file": "read-000.json",
+        "native_read_utc_ms": [
+          1793649145211,
+          1793649145245
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 219451.70000004768,
+        "performance_query_utc_ms": 1793649145171.8,
+        "performance_frame": 13122,
+        "feed_query_ms": 219152.20000004768,
+        "feed_frame": 13104,
+        "performance_age_from_feed_ms": -299.5,
+        "ui": {
+          "nodes": 65,
+          "logical_nodes": 98,
+          "region_upper_bound": 151,
+          "render_regions": 129,
+          "cpu_render_ms": 0.10000002384185791,
+          "gpu": {
+            "text_rasters": 176,
+            "atlas_uploads": 176,
+            "atlas_compactions": 0,
+            "rebuilds": 8024,
+            "quads": 129,
+            "draw_calls": 45,
+            "last_rebuild_ms": 0.10000002384185791,
+            "text_slots": 31,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 19,
+            "submits": 13110
+          }
+        }
+      },
+      "last": {
+        "file": "read-after.json",
+        "native_read_utc_ms": [
+          1793649178114,
+          1793649178281
+        ],
+        "origin_ms": 1793648925720.1,
+        "performance_query_ms": 250903.10000002384,
+        "performance_query_utc_ms": 1793649176623.2002,
+        "performance_frame": 14895,
+        "feed_query_ms": 252192.90000009537,
+        "feed_frame": 14965,
+        "performance_age_from_feed_ms": 1289.8000000715256,
+        "ui": {
+          "nodes": 66,
+          "logical_nodes": 101,
+          "region_upper_bound": 163,
+          "render_regions": 142,
+          "cpu_render_ms": 0.5,
+          "gpu": {
+            "text_rasters": 646,
+            "atlas_uploads": 646,
+            "atlas_compactions": 0,
+            "rebuilds": 8564,
+            "quads": 142,
+            "draw_calls": 46,
+            "last_rebuild_ms": 0.5,
+            "text_slots": 32,
+            "atlas_pages": 1,
+            "dedicated_text_textures": 0,
+            "image_textures": 19,
+            "submits": 13650
+          }
+        }
+      },
+      "deltas": {
+        "text_rasters": 470,
+        "atlas_uploads": 470,
+        "atlas_compactions": 0,
+        "rebuilds": 540,
+        "submits": 540
+      },
+      "rasters_per_submit": 0.8703703703703703,
+      "scope": "Actual independently cached performance queries, not the formal30s or exact diagnostic measurement endpoints. No per-label raster identity is exposed."
+    },
+    "interval_counter_deltas": [
+      {
+        "before_file": "read-000.json",
+        "after_file": "read-004.json",
+        "query_ms": [
+          219451.70000004768,
+          220952.80000007153
+        ],
+        "frame": [
+          13122,
+          13212
+        ],
+        "text_rasters": 68,
+        "atlas_uploads": 68,
+        "atlas_compactions": 0,
+        "rebuilds": 90,
+        "submits": 90
+      },
+      {
+        "before_file": "read-004.json",
+        "after_file": "read-014.json",
+        "query_ms": [
+          220952.80000007153,
+          223326.30000007153
+        ],
+        "frame": [
+          13212,
+          13338
+        ],
+        "text_rasters": 30,
+        "atlas_uploads": 30,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-014.json",
+        "after_file": "read-024.json",
+        "query_ms": [
+          223326.30000007153,
+          226101
+        ],
+        "frame": [
+          13338,
+          13485
+        ],
+        "text_rasters": 40,
+        "atlas_uploads": 40,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-024.json",
+        "after_file": "read-033.json",
+        "query_ms": [
+          226101,
+          228329
+        ],
+        "frame": [
+          13485,
+          13609
+        ],
+        "text_rasters": 20,
+        "atlas_uploads": 20,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-033.json",
+        "after_file": "read-040.json",
+        "query_ms": [
+          228329,
+          230367.30000007153
+        ],
+        "frame": [
+          13609,
+          13732
+        ],
+        "text_rasters": 4,
+        "atlas_uploads": 4,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-040.json",
+        "after_file": "read-045.json",
+        "query_ms": [
+          230367.30000007153,
+          231648.20000004768
+        ],
+        "frame": [
+          13732,
+          13810
+        ],
+        "text_rasters": 3,
+        "atlas_uploads": 3,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-045.json",
+        "after_file": "read-050.json",
+        "query_ms": [
+          231648.20000004768,
+          232392.40000009537
+        ],
+        "frame": [
+          13810,
+          13855
+        ],
+        "text_rasters": 0,
+        "atlas_uploads": 0,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-050.json",
+        "after_file": "read-056.json",
+        "query_ms": [
+          232392.40000009537,
+          233147.30000007153
+        ],
+        "frame": [
+          13855,
+          13900
+        ],
+        "text_rasters": 2,
+        "atlas_uploads": 2,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-056.json",
+        "after_file": "read-061.json",
+        "query_ms": [
+          233147.30000007153,
+          234336.20000004768
+        ],
+        "frame": [
+          13900,
+          13969
+        ],
+        "text_rasters": 1,
+        "atlas_uploads": 1,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-061.json",
+        "after_file": "read-070.json",
+        "query_ms": [
+          234336.20000004768,
+          235269.60000002384
+        ],
+        "frame": [
+          13969,
+          14027
+        ],
+        "text_rasters": 2,
+        "atlas_uploads": 2,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-070.json",
+        "after_file": "read-080.json",
+        "query_ms": [
+          235269.60000002384,
+          237397.80000007153
+        ],
+        "frame": [
+          14027,
+          14146
+        ],
+        "text_rasters": 10,
+        "atlas_uploads": 10,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-080.json",
+        "after_file": "read-090.json",
+        "query_ms": [
+          237397.80000007153,
+          240103.20000004768
+        ],
+        "frame": [
+          14146,
+          14295
+        ],
+        "text_rasters": 79,
+        "atlas_uploads": 79,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-090.json",
+        "after_file": "read-100.json",
+        "query_ms": [
+          240103.20000004768,
+          242808
+        ],
+        "frame": [
+          14295,
+          14445
+        ],
+        "text_rasters": 84,
+        "atlas_uploads": 84,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-100.json",
+        "after_file": "read-110.json",
+        "query_ms": [
+          242808,
+          245544.70000004768
+        ],
+        "frame": [
+          14445,
+          14595
+        ],
+        "text_rasters": 62,
+        "atlas_uploads": 62,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-110.json",
+        "after_file": "read-120.json",
+        "query_ms": [
+          245544.70000004768,
+          248219.10000002384
+        ],
+        "frame": [
+          14595,
+          14745
+        ],
+        "text_rasters": 24,
+        "atlas_uploads": 24,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      },
+      {
+        "before_file": "read-120.json",
+        "after_file": "read-after.json",
+        "query_ms": [
+          248219.10000002384,
+          250903.10000002384
+        ],
+        "frame": [
+          14745,
+          14895
+        ],
+        "text_rasters": 41,
+        "atlas_uploads": 41,
+        "atlas_compactions": 0,
+        "rebuilds": 30,
+        "submits": 30
+      }
+    ],
+    "gauge_ranges": {
+      "quads": {
+        "n": 17,
+        "sum": 8631,
+        "min": 129,
+        "p50": 593,
+        "p95": 908,
+        "p99": 908,
+        "max": 908
+      },
+      "draw_calls": {
+        "n": 17,
+        "sum": 2383,
+        "min": 43,
+        "p50": 187,
+        "p95": 246,
+        "p99": 246,
+        "max": 246
+      },
+      "last_rebuild_ms": {
+        "n": 17,
+        "sum": 8.799999952316284,
+        "min": 0.10000002384185791,
+        "p50": 0.5,
+        "p95": 0.8999999761581421,
+        "p99": 0.8999999761581421,
+        "max": 0.8999999761581421
+      },
+      "text_slots": {
+        "n": 17,
+        "sum": 543,
+        "min": 31,
+        "p50": 32,
+        "p95": 32,
+        "p99": 32,
+        "max": 32
+      },
+      "atlas_compactions": {
+        "n": 17,
+        "sum": 0,
+        "min": 0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0
+      }
+    },
+    "node_region_ranges": {
+      "nodes": {
+        "n": 17,
+        "sum": 1122,
+        "min": 63,
+        "p50": 66,
+        "p95": 70,
+        "p99": 70,
+        "max": 70
+      },
+      "logical_nodes": {
+        "n": 17,
+        "sum": 8416,
+        "min": 90,
+        "p50": 820,
+        "p95": 892,
+        "p99": 892,
+        "max": 892
+      },
+      "region_upper_bound": {
+        "n": 17,
+        "sum": 8987,
+        "min": 151,
+        "p50": 830,
+        "p95": 899,
+        "p99": 899,
+        "max": 899
+      },
+      "render_regions": {
+        "n": 17,
+        "sum": 8631,
+        "min": 129,
+        "p50": 593,
+        "p95": 908,
+        "p99": 908,
+        "max": 908
+      }
+    },
+    "longest_complete_planned_window_ui_draw_examples": [
+      {
+        "event_id": "draw:13245",
+        "frame": 13410,
+        "start_ms": 224553.60000002384,
+        "end_ms": 224593.70000004768,
+        "ui_draw_ms": 39.699999928474426,
+        "renderer_draw_ms": 0.30000007152557373,
+        "exact_same_frame_performance": null,
+        "nearest_cached_performance": {
+          "file": "read-014.json",
+          "native_read_utc_ms": [
+            1793649151409,
+            1793649151604
+          ],
+          "origin_ms": 1793648925720.1,
+          "performance_query_ms": 223326.30000007153,
+          "performance_query_utc_ms": 1793649149046.4001,
+          "performance_frame": 13338,
+          "feed_query_ms": 225483.70000004768,
+          "feed_frame": 13455,
+          "performance_age_from_feed_ms": 2157.399999976158,
+          "ui": {
+            "nodes": 68,
+            "logical_nodes": 850,
+            "region_upper_bound": 855,
+            "render_regions": 860,
+            "cpu_render_ms": 0.5,
+            "gpu": {
+              "text_rasters": 274,
+              "atlas_uploads": 274,
+              "atlas_compactions": 0,
+              "rebuilds": 8144,
+              "quads": 860,
+              "draw_calls": 214,
+              "last_rebuild_ms": 0.5,
+              "text_slots": 32,
+              "atlas_pages": 1,
+              "dedicated_text_textures": 0,
+              "image_textures": 31,
+              "submits": 13230
+            }
+          }
+        },
+        "nearest_query_minus_event_end_ms": -1267.3999999761581,
+        "nearest_frame_minus_event_frame": -72,
+        "scope": "Nearest is explicitly not a same-frame attribution when exact_same_frame_performance is null. GPU last_rebuild_ms is last rebuild CPU time, not total ui_draw or GPU time."
+      },
+      {
+        "event_id": "draw:13287",
+        "frame": 13595,
+        "start_ms": 228015.20000004768,
+        "end_ms": 228054.10000002384,
+        "ui_draw_ms": 38.39999997615814,
+        "renderer_draw_ms": 0.5,
+        "exact_same_frame_performance": null,
+        "nearest_cached_performance": {
+          "file": "read-033.json",
+          "native_read_utc_ms": [
+            1793649155908,
+            1793649155992
+          ],
+          "origin_ms": 1793648925720.1,
+          "performance_query_ms": 228329,
+          "performance_query_utc_ms": 1793649154049.1,
+          "performance_frame": 13609,
+          "feed_query_ms": 230268.10000002384,
+          "feed_frame": 13726,
+          "performance_age_from_feed_ms": 1939.1000000238419,
+          "ui": {
+            "nodes": 66,
+            "logical_nodes": 843,
+            "region_upper_bound": 850,
+            "render_regions": 593,
+            "cpu_render_ms": 0.3999999761581421,
+            "gpu": {
+              "text_rasters": 334,
+              "atlas_uploads": 334,
+              "atlas_compactions": 0,
+              "rebuilds": 8204,
+              "quads": 593,
+              "draw_calls": 187,
+              "last_rebuild_ms": 0.3999999761581421,
+              "text_slots": 32,
+              "atlas_pages": 1,
+              "dedicated_text_textures": 0,
+              "image_textures": 28,
+              "submits": 13290
+            }
+          }
+        },
+        "nearest_query_minus_event_end_ms": 274.89999997615814,
+        "nearest_frame_minus_event_frame": 14,
+        "scope": "Nearest is explicitly not a same-frame attribution when exact_same_frame_performance is null. GPU last_rebuild_ms is last rebuild CPU time, not total ui_draw or GPU time."
+      },
+      {
+        "event_id": "draw:13259",
+        "frame": 13480,
+        "start_ms": 225974,
+        "end_ms": 226012.60000002384,
+        "ui_draw_ms": 38.199999928474426,
+        "renderer_draw_ms": 0.30000007152557373,
+        "exact_same_frame_performance": null,
+        "nearest_cached_performance": {
+          "file": "read-024.json",
+          "native_read_utc_ms": [
+            1793649153891,
+            1793649153980
+          ],
+          "origin_ms": 1793648925720.1,
+          "performance_query_ms": 226101,
+          "performance_query_utc_ms": 1793649151821.1,
+          "performance_frame": 13485,
+          "feed_query_ms": 228164.60000002384,
+          "feed_frame": 13600,
+          "performance_age_from_feed_ms": 2063.600000023842,
+          "ui": {
+            "nodes": 70,
+            "logical_nodes": 93,
+            "region_upper_bound": 162,
+            "render_regions": 142,
+            "cpu_render_ms": 0.5999999046325684,
+            "gpu": {
+              "text_rasters": 314,
+              "atlas_uploads": 314,
+              "atlas_compactions": 0,
+              "rebuilds": 8174,
+              "quads": 142,
+              "draw_calls": 48,
+              "last_rebuild_ms": 0.5999999046325684,
+              "text_slots": 32,
+              "atlas_pages": 1,
+              "dedicated_text_textures": 0,
+              "image_textures": 20,
+              "submits": 13260
+            }
+          }
+        },
+        "nearest_query_minus_event_end_ms": 88.39999997615814,
+        "nearest_frame_minus_event_frame": 5,
+        "scope": "Nearest is explicitly not a same-frame attribution when exact_same_frame_performance is null. GPU last_rebuild_ms is last rebuild CPU time, not total ui_draw or GPU time."
+      },
+      {
+        "event_id": "draw:13252",
+        "frame": 13445,
+        "start_ms": 225267.20000004768,
+        "end_ms": 225304.20000004768,
+        "ui_draw_ms": 36.39999997615814,
+        "renderer_draw_ms": 0.3999999761581421,
+        "exact_same_frame_performance": null,
+        "nearest_cached_performance": {
+          "file": "read-024.json",
+          "native_read_utc_ms": [
+            1793649153891,
+            1793649153980
+          ],
+          "origin_ms": 1793648925720.1,
+          "performance_query_ms": 226101,
+          "performance_query_utc_ms": 1793649151821.1,
+          "performance_frame": 13485,
+          "feed_query_ms": 228164.60000002384,
+          "feed_frame": 13600,
+          "performance_age_from_feed_ms": 2063.600000023842,
+          "ui": {
+            "nodes": 70,
+            "logical_nodes": 93,
+            "region_upper_bound": 162,
+            "render_regions": 142,
+            "cpu_render_ms": 0.5999999046325684,
+            "gpu": {
+              "text_rasters": 314,
+              "atlas_uploads": 314,
+              "atlas_compactions": 0,
+              "rebuilds": 8174,
+              "quads": 142,
+              "draw_calls": 48,
+              "last_rebuild_ms": 0.5999999046325684,
+              "text_slots": 32,
+              "atlas_pages": 1,
+              "dedicated_text_textures": 0,
+              "image_textures": 20,
+              "submits": 13260
+            }
+          }
+        },
+        "nearest_query_minus_event_end_ms": 796.7999999523163,
+        "nearest_frame_minus_event_frame": 40,
+        "scope": "Nearest is explicitly not a same-frame attribution when exact_same_frame_performance is null. GPU last_rebuild_ms is last rebuild CPU time, not total ui_draw or GPU time."
+      },
+      {
+        "event_id": "draw:13269",
+        "frame": 13530,
+        "start_ms": 226910.20000004768,
+        "end_ms": 226946,
+        "ui_draw_ms": 35.10000002384186,
+        "renderer_draw_ms": 0.5,
+        "exact_same_frame_performance": null,
+        "nearest_cached_performance": {
+          "file": "read-024.json",
+          "native_read_utc_ms": [
+            1793649153891,
+            1793649153980
+          ],
+          "origin_ms": 1793648925720.1,
+          "performance_query_ms": 226101,
+          "performance_query_utc_ms": 1793649151821.1,
+          "performance_frame": 13485,
+          "feed_query_ms": 228164.60000002384,
+          "feed_frame": 13600,
+          "performance_age_from_feed_ms": 2063.600000023842,
+          "ui": {
+            "nodes": 70,
+            "logical_nodes": 93,
+            "region_upper_bound": 162,
+            "render_regions": 142,
+            "cpu_render_ms": 0.5999999046325684,
+            "gpu": {
+              "text_rasters": 314,
+              "atlas_uploads": 314,
+              "atlas_compactions": 0,
+              "rebuilds": 8174,
+              "quads": 142,
+              "draw_calls": 48,
+              "last_rebuild_ms": 0.5999999046325684,
+              "text_slots": 32,
+              "atlas_pages": 1,
+              "dedicated_text_textures": 0,
+              "image_textures": 20,
+              "submits": 13260
+            }
+          }
+        },
+        "nearest_query_minus_event_end_ms": -845,
+        "nearest_frame_minus_event_frame": -45,
+        "scope": "Nearest is explicitly not a same-frame attribution when exact_same_frame_performance is null. GPU last_rebuild_ms is last rebuild CPU time, not total ui_draw or GPU time."
+      },
+      {
+        "event_id": "draw:13296",
+        "frame": 13636,
+        "start_ms": 228765,
+        "end_ms": 228798.80000007153,
+        "ui_draw_ms": 33.299999952316284,
+        "renderer_draw_ms": 0.40000009536743164,
+        "exact_same_frame_performance": null,
+        "nearest_cached_performance": {
+          "file": "read-033.json",
+          "native_read_utc_ms": [
+            1793649155908,
+            1793649155992
+          ],
+          "origin_ms": 1793648925720.1,
+          "performance_query_ms": 228329,
+          "performance_query_utc_ms": 1793649154049.1,
+          "performance_frame": 13609,
+          "feed_query_ms": 230268.10000002384,
+          "feed_frame": 13726,
+          "performance_age_from_feed_ms": 1939.1000000238419,
+          "ui": {
+            "nodes": 66,
+            "logical_nodes": 843,
+            "region_upper_bound": 850,
+            "render_regions": 593,
+            "cpu_render_ms": 0.3999999761581421,
+            "gpu": {
+              "text_rasters": 334,
+              "atlas_uploads": 334,
+              "atlas_compactions": 0,
+              "rebuilds": 8204,
+              "quads": 593,
+              "draw_calls": 187,
+              "last_rebuild_ms": 0.3999999761581421,
+              "text_slots": 32,
+              "atlas_pages": 1,
+              "dedicated_text_textures": 0,
+              "image_textures": 28,
+              "submits": 13290
+            }
+          }
+        },
+        "nearest_query_minus_event_end_ms": -469.8000000715256,
+        "nearest_frame_minus_event_frame": -27,
+        "scope": "Nearest is explicitly not a same-frame attribution when exact_same_frame_performance is null. GPU last_rebuild_ms is last rebuild CPU time, not total ui_draw or GPU time."
+      }
+    ],
+    "source_contract": {
+      "full_node_key": "canvas-ui.mjs267 serializes the whole normalized node, including absolute rect x/y, as nodeKey for composition detection and GPU text content.",
+      "raster_key": "ui-gpu.js184 includes that full nodeKey plus relative x-x0/y-y0, size, crop dimensions, viewport H and scale.",
+      "paint": "ui-gpu.js89–91 sets scratch transform to(-x0,-y0). canvas-ui.mjs198–201 passes explicit pixel bounds to text painters; styled text/layout uses those bounds and paint properties, not node.rect.",
+      "confirmed_conditional_redundancy": "For the same text/paint properties translated by exact integer framebuffer pixels with unchanged local geometry, crop extent, subpixel phase, viewport and scale, the scratch-local paint is unchanged while full-node absolute x/y changes request.content and forces another raster/upload.",
+      "constraints": "Fractional subpixel movement, crop/clip changes, dimensions, viewport/scale, fonts/styles, text-edit selection/caret/composition and shadow bounds can change pixels and must remain in content identity. GPU quad placement/order/clipping must still update independently.",
+      "scope": "Source-level conditional equivalence, not actual pixel/GPU proof or authorization to modify the renderer."
+    },
+    "observed_conclusion": "The cumulative sample shows470rasters/uploads across540submits, with no compaction and31–32live text slots. This is not evidence of re-rasterizing every text node on every frame. It does not isolate which label changed or prove the conditional key redundancy dominates the large ui_draw tail. Rebuild CPU metrics are often under1ms while the aggregate ui_draw tail is much larger, so work before/around GPU rebuild remains unisolated."
+  }
+}

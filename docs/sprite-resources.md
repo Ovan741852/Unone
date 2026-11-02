@@ -62,6 +62,24 @@ The Web host shares physical image/texture storage across material preparations
 for the same catalog asset and sampling settings. Program readiness remains
 specific to its shader and render-target variants.
 
+Ordinary sprite presentation can retain a ready resource through an explicit
+renderer-owned idle cache lease. This is separate from caller and committed
+entity leases. A managed-only resource still retires on its final release;
+managed use does not grant or refresh ordinary-sprite idle retention. Pending
+loads and failed preparation do not become ready cache entries. The renderer
+continues to hold the preceding complete appearance while a true cold resource
+is pending.
+
+One registered GPU texture-cache controller covers legacy world texture records
+and sprite-pool owners. Its omitted policy is 64 MiB / 128 entries / 1800 renderer
+frames, configurable through `texture_cache` in `player.presentation.json`.
+Shared material variants count a physical asset/sampler/catalog/epoch texture
+owner once. Idle material/program entries are separately bounded by
+`min(texture_cache.max_entries, 4096)` and their idle TTL. Context loss retires
+idle cache owners while active CPU image leases remain available for restoration;
+old-epoch completions cannot restore retired resources. See the
+[texture-cache contract](texture-cache.md) for eviction and pressure semantics.
+
 Host resource plans and scalar receipts travel outside the canonical World.
 `presentation_resources` is recorded input, containing resource and appearance
 receipts. Manual/replay input stays authoritative. Failed ticks retain admitted
@@ -70,11 +88,17 @@ the worker boundary. Reload/session/context epochs fence late completions.
 
 Generic safety limits are 4096 live resource handles/owners, at most 256 resource
 and 256 appearance receipts per input batch, exact positive safe-integer epochs
-and revisions, and at most 1 GiB reported bytes per resource. Actual Web texture
-admission uses the authored image budget (default 64 MiB / 128 unique textures),
-including both outgoing and incoming owners. A larger hard limit is not a memory
-budget. Other renderer allocations, render targets, browser copies and broker
-unused-image caches have separately reported scopes.
+and revisions, and at most 1 GiB reported bytes per resource. The sprite pool's
+existing hard admission limit still covers active, incoming and reserved unique
+textures, including outgoing owners retained during a transition. The official
+player currently takes these byte/count limits from the authored image preload
+plan budget (default 64 MiB / 128 entries). This check remains distinct from the
+single idle `texture_cache` policy. Admission can reclaim eligible pool idle
+owners through that controller before reporting a budget error; it cannot evict
+live owners, bypass the limit or increase the authored budget. A larger generic
+safety limit is not a memory budget. Decoded-image broker residency, other
+renderer allocations, render targets and browser copies have separately reported
+scopes; none of these estimates is total process memory or VRAM.
 
 See [immutable byte views](decisions/0049-bounded-immutable-byte-views.md) for
 binary buffer ownership. Sprite resources do not expose a writable buffer alias.

@@ -4,6 +4,7 @@ import * as THREE from '../vendor/three/three.module.js';
 import {createBloom} from './bloom.js';
 import {createSpriteResourcePool} from './sprite-resources.js';
 import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
+import {createTextureCachePolicy} from './texture-cache-policy.js';
 
 function fixture({failOffscreen=false}={}){
  const previous={name:'prior-target'},compiled=[],rendered=[];let target=previous,cube=2,mip=3,checks=0;
@@ -14,7 +15,7 @@ function fixture({failOffscreen=false}={}){
   compile(){compiled.push(target);},properties:{get(){return {currentProgram:{getUniforms(){checks++;if(failOffscreen&&target)throw Error('OFFSCREEN_LINK_FAILURE');}}};}}};
  const bloom=createBloom(THREE,renderer),catalog=createAssetCatalog({assets:[{id:'a',kind:'texture2d',source:'a.png'}]});
  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:()=>'/a.png',inspectImage:async()=>({format:'png',width:2,height:2}),loadImage:async()=>({width:2,height:2})});
- const pool=createSpriteResourcePool({THREE,renderer,getCatalog:()=>catalog,getImages:()=>broker,withPreparationTargets:compile=>bloom.withWorldPreparationTargets(compile)});
+ const pool=createSpriteResourcePool({THREE,renderer,textureCache:createTextureCachePolicy(new Map()),getCatalog:()=>catalog,getImages:()=>broker,withPreparationTargets:compile=>bloom.withWorldPreparationTargets(compile)});
  return {renderer,bloom,pool,compiled,rendered,previous,checks:()=>checks,target:()=>({target,cube,mip}),dispose(){pool.dispose();bloom.dispose();broker.dispose();}};
 }
 
