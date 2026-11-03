@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "ok": false,
+  "scope": "Current acec Game fixtures: same actual opt2 sampler across three fresh VMs, actual setup/phase validation, collect:false heap reads every60 measured ticks outside command timing. Not production/browser FPS, JS GC, collection-cycle frequency or global leak evidence.",
+  "runtime_pins": {
+    "manifest": "cee5c6e99c708078e7ac19ce063f2076b8f6c552c8847c6f99ea7f7a8f47e44e",
+    "source": "2093abf9995297e8753b9703e3e7a3614a71cba9",
+    "javascript": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+    "wasm": "b4fd6ab3b4d78ca29acd8921eaa770747894a6aad251dafe8c892c19e8eba15d"
+  },
+  "metadata": {
+    "compiled_systems": [
+      "audio",
+      "camera2d",
+      "camera3d",
+      "effekseer",
+      "input",
+      "jobs",
+      "observation",
+      "particle",
+      "physics2d",
+      "physics3d",
+      "random",
+      "save",
+      "spine",
+      "ui",
+      "world"
+    ],
+    "runtime_packages": {
+      "@unone/ui": "0.6.0"
+    },
+    "cargo_features": [
+      "all-systems",
+      "sampling-profile"
+    ],
+    "profile": "release",
+    "dev_tools": false,
+    "preview_tools": true,
+    "phase_profile": false,
+    "sampling_profile": true,
+    "bytecode_optimization_level": 2,
+    "profile_mode": "opt2-sampling",
+    "javascript": "unone-player.js",
+    "wasm": "unone_player.wasm",
+    "wasm_bytes": 5616391,
+    "wasm_sha256": "b4fd6ab3b4d78ca29acd8921eaa770747894a6aad251dafe8c892c19e8eba15d",
+    "javascript_sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+    "exports": [
+      "init",
+      "alloc",
+      "stage_data",
+      "load_project",
+      "unload_project",
+      "set_save_payload",
+      "set_input_frame",
+      "set_viewport_aspect",
+      "set_viewport_size",
+      "set_instance_transport",
+      "set_ui_transport",
+      "tick",
+      "ui_request",
+      "jobs_request",
+      "jobs_binary",
+      "spatial_request",
+      "host_time_request",
+      "sprite_resources_request",
+      "observation_ptr",
+      "observation_len",
+      "developer_request",
+      "particle_alloc",
+      "particle_sample",
+      "particle_output_ptr",
+      "particle_output_len"
+    ],
+    "source_commit": "2093abf9995297e8753b9703e3e7a3614a71cba9",
+    "source_dirty": false
+  },
+  "options": {
+    "warmup": 66,
+    "frames": 600,
+    "seed": "42",
+    "timeoutMs": 180000
+  },
+  "input_pins": [
+    {
+      "label": "payload",
+      "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\inventory.payload.json",
+      "bytes": 2414604,
+      "sha256": "8501c2d456d9386ddcc3e4b8227e227196eba5419cabad050f57ad0e99657efc"
+    },
+    {
+      "label": "input_sequence",
+      "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\inventory.inputs.json",
+      "bytes": 18052,
+      "sha256": "f2bcd1d7f555a9feede793726c37501a4470338d30fe20eb418d6a04bdb281e7"
+    }
+  ],
+  "host": [
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\runtime-core.mjs",
+      "bytes": 10218,
+      "sha256": "f38a5dce3ee3f161e25c18c8f598863e475780a6c0976ec69eb6baaec5f175b1"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\spatial-host.mjs",
+      "bytes": 5312,
+      "sha256": "4ae64136e03f490e967dad3d4eca0721e03172a5be30865b52c837b24e100e05"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\spatial-metrics.mjs",
+      "bytes": 1939,
+      "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+      "bytes": 14120,
+      "sha256": "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\world-field-publication.mjs",
+      "bytes": 1151,
+      "sha256": "fe0ff26fa6e7c40bb262c8e89d05c61cd2e0adfe9501392f468a6b08b9931090"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\ui-tree-publication.mjs",
+      "bytes": 1913,
+      "sha256": "1a83c34391c60906da1c599429266ae448fdea8a295dbeb6cb373ec9771b75ba"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\save-publication.mjs",
+      "bytes": 1266,
+      "sha256": "f559315d6ec4e75134ddda340db40e34a554b2b04bf57a1016a3c3578dcb0f66"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\retained-image-generation.mjs",
+      "bytes": 1452,
+      "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\job-pool.mjs",
+      "bytes": 6787,
+      "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+    },
+    {
+      "label": "host_source",
+      "path": "D:\\Projects\\Unone\\web\\shared\\job-binary.mjs",
+      "bytes": 6407,
+      "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+    }
+  ],
+  "order": [
+    "off",
+    "probes",
+    "sampling"
+  ],
+  "runs": [],
+  "limits": [
+    "OFF is the same sampling-capable artifact with profiling window inactive; it is not an ordinary production artifact. Raw OFF zero counters are unavailable observations, not zero allocation or GC.",
+    "Probes/sampling active VM counters cover Luau update including engine callbacks. Positive allocator growth is cumulative requests, not live heap, frees, Rust allocation or JavaScript allocation.",
+    "Incremental GC interrupt timing includes instrumentation/host scheduling overhead and excludes full collections. Per-frame overlap does not establish all GC causes or OS pause time.",
+    "Function counts are biased safe-point samples, not exact function milliseconds or call counts. Opt2 inlining, short functions and native bindings are not fully attributed; preserve dropped/truncated/sample metadata.",
+    "Three fixed-order runs do not establish causal performance improvement. Concurrent chats/machine work may overlap; no exclusive-window/FPS claim.",
+    "Only digest strings and frame scalars are checked after each timed command; full final World/UI/save encoding and profile report happen after timing.",
+    "Public phase history records natural battle termination; never force activity, restart, heal or synthesize GPU receipts. All memory_sample calls explicitly use collect:false; raw used heap is not a post-GC retained baseline. Periodic heap diagnostic calls occur outside command timing and can affect the following workload. WASM linear-memory capacity is not live memory, allocation growth, GC frequency or leak proof. No forced collection, replacement API, renderer or Native executable is used."
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: {\"ok\":false,\"mode\":\"off\",\"command\":null,\"vm\":null,\"samples\":null,\"error\":\"Error: ENOENT: no such file or directory, lstat 'D:\\\\Projects\\\\JYRogue\\\\game\\\\evidence\\\\engine-upgrade-20261103\\\\atlas-input-gate\\\\engine-gc-fixtures\\\\assets'\\n    at Object.realpathSync (node:fs:2848:29)\\n    at file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:52:264\\n    at Array.map (<anonymous>)\\n    at dataAssets (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:52:17)\\n    at worker (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:82:226)\\n    at async file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:154:33\"}\n\n\n1 !== 0\n\n    at main (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:146:265)\n    at file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:154:90\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)"
+}

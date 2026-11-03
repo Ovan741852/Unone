@@ -1,0 +1,110 @@
+✔ disabled wake diagnostics add neither an observer packet nor an end-clock read (2.1024ms)
+✖ passive wake records expose zero/two steps and retained negative debt without changing frames (0.8487ms)
+✖ wake diagnostics distinguish capped catch-up, paused redraw and resets (0.8383ms)
+✖ stale rejected wake retains its original generation and cannot claim the replacement clock debt (0.3242ms)
+✔ coherent update/accept/draw keeps original RAF metadata while actual variable completion times remain honest (0.7082ms)
+✔ a delayed worker has one originating RAF continuation and cannot overlap or draw a stale snapshot (0.496ms)
+✔ RAF timestamp rounding does not alternate duplicate and skipped frames; early debt is retained (16.2567ms)
+✔ high-refresh RAFs redraw honestly while simulation stays fixed-step; long stalls have bounded catch-up (1.8021ms)
+✔ pause and hidden intervals reset simulation time; an in-flight old generation cannot draw on return (0.3539ms)
+✔ stop cancels the next RAF and suppresses late work; restart attaches a fresh clock/listener (0.2601ms)
+✔ failed updates never claim a completed draw and actual draw errors stop scheduling once (0.3243ms)
+✔ stopping before a pending worker rejects ignores cancellation and never reports a completed draw (0.1846ms)
+✔ an old rejection cannot stop a restarted generation, while the same current failure still reports once (0.1594ms)
+✔ a rejection from before pause cannot stop the new clock or contaminate its RAF metadata (0.1534ms)
+✔ a rejection from before reset cannot stop the new clock or contaminate its RAF metadata (0.1205ms)
+✔ a rejection from before hide-restore cannot stop the new clock or contaminate its RAF metadata (0.0741ms)
+✔ reset during a tick suppresses its catch-up tail and resumes only at a new RAF boundary (0.1074ms)
+✔ a worker response spanning hide and restore cannot draw in the old generation or catch up hidden time (0.1068ms)
+✔ drawing consumes the newly accepted packed lease and interpolation remains presentation-only (0.806ms)
+✔ stop/start during one in-flight tick waits for retirement without a second update chain or stale draw (0.2216ms)
+✔ ordinary fixed ticks consume clicks against the private projector of the previous visible view (0.1749ms)
+✖ production main enables bounded passive wake records only through the real profile opt-in (0.7131ms)
+✖ actual main wake observer failure cannot escape into game scheduling (1.1305ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 18
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 95.6447
+
+✖ failing tests:
+
+test at web\shared\async-scheduler.test.mjs:34:1
+✖ passive wake records expose zero/two steps and retained negative debt without changing frames (0.8487ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 3
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/async-scheduler.test.mjs:37:42)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 3,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at web\shared\async-scheduler.test.mjs:44:1
+✖ wake diagnostics distinguish capped catch-up, paused redraw and resets (0.8383ms)
+  TypeError: Cannot read properties of undefined (reading 'due')
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/async-scheduler.test.mjs:46:23)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\async-scheduler.test.mjs:51:1
+✖ stale rejected wake retains its original generation and cannot claim the replacement clock debt (0.3242ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/async-scheduler.test.mjs:54:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at web\shared\player-profile-wake.test.mjs:17:1
+✖ production main enables bounded passive wake records only through the real profile opt-in (0.7131ms)
+  AssertionError [ERR_ASSERTION]: Actual main wake recorder is present
+      at registration (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:10:2)
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:18:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at web\shared\player-profile-wake.test.mjs:24:1
+✖ actual main wake observer failure cannot escape into game scheduling (1.1305ms)
+  AssertionError [ERR_ASSERTION]: Actual main wake recorder is present
+      at registration (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:10:2)
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:25:11)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,0 +1,1666 @@
+{
+  "schema": "unone.shared-ui.acec-vm-gc.v1",
+  "status": "actual-production-bootstrap-and-six-fresh-wasm-diagnostics-complete; not-FPS-GC-frequency-or-leak-acceptance",
+  "scope": "Frozen Game acec87fc, seed42,1600x900, no renderer/GPU or fake presentation receipts. Existing sampler2093 emittedWASM; no production host-profile capability is involved.",
+  "source_script_sha256": "acec87fc30ae4438476288386ab2730b6917c57770a2b5c56e38b1557598fc2a",
+  "production_setup": {
+    "raw": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/production-setups-result.json",
+      "bytes": 50587,
+      "sha256": "3378e63cc8cb0273dc2786fc8dfdd4a321f468fe56131a3c42b180eebd5e0c69",
+      "original_path": ".cache/acec-gc-production-setups-20261103/result.json"
+    },
+    "source_raw": {
+      "path": ".cache/acec-gc-production-setups-20261103/result.json",
+      "bytes": 50587,
+      "sha256": "3378e63cc8cb0273dc2786fc8dfdd4a321f468fe56131a3c42b180eebd5e0c69"
+    },
+    "runtime_pins": [
+      {
+        "path": "D:/Projects/Unone/artifacts/ui-shared-ci-9c773e3/candidate/production/runtime/runtime.json",
+        "bytes": 1443,
+        "sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6"
+      },
+      {
+        "path": "D:/Projects/Unone/artifacts/ui-shared-ci-9c773e3/candidate/production/runtime/unone-player.js",
+        "bytes": 102845,
+        "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+      },
+      {
+        "path": "D:/Projects/Unone/artifacts/ui-shared-ci-9c773e3/candidate/production/runtime/unone_player.wasm",
+        "bytes": 5301301,
+        "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+      }
+    ],
+    "started_utc": "2026-11-02T22:11:28.695Z",
+    "finished_utc": "2026-11-02T22:11:29.296Z",
+    "ok": true,
+    "fresh_vms": 2,
+    "all_closed": true,
+    "note": "Real production9c validates canonical load and six-input bootstrap checkpoints. It does not supply the subsequent sampler counters or a browser/rendering result."
+  },
+  "harness": {
+    "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/harness.mjs",
+    "bytes": 22903,
+    "sha256": "f94c0641fc3158836f5bf2fe06f63b56243add982c6b28294b805678dc58c43a",
+    "original_path": ".cache/profile-core-sampler-acec-wasm-20261103.mjs"
+  },
+  "raw_logs": {
+    "harness": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/harness.mjs",
+      "bytes": 22903,
+      "sha256": "f94c0641fc3158836f5bf2fe06f63b56243add982c6b28294b805678dc58c43a",
+      "original_path": ".cache/profile-core-sampler-acec-wasm-20261103.mjs"
+    },
+    "production_setup": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/production-setups-result.json",
+      "bytes": 50587,
+      "sha256": "3378e63cc8cb0273dc2786fc8dfdd4a321f468fe56131a3c42b180eebd5e0c69",
+      "original_path": ".cache/acec-gc-production-setups-20261103/result.json"
+    },
+    "failed_attempt": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-attempt1-result.json",
+      "bytes": 8120,
+      "sha256": "96ba42a534c6c75c74d10c9642287519362339033ec12afd23dd9f689754ff7f",
+      "original_path": ".cache/acec-gc-inventory-sampler-20261103/result.json"
+    },
+    "failed_stdout": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-attempt1-stdout.log",
+      "bytes": 708,
+      "sha256": "cdc07f86b36c512e67ef0ee8657f02d5609e95d47efd8b85b2fb4e691e059920",
+      "original_path": ".cache/acec-gc-inventory-sampler-20261103/0-stdout.log"
+    },
+    "failed_stderr": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-attempt1-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_path": ".cache/acec-gc-inventory-sampler-20261103/0-stderr.log"
+    },
+    "failed_command": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-attempt1-command.json",
+      "bytes": 427,
+      "sha256": "52e9b8e2da3bb000a12562a5bba989444b4d7e9d603e0fb7386fd7d060e1ddcc",
+      "original_path": ".cache/acec-gc-inventory-sampler-20261103/0-command.json"
+    },
+    "data_provenance": {
+      "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/data-provenance.json",
+      "bytes": 378,
+      "sha256": "64f2f18fc033bc20c6a2e7fe99fe7d30d5090f8df39e5be18466a327039aa71a",
+      "original_path": ".cache/acec-gc-data-20261103/provenance.json"
+    }
+  },
+  "first_inventory_attempt": {
+    "status": "failed-before-VM-instantiation-and-project-load",
+    "aggregate": {
+      "path": ".cache/acec-gc-inventory-sampler-20261103/result.json",
+      "bytes": 8120,
+      "sha256": "96ba42a534c6c75c74d10c9642287519362339033ec12afd23dd9f689754ff7f"
+    },
+    "child_report": {
+      "path": ".cache/acec-gc-inventory-sampler-20261103/0-off/result.json",
+      "bytes": 8101,
+      "sha256": "d34e091665e44417501b57497e343fa8908f85ace182b36e3fac428aec8fce82"
+    },
+    "error": "AssertionError [ERR_ASSERTION]: {\"ok\":false,\"mode\":\"off\",\"command\":null,\"vm\":null,\"samples\":null,\"error\":\"Error: ENOENT: no such file or directory, lstat 'D:\\\\Projects\\\\JYRogue\\\\game\\\\evidence\\\\engine-upgrade-20261103\\\\atlas-input-gate\\\\engine-gc-fixtures\\\\assets'\\n    at Object.realpathSync (node:fs:2848:29)\\n    at file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:52:264\\n    at Array.map (<anonymous>)\\n    at dataAssets (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:52:17)\\n    at worker (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:82:226)\\n    at async file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:154:33\"}\n\n\n1 !== 0\n\n    at main (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:146:265)\n    at file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:154:90\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)",
+    "child_error": "Error: ENOENT: no such file or directory, lstat 'D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\assets'\n    at Object.realpathSync (node:fs:2848:29)\n    at file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:52:264\n    at Array.map (<anonymous>)\n    at dataAssets (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:52:17)\n    at worker (file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:82:226)\n    at async file:///D:/Projects/Unone/.cache/profile-core-sampler-acec-wasm-20261103.mjs:154:33",
+    "successful_runs": 0,
+    "explanation": "The unchanged payload's canonical declared data source requires an assets/... relative path. The first attempt used the fixture directory containing data/... and failed its filesystem realpath before instantiateEmittedRuntime. No successful VM/load or counters are claimed.",
+    "resolution": {
+      "data_dir": ".cache/acec-gc-data-20261103",
+      "provenance": {
+        "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/data-provenance.json",
+        "bytes": 378,
+        "sha256": "64f2f18fc033bc20c6a2e7fe99fe7d30d5090f8df39e5be18466a327039aa71a",
+        "original_path": ".cache/acec-gc-data-20261103/provenance.json"
+      },
+      "exact_glyph_text_bytes": 5248,
+      "sha256": "e490e8ee3378e03dbc269a28b3d4ec2a131eda4b3ae998333679d3251a315b37",
+      "scope": "Exact declared source bytes copied into matching canonical path under an engine-owned data staging directory; payload and input hashes unchanged. No Game file or simulation rule changed."
+    }
+  },
+  "scenarios": {
+    "inventory": {
+      "aggregate": {
+        "path": ".cache/acec-gc-inventory-sampler-20261103-r2/result.json",
+        "bytes": 567463,
+        "sha256": "dbc6170ba9bb4620b41a13b6e56bfa71bfe3f2681747f7009fa1afb8f5d814b4"
+      },
+      "aggregate_ok": true,
+      "options": {
+        "warmup": 66,
+        "frames": 600,
+        "seed": "42",
+        "timeoutMs": 180000
+      },
+      "order": [
+        "off",
+        "probes",
+        "sampling"
+      ],
+      "input_pins": [
+        {
+          "label": "payload",
+          "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\inventory.payload.json",
+          "bytes": 2414604,
+          "sha256": "8501c2d456d9386ddcc3e4b8227e227196eba5419cabad050f57ad0e99657efc"
+        },
+        {
+          "label": "input_sequence",
+          "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\inventory.inputs.json",
+          "bytes": 18052,
+          "sha256": "f2bcd1d7f555a9feede793726c37501a4470338d30fe20eb418d6a04bdb281e7"
+        }
+      ],
+      "host_reader_pins": [
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\runtime-core.mjs",
+          "bytes": 10218,
+          "sha256": "f38a5dce3ee3f161e25c18c8f598863e475780a6c0976ec69eb6baaec5f175b1"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\spatial-host.mjs",
+          "bytes": 5312,
+          "sha256": "4ae64136e03f490e967dad3d4eca0721e03172a5be30865b52c837b24e100e05"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\spatial-metrics.mjs",
+          "bytes": 1939,
+          "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+          "bytes": 14120,
+          "sha256": "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\world-field-publication.mjs",
+          "bytes": 1151,
+          "sha256": "fe0ff26fa6e7c40bb262c8e89d05c61cd2e0adfe9501392f468a6b08b9931090"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\ui-tree-publication.mjs",
+          "bytes": 1913,
+          "sha256": "1a83c34391c60906da1c599429266ae448fdea8a295dbeb6cb373ec9771b75ba"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\save-publication.mjs",
+          "bytes": 1266,
+          "sha256": "f559315d6ec4e75134ddda340db40e34a554b2b04bf57a1016a3c3578dcb0f66"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\retained-image-generation.mjs",
+          "bytes": 1452,
+          "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\job-pool.mjs",
+          "bytes": 6787,
+          "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\job-binary.mjs",
+          "bytes": 6407,
+          "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+        }
+      ],
+      "scenario_pin": {
+        "label": "scenario",
+        "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\inventory.scenario.json",
+        "bytes": 1803,
+        "sha256": "64f7acb00c674bdb80a7a053bb56848f8175de419a7ea4858d9ac2a998d09993"
+      },
+      "data_pins": [
+        {
+          "label": "data:data://jy/player-name-glyph-support",
+          "path": "D:\\Projects\\Unone\\.cache\\acec-gc-data-20261103\\assets\\data\\player-name-glyph-support.txt",
+          "bytes": 5248,
+          "sha256": "e490e8ee3378e03dbc269a28b3d4ec2a131eda4b3ae998333679d3251a315b37"
+        }
+      ],
+      "production_bootstrap": {
+        "scenario": "inventory",
+        "ok": true,
+        "closed": true,
+        "diagnostics": [],
+        "stderr": [],
+        "aborts": [],
+        "checkpoint_rows": 6,
+        "expected_checkpoint_checks": [
+          {
+            "after_input_index": 0,
+            "frame": 1,
+            "expected": {
+              "screen": "world"
+            },
+            "actual_public": {
+              "screen": "world",
+              "ui_window": "none",
+              "in_battle": false,
+              "position": 1,
+              "map_view_mode": "detail"
+            },
+            "passed": true
+          },
+          {
+            "after_input_index": 2,
+            "frame": 3,
+            "expected": {
+              "screen": "world",
+              "ui_window": "inventory"
+            },
+            "actual_public": {
+              "screen": "world",
+              "ui_window": "inventory",
+              "in_battle": false,
+              "position": 1,
+              "map_view_mode": "detail"
+            },
+            "passed": true
+          }
+        ],
+        "load_digest": "sha256:52c31949b9372ea27d599afed416c2a7b65ac2422f3603e9f9c1edfd2ecbe44c",
+        "load_and_frames1_to6_match_all_three_sampler_runs": true
+      },
+      "parity": {
+        "status": "independently rechecked from saved reports",
+        "frames": 667,
+        "all_digest_strings_exact": true,
+        "full_final_world_string_exact": true,
+        "full_final_save_string_exact": true,
+        "ui_final_hash_exact": true,
+        "allowlist": [],
+        "note": "Parity is OFF/probes/sampling within this frozen scenario. Production setup comparison covers load+sixsetupframes only; no production600tick run or cross-scenario state equality is invented."
+      },
+      "modes": [
+        {
+          "mode": "off",
+          "ok": true,
+          "closed": true,
+          "raw_report": {
+            "path": "D:\\Projects\\Unone\\.cache\\acec-gc-inventory-sampler-20261103-r2\\0-off\\result.json",
+            "bytes": 819714,
+            "sha256": "f70a094755a0a0fff151637c088aefb4a7d326c1fa14aaeb08dad9e3c9d29b86"
+          },
+          "logs": {
+            "command": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-off-command.json",
+              "bytes": 433,
+              "sha256": "2f7c8aeeacaea1013ae14e271d893dabac05974a6586ce2d55c848424858f4f2",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/0-command.json"
+            },
+            "stdout": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-off-stdout.log",
+              "bytes": 198,
+              "sha256": "9bcd8f03defdec40575be39ce42493241a17a8b77ea6ae2472382abc6649d710",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/0-stdout.log"
+            },
+            "stderr": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-off-stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/0-stderr.log"
+            }
+          },
+          "environment": {
+            "node": "v24.19.0",
+            "platform": "win32",
+            "arch": "x64",
+            "started_utc": "2026-11-02T22:17:26.304Z"
+          },
+          "options": {
+            "warmup": 66,
+            "frames": 600,
+            "seed": "42",
+            "input_sequence_frames": 666,
+            "data_sources": 1,
+            "mode": "off",
+            "profile_window": false,
+            "function_sampling": false
+          },
+          "command_wall": {
+            "samples": 600,
+            "total_ms": 2128.044000000001,
+            "p50_ms": 2.2673999999999523,
+            "p95_ms": 6.477300000000014,
+            "max_ms": 13.634700000000066
+          },
+          "public_phase_counts": {
+            "load": {
+              "[\"title\",\"none\",false]": 1
+            },
+            "warmup": {
+              "[\"world\",\"none\",false]": 2,
+              "[\"world\",\"inventory\",false]": 64
+            },
+            "measured": {
+              "[\"world\",\"inventory\",false]": 600
+            }
+          },
+          "measured_phase_samples": 600,
+          "synthetic_presentation_feedback_frames": 0,
+          "digest_checkpoints": 667,
+          "digest_sequence_sha256": "f784d2fba6b26882db1b16b586318ef6a59ec4e3c9fb3bbdab8522b7134e3aa4",
+          "final": {
+            "frame": 666,
+            "core_digest": "sha256:85512f41dd513e8dc5a061151b32b99279b6594a9502515e26e2eaa06329c8c6",
+            "world_sha256": "6198426c78ff50527faa02853e0768c68071b46d77428eaa0633f9e771b6bc30",
+            "ui_sha256": "c772eed751be06e1a4433391078d5303488804b76c6e216576c77e99e990b9e4",
+            "save_sha256": "7779cc6880d8ba6c4381db1d081ea053fb0b03752abbcd63040f9c410ba7ff4c"
+          },
+          "wasm_linear_capacity": {
+            "before_bytes": 50331648,
+            "after_bytes": 50331648,
+            "scope": "Linear allocation capacity; not Lua heap, RSS, bytes reachable or memory leak proof."
+          },
+          "public_luau_memory": {
+            "min_sampled_bytes": 14576558,
+            "max_sampled_bytes": 15934210,
+            "first_bytes": 14889900,
+            "last_bytes": 15934210,
+            "all_collected_false": true,
+            "all_full_gc_wall_ms_and_reclaimed_bytes_null": true,
+            "allocated_byte_samples": [
+              14889900,
+              14576558,
+              15334264,
+              14847464,
+              15467470,
+              15557667,
+              15546909,
+              15057886,
+              15128982,
+              15181720,
+              15934210
+            ],
+            "query_wall_ms_samples": [
+              0.047701,
+              0.003501,
+              0.0046,
+              0.003401,
+              0.0035,
+              0.0035,
+              0.003399,
+              0.0036,
+              0.003799,
+              0.003799,
+              0.003701
+            ]
+          },
+          "vm_gc": null,
+          "vm_counter_availability": "unavailable: profiling window inactive in the sampling-capable artifact; raw zeros do not imply no allocation/GC",
+          "core_phase_timing_available": false,
+          "function_sampling": {
+            "samples": 0,
+            "dropped_samples": 0,
+            "truncated_stacks": 0,
+            "limits": {
+              "depth": 32,
+              "functions": 1024,
+              "minimum_interval_ms": 1,
+              "stacks": 4096
+            },
+            "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+          },
+          "top_sampled_functions": [],
+          "stderr_count": 0,
+          "aborts_count": 0
+        },
+        {
+          "mode": "probes",
+          "ok": true,
+          "closed": true,
+          "raw_report": {
+            "path": "D:\\Projects\\Unone\\.cache\\acec-gc-inventory-sampler-20261103-r2\\1-probes\\result.json",
+            "bytes": 1309451,
+            "sha256": "2328673ce788c050b2bf3b0031f14a2faa5b78e874dc4d77c65b88cdcab3fef8"
+          },
+          "logs": {
+            "command": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-probes-command.json",
+              "bytes": 436,
+              "sha256": "33471c29d1043a8387214127403e8d8baf06ccf1006a4f39b4451e4ad5396437",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/1-command.json"
+            },
+            "stdout": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-probes-stdout.log",
+              "bytes": 970,
+              "sha256": "0abc1747f991d467f9913de43d78917e6318ee40d53615d8c1637ebe71008387",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/1-stdout.log"
+            },
+            "stderr": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-probes-stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/1-stderr.log"
+            }
+          },
+          "environment": {
+            "node": "v24.19.0",
+            "platform": "win32",
+            "arch": "x64",
+            "started_utc": "2026-11-02T22:17:29.060Z"
+          },
+          "options": {
+            "warmup": 66,
+            "frames": 600,
+            "seed": "42",
+            "input_sequence_frames": 666,
+            "data_sources": 1,
+            "mode": "probes",
+            "profile_window": true,
+            "function_sampling": false
+          },
+          "command_wall": {
+            "samples": 600,
+            "total_ms": 2300.0436000000027,
+            "p50_ms": 2.314200000000028,
+            "p95_ms": 7.253200000000106,
+            "max_ms": 13.725299999999606
+          },
+          "public_phase_counts": {
+            "load": {
+              "[\"title\",\"none\",false]": 1
+            },
+            "warmup": {
+              "[\"world\",\"none\",false]": 2,
+              "[\"world\",\"inventory\",false]": 64
+            },
+            "measured": {
+              "[\"world\",\"inventory\",false]": 600
+            }
+          },
+          "measured_phase_samples": 600,
+          "synthetic_presentation_feedback_frames": 0,
+          "digest_checkpoints": 667,
+          "digest_sequence_sha256": "f784d2fba6b26882db1b16b586318ef6a59ec4e3c9fb3bbdab8522b7134e3aa4",
+          "final": {
+            "frame": 666,
+            "core_digest": "sha256:85512f41dd513e8dc5a061151b32b99279b6594a9502515e26e2eaa06329c8c6",
+            "world_sha256": "6198426c78ff50527faa02853e0768c68071b46d77428eaa0633f9e771b6bc30",
+            "ui_sha256": "c772eed751be06e1a4433391078d5303488804b76c6e216576c77e99e990b9e4",
+            "save_sha256": "7779cc6880d8ba6c4381db1d081ea053fb0b03752abbcd63040f9c410ba7ff4c"
+          },
+          "wasm_linear_capacity": {
+            "before_bytes": 50331648,
+            "after_bytes": 50331648,
+            "scope": "Linear allocation capacity; not Lua heap, RSS, bytes reachable or memory leak proof."
+          },
+          "public_luau_memory": {
+            "min_sampled_bytes": 14142934,
+            "max_sampled_bytes": 15599882,
+            "first_bytes": 14403028,
+            "last_bytes": 15599882,
+            "all_collected_false": true,
+            "all_full_gc_wall_ms_and_reclaimed_bytes_null": true,
+            "allocated_byte_samples": [
+              14403028,
+              14142934,
+              14882184,
+              14462872,
+              14920774,
+              15042179,
+              15177789,
+              15016414,
+              15127302,
+              14537504,
+              15599882
+            ],
+            "query_wall_ms_samples": [
+              0.050299,
+              0.0047,
+              0.0035,
+              0.0029000000000000002,
+              0.0035,
+              0.0031999999999999997,
+              0.0034000000000000002,
+              0.0036,
+              0.0036,
+              0.003699,
+              0.002901
+            ]
+          },
+          "vm_gc": {
+            "totals": {
+              "tick_count": 600,
+              "allocation_growth_bytes": 222633197,
+              "allocation_growth_events": 2246476,
+              "incremental_gc_steps": 152834,
+              "incremental_gc_ms": 167.6057279999999,
+              "incremental_gc_max_step_ms": 0.2084
+            },
+            "per_tick_assist_wall_ms": {
+              "samples": 600,
+              "unit": "milliseconds per measured update",
+              "min": 0.048379000000000005,
+              "p50": 0.15151399999999993,
+              "p95": 0.882381,
+              "p99": 1.5368940000000022,
+              "max": 1.8570090000000001,
+              "sum": 167.60572800000003
+            },
+            "per_tick_assist_count": {
+              "samples": 600,
+              "unit": "incremental-step callbacks per measured update",
+              "min": 11,
+              "p50": 132,
+              "p95": 558,
+              "p99": 651,
+              "max": 1174,
+              "sum": 152834
+            },
+            "per_tick_largest_single_assist_ms": {
+              "samples": 600,
+              "unit": "milliseconds",
+              "min": 0.001,
+              "p50": 0.0070999999999999995,
+              "p95": 0.037698999999999996,
+              "p99": 0.048201,
+              "max": 0.2084,
+              "sum": 7.359712999999994
+            },
+            "per_tick_positive_allocation_growth": {
+              "samples": 600,
+              "unit": "bytes",
+              "min": 151920,
+              "p50": 152880,
+              "p95": 704458,
+              "p99": 915375,
+              "max": 2086805,
+              "sum": 222633197
+            }
+          },
+          "vm_counter_availability": "measured automatic incremental assists and positive growth only",
+          "core_phase_timing_available": false,
+          "function_sampling": {
+            "samples": 0,
+            "dropped_samples": 0,
+            "truncated_stacks": 0,
+            "limits": {
+              "depth": 32,
+              "functions": 1024,
+              "minimum_interval_ms": 1,
+              "stacks": 4096
+            },
+            "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+          },
+          "top_sampled_functions": [],
+          "stderr_count": 0,
+          "aborts_count": 0
+        },
+        {
+          "mode": "sampling",
+          "ok": true,
+          "closed": true,
+          "raw_report": {
+            "path": "D:\\Projects\\Unone\\.cache\\acec-gc-inventory-sampler-20261103-r2\\2-sampling\\result.json",
+            "bytes": 1428545,
+            "sha256": "5d2b08d987b4e8c1ea90680332dcc99e093b31f4bad95a69677cbe7e89b554e8"
+          },
+          "logs": {
+            "command": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-sampling-command.json",
+              "bytes": 438,
+              "sha256": "81efb09f531b46eb2093b303314ece8bcee59f4c351bfb292b719db5ebecc4d3",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/2-command.json"
+            },
+            "stdout": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-sampling-stdout.log",
+              "bytes": 979,
+              "sha256": "a4dd422626e47f3311b7f52a245f30b8762d3f74189a2d8433f9e206ef8def24",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/2-stdout.log"
+            },
+            "stderr": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/inventory-sampling-stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "original_path": ".cache/acec-gc-inventory-sampler-20261103-r2/2-stderr.log"
+            }
+          },
+          "environment": {
+            "node": "v24.19.0",
+            "platform": "win32",
+            "arch": "x64",
+            "started_utc": "2026-11-02T22:17:32.046Z"
+          },
+          "options": {
+            "warmup": 66,
+            "frames": 600,
+            "seed": "42",
+            "input_sequence_frames": 666,
+            "data_sources": 1,
+            "mode": "sampling",
+            "profile_window": true,
+            "function_sampling": true
+          },
+          "command_wall": {
+            "samples": 600,
+            "total_ms": 2401.3627999999994,
+            "p50_ms": 2.4569999999999936,
+            "p95_ms": 7.352699999999913,
+            "max_ms": 11.727200000000039
+          },
+          "public_phase_counts": {
+            "load": {
+              "[\"title\",\"none\",false]": 1
+            },
+            "warmup": {
+              "[\"world\",\"none\",false]": 2,
+              "[\"world\",\"inventory\",false]": 64
+            },
+            "measured": {
+              "[\"world\",\"inventory\",false]": 600
+            }
+          },
+          "measured_phase_samples": 600,
+          "synthetic_presentation_feedback_frames": 0,
+          "digest_checkpoints": 667,
+          "digest_sequence_sha256": "f784d2fba6b26882db1b16b586318ef6a59ec4e3c9fb3bbdab8522b7134e3aa4",
+          "final": {
+            "frame": 666,
+            "core_digest": "sha256:85512f41dd513e8dc5a061151b32b99279b6594a9502515e26e2eaa06329c8c6",
+            "world_sha256": "6198426c78ff50527faa02853e0768c68071b46d77428eaa0633f9e771b6bc30",
+            "ui_sha256": "c772eed751be06e1a4433391078d5303488804b76c6e216576c77e99e990b9e4",
+            "save_sha256": "7779cc6880d8ba6c4381db1d081ea053fb0b03752abbcd63040f9c410ba7ff4c"
+          },
+          "wasm_linear_capacity": {
+            "before_bytes": 50331648,
+            "after_bytes": 50331648,
+            "scope": "Linear allocation capacity; not Lua heap, RSS, bytes reachable or memory leak proof."
+          },
+          "public_luau_memory": {
+            "min_sampled_bytes": 14222662,
+            "max_sampled_bytes": 15567418,
+            "first_bytes": 14552364,
+            "last_bytes": 15567418,
+            "all_collected_false": true,
+            "all_full_gc_wall_ms_and_reclaimed_bytes_null": true,
+            "allocated_byte_samples": [
+              14552364,
+              14222662,
+              15002272,
+              14532432,
+              15207134,
+              15304011,
+              15500541,
+              15008326,
+              15226374,
+              14603808,
+              15567418
+            ],
+            "query_wall_ms_samples": [
+              0.0493,
+              0.003201,
+              0.0034000000000000002,
+              0.0029000000000000002,
+              0.0029000000000000002,
+              0.003,
+              0.0035,
+              0.003499,
+              0.003499,
+              0.0029000000000000002,
+              0.0036
+            ]
+          },
+          "vm_gc": {
+            "totals": {
+              "tick_count": 600,
+              "allocation_growth_bytes": 222553927,
+              "allocation_growth_events": 2245394,
+              "incremental_gc_steps": 152700,
+              "incremental_gc_ms": 164.71997800000003,
+              "incremental_gc_max_step_ms": 0.104301
+            },
+            "per_tick_assist_wall_ms": {
+              "samples": 600,
+              "unit": "milliseconds per measured update",
+              "min": 0.053006000000000025,
+              "p50": 0.15149500000000007,
+              "p95": 0.9864830000000001,
+              "p99": 1.5123049999999998,
+              "max": 1.7909189999999988,
+              "sum": 164.7199780000001
+            },
+            "per_tick_assist_count": {
+              "samples": 600,
+              "unit": "incremental-step callbacks per measured update",
+              "min": 14,
+              "p50": 131,
+              "p95": 558,
+              "p99": 649,
+              "max": 1174,
+              "sum": 152700
+            },
+            "per_tick_largest_single_assist_ms": {
+              "samples": 600,
+              "unit": "milliseconds",
+              "min": 0.000999,
+              "p50": 0.0072,
+              "p95": 0.035899,
+              "p99": 0.0445,
+              "max": 0.104301,
+              "sum": 6.872754999999993
+            },
+            "per_tick_positive_allocation_growth": {
+              "samples": 600,
+              "unit": "bytes",
+              "min": 151920,
+              "p50": 152880,
+              "p95": 703825,
+              "p99": 941174,
+              "max": 2086805,
+              "sum": 222553927
+            }
+          },
+          "vm_counter_availability": "measured automatic incremental assists and positive growth only",
+          "core_phase_timing_available": false,
+          "function_sampling": {
+            "samples": 1419,
+            "dropped_samples": 0,
+            "truncated_stacks": 0,
+            "limits": {
+              "depth": 32,
+              "functions": 1024,
+              "minimum_interval_ms": 1,
+              "stacks": 4096
+            },
+            "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+          },
+          "top_sampled_functions": [
+            {
+              "key": "scripts/main.luau:15728:<anonymous>",
+              "inclusive_samples": 107,
+              "line": 15728,
+              "name": "<anonymous>",
+              "self_samples": 92,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:15524:collectMapCell",
+              "inclusive_samples": 201,
+              "line": 15524,
+              "name": "collectMapCell",
+              "self_samples": 86,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:20035:update",
+              "inclusive_samples": 1419,
+              "line": 20035,
+              "name": "update",
+              "self_samples": 85,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:5718:update",
+              "inclusive_samples": 151,
+              "line": 5718,
+              "name": "update",
+              "self_samples": 77,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:19251:process",
+              "inclusive_samples": 108,
+              "line": 19251,
+              "name": "process",
+              "self_samples": 54,
+              "source": "scripts/main.luau"
+            }
+          ],
+          "stderr_count": 0,
+          "aborts_count": 0
+        }
+      ],
+      "runtime_identity": "See sampler_runtime; identical sampler metadata/pins across both cases."
+    },
+    "battle": {
+      "aggregate": {
+        "path": ".cache/acec-gc-battle-sampler-20261103/result.json",
+        "bytes": 557506,
+        "sha256": "35c0e3ff224c4c7aee2b5caba383ccc3156103b805e26569b08073c00887b34b"
+      },
+      "aggregate_ok": true,
+      "options": {
+        "warmup": 66,
+        "frames": 600,
+        "seed": "42",
+        "timeoutMs": 180000
+      },
+      "order": [
+        "off",
+        "probes",
+        "sampling"
+      ],
+      "input_pins": [
+        {
+          "label": "payload",
+          "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\battle.payload.json",
+          "bytes": 2415209,
+          "sha256": "b86bca68489a7ee36285cfd9b0bcf306b5413e993bb2f1be006695d394ede7ba"
+        },
+        {
+          "label": "input_sequence",
+          "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\battle.inputs.json",
+          "bytes": 18074,
+          "sha256": "c54aa24e7ebc5b2c1052760d61d5c6ad6b4281bdf8b617bc9ae6352e571e8b73"
+        }
+      ],
+      "host_reader_pins": [
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\runtime-core.mjs",
+          "bytes": 10218,
+          "sha256": "f38a5dce3ee3f161e25c18c8f598863e475780a6c0976ec69eb6baaec5f175b1"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\spatial-host.mjs",
+          "bytes": 5312,
+          "sha256": "4ae64136e03f490e967dad3d4eca0721e03172a5be30865b52c837b24e100e05"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\spatial-metrics.mjs",
+          "bytes": 1939,
+          "sha256": "82dcf44034026f774b57fc3e3c38b252c972222e9ef6c804b861e7eb00908ff2"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\load-project.js",
+          "bytes": 14120,
+          "sha256": "e11855466f0f8bf35b77c695aa843ca96ff403c0fbe67445b3864e2bd4190e1c"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\world-field-publication.mjs",
+          "bytes": 1151,
+          "sha256": "fe0ff26fa6e7c40bb262c8e89d05c61cd2e0adfe9501392f468a6b08b9931090"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\ui-tree-publication.mjs",
+          "bytes": 1913,
+          "sha256": "1a83c34391c60906da1c599429266ae448fdea8a295dbeb6cb373ec9771b75ba"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\save-publication.mjs",
+          "bytes": 1266,
+          "sha256": "f559315d6ec4e75134ddda340db40e34a554b2b04bf57a1016a3c3578dcb0f66"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\retained-image-generation.mjs",
+          "bytes": 1452,
+          "sha256": "d8868d57831d10b099e114bdc46b224b4ed870fab755aeea0d0921ee7c43fe2c"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\job-pool.mjs",
+          "bytes": 6787,
+          "sha256": "18037411e6db13d264148555bb70e986632dfe7bb68776fc4f6702bbb96379d9"
+        },
+        {
+          "label": "host_source",
+          "path": "D:\\Projects\\Unone\\web\\shared\\job-binary.mjs",
+          "bytes": 6407,
+          "sha256": "e3fe9f2765449749f6a4dce8cb128c09619bc0f8c1546b40940a993be0df482f"
+        }
+      ],
+      "scenario_pin": {
+        "label": "scenario",
+        "path": "D:\\Projects\\JYRogue\\game\\evidence\\engine-upgrade-20261103\\atlas-input-gate\\engine-gc-fixtures\\battle.scenario.json",
+        "bytes": 1854,
+        "sha256": "918eb4fc22bafd462f41c58cea5da645af0adb8e6c125ee8f6206a526ef23434"
+      },
+      "data_pins": [
+        {
+          "label": "data:data://jy/player-name-glyph-support",
+          "path": "D:\\Projects\\Unone\\.cache\\acec-gc-data-20261103\\assets\\data\\player-name-glyph-support.txt",
+          "bytes": 5248,
+          "sha256": "e490e8ee3378e03dbc269a28b3d4ec2a131eda4b3ae998333679d3251a315b37"
+        }
+      ],
+      "production_bootstrap": {
+        "scenario": "battle",
+        "ok": true,
+        "closed": true,
+        "diagnostics": [],
+        "stderr": [],
+        "aborts": [],
+        "checkpoint_rows": 6,
+        "expected_checkpoint_checks": [
+          {
+            "after_input_index": 0,
+            "frame": 1,
+            "expected": {
+              "screen": "world",
+              "position": 8
+            },
+            "actual_public": {
+              "screen": "world",
+              "ui_window": "none",
+              "in_battle": false,
+              "position": 8,
+              "map_view_mode": "detail"
+            },
+            "passed": true
+          },
+          {
+            "after_input_index": 4,
+            "frame": 5,
+            "expected": {
+              "screen": "battle",
+              "in_battle": true
+            },
+            "actual_public": {
+              "screen": "battle",
+              "ui_window": "none",
+              "in_battle": true,
+              "position": 8,
+              "map_view_mode": "detail"
+            },
+            "passed": true
+          }
+        ],
+        "load_digest": "sha256:dc6c633dd4025ad49cbfeec98b63dbdb608fd10ae529db1b6606f94044904fd3",
+        "load_and_frames1_to6_match_all_three_sampler_runs": true
+      },
+      "parity": {
+        "status": "independently rechecked from saved reports",
+        "frames": 667,
+        "all_digest_strings_exact": true,
+        "full_final_world_string_exact": true,
+        "full_final_save_string_exact": true,
+        "ui_final_hash_exact": true,
+        "allowlist": [],
+        "note": "Parity is OFF/probes/sampling within this frozen scenario. Production setup comparison covers load+sixsetupframes only; no production600tick run or cross-scenario state equality is invented."
+      },
+      "modes": [
+        {
+          "mode": "off",
+          "ok": true,
+          "closed": true,
+          "raw_report": {
+            "path": "D:\\Projects\\Unone\\.cache\\acec-gc-battle-sampler-20261103\\0-off\\result.json",
+            "bytes": 630945,
+            "sha256": "ac1b34f3321010633b588d0ddb6cbddd4e4b1b6fbb3de2d17293547389d60d30"
+          },
+          "logs": {
+            "command": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-off-command.json",
+              "bytes": 421,
+              "sha256": "7ae858e5c807d99117fdca96aabaae5eb868ee6275d0da48db9124924fb76a78",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/0-command.json"
+            },
+            "stdout": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-off-stdout.log",
+              "bytes": 198,
+              "sha256": "40a13053f538842d040dbfe3cd1bcbc0e82fa6487d57a17be0d472c766f136a8",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/0-stdout.log"
+            },
+            "stderr": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-off-stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/0-stderr.log"
+            }
+          },
+          "environment": {
+            "node": "v24.19.0",
+            "platform": "win32",
+            "arch": "x64",
+            "started_utc": "2026-11-02T22:17:46.519Z"
+          },
+          "options": {
+            "warmup": 66,
+            "frames": 600,
+            "seed": "42",
+            "input_sequence_frames": 666,
+            "data_sources": 1,
+            "mode": "off",
+            "profile_window": false,
+            "function_sampling": false
+          },
+          "command_wall": {
+            "samples": 600,
+            "total_ms": 2075.2395000000024,
+            "p50_ms": 3.168600000000083,
+            "p95_ms": 4.671100000000024,
+            "max_ms": 12.052599999999984
+          },
+          "public_phase_counts": {
+            "load": {
+              "[\"title\",\"none\",false]": 1
+            },
+            "warmup": {
+              "[\"world\",\"none\",false]": 4,
+              "[\"battle\",\"none\",true]": 62
+            },
+            "measured": {
+              "[\"battle\",\"none\",true]": 600
+            }
+          },
+          "measured_phase_samples": 600,
+          "synthetic_presentation_feedback_frames": 0,
+          "digest_checkpoints": 667,
+          "digest_sequence_sha256": "20ea5099dbc86b2fced43b9cade1770dbe723b25fa7ddc3469842d2405756894",
+          "final": {
+            "frame": 666,
+            "core_digest": "sha256:f8825d3dbb3e52c17b5ef2936a317b5ceeb90ff93f980e51eca4909cc2d20409",
+            "world_sha256": "5e43691f77b0748ccc1010f259ddf19ea190edd106c576f85dc0de04f9ab1853",
+            "ui_sha256": "e05cc5614b841dad4bc439d0d9a8afca2cca26cf0c42d41ed2a14d2626884564",
+            "save_sha256": "d4f777e9e4a3b194bed63e21483a1230d287ab3db2d9cf45dc173e852969e7c5"
+          },
+          "wasm_linear_capacity": {
+            "before_bytes": 50331648,
+            "after_bytes": 50331648,
+            "scope": "Linear allocation capacity; not Lua heap, RSS, bytes reachable or memory leak proof."
+          },
+          "public_luau_memory": {
+            "min_sampled_bytes": 14433221,
+            "max_sampled_bytes": 16449716,
+            "first_bytes": 14530427,
+            "last_bytes": 16073222,
+            "all_collected_false": true,
+            "all_full_gc_wall_ms_and_reclaimed_bytes_null": true,
+            "allocated_byte_samples": [
+              14530427,
+              14433221,
+              15749913,
+              15910913,
+              15504733,
+              16449716,
+              14892814,
+              15912723,
+              15289402,
+              15081151,
+              16073222
+            ],
+            "query_wall_ms_samples": [
+              0.048600000000000004,
+              0.003,
+              0.0037,
+              0.0039,
+              0.003401,
+              0.0027010000000000003,
+              0.0033,
+              0.0037,
+              0.003499,
+              0.003401,
+              0.005201
+            ]
+          },
+          "vm_gc": null,
+          "vm_counter_availability": "unavailable: profiling window inactive in the sampling-capable artifact; raw zeros do not imply no allocation/GC",
+          "core_phase_timing_available": false,
+          "function_sampling": {
+            "samples": 0,
+            "dropped_samples": 0,
+            "truncated_stacks": 0,
+            "limits": {
+              "depth": 32,
+              "functions": 1024,
+              "minimum_interval_ms": 1,
+              "stacks": 4096
+            },
+            "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+          },
+          "top_sampled_functions": [],
+          "stderr_count": 0,
+          "aborts_count": 0
+        },
+        {
+          "mode": "probes",
+          "ok": true,
+          "closed": true,
+          "raw_report": {
+            "path": "D:\\Projects\\Unone\\.cache\\acec-gc-battle-sampler-20261103\\1-probes\\result.json",
+            "bytes": 1120375,
+            "sha256": "97b3fa8a8fd43c02dbbeddc90fc011e5d0e2da0acd4e42e52b12015e00266912"
+          },
+          "logs": {
+            "command": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-probes-command.json",
+              "bytes": 424,
+              "sha256": "289583263c08fcdb06a4e6c70ee17827674d291e7e0ad40e8662f9b79a25b625",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/1-command.json"
+            },
+            "stdout": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-probes-stdout.log",
+              "bytes": 970,
+              "sha256": "e6c970af07980a65c1566b924261ca7ff1dd3f0b04e7f86d0b1d0783c0b21c3d",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/1-stdout.log"
+            },
+            "stderr": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-probes-stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/1-stderr.log"
+            }
+          },
+          "environment": {
+            "node": "v24.19.0",
+            "platform": "win32",
+            "arch": "x64",
+            "started_utc": "2026-11-02T22:17:49.305Z"
+          },
+          "options": {
+            "warmup": 66,
+            "frames": 600,
+            "seed": "42",
+            "input_sequence_frames": 666,
+            "data_sources": 1,
+            "mode": "probes",
+            "profile_window": true,
+            "function_sampling": false
+          },
+          "command_wall": {
+            "samples": 600,
+            "total_ms": 2111.7301999999963,
+            "p50_ms": 3.2520000000004075,
+            "p95_ms": 4.493799999999965,
+            "max_ms": 13.192900000000009
+          },
+          "public_phase_counts": {
+            "load": {
+              "[\"title\",\"none\",false]": 1
+            },
+            "warmup": {
+              "[\"world\",\"none\",false]": 4,
+              "[\"battle\",\"none\",true]": 62
+            },
+            "measured": {
+              "[\"battle\",\"none\",true]": 600
+            }
+          },
+          "measured_phase_samples": 600,
+          "synthetic_presentation_feedback_frames": 0,
+          "digest_checkpoints": 667,
+          "digest_sequence_sha256": "20ea5099dbc86b2fced43b9cade1770dbe723b25fa7ddc3469842d2405756894",
+          "final": {
+            "frame": 666,
+            "core_digest": "sha256:f8825d3dbb3e52c17b5ef2936a317b5ceeb90ff93f980e51eca4909cc2d20409",
+            "world_sha256": "5e43691f77b0748ccc1010f259ddf19ea190edd106c576f85dc0de04f9ab1853",
+            "ui_sha256": "e05cc5614b841dad4bc439d0d9a8afca2cca26cf0c42d41ed2a14d2626884564",
+            "save_sha256": "d4f777e9e4a3b194bed63e21483a1230d287ab3db2d9cf45dc173e852969e7c5"
+          },
+          "wasm_linear_capacity": {
+            "before_bytes": 50331648,
+            "after_bytes": 50331648,
+            "scope": "Linear allocation capacity; not Lua heap, RSS, bytes reachable or memory leak proof."
+          },
+          "public_luau_memory": {
+            "min_sampled_bytes": 14492009,
+            "max_sampled_bytes": 16540907,
+            "first_bytes": 15164955,
+            "last_bytes": 16488854,
+            "all_collected_false": true,
+            "all_full_gc_wall_ms_and_reclaimed_bytes_null": true,
+            "allocated_byte_samples": [
+              15164955,
+              15032981,
+              16462921,
+              14492009,
+              15978031,
+              14795516,
+              15527118,
+              16540907,
+              15618914,
+              15160396,
+              16488854
+            ],
+            "query_wall_ms_samples": [
+              0.0479,
+              0.0043,
+              0.0039009999999999995,
+              0.003899,
+              0.0045000000000000005,
+              0.003399,
+              0.003699,
+              0.0036,
+              0.003701,
+              0.004301,
+              0.0036
+            ]
+          },
+          "vm_gc": {
+            "totals": {
+              "tick_count": 600,
+              "allocation_growth_bytes": 131363462,
+              "allocation_growth_events": 1172771,
+              "incremental_gc_steps": 86755,
+              "incremental_gc_ms": 98.03705799999992,
+              "incremental_gc_max_step_ms": 0.1295
+            },
+            "per_tick_assist_wall_ms": {
+              "samples": 600,
+              "unit": "milliseconds per measured update",
+              "min": 0.07680399999999998,
+              "p50": 0.12199900000000005,
+              "p95": 0.461903,
+              "p99": 0.7835960000000002,
+              "max": 1.2209069999999995,
+              "sum": 98.03705799999993
+            },
+            "per_tick_assist_count": {
+              "samples": 600,
+              "unit": "incremental-step callbacks per measured update",
+              "min": 7,
+              "p50": 148,
+              "p95": 217,
+              "p99": 346,
+              "max": 915,
+              "sum": 86755
+            },
+            "per_tick_largest_single_assist_ms": {
+              "samples": 600,
+              "unit": "milliseconds",
+              "min": 0.000999,
+              "p50": 0.006101,
+              "p95": 0.036399999999999995,
+              "p99": 0.071401,
+              "max": 0.1295,
+              "sum": 6.813831000000002
+            },
+            "per_tick_positive_allocation_growth": {
+              "samples": 600,
+              "unit": "bytes",
+              "min": 179184,
+              "p50": 203192,
+              "p95": 329217,
+              "p99": 479100,
+              "max": 1604654,
+              "sum": 131363462
+            }
+          },
+          "vm_counter_availability": "measured automatic incremental assists and positive growth only",
+          "core_phase_timing_available": false,
+          "function_sampling": {
+            "samples": 0,
+            "dropped_samples": 0,
+            "truncated_stacks": 0,
+            "limits": {
+              "depth": 32,
+              "functions": 1024,
+              "minimum_interval_ms": 1,
+              "stacks": 4096
+            },
+            "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+          },
+          "top_sampled_functions": [],
+          "stderr_count": 0,
+          "aborts_count": 0
+        },
+        {
+          "mode": "sampling",
+          "ok": true,
+          "closed": true,
+          "raw_report": {
+            "path": "D:\\Projects\\Unone\\.cache\\acec-gc-battle-sampler-20261103\\2-sampling\\result.json",
+            "bytes": 1213672,
+            "sha256": "1e7b6828eced448959392684e5b0990207aab76ec2344ccd21f3b6a220bfc643"
+          },
+          "logs": {
+            "command": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-sampling-command.json",
+              "bytes": 426,
+              "sha256": "6187f68070a8e57a6dcfb47a763018790688d466210e66496962b0b95f925922",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/2-command.json"
+            },
+            "stdout": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-sampling-stdout.log",
+              "bytes": 975,
+              "sha256": "719fa2660be82f24877f6f063cb76f6313c0b1821ebe83d93874751e08fc734f",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/2-stdout.log"
+            },
+            "stderr": {
+              "path": "docs/evidence/2026-11-03-shared-ui/acec-vm-gc/battle-sampling-stderr.log",
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "original_path": ".cache/acec-gc-battle-sampler-20261103/2-stderr.log"
+            }
+          },
+          "environment": {
+            "node": "v24.19.0",
+            "platform": "win32",
+            "arch": "x64",
+            "started_utc": "2026-11-02T22:17:52.151Z"
+          },
+          "options": {
+            "warmup": 66,
+            "frames": 600,
+            "seed": "42",
+            "input_sequence_frames": 666,
+            "data_sources": 1,
+            "mode": "sampling",
+            "profile_window": true,
+            "function_sampling": true
+          },
+          "command_wall": {
+            "samples": 600,
+            "total_ms": 2227.8608000000027,
+            "p50_ms": 3.4500000000000455,
+            "p95_ms": 4.9766000000001895,
+            "max_ms": 13.44659999999999
+          },
+          "public_phase_counts": {
+            "load": {
+              "[\"title\",\"none\",false]": 1
+            },
+            "warmup": {
+              "[\"world\",\"none\",false]": 4,
+              "[\"battle\",\"none\",true]": 62
+            },
+            "measured": {
+              "[\"battle\",\"none\",true]": 600
+            }
+          },
+          "measured_phase_samples": 600,
+          "synthetic_presentation_feedback_frames": 0,
+          "digest_checkpoints": 667,
+          "digest_sequence_sha256": "20ea5099dbc86b2fced43b9cade1770dbe723b25fa7ddc3469842d2405756894",
+          "final": {
+            "frame": 666,
+            "core_digest": "sha256:f8825d3dbb3e52c17b5ef2936a317b5ceeb90ff93f980e51eca4909cc2d20409",
+            "world_sha256": "5e43691f77b0748ccc1010f259ddf19ea190edd106c576f85dc0de04f9ab1853",
+            "ui_sha256": "e05cc5614b841dad4bc439d0d9a8afca2cca26cf0c42d41ed2a14d2626884564",
+            "save_sha256": "d4f777e9e4a3b194bed63e21483a1230d287ab3db2d9cf45dc173e852969e7c5"
+          },
+          "wasm_linear_capacity": {
+            "before_bytes": 50331648,
+            "after_bytes": 50331648,
+            "scope": "Linear allocation capacity; not Lua heap, RSS, bytes reachable or memory leak proof."
+          },
+          "public_luau_memory": {
+            "min_sampled_bytes": 14487737,
+            "max_sampled_bytes": 16508862,
+            "first_bytes": 15164731,
+            "last_bytes": 16508862,
+            "all_collected_false": true,
+            "all_full_gc_wall_ms_and_reclaimed_bytes_null": true,
+            "allocated_byte_samples": [
+              15164731,
+              14950981,
+              16331017,
+              14487737,
+              15830567,
+              14660540,
+              15412622,
+              16426387,
+              15479346,
+              14999652,
+              16508862
+            ],
+            "query_wall_ms_samples": [
+              0.0505,
+              0.003699,
+              0.0027,
+              0.002999,
+              0.0038,
+              0.0035,
+              0.003,
+              0.0036,
+              0.003101,
+              0.003499,
+              0.0067
+            ]
+          },
+          "vm_gc": {
+            "totals": {
+              "tick_count": 600,
+              "allocation_growth_bytes": 131385335,
+              "allocation_growth_events": 1172886,
+              "incremental_gc_steps": 86677,
+              "incremental_gc_ms": 96.83875899999997,
+              "incremental_gc_max_step_ms": 0.0931
+            },
+            "per_tick_assist_wall_ms": {
+              "samples": 600,
+              "unit": "milliseconds per measured update",
+              "min": 0.07408899999999999,
+              "p50": 0.12070700000000009,
+              "p95": 0.4253980000000001,
+              "p99": 0.7941089999999998,
+              "max": 1.291478,
+              "sum": 96.83875900000001
+            },
+            "per_tick_assist_count": {
+              "samples": 600,
+              "unit": "incremental-step callbacks per measured update",
+              "min": 6,
+              "p50": 149,
+              "p95": 217,
+              "p99": 347,
+              "max": 915,
+              "sum": 86677
+            },
+            "per_tick_largest_single_assist_ms": {
+              "samples": 600,
+              "unit": "milliseconds",
+              "min": 0.001,
+              "p50": 0.0061,
+              "p95": 0.0324,
+              "p99": 0.0662,
+              "max": 0.0931,
+              "sum": 6.647297000000007
+            },
+            "per_tick_positive_allocation_growth": {
+              "samples": 600,
+              "unit": "bytes",
+              "min": 179184,
+              "p50": 203432,
+              "p95": 329217,
+              "p99": 486490,
+              "max": 1604718,
+              "sum": 131385335
+            }
+          },
+          "vm_counter_availability": "measured automatic incremental assists and positive growth only",
+          "core_phase_timing_available": false,
+          "function_sampling": {
+            "samples": 1293,
+            "dropped_samples": 0,
+            "truncated_stacks": 0,
+            "limits": {
+              "depth": 32,
+              "functions": 1024,
+              "minimum_interval_ms": 1,
+              "stacks": 4096
+            },
+            "semantics": "VM-safe-point sample counts, not exact function milliseconds or call counts. Native calls and GC are not asynchronously sampled. Short functions, inlining and safe-point placement can bias attribution; compare with sampling disabled."
+          },
+          "top_sampled_functions": [
+            {
+              "key": "scripts/main.luau:11650:snapshot",
+              "inclusive_samples": 163,
+              "line": 11650,
+              "name": "snapshot",
+              "self_samples": 163,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:19309:exploration",
+              "inclusive_samples": 297,
+              "line": 19309,
+              "name": "exploration",
+              "self_samples": 121,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:19878:processActions",
+              "inclusive_samples": 274,
+              "line": 19878,
+              "name": "processActions",
+              "self_samples": 108,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:20035:update",
+              "inclusive_samples": 1293,
+              "line": 20035,
+              "name": "update",
+              "self_samples": 77,
+              "source": "scripts/main.luau"
+            },
+            {
+              "key": "scripts/main.luau:7346:observe",
+              "inclusive_samples": 115,
+              "line": 7346,
+              "name": "observe",
+              "self_samples": 67,
+              "source": "scripts/main.luau"
+            }
+          ],
+          "stderr_count": 0,
+          "aborts_count": 0
+        }
+      ],
+      "runtime_identity": "See sampler_runtime; identical sampler metadata/pins across both cases."
+    }
+  },
+  "interpretation": {
+    "fresh_sampler_vms": 6,
+    "all_closed": true,
+    "warmup_ticks_each": 66,
+    "measured_ticks_each": 600,
+    "digests_each": 667,
+    "public_phase": "All600measured inventory frames remain world/inventory/nonbattle; all600battle frames remain battle/in_battle=true, in every mode. Normal HP/damage/NPC/save rules stay live; no healing, restart, forced active state or fake host feedback is used.",
+    "allocator_growth": "Probes inventory222633197B/2246476positive-growth events; battle131363462B/1172771events. This is sum(max(new_size-old_size,0)) on successful Luau allocator requests, excluding frees and Rust/JS allocations; not live heap or net memory growth.",
+    "incremental_gc": "Probes observe152834inventory and86755battle paired incremental-step callbacks, totals167.605728/98.037058ms and largest single callbacks.2084/.1295ms. Callback counts are not full collection cycles, collection frequency or stop-the-world pause counts. Instrumentation/scheduling affects measured assist wall time; full_gc_ms remains unsupported/null.",
+    "heap": {
+      "sample_count_per_vm": 11,
+      "total_samples": 66,
+      "min_sampled_lua_allocated_bytes": 14142934,
+      "max_sampled_lua_allocated_bytes": 16540907,
+      "scope": "About14.14–16.54 decimalMB across coarse boundary samples. These are current VMallocated bytes including not-yet-collected objects/capacity, not a post-GC reachable-live baseline or continuous peak.48MiB WASM linear capacity is a different quantity."
+    },
+    "performance": "Command wall values are retained only as diagnostic context. Three modes ran in fixed OFF/probes/sampling order on a shared machine and use a sampling-capable opt2artifact. No causal mode-overhead, productionFPS or no-frequent-GC verdict is established.",
+    "function_samples": "Top functions are safe-point self/inclusive sample counts and definition lines, not function timings/call counts; opt2inlining/native callbacks bias attribution. No olderR2workload is used as an A/B control.",
+    "unresolved": "No frequent-GC requirement, fullGCtime/frequency, JS/driverGC, global leak freedom, GPU residency/rendering, Native execution or completeSDK acceptance is proved.",
+    "command_wall_scope": "Timer wraps await core.execute(tick,input), including input acceptance, WASM tick, publication/restore and its JS continuation. Full final encoding, digest comparison and periodic memory_sample developer calls are outside the command timer; those calls can affect subsequent work. This is not tick-ABI-only or FPS.",
+    "public_heap_method": "Existing developer memory_sample with collect:false,warmup:false;11 calls at frame66 and every60measuredticks, outside command timing. Not a post-full-GC baseline or continuous peak/live-heap measurement.",
+    "public_heap_sample_frames": [
+      66,
+      126,
+      186,
+      246,
+      306,
+      366,
+      426,
+      486,
+      546,
+      606,
+      666
+    ],
+    "vm_measurement_methods": {
+      "scope": "Luau update call, including engine callbacks; manual tools and load/start are excluded",
+      "availability": {
+        "allocation_growth": "measured",
+        "full_gc_wall_time": "unsupported",
+        "incremental_gc_wall_time": "measured",
+        "js_gc": "not-applicable",
+        "rust_allocations": "not-collected"
+      },
+      "allocation_method": "Luau onallocate: sum(max(new_size-old_size,0)) on successful requests; excludes frees, allocator overhead and Rust/JS allocations",
+      "gc_method": "Luau paired incremental-step interrupts; includes automatic assists, excludes full collections; timing includes instrumentation overhead"
+    },
+    "native_scope": "No Native executable or Cargo build/test was used. Current local Windows Native delivery remains affected by recorded App-Control4551 limitations; this evidence neither retries nor turns it into Native acceptance.",
+    "no_frequent_gc_requirement": "Not established: incremental-step callback counts and coarse allocated-byte snapshots do not measure full collection frequency or prove low pause frequency."
+  },
+  "preservation": "Only this new compact evidence and bounded harness/log copies are written. No Game payload, full final World/save or large profile JSON is copied; original failed and successful reports remain in cache with byte hashes. This evidence-writing step executes no Core/GPU/test/Native/Cargo workload.",
+  "sampler_runtime": {
+    "runtime_pins": {
+      "manifest": "cee5c6e99c708078e7ac19ce063f2076b8f6c552c8847c6f99ea7f7a8f47e44e",
+      "source": "2093abf9995297e8753b9703e3e7a3614a71cba9",
+      "javascript": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+      "wasm": "b4fd6ab3b4d78ca29acd8921eaa770747894a6aad251dafe8c892c19e8eba15d"
+    },
+    "metadata": {
+      "compiled_systems": [
+        "audio",
+        "camera2d",
+        "camera3d",
+        "effekseer",
+        "input",
+        "jobs",
+        "observation",
+        "particle",
+        "physics2d",
+        "physics3d",
+        "random",
+        "save",
+        "spine",
+        "ui",
+        "world"
+      ],
+      "runtime_packages": {
+        "@unone/ui": "0.6.0"
+      },
+      "cargo_features": [
+        "all-systems",
+        "sampling-profile"
+      ],
+      "profile": "release",
+      "dev_tools": false,
+      "preview_tools": true,
+      "phase_profile": false,
+      "sampling_profile": true,
+      "bytecode_optimization_level": 2,
+      "profile_mode": "opt2-sampling",
+      "javascript": "unone-player.js",
+      "wasm": "unone_player.wasm",
+      "wasm_bytes": 5616391,
+      "wasm_sha256": "b4fd6ab3b4d78ca29acd8921eaa770747894a6aad251dafe8c892c19e8eba15d",
+      "javascript_sha256": "906aa2519c1edd8d5b92e5b549adca839ee6c1ad2fedef58b028ccd47cd0c28f",
+      "exports": [
+        "init",
+        "alloc",
+        "stage_data",
+        "load_project",
+        "unload_project",
+        "set_save_payload",
+        "set_input_frame",
+        "set_viewport_aspect",
+        "set_viewport_size",
+        "set_instance_transport",
+        "set_ui_transport",
+        "tick",
+        "ui_request",
+        "jobs_request",
+        "jobs_binary",
+        "spatial_request",
+        "host_time_request",
+        "sprite_resources_request",
+        "observation_ptr",
+        "observation_len",
+        "developer_request",
+        "particle_alloc",
+        "particle_sample",
+        "particle_output_ptr",
+        "particle_output_len"
+      ],
+      "source_commit": "2093abf9995297e8753b9703e3e7a3614a71cba9",
+      "source_dirty": false
+    }
+  },
+  "sampler_limits": [
+    "OFF is the same sampling-capable artifact with profiling window inactive; it is not an ordinary production artifact. Raw OFF zero counters are unavailable observations, not zero allocation or GC.",
+    "Probes/sampling active VM counters cover Luau update including engine callbacks. Positive allocator growth is cumulative requests, not live heap, frees, Rust allocation or JavaScript allocation.",
+    "Incremental GC interrupt timing includes instrumentation/host scheduling overhead and excludes full collections. Per-frame overlap does not establish all GC causes or OS pause time.",
+    "Function counts are biased safe-point samples, not exact function milliseconds or call counts. Opt2 inlining, short functions and native bindings are not fully attributed; preserve dropped/truncated/sample metadata.",
+    "Three fixed-order runs do not establish causal performance improvement. Concurrent chats/machine work may overlap; no exclusive-window/FPS claim.",
+    "Only digest strings and frame scalars are checked after each timed command; full final World/UI/save encoding and profile report happen after timing.",
+    "Public phase history records natural battle termination; never force activity, restart, heal or synthesize GPU receipts. All memory_sample calls explicitly use collect:false; raw used heap is not a post-GC retained baseline. Periodic heap diagnostic calls occur outside command timing and can affect the following workload. WASM linear-memory capacity is not live memory, allocation growth, GC frequency or leak proof. No forced collection, replacement API, renderer or Native executable is used."
+  ]
+}

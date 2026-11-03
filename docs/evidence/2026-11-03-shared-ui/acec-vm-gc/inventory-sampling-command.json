@@ -1,0 +1,10 @@
+{
+  "executable": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "args": [
+    "D:\\Projects\\Unone\\.cache\\profile-core-sampler-acec-wasm-20261103.mjs",
+    "--worker",
+    "D:\\Projects\\Unone\\.cache\\acec-gc-inventory-sampler-20261103-r2\\2-input.json",
+    "D:\\Projects\\Unone\\.cache\\acec-gc-inventory-sampler-20261103-r2\\2-sampling"
+  ],
+  "cwd": "D:\\Projects\\Unone"
+}

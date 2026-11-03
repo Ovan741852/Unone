@@ -1,0 +1,252 @@
+diff --git a/web/player/main.js b/web/player/main.js
+index 841636c..66d8941 100644
+--- a/web/player/main.js
++++ b/web/player/main.js
+@@ -66,16 +66,22 @@ function reportPerformanceFeedError(error){
+ function disposePerformanceFeed(){
+  const retiring=performanceFeed;performanceFeed=null;
+  try{retiring?.dispose();}catch(error){reportPerformanceFeedError(error);}
+ }
+ let orderedQueue=null,orderedRouter=null,orderedEpoch=0,physicalProfile;
+ // Explicit opt-in host profiling (?unone_profile=1). Null when disabled: each site is one branch.
+ let profiler=null,profileFlight=null,profileLastSource=null;
+ /* PROFILE_INIT */
++function recordSchedulerWake(wake){
++ if(!profiler)return;
++ const {error,...attrs}=wake;if(error)attrs.error=error;
++ try{profiler.record('wake',wake.cancelled?'cancelled':error?'error':'ok',attrs);}
++ catch(error){try{document.body.dataset.playerProfileError=String(error?.message??error).slice(0,128);}catch{}}
++}
+ const metrics={};
+ const startupAbort=new AbortController();
+ const disposeRenderer=createRendererDisposer();
+ function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+ function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
+ function configurePhysical(){
+  textInputs.setExternalInput(Boolean(physicalProfile));
+  if(!physicalProfile)return;orderedRouter?.dispose();orderedQueue=createOrderedPhysicalQueue({epoch:++orderedEpoch});
+@@ -184,16 +190,17 @@ async function finishStartup(presentation,kind){
+  const subscribe=listener=>{listeners.add(listener);const unsubscribe=gate?.subscribe(listener);return()=>{listeners.delete(listener);unsubscribe?.();};};
+  const commit=()=>{
+  draw(null,null,false,'startup');
+  metrics.raster=renderer.metrics().raster;
+  if(startupAbort.signal.aborted)throw startupCancelled();
+  if(sample().state!=='presented')return false;
+  assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
+  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,
++  onWakeDiagnostic:profiler?recordSchedulerWake:null,
+   onRafEnd:(at,start,end,flight,budget)=>{playerCompletion.rafEnd(at,start,end,flight,budget);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
+   onPreparationEnd:(tag,at,start,end,steps,cancelled,budget)=>playerCompletion.preparationEnd(tag,at,start,end,steps,cancelled,budget),
+   onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();audio?.setVisibility(visible);}});
+  /* DEVELOPER_CONNECT */
+  if(performanceFeed)publishPerformanceFeed();
+  scheduler.start();
+  window.addEventListener('resize',()=>{const [width,height]=physicalViewport();backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
+  };
+diff --git a/web/shared/async-scheduler.mjs b/web/shared/async-scheduler.mjs
+index 55df5f9..f6649f8 100644
+--- a/web/shared/async-scheduler.mjs
++++ b/web/shared/async-scheduler.mjs
+@@ -1,64 +1,91 @@
+ // One RAF owns update -> acceptance -> draw. Preparing another game View while
+ // the old one remains visible would advance private Luau projector/hit caches
+ // before input on that visible view is consumed. Keep the coherent order.
+ export function createAsyncScheduler({
+- tick,render,onError=console.error,onVisibilityChange=()=>{},onWake=null,
++ tick,render,onError=console.error,onVisibilityChange=()=>{},onWake=null,onWakeDiagnostic=null,
+  onRafEnd=null,onPreparationStart=null,onPreparationEnd=null,
+  stepMs=1000/60,maxCatchUpSteps=5,now=()=>performance.now(),
+  raf=cb=>requestAnimationFrame(cb),cancelRaf=id=>cancelAnimationFrame(id),
+  visibilityTarget=globalThis.document,
+ }={}){
+  if(typeof tick!=='function'||typeof render!=='function')throw TypeError('async scheduler requires tick() and render()');
+  if(!Number.isFinite(stepMs)||stepMs<=0)throw RangeError('stepMs must be positive');
+  if(!Number.isInteger(maxCatchUpSteps)||maxCatchUpSteps<=0)throw RangeError('maxCatchUpSteps must be a positive integer');
+  // RAF timestamps may be rounded to tenths of a millisecond. Retain any early
+  // step as negative debt; this never adds simulation time or erases that debt.
+  const toleranceMs=Math.min(.25,stepMs/100);
+  let started=false,paused=false,busy=false,last=0,acc=0,frame=null,generation=0,dropped=0,attached=false;
++ let diagnosticGeneration=null,diagnosticFailures=0;
+  const hidden=()=>visibilityTarget?.hidden===true||visibilityTarget?.visibilityState==='hidden';
+  function resetClock(){last=now();acc=0;generation++;}
+  function cancelFrame(){if(frame!==null){cancelRaf(frame);frame=null;}}
+  function schedule(){if(started&&!hidden()&&!busy&&frame===null)frame=raf(draw);}
+  function stop(){started=false;resetClock();cancelFrame();if(attached){visibilityTarget?.removeEventListener?.('visibilitychange',visibility);attached=false;}}
++ function beginWakeDiagnostic(token,at,began,elapsed){
++  const record={source:'raf',raf_time_ms:at,wake_start_ms:began,generation:token,reset_before_wake:diagnosticGeneration!==token,
++   elapsed_ms:elapsed,acc_before_ms:acc,acc_after_elapsed_ms:acc,acc_after_ms:acc,due:0,admitted:0,lost:0,attempted_steps:0,
++   dropped_before:dropped,paused,hidden:hidden(),error:null,step_ms:stepMs,tolerance_ms:toleranceMs,max_catch_up_steps:maxCatchUpSteps,
++   step_scope:'Successful awaited scheduler tick calls; a coalesced host request is not a second Core update.'};
++  diagnosticGeneration=token;return record;
++ }
++ function finalizeWakeDiagnostic(record,end,steps){
++  record.wake_end_ms=end;record.generation_end=generation;record.reset_during_wake=generation!==record.generation;
++  record.actual_steps=steps;record.acc_current_ms=acc;record.dropped_delta=dropped-record.dropped_before;
++  record.paused_end=paused;record.cancelled=!started||hidden()||record.reset_during_wake||(!record.paused&&paused);
++  record.wall_scope='Wake body through preparation finalization, before RAF/wake observers; overlaps update/draw, not additive CPU.';
++ }
++ function emitWakeDiagnostic(record){
++  // Observation is never game control. A broken optional sink cannot prevent
++  // the legacy observer, change the clock or reject the RAF continuation.
++  try{onWakeDiagnostic(record);}catch{diagnosticFailures++;}
++ }
+  async function draw(timestamp){
+   frame=null;if(!started||hidden()||busy)return;
+   const token=generation,at=Number.isFinite(timestamp)?timestamp:now(),began=now(),elapsed=Math.max(0,at-last);
+   last=at;busy=true;let steps=0,error=null,preparationStart=null,tag,preparationReported=false,submissionStart=null,submissionEnd=null;
++  const diagnostic=onWakeDiagnostic?beginWakeDiagnostic(token,at,began,elapsed):null;
+   try{
+    if(!paused){
+     acc+=elapsed;const due=Math.floor((acc+toleranceMs)/stepMs),lost=Math.max(0,due-maxCatchUpSteps);
++    if(diagnostic)diagnostic.acc_after_elapsed_ms=acc;
+     dropped+=lost;acc-=lost*stepMs;
+     const count=Math.min(maxCatchUpSteps,Math.floor((acc+toleranceMs)/stepMs));
++    if(diagnostic){diagnostic.due=due;diagnostic.admitted=count;diagnostic.lost=lost;diagnostic.acc_after_ms=acc;}
+     if(count>0){
+      preparationStart=now();tag=onPreparationStart?.();
+-     while(steps<count&&started&&!hidden()&&!paused&&token===generation&&acc+toleranceMs>=stepMs){acc-=stepMs;await tick();steps++;}
++     while(steps<count&&started&&!hidden()&&!paused&&token===generation&&acc+toleranceMs>=stepMs){acc-=stepMs;if(diagnostic){diagnostic.acc_after_ms=acc;diagnostic.attempted_steps++;}await tick();steps++;}
+      preparationReported=true;onPreparationEnd?.(tag,at,preparationStart,now(),steps,!started||hidden()||paused||token!==generation,stepMs);
+     }
+    }
+    if(started&&!hidden()&&token===generation){
+     // The originating browser RAF timestamp survives awaits. Only this known
+     // synchronous submission continuation contributes callback_sync_wall;
+     // worker/job waits belong to preparation_wall, never sync CPU/wall work.
+     submissionStart=now();try{render(at,submissionStart,false,'scheduler_raf',stepMs);}finally{submissionEnd=now();}
+    }
+   }catch(cause){
++   if(diagnostic)diagnostic.error=String(cause?.message??cause);
+    // Teardown can reject an in-flight worker request after stop(), or after
+    // a new clock/generation has replaced it. Only its current owner may fail
+    // the scheduler; an obsolete continuation must not stop a restarted one.
+    if(started&&token===generation){error=String(cause?.message??cause);stop();onError(cause);}
+   }
+   finally{
+    if(preparationStart!==null&&!preparationReported)onPreparationEnd?.(tag,at,preparationStart,now(),steps,true,stepMs);
+    busy=false;
++   // Capture the old generation/debt and body endpoint before any completion,
++   // feed or legacy observer can consume time or reset the scheduler clock.
++   if(diagnostic)finalizeWakeDiagnostic(diagnostic,now(),steps);
+    try{if(submissionStart!==null)onRafEnd?.(at,submissionStart,submissionEnd,false,stepMs);
+     onWake?.({source:'raf',start_ms:began,end_ms:now(),timestamp_ms:at,elapsed_ms:elapsed,steps,busy:false,dropped_steps:dropped,error});}
+-   finally{schedule();}
++   finally{try{if(diagnostic)emitWakeDiagnostic(diagnostic);}finally{schedule();}}
+   }
+  }
+  function visibility(){resetClock();cancelFrame();onVisibilityChange({visible:!hidden()});schedule();}
+  return {
+   start(){if(started)return;started=true;paused=false;resetClock();if(!attached){visibilityTarget?.addEventListener?.('visibilitychange',visibility);attached=true;}schedule();},
+   pause(){paused=true;resetClock();},resume(){paused=false;resetClock();schedule();},stop,resetClock,
+   get totalDroppedSteps(){return dropped;},get busy(){return busy;},
++  get wakeDiagnosticFailures(){return diagnosticFailures;},
+  };
+ }
+diff --git a/web/shared/async-scheduler.test.mjs b/web/shared/async-scheduler.test.mjs
+index 9d75506..05f8b0c 100644
+--- a/web/shared/async-scheduler.test.mjs
++++ b/web/shared/async-scheduler.test.mjs
+@@ -20,16 +20,80 @@ function fixture(options={}){
+  });
+  return {scheduler,frames,seen,errors,wakes,target,metrics,
+   counts:()=>({ticks,draws,timers}),setTime:t=>time=t,getTime:()=>time,
+   async frame(t){time=t;const due=[...frames.values()];frames.clear();for(const fn of due)fn(t);await flush();},
+   async visibility(hidden,t){time=t;target.hidden=hidden;listener?.();await flush();},
+  };
+ }
+ 
++test('disabled wake diagnostics add neither an observer packet nor an end-clock read',async()=>{
++ let reads=0;const h=fixture({scheduler:{onWake:null,onWakeDiagnostic:null,now:()=>{reads++;return h.getTime();}}});
++ h.scheduler.start();await h.frame(5);assert.equal(reads,4);assert.deepEqual(h.counts(),{ticks:0,draws:1,timers:0});h.scheduler.stop();
++ const legacy=fixture();legacy.scheduler.start();await legacy.frame(5);assert.equal(legacy.wakes.length,1);assert.equal(Object.hasOwn(legacy.wakes[0],'acc_before_ms'),false);legacy.scheduler.stop();
++});
++
++test('passive wake records expose zero/two steps and retained negative debt without changing frames',async()=>{
++ const rows=[],h=fixture({scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();
++ await h.frame(9.95);await h.frame(19.85);await h.frame(30);
++ assert.deepEqual(h.seen,[1,1,3]);assert.equal(rows.length,3);
++ assert.deepEqual(rows.map(r=>[r.raf_time_ms,r.due,r.admitted,r.actual_steps,r.lost,r.dropped_delta]),[[9.95,1,1,1,0,0],[19.85,0,0,0,0,0],[30,2,2,2,0,0]]);
++ assert.equal(rows[0].step_ms,10);assert.equal(rows[0].tolerance_ms,.1);assert.equal(rows[0].max_catch_up_steps,5);
++ assert(Math.abs(rows[0].acc_after_ms+.05)<1e-10);assert(Math.abs(rows[1].acc_before_ms+.05)<1e-10);assert(Math.abs(rows[2].acc_after_ms)<1e-10);
++ assert.deepEqual(rows.map(r=>r.reset_before_wake),[true,false,false]);assert(rows.every(r=>!r.cancelled&&!r.error));
++ assert.equal(h.wakes.length,3,'the development wake hook remains independent');h.scheduler.stop();
++});
++
++test('wake diagnostics distinguish capped catch-up, paused redraw and resets',async()=>{
++ const rows=[],h=fixture({scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();await h.frame(103);
++ assert.equal(rows[0].due,10);assert.equal(rows[0].admitted,5);assert.equal(rows[0].lost,5);assert.equal(rows[0].actual_steps,5);assert.equal(rows[0].dropped_delta,5);assert.equal(rows[0].acc_after_ms,3);
++ h.scheduler.pause();await h.frame(1000);assert.equal(rows[1].paused,true);assert.equal(rows[1].actual_steps,0);assert.equal(rows[1].due,0);assert.equal(rows[1].cancelled,false);assert.equal(rows[1].reset_before_wake,true);
++ h.scheduler.resume();await h.frame(1010);assert.equal(rows[2].reset_before_wake,true);assert.equal(rows[2].actual_steps,1);assert.equal(h.scheduler.totalDroppedSteps,5);h.scheduler.stop();
++});
++
++test('stale rejected wake retains its original generation and cannot claim the replacement clock debt',async()=>{
++ let reject;const rows=[],h=fixture({tick:()=>new Promise((_,r)=>reject=r),scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();await h.frame(10);
++ assert.equal(rows.length,0);h.scheduler.stop();h.setTime(1000);h.scheduler.start();reject(Error('RUNTIME_CLOSED'));await flush();
++ assert.equal(rows.length,1);const row=rows[0];assert.equal(row.raf_time_ms,10);assert(row.generation_end>row.generation);assert.equal(row.reset_during_wake,true);assert.equal(row.cancelled,true);assert.equal(row.actual_steps,0);assert.equal(row.attempted_steps,1);assert.equal(row.error,'RUNTIME_CLOSED');assert.equal(row.acc_current_ms,0);
++ assert.deepEqual(h.errors,[]);assert.deepEqual(h.seen,[]);assert.equal(h.frames.size,1);h.scheduler.stop();
++});
++
++test('a failed diagnostic sink preserves legacy wake delivery and the next unmodified RAF',async()=>{
++ const h=fixture({scheduler:{onWakeDiagnostic(){throw Error('DIAGNOSTIC_FAILED');}}});h.scheduler.start();await h.frame(10);await h.frame(20);
++ assert.deepEqual(h.seen,[1,2]);assert.equal(h.wakes.length,2);assert.equal(h.scheduler.wakeDiagnosticFailures,2);assert.equal(h.frames.size,1);assert.deepEqual(h.errors,[]);h.scheduler.stop();
++});
++
++for(const transition of ['pause','reset','hide-restore'])test(`passive wake preserves old debt on a successful tick cancelled by ${transition}`,async()=>{
++ let resolve;const rows=[],h=fixture({tick:()=>new Promise(r=>resolve=r),scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();await h.frame(30);
++ if(transition==='pause')h.scheduler.pause();else if(transition==='reset')h.scheduler.resetClock();else{await h.visibility(true,40);await h.visibility(false,1000);}
++ resolve();await flush();assert.equal(rows.length,1);assert.equal(rows[0].admitted,3);assert.equal(rows[0].actual_steps,1);assert.equal(rows[0].attempted_steps,1);
++ assert.equal(rows[0].acc_after_ms,20);assert.equal(rows[0].acc_current_ms,0);assert.equal(rows[0].cancelled,true);assert.equal(rows[0].reset_during_wake,true);assert.equal(rows[0].error,null);
++ assert.deepEqual(h.seen,[]);assert.deepEqual(h.errors,[]);assert.equal(h.frames.size,1);h.scheduler.stop();
++});
++
++test('diagnostic fencing does not swallow or replace a historical legacy onWake failure',async()=>{
++ let time=0,callback,observed=0,scheduled=0;const legacy=Error('LEGACY_WAKE_FAILED');
++ const scheduler=createAsyncScheduler({stepMs:10,now:()=>time,visibilityTarget:{hidden:false},raf:f=>(callback=f,++scheduled),cancelRaf(){},tick:async()=>{},render(){},
++  onWake(){throw legacy;},onWakeDiagnostic(){observed++;throw Error('NEW_DIAGNOSTIC_FAILED');}});
++ scheduler.start();time=10;const first=callback;await assert.rejects(first(10),error=>error===legacy);
++ assert.equal(observed,1);assert.equal(scheduler.wakeDiagnosticFailures,1);assert.equal(scheduled,2);scheduler.stop();
++});
++
++for(const action of ['reset','pause'])test(`wake body state excludes RAF observer work and a legacy ${action}`,async()=>{
++ const rows=[],legacy=[];const h=fixture({tick:()=>h.setTime(17),render:()=>h.setTime(18),scheduler:{
++  onRafEnd(){h.setTime(h.getTime()+15);},onWakeDiagnostic:r=>rows.push(r),
++  onWake:r=>{legacy.push(r);if(action==='reset')h.scheduler.resetClock();else h.scheduler.pause();},
++ }});h.scheduler.start();await h.frame(15);
++ assert.deepEqual(h.seen,[1]);assert.equal(rows.length,1);assert.equal(rows[0].wake_end_ms,18,'body endpoint precedes the RAF/feed observer');
++ assert.equal(rows[0].acc_after_ms,5);assert.equal(rows[0].acc_current_ms,5,'snapshot precedes legacy resetting live debt');
++ assert.equal(rows[0].generation_end,rows[0].generation);assert.equal(rows[0].reset_during_wake,false);assert.equal(rows[0].paused_end,false);assert.equal(rows[0].cancelled,false);
++ assert.equal(rows[0].actual_steps,1);assert.equal(rows[0].tolerance_ms,.1);assert.equal(legacy[0].end_ms,33,'historical legacy wake includes RAF observer cost');
++ assert.equal(h.frames.size,1);assert.deepEqual(h.errors,[]);h.scheduler.stop();
++});
++
+ test('coherent update/accept/draw keeps original RAF metadata while actual variable completion times remain honest',async()=>{
+  const h=fixture({tick:()=>{h.setTime(h.counts().ticks*10+(h.counts().ticks%2?4:9));},render:()=>h.setTime(h.getTime()+1)});h.scheduler.start();
+  assert.equal(h.frames.size,1);assert.equal(h.counts().ticks,0);
+  await h.frame(10);assert.deepEqual(h.seen,[1]);assert.equal(h.frames.size,1);
+  await h.frame(20);assert.deepEqual(h.seen,[1,2]);
+  await flush();assert.equal(h.counts().ticks,2,'completion schedules only a RAF, never a timer update');
+  await h.frame(30);assert.deepEqual(h.seen,[1,2,3]);
+  const r=h.metrics.snapshot({includeRafSamples:true});assert.equal(r.completed_draws,3);assert.equal(r.presented_frame_changes,3);assert.equal(r.simulation_frame,3);assert.equal(r.last_presented_snapshot_frame,3);assert.equal(r.completed_intervals.p99_ms,15,'actual completion jitter is preserved');
+diff --git a/web/shared/startup-player-entry.test.mjs b/web/shared/startup-player-entry.test.mjs
+index 38f2339..4e4283a 100644
+--- a/web/shared/startup-player-entry.test.mjs
++++ b/web/shared/startup-player-entry.test.mjs
+@@ -17,17 +17,17 @@ function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED
+   validate:()=>{validations++;return {samples:919,passed:919};},onState:()=>state?.changed()});cap.ensure(view);
+  const available=()=>{if(lost){cap.lost();return false;}return cap.metrics().status!=='lost';};
+  state=createStartupPresentationState({available,metrics:cap.metrics,view:()=>view});
+  const raster=()=>({projected:{...cap.metrics(),completed_game_draw:state.metrics()}});
+  const renderer={startupPresentation:state,isPresentationAvailable:available,metrics:()=>({raster:raster()}),ready:async()=>{},dispose:()=>disposed++};
+  const raf=f=>{frames.set(++id,f);return id;};
+  const playerCompletion=createPlayerCompletionMetrics({now:()=>0}),ui=uiRenderer??{draw:()=>DRAW_COMPLETED,ready:async()=>{},releaseAll(){}},events=new Map();
+  const canvas={addEventListener(name,fn){const list=events.get(name)??new Set();list.add(fn);events.set(name,list);},removeEventListener(name,fn){events.get(name)?.delete(fn);}};
+- const context={renderer,canvas,playerCompletion,performanceFeed:null,metrics,serializedSavePayload,startupAbort:abort,startupCancelled,assertRasterReady,renderCount:0,orderedRouter:null,publishPhysical(){},
++ const context={renderer,canvas,playerCompletion,profiler:null,performanceFeed:null,metrics,serializedSavePayload,startupAbort:abort,startupCancelled,assertRasterReady,renderCount:0,orderedRouter:null,publishPhysical(){},
+   draw(at=null,start=null,inFlight=false,source='manual',budget=1000/60){draws++;context.renderCount++;const world=available()?worldOutcome:DRAW_SKIPPED.raster_unavailable;if(available()){cap.ensure(view);state.drawn();}playerCompletion.attempt();return playerCompletion.finish(world,ui.draw(context.snapshot,{width:100,height:100,dpr:1}),cursorOutcome(),0,0,source,at,start,inFlight,budget);},
+   requestAnimationFrame:raf,completeStartupPresentation:opts=>completeStartupPresentation({...opts,nextFrame:raf,cancelFrame:n=>frames.delete(n)}),
+   performance:{now:()=>0,getEntriesByType:()=>[]},window:{playerBoot:0,addEventListener(){}},URL,
+   document:{body:{dataset:{}}},console:{info:s=>logs.push(s)},status:{textContent:'loading'},snapshot:{world:{frame:0,...(uiSnapshot?{ui:uiSnapshot}:{})},save_payload:savePayload},
+   saved:restoredSave,key:'startup-save',localStorage:{setItem(key,text){if(storageError)throw storageError;writes.push({key,text,ready:logs.some(s=>s.startsWith('UNONE_PLAYER_READY'))});}},
+   createAsyncScheduler(){made++;return {start:()=>starts++};},frozen:false,tickOnce:async()=>{},fail(){},
+   uiScroll:{cancel(){}},uiRenderer:ui,cursorHost:{ready:cursorReady},input:{releaseAll(){}},audio:null,physicalViewport:()=>[1280,720],backend:{request:async()=>{}}};
+  let source=fs.readFileSync(process.env.UNONE_STARTUP_MAIN_SOURCE??new URL('../player/main.js',import.meta.url),'utf8');

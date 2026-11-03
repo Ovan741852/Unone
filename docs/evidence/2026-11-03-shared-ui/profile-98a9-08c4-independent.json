@@ -1,0 +1,1137 @@
+{
+  "schema": "unone.shared-ui.profile-98a9-08c4-independent.v1",
+  "status": "bounded-offline-travel-diagnostic-reviewed; formal22-skip-near-detail-scenario-not-reproduced",
+  "author": "/root/native_performance",
+  "scope": "Read-only offline inspection of existing raw files. No browser, Core, Native, Cargo, test, timing rerun or Game-file modification.",
+  "producer": {
+    "hostSha256": "7e812c342835e1405d531796fc8c037470183c398ea5efc66dec8548f33fa5b7",
+    "hostCommit": "08c4f51529b63681a6a29d245139d6d77d8865fd",
+    "url": "http://127.0.0.1:8244/main-map-cache-20261103-r6/index.html?seed=42&unone_performance_feed=1&unone_profile=1&unone_profile_limit=64",
+    "releaseRoot": "releases/dbc3652b829688fdef7c988b1a1924e2ac5eefcda94b231d0176fcf6b191ad3f/",
+    "sourceSha256": "98a9af112db79ac6f0b6cc0080af35dbca5f5aa4174393fdf911694d44ea1b89"
+  },
+  "runtime": {
+    "core_source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+    "manifest_sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+    "wasm_sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+    "javascript_sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+    "authority": "Root-selected reused production runtime identity; the capture producer record pins host/source/release but does not itself contain a runtime fingerprint. This analysis did not instantiate or rehash the runtime."
+  },
+  "collector": {
+    "source": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.collector-source.mjs",
+      "bytes": 17633,
+      "sha256": "2c454b1afcd89daad22adb47ec95d0356a7579c6460d1f6f200ea83420a9ddf7"
+    },
+    "pin_record": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.collector-pin.json",
+      "bytes": 1450,
+      "sha256": "fff598249c70377587d130a82d63ab6a5528509684a8983136d1da193d361d59"
+    },
+    "prospective": true,
+    "source_matches_pin": true,
+    "bytes": 17633,
+    "pinned_at_utc_ms": 1793655446201,
+    "pinned_at_utc": "2026-11-02T21:37:26.201Z",
+    "first_read_utc_ms": 1793655465754,
+    "pin_precedes_first_read_ms": 19553,
+    "source_unchanged_at_end": true,
+    "options": {
+      "durationMs": 30000,
+      "pollMs": 125,
+      "preludePollMs": 25,
+      "preludeTimeoutMs": 5000,
+      "targetBeforeAgeMs": 40,
+      "followupTimeoutMs": 1500
+    },
+    "io_scope": "Pinned source writes the source/pin record before collection and buffers raw DOM reads. Profile parsing, raw split output and aggregate file I/O occur after the fixed window and N+1 followup; no per-read file I/O in the measured window is claimed. Native DOM transfer, screening, profiling publication and collection waits still perturb the diagnostic."
+  },
+  "raw_pins": {
+    "capture": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json",
+      "bytes": 51906550,
+      "sha256_recorded_by_index": "8dc2ea204ad46ccdd5b53a86e36edd954b913c6a470b16ab4f6679b2608a95a9",
+      "verification": "Streamed SHA256 independently verified below; aggregate JSON was not duplicated into this record.",
+      "sha256": "8dc2ea204ad46ccdd5b53a86e36edd954b913c6a470b16ab4f6679b2608a95a9",
+      "matches_index": true
+    },
+    "split_index": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/capture-index.json",
+      "bytes": 500192,
+      "sha256": "4b5858f97e3b5f91833defc4e71fc7288ed285ee2adce76f9a0314fb7cd4ebcc"
+    },
+    "owner_raw_manifest": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/independent-input-manifest.json",
+      "bytes": 36966,
+      "sha256": "0b17007af689e9402c8efc18206d926e534e859dace30fce202f09429a935287"
+    },
+    "owner_adapter_review": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/profile-adapter-provenance.json",
+      "bytes": 351510,
+      "sha256": "7643e71565af2916751d1be94dbb1a1be3ebaeee3e6e4a52c487d3fbf9cc0d24"
+    },
+    "owner_summary": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/independent-summary.json",
+      "bytes": 349886,
+      "sha256": "c7dc7ac9754a24483ed319d51cb25ba2a95176c5f83c719ec0929f18cd22fd9f"
+    },
+    "owner_summary_markdown": {
+      "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/independent-summary.md",
+      "bytes": 2619,
+      "sha256": "2f6df1a31de25037f24111f21d1684adeb1b25aa52114490bdec8b389a795776"
+    },
+    "screenshots": [
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/travel-start.png",
+        "bytes": 124838,
+        "sha256": "867d43f81b390fcb5d5dfb48f65160f671e87b8500118e2cd6d42c1b03570cb7"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/travel-end.png",
+        "bytes": 118921,
+        "sha256": "426bdcae51f93973132c6bdc50f8505b38a057767dbfc6246e3e3e72a6f96393"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/route-preview.png",
+        "bytes": 134448,
+        "sha256": "08f6b84a5a9309bc9195cb63d296dcb85bb779c487b47b5f9cfbc27cdcb04ef9"
+      }
+    ],
+    "critical_reads": [
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/read-0000.json",
+        "bytes": 211342,
+        "sha256": "31a6c7cde24975029f88680ea0c13575dacd6713ccc978b1c819fae0d4026f4e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/read-0239.json",
+        "bytes": 211088,
+        "sha256": "3ff8fe1cf9dc771726b3af32c7f8fa6aca341d48496fccb7633d48a8cbfa9f7e"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/read-0240.json",
+        "bytes": 211096,
+        "sha256": "636a9b32c3173fc9892f762ba7b79d8ed0af5497467e755defb74aa5a2712b6c"
+      },
+      {
+        "path": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/profile-98a9-08c4-travel-r1/capture.json.profile/read-0241.json",
+        "bytes": 211516,
+        "sha256": "9b231d7aa2732e89c41ed5366d9612f02ffc99d60e59398955746296f4a14f56"
+      }
+    ],
+    "split_integrity": {
+      "indexed_files": 243,
+      "all_bytes_and_sha256_verified": true,
+      "mismatches": 0,
+      "complete_profile_json_records": 243,
+      "profile_records": 243
+    }
+  },
+  "scene_scope": {
+    "reported_route": "20tiles,38seconds,385,269 to405,269",
+    "formal_route_difference": "Formal travel used22tiles starting385,268; route and preceding simulation/NPC state differ.",
+    "screenshots": "Root identifies start/end PNG as atlas. A compass click records intent, not proof of a near-detail switch. Capture provides no authoritative per-frame Game mode observation.",
+    "mode": "unknown authoritative Game mode; moving-atlas presentation is consistent with screenshot boundaries and cached authored UI reports",
+    "visible_ids": "Cached UI asset IDs and subtree names are required/published composition metadata, not proof of exact painted visibility at a Core frame.",
+    "not_analyzed": "No separate atlas-case capture was independently reprocessed in this record; this is the travel-named diagnostic with atlas-boundary evidence."
+  },
+  "datasets": {
+    "owner_restricted": {
+      "read_files": 240,
+      "first": "read-0000.json",
+      "last": "read-0239.json",
+      "followups_excluded": 2,
+      "prelude_separate": 1,
+      "input_manifest_records": 241,
+      "stage_groups": 45,
+      "coverage": {
+        "completeFixedWindow": false,
+        "coverageMeaning": "Completed event/span sample coverage, not all CPU work, complete attributes, FPS or release acceptance.",
+        "finalSnapshotNoOpenAbandonedOrLateEvents": false,
+        "holes": [],
+        "firstSnapshotNewestEventMs": 423912,
+        "lastSnapshotNewestEventMs": 453906.3000000715,
+        "eventTimeBoundsMs": [
+          423555.40000009537,
+          453906.3000000715
+        ],
+        "observedEventsIntersectingWindow": 5395,
+        "scope": "Coverage uses adjacent completed-counter deltas versus new retained IDs. Prefixes are never used. Boundary-crossing events/spans are not clipped or invented."
+      },
+      "note": "The owner's restricted240-read partial scope and its totals are preserved as that dataset, not overwritten. Its adapter separately records the prospective collector pin. Legacy retrospective provenance wording in the unchanged summary is not adopted as a fact about this collector.",
+      "selected_stages": [
+        {
+          "kind": "command",
+          "parent": "execute",
+          "name": "tick_abi_atomic",
+          "n": 1798,
+          "totalMs": 19330.80000269413,
+          "min": 8,
+          "p50": 10.399999976158142,
+          "p95": 13,
+          "p99": 15.600000023841858,
+          "max": 22,
+          "mean": 10.751279200608526
+        },
+        {
+          "kind": "draw",
+          "parent": null,
+          "name": "ui_draw",
+          "n": 1798,
+          "totalMs": 2402.899999499321,
+          "min": 0.8999999761581421,
+          "p50": 1.2999999523162842,
+          "p95": 1.6999999284744263,
+          "p99": 2.100000023841858,
+          "max": 3.200000047683716,
+          "mean": 1.3364293656837158
+        },
+        {
+          "kind": "draw",
+          "parent": null,
+          "name": "renderer_draw",
+          "n": 1798,
+          "totalMs": 661.1999979019165,
+          "min": 0.19999992847442627,
+          "p50": 0.3999999761581421,
+          "p95": 0.5,
+          "p99": 0.6000000238418579,
+          "max": 0.8000000715255737,
+          "mean": 0.3677419343169725
+        },
+        {
+          "kind": "command",
+          "parent": "execute",
+          "name": "ui_tree_restore",
+          "n": 1799,
+          "totalMs": 378.8000000715256,
+          "min": 0.09999990463256836,
+          "p50": 0.20000004768371582,
+          "p95": 0.30000007152557373,
+          "p99": 0.3999999761581421,
+          "max": 0.5,
+          "mean": 0.2105614230525434
+        }
+      ]
+    },
+    "independent_full": {
+      "read_files": 242,
+      "first": "read-0000.json",
+      "last": "read-0241.json",
+      "prelude_separate": 1,
+      "prelude_same_profile_as_before": true,
+      "followup_files": [
+        "read-0240.json",
+        "read-0241.json"
+      ],
+      "unique_event_identities": 5494,
+      "initial_retained_events": 64,
+      "new_unique_identities": 5430,
+      "completed_counter_delta": 5430,
+      "conflicts": 0
+    }
+  },
+  "window": {
+    "planned_utc": {
+      "startUtcMs": 1793655465792,
+      "endUtcMs": 1793655495792
+    },
+    "actual_collection_utc": {
+      "startUtcMs": 1793655465792,
+      "endUtcMs": 1793655495819
+    },
+    "planned_monotonic_ms": {
+      "start": 423934.3000488281,
+      "end": 453934.3000488281
+    },
+    "planned_seconds": 30,
+    "actual_overshoot_ms": 27,
+    "selection": "Each selected timed span is wholly contained within the fixed planned30seconds. No crossing span is clipped or invented and no followup/post-window duration is added. Therefore contained counts/totals are lower bounds on observed work intersecting the window, not all CPU costs."
+  },
+  "coverage": {
+    "completed_identity_accounting": {
+      "status": "passed",
+      "equation": "initial64 + completed-counter delta5430 = deduplicated5494",
+      "scope": "New completed identities through the final followup, with no identity conflict, clear, abandoned or late end. This is completed-event accounting, not CPU coverage."
+    },
+    "boundary_closure": {
+      "before_followup_open_update": {
+        "id": "update:27170",
+        "start_ms": 453894.8000000715,
+        "end_ms": 453907.2000000477,
+        "status": "ok"
+      },
+      "closed_seen_in": "read-0241.json",
+      "final_open": [
+        {
+          "id": "update:27180",
+          "kind": "update",
+          "start_ms": 454061.5,
+          "starts_after_window": true
+        }
+      ],
+      "statement": "update27170 was open in the nominal after read but closes in N+1. The final open update27180 starts after the fixed window; requiring an empty final live loop would be an overbroad completeness criterion."
+    },
+    "metadata": {
+      "complete": false,
+      "dropped_attrs": {
+        "first": 25370,
+        "last": 27180,
+        "delta": 1810
+      },
+      "provider_errors": {
+        "first": 0,
+        "last": 0
+      },
+      "publish_errors": {
+        "first": 0,
+        "last": 0
+      },
+      "note": "Complete JSON and captured event identities do not restore dropped attributes."
+    },
+    "full_cpu": {
+      "established": false,
+      "reason": "Profiled host wall spans omit uninstrumented work and include scheduling/preemption; tick ABI is unsplit Core update/publication, not isolated Lua/GC/serialization."
+    },
+    "gpu_and_scanout": {
+      "established": false
+    },
+    "fps_and_release_acceptance": {
+      "established": false
+    }
+  },
+  "contained_stages": {
+    "all_groups": [
+      {
+        "kind": "update",
+        "parent": null,
+        "name": "backend_request",
+        "n": 1799,
+        "total_ms": 21235.899999260902,
+        "min_ms": 8.699999928474426,
+        "p50_ms": 11.5,
+        "p95_ms": 14.200000047683716,
+        "p99_ms": 16.799999952316284,
+        "max_ms": 23.600000023841858
+      },
+      {
+        "kind": "command",
+        "parent": null,
+        "name": "execute",
+        "n": 1799,
+        "total_ms": 20926.80000090599,
+        "min_ms": 8.699999928474426,
+        "p50_ms": 11.299999952316284,
+        "p95_ms": 14,
+        "p99_ms": 16.600000023841858,
+        "max_ms": 23.600000023841858
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "tick_abi_atomic",
+        "n": 1799,
+        "total_ms": 19343.500002741814,
+        "min_ms": 8,
+        "p50_ms": 10.399999976158142,
+        "p95_ms": 13,
+        "p99_ms": 15.600000023841858,
+        "max_ms": 22
+      },
+      {
+        "kind": "draw",
+        "parent": null,
+        "name": "ui_draw",
+        "n": 1800,
+        "total_ms": 2405.6999995708466,
+        "min_ms": 0.8999999761581421,
+        "p50_ms": 1.2999999523162842,
+        "p95_ms": 1.6999999284744263,
+        "p99_ms": 2.100000023841858,
+        "max_ms": 3.200000047683716
+      },
+      {
+        "kind": "draw",
+        "parent": null,
+        "name": "renderer_draw",
+        "n": 1800,
+        "total_ms": 661.7999978065491,
+        "min_ms": 0.19999992847442627,
+        "p50_ms": 0.3999999761581421,
+        "p95_ms": 0.5,
+        "p99_ms": 0.5999999046325684,
+        "max_ms": 0.8000000715255737
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/observations/parse",
+        "n": 1800,
+        "total_ms": 418.49999940395355,
+        "min_ms": 0.09999990463256836,
+        "p50_ms": 0.20000004768371582,
+        "p95_ms": 0.30000007152557373,
+        "p99_ms": 0.40000009536743164,
+        "max_ms": 3.600000023841858
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "ui_tree_restore",
+        "n": 1800,
+        "total_ms": 379,
+        "min_ms": 0.09999990463256836,
+        "p50_ms": 0.20000004768371582,
+        "p95_ms": 0.30000007152557373,
+        "p99_ms": 0.3999999761581421,
+        "max_ms": 0.5
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "ordinary_render_submit",
+        "n": 1800,
+        "total_ms": 296.39999651908875,
+        "min_ms": 0,
+        "p50_ms": 0.19999992847442627,
+        "p95_ms": 0.2999999523162842,
+        "p99_ms": 0.30000007152557373,
+        "max_ms": 0.5
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "scene_sync",
+        "n": 1800,
+        "total_ms": 255.80000162124634,
+        "min_ms": 0,
+        "p50_ms": 0.10000002384185791,
+        "p95_ms": 0.20000004768371582,
+        "p99_ms": 0.2999999523162842,
+        "max_ms": 0.3999999761581421
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/observations/freeze",
+        "n": 1800,
+        "total_ms": 249.89999914169312,
+        "min_ms": 0,
+        "p50_ms": 0.10000002384185791,
+        "p95_ms": 0.20000004768371582,
+        "p99_ms": 0.2999999523162842,
+        "max_ms": 0.5
+      },
+      {
+        "kind": "draw",
+        "parent": null,
+        "name": "host_publish",
+        "n": 1800,
+        "total_ms": 187.49999940395355,
+        "min_ms": 0,
+        "p50_ms": 0.10000002384185791,
+        "p95_ms": 0.20000004768371582,
+        "p99_ms": 0.5,
+        "max_ms": 0.7000000476837158
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/shader_materials/parse",
+        "n": 1800,
+        "total_ms": 94.50000131130219,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.20000004768371582,
+        "max_ms": 0.2999999523162842
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/observations/utf8",
+        "n": 1800,
+        "total_ms": 68.80000019073486,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.19999992847442627,
+        "max_ms": 0.3999999761581421
+      },
+      {
+        "kind": "update",
+        "parent": null,
+        "name": "input_consume",
+        "n": 1800,
+        "total_ms": 50.90000033378601,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.5
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/shader_materials/freeze",
+        "n": 1800,
+        "total_ms": 50.20000123977661,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.2999999523162842
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "input_abi",
+        "n": 1800,
+        "total_ms": 48.799999356269836,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.20000004768371582
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "resize_raster_validate",
+        "n": 1800,
+        "total_ms": 47.50000035762787,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.20000004768371582
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "observation_parse",
+        "n": 1800,
+        "total_ms": 44.50000071525574,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.20000004768371582
+      },
+      {
+        "kind": "update",
+        "parent": null,
+        "name": "audio_sync",
+        "n": 1800,
+        "total_ms": 35.50000059604645,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.20000004768371582
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/shader_materials/utf8",
+        "n": 1800,
+        "total_ms": 34.799999475479126,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.30000007152557373
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/entities/reuse",
+        "n": 1800,
+        "total_ms": 27.100000143051147,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.30000007152557373
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "save_restore",
+        "n": 1800,
+        "total_ms": 26.699999451637268,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.5
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "observation_utf8",
+        "n": 1800,
+        "total_ms": 24.99999976158142,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.20000004768371582
+      },
+      {
+        "kind": "command",
+        "parent": null,
+        "name": "queue_wait",
+        "n": 1800,
+        "total_ms": 18.299998998641968,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.19999992847442627
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "snapshot_policy",
+        "n": 1800,
+        "total_ms": 17.399999737739563,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.2999999523162842
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "barrier_wait",
+        "n": 1800,
+        "total_ms": 16.399999856948853,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.19999992847442627
+      },
+      {
+        "kind": "update",
+        "parent": null,
+        "name": "accept_snapshot",
+        "n": 1800,
+        "total_ms": 14.299999952316284,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.2999999523162842
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "observation_view",
+        "n": 1800,
+        "total_ms": 10.500000476837158,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.09999990463256836,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/particle_effects/reuse",
+        "n": 1800,
+        "total_ms": 8.69999885559082,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_fields_restore",
+        "n": 1800,
+        "total_ms": 7.700000047683716,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "subrenderer_prepare",
+        "n": 1800,
+        "total_ms": 7.699999809265137,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.2999999523162842
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "legacy_projected_terrain_validate",
+        "n": 1800,
+        "total_ms": 5.4000004529953,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.20000004768371582
+      },
+      {
+        "kind": "draw",
+        "parent": null,
+        "name": "interpolation_sample",
+        "n": 1800,
+        "total_ms": 5.100000262260437,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "projected_prepare_texture_sweep",
+        "n": 1800,
+        "total_ms": 4.699999928474426,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "update",
+        "parent": null,
+        "name": "save_persist",
+        "n": 1800,
+        "total_ms": 4.099999904632568,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.20000004768371582
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "presentation_hooks",
+        "n": 1800,
+        "total_ms": 4.0000001192092896,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/observations/descriptor",
+        "n": 1800,
+        "total_ms": 3.9000000953674316,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "frame_decode_validate",
+        "n": 1800,
+        "total_ms": 2.7999998331069946,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "publication_commit",
+        "n": 1800,
+        "total_ms": 2.5000001192092896,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.3999999761581421
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "ui_images_restore",
+        "n": 1800,
+        "total_ms": 2.099999785423279,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0.09999990463256836,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "spatial_dispatch",
+        "n": 1800,
+        "total_ms": 1.4000002145767212,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "world_field/shader_materials/descriptor",
+        "n": 1800,
+        "total_ms": 1.3999998569488525,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "command",
+        "parent": "execute",
+        "name": "jobs_dispatch",
+        "n": 1800,
+        "total_ms": 1.0000001192092896,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "projected_pass_submit",
+        "n": 1800,
+        "total_ms": 0.8999998569488525,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0.10000002384185791
+      },
+      {
+        "kind": "draw",
+        "parent": "renderer_draw",
+        "name": "frame_identity",
+        "n": 1800,
+        "total_ms": 0.7999999523162842,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0,
+        "max_ms": 0.10000002384185791
+      }
+    ],
+    "parent_exclusive": [
+      {
+        "name": "execute",
+        "n": 1799,
+        "total_ms": 60.59999859333038,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.19999992847442627,
+        "max_ms": 0.30000007152557373
+      },
+      {
+        "name": "renderer_draw",
+        "n": 1800,
+        "total_ms": 18.399999618530273,
+        "min_ms": 0,
+        "p50_ms": 0,
+        "p95_ms": 0.10000002384185791,
+        "p99_ms": 0.10000002384185791,
+        "max_ms": 0.19999992847442627
+      }
+    ],
+    "parent_exclusive_method": "Subtract only immediate child spans within each matched contained parent event; never subtract unrelated aggregate populations or add parents to children.",
+    "matched_execute": {
+      "n": 1799,
+      "execute_ms": 20926.80000090599,
+      "tick_abi_atomic_ms": 19343.500002741814,
+      "tick_fraction_of_execute": 0.9243410364654113
+    },
+    "interpretation": "The largest accounted blocking wall stage is unsplit Core tick. UI draw averages about1.34ms, p951.7/max3.2; world renderer p95.5/max.8. UI-tree restore is about.21ms on selected calls. These do not identify a Lua function or GC cause, nor can independent p95 values be added into a frame budget.",
+    "longest_ui_spans": [
+      {
+        "event": "draw:26554",
+        "frame": 26950,
+        "start_ms": 450242.60000002384,
+        "end_ms": 450245.8000000715,
+        "ms": 3.200000047683716
+      },
+      {
+        "event": "draw:25709",
+        "frame": 26105,
+        "start_ms": 436155.90000009537,
+        "end_ms": 436159,
+        "ms": 3.0999999046325684
+      },
+      {
+        "event": "draw:25753",
+        "frame": 26149,
+        "start_ms": 436893.5,
+        "end_ms": 436896.5,
+        "ms": 3
+      },
+      {
+        "event": "draw:25976",
+        "frame": 26372,
+        "start_ms": 440611.10000002384,
+        "end_ms": 440613.90000009537,
+        "ms": 2.8000000715255737
+      },
+      {
+        "event": "draw:26251",
+        "frame": 26647,
+        "start_ms": 445192.60000002384,
+        "end_ms": 445195.3000000715,
+        "ms": 2.700000047683716
+      }
+    ]
+  },
+  "image_evidence": {
+    "fresh_feed_skip_counts": {
+      "raster_unavailable": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "raster_validation": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "frame_resources_pending": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "frame_pass_incomplete": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "world_assets_pending": {
+        "first": 2,
+        "last": 2,
+        "delta": 0
+      },
+      "ui_assets_pending": {
+        "first": 47,
+        "last": 47,
+        "delta": 0
+      },
+      "ui_diagnostics": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "ui_target_unavailable": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "cursor_assets_pending": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "cursor_diagnostics": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      },
+      "other": {
+        "first": 0,
+        "last": 0,
+        "delta": 0
+      }
+    },
+    "feed_brackets_fixed_window": {
+      "first_published_ms": 423928.90000009537,
+      "last_published_ms": 454023.8000000715,
+      "brackets": true,
+      "sessions": [
+        1
+      ]
+    },
+    "broker_cached_counter_ranges": {
+      "loads": {
+        "first": 111,
+        "last": 111,
+        "min": 111,
+        "max": 111
+      },
+      "loading": {
+        "first": 0,
+        "last": 0,
+        "min": 0,
+        "max": 0
+      },
+      "active_tasks": {
+        "first": 0,
+        "last": 0,
+        "min": 0,
+        "max": 0
+      },
+      "queued_tasks": {
+        "first": 0,
+        "last": 0,
+        "min": 0,
+        "max": 0
+      },
+      "evictions": {
+        "first": 22,
+        "last": 22,
+        "min": 22,
+        "max": 22
+      },
+      "closed_images": {
+        "first": 20,
+        "last": 20,
+        "min": 20,
+        "max": 20
+      },
+      "resident_entries": {
+        "first": 89,
+        "last": 89,
+        "min": 89,
+        "max": 89
+      },
+      "resident_bytes_estimate": {
+        "first": 128021868,
+        "last": 128021868,
+        "min": 128021868,
+        "max": 128021868
+      },
+      "scene_entries": {
+        "first": 70,
+        "last": 70,
+        "min": 70,
+        "max": 70
+      },
+      "scene_bytes_estimate": {
+        "first": 66906784,
+        "last": 66906784,
+        "min": 66906784,
+        "max": 66906784
+      },
+      "active_entries": {
+        "first": 26,
+        "last": 25,
+        "min": 25,
+        "max": 27
+      },
+      "active_bytes_estimate": {
+        "first": 68074920,
+        "last": 67497720,
+        "min": 67497720,
+        "max": 68742072
+      }
+    },
+    "non_ready_ui_asset_records": [],
+    "all_cached_ui_asset_ids": [
+      "texture://jy/ui-game/profile-portrait",
+      "texture://jy/ui-game/skin/portrait-frame",
+      "texture://jy/ui-redesign/hud-paper-wash-trimmed",
+      "texture://jy/ui-game/skin/bar-frame",
+      "texture://jy/ui-game/skin/currency",
+      "texture://jy/ui-settings/gear",
+      "texture://jy/ui-game/skin/nav-frame",
+      "texture://jy/ui-redesign/nav/bag",
+      "texture://jy/ui-redesign/nav/training",
+      "texture://jy/ui-redesign/nav/heroes",
+      "texture://jy/items/scroll",
+      "texture://jy/ui-scroll",
+      "texture://jy/exploration/world-atlas-vector",
+      "texture://jy/cartography/city",
+      "texture://jy/ui-buttons/atlas",
+      "texture://jy/cartography/compass",
+      "texture://jy/props/bamboo",
+      "texture://jy/map-navigation/ink-markers",
+      "texture://jy/map-navigation/path-strokes",
+      "texture://jy/cartography/village"
+    ],
+    "ui_cached_work": {
+      "first": {
+        "backend": "three.js",
+        "quads": 128,
+        "draw_calls": 45,
+        "rebuilds": 4402,
+        "last_rebuild_ms": 0.5999999046325684,
+        "text_rasters": 469,
+        "atlas_uploads": 469,
+        "atlas_compactions": 0,
+        "atlas_pages": 1,
+        "atlas_page_size": 4096,
+        "text_slots": 40,
+        "dedicated_text_textures": 0,
+        "image_textures": 19,
+        "submits": 24960
+      },
+      "last": {
+        "backend": "three.js",
+        "quads": 125,
+        "draw_calls": 45,
+        "rebuilds": 6202,
+        "last_rebuild_ms": 0.3999999761581421,
+        "text_rasters": 3744,
+        "atlas_uploads": 3744,
+        "atlas_compactions": 0,
+        "atlas_pages": 1,
+        "atlas_page_size": 4096,
+        "text_slots": 40,
+        "dedicated_text_textures": 0,
+        "image_textures": 18,
+        "submits": 26760
+      },
+      "rebuild_delta": 1800,
+      "text_raster_delta": 3275,
+      "atlas_upload_delta": 3275,
+      "image_texture_count": {
+        "min": 18,
+        "max": 20
+      }
+    },
+    "temporal_limit": {
+      "same_dom_read_is_not_same_core_frame": true,
+      "feed_frame_minus_cached_performance_frame": {
+        "min": -29,
+        "max": 24
+      },
+      "first": {
+        "feed_frame": 25371,
+        "performance_frame": 25356
+      },
+      "last": {
+        "feed_frame": 27177,
+        "performance_frame": 27156
+      },
+      "meaning": "Two independently cached publications can lead or lag each other. These signed offsets are not measured latency against the current Core frame. Cached per-asset ready reports cannot be joined to an exact ui_draw span or establish visibility; short queue activity between report publications may be unobserved."
+    },
+    "adjudication": "Fresh feed counters remain ui_assets_pending47 to47 and world_assets_pending2 to2, with all other skip deltas0. Their publication times bracket the fixed window in one session. The cached broker has constant loads111/evictions22/closed20 and zero sampled loading/tasks/queue; no non-ready UI asset ID was captured. This diagnostic does not reproduce the formal22travel skips and provides no pending-plus-visible-asset-ID causal evidence. No attribution to the hypothetical hidden-image required-set path is made."
+  },
+  "preservation": "Only this new engine evidence file was written. No raw Game data, Game code, collector, owner summary/adapter/index or original dataset was edited or copied into the repository."
+}

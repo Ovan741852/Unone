@@ -1,0 +1,6 @@
+{
+  "source": "D:/Projects/JYRogue/game/evidence/engine-upgrade-20261103/atlas-input-gate/engine-gc-fixtures/data/player-name-glyph-support.txt",
+  "bytes": 5248,
+  "sha256": "e490e8ee3378e03dbc269a28b3d4ec2a131eda4b3ae998333679d3251a315b37",
+  "scope": "Exact fixture bytes in the unchanged canonical payload source path; no Game payload, input or renderer feedback change."
+}

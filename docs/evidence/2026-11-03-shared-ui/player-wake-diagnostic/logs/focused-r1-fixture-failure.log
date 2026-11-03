@@ -1,0 +1,90 @@
+✔ disabled wake diagnostics add neither an observer packet nor an end-clock read (2.1946ms)
+✔ passive wake records expose zero/two steps and retained negative debt without changing frames (0.5546ms)
+✔ wake diagnostics distinguish capped catch-up, paused redraw and resets (1.2929ms)
+✔ stale rejected wake retains its original generation and cannot claim the replacement clock debt (0.364ms)
+✔ a failed diagnostic sink preserves legacy wake delivery and the next unmodified RAF (0.3308ms)
+✔ coherent update/accept/draw keeps original RAF metadata while actual variable completion times remain honest (0.9885ms)
+✔ a delayed worker has one originating RAF continuation and cannot overlap or draw a stale snapshot (0.7395ms)
+✔ RAF timestamp rounding does not alternate duplicate and skipped frames; early debt is retained (19.8693ms)
+✔ high-refresh RAFs redraw honestly while simulation stays fixed-step; long stalls have bounded catch-up (2.1364ms)
+✔ pause and hidden intervals reset simulation time; an in-flight old generation cannot draw on return (0.4945ms)
+✔ stop cancels the next RAF and suppresses late work; restart attaches a fresh clock/listener (0.2317ms)
+✔ failed updates never claim a completed draw and actual draw errors stop scheduling once (0.2979ms)
+✔ stopping before a pending worker rejects ignores cancellation and never reports a completed draw (0.1476ms)
+✔ an old rejection cannot stop a restarted generation, while the same current failure still reports once (0.1906ms)
+✔ a rejection from before pause cannot stop the new clock or contaminate its RAF metadata (0.1797ms)
+✔ a rejection from before reset cannot stop the new clock or contaminate its RAF metadata (0.1035ms)
+✔ a rejection from before hide-restore cannot stop the new clock or contaminate its RAF metadata (0.1462ms)
+✔ reset during a tick suppresses its catch-up tail and resumes only at a new RAF boundary (0.1321ms)
+✔ a worker response spanning hide and restore cannot draw in the old generation or catch up hidden time (0.236ms)
+✔ drawing consumes the newly accepted packed lease and interpolation remains presentation-only (0.8097ms)
+✔ stop/start during one in-flight tick waits for retirement without a second update chain or stale draw (0.2637ms)
+✔ ordinary fixed ticks consume clicks against the private projector of the previous visible view (0.2221ms)
+✔ main-thread backend: identical ABI sequence when disabled; enabled commands carry execute and atomic tick spans (5.0621ms)
+✔ main-thread accepted publications and performance reads do not imply completed presentation or invoke the ABI (1.1667ms)
+✔ disabled profiling leaves draw/update/save behavior and published datasets unchanged (72.5052ms)
+✔ updates and draws are distinct identities; redraws of one snapshot are flagged, not new updates (45.8673ms)
+✔ failed updates and draws keep identity and status, then rethrow unchanged (30.9849ms)
+✔ an in-flight update evicted by a command backlog still completes the real tick unchanged (560.5008ms)
+✔ actual main entry with worker snapshots counts only complete world/UI/cursor submissions (156.7089ms)
+✔ actual player with real worker accepts then draws each fixed tick under its originating RAF token (1848.109ms)
+✔ actual player awaits one worker publication and draws once in its originating RAF continuation (30.5043ms)
+✔ actual tick persistence skips unchanged saves and commits the marker only after successful change/clear writes (140.7369ms)
+✔ actual public accessor forwards opt-in paired RAF samples and rejects unknown or malformed options without backend work (1.1177ms)
+✖ production main enables bounded passive wake records only through the real profile opt-in (1.1052ms)
+✖ actual main wake observer failure cannot escape into game scheduling (0.9789ms)
+✔ actual production startup entry waits raw-loss event gap, redraws, then publishes exactly one READY and starts scheduler once (5.9304ms)
+✔ actual production startup entry pagehide cancellation prevents late READY and scheduler creation (1.1001ms)
+✔ actual production factory assignment disposes a late resolved renderer after pagehide (1.0651ms)
+✔ actual READY commit resamples/cancels after metrics callbacks, without a later await gap (0.9018ms)
+✔ actual ordinary and checked startup wait for delayed Canvas-only images without polling RAF or starting simulation (3.2857ms)
+✔ startup never treats an unknown renderer outcome as a completed presentation (0.82ms)
+✔ pointer entry at the final RAF barrier cannot READY a newly required pending cursor (1.6665ms)
+✔ Game.start save changes are persisted exactly once before READY, including private encoded publications (1.9524ms)
+✔ a startup storage failure preserves the persisted marker and prevents READY/scheduler creation (1.4022ms)
+✔ restarting while paused persists new Game.start contents without waiting for a tick (0.8802ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 43
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2973.5785
+
+✖ failing tests:
+
+test at web\shared\player-profile-wake.test.mjs:17:1
+✖ production main enables bounded passive wake records only through the real profile opt-in (1.1052ms)
+  evalmachine.<anonymous>:6
+  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,
+                                                                                                ^
+  
+  ReferenceError: draw is not defined
+      at evalmachine.<anonymous>:6:95
+      at Script.runInContext (node:vm:149:12)
+      at Object.runInContext (node:vm:301:6)
+      at registration (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:14:31)
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:18:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at web\shared\player-profile-wake.test.mjs:24:1
+✖ actual main wake observer failure cannot escape into game scheduling (0.9789ms)
+  evalmachine.<anonymous>:6
+  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,
+                                                                                                ^
+  
+  ReferenceError: draw is not defined
+      at evalmachine.<anonymous>:6:95
+      at Script.runInContext (node:vm:149:12)
+      at Object.runInContext (node:vm:301:6)
+      at registration (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:14:31)
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/player-profile-wake.test.mjs:25:11)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)

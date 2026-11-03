@@ -1,0 +1,536 @@
+{
+  "schema": "unone.player-wake-diagnostic.validation.v1",
+  "status": "exact-final-focused-and-full-node-passed-runtime-browser-validation-pending",
+  "scope": "Reusable passive engine-host diagnostic only. No simulation, clock, tolerance, schedule order, Game behavior, Core API or renderer change.",
+  "base_context": "Previously delivered host08c4f51529b63681a6a29d245139d6d77d8865fd. New wake source has no built official artifact assigned by this writer.",
+  "final_source_pins": [
+    {
+      "source": {
+        "path": "D:/Projects/Unone/web/shared/async-scheduler.mjs",
+        "bytes": 6537,
+        "sha256": "01a81a3ccd4a17baabedf2ee9b3b8e9af425662ac95e027490712a508af38d21"
+      },
+      "postimage": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-final/web/shared/async-scheduler.mjs",
+        "bytes": 6537,
+        "sha256": "01a81a3ccd4a17baabedf2ee9b3b8e9af425662ac95e027490712a508af38d21"
+      }
+    },
+    {
+      "source": {
+        "path": "D:/Projects/Unone/web/player/main.js",
+        "bytes": 31859,
+        "sha256": "1416cce3c9c4c8e420718eed1e5cf50778f1aa2fbf252e8b275412776a99796c"
+      },
+      "postimage": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-final/web/player/main.js",
+        "bytes": 31859,
+        "sha256": "1416cce3c9c4c8e420718eed1e5cf50778f1aa2fbf252e8b275412776a99796c"
+      }
+    },
+    {
+      "source": {
+        "path": "D:/Projects/Unone/web/shared/async-scheduler.test.mjs",
+        "bytes": 21631,
+        "sha256": "ab5d743255c12b704e4e8cd9a85ebfccc2bcfab28dbff57d36a845df0285cc57"
+      },
+      "postimage": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-final/web/shared/async-scheduler.test.mjs",
+        "bytes": 21631,
+        "sha256": "ab5d743255c12b704e4e8cd9a85ebfccc2bcfab28dbff57d36a845df0285cc57"
+      }
+    },
+    {
+      "source": {
+        "path": "D:/Projects/Unone/web/shared/player-profile-wake.test.mjs",
+        "bytes": 3530,
+        "sha256": "7f8ef4d5739394597ddda7ab74cba632e6a6d0271c921e21d93e8f761ca6a062"
+      },
+      "postimage": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-final/web/shared/player-profile-wake.test.mjs",
+        "bytes": 3530,
+        "sha256": "7f8ef4d5739394597ddda7ab74cba632e6a6d0271c921e21d93e8f761ca6a062"
+      }
+    },
+    {
+      "source": {
+        "path": "D:/Projects/Unone/web/shared/startup-player-entry.test.mjs",
+        "bytes": 14522,
+        "sha256": "398d5a0a859f7134bb90693f9229051e7599b2726d66fff3094b6d26e97bd928"
+      },
+      "postimage": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-final/web/shared/startup-player-entry.test.mjs",
+        "bytes": 14522,
+        "sha256": "398d5a0a859f7134bb90693f9229051e7599b2726d66fff3094b6d26e97bd928"
+      }
+    }
+  ],
+  "r6_before_null_error_fix_postimages": [
+    {
+      "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-r6-before-null-error-fix/web/shared/async-scheduler.mjs",
+      "bytes": 6537,
+      "sha256": "01a81a3ccd4a17baabedf2ee9b3b8e9af425662ac95e027490712a508af38d21"
+    },
+    {
+      "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-r6-before-null-error-fix/web/player/main.js",
+      "bytes": 31805,
+      "sha256": "546955d814a38c56bc17480e2fb66500e80fd88045040312c1a808ae4e28ccd1"
+    },
+    {
+      "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-r6-before-null-error-fix/web/shared/async-scheduler.test.mjs",
+      "bytes": 21631,
+      "sha256": "ab5d743255c12b704e4e8cd9a85ebfccc2bcfab28dbff57d36a845df0285cc57"
+    },
+    {
+      "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-r6-before-null-error-fix/web/shared/player-profile-wake.test.mjs",
+      "bytes": 2676,
+      "sha256": "a6f7ad248e3a793d3c07d4513cb372cfb1f0b0c8354823195e21916de75a49f9"
+    },
+    {
+      "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/source-r6-before-null-error-fix/web/shared/startup-player-entry.test.mjs",
+      "bytes": 14522,
+      "sha256": "398d5a0a859f7134bb90693f9229051e7599b2726d66fff3094b6d26e97bd928"
+    }
+  ],
+  "documentation": {
+    "path": "D:/Projects/Unone/docs/profiling.md",
+    "bytes": 27493,
+    "sha256": "52dca3e06f66f5bd4e63ea26cfc419142d79ee3d1cc035be67e75914fe7aac89"
+  },
+  "contract": {
+    "enabled": "Only existing unone_profile=1 opt-in; production main passes null diagnostic hook otherwise",
+    "bounded": "Records kind wake into the existing shared profiler ring; default256, selectable16..2048, overwritten counts preserved",
+    "default_off": "No new diagnostic packet, diagnostic endpoint clock read, Core request or Worker request",
+    "same_token": "Original browser RAF timestamp preserved in raf_time_ms with clock generation/reset markers",
+    "attributes": [
+      "wake_start_ms",
+      "wake_end_ms",
+      "generation",
+      "generation_end",
+      "reset_before_wake",
+      "reset_during_wake",
+      "elapsed_ms",
+      "acc_before_ms",
+      "acc_after_elapsed_ms",
+      "acc_after_ms",
+      "acc_current_ms",
+      "step_ms",
+      "tolerance_ms",
+      "max_catch_up_steps",
+      "due",
+      "admitted",
+      "lost",
+      "actual_steps",
+      "attempted_steps",
+      "dropped_delta",
+      "paused",
+      "paused_end",
+      "cancelled",
+      "sanitized genuine error_code"
+    ],
+    "successful_step_scope": "Successful awaited scheduler tick calls; a coalesced host request is not necessarily a distinct Core update",
+    "body_endpoint": "Captured after preparation finalization and busy=false, before onRafEnd/completion feed and legacy wake observers",
+    "time_scope": "wake_start/end encloses async update/draw work and overlaps existing spans. Event wall_ms is observer recording time, not body CPU. Never sum parent/body and child stage timings.",
+    "reset_scope": "Old generation debt remains in acc_after_ms; acc_current_ms/generation_end capture live state at the pre-observer endpoint",
+    "legacy": "Development PROFILE_WAKE hook remains separate with its original post-onRafEnd end_ms and existing throw behavior",
+    "new_hook_failure": "Only new diagnostic callback exceptions are fenced and counted in readonly wakeDiagnosticFailures; legacy delivery/schedule finally are preserved",
+    "main_failure": "Profiler.record failures are caught, bounded playerProfileError sink attempted independently, never Game.fail",
+    "error_scope": "Healthy null error is omitted; genuine errors retain sanitized leading error_code and status. Cancellation keeps cancelled status."
+  },
+  "corrected_findings": [
+    {
+      "priority": "P2",
+      "found_by": "Root independent manual diff review",
+      "before": "Diagnostic end clock was after onRafEnd/feed, and state snapshot after legacy observer, contradicting the before-observers wall scope.",
+      "fix": "Split finalize from emit: capture endpoint/state before observers; emit afterward without rereading scheduler state. Preserve historical legacy clock at its old location.",
+      "regression": "Two fake-clock reset/pause cases first failed on R5, then passed: diagnostic bodyend18/debt5/originalgeneration retained, legacy end33 includes15ms onRafEnd work."
+    },
+    {
+      "priority": "P2 diagnostic metadata",
+      "found_by": "Runtime audit docs read, corrected on Root instruction",
+      "before": "Passing error:null to existing profiler produced misleading error_code UNCLASSIFIED on healthy wake.",
+      "fix": "Profile-on recorder destructures error and conditionally adds it only when genuine; no stale workaround in documentation.",
+      "regression": "Actual main consumer asserts healthy attrs lack error_code and real TICK_FAILED/RUNTIME_CLOSED are sanitized with correct error/cancelled status."
+    }
+  ],
+  "testing": {
+    "missing_hook_red": {
+      "exit_status": 1,
+      "command": [
+        "node",
+        "--test",
+        "web/shared/async-scheduler.test.mjs",
+        "web/shared/player-profile-wake.test.mjs"
+      ],
+      "log": "missing-hook-red-r1.log",
+      "scope": "Actual old source lacked diagnostic hook/main registration; deterministic tests failed before implementation"
+    },
+    "boundary_red": {
+      "exit_status": 1,
+      "command": [
+        "node",
+        "--test",
+        "web/shared/async-scheduler.test.mjs"
+      ],
+      "log": "measurement-boundary-red-r1.log",
+      "counts": {
+        "tests": 28,
+        "pass": 26,
+        "fail": 2
+      }
+    },
+    "final_focused": {
+      "exit_status": 0,
+      "executable": "node",
+      "cwd": "D:/Projects/Unone",
+      "args": [
+        "--test",
+        "web/shared/async-scheduler.test.mjs",
+        "web/shared/player-profile-wake.test.mjs",
+        "web/shared/startup-player-entry.test.mjs",
+        "web/shared/player-profile-main.test.mjs",
+        "web/shared/player-profile-main-backend.test.mjs"
+      ],
+      "log": "focused-final-r7.log",
+      "counts": {
+        "tests": 52.0,
+        "pass": 52.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 2997.5669
+      },
+      "scope": "Final corrected five-source postimages; real source-extracted main recorder/registration and bounded profiler, deterministic fake RAF/worker fixtures. No actual emitted Core or GPU."
+    },
+    "full_node": {
+      "exit_status": 0,
+      "status_source": "Root reported completion; totals parsed from retained log",
+      "log": "full-node-r1-before-null-error-fix.log",
+      "counts": {
+        "tests": 874.0,
+        "pass": 869.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 5.0,
+        "todo": 0.0,
+        "duration_ms": 15347.5015
+      },
+      "source_scope": "R6 before final null-error metadata correction/new consumer test, retained byte-exact in source-r6-before-null-error-fix",
+      "exact_argv": "Not supplied in this log; no invocation invented",
+      "skips": [
+        {
+          "test": "actual pinned WASM loads fresh source module plus JSON/text data before publishing (0.0842ms)",
+          "reason": "Set UNONE_WEB_REFRESH_INTEGRATION=1 plus exact runtime path/manifest SHA to run actual Core"
+        },
+        {
+          "test": "actual Core JSON decoder rejection and entry compile failure never publish output (0.061ms)",
+          "reason": "Set UNONE_WEB_REFRESH_INTEGRATION=1 plus exact runtime path/manifest SHA to run actual Core"
+        },
+        {
+          "test": "no navigator.gpu reports preview unavailable while real plugin inspection works (0.7571ms)",
+          "reason": "Set UNONE_SHADER_ROOT to test the installed plugin"
+        },
+        {
+          "test": "CPU-only plugin profile keeps GPU null and rejects samples with no timing (0.1489ms)",
+          "reason": "Set UNONE_SHADER_ROOT to test the installed plugin"
+        },
+        {
+          "test": "real adjacent normal-World packets: same-length vertex changes update in place, length changes rebuild, output equals a fresh renderer (1.0417ms)",
+          "reason": "packets missing"
+        }
+      ]
+    },
+    "final_full_suite": "Root exact-final R2 full gate passed875total/870pass/0fail/5skip after the null-error correction. Earlier R1 remains retained with its pre-correction scope.",
+    "intermediate_attempts": [
+      "focused-r1-fixture-failure.log: two source-extraction contexts lacked draw/fail; fixture setup corrected without weakening assertions",
+      "focused-r3-test-assertion-failure.log: scheduling used the same callback function identity; test corrected to assert next RAF registration count",
+      "focused-r5-before-boundary-fix.log:49passed but superseded by the concrete measurement P2"
+    ],
+    "exact_final_full_node": {
+      "exit_status": 0,
+      "status_source": "Root supplied actual completed exit0; complete totals independently parsed from its raw log",
+      "log": "full-node-final-r2.log",
+      "counts": {
+        "tests": 875.0,
+        "pass": 870.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 5.0,
+        "todo": 0.0,
+        "duration_ms": 14105.7258
+      },
+      "source_scope": "Exact final five source postimages, including healthy-error metadata fix and new genuine-error regression",
+      "final_source_verification": [
+        {
+          "path": "D:/Projects/Unone/web/shared/async-scheduler.mjs",
+          "sha256": "01a81a3ccd4a17baabedf2ee9b3b8e9af425662ac95e027490712a508af38d21",
+          "current_and_saved_postimage_match": true
+        },
+        {
+          "path": "D:/Projects/Unone/web/player/main.js",
+          "sha256": "1416cce3c9c4c8e420718eed1e5cf50778f1aa2fbf252e8b275412776a99796c",
+          "current_and_saved_postimage_match": true
+        },
+        {
+          "path": "D:/Projects/Unone/web/shared/async-scheduler.test.mjs",
+          "sha256": "ab5d743255c12b704e4e8cd9a85ebfccc2bcfab28dbff57d36a845df0285cc57",
+          "current_and_saved_postimage_match": true
+        },
+        {
+          "path": "D:/Projects/Unone/web/shared/player-profile-wake.test.mjs",
+          "sha256": "7f8ef4d5739394597ddda7ab74cba632e6a6d0271c921e21d93e8f761ca6a062",
+          "current_and_saved_postimage_match": true
+        },
+        {
+          "path": "D:/Projects/Unone/web/shared/startup-player-entry.test.mjs",
+          "sha256": "398d5a0a859f7134bb90693f9229051e7599b2726d66fff3094b6d26e97bd928",
+          "current_and_saved_postimage_match": true
+        }
+      ],
+      "exact_argv": "Not supplied in this log; no invocation invented",
+      "skips": [
+        {
+          "test": "actual pinned WASM loads fresh source module plus JSON/text data before publishing (0.0641ms)",
+          "reason": "Set UNONE_WEB_REFRESH_INTEGRATION=1 plus exact runtime path/manifest SHA to run actual Core"
+        },
+        {
+          "test": "actual Core JSON decoder rejection and entry compile failure never publish output (0.0334ms)",
+          "reason": "Set UNONE_WEB_REFRESH_INTEGRATION=1 plus exact runtime path/manifest SHA to run actual Core"
+        },
+        {
+          "test": "no navigator.gpu reports preview unavailable while real plugin inspection works (0.5959ms)",
+          "reason": "Set UNONE_SHADER_ROOT to test the installed plugin"
+        },
+        {
+          "test": "CPU-only plugin profile keeps GPU null and rejects samples with no timing (0.0981ms)",
+          "reason": "Set UNONE_SHADER_ROOT to test the installed plugin"
+        },
+        {
+          "test": "real adjacent normal-World packets: same-length vertex changes update in place, length changes rebuild, output equals a fresh renderer (0.9471ms)",
+          "reason": "packets missing"
+        }
+      ]
+    }
+  },
+  "raw_logs": {
+    "missing-hook-red-r1.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-red-20261103-r1.log",
+        "bytes": 6224,
+        "sha256": "3ecaa10f7d02b03e2613d0df036907d9aa357472ba88a617d86a4e76e9bb7409"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/missing-hook-red-r1.log",
+        "bytes": 6224,
+        "sha256": "3ecaa10f7d02b03e2613d0df036907d9aa357472ba88a617d86a4e76e9bb7409"
+      },
+      "counts": {
+        "tests": 23.0,
+        "pass": 18.0,
+        "fail": 5.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 95.6447
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "measurement-boundary-red-r1.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-boundary-red-20261103-r1.log",
+        "bytes": 4348,
+        "sha256": "f619864161bf3bf9460106f6b235c58845f8dcb666ca489ac8b66126b62ff7ff"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/measurement-boundary-red-r1.log",
+        "bytes": 4348,
+        "sha256": "f619864161bf3bf9460106f6b235c58845f8dcb666ca489ac8b66126b62ff7ff"
+      },
+      "counts": {
+        "tests": 28.0,
+        "pass": 26.0,
+        "fail": 2.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 100.5724
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "focused-r1-fixture-failure.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-focused-20261103-r1.log",
+        "bytes": 7259,
+        "sha256": "a0aa1577a621ef81b329811d7c5c89af1b33b26f463882373f89bb6001d927c4"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/focused-r1-fixture-failure.log",
+        "bytes": 7259,
+        "sha256": "a0aa1577a621ef81b329811d7c5c89af1b33b26f463882373f89bb6001d927c4"
+      },
+      "counts": {
+        "tests": 45.0,
+        "pass": 43.0,
+        "fail": 2.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 2973.5785
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "focused-r3-test-assertion-failure.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-focused-20261103-r3.log",
+        "bytes": 6141,
+        "sha256": "82758c4005455f190346fa04559e5daf5e2ed1d3c7ea0b3ca02ac58e3690eda3"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/focused-r3-test-assertion-failure.log",
+        "bytes": 6141,
+        "sha256": "82758c4005455f190346fa04559e5daf5e2ed1d3c7ea0b3ca02ac58e3690eda3"
+      },
+      "counts": {
+        "tests": 49.0,
+        "pass": 48.0,
+        "fail": 1.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 2937.5807
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "focused-r5-before-boundary-fix.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-focused-20261103-r5.log",
+        "bytes": 5477,
+        "sha256": "57cdf3dfaef6d3e7490df82ecf3681063a97862c973ba686824156e1394c1031"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/focused-r5-before-boundary-fix.log",
+        "bytes": 5477,
+        "sha256": "57cdf3dfaef6d3e7490df82ecf3681063a97862c973ba686824156e1394c1031"
+      },
+      "counts": {
+        "tests": 49.0,
+        "pass": 49.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 2946.7748
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "focused-r6-before-null-error-fix.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-focused-20261103-r6.log",
+        "bytes": 5631,
+        "sha256": "f25a7f29fafce3a9d124c21eb06e49cac58f2cfc25a01ca1eac42ebd0ebdc4a8"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/focused-r6-before-null-error-fix.log",
+        "bytes": 5631,
+        "sha256": "f25a7f29fafce3a9d124c21eb06e49cac58f2cfc25a01ca1eac42ebd0ebdc4a8"
+      },
+      "counts": {
+        "tests": 51.0,
+        "pass": 51.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 3005.0811
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "focused-final-r7.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-focused-20261103-r7.log",
+        "bytes": 5747,
+        "sha256": "a11841810dbd1fb3f8259738b579739968c23280bd197c2025c3b549f953e4e2"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/focused-final-r7.log",
+        "bytes": 5747,
+        "sha256": "a11841810dbd1fb3f8259738b579739968c23280bd197c2025c3b549f953e4e2"
+      },
+      "counts": {
+        "tests": 52.0,
+        "pass": 52.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 0.0,
+        "todo": 0.0,
+        "duration_ms": 2997.5669
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "full-node-r1-before-null-error-fix.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-full-node-20261103-r1.log",
+        "bytes": 89776,
+        "sha256": "a3615266c0278fb6b28cd7ce90af8e6b2be8f78188f54d470e1022b6f38d8eae"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/full-node-r1-before-null-error-fix.log",
+        "bytes": 89776,
+        "sha256": "a3615266c0278fb6b28cd7ce90af8e6b2be8f78188f54d470e1022b6f38d8eae"
+      },
+      "counts": {
+        "tests": 874.0,
+        "pass": 869.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 5.0,
+        "todo": 0.0,
+        "duration_ms": 15347.5015
+      },
+      "scope": "Byte-exact captured Node output; copied with file operations, not rerun."
+    },
+    "full-node-final-r2.log": {
+      "source": {
+        "path": "D:/Projects/Unone/.cache/player-wake-diagnostic-full-node-20261103-r2.log",
+        "bytes": 89868,
+        "sha256": "afa038cdc8973fc839cb3c52a1bf8d066aca918ee90593919a73d002a87bb9ae"
+      },
+      "copy": {
+        "path": "D:/Projects/Unone/docs/evidence/2026-11-03-shared-ui/player-wake-diagnostic/logs/full-node-final-r2.log",
+        "bytes": 89868,
+        "sha256": "afa038cdc8973fc839cb3c52a1bf8d066aca918ee90593919a73d002a87bb9ae"
+      },
+      "counts": {
+        "tests": 875.0,
+        "pass": 870.0,
+        "fail": 0.0,
+        "cancelled": 0.0,
+        "skipped": 5.0,
+        "todo": 0.0,
+        "duration_ms": 14105.7258
+      },
+      "scope": "Byte-exact Root executed exact-final full Node gate; no rerun by this writer."
+    }
+  },
+  "review": {
+    "root": "Final manual diff CLEAR before null-error correction; that metadata correction explicitly requested by Root",
+    "independent": "Prior source review/pending independent re-read kept separate from executed evidence",
+    "claude": "Not attempted for this slice; no external completion or clearance claimed"
+  },
+  "pending": [
+    "Actual official exported host execution with new wake metadata",
+    "Actual browser/GPU host validation after Root packages the new host"
+  ],
+  "limitations": [
+    "Active profiling adds clocks/serialization/DOM work and can perturb future RAF phase; default-off behavior and separate production acceptance matter",
+    "No Game FPS, physical scanout, universal no-leak, zero-allocation or no-frequent-GC claim",
+    "No local Core/Cargo/Native CLI or blocked executable execution; no OS policy bypass",
+    "No new ADR: internal passive observation does not alter simulation policy"
+  ],
+  "writer_actions": {
+    "commit_or_push": false,
+    "gpu_browser_or_runtime_started_by_evidence_writer": false,
+    "raw_or_source_copies_are_byte_exact": true
+  }
+}

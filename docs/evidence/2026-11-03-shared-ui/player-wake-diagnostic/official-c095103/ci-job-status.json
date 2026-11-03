@@ -1,0 +1,88 @@
+{
+  "schema": "unone.wake-ci-readonly-jobs.v1",
+  "source": "Read-only connected GitHub jobs API; selected public job metadata only. No logs/artifacts downloaded.",
+  "runs": [
+    {
+      "run_id": 41538744720,
+      "url": "https://github.com/Ovan741852/Unone/actions/runs/41538744720",
+      "jobs": [
+        {
+          "id": 125597171838,
+          "name": "Core ownership and library tests",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-02T22:36:52Z",
+          "completed_at": "2026-11-02T22:38:55Z",
+          "html_url": "https://github.com/Ovan741852/Unone/actions/runs/41538744720/job/125597171838",
+          "head_sha": "c09510388b019df887680375a4f9c296dff5f52a"
+        },
+        {
+          "id": 125598156344,
+          "name": "candidate official Web runtimes",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-02T22:38:58Z",
+          "completed_at": "2026-11-02T22:47:46Z",
+          "html_url": "https://github.com/Ovan741852/Unone/actions/runs/41538744720/job/125598156344",
+          "head_sha": "c09510388b019df887680375a4f9c296dff5f52a"
+        },
+        {
+          "id": 125598156536,
+          "name": "baseline official Web runtimes",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-02T22:38:58Z",
+          "completed_at": "2026-11-02T22:47:36Z",
+          "html_url": "https://github.com/Ovan741852/Unone/actions/runs/41538744720/job/125598156536",
+          "head_sha": "c09510388b019df887680375a4f9c296dff5f52a"
+        }
+      ]
+    },
+    {
+      "run_id": 41538744559,
+      "url": "https://github.com/Ovan741852/Unone/actions/runs/41538744559",
+      "jobs": [
+        {
+          "id": 125597171042,
+          "name": "rustfmt",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-02T22:36:51Z",
+          "completed_at": "2026-11-02T22:37:26Z",
+          "html_url": "https://github.com/Ovan741852/Unone/actions/runs/41538744559/job/125597171042",
+          "head_sha": "c09510388b019df887680375a4f9c296dff5f52a"
+        },
+        {
+          "id": 125597171501,
+          "name": "Web module tests",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-02T22:36:51Z",
+          "completed_at": "2026-11-02T22:37:17Z",
+          "html_url": "https://github.com/Ovan741852/Unone/actions/runs/41538744559/job/125597171501",
+          "head_sha": "c09510388b019df887680375a4f9c296dff5f52a"
+        },
+        {
+          "id": 125597171510,
+          "name": "Workspace check, clippy and tests",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-02T22:36:51Z",
+          "completed_at": "2026-11-02T22:39:05Z",
+          "html_url": "https://github.com/Ovan741852/Unone/actions/runs/41538744559/job/125597171510",
+          "head_sha": "c09510388b019df887680375a4f9c296dff5f52a"
+        },
+        {
+          "id": 125597171518,
+          "name": "Excluded player crates",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-02T22:36:51Z",
+          "completed_at": "2026-11-02T22:38:58Z",
+          "html_url": "https://github.com/Ovan741852/Unone/actions/runs/41538744559/job/125597171518",
+          "head_sha": "c09510388b019df887680375a4f9c296dff5f52a"
+        }
+      ]
+    }
+  ]
+}

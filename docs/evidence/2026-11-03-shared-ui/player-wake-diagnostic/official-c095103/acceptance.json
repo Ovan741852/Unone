@@ -1,0 +1,194 @@
+{
+  "schema": "unone.wake-ui-frozen-host-acceptance.v1",
+  "ok": true,
+  "source_commit": "c09510388b019df887680375a4f9c296dff5f52a",
+  "host_root": "D:/Projects/Unone/artifacts/web-wake-ui-host-c095103-20261103",
+  "host_sha256": "5e9b79155427125648a06ec65fb733dc2bc430161fbf99ac5129b7e41ffd8a2d",
+  "host_files": 111,
+  "actual_refresh": {
+    "passed": 22,
+    "failed": 0,
+    "skipped": 0
+  },
+  "runs": [
+    {
+      "backend": "main",
+      "observed_utc": "2026-11-02T22:40:12.919Z",
+      "observer_frame": 5837,
+      "metrics_frame": 5816,
+      "raw": {
+        "path": "D:/Projects/Unone/.cache/wake-ui-main-c095103-20261103.json",
+        "bytes": 45519,
+        "sha256": "d046fdf5e4652bf9a0e8f8b208c450efdc44b18616de109d46c8d2ecd05bb293"
+      },
+      "sprite": {
+        "builds": 2,
+        "cpu_reserved_bytes_estimate": 0,
+        "entries": 0,
+        "epoch": 1,
+        "errors": 0,
+        "gpu_reserved_bytes_estimate": 0,
+        "handles": 0,
+        "idle_material_entries": 0,
+        "idle_material_limit": 2,
+        "image_leases": 0,
+        "legacy_fallback_sprites": 0,
+        "limits": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        },
+        "live_textures": 0,
+        "pending": 0,
+        "ready": 0,
+        "retired": 2,
+        "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+        "supported": true,
+        "texture_builds": 1,
+        "texture_entries": 0,
+        "texture_retired": 1
+      },
+      "texture_cache": {
+        "decoded_texture_bytes_estimate": 0,
+        "enabled": true,
+        "entries": 0,
+        "estimate_excludes": "driver allocation, encoded files, browser decode copies, UI/data textures and render targets",
+        "evicted": 0,
+        "loading": 0,
+        "pinned_bytes_estimate": 0,
+        "policy": {
+          "idle_frames": 16,
+          "max_bytes": 512,
+          "max_entries": 2
+        },
+        "policy_source": "authored",
+        "pressure_bytes": 0,
+        "pressure_entries": 0,
+        "released_bytes_estimate": 0,
+        "scope": "Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected."
+      },
+      "broker": {
+        "loads": 1,
+        "resident_entries": 1,
+        "resident_bytes_estimate": 128,
+        "active_entries": 0
+      },
+      "skip_counts": {
+        "cursor_assets_pending": 0,
+        "cursor_diagnostics": 0,
+        "frame_pass_incomplete": 0,
+        "frame_resources_pending": 0,
+        "other": 0,
+        "raster_unavailable": 0,
+        "raster_validation": 0,
+        "ui_assets_pending": 0,
+        "ui_diagnostics": 0,
+        "ui_target_unavailable": 0,
+        "world_assets_pending": 1
+      },
+      "profile": {
+        "limit": 64,
+        "counts": {
+          "abandoned": 0,
+          "begun": 23342,
+          "cleared": 0,
+          "completed": 23342,
+          "dropped_attrs": 0,
+          "late_ends": 0,
+          "late_operations": 0,
+          "open": 0,
+          "orphan_marks": 0,
+          "overwritten": 23278,
+          "provider_errors": 0,
+          "publish_errors": 0,
+          "retained": 64
+        },
+        "retained_wakes": 16,
+        "arithmetic_and_preobserver_bounds": "passed",
+        "healthy_error_code_absent": true
+      }
+    },
+    {
+      "backend": "worker",
+      "observed_utc": "2026-11-02T22:42:23.933Z",
+      "observer_frame": 4138,
+      "metrics_frame": 4136,
+      "raw": {
+        "path": "D:/Projects/Unone/.cache/wake-ui-worker-c095103-20261103.json",
+        "bytes": 20627,
+        "sha256": "cd6678e7b4b4f7f225d8b606f4172f975994a5676157ce17426241a65a70059c"
+      },
+      "sprite": {
+        "builds": 2,
+        "cpu_reserved_bytes_estimate": 0,
+        "entries": 0,
+        "epoch": 1,
+        "errors": 0,
+        "gpu_reserved_bytes_estimate": 0,
+        "handles": 0,
+        "idle_material_entries": 0,
+        "idle_material_limit": 2,
+        "image_leases": 0,
+        "legacy_fallback_sprites": 0,
+        "limits": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        },
+        "live_textures": 0,
+        "pending": 0,
+        "ready": 0,
+        "retired": 2,
+        "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+        "supported": true,
+        "texture_builds": 1,
+        "texture_entries": 0,
+        "texture_retired": 1
+      },
+      "texture_cache": {
+        "decoded_texture_bytes_estimate": 0,
+        "enabled": true,
+        "entries": 0,
+        "estimate_excludes": "driver allocation, encoded files, browser decode copies, UI/data textures and render targets",
+        "evicted": 0,
+        "loading": 0,
+        "pinned_bytes_estimate": 0,
+        "policy": {
+          "idle_frames": 16,
+          "max_bytes": 512,
+          "max_entries": 2
+        },
+        "policy_source": "authored",
+        "pressure_bytes": 0,
+        "pressure_entries": 0,
+        "released_bytes_estimate": 0,
+        "scope": "Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected."
+      },
+      "broker": {
+        "loads": 1,
+        "resident_entries": 1,
+        "resident_bytes_estimate": 128,
+        "active_entries": 0
+      },
+      "skip_counts": {
+        "cursor_assets_pending": 0,
+        "cursor_diagnostics": 0,
+        "frame_pass_incomplete": 0,
+        "frame_resources_pending": 0,
+        "other": 0,
+        "raster_unavailable": 0,
+        "raster_validation": 0,
+        "ui_assets_pending": 0,
+        "ui_diagnostics": 0,
+        "ui_target_unavailable": 0,
+        "world_assets_pending": 1
+      },
+      "profile": null
+    }
+  ],
+  "limits": [
+    "100-cycle protocol plus terminal GPU ownership counters; not a per-cycle trace or game FPS acceptance.",
+    "Main profile capture is a bounded tail of actual production-host wake events; not a causal scheduler-phase reproduction.",
+    "Cached performance frame may differ from observer frame. Broker retains one intentional128B decoded scene pin; UI/Bloom allocations are separate.",
+    "16MiB linear WASM capacity is not live heap, GC frequency, process/GPU memory or leak proof.",
+    "Source-ingestion refresh reuses accepted9c production WASM; not a full SDK or new Native executable. Windows Native final remains4551-blocked."
+  ]
+}
