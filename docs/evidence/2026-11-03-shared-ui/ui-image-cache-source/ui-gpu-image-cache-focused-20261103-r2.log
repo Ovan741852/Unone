@@ -1,0 +1,48 @@
+✔ configured ordinary-sprite idle grace retains the auto GPU owner after hiding (4.4882ms)
+✔ a scene-decoded, GPU-warmed auto sprite reappears inside cache grace without another pending frame (1.3015ms)
+✔ 100 auto hide/reappear cycles preserve ready reuse without extra image, texture or program work (2.6124ms)
+✔ strict finite optional policy (2.0192ms)
+✔ idle resources evict by LRU under entry/byte pressure (0.4949ms)
+✔ active textures can exceed budget without being disposed (0.1386ms)
+✔ persistent mesh/terrain dependencies remain protected (0.131ms)
+✔ idle hysteresis avoids rapid reload churn (0.1251ms)
+✔ pending load eviction marks stale generation for the renderer guard (0.0917ms)
+✔ clear is idempotent and invalidates pending references (0.1553ms)
+✔ omitted policy has an explicit bounded default and expires idle owners (1.6847ms)
+✔ texture accounting includes mip estimate, without claiming driver bytes (0.303ms)
+✔ decoded lease is released once even when local GPU disposal throws (0.2907ms)
+✔ legacy and pool owners compete under one physical cache budget, with live owners protected (0.2469ms)
+✔ domain reclamation skips unrelated idle owners and untrack never retires physical ownership (0.2112ms)
+✔ clear attempts all physical owner retirements after removing their controller records (0.2212ms)
+✔ retirement callbacks removing another idle record do not strand the remaining pressure victims (0.2069ms)
+✔ a large expiry sweep reads owner byte estimates a linear number of times (0.9734ms)
+✔ pressure recounts reentrant registration and removal instead of trusting stale aggregate estimates (0.309ms)
+✔ a callback admitting a new idle owner at the end of a sweep is still checked against the budget (0.106ms)
+✔ official UI owner retains ready pixels across a composition release instead of causing another cold load (6.1585ms)
+✔ a decoded-warm UI A/hide/A reuses the same GPU Texture and one upload (1.1069ms)
+✔ 100 UI hide/show compositions reuse one texture and lease until actual idle TTL expires (5.9574ms)
+✔ one shared controller evicts idle UI under world pressure and never evicts currently active UI (1.0857ms)
+✔ UI leaves share one linear texture while the sprite sampler remains a separately counted physical owner (2.1855ms)
+✔ image-identity mismatch is never reported ready and a valid subsequent image can recover (1.2209ms)
+✔ broker/catalog replacement fences the old scope and requires actual new ready pixels (0.8697ms)
+✔ later resource failure rolls back newly staged owners and preserves unrelated committed owners (0.617ms)
+✔ upload failure releases the independent lease and cannot publish an untracked UI owner (0.4864ms)
+✔ context/clear retirement unpublishes owners before callbacks, attempts all, and preserves separate Canvas pixels (0.6828ms)
+✔ a context retirement inside upload cannot publish its late old-epoch texture (0.4118ms)
+✔ shrinking UI runs detach retired image/dedicated samplers while preserving active ownership (4.5344ms)
+✔ an empty UI composition clears every old sampler even when no new render call occurs (0.6579ms)
+✔ next reuse preserves reusable geometry/materials and binds only newly live textures (0.8496ms)
+✔ shared A/B/A runs detach only the hidden borrower and preserve the still-live A sampler (0.5928ms)
+✔ hidden atlas borrowers detach without evicting cached text; context loss retires the page once (0.8718ms)
+✔ a failed dedicated text raster leaves its preceding complete sampler and texture alive (1.2153ms)
+✔ clear detaches all sampler references before physical texture disposal (0.6246ms)
+✔ contextLost detaches all sampler references before physical texture disposal (0.3698ms)
+✔ dispose detaches all sampler references before physical texture disposal (0.3849ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 152.6695

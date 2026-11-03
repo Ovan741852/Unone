@@ -1,0 +1,357 @@
+{
+  "schema": "unone.ui-image-shared-cache-source.v1",
+  "created_utc": "2026-11-03T01:30:56.077Z",
+  "base_commit": "9e48220585cc67715af5b6068c1c307d82ecead0",
+  "sources": [
+    {
+      "path": "web/renderer/ui-gpu.js",
+      "bytes": 25247,
+      "sha256": "bb45ffb6ad46d088fcc03fe6a00584e9c2af8c63464cd1b9b973c1d77a38c75d"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 39784,
+      "sha256": "d6bb56d3296db3ff4502221528ce451048b90a442c2bebf1daa8ec0c539136d3"
+    },
+    {
+      "path": "web/renderer/texture-cache-policy.js",
+      "bytes": 6852,
+      "sha256": "43982a69609e6316d61834aeb5a982d09f03ebb044547d3e0d2dfe622ec02387"
+    },
+    {
+      "path": "web/renderer/ui-gpu-image-cache.test.mjs",
+      "bytes": 14875,
+      "sha256": "b3948a7a6e50777c075aea9f3cf74262f4d6862c45572947f0f9a14539a430e2"
+    },
+    {
+      "path": "web/renderer/ui-gpu-ownership.test.mjs",
+      "bytes": 8087,
+      "sha256": "dea89f4775731c7132b75575ef510c53a8023b2f8b66daf4c3c4d0c137968423"
+    },
+    {
+      "path": "web/renderer/sprite-auto-cache.test.mjs",
+      "bytes": 4769,
+      "sha256": "442c1318d0e1ce4f5682c838758a25d6b78bfb3629ae15dbd26006d21552defe"
+    }
+  ],
+  "checks": {
+    "focused": {
+      "total": 96,
+      "passed": 96,
+      "failed": 0,
+      "skipped": 0,
+      "log": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-focused-20261103-r6.log"
+    },
+    "final_full_node": {
+      "total": 907,
+      "passed": 902,
+      "failed": 0,
+      "skipped": 5,
+      "log": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-image-cache-full-node-20261103-r3.log"
+    },
+    "independent_source_reviews": [
+      {
+        "reviewer": "native_performance",
+        "status": "CLEAR",
+        "ui_source_sha256": "bb45ffb6ad46d088fcc03fe6a00584e9c2af8c63464cd1b9b973c1d77a38c75d"
+      },
+      {
+        "reviewer": "runtime_audit",
+        "status": "CLEAR",
+        "ui_source_sha256": "bb45ffb6ad46d088fcc03fe6a00584e9c2af8c63464cd1b9b973c1d77a38c75d"
+      }
+    ],
+    "root_manual_review": "CLEAR; exact final source read and final full Node gate executed"
+  },
+  "negative_controls": [
+    {
+      "log": "ui-gpu-image-cache-red-20261103-r1.log",
+      "result": "2 actual behavior failures on pre-change implementation: decoded closure and recreated GPU Texture; early two-test source was not separately captured; final test file is a larger superset."
+    },
+    {
+      "log": "ui-gpu-image-cache-reentry-red-20261103.log",
+      "result": "Intermediate draft allowed same-epoch nested upload draw, orphaning a tracked owner; corrected by whole-draw fence."
+    },
+    {
+      "log": "ui-gpu-image-cache-cached-reentry-red-20261103.log",
+      "result": "Intermediate draft allowed diagnostic callback to demote promoted visible owner; corrected by whole-draw fence."
+    }
+  ],
+  "external_reviews": [
+    {
+      "directory": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1",
+      "status": "timed-out-incomplete",
+      "timeout_ms": 45000,
+      "final_source": false,
+      "scope": "Fixed pre-correction392fdeab source; no output. Not a pass."
+    },
+    {
+      "directory": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2",
+      "status": "timed-out-incomplete",
+      "timeout_ms": 90000,
+      "final_source": false,
+      "scope": "Fixed intermediate59675fc3 source; no output. Final whole-draw correction reviewed separately by Root and two Codex agents."
+    }
+  ],
+  "superseded": [
+    "focused r1 through r5 and full-node r1/r2 precede final scope/reentry corrections; retained but not final acceptance.",
+    "Earlier source CLEAR dispositions on392fdeab/59675fc3/d9108858 are superseded by exact-final bb45ffb6 reviews."
+  ],
+  "limits": [
+    "Node uses actual official presenters/Three and broker with controlled Canvas/GL boundaries; no browser pixels or hardware execution.",
+    "Actual official main/worker and combined B+C Game validation have not run for this source record.",
+    "One controller retains existing policy. Active owners can exceed it; UI cached owners intentionally retain active decoded broker leases. No hard total memory cap.",
+    "Eight-image65.24MiB union exceeds64MiB; not simultaneous demand or evidence of a budget defect.",
+    "image_texture_builds/retired count committed logical UI owners, not every attempted initTexture call or driver allocation; cache hits count owner reuse, not network/decoder hits.",
+    "No Game/Core/Native binary change. Windows Native final remains App Control4551-blocked; no retry or bypass.",
+    "No seven-scene60FPS, no-frequent-GC, totalVRAM/RSS or process leak-freedom acceptance."
+  ],
+  "files": [
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/final-source/ui-gpu.js.txt",
+      "source": "web/renderer/ui-gpu.js",
+      "bytes": 25247,
+      "sha256": "bb45ffb6ad46d088fcc03fe6a00584e9c2af8c63464cd1b9b973c1d77a38c75d"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/final-source/three.js.txt",
+      "source": "web/renderer/three.js",
+      "bytes": 39784,
+      "sha256": "d6bb56d3296db3ff4502221528ce451048b90a442c2bebf1daa8ec0c539136d3"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/final-source/texture-cache-policy.js.txt",
+      "source": "web/renderer/texture-cache-policy.js",
+      "bytes": 6852,
+      "sha256": "43982a69609e6316d61834aeb5a982d09f03ebb044547d3e0d2dfe622ec02387"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/final-source/ui-gpu-image-cache.test.mjs.txt",
+      "source": "web/renderer/ui-gpu-image-cache.test.mjs",
+      "bytes": 14875,
+      "sha256": "b3948a7a6e50777c075aea9f3cf74262f4d6862c45572947f0f9a14539a430e2"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/final-source/ui-gpu-ownership.test.mjs.txt",
+      "source": "web/renderer/ui-gpu-ownership.test.mjs",
+      "bytes": 8087,
+      "sha256": "dea89f4775731c7132b75575ef510c53a8023b2f8b66daf4c3c4d0c137968423"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/final-source/sprite-auto-cache.test.mjs.txt",
+      "source": "web/renderer/sprite-auto-cache.test.mjs",
+      "bytes": 4769,
+      "sha256": "442c1318d0e1ce4f5682c838758a25d6b78bfb3629ae15dbd26006d21552defe"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-cached-reentry-red-20261103.log",
+      "source": ".cache/ui-gpu-image-cache-cached-reentry-red-20261103.log",
+      "bytes": 911,
+      "sha256": "5fc8e41f22b96f5a2cb3c65c386b1ce022cbd7645dcfa0babe2a8a195d0ac1a3"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-focused-20261103-r1.log",
+      "source": ".cache/ui-gpu-image-cache-focused-20261103-r1.log",
+      "bytes": 3017,
+      "sha256": "8ec4e86cdd3453ffd47899660dcf217e6ab23d650e35efe26e3ff106363f589b"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-focused-20261103-r2.log",
+      "source": ".cache/ui-gpu-image-cache-focused-20261103-r2.log",
+      "bytes": 3993,
+      "sha256": "17dca18bd5f74a4385d4a6968c7a059447912215e723a1cae0cb6d1f82a7a67c"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-focused-20261103-r3.log",
+      "source": ".cache/ui-gpu-image-cache-focused-20261103-r3.log",
+      "bytes": 9650,
+      "sha256": "42da2988d851845deafec6f2caa7bb31fa816fd5eae52512385d8471c1bdc4c9"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-focused-20261103-r4.log",
+      "source": ".cache/ui-gpu-image-cache-focused-20261103-r4.log",
+      "bytes": 9746,
+      "sha256": "c7e902ea36939b1ce5830a592cc53d5a1e42d985b44ee9ea39fa248ae4466a5e"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-focused-20261103-r5.log",
+      "source": ".cache/ui-gpu-image-cache-focused-20261103-r5.log",
+      "bytes": 9841,
+      "sha256": "5a924a6b045bddcd35e32b9e683024bf9e256949e1334a05f863a5e0dd362f28"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-focused-20261103-r6.log",
+      "source": ".cache/ui-gpu-image-cache-focused-20261103-r6.log",
+      "bytes": 10063,
+      "sha256": "551ad465ac0aab7db8cffaaeb71da295a8de4c49f7e84dd77f4f7155773ba5a0"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-red-20261103-r1.log",
+      "source": ".cache/ui-gpu-image-cache-red-20261103-r1.log",
+      "bytes": 2299,
+      "sha256": "1d7343b665bff5552cb55015ab73f1324fc2c490b5edee3a5a3af06946f32e3e"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-gpu-image-cache-reentry-red-20261103.log",
+      "source": ".cache/ui-gpu-image-cache-reentry-red-20261103.log",
+      "bytes": 910,
+      "sha256": "9b0eeecf92ea560a0556aa755ffc7e1cb6601dcd3f4c6fb09a2fdd6421bc933c"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-image-cache-full-node-20261103-r1.log",
+      "source": ".cache/ui-image-cache-full-node-20261103-r1.log",
+      "bytes": 92947,
+      "sha256": "f9840ca22fefca577cbf19e60967efa1940f1c843cfb8d9d831dabc99e1790ee"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-image-cache-full-node-20261103-r2.log",
+      "source": ".cache/ui-image-cache-full-node-20261103-r2.log",
+      "bytes": 93030,
+      "sha256": "9151c4c2d34496b9a077d3f832919d0d3bc5575d956e5cba3d06a6cc72614ca9"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/ui-image-cache-full-node-20261103-r3.log",
+      "source": ".cache/ui-image-cache-full-node-20261103-r3.log",
+      "bytes": 93393,
+      "sha256": "727eab9b98a67590bcc78b00b1b7b4995348410038cca37c91de9a61b1ec4342"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/command.json",
+      "source": ".cache/ui-image-cache-source-review-20261103/command.json",
+      "bytes": 1577,
+      "sha256": "dbe04ba1d996608c178c5c580c99ef872a5c003be8100c9027d8ecfbb8290eb7"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/fixed.diff",
+      "source": ".cache/ui-image-cache-source-review-20261103/fixed.diff",
+      "bytes": 27464,
+      "sha256": "d49c7130ed211e74a711adceeee67517b43d4afd7cec3eccfe55f77d90302a45"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/prompt.txt",
+      "source": ".cache/ui-image-cache-source-review-20261103/prompt.txt",
+      "bytes": 104769,
+      "sha256": "4748e62ec227c66caa442656cd14a2546b823135db3710d601b14cf9d7042632"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/result.json",
+      "source": ".cache/ui-image-cache-source-review-20261103/result.json",
+      "bytes": 2382,
+      "sha256": "a2b9fd843edaf7aa064a23936e9a652baf5a6b090ef2e98626380c62d9046a58"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/review.stderr.txt",
+      "source": ".cache/ui-image-cache-source-review-20261103/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/review.stdout.json",
+      "source": ".cache/ui-image-cache-source-review-20261103/review.stdout.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/source-0.txt",
+      "source": ".cache/ui-image-cache-source-review-20261103/source-0.txt",
+      "bytes": 24718,
+      "sha256": "392fdeab5c9388b8a9ac79a4a8572e83977e7266d0eb3217109fb273eb9b105a"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/source-1.txt",
+      "source": ".cache/ui-image-cache-source-review-20261103/source-1.txt",
+      "bytes": 39784,
+      "sha256": "d6bb56d3296db3ff4502221528ce451048b90a442c2bebf1daa8ec0c539136d3"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/source-2.txt",
+      "source": ".cache/ui-image-cache-source-review-20261103/source-2.txt",
+      "bytes": 6852,
+      "sha256": "43982a69609e6316d61834aeb5a982d09f03ebb044547d3e0d2dfe622ec02387"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/version.stderr.txt",
+      "source": ".cache/ui-image-cache-source-review-20261103/version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r1/version.stdout.txt",
+      "source": ".cache/ui-image-cache-source-review-20261103/version.stdout.txt",
+      "bytes": 22,
+      "sha256": "b354fe63f3ea7b46441790aa41c704340be3e4722cd759d1b77da284764c82ef"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/command.json",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/command.json",
+      "bytes": 1577,
+      "sha256": "f6c595efa169e96eedf49804acbe279cbe8d1e6b8a47878f4b84541e6f369cab"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/fixed.diff",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/fixed.diff",
+      "bytes": 27582,
+      "sha256": "90daacde05321121de911686c1bf522dca777044484bea024d432874e67330e2"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/prompt.txt",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/prompt.txt",
+      "bytes": 105191,
+      "sha256": "36e3b4d5506c7312d6d2bea162af38f08623e112dd17767406441e660fbc7388"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/result.json",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/result.json",
+      "bytes": 2380,
+      "sha256": "2c656b5a2313e7fd338793343f15c782df65b897eaa3489272284cd8bc66b61d"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/review.stderr.txt",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/review.stdout.json",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/review.stdout.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/source-0.txt",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/source-0.txt",
+      "bytes": 24835,
+      "sha256": "59675fc3ef79f67e071033c9e650b2a4f85b5f2057711b82821d57349a7f1f10"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/source-1.txt",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/source-1.txt",
+      "bytes": 39784,
+      "sha256": "d6bb56d3296db3ff4502221528ce451048b90a442c2bebf1daa8ec0c539136d3"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/source-2.txt",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/source-2.txt",
+      "bytes": 6852,
+      "sha256": "43982a69609e6316d61834aeb5a982d09f03ebb044547d3e0d2dfe622ec02387"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/version.stderr.txt",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/external-review-r2/version.stdout.txt",
+      "source": ".cache/ui-image-cache-source-review-r2-20261103/version.stdout.txt",
+      "bytes": 22,
+      "sha256": "b354fe63f3ea7b46441790aa41c704340be3e4722cd759d1b77da284764c82ef"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-cache-source/r9-working-set.json",
+      "source": ".cache/ui-image-cache-r9-working-set-20261103.json",
+      "bytes": 20842,
+      "sha256": "7665952c12e72cee3c480b4d566c253d6f7ae132ec7aa076005cb5a9a58b2475"
+    }
+  ]
+}

@@ -1,0 +1,316 @@
+diff --git a/web/renderer/sprite-auto-cache.test.mjs b/web/renderer/sprite-auto-cache.test.mjs
+index 07f07f4..b85e509 100644
+--- a/web/renderer/sprite-auto-cache.test.mjs
++++ b/web/renderer/sprite-auto-cache.test.mjs
+@@ -6,19 +6,19 @@ import assert from 'node:assert/strict';
+ import fs from 'node:fs';
+ import * as THREE from '../vendor/three/three.module.js';
+ import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
+ import {createTextureCachePolicy} from './texture-cache-policy.js';
+ import {createSpriteResourcePool,parseSpriteResourceBudget} from './sprite-resources.js';
+ import {createSpritePresentation} from './sprite-presentation.js';
+ 
+ const source=fs.readFileSync(new URL('./three.js',import.meta.url),'utf8');
+-const start=source.indexOf('  const textureCache = createTextureCachePolicy('),end=source.indexOf('  const heightfields =',start);
+-assert(start>=0&&end>start,'Actual production renderer resource-routing boundary');
+-const routing=source.slice(start,end);
++const start=source.indexOf('  const textureCache = createTextureCachePolicy('),pool=source.indexOf("  spriteResources=backend==='webgl'"),end=source.indexOf('  const heightfields =',pool);
++assert(start>=0&&pool>start&&end>pool,'Actual production renderer resource-routing boundary');
++const routing=source.slice(start,source.indexOf('\n',start))+source.slice(pool,end);
+ const ASSET='texture://auto-cache-probe';
+ async function fixture(){
+  const catalog=createAssetCatalog({assets:[{id:ASSET,kind:'texture2d',source:'atlas.png',encoding:{decoder:'image',format:'png',mime:'image/png'}}]});
+  let loads=0,uploads=0,compiles=0;
+  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:asset=>asset.source,inspectImage:async()=>({format:'png',width:2,height:2}),loadImage:async()=>{loads++;return {width:2,height:2};},unusedMaxBytes:0,unusedMaxEntries:0});
+  await broker.prepareScene({entities:[{id:'declared',sprite:{asset:ASSET,visible:false}}]});
+  const renderer={capabilities:{maxTextureSize:2048},initTexture(){uploads++;},compile(){compiles++;},properties:{get:()=>({currentProgram:{getUniforms(){}}})}};
+  const options={getImageAssets:()=>broker,getAssetCatalog:()=>catalog,textureCache:{max_bytes:16,max_entries:1,idle_frames:3}};
+diff --git a/web/renderer/texture-cache-policy.js b/web/renderer/texture-cache-policy.js
+index 06f4939..8faeadf 100644
+--- a/web/renderer/texture-cache-policy.js
++++ b/web/renderer/texture-cache-policy.js
+@@ -1,9 +1,9 @@
+-// Reusable renderer-owned cache policy. Active and non-sprite owners stay pinned.
++// Reusable renderer-owned cache policy. Active/prepared/persistent owners stay pinned.
+ export function parseTextureCache(value) {
+   if(value===undefined)return null;
+   if(!value||typeof value!=='object'||Array.isArray(value))throw Error('TEXTURE_CACHE_INVALID: expected an object');
+   const ranges={max_bytes:[1,1073741824],max_entries:[1,65536],idle_frames:[1,36000]};
+   if(Object.keys(value).some(key=>!Object.hasOwn(ranges,key)))throw Error('TEXTURE_CACHE_INVALID: unknown field');
+   for(const [key,[min,max]] of Object.entries(ranges))if(!Number.isSafeInteger(value[key])||value[key]<min||value[key]>max)
+     throw Error(`TEXTURE_CACHE_INVALID: ${key} must be an integer in ${min}..${max}`);
+   return {...value};
+@@ -67,12 +67,12 @@ export function createTextureCachePolicy(records,value,{dispose=texture=>texture
+       if(failure)throw failure;
+     },
+     clear(){const retiring=[...owners.values()];owners.clear();mutation++;activeLegacy.clear();head=tail=null;let failure;
+       for(const node of retiring){node.linked=false;node.previous=node.next=null;try{releasedBytes+=size(node);evicted++;node.adapter.retire();}catch(error){failure??=error;}}
+       if(failure)throw failure;
+     },
+     metrics(){const {bytes,pinnedBytes,loading,entries}=totals();return {enabled:true,entries,decoded_texture_bytes_estimate:bytes,pinned_bytes_estimate:pinnedBytes,loading,evicted,released_bytes_estimate:releasedBytes,
+       pressure_bytes:Math.max(0,bytes-policy.max_bytes),pressure_entries:Math.max(0,entries-policy.max_entries),
+-      scope:'Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected.',
+-      policy,policy_source:authored?'authored':'default',estimate_excludes:'driver allocation, encoded files, browser decode copies, UI/data textures and render targets'};},
++      scope:'Registered world and catalog-image UI GPU owners share this one policy. Active/prepared/persistent owners are protected; UI and sprite samplers remain distinct physical textures.',
++      policy,policy_source:authored?'authored':'default',estimate_excludes:'driver allocation, encoded files, browser decode copies, glyph atlases, data textures and render targets'};},
+   };
+ }
+diff --git a/web/renderer/three.js b/web/renderer/three.js
+index cb381bc..069822e 100644
+--- a/web/renderer/three.js
++++ b/web/renderer/three.js
+@@ -164,19 +164,21 @@ export async function createThreeRenderer(canvas, options = {}) {
+   scene.add(world3d);
+   const camera3d = createPerspectiveCamera(THREE);
+   const meshAssets = new Map();
+   const instances = createInstanceRenderer(THREE,world3d,meshAssetFor,options.instanceMemory);
+   const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor);
+   const particles = createParticleRenderer(THREE,world3d);
+   const projected = createProjectedRenderer(THREE,textureFor,{raster:rasterPolicy.requested});
+   const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile});
++  const textureRecords = new Map();
++  const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
+   // The render pipeline's ui stage: game UI drawn into this frame after the world.
+   let worldSubmitted=false;
+-  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable()}):null;
++  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog}):null;
+   let assetRequestPending=false;
+   const rasterPass=checkedRaster?createProjectedRasterPass(THREE,renderer):null;
+   // Retained across redraws: unchanged packed geometry is validated once, not on every frame.
+   const frameDecoder=createProjectedFrameDecoder({copyGeometry:false});
+   const frameDraws=frameProfile?createFrameDraws(THREE,textureFor):null,framePass=frameProfile?createFramePass(THREE,renderer):null;
+   // Explicit opt-in player profiling only (options.profiler); null keeps every site a single branch.
+   const profile=options.profiler?.renderer??null;
+   if(options.profiler)profileProviders(options.profiler);
+@@ -227,18 +229,16 @@ export async function createThreeRenderer(canvas, options = {}) {
+   if(checkedRaster)startupPresentation=createStartupPresentationState({available:rasterAvailable,metrics:rasterCapability.metrics,
+     view:()=>{const size=renderer.getDrawingBufferSize(new THREE.Vector2());return {width:size.x,height:size.y,dpr:renderer.getPixelRatio(),
+      ...(frameProfile?{material_profile:frameProfile,frame_revision:framePublication?.revision??null}:{})};}});
+   const camera = new THREE.OrthographicCamera(-8, 8, 4.5, -4.5, -1000, 1000);
+   camera.position.z = 10;
+   const geometry = new THREE.PlaneGeometry(1, 1);
+   const records = new Map();
+   const shaderMaterials = createShaderMaterials(THREE, renderer, backend);
+-  const textureRecords = new Map();
+-  const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
+   spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,textureCache,
+     getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,
+     onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;
+   if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
+   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor);
+   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
+   const dataTextures = createDataTextures(THREE,{memory:options.instanceMemory});
+   const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature,dataTextures});
+diff --git a/web/renderer/ui-gpu.js b/web/renderer/ui-gpu.js
+index e9da988..7a0b187 100644
+--- a/web/renderer/ui-gpu.js
++++ b/web/renderer/ui-gpu.js
+@@ -4,16 +4,17 @@
+ // order; quads split into draw calls only where their texture changes.
+ // The browser font engine rasterizes each text block once into an atlas page
+ // (a glyph resource, like a decoded image); every pixel on screen is drawn by
+ // three.js. Geometry is rebuilt only when the composition changes; unchanged
+ // frames submit the same draw calls again.
+ import {slicePatches} from '../shared/ui-geometry.mjs';
+ import {textPaintBounds} from '../shared/ui-presentation.mjs';
+ import {imageBatchSnappedRect} from '../shared/ui-image-batch.mjs';
++import {assetCatalogSpecs} from '../shared/asset-encoding.js';
+ 
+ const STRIDE=32,FILL=0,BORDER=1,IMAGE=2,FREE=3,MAX_PAGES=4,ATTRIBUTES=['uiOrigin','uiAxis','uiUv','uiColor','uiBorder','uiBox','uiParams','uiClip'];
+ // Pixel space is the drawing buffer, y down. uiOrigin = origin.xy + x axis,
+ // uiAxis = y axis; axes carry image-batch affine transforms and reflection.
+ const VERTEX=`attribute vec4 uiOrigin;attribute vec4 uiAxis;attribute vec4 uiUv;attribute vec4 uiColor;attribute vec4 uiBorder;attribute vec4 uiBox;attribute vec4 uiParams;attribute vec4 uiClip;
+ uniform vec2 uiSize;
+ varying vec2 vPixel;varying vec2 vUv;varying vec4 vColor;varying vec4 vBorder;varying vec4 vBox;varying vec4 vParams;varying vec4 vClip;
+ void main(){vec2 corner=position.xy;vec2 pixel=uiOrigin.xy+corner.x*uiOrigin.zw+corner.y*uiAxis.xy;
+@@ -36,23 +37,44 @@ void main(){
+   color=vec4(vBorder.rgb,1.0)*vBorder.a*coverage(vBox,vParams.x)*(1.0-hole);}
+  else{color=texture2D(uiTexture,vUv)*vColor.a;if(mode<2.5)color*=coverage(vBox,vParams.x);}
+  gl_FragColor=color*vParams.w;
+ }`;
+ const imageSize=image=>[image?.naturalWidth??image?.width,image?.naturalHeight??image?.height];
+ const capacityFor=n=>2**Math.ceil(Math.log2(Math.max(64,n)));
+ const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
+ 
+-export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas')}={}){
++export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null}={}){
+  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
+  const positions=new THREE.BufferAttribute(new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),3),index=new THREE.BufferAttribute(new Uint16Array([0,1,2,0,2,3]),1);
+  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
+  const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
+  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
+  let rebuilds=0,rasters=0,uploads=0,compactions=0,draws=0,lastRegions=0,lastMs=null,wasted=0,stale=true;
++ const sharedImages=!!(textureCache&&getImageAssets&&getAssetCatalog),imageOwners=new Map();
++ let imageBroker=null,imageCatalog=null,imageSpecs=null,imageEpoch=0,retiring=false,imageActive=0,imageCached=0,imageBytes=0,imageBuilds=0,imageHits=0,imageIdleHits=0,imageRetired=0;
++ function attemptAll(values,fn){let failure;for(const value of values)try{fn(value);}catch(error){failure??=error;}if(failure)throw failure;}
++ function imageActiveState(owner,active){if(owner.active===active)return;owner.active=active;imageActive+=active?1:-1;imageCached+=active?-1:1;textureCache.pinOwner(owner,active);}
++ function retireImage(owner){
++  if(owner.retired)return;owner.retired=true;if(imageOwners.get(owner.id)===owner)imageOwners.delete(owner.id);
++  if(owner.tracked){owner.tracked=false;textureCache.untrackOwner(owner);}stale=true;
++  if(owner.counted){owner.counted=false;imageBytes-=owner.bytes;if(owner.active)imageActive--;else imageCached--;imageRetired++;}
++  const texture=owner.texture,lease=owner.lease;owner.texture=owner.lease=owner.image=null;const previous=retiring;retiring=true;
++  let failure;try{if(texture)retireTexture(texture);}catch(error){failure=error;}
++  try{lease?.release();}catch(error){failure??=error;}finally{retiring=previous;}if(failure)throw failure;
++ }
++ function clearImageOwners(){
++  const owners=[...imageOwners.values()],previous=retiring;retiring=true;imageEpoch++;imageOwners.clear();
++  try{for(const owner of owners)if(owner.tracked){owner.tracked=false;textureCache.untrackOwner(owner);}attemptAll(owners,retireImage);}finally{retiring=previous;}
++ }
++ function syncImageScope(){
++  if(!sharedImages)return;const catalog=getAssetCatalog(),broker=getImageAssets(),specs=assetCatalogSpecs(catalog);
++  if(!broker||typeof broker.acquire!=='function')throw Error('UI_IMAGE_BROKER_REQUIRED');
++  if(catalog!==imageCatalog||broker!==imageBroker){clearImageOwners();imageCatalog=catalog;imageBroker=broker;imageSpecs=specs;stale=true;}
++ }
+ 
+  function material(){
+   return new THREE.ShaderMaterial({vertexShader:VERTEX,fragmentShader:FRAGMENT,uniforms:{uiSize:{value:uiSize},uiTexture:{value:white}},
+    transparent:true,depthTest:false,depthWrite:false,toneMapped:false,side:THREE.DoubleSide,blending:THREE.CustomBlending,
+    blendSrc:THREE.OneFactor,blendDst:THREE.OneMinusSrcAlphaFactor,blendSrcAlpha:THREE.OneFactor,blendDstAlpha:THREE.OneMinusSrcAlphaFactor});
+  }
+  function bindRun(run,texture){
+   const old=run.texture;if(old===texture)return;
+@@ -144,33 +166,48 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+    let own=dedicated.get(request.key);
+    if(!own||own.content!==request.content){const canvas=surface(request.w,request.h),context=canvas.getContext('2d');
+     if(!context)throw Error('UI_TEXT_RASTER_UNAVAILABLE');paint(request,canvas,context);
+     const previous=own;own={texture:configure(new THREE.Texture(canvas)),content:request.content};own.texture.needsUpdate=true;dedicated.set(request.key,own);if(previous)retireTexture(previous.texture);uploads++;}
+    request.texture=own.texture;request.uv=FULL_UV;request.dedicated=true;
+   }
+   for(const [key,own]of dedicated)if(!missing.some(r=>r.key===key)){dedicated.delete(key);retireTexture(own.texture);}
+  }
+- function imageTexture(image,used){
+-  used.add(image);let texture=imageTextures.get(image);
+-  if(!texture){texture=configure(new THREE.Texture(image));texture.needsUpdate=true;imageTextures.set(image,texture);}
+-  return texture;
++ function imageTexture(id,image,used,created,promoted){
++  if(!sharedImages){used.add(image);let texture=imageTextures.get(image);if(!texture){texture=configure(new THREE.Texture(image));texture.needsUpdate=true;imageTextures.set(image,texture);}return texture;}
++  if(retiring||disposed)throw Error('UI_IMAGE_RESOURCES_RETIRED');
++  let owner=imageOwners.get(id);
++  if(owner&&(owner.lease.state!=='ready'||owner.lease.image!==image)){retireImage(owner);owner=null;}
++  if(!owner){
++   if(imageSpecs.get(id)?.kind!=='texture2d')throw Error('UI_IMAGE_ASSET_INVALID');
++   const epoch=imageEpoch;owner={id,lease:null,texture:null,image,bytes:0,active:true,tracked:false,counted:false,retired:false};
++   try{
++    owner.lease=imageBroker.acquire(id);if(owner.lease.state!=='ready'||owner.lease.image!==image)throw Error('UI_IMAGE_LEASE_NOT_READY_OR_CHANGED');
++    const [w,h]=imageSize(image),bytes=w*h*4;if(!Number.isSafeInteger(bytes)||bytes<=0)throw Error('UI_IMAGE_DIMENSIONS_INVALID');owner.bytes=bytes;
++    owner.texture=configure(new THREE.Texture(image));owner.texture.needsUpdate=true;renderer.initTexture(owner.texture);
++    if(disposed||retiring||epoch!==imageEpoch)throw Error('UI_IMAGE_RESOURCE_CANCELLED');
++    textureCache.trackOwner(owner,{bytes:()=>owner.bytes,loading:()=>false,retire:()=>retireImage(owner)});owner.tracked=true;
++    imageOwners.set(id,owner);owner.counted=true;imageActive++;imageBytes+=bytes;imageBuilds++;created.push(owner);
++   }catch(error){try{retireImage(owner);}catch{/* retain the preparation error */}throw error;}
++  }else if(!used.has(owner)){imageHits++;if(!owner.active){imageIdleHits++;promoted.push(owner);imageActiveState(owner,true);}}
++  if(!used.has(owner))textureCache.touchOwner(owner);used.add(owner);return owner.texture;
+  }
+ 
+  function rebuild(context){
+   const started=performance.now(),{nodes,nodeKeys,batches,images,scale,paintText,hasText,imageError,identity}=context,W=width,H=height,unit=H/100;
+-  const prims=[],requests=[],ids=new Map(),usedImages=new Set(),screen=[0,0,W,H];
++  const prims=[],requests=[],ids=new Map(),usedImages=new Set(),created=[],promoted=[],epoch=imageEpoch,screen=[0,0,W,H];
++  try{
+   const clipOf=c=>c?[c.x*W/100,(100-c.y-c.height)*H/100,(c.x+c.width)*W/100,(100-c.y)*H/100]:screen;
+   const meet=(a,b)=>[Math.max(a[0],b[0]),Math.max(a[1],b[1]),Math.min(a[2],b[2]),Math.min(a[3],b[3])];
+   const rect=(x,y,w,h,extra)=>prims.push({origin:[x,y],axisX:[w,0],axisY:[0,h],uv:FULL_UV,color:WHITE,border:NONE,box:[x,y,w,h],radius:0,width:0,opacity:1,...extra});
+   function image(node,x,y,w,h,radius,opacity,clip){
+    const entry=images.get(node.asset);if(!entry?.image)return;
+    const pad=node.style?.padding??{},left=(pad.left??0)*unit,top=(pad.top??0)*unit;
+    const cw=Math.max(0,w-left-(pad.right??0)*unit),ch=Math.max(0,h-top-(pad.bottom??0)*unit);if(!cw||!ch)return;
+-   const [iw,ih]=imageSize(entry.image),texture=imageTexture(entry.image,usedImages),cx=x+left,cy=y+top,inner=meet(clip,[cx,cy,cx+cw,cy+ch]);
++   const [iw,ih]=imageSize(entry.image),texture=imageTexture(node.asset,entry.image,usedImages,created,promoted),cx=x+left,cy=y+top,inner=meet(clip,[cx,cy,cx+cw,cy+ch]);
+    const quad=(dx,dy,dw,dh,uv)=>rect(dx,dy,dw,dh,{mode:IMAGE,texture,uv,box:[x,y,w,h],radius,opacity,clip:inner});
+    try{
+     if(node.slice){
+      if(node.fit&&node.fit!=='stretch')throw Error('UI_SLICE_FIT_CONFLICT: omit fit or use stretch');
+      for(const [s,d]of slicePatches(node.slice,iw,ih,cw,ch,H))quad(cx+d.x,cy+d.y,d.width,d.height,[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]);
+     }else if(node.fit==='stretch')quad(cx,cy,cw,ch,FULL_UV);
+     else{const k=node.fit==='cover'?Math.max(cw/iw,ch/ih):Math.min(cw/iw,ch/ih);quad(cx+(cw-iw*k)/2,cy+(ch-ih*k)/2,iw*k,ih*k,FULL_UV);}
+    }catch(error){imageError(node,null,error);}
+@@ -180,17 +217,17 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+    const point=(sx,sy)=>[(t.a*sx+t.c*sy+t.tx)*W/100,H-(t.b*sx+t.d*sy+t.ty)*H/100];
+    instance.definition.quads.forEach((q,i)=>{
+     const entry=images.get(q.asset);if(!entry?.image)return;
+     const [iw,ih]=imageSize(entry.image),s=q.source,r=q.rect;
+     if(s&&(s.x+s.width>iw||s.y+s.height>ih)){imageError(node,i,Error(`UI_SLICE_BOUNDS: source exceeds image ${iw}x${ih}`));return;}
+     let origin,axisX,axisY;
+     if(instance.pixelSnap){const snapped=imageBatchSnappedRect(instance,r,W,H);if(!snapped.width||!snapped.height)return;origin=[snapped.x,snapped.y];axisX=[snapped.width,0];axisY=[0,snapped.height];}
+     else{const tl=point(r.x,r.y+r.height),tr=point(r.x+r.width,r.y+r.height),bl=point(r.x,r.y);origin=tl;axisX=[tr[0]-tl[0],tr[1]-tl[1]];axisY=[bl[0]-tl[0],bl[1]-tl[1]];}
+-    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:imageTexture(entry.image,usedImages)});
++    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:imageTexture(q.asset,entry.image,usedImages,created,promoted)});
+    });
+   }
+   function text(node,nodeKey,x,y,w,h,radius,opacity,clip,bounds){
+    const x0=Math.max(Math.floor(bounds.x),Math.floor(clip[0]),0),y0=Math.max(Math.floor(bounds.y),Math.floor(clip[1]),0);
+    const x1=Math.min(Math.ceil(bounds.x+bounds.width),Math.ceil(clip[2]),W),y1=Math.min(Math.ceil(bounds.y+bounds.height),Math.ceil(clip[3]),H);
+    if(x1<=x0||y1<=y0)return;
+    const n=(ids.get(node.id)??0)+1;ids.set(node.id,n);
+    const request={key:n>1?`${node.id}\u0000${n}`:node.id,x0,y0,w:x1-x0,h:y1-y0,
+@@ -209,16 +246,17 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+    const radius=(style?.border_radius??0)*unit;
+    if(style?.background)rect(x,y,w,h,{mode:FILL,color:style.background,radius,opacity,clip});
+    if(node.kind==='image')image(node,x,y,w,h,radius,opacity,clip);
+    else if(hasText(node))text(node,nodeKeys?.[index]??JSON.stringify(node),x,y,w,h,radius,opacity,clip,bounds);
+    const border=Math.min((style?.border_width??0)*unit,w,h);
+    if(border>0)rect(x,y,w,h,{mode:BORDER,border:style.border_color??WHITE,radius,width:border,opacity,clip});
+   }
+   placeText(requests);
++  if(disposed||retiring||epoch!==imageEpoch)throw Error('UI_IMAGE_RESOURCE_CANCELLED');
+   for(const [image,texture]of imageTextures)if(!usedImages.has(image)){imageTextures.delete(image);retireTexture(texture);}
+   // Pack quads in painter order; a draw call ends only where the texture changes.
+   if(data.length<prims.length*STRIDE)data=new Float32Array(capacityFor(prims.length)*STRIDE);
+   const groups=[];let group=null;count=0;
+   for(const p of prims){
+    const texture=p.text?p.text.texture:p.texture;if(p.text&&!texture)continue;
+    if(!group||(texture&&group.texture&&texture!==group.texture)){group={texture:null,start:count,count:0};groups.push(group);}
+    if(texture)group.texture=texture;
+@@ -226,40 +264,45 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+    data.set([p.origin[0],p.origin[1],p.axisX[0],p.axisX[1],p.axisY[0],p.axisY[1],0,0,uv[0],uv[1],uv[2],uv[3],c[0],c[1],c[2],c[3],b[0],b[1],b[2],b[3],
+     box[0],box[1],box[2],box[3],p.radius,p.width,p.mode,p.opacity,clip[0],clip[1],clip[2],clip[3]],o);
+    group.count++;count++;
+   }
+   groups.forEach((g,i)=>{const r=runAt(i,g.count);r.buffer.array.set(data.subarray(g.start*STRIDE,(g.start+g.count)*STRIDE));
+    r.buffer.clearUpdateRanges();r.buffer.addUpdateRange(0,g.count*STRIDE);r.buffer.needsUpdate=true;
+    r.geometry.instanceCount=g.count;bindRun(r,g.texture??white);r.mesh.visible=g.count>0;});
+   for(let i=groups.length;i<runs.length;i++){bindRun(runs[i],white);runs[i].mesh.visible=false;}
++  for(const owner of imageOwners.values())if(owner.active&&!usedImages.has(owner))imageActiveState(owner,false);
+   drawRuns=groups.length;lastRegions=prims.length;lastMs=performance.now()-started;rebuilds++;stale=false;
++  }catch(error){stale=true;try{attemptAll(created,retireImage);}catch{}try{attemptAll(promoted,owner=>{if(!owner.retired)imageActiveState(owner,false);});}catch{}throw error;}
+  }
+ 
+  function clear(){
+-  for(const r of runs){bindRun(r,white);scene.remove(r.mesh);r.geometry.dispose();r.mesh.material.dispose();}runs.length=0;textureRuns.clear();
+-  for(const page of pages)retireTexture(page.texture);pages.length=0;slots.clear();
+-  for(const own of dedicated.values())retireTexture(own.texture);dedicated.clear();
+-  for(const texture of imageTextures.values())retireTexture(texture);imageTextures.clear();
+-  scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=0;stale=true;
++  if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');const oldRuns=runs.splice(0),oldPages=pages.splice(0),oldDedicated=[...dedicated.values()],oldImages=[...imageTextures.values()];dedicated.clear();imageTextures.clear();slots.clear();
++  retiring=true;let failure;try{for(const r of oldRuns){bindRun(r,white);scene.remove(r.mesh);}textureRuns.clear();
++   try{clearImageOwners();}catch(error){failure??=error;}
++   for(const [values,fn]of [[oldRuns,r=>{try{r.geometry.dispose();}finally{r.mesh.material.dispose();}}],[oldPages,p=>retireTexture(p.texture)],[oldDedicated,p=>retireTexture(p.texture)],[oldImages,retireTexture]])try{attemptAll(values,fn);}catch(error){failure??=error;}
++  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=0;stale=true;}if(failure)throw failure;
+  }
+  return {
+   // Drawing-buffer pixels the UI lays out against, and the CSS->device scale.
+   target(){if(disposed||!available()||renderer.getContext().isContextLost())return null;renderer.getDrawingBufferSize(size);return {width:size.x,height:size.y,scale:renderer.getPixelRatio()};},
+   draw(context){
++   if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');
+    if(disposed||!available()||renderer.getContext().isContextLost())return {skipped:true,regions:0};
++   syncImageScope();
+    renderer.getDrawingBufferSize(size);
+    if(!atlasSize)atlasSize=Math.min(4096,renderer.capabilities?.maxTextureSize??2048);
+    if(context.changed||stale||size.x!==width||size.y!==height){width=size.x;height=size.y;uiSize.set(width,height);rebuild(context);}
+    if(count){
+     const autoClear=renderer.autoClear,test=renderer.getScissorTest(),target=renderer.getRenderTarget();renderer.getViewport(viewport);
+     try{renderer.autoClear=false;renderer.setRenderTarget(null);renderer.setScissorTest(false);renderer.setViewport(0,0,width/renderer.getPixelRatio(),height/renderer.getPixelRatio());renderer.render(scene,camera);draws++;}
+     finally{renderer.setRenderTarget(target);renderer.setViewport(viewport);renderer.setScissorTest(test);renderer.autoClear=autoClear;}
+    }
+    return {skipped:false,regions:lastRegions,cpu_ms:lastMs};
+   },
+   contextLost(){clear();},
+   clear,
+-  dispose(){if(disposed)return;clear();white.dispose();disposed=true;},
++   dispose(){if(disposed)return;if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');disposed=true;try{clear();}finally{white.dispose();}},
+   metrics:()=>({backend:'three.js',quads:count,draw_calls:drawRuns,rebuilds,last_rebuild_ms:lastMs,text_rasters:rasters,atlas_uploads:uploads,atlas_compactions:compactions,
+-   atlas_pages:pages.length,atlas_page_size:atlasSize,text_slots:slots.size,dedicated_text_textures:dedicated.size,image_textures:imageTextures.size,submits:draws}),
++    atlas_pages:pages.length,atlas_page_size:atlasSize,text_slots:slots.size,dedicated_text_textures:dedicated.size,image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
++    image_cache_scope:sharedImages?'shared_texture_cache_with_broker_lease':'borrowed_immediate_no_shared_cache',image_active_owners:imageActive,image_cached_owners:imageCached,image_bytes_estimate:imageBytes,image_texture_builds:imageBuilds,image_cache_hits:imageHits,image_idle_hits:imageIdleHits,image_owners_retired:imageRetired,image_epoch:imageEpoch}),
+  };
+ }

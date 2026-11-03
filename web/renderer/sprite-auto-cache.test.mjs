@@ -11,9 +11,9 @@ import {createSpriteResourcePool,parseSpriteResourceBudget} from './sprite-resou
 import {createSpritePresentation} from './sprite-presentation.js';
 
 const source=fs.readFileSync(new URL('./three.js',import.meta.url),'utf8');
-const start=source.indexOf('  const textureCache = createTextureCachePolicy('),end=source.indexOf('  const heightfields =',start);
-assert(start>=0&&end>start,'Actual production renderer resource-routing boundary');
-const routing=source.slice(start,end);
+const start=source.indexOf('  const textureCache = createTextureCachePolicy('),pool=source.indexOf("  spriteResources=backend==='webgl'"),end=source.indexOf('  const heightfields =',pool);
+assert(start>=0&&pool>start&&end>pool,'Actual production renderer resource-routing boundary');
+const routing=source.slice(start,source.indexOf('\n',start))+source.slice(pool,end);
 const ASSET='texture://auto-cache-probe';
 async function fixture(){
  const catalog=createAssetCatalog({assets:[{id:ASSET,kind:'texture2d',source:'atlas.png',encoding:{decoder:'image',format:'png',mime:'image/png'}}]});

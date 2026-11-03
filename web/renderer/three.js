@@ -169,9 +169,11 @@ export async function createThreeRenderer(canvas, options = {}) {
   const particles = createParticleRenderer(THREE,world3d);
   const projected = createProjectedRenderer(THREE,textureFor,{raster:rasterPolicy.requested});
   const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile});
+  const textureRecords = new Map();
+  const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
   // The render pipeline's ui stage: game UI drawn into this frame after the world.
   let worldSubmitted=false;
-  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable()}):null;
+  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog}):null;
   let assetRequestPending=false;
   const rasterPass=checkedRaster?createProjectedRasterPass(THREE,renderer):null;
   // Retained across redraws: unchanged packed geometry is validated once, not on every frame.
@@ -232,8 +234,6 @@ export async function createThreeRenderer(canvas, options = {}) {
   const geometry = new THREE.PlaneGeometry(1, 1);
   const records = new Map();
   const shaderMaterials = createShaderMaterials(THREE, renderer, backend);
-  const textureRecords = new Map();
-  const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
   spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,textureCache,
     getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,
     onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;

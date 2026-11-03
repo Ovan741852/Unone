@@ -9,6 +9,7 @@
 import {slicePatches} from '../shared/ui-geometry.mjs';
 import {textPaintBounds} from '../shared/ui-presentation.mjs';
 import {imageBatchSnappedRect} from '../shared/ui-image-batch.mjs';
+import {assetCatalogSpecs} from '../shared/asset-encoding.js';
 
 const STRIDE=32,FILL=0,BORDER=1,IMAGE=2,FREE=3,MAX_PAGES=4,ATTRIBUTES=['uiOrigin','uiAxis','uiUv','uiColor','uiBorder','uiBox','uiParams','uiClip'];
 // Pixel space is the drawing buffer, y down. uiOrigin = origin.xy + x axis,
@@ -41,13 +42,36 @@ const imageSize=image=>[image?.naturalWidth??image?.width,image?.naturalHeight??
 const capacityFor=n=>2**Math.ceil(Math.log2(Math.max(64,n)));
 const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
 
-export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas')}={}){
+export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null}={}){
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
  const positions=new THREE.BufferAttribute(new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),3),index=new THREE.BufferAttribute(new Uint16Array([0,1,2,0,2,3]),1);
  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
  const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
  let rebuilds=0,rasters=0,uploads=0,compactions=0,draws=0,lastRegions=0,lastMs=null,wasted=0,stale=true;
+ const sharedImages=!!(textureCache&&getImageAssets&&getAssetCatalog),imageOwners=new Map();
+ let imageBroker=null,imageCatalog=null,imageSpecs=null,imageEpoch=0,retiring=false,drawing=false,imageActive=0,imageCached=0,imageBytes=0,imageBuilds=0,imageHits=0,imageIdleHits=0,imageRetired=0;
+ function attemptAll(values,fn){let failure;for(const value of values)try{fn(value);}catch(error){failure??=error;}if(failure)throw failure;}
+ function imageActiveState(owner,active){if(owner.active===active)return;owner.active=active;imageActive+=active?1:-1;imageCached+=active?-1:1;textureCache.pinOwner(owner,active);}
+ function retireImage(owner){
+  if(owner.retired)return;owner.retired=true;if(imageOwners.get(owner.id)===owner)imageOwners.delete(owner.id);
+  if(owner.tracked){owner.tracked=false;textureCache.untrackOwner(owner);}stale=true;
+  if(owner.counted){owner.counted=false;imageBytes-=owner.bytes;if(owner.active)imageActive--;else imageCached--;imageRetired++;}
+  const texture=owner.texture,lease=owner.lease;owner.texture=owner.lease=owner.image=null;const previous=retiring;retiring=true;
+  let failure;try{if(texture)retireTexture(texture);}catch(error){failure=error;}
+  try{lease?.release();}catch(error){failure??=error;}finally{retiring=previous;}if(failure)throw failure;
+ }
+ function clearImageOwners(){
+  const owners=[...imageOwners.values()],previous=retiring;retiring=true;imageEpoch++;imageOwners.clear();
+  try{for(const owner of owners)if(owner.tracked){owner.tracked=false;textureCache.untrackOwner(owner);}attemptAll(owners,retireImage);}finally{retiring=previous;}
+ }
+ function syncImageScope(){
+  if(!sharedImages)return true;const epoch=imageEpoch,catalog=getAssetCatalog();if(disposed||epoch!==imageEpoch)return false;
+  const broker=getImageAssets(),specs=assetCatalogSpecs(catalog);if(disposed||epoch!==imageEpoch)return false;
+  if(!broker||typeof broker.acquire!=='function')throw Error('UI_IMAGE_BROKER_REQUIRED');
+  if(catalog!==imageCatalog||broker!==imageBroker){clearImageOwners();imageCatalog=catalog;imageBroker=broker;imageSpecs=specs;stale=true;}
+  return true;
+ }
 
  function material(){
   return new THREE.ShaderMaterial({vertexShader:VERTEX,fragmentShader:FRAGMENT,uniforms:{uiSize:{value:uiSize},uiTexture:{value:white}},
@@ -149,15 +173,30 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   }
   for(const [key,own]of dedicated)if(!missing.some(r=>r.key===key)){dedicated.delete(key);retireTexture(own.texture);}
  }
- function imageTexture(image,used){
-  used.add(image);let texture=imageTextures.get(image);
-  if(!texture){texture=configure(new THREE.Texture(image));texture.needsUpdate=true;imageTextures.set(image,texture);}
-  return texture;
+ function imageTexture(id,image,used,created,promoted){
+  if(!sharedImages){used.add(image);let texture=imageTextures.get(image);if(!texture){texture=configure(new THREE.Texture(image));texture.needsUpdate=true;imageTextures.set(image,texture);}return texture;}
+  if(retiring||disposed)throw Error('UI_IMAGE_RESOURCES_RETIRED');
+  let owner=imageOwners.get(id);
+  if(owner&&(owner.lease.state!=='ready'||owner.lease.image!==image)){retireImage(owner);owner=null;}
+  if(!owner){
+   if(imageSpecs.get(id)?.kind!=='texture2d')throw Error('UI_IMAGE_ASSET_INVALID');
+   const epoch=imageEpoch;owner={id,lease:null,texture:null,image,bytes:0,active:true,tracked:false,counted:false,retired:false};
+   try{
+    owner.lease=imageBroker.acquire(id);if(owner.lease.state!=='ready'||owner.lease.image!==image)throw Error('UI_IMAGE_LEASE_NOT_READY_OR_CHANGED');
+    const [w,h]=imageSize(image),bytes=w*h*4;if(!Number.isSafeInteger(bytes)||bytes<=0)throw Error('UI_IMAGE_DIMENSIONS_INVALID');owner.bytes=bytes;
+    owner.texture=configure(new THREE.Texture(image));owner.texture.needsUpdate=true;renderer.initTexture(owner.texture);
+    if(disposed||retiring||epoch!==imageEpoch)throw Error('UI_IMAGE_RESOURCE_CANCELLED');
+    textureCache.trackOwner(owner,{bytes:()=>owner.bytes,loading:()=>false,retire:()=>retireImage(owner)});owner.tracked=true;
+    imageOwners.set(id,owner);owner.counted=true;imageActive++;imageBytes+=bytes;imageBuilds++;created.push(owner);
+   }catch(error){try{retireImage(owner);}catch{/* retain the preparation error */}throw error;}
+  }else if(!used.has(owner)){imageHits++;if(!owner.active){imageIdleHits++;promoted.push(owner);imageActiveState(owner,true);}}
+  if(!used.has(owner))textureCache.touchOwner(owner);used.add(owner);return owner.texture;
  }
 
  function rebuild(context){
   const started=performance.now(),{nodes,nodeKeys,batches,images,scale,paintText,hasText,imageError,identity}=context,W=width,H=height,unit=H/100;
-  const prims=[],requests=[],ids=new Map(),usedImages=new Set(),screen=[0,0,W,H];
+  const prims=[],requests=[],ids=new Map(),usedImages=new Set(),created=[],promoted=[],epoch=imageEpoch,screen=[0,0,W,H];
+  try{
   const clipOf=c=>c?[c.x*W/100,(100-c.y-c.height)*H/100,(c.x+c.width)*W/100,(100-c.y)*H/100]:screen;
   const meet=(a,b)=>[Math.max(a[0],b[0]),Math.max(a[1],b[1]),Math.min(a[2],b[2]),Math.min(a[3],b[3])];
   const rect=(x,y,w,h,extra)=>prims.push({origin:[x,y],axisX:[w,0],axisY:[0,h],uv:FULL_UV,color:WHITE,border:NONE,box:[x,y,w,h],radius:0,width:0,opacity:1,...extra});
@@ -165,7 +204,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    const entry=images.get(node.asset);if(!entry?.image)return;
    const pad=node.style?.padding??{},left=(pad.left??0)*unit,top=(pad.top??0)*unit;
    const cw=Math.max(0,w-left-(pad.right??0)*unit),ch=Math.max(0,h-top-(pad.bottom??0)*unit);if(!cw||!ch)return;
-   const [iw,ih]=imageSize(entry.image),texture=imageTexture(entry.image,usedImages),cx=x+left,cy=y+top,inner=meet(clip,[cx,cy,cx+cw,cy+ch]);
+   const [iw,ih]=imageSize(entry.image),texture=imageTexture(node.asset,entry.image,usedImages,created,promoted),cx=x+left,cy=y+top,inner=meet(clip,[cx,cy,cx+cw,cy+ch]);
    const quad=(dx,dy,dw,dh,uv)=>rect(dx,dy,dw,dh,{mode:IMAGE,texture,uv,box:[x,y,w,h],radius,opacity,clip:inner});
    try{
     if(node.slice){
@@ -185,7 +224,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
     let origin,axisX,axisY;
     if(instance.pixelSnap){const snapped=imageBatchSnappedRect(instance,r,W,H);if(!snapped.width||!snapped.height)return;origin=[snapped.x,snapped.y];axisX=[snapped.width,0];axisY=[0,snapped.height];}
     else{const tl=point(r.x,r.y+r.height),tr=point(r.x+r.width,r.y+r.height),bl=point(r.x,r.y);origin=tl;axisX=[tr[0]-tl[0],tr[1]-tl[1]];axisY=[bl[0]-tl[0],bl[1]-tl[1]];}
-    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:imageTexture(entry.image,usedImages)});
+    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:imageTexture(q.asset,entry.image,usedImages,created,promoted)});
    });
   }
   function text(node,nodeKey,x,y,w,h,radius,opacity,clip,bounds){
@@ -214,6 +253,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    if(border>0)rect(x,y,w,h,{mode:BORDER,border:style.border_color??WHITE,radius,width:border,opacity,clip});
   }
   placeText(requests);
+  if(disposed||retiring||epoch!==imageEpoch)throw Error('UI_IMAGE_RESOURCE_CANCELLED');
   for(const [image,texture]of imageTextures)if(!usedImages.has(image)){imageTextures.delete(image);retireTexture(texture);}
   // Pack quads in painter order; a draw call ends only where the texture changes.
   if(data.length<prims.length*STRIDE)data=new Float32Array(capacityFor(prims.length)*STRIDE);
@@ -231,22 +271,29 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    r.buffer.clearUpdateRanges();r.buffer.addUpdateRange(0,g.count*STRIDE);r.buffer.needsUpdate=true;
    r.geometry.instanceCount=g.count;bindRun(r,g.texture??white);r.mesh.visible=g.count>0;});
   for(let i=groups.length;i<runs.length;i++){bindRun(runs[i],white);runs[i].mesh.visible=false;}
+  for(const owner of imageOwners.values())if(owner.active&&!usedImages.has(owner))imageActiveState(owner,false);
   drawRuns=groups.length;lastRegions=prims.length;lastMs=performance.now()-started;rebuilds++;stale=false;
+  }catch(error){stale=true;try{attemptAll(created,retireImage);}catch{}try{attemptAll(promoted,owner=>{if(!owner.retired)imageActiveState(owner,false);});}catch{}throw error;}
  }
 
  function clear(){
-  for(const r of runs){bindRun(r,white);scene.remove(r.mesh);r.geometry.dispose();r.mesh.material.dispose();}runs.length=0;textureRuns.clear();
-  for(const page of pages)retireTexture(page.texture);pages.length=0;slots.clear();
-  for(const own of dedicated.values())retireTexture(own.texture);dedicated.clear();
-  for(const texture of imageTextures.values())retireTexture(texture);imageTextures.clear();
-  scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=0;stale=true;
+  if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');const oldRuns=runs.splice(0),oldPages=pages.splice(0),oldDedicated=[...dedicated.values()],oldImages=[...imageTextures.values()];dedicated.clear();imageTextures.clear();slots.clear();
+  retiring=true;let failure;try{for(const r of oldRuns){bindRun(r,white);scene.remove(r.mesh);}textureRuns.clear();
+   try{clearImageOwners();}catch(error){failure??=error;}
+   for(const [values,fn]of [[oldRuns,r=>{try{r.geometry.dispose();}finally{r.mesh.material.dispose();}}],[oldPages,p=>retireTexture(p.texture)],[oldDedicated,p=>retireTexture(p.texture)],[oldImages,retireTexture]])try{attemptAll(values,fn);}catch(error){failure??=error;}
+  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=0;stale=true;}if(failure)throw failure;
  }
  return {
   // Drawing-buffer pixels the UI lays out against, and the CSS->device scale.
   target(){if(disposed||!available()||renderer.getContext().isContextLost())return null;renderer.getDrawingBufferSize(size);return {width:size.x,height:size.y,scale:renderer.getPixelRatio()};},
   draw(context){
-   if(disposed||!available()||renderer.getContext().isContextLost())return {skipped:true,regions:0};
+   if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');
+   if(drawing)throw Error('UI_DRAW_REENTRANT');if(disposed)return {skipped:true,regions:0};drawing=true;
+   try{
+   const enteredEpoch=imageEpoch;if(!available()||renderer.getContext().isContextLost()||disposed||enteredEpoch!==imageEpoch)return {skipped:true,regions:0};
+   if(!syncImageScope())return {skipped:true,regions:0};const epoch=imageEpoch;
    renderer.getDrawingBufferSize(size);
+   if(disposed||epoch!==imageEpoch)return {skipped:true,regions:0};
    if(!atlasSize)atlasSize=Math.min(4096,renderer.capabilities?.maxTextureSize??2048);
    if(context.changed||stale||size.x!==width||size.y!==height){width=size.x;height=size.y;uiSize.set(width,height);rebuild(context);}
    if(count){
@@ -254,12 +301,14 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
     try{renderer.autoClear=false;renderer.setRenderTarget(null);renderer.setScissorTest(false);renderer.setViewport(0,0,width/renderer.getPixelRatio(),height/renderer.getPixelRatio());renderer.render(scene,camera);draws++;}
     finally{renderer.setRenderTarget(target);renderer.setViewport(viewport);renderer.setScissorTest(test);renderer.autoClear=autoClear;}
    }
-   return {skipped:false,regions:lastRegions,cpu_ms:lastMs};
+   return disposed||epoch!==imageEpoch?{skipped:true,regions:0}:{skipped:false,regions:lastRegions,cpu_ms:lastMs};
+   }finally{drawing=false;}
   },
   contextLost(){clear();},
   clear,
-  dispose(){if(disposed)return;clear();white.dispose();disposed=true;},
+   dispose(){if(disposed)return;if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');disposed=true;try{clear();}finally{white.dispose();}},
   metrics:()=>({backend:'three.js',quads:count,draw_calls:drawRuns,rebuilds,last_rebuild_ms:lastMs,text_rasters:rasters,atlas_uploads:uploads,atlas_compactions:compactions,
-   atlas_pages:pages.length,atlas_page_size:atlasSize,text_slots:slots.size,dedicated_text_textures:dedicated.size,image_textures:imageTextures.size,submits:draws}),
+    atlas_pages:pages.length,atlas_page_size:atlasSize,text_slots:slots.size,dedicated_text_textures:dedicated.size,image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
+    image_cache_scope:sharedImages?'shared_texture_cache_with_broker_lease':'borrowed_immediate_no_shared_cache',image_active_owners:imageActive,image_cached_owners:imageCached,image_bytes_estimate:imageBytes,image_texture_builds:imageBuilds,image_cache_hits:imageHits,image_idle_hits:imageIdleHits,image_owners_retired:imageRetired,image_epoch:imageEpoch}),
  };
 }

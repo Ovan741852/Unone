@@ -34,6 +34,7 @@ test('shrinking UI runs detach retired image/dedicated samplers while preserving
   for(let i=1;i<meshes.length;i++){assert.equal(meshes[i].visible,false);assert.notEqual(sampler(meshes[i]),textures[i],'An inactive engine run must not retain retired CPU image/canvas through its sampler');}
   assert.equal(meshes[1].material.map,null);assert.deepEqual(disposed.map(read=>read()),[0,1,1]);assert.deepEqual(f.closed,[]);assert(f.leases.every(l=>l.state==='ready'));
   assert.equal(f.ui.metrics().image_textures,1);assert.equal(f.ui.metrics().dedicated_text_textures,0);
+  assert.equal(f.ui.metrics().image_cache_scope,'borrowed_immediate_no_shared_cache');
  }finally{f.dispose();}
 });
 

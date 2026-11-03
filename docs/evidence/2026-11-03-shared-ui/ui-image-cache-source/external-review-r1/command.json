@@ -1,0 +1,56 @@
+{
+  "status": "running",
+  "started_utc": "2026-11-03T01:16:29.438Z",
+  "base_revision": "9e48220",
+  "captured_head": "9e48220585cc67715af5b6068c1c307d82ecead0",
+  "fixed_diff_sha256": "d49c7130ed211e74a711adceeee67517b43d4afd7cec3eccfe55f77d90302a45",
+  "paths": [
+    {
+      "path": "web/renderer/ui-gpu.js",
+      "bytes": 24718,
+      "sha256": "392fdeab5c9388b8a9ac79a4a8572e83977e7266d0eb3217109fb273eb9b105a"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 39784,
+      "sha256": "d6bb56d3296db3ff4502221528ce451048b90a442c2bebf1daa8ec0c539136d3"
+    },
+    {
+      "path": "web/renderer/texture-cache-policy.js",
+      "bytes": 6852,
+      "sha256": "43982a69609e6316d61834aeb5a982d09f03ebb044547d3e0d2dfe622ec02387"
+    }
+  ],
+  "cli": {
+    "path": "C:/Users/liNao/.local/bin/claude.exe",
+    "version": "2.1.308 (Claude Code)",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version_exit": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 45000
+  },
+  "prompt_sha256": "4748e62ec227c66caa442656cd14a2546b823135db3710d601b14cf9d7042632"
+}

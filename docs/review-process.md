@@ -1,5 +1,12 @@
 # Code review and decision records
 
+2026-11-03: UI catalog-image owners now use the existing shared texture cache.
+Exact final source passed Root and two independent Codex reviews, 96 focused
+checks and the full Node gate (902 passes, 5 skipped). Two intermediate reentry
+defects were reproduced and fixed. Separate Claude attempts remain incomplete
+and precede the final correction; actual Web/Game acceptance is pending. See
+[the scoped review](reviews/2026-11-03-ui-image-shared-cache.md).
+
 ## Purpose and cadence
 
 Use Claude CLI as an independent, read-only review layer at meaningful vertical

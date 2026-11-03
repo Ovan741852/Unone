@@ -1,0 +1,28 @@
+✖ same-epoch upload reentry cannot publish a second pinned owner for the same asset (5.6417ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 111.511
+
+✖ failing tests:
+
+test at web\renderer\ui-gpu-image-cache.test.mjs:123:1
+✖ same-epoch upload reentry cannot publish a second pinned owner for the same asset (5.6417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-image-cache.test.mjs:126:28)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

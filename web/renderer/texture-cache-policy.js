@@ -1,4 +1,4 @@
-// Reusable renderer-owned cache policy. Active and non-sprite owners stay pinned.
+// Reusable renderer-owned cache policy. Active/prepared/persistent owners stay pinned.
 export function parseTextureCache(value) {
   if(value===undefined)return null;
   if(!value||typeof value!=='object'||Array.isArray(value))throw Error('TEXTURE_CACHE_INVALID: expected an object');
@@ -72,7 +72,7 @@ export function createTextureCachePolicy(records,value,{dispose=texture=>texture
     },
     metrics(){const {bytes,pinnedBytes,loading,entries}=totals();return {enabled:true,entries,decoded_texture_bytes_estimate:bytes,pinned_bytes_estimate:pinnedBytes,loading,evicted,released_bytes_estimate:releasedBytes,
       pressure_bytes:Math.max(0,bytes-policy.max_bytes),pressure_entries:Math.max(0,entries-policy.max_entries),
-      scope:'Registered world asset-texture GPU owners; legacy records and sprite-pool owners share this one policy. Active/prepared/persistent owners are protected.',
-      policy,policy_source:authored?'authored':'default',estimate_excludes:'driver allocation, encoded files, browser decode copies, UI/data textures and render targets'};},
+      scope:'Registered world and catalog-image UI GPU owners share this one policy. Active/prepared/persistent owners are protected; UI and sprite samplers remain distinct physical textures.',
+      policy,policy_source:authored?'authored':'default',estimate_excludes:'driver allocation, encoded files, browser decode copies, glyph atlases, data textures and render targets'};},
   };
 }

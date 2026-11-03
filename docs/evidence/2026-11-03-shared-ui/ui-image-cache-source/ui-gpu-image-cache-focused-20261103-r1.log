@@ -1,0 +1,39 @@
+✔ configured ordinary-sprite idle grace retains the auto GPU owner after hiding (4.5755ms)
+✔ a scene-decoded, GPU-warmed auto sprite reappears inside cache grace without another pending frame (1.2346ms)
+✔ 100 auto hide/reappear cycles preserve ready reuse without extra image, texture or program work (3.9462ms)
+✔ strict finite optional policy (2.4593ms)
+✔ idle resources evict by LRU under entry/byte pressure (0.8133ms)
+✔ active textures can exceed budget without being disposed (0.3399ms)
+✔ persistent mesh/terrain dependencies remain protected (0.367ms)
+✔ idle hysteresis avoids rapid reload churn (0.1838ms)
+✔ pending load eviction marks stale generation for the renderer guard (0.224ms)
+✔ clear is idempotent and invalidates pending references (0.2629ms)
+✔ omitted policy has an explicit bounded default and expires idle owners (2.2653ms)
+✔ texture accounting includes mip estimate, without claiming driver bytes (0.3209ms)
+✔ decoded lease is released once even when local GPU disposal throws (0.3436ms)
+✔ legacy and pool owners compete under one physical cache budget, with live owners protected (0.3363ms)
+✔ domain reclamation skips unrelated idle owners and untrack never retires physical ownership (0.2462ms)
+✔ clear attempts all physical owner retirements after removing their controller records (0.2107ms)
+✔ retirement callbacks removing another idle record do not strand the remaining pressure victims (0.1667ms)
+✔ a large expiry sweep reads owner byte estimates a linear number of times (0.9821ms)
+✔ pressure recounts reentrant registration and removal instead of trusting stale aggregate estimates (0.5709ms)
+✔ a callback admitting a new idle owner at the end of a sweep is still checked against the budget (0.1558ms)
+✔ official UI owner retains ready pixels across a composition release instead of causing another cold load (8.9703ms)
+✔ a decoded-warm UI A/hide/A reuses the same GPU Texture and one upload (1.7082ms)
+✔ shrinking UI runs detach retired image/dedicated samplers while preserving active ownership (6.0343ms)
+✔ an empty UI composition clears every old sampler even when no new render call occurs (1.4005ms)
+✔ next reuse preserves reusable geometry/materials and binds only newly live textures (1.8169ms)
+✔ shared A/B/A runs detach only the hidden borrower and preserve the still-live A sampler (1.264ms)
+✔ hidden atlas borrowers detach without evicting cached text; context loss retires the page once (1.522ms)
+✔ a failed dedicated text raster leaves its preceding complete sampler and texture alive (2.0487ms)
+✔ clear detaches all sampler references before physical texture disposal (1.1004ms)
+✔ contextLost detaches all sampler references before physical texture disposal (0.8536ms)
+✔ dispose detaches all sampler references before physical texture disposal (0.5166ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 196.9056

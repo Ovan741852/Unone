@@ -1,0 +1,68 @@
+✖ official UI owner retains ready pixels across a composition release instead of causing another cold load (5.4949ms)
+✖ a decoded-warm UI A/hide/A reuses the same GPU Texture and one upload (1.4088ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 112.7591
+
+✖ failing tests:
+
+test at web\renderer\ui-gpu-image-cache.test.mjs:23:1
+✖ official UI owner retains ready pixels across a composition release instead of causing another cold load (5.4949ms)
+  AssertionError [ERR_ASSERTION]: The independent GPU owner must protect decoded pixels after Canvas releases
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-image-cache.test.mjs:26:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at web\renderer\ui-gpu-image-cache.test.mjs:30:1
+✖ a decoded-warm UI A/hide/A reuses the same GPU Texture and one upload (1.4088ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be reference-equal to "expected":
+  + actual - expected
+  ... Skipped lines
+  
+    Texture {
+      anisotropy: 1,
+      center: Vector2 {
+        x: 0,
+        y: 0
+  ...
+        isSource: true,
+  +     uuid: '28cf4ea3-5ca4-4b1d-9ca8-9bb0980600e1',
+  -     uuid: 'c2a866df-a25a-4736-91ac-fd807b907e88',
+        version: 1
+      },
+      type: 1009,
+      unpackAlignment: 4,
+      updateRanges: [],
+      userData: {},
+  +   uuid: '3d91a491-48b1-4754-8356-83a7c7e26f90',
+  -   uuid: '53fb82bf-9406-47bc-8a56-7e0604beb0b8',
+      version: 1,
+      wrapS: 1001,
+      wrapT: 1001
+    }
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/renderer/ui-gpu-image-cache.test.mjs:32:101)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Texture],
+    expected: [Texture],
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

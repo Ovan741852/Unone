@@ -1,0 +1,79 @@
+{
+  "status": "timed-out-incomplete",
+  "started_utc": "2026-11-03T01:18:47.810Z",
+  "base_revision": "9e48220",
+  "captured_head": "9e48220585cc67715af5b6068c1c307d82ecead0",
+  "fixed_diff_sha256": "90daacde05321121de911686c1bf522dca777044484bea024d432874e67330e2",
+  "paths": [
+    {
+      "path": "web/renderer/ui-gpu.js",
+      "bytes": 24835,
+      "sha256": "59675fc3ef79f67e071033c9e650b2a4f85b5f2057711b82821d57349a7f1f10"
+    },
+    {
+      "path": "web/renderer/three.js",
+      "bytes": 39784,
+      "sha256": "d6bb56d3296db3ff4502221528ce451048b90a442c2bebf1daa8ec0c539136d3"
+    },
+    {
+      "path": "web/renderer/texture-cache-policy.js",
+      "bytes": 6852,
+      "sha256": "43982a69609e6316d61834aeb5a982d09f03ebb044547d3e0d2dfe622ec02387"
+    }
+  ],
+  "cli": {
+    "path": "C:/Users/liNao/.local/bin/claude.exe",
+    "version": "2.1.308 (Claude Code)",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version_exit": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 90000
+  },
+  "prompt_sha256": "36e3b4d5506c7312d6d2bea162af38f08623e112dd17767406441e660fbc7388",
+  "finished_utc": "2026-11-03T01:20:18.199Z",
+  "elapsed_ms": 90339.3036,
+  "exit_code": 1,
+  "signal": null,
+  "timed_out": true,
+  "launch_error": null,
+  "termination": {
+    "command": [
+      "taskkill.exe",
+      "/PID",
+      "70508",
+      "/T",
+      "/F"
+    ],
+    "exit": 0,
+    "stdout": "���\\: PID �� 53908 (PID �� 70508 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n���\\: PID �� 70508 (PID �� 988 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n",
+    "stderr": "",
+    "error": null
+  },
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
