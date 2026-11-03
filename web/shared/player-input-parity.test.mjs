@@ -13,19 +13,23 @@ const mappings=[...native.slice(native.indexOf('fn key_action('),native.indexOf(
   .matchAll(/KeyCode::(\w+)\s*=>\s*Some\("([^"]+)"\)/g)].map(m=>[m[1],m[2]]);
 
 function harness() {
-  const canvasEvents=new Map(),windowEvents=new Map(),input=createHostInput(),uiCalls=[];
-  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,orderedRouter:null,textInputs:{pointer:()=>false,routeKey:()=>false,suspend(){}},
-    canvas:{getBoundingClientRect:()=>({left:0,top:0,width:200,height:100}),setPointerCapture(){},addEventListener:(name,fn)=>canvasEvents.set(name,fn)},
+  const canvasEvents=new Map(),windowEvents=new Map(),input=createHostInput(),uiCalls=[],captures=new Set(),released=[];
+  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,scheduler:null,frozen:false,orderedRouter:null,textInputs:{pointer:()=>false,routeKey:()=>false,suspend(){}},
+    canvas:{getBoundingClientRect:()=>({left:0,top:0,width:200,height:100}),setPointerCapture:id=>captures.add(id),hasPointerCapture:id=>captures.has(id),
+      releasePointerCapture:id=>{captures.delete(id);released.push(id);},addEventListener:(name,fn)=>canvasEvents.set(name,fn)},
     window:{addEventListener:(name,fn)=>windowEvents.set(name,fn)},
     worldFromPointer:(_canvas,event)=>({x:event.clientX,y:event.clientY}),
-    uiScroll:{pointer:(_e,kind)=>{uiCalls.push(kind);return false;}},
+    uiScroll:{pointer:(_e,kind)=>{uiCalls.push(kind);return false;},cancel(){}},
     uiRenderer:{hitTest:()=>null,pointer:()=>false,releaseAll(){}}});
-  const route=source.slice(source.indexOf('function pointer(event,down,kind){'),source.indexOf("window.addEventListener('unone-host-pause'"));
+  const route=source.slice(source.indexOf('function pointer(event,down,kind){'),source.indexOf("window.addEventListener('pageshow'"));
   assert.ok(route.startsWith('function pointer('));vm.runInContext(route,context);
+  // The scheduler visibility callback is built inside finishStartup; run that exact handler.
+  const visibilityLine=source.split('\n').map(line=>line.trim()).find(line=>line.startsWith('onVisibilityChange:'));
+  const visibility=vm.runInContext('('+visibilityLine.slice('onVisibilityChange:'.length).replace(/\}\);$/,'')+')',context);
   const pointer=(kind,patch={})=>canvasEvents.get(kind)({pointerId:1,pointerType:'mouse',button:0,buttons:1,
     clientX:20,clientY:40,preventDefault(){},...patch});
   const key=(kind,code)=>windowEvents.get(kind)({code,preventDefault(){}});
-  return {input,context,uiCalls,pointer,key,canvasEvents,windowEvents};
+  return {input,context,uiCalls,pointer,key,canvasEvents,windowEvents,captures,released,visibility};
 }
 
 test('actual official player physical keys match every current native action name',()=>{
@@ -103,6 +107,27 @@ test('focus loss releases held actions and discards pending physical and seconda
   assert.deepEqual(h.input.consumeFrame().actions,{});assert.equal(h.input.pointer.down,false);
   h.key('keyup','KeyW');h.pointer('pointerup',{button:2,buttons:0});
   assert.deepEqual(h.input.consumeFrame().actions,{});
+});
+
+test('legacy release-all keeps a still-held primary up until a fresh pointerdown',()=>{
+  const barriers={blur:h=>h.windowEvents.get('blur')(),hidden:h=>h.visibility({visible:false}),
+    pause:h=>h.windowEvents.get('unone-host-pause')()};
+  for(const [name,release] of Object.entries(barriers)) {
+    const h=harness();h.pointer('pointerdown');
+    assert.equal(h.input.consumeFrame().pointer.down,true,name);assert.deepEqual([...h.captures],[1],name);
+    release(h);
+    h.pointer('pointermove',{button:-1,buttons:1,clientX:60});
+    const stale=h.input.consumeFrame();assert.equal(stale.pointer.down,false,name+' stale move is not a press');
+    assert.equal(stale.pointer.screen_position.x,30,name+' stale move still updates position');
+    assert.deepEqual(h.released,[1],name+' releases the capture the player still holds');
+    h.pointer('pointermove',{button:2,buttons:3,clientX:80});
+    const chord=h.input.consumeFrame();assert.equal(chord.pointer.down,false,name);assert.equal(chord.actions.MouseRight,true,name);
+    h.pointer('pointermove',{button:2,buttons:1,clientX:90});h.input.consumeFrame();
+    assert.deepEqual(h.uiCalls.slice(1),['move','move','move'],name+' UI never sees a stale press');
+    h.pointer('pointerdown',{clientX:100});assert.equal(h.input.consumeFrame().pointer.down,true,name+' fresh press');
+    h.pointer('pointermove',{button:-1,buttons:1,clientX:120});assert.equal(h.input.consumeFrame().pointer.down,true,name+' fresh drag');
+    h.pointer('pointerup',{buttons:0});assert.equal(h.input.consumeFrame().pointer.down,false,name);
+  }
 });
 
 test('canvas context menu is prevented without stealing menus outside the canvas',()=>{

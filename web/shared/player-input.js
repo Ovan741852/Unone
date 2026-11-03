@@ -46,11 +46,33 @@ export function routeBrowserPointer(event,kind,handlers) {
       event.preventDefault?.();handlers.middle(event,(event.buttons&4)!==0);
       if(event.button!==0)return;
     }
-    const changedPrimary=event.pointerType!=='touch'&&event.button===0;
-    const primary=(event.buttons&1)!==0;
+    // Optional stalePrimary: a primary button held across a host release-all
+    // is not a press; it stays up until a fresh pointerdown starts one.
+    const stale=handlers.stalePrimary?.()===true;
+    const changedPrimary=!stale&&event.pointerType!=='touch'&&event.button===0;
+    const primary=!stale&&(event.buttons&1)!==0;
     const routedKind=changedPrimary?(primary?'down':'up'):'move';
     if(!handlers.ui(event,routedKind))handlers.primary(event,primary,changedPrimary?'edge':'move');
   }else if(kind==='cancel') {
     if(!handlers.ui(event,'cancel'))handlers.cancel();
   }
+}
+
+// Unordered routing (no ordered_physical_v1 router) has no gesture owner.
+// After the host releases all input, a primary button still held from before
+// stays up until a fresh primary pointerdown, and the player gives back the
+// pointer captures it still holds. The ordered router routes such gestures to
+// host_ui itself and does not use this.
+export function createLegacyPointerRouting(canvas,handlers) {
+  let stale=false;const captures=new Set();
+  const routed={...handlers,stalePrimary:()=>stale,capture(id){handlers.capture(id);captures.add(id);}};
+  return {
+    route(event,kind){if(kind==='down'&&(event.button??0)===0)stale=false;routeBrowserPointer(event,kind,routed);},
+    lostCapture(id){captures.delete(id);},
+    release(){
+      stale=true;
+      for(const id of captures)if(canvas.hasPointerCapture(id))canvas.releasePointerCapture(id);
+      captures.clear();
+    },
+  };
 }
