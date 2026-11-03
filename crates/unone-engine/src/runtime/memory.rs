@@ -70,6 +70,15 @@ impl EngineRuntime {
         report(&h)
     }
 }
+// Least-squares retained bytes per tick across samples: noise in a long run
+// breaks strict monotonic growth, while a slow drift still shows here. None when
+// every sample was taken at the same tick.
+fn slope(ticks: &[f64], retained: &[u64]) -> Option<f64> {
+    let n = ticks.len() as f64;
+    let (mean_tick, mean_bytes) = (ticks.iter().sum::<f64>() / n, retained.iter().map(|&b| b as f64).sum::<f64>() / n);
+    let spread: f64 = ticks.iter().map(|t| (t - mean_tick).powi(2)).sum();
+    (spread > 0.).then(|| ticks.iter().zip(retained).map(|(t, &b)| (t - mean_tick) * (b as f64 - mean_bytes)).sum::<f64>() / spread)
+}
 fn report(h: &History) -> Json {
     let mut groups: BTreeMap<String, Vec<&Json>> = BTreeMap::new();
     for s in &h.samples {
@@ -81,10 +90,13 @@ fn report(h: &History) -> Json {
         }
     }
     let trends: Vec<Json> = groups.into_iter().map(|(label, samples)| {
-        let first = samples[0]["lua_used_after_bytes"].as_u64().unwrap();
-        let last = samples.last().unwrap()["lua_used_after_bytes"].as_u64().unwrap();
-        let rising = samples.len() >= 3 && samples.windows(2).all(|w| w[1]["lua_used_after_bytes"].as_u64() > w[0]["lua_used_after_bytes"].as_u64());
+        let retained: Vec<u64> = samples.iter().map(|s| s["lua_used_after_bytes"].as_u64().unwrap()).collect();
+        let (first, last) = (retained[0], retained[retained.len() - 1]);
+        let rising = retained.len() >= 3 && retained.windows(2).all(|w| w[1] > w[0]);
+        let ticks: Vec<f64> = samples.iter().map(|s| s["tick"].as_f64().unwrap_or(0.)).collect();
         json!({"label":label,"samples":samples.len(),"retained_delta_bytes":last as i128-first as i128,
+            "retained_min_bytes":retained.iter().min(),"retained_max_bytes":retained.iter().max(),
+            "retained_slope_bytes_per_1000_ticks":slope(&ticks, &retained).map(|s| (s * 1000.).round() as i64),
             "assessment":if rising {"growing_retained_heap_investigate"} else if samples.len()<3 {"insufficient_samples"} else {"no_monotonic_growth_in_window"},
             "leak_proven":false})
     }).collect();
@@ -121,6 +133,22 @@ mod tests {
                 .all(|w| w[0]["lua_used_after_bytes"] == w[1]["lua_used_after_bytes"])
         );
         assert_eq!(report["trends"][0]["retained_delta_bytes"], 0);
+        assert_eq!(report["trends"][0]["retained_min_bytes"], report["trends"][0]["retained_max_bytes"]);
+        // Every sample was taken at tick 0: no slope to report.
+        assert!(report["trends"][0]["retained_slope_bytes_per_1000_ticks"].is_null());
+    }
+    #[test]
+    fn noisy_drift_shows_a_slope_without_strict_growth() {
+        // Grows by one table every tick and releases one every third tick.
+        let mut r = EngineRuntime::load_source("drift", "main.luau", "local held={} local n=0 return {start=function()end,update=function() n+=1 if n%3==0 then table.remove(held) else table.insert(held,table.create(2000,1)) end end}", None).unwrap();
+        for _ in 0..8 {
+            r.tick().unwrap();
+            r.memory_sample("idle", true, false).unwrap();
+        }
+        let trend = &r.memory_report()["trends"][0];
+        assert_eq!(trend["assessment"], "no_monotonic_growth_in_window");
+        assert!(trend["retained_slope_bytes_per_1000_ticks"].as_i64().unwrap() > 0, "{trend}");
+        assert!(trend["retained_max_bytes"].as_u64() > trend["retained_min_bytes"].as_u64());
     }
     #[test]
     fn retained_release_warmup_and_bounded_history() {
@@ -134,6 +162,7 @@ mod tests {
             r.memory_report()["trends"][0]["assessment"],
             "growing_retained_heap_investigate"
         );
+        assert!(r.memory_report()["trends"][0]["retained_slope_bytes_per_1000_ticks"].as_i64().unwrap() > 0);
         let before = r.memory_report()["samples"][3]["lua_used_after_bytes"]
             .as_u64()
             .unwrap();

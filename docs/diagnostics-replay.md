@@ -121,9 +121,13 @@ Collection defaults to **false**; `collect:true` is an explicit full-GC operatio
 Reports include before/after Lua bytes, reclaimed bytes, full-GC wall time,
 measurement overhead, tick, phase label, bounded 128-sample history and dropped
 count. Sampled peak is not a continuous peak. Hot reload replaces VM-local history.
-Only same-label, post-GC, non-warmup samples contribute to trends. Three strictly
-rising retained samples produce `growing_retained_heap_investigate`, never
-`leak_proven:true`. Compare identical workloads and return-to-idle phases.
+Only same-label, post-GC, non-warmup samples contribute to trends. At least three
+samples, each retaining strictly more than the one before, produce
+`growing_retained_heap_investigate`, never `leak_proven:true`. Noise in a long
+run breaks that chain, so each trend also reports `retained_min_bytes`,
+`retained_max_bytes` and `retained_slope_bytes_per_1000_ticks` (least squares
+over sample ticks; null when all samples share one tick) for slow drift. Compare
+identical workloads and return-to-idle phases; growing game state also slopes up.
 
 Replay can sample with `memory:{sampleEveryTicks,warmupTicks,collect,label}` and
 attaches the actual fingerprints and profiling report. Collection changes weak
