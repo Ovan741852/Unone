@@ -1,0 +1,247 @@
+{
+  "schema": "unone.ui-text-raster-source.v1",
+  "created_utc": "2026-11-03T13:41:32.179Z",
+  "base_commit": "d7b4afcab8db547a9fae25832974606ac50fdc24",
+  "sources": [
+    {
+      "path": "web/renderer/ui-gpu.js",
+      "bytes": 25520,
+      "sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 33317,
+      "sha256": "80eb627a5de85379ed5f6a38b67ce1f75e3bbecc04e90dc8f87bcbbb44247974"
+    },
+    {
+      "path": "web/renderer/ui-text-raster-translation.test.mjs",
+      "bytes": 9155,
+      "sha256": "d211d328438818a77dee9baa96a0c3698cbdd2bc96a3371a815d825a5fdaa57e"
+    }
+  ],
+  "negative_control": {
+    "total": 26,
+    "passed": 23,
+    "failed": 3,
+    "scope": "Actual official presenters/painters and Three with controlled Canvas/GL. Original atlas+dedicated integertranslation failures and samephysicalsize DPR dirty failure all retained.",
+    "baseline_ui_sha256": "392fdeab5c9388b8a9ac79a4a8572e83977e7266d0eb3217109fb273eb9b105a",
+    "baseline_note": "Historical B draft; later B owner/reentry corrections do not change this raster key."
+  },
+  "checks": {
+    "focused": {
+      "total": 57,
+      "passed": 57,
+      "failed": 0,
+      "new_text_cases": 32,
+      "note": "Original26 plus6clipped/shadow/legacy cases, alongside B image-owner/ownership tests. Final Canvas comment-only change is separately pinned."
+    },
+    "full_node": {
+      "total": 939,
+      "passed": 934,
+      "failed": 0,
+      "skipped": 5
+    },
+    "independent_source_reviews": [
+      {
+        "reviewer": "native_performance",
+        "status": "CLEAR",
+        "ui_sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a",
+        "canvas_sha256": "80eb627a5de85379ed5f6a38b67ce1f75e3bbecc04e90dc8f87bcbbb44247974"
+      },
+      {
+        "reviewer": "web_lifecycle",
+        "status": "CLEAR",
+        "ui_sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a",
+        "canvas_sha256": "80eb627a5de85379ed5f6a38b67ce1f75e3bbecc04e90dc8f87bcbbb44247974"
+      }
+    ],
+    "root_manual_review": "CLEAR; exact painter inputs/local crop geometry and complete final diff reviewed."
+  },
+  "external_review": {
+    "status": "timed-out-incomplete",
+    "elapsed_ms": 45331.6483,
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "final_source": true,
+    "note": "Tool-free boundedClaude2.1.308 attempt timed out with no output; incomplete, not a passed external review. New test postimage was supplied explicitly though absent from tracked diff."
+  },
+  "limits": [
+    "No Game, Core, Native binary, renderer selection, layout/routing or timing/gate change.",
+    "Source/Node gate only. Actual browser glyph-pixel parity and official main/worker rendering have not run for C.",
+    "Conservative complete style key may invalidate for irrelevant style changes; integertranslation reuse requires exactly equal localphase/crop/size/paint inputs.",
+    "No inference that all observed1152Game rasters are avoidable or that this resolves allCPUtails.",
+    "Seven-scene60FPS, JS/RustGC frequency, totalprocess/VRAM and memory leak freedom remain unaccepted.",
+    "WindowsNative final remainsAppControl4551blocked and is not passed."
+  ],
+  "files": [
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/final-source/ui-gpu.js.txt",
+      "source": "web/renderer/ui-gpu.js",
+      "bytes": 25520,
+      "sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/final-source/canvas-ui.mjs.txt",
+      "source": "web/shared/canvas-ui.mjs",
+      "bytes": 33317,
+      "sha256": "80eb627a5de85379ed5f6a38b67ce1f75e3bbecc04e90dc8f87bcbbb44247974"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/final-source/ui-text-raster-translation.test.mjs.txt",
+      "source": "web/renderer/ui-text-raster-translation.test.mjs",
+      "bytes": 9155,
+      "sha256": "d211d328438818a77dee9baa96a0c3698cbdd2bc96a3371a815d825a5fdaa57e"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/red-r1/findings.json",
+      "source": ".cache/ui-text-raster-red-20261103-r1/findings.json",
+      "bytes": 1354,
+      "sha256": "affdb9e68321501d60c12bb8841d19cfb0672b7a68a04c84d79e3dab441da840"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/red-r1/result.json",
+      "source": ".cache/ui-text-raster-red-20261103-r1/result.json",
+      "bytes": 542,
+      "sha256": "22bbfb7134ff63adfc548110011dc0b4d15f824d46edbac07bd8830cd84d8eae"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/red-r1/stderr.txt",
+      "source": ".cache/ui-text-raster-red-20261103-r1/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/red-r1/stdout.txt",
+      "source": ".cache/ui-text-raster-red-20261103-r1/stdout.txt",
+      "bytes": 4329,
+      "sha256": "f233184ed7a0986f25882bb6f7ee69a41da3c5eb70f8157a7012151b181c24d4"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/red-r1/test-source.mjs",
+      "source": ".cache/ui-text-raster-red-20261103-r1/test-source.mjs",
+      "bytes": 7833,
+      "sha256": "cf01296bfe9fdffc7c0c6bcbed7aebd7c688ee705eed3a2a3d34947f069398df"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/green-r1/canvas-ui-comment-final.mjs",
+      "source": ".cache/ui-text-raster-green-20261103-r1/canvas-ui-comment-final.mjs",
+      "bytes": 33317,
+      "sha256": "80eb627a5de85379ed5f6a38b67ce1f75e3bbecc04e90dc8f87bcbbb44247974"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/green-r1/canvas-ui.mjs",
+      "source": ".cache/ui-text-raster-green-20261103-r1/canvas-ui.mjs",
+      "bytes": 33336,
+      "sha256": "2d93d5dc9d2cb928334661fc7e98273998c7565094c2911158bf0143dfb65f33"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/green-r1/result.json",
+      "source": ".cache/ui-text-raster-green-20261103-r1/result.json",
+      "bytes": 782,
+      "sha256": "cef35fcb2b025ab5eec1686fd1baa842b7d5ab93e0fd22fe9b0a48ad19dabee6"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/green-r1/stderr.txt",
+      "source": ".cache/ui-text-raster-green-20261103-r1/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/green-r1/stdout.txt",
+      "source": ".cache/ui-text-raster-green-20261103-r1/stdout.txt",
+      "bytes": 4727,
+      "sha256": "58441c94b106ba89cfa391a4484e830091cfe61199e932bb0ad8917a04d310d0"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/green-r1/test-source.mjs",
+      "source": ".cache/ui-text-raster-green-20261103-r1/test-source.mjs",
+      "bytes": 9155,
+      "sha256": "d211d328438818a77dee9baa96a0c3698cbdd2bc96a3371a815d825a5fdaa57e"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/green-r1/ui-gpu.js",
+      "source": ".cache/ui-text-raster-green-20261103-r1/ui-gpu.js",
+      "bytes": 25520,
+      "sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/command.json",
+      "source": ".cache/ui-text-raster-source-review-20261103/command.json",
+      "bytes": 1625,
+      "sha256": "70e2bf76a0bc4a01d3573e16fbb20434acdc53f1b7d1c98a5a9688feb1b574ec"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/fixed.diff",
+      "source": ".cache/ui-text-raster-source-review-20261103/fixed.diff",
+      "bytes": 12290,
+      "sha256": "3d5981cff653ffeee5953b0af0f0f46241471e85feb856a43ad35038c786d172"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/prompt.txt",
+      "source": ".cache/ui-text-raster-source-review-20261103/prompt.txt",
+      "bytes": 85377,
+      "sha256": "82930d83aeccdc54fcf56bb30bbe94ccbb2b96d945e69aaac2bab1a0c3cd74cd"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/result.json",
+      "source": ".cache/ui-text-raster-source-review-20261103/result.json",
+      "bytes": 2430,
+      "sha256": "81db86b1978754b29e1ff29f3a460953f4636b3c2c4fde4707c1547d2934cf50"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/review.stderr.txt",
+      "source": ".cache/ui-text-raster-source-review-20261103/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/review.stdout.json",
+      "source": ".cache/ui-text-raster-source-review-20261103/review.stdout.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/source-0.txt",
+      "source": ".cache/ui-text-raster-source-review-20261103/source-0.txt",
+      "bytes": 25520,
+      "sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/source-1.txt",
+      "source": ".cache/ui-text-raster-source-review-20261103/source-1.txt",
+      "bytes": 33317,
+      "sha256": "80eb627a5de85379ed5f6a38b67ce1f75e3bbecc04e90dc8f87bcbbb44247974"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/source-2.txt",
+      "source": ".cache/ui-text-raster-source-review-20261103/source-2.txt",
+      "bytes": 9155,
+      "sha256": "d211d328438818a77dee9baa96a0c3698cbdd2bc96a3371a815d825a5fdaa57e"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/version.stderr.txt",
+      "source": ".cache/ui-text-raster-source-review-20261103/version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/external-review/version.stdout.txt",
+      "source": ".cache/ui-text-raster-source-review-20261103/version.stdout.txt",
+      "bytes": 22,
+      "sha256": "b354fe63f3ea7b46441790aa41c704340be3e4722cd759d1b77da284764c82ef"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/full-node.log",
+      "source": ".cache/ui-text-raster-full-node-20261103-r1.log",
+      "bytes": 95429,
+      "sha256": "85997840b12fb3979463c5a8d316900482e882e85e8517f99156e263c38a0a12"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-text-raster-source/proposal.md",
+      "source": ".cache/ui-text-raster-translation-proposal.md",
+      "bytes": 2951,
+      "sha256": "5ac80371de631f8bfbd285491bfcd1a7d4cb5bbdcaf1b2ce6988b40a71621c3f"
+    }
+  ]
+}

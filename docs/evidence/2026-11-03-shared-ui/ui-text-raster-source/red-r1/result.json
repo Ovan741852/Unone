@@ -1,0 +1,10 @@
+{
+  "command": "node --test .cache/ui-text-raster-translation.test.mjs",
+  "cwd": "D:/Projects/Unone",
+  "exit_code": 1,
+  "elapsed_ms": 195.5244,
+  "ui_gpu_sha256_before": "392fdeab5c9388b8a9ac79a4a8572e83977e7266d0eb3217109fb273eb9b105a",
+  "ui_gpu_sha256_after": "392fdeab5c9388b8a9ac79a4a8572e83977e7266d0eb3217109fb273eb9b105a",
+  "node": "C:\\Users\\liNao\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "test_sha256": "cf01296bfe9fdffc7c0c6bcbed7aebd7c688ee705eed3a2a3d34947f069398df"
+}

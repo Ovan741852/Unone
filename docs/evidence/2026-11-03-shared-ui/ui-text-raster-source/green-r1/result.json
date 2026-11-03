@@ -1,0 +1,20 @@
+{
+  "command": "node --test web/renderer/ui-text-raster-translation.test.mjs web/renderer/ui-gpu-image-cache.test.mjs web/renderer/ui-gpu-ownership.test.mjs",
+  "cwd": "D:/Projects/Unone",
+  "exit_code": 0,
+  "elapsed_ms": 235.8907,
+  "source_pins": [
+    {
+      "Path": "D:\\Projects\\Unone\\web\\renderer\\ui-gpu.js",
+      "sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a"
+    },
+    {
+      "Path": "D:\\Projects\\Unone\\web\\shared\\canvas-ui.mjs",
+      "sha256": "2d93d5dc9d2cb928334661fc7e98273998c7565094c2911158bf0143dfb65f33"
+    },
+    {
+      "Path": "D:\\Projects\\Unone\\web\\renderer\\ui-text-raster-translation.test.mjs",
+      "sha256": "d211d328438818a77dee9baa96a0c3698cbdd2bc96a3371a815d825a5fdaa57e"
+    }
+  ]
+}

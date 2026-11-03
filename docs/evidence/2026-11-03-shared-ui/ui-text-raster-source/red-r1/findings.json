@@ -1,0 +1,26 @@
+{
+  "schema": "unone.ui-text-raster-red.v1",
+  "status": "actual-red",
+  "total": 26,
+  "passed": 23,
+  "failed": 3,
+  "failure_classes": [
+    {
+      "tests": [
+        "atlas integer translation preserves local text pixels and raster/upload counts",
+        "dedicated integer translation preserves local text pixels and raster/upload counts"
+      ],
+      "cause": "Full absolute-placement node key invalidates identical local raster; actual quad moves before assertion fails (2 rasters vs1)."
+    },
+    {
+      "tests": [
+        "viewport height and DPR changes invalidate"
+      ],
+      "cause": "Height resize assertion passes; changing DPR while physical drawing-buffer width/height remain constant does not set Canvas UI dirty, so scale-sensitive raster is reused."
+    }
+  ],
+  "parent_decision": "Keep all26 assertions. Both local-raster-key and scale dirty fixes are required for GREEN; no production edits until B commit/handoff.",
+  "source_scope": "R1 executed against historical frozen B source392fdeab, not refrozen59675fc3. Only preparing/reentry changes separated those sources; no text-key change.",
+  "test_source": "test-source.mjs",
+  "runtime_scope": "Actual createGpuUi/createCanvasUi/text painters and Three objects; fake Canvas/GL. No GPU, glyph pixel, GameFPS, Core, Native or WASM execution."
+}

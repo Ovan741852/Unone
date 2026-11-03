@@ -1,0 +1,146 @@
+diff --git a/web/renderer/ui-gpu.js b/web/renderer/ui-gpu.js
+index 28f1e1b..f19346c 100644
+--- a/web/renderer/ui-gpu.js
++++ b/web/renderer/ui-gpu.js
+@@ -36,16 +36,19 @@ void main(){
+   float hole=inner.z>0.0&&inner.w>0.0?coverage(inner,max(0.0,vParams.x-w)):0.0;
+   color=vec4(vBorder.rgb,1.0)*vBorder.a*coverage(vBox,vParams.x)*(1.0-hole);}
+  else{color=texture2D(uiTexture,vUv)*vColor.a;if(mode<2.5)color*=coverage(vBox,vParams.x);}
+  gl_FragColor=color*vParams.w;
+ }`;
+ const imageSize=image=>[image?.naturalWidth??image?.width,image?.naturalHeight??image?.height];
+ const capacityFor=n=>2**Math.ceil(Math.log2(Math.max(64,n)));
+ const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
++// Raster pixels depend on the painters' inputs and local crop geometry. Absolute
++// placement stays in the quad; retain the complete style conservatively.
++const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placeholder,node.text_edit,node.style,node.align,node.fontSize,node.lineHeight]);
+ 
+ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null}={}){
+  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
+  const positions=new THREE.BufferAttribute(new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),3),index=new THREE.BufferAttribute(new Uint16Array([0,1,2,0,2,3]),1);
+  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
+  const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
+  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
+  let rebuilds=0,rasters=0,uploads=0,compactions=0,draws=0,lastRegions=0,lastMs=null,wasted=0,stale=true;
+@@ -189,17 +192,17 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+     textureCache.trackOwner(owner,{bytes:()=>owner.bytes,loading:()=>false,retire:()=>retireImage(owner)});owner.tracked=true;
+     imageOwners.set(id,owner);owner.counted=true;imageActive++;imageBytes+=bytes;imageBuilds++;created.push(owner);
+    }catch(error){try{retireImage(owner);}catch{/* retain the preparation error */}throw error;}
+   }else if(!used.has(owner)){imageHits++;if(!owner.active){imageIdleHits++;promoted.push(owner);imageActiveState(owner,true);}}
+   if(!used.has(owner))textureCache.touchOwner(owner);used.add(owner);return owner.texture;
+  }
+ 
+  function rebuild(context){
+-  const started=performance.now(),{nodes,nodeKeys,batches,images,scale,paintText,hasText,imageError,identity}=context,W=width,H=height,unit=H/100;
++  const started=performance.now(),{nodes,batches,images,scale,paintText,hasText,imageError,identity}=context,W=width,H=height,unit=H/100;
+   const prims=[],requests=[],ids=new Map(),usedImages=new Set(),created=[],promoted=[],epoch=imageEpoch,screen=[0,0,W,H];
+   try{
+   const clipOf=c=>c?[c.x*W/100,(100-c.y-c.height)*H/100,(c.x+c.width)*W/100,(100-c.y)*H/100]:screen;
+   const meet=(a,b)=>[Math.max(a[0],b[0]),Math.max(a[1],b[1]),Math.min(a[2],b[2]),Math.min(a[3],b[3])];
+   const rect=(x,y,w,h,extra)=>prims.push({origin:[x,y],axisX:[w,0],axisY:[0,h],uv:FULL_UV,color:WHITE,border:NONE,box:[x,y,w,h],radius:0,width:0,opacity:1,...extra});
+   function image(node,x,y,w,h,radius,opacity,clip){
+    const entry=images.get(node.asset);if(!entry?.image)return;
+    const pad=node.style?.padding??{},left=(pad.left??0)*unit,top=(pad.top??0)*unit;
+@@ -222,38 +225,38 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
+     const [iw,ih]=imageSize(entry.image),s=q.source,r=q.rect;
+     if(s&&(s.x+s.width>iw||s.y+s.height>ih)){imageError(node,i,Error(`UI_SLICE_BOUNDS: source exceeds image ${iw}x${ih}`));return;}
+     let origin,axisX,axisY;
+     if(instance.pixelSnap){const snapped=imageBatchSnappedRect(instance,r,W,H);if(!snapped.width||!snapped.height)return;origin=[snapped.x,snapped.y];axisX=[snapped.width,0];axisY=[0,snapped.height];}
+     else{const tl=point(r.x,r.y+r.height),tr=point(r.x+r.width,r.y+r.height),bl=point(r.x,r.y);origin=tl;axisX=[tr[0]-tl[0],tr[1]-tl[1]];axisY=[bl[0]-tl[0],bl[1]-tl[1]];}
+     prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:imageTexture(q.asset,entry.image,usedImages,created,promoted)});
+    });
+   }
+-  function text(node,nodeKey,x,y,w,h,radius,opacity,clip,bounds){
++  function text(node,x,y,w,h,radius,opacity,clip,bounds){
+    const x0=Math.max(Math.floor(bounds.x),Math.floor(clip[0]),0),y0=Math.max(Math.floor(bounds.y),Math.floor(clip[1]),0);
+    const x1=Math.min(Math.ceil(bounds.x+bounds.width),Math.ceil(clip[2]),W),y1=Math.min(Math.ceil(bounds.y+bounds.height),Math.ceil(clip[3]),H);
+    if(x1<=x0||y1<=y0)return;
+    const n=(ids.get(node.id)??0)+1;ids.set(node.id,n);
+    const request={key:n>1?`${node.id}\u0000${n}`:node.id,x0,y0,w:x1-x0,h:y1-y0,
+-    content:`${identity}${nodeKey}${x-x0},${y-y0},${w},${h},${x1-x0},${y1-y0},${H},${scale}`,
++    content:`${identity}${textRasterContent(node)}${x-x0},${y-y0},${w},${h},${x1-x0},${y1-y0},${W},${H},${scale}`,
+     paint:target=>paintText(target,node,{x,y,width:w,height:h,viewportHeight:H},scale)};
+    requests.push(request);
+    rect(x0,y0,x1-x0,y1-y0,{mode:node.style?.text_shadow?FREE:IMAGE,text:request,box:[x,y,w,h],radius,opacity,clip});
+   }
+   for(let index=0;index<nodes.length;index++){
+    const node=nodes[index];if(node.kind==='input_region')continue;
+    const clip=clipOf(node.clip);
+    if(node.kind==='image_batch'){imageBatch(node,clip);continue;}
+    const r=node.rect,x=r.x*W/100,y=(100-r.y-r.height)*H/100,w=r.width*W/100,h=r.height*H/100,style=node.style;
+    const opacity=style?.opacity??1,bounds=textPaintBounds(style,{x,y,width:w,height:h,viewportHeight:H});
+    if(opacity<=0||bounds.x>=clip[2]||bounds.x+bounds.width<=clip[0]||bounds.y>=clip[3]||bounds.y+bounds.height<=clip[1])continue;
+    const radius=(style?.border_radius??0)*unit;
+    if(style?.background)rect(x,y,w,h,{mode:FILL,color:style.background,radius,opacity,clip});
+    if(node.kind==='image')image(node,x,y,w,h,radius,opacity,clip);
+-   else if(hasText(node))text(node,nodeKeys?.[index]??JSON.stringify(node),x,y,w,h,radius,opacity,clip,bounds);
++   else if(hasText(node))text(node,x,y,w,h,radius,opacity,clip,bounds);
+    const border=Math.min((style?.border_width??0)*unit,w,h);
+    if(border>0)rect(x,y,w,h,{mode:BORDER,border:style.border_color??WHITE,radius,width:border,opacity,clip});
+   }
+   placeText(requests);
+   if(disposed||retiring||epoch!==imageEpoch)throw Error('UI_IMAGE_RESOURCE_CANCELLED');
+   for(const [image,texture]of imageTextures)if(!usedImages.has(image)){imageTextures.delete(image);retireTexture(texture);}
+   // Pack quads in painter order; a draw call ends only where the texture changes.
+   if(data.length<prims.length*STRIDE)data=new Float32Array(capacityFor(prims.length)*STRIDE);
+diff --git a/web/shared/canvas-ui.mjs b/web/shared/canvas-ui.mjs
+index ab87c2b..50c03bd 100644
+--- a/web/shared/canvas-ui.mjs
++++ b/web/shared/canvas-ui.mjs
+@@ -233,17 +233,17 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
+   // Text the GPU presenter rasterizes into its atlas: the same painters and
+   // node rules as the Canvas2D loop below.
+   const hasText=node=>node.kind==='text_input'||(Boolean(node.text)&&node.kind!=='panel'&&node.kind!=='image'&&(Boolean(node.style)||!['slider','combobox'].includes(node.kind)));
+   function paintText(target,node,bounds,scale){
+     if(node.kind==='text_input')textInput(target,node,bounds);
+     else if(node.style)paintUiText(target,node,{...bounds,fontFamily,textColor});
+     else text(target,node,bounds.x,bounds.y,bounds.width,bounds.height,scale);
+   }
+-  let gpuTarget={width:0,height:0},nodeKeys=[];
++  let gpuTarget={width:0,height:0,scale:null},nodeKeys=[];
+   function textInput(target,node,bounds){
+     const empty=node.text.length===0,style={text_align:'start',vertical_align:'middle',wrap:'none',...(node.style??{})};
+     const value={...node,text:empty?(node.placeholder??''):node.text,style};
+     const layout=layoutUiText(target,value,{...bounds,fontFamily,textColor}),c=layout.content,line=layout.lines[0];
+     const editing=node.text_edit,focus=editing?.focused===true;
+     const start=Math.max(0,Math.min(node.text.length,editing?.selection_start??node.text.length));
+     const end=Math.max(start,Math.min(node.text.length,editing?.selection_end??start));
+     target.save();
+@@ -270,17 +270,17 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
+       paintUiBox(target,node.style,x,y,width,height,viewportHeight/100,phase);
+     }finally{target.restore();}
+   }
+   return {
+     draw(snapshot,options={}){
+       if(disposed)throw Error('UI_DISPOSED');
+       const gpu=canvas?null:getPresenter();let bw,bh,scale;
+       if(gpu){const target=gpu.target();if(!target)return DRAW_SKIPPED.ui_target_unavailable;bw=target.width;bh=target.height;scale=target.scale;
+-        if(gpuTarget.width!==bw||gpuTarget.height!==bh){gpuTarget={width:bw,height:bh};dirty=true;}}
++        if(gpuTarget.width!==bw||gpuTarget.height!==bh||gpuTarget.scale!==scale){gpuTarget={width:bw,height:bh,scale};dirty=true;}}
+       else{
+         if(!canvas)return DRAW_SKIPPED.ui_target_unavailable;
+         const {width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}=options;
+         if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return DRAW_SKIPPED.ui_target_unavailable;
+         bw=Math.min(8192,Math.max(1,Math.round(width*dpr)));bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));scale=bw/width;
+         if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
+       }
+       const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=uiTreeGeneration(tree)??uiProjectionGeneration(tree)??JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
+@@ -299,17 +299,17 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
+         finally{if(!disposed){
+           // Callbacks may throw or replace this composition synchronously.
+           // Retire against the latest required set, after its incoming pins.
+           if([...assets.keys()].some(id=>!requiredAssets.has(id))&&!(typeof acquireAsset==='function'&&getImageBatchPresenter()?.ownsImageLeases===true))retireGpu();
+           for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e,id,'composition');assets.delete(id);diagnostics.delete(id);}
+           batchResolver.prune(nodes);}}
+         if(disposed)throw Error('UI_DISPOSED');}
+       if(gpu){
+-        // One serialization per node serves change detection and the presenter's text cache keys.
++        // One serialization per node serves composition/paint dirty detection.
+         if(compositionChanged){nodeKeys=nodes.map(n=>JSON.stringify(n));const nextKey=nodeKeys.join(''),definitions=nodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
+           if(nextKey!==paintKey||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;paintKey=nextKey;paintDefinitions=definitions;}
+         const changed=dirty;dirty=false;
+         if(changed){for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
+         const result=gpu.draw({nodes,nodeKeys,batches,images:assets,scale,changed,identity:JSON.stringify([fontFamily,textColor]),paintText,hasText,imageError:imageFailure});
+         if(result.skipped)dirty||=changed;else if(changed){renderRegions=result.regions;renderMs=result.cpu_ms;}
+         notifyReady();
+         return result.skipped?DRAW_SKIPPED.ui_target_unavailable:outcome();

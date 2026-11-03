@@ -41,6 +41,9 @@ void main(){
 const imageSize=image=>[image?.naturalWidth??image?.width,image?.naturalHeight??image?.height];
 const capacityFor=n=>2**Math.ceil(Math.log2(Math.max(64,n)));
 const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
+// Raster pixels depend on the painters' inputs and local crop geometry. Absolute
+// placement stays in the quad; retain the complete style conservatively.
+const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placeholder,node.text_edit,node.style,node.align,node.fontSize,node.lineHeight]);
 
 export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null}={}){
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
@@ -194,7 +197,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  }
 
  function rebuild(context){
-  const started=performance.now(),{nodes,nodeKeys,batches,images,scale,paintText,hasText,imageError,identity}=context,W=width,H=height,unit=H/100;
+  const started=performance.now(),{nodes,batches,images,scale,paintText,hasText,imageError,identity}=context,W=width,H=height,unit=H/100;
   const prims=[],requests=[],ids=new Map(),usedImages=new Set(),created=[],promoted=[],epoch=imageEpoch,screen=[0,0,W,H];
   try{
   const clipOf=c=>c?[c.x*W/100,(100-c.y-c.height)*H/100,(c.x+c.width)*W/100,(100-c.y)*H/100]:screen;
@@ -227,13 +230,13 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
     prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:imageTexture(q.asset,entry.image,usedImages,created,promoted)});
    });
   }
-  function text(node,nodeKey,x,y,w,h,radius,opacity,clip,bounds){
+  function text(node,x,y,w,h,radius,opacity,clip,bounds){
    const x0=Math.max(Math.floor(bounds.x),Math.floor(clip[0]),0),y0=Math.max(Math.floor(bounds.y),Math.floor(clip[1]),0);
    const x1=Math.min(Math.ceil(bounds.x+bounds.width),Math.ceil(clip[2]),W),y1=Math.min(Math.ceil(bounds.y+bounds.height),Math.ceil(clip[3]),H);
    if(x1<=x0||y1<=y0)return;
    const n=(ids.get(node.id)??0)+1;ids.set(node.id,n);
    const request={key:n>1?`${node.id}\u0000${n}`:node.id,x0,y0,w:x1-x0,h:y1-y0,
-    content:`${identity}${nodeKey}${x-x0},${y-y0},${w},${h},${x1-x0},${y1-y0},${H},${scale}`,
+    content:`${identity}${textRasterContent(node)}${x-x0},${y-y0},${w},${h},${x1-x0},${y1-y0},${W},${H},${scale}`,
     paint:target=>paintText(target,node,{x,y,width:w,height:h,viewportHeight:H},scale)};
    requests.push(request);
    rect(x0,y0,x1-x0,y1-y0,{mode:node.style?.text_shadow?FREE:IMAGE,text:request,box:[x,y,w,h],radius,opacity,clip});
@@ -248,7 +251,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    const radius=(style?.border_radius??0)*unit;
    if(style?.background)rect(x,y,w,h,{mode:FILL,color:style.background,radius,opacity,clip});
    if(node.kind==='image')image(node,x,y,w,h,radius,opacity,clip);
-   else if(hasText(node))text(node,nodeKeys?.[index]??JSON.stringify(node),x,y,w,h,radius,opacity,clip,bounds);
+   else if(hasText(node))text(node,x,y,w,h,radius,opacity,clip,bounds);
    const border=Math.min((style?.border_width??0)*unit,w,h);
    if(border>0)rect(x,y,w,h,{mode:BORDER,border:style.border_color??WHITE,radius,width:border,opacity,clip});
   }

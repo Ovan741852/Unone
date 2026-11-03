@@ -1,5 +1,12 @@
 # Code review and decision records
 
+2026-11-03: placement-only text raster reuse and same-buffer DPR invalidation
+passed Root and two independent Codex source reviews, 57 focused cases and the
+full Node gate (934 passes, 5 skipped). Original atlas/dedicated translation and
+DPR REDs are preserved. The exact-final Claude attempt remains incomplete;
+official browser pixels/FPS/memory/GC acceptance is pending. See
+[the scoped correction](issues/2026-11-03-ui-text-raster-reuse.md).
+
 2026-11-03: UI catalog-image owners now use the existing shared texture cache.
 Exact final source passed Root and two independent Codex reviews, 96 focused
 checks and the full Node gate (902 passes, 5 skipped). Two intermediate reentry

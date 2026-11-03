@@ -238,7 +238,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     else if(node.style)paintUiText(target,node,{...bounds,fontFamily,textColor});
     else text(target,node,bounds.x,bounds.y,bounds.width,bounds.height,scale);
   }
-  let gpuTarget={width:0,height:0},nodeKeys=[];
+  let gpuTarget={width:0,height:0,scale:null},nodeKeys=[];
   function textInput(target,node,bounds){
     const empty=node.text.length===0,style={text_align:'start',vertical_align:'middle',wrap:'none',...(node.style??{})};
     const value={...node,text:empty?(node.placeholder??''):node.text,style};
@@ -275,7 +275,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       if(disposed)throw Error('UI_DISPOSED');
       const gpu=canvas?null:getPresenter();let bw,bh,scale;
       if(gpu){const target=gpu.target();if(!target)return DRAW_SKIPPED.ui_target_unavailable;bw=target.width;bh=target.height;scale=target.scale;
-        if(gpuTarget.width!==bw||gpuTarget.height!==bh){gpuTarget={width:bw,height:bh};dirty=true;}}
+        if(gpuTarget.width!==bw||gpuTarget.height!==bh||gpuTarget.scale!==scale){gpuTarget={width:bw,height:bh,scale};dirty=true;}}
       else{
         if(!canvas)return DRAW_SKIPPED.ui_target_unavailable;
         const {width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}=options;
@@ -304,7 +304,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
           batchResolver.prune(nodes);}}
         if(disposed)throw Error('UI_DISPOSED');}
       if(gpu){
-        // One serialization per node serves change detection and the presenter's text cache keys.
+        // One serialization per node serves composition/paint dirty detection.
         if(compositionChanged){nodeKeys=nodes.map(n=>JSON.stringify(n));const nextKey=nodeKeys.join(''),definitions=nodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
           if(nextKey!==paintKey||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;paintKey=nextKey;paintDefinitions=definitions;}
         const changed=dirty;dirty=false;

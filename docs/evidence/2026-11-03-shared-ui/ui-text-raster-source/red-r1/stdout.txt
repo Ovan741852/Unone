@@ -1,0 +1,97 @@
+✖ atlas integer translation preserves local text pixels and raster/upload counts (6.6861ms)
+✖ dedicated integer translation preserves local text pixels and raster/upload counts (0.7076ms)
+✔ fractional pixel phase invalidates actual text raster (0.6156ms)
+✔ independent clip edge invalidates actual text raster (0.4967ms)
+✔ wrapped content width invalidates actual text raster (1.4584ms)
+✔ ellipsis width invalidates actual text raster (0.4424ms)
+✔ content height invalidates actual text raster (0.3276ms)
+✔ padding invalidates actual text raster (0.3135ms)
+✔ font family invalidates actual text raster (0.32ms)
+✔ font weight invalidates actual text raster (0.4109ms)
+✔ font size invalidates actual text raster (0.2876ms)
+✔ line height invalidates actual text raster (0.2782ms)
+✔ letter spacing invalidates actual text raster (0.2229ms)
+✔ text color invalidates actual text raster (0.2449ms)
+✔ text shadow invalidates actual text raster (0.2969ms)
+✔ content invalidates actual text raster (0.9373ms)
+✔ text input selection invalidates (0.4645ms)
+✔ text input caret position invalidates (0.2037ms)
+✔ text input focus invalidates (0.2349ms)
+✔ text input composition underline invalidates (0.2225ms)
+✔ text input placeholder invalidates (0.2255ms)
+✔ rounded shadow crop changes invalidate (0.4052ms)
+✖ viewport height and DPR changes invalidate (3.0297ms)
+✔ fallback font family invalidates independently of node fields (0.2657ms)
+✔ duplicate-id slots do not reuse another label content (0.2912ms)
+✔ context loss forces a new raster/upload even with identical text (0.2495ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 23
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 132.5956
+
+✖ failing tests:
+
+test at .cache\ui-text-raster-translation.test.mjs:34:37
+✖ atlas integer translation preserves local text pixels and raster/upload counts (6.6861ms)
+  AssertionError [ERR_ASSERTION]: integer translation must reuse unchanged local raster
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/.cache/ui-text-raster-translation.test.mjs:41:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .cache\ui-text-raster-translation.test.mjs:34:37
+✖ dedicated integer translation preserves local text pixels and raster/upload counts (0.7076ms)
+  AssertionError [ERR_ASSERTION]: integer translation must reuse unchanged local raster
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/.cache/ui-text-raster-translation.test.mjs:41:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at .cache\ui-text-raster-translation.test.mjs:81:1
+✖ viewport height and DPR changes invalidate (3.0297ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(scaled.text_rasters>resized.text_rasters)
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/.cache/ui-text-raster-translation.test.mjs:82:192)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

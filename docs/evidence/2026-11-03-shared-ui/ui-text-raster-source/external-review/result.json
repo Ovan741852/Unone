@@ -1,0 +1,79 @@
+{
+  "status": "timed-out-incomplete",
+  "started_utc": "2026-11-03T13:37:36.282Z",
+  "base_revision": "d7b4afcab8db547a9fae25832974606ac50fdc24",
+  "captured_head": "d7b4afcab8db547a9fae25832974606ac50fdc24",
+  "fixed_diff_sha256": "3d5981cff653ffeee5953b0af0f0f46241471e85feb856a43ad35038c786d172",
+  "paths": [
+    {
+      "path": "web/renderer/ui-gpu.js",
+      "bytes": 25520,
+      "sha256": "28cd6f0ee5842da98bb67d8000feecb3704645d1fcd5688bd31a25fbb0f7527a"
+    },
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "bytes": 33317,
+      "sha256": "80eb627a5de85379ed5f6a38b67ce1f75e3bbecc04e90dc8f87bcbbb44247974"
+    },
+    {
+      "path": "web/renderer/ui-text-raster-translation.test.mjs",
+      "bytes": 9155,
+      "sha256": "d211d328438818a77dee9baa96a0c3698cbdd2bc96a3371a815d825a5fdaa57e"
+    }
+  ],
+  "cli": {
+    "path": "C:/Users/liNao/.local/bin/claude.exe",
+    "version": "2.1.308 (Claude Code)",
+    "version_command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--version"
+    ],
+    "version_exit": 0,
+    "version_error": null,
+    "command": [
+      "C:/Users/liNao/.local/bin/claude.exe",
+      "--safe-mode",
+      "--restricted",
+      "--strict-mcp-config",
+      "--tools",
+      "",
+      "--permission-mode",
+      "plan",
+      "--permission-prompts",
+      "none",
+      "--disable-slash-commands",
+      "--no-session-persistence",
+      "--output-format",
+      "json",
+      "--print"
+    ],
+    "stdin": "prompt.txt",
+    "read_only": true,
+    "tool_access": "none",
+    "timeout_ms": 45000
+  },
+  "prompt_sha256": "82930d83aeccdc54fcf56bb30bbe94ccbb2b96d945e69aaac2bab1a0c3cd74cd",
+  "finished_utc": "2026-11-03T13:38:21.686Z",
+  "elapsed_ms": 45331.6483,
+  "exit_code": 1,
+  "signal": null,
+  "timed_out": true,
+  "launch_error": null,
+  "termination": {
+    "command": [
+      "taskkill.exe",
+      "/PID",
+      "69568",
+      "/T",
+      "/F"
+    ],
+    "exit": 0,
+    "stdout": "���\\: PID �� 70892 (PID �� 69568 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n���\\: PID �� 69568 (PID �� 26020 ���l�B�z�{��) ���B�z�{�Ǥw�פ�C\r\n",
+    "stderr": "",
+    "error": null
+  },
+  "stdout_bytes": 0,
+  "stderr_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
