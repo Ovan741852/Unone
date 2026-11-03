@@ -1,0 +1,34 @@
+✖ actual loading/ready/release work is observable, not only the presence of a new setter (2.5441ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 81.7041
+
+✖ failing tests:
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:30:1
+✖ actual loading/ready/release work is observable, not only the presence of a new setter (2.5441ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'loading',
+  -   'ready',
+  -   'release'
+  - ]
+  
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:36:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'loading', 'ready', 'release' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

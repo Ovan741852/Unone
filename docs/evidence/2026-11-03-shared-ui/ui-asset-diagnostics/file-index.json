@@ -1,0 +1,200 @@
+[
+  {
+    "path": "ui-asset-diagnostics/lifecycle-red.log",
+    "source_path": ".cache/ui-asset-diagnostics-lifecycle-red-20261103.log",
+    "bytes": 1045,
+    "sha256": "a7cde191a5a71ac23d226ba34fd5132a58dba1a4b0ea936c574e36e3c333f952"
+  },
+  {
+    "path": "ui-asset-diagnostics/lifecycle-red-test-source.mjs.txt",
+    "source_path": ".cache/ui-asset-diagnostics-lifecycle-red-test-20261103.mjs.txt",
+    "bytes": 12172,
+    "sha256": "7dbc6421653f1e757ddc72a2ab46e0e702147d6a2e76e0ce557f5960602c47ee"
+  },
+  {
+    "path": "ui-asset-diagnostics/before-canvas-ui.mjs.txt",
+    "source_path": ".cache/ui-asset-diagnostics-before-canvas-ui-20261103.mjs.txt",
+    "bytes": 28783,
+    "sha256": "5322e4f2dc2ca4be236b78aaff6e617e7c63f6be3c211756d6bd081179d57e9c"
+  },
+  {
+    "path": "ui-asset-diagnostics/before-main.js.txt",
+    "source_path": ".cache/ui-asset-diagnostics-before-main-20261103.js.txt",
+    "bytes": 31859,
+    "sha256": "1416cce3c9c4c8e420718eed1e5cf50778f1aa2fbf252e8b275412776a99796c"
+  },
+  {
+    "path": "ui-asset-diagnostics/interface-red-canvas.log",
+    "source_path": ".cache/ui-asset-diagnostics-red-20261103-canvas-r2.log",
+    "bytes": 8157,
+    "sha256": "f426055601096d22eb1cb51b6787d72ce1ccef8dec36f03be139a7b8eb8856ab"
+  },
+  {
+    "path": "ui-asset-diagnostics/interface-red-main.log",
+    "source_path": ".cache/ui-asset-diagnostics-red-20261103-main-r2.log",
+    "bytes": 2387,
+    "sha256": "bbc54b67b84fb2e6317af62e9af7339f34aef42a6937d81ba9cdc98136c1745a"
+  },
+  {
+    "path": "ui-asset-diagnostics/superseded-main-selector-red.log",
+    "source_path": ".cache/ui-asset-diagnostics-red-20261103-main.log",
+    "bytes": 2397,
+    "sha256": "f9a8fb0fdce1353c1891844fb0753b5950d5a1e3adb683f0beb4164badc4fb2e"
+  },
+  {
+    "path": "ui-asset-diagnostics/superseded-focused-selector.log",
+    "source_path": ".cache/ui-asset-diagnostics-focused-20261103-r1.log",
+    "bytes": 6696,
+    "sha256": "104eb4f04cc6236477d6e707978d3cf47d754b2bd22afa0bc705e73e9136157c"
+  },
+  {
+    "path": "ui-asset-diagnostics/focused.log",
+    "source_path": ".cache/ui-asset-diagnostics-focused-20261103-r5.log",
+    "bytes": 5948,
+    "sha256": "a10577ec448e7fe5c6982a1143bb1a9ae0fd199b3bd62ade4190c1c2842a0066"
+  },
+  {
+    "path": "ui-asset-diagnostics/full-node.log",
+    "source_path": ".cache/ui-asset-diagnostics-full-node-20261103-r1.log",
+    "bytes": 91620,
+    "sha256": "5544e87ee568e24da836682a055d3a43b246bb4e248f3d064852b290a843e9ed"
+  },
+  {
+    "path": "ui-asset-diagnostics/actual-refresh.log",
+    "source_path": ".cache/ui-asset-diagnostics-actual-refresh-20261103-r1.log",
+    "bytes": 8673,
+    "sha256": "b4f4ddc32d13c6333ae22c514b13781f7aede7c63dde7770433784c77212550f"
+  },
+  {
+    "path": "ui-asset-diagnostics/host-acceptance.json",
+    "source_path": ".cache/ui-asset-host-2d34ca7-acceptance-20261103.json",
+    "bytes": 10134,
+    "sha256": "74994792dd8d3be22f7fb0d879a67005c7537fd096c79ebe44b061e907a9b764"
+  },
+  {
+    "path": "ui-asset-diagnostics/host-acceptance-validator.mjs.txt",
+    "source_path": ".cache/validate-ui-asset-host-2d34ca7-20261103.mjs",
+    "bytes": 5957,
+    "sha256": "8d06e8a4f93c9ee9c22d5026cf25454016f44c90e1b878f9d49e8f2020958218"
+  },
+  {
+    "path": "ui-asset-diagnostics/main-end.json",
+    "source_path": ".cache/ui-asset-main-2d34ca7-end-20261103.json",
+    "bytes": 32077,
+    "sha256": "aefa07e9c7a7dbc38897668a85ed6416108bf7b54db6f19b742ff6d4503b074a"
+  },
+  {
+    "path": "ui-asset-diagnostics/worker-end.json",
+    "source_path": ".cache/ui-asset-worker-2d34ca7-end-20261103.json",
+    "bytes": 20559,
+    "sha256": "34627052072498cd38c6818700ea87f6bb827399f36045b8bdc799c0e8807a13"
+  },
+  {
+    "path": "ui-asset-diagnostics/main.png",
+    "source_path": ".cache/ui-asset-main-2d34ca7-20261103.png",
+    "bytes": 33816,
+    "sha256": "60411daf8f1d78d6b4824150d26a2a160d0e39b3de173723e4c5ecab0a699eb7"
+  },
+  {
+    "path": "ui-asset-diagnostics/worker.png",
+    "source_path": ".cache/ui-asset-worker-2d34ca7-20261103.png",
+    "bytes": 34207,
+    "sha256": "839c446c76809b843e40e375657a856cfe9e1855e1399919544149a7dc306ac4"
+  },
+  {
+    "path": "ui-asset-diagnostics/fixture-r1-provenance.json",
+    "source_path": ".cache/ui-asset-gpu-project-20261103/ui-asset-fixture-provenance.json",
+    "bytes": 600,
+    "sha256": "bed204a2a4f7745d4df593118fe7f1deef325db3f1356920abaa7b1268c67785"
+  },
+  {
+    "path": "ui-asset-diagnostics/fixture-r2-provenance.json",
+    "source_path": ".cache/ui-asset-gpu-project-r2-20261103/ui-asset-fixture-r2-provenance.json",
+    "bytes": 864,
+    "sha256": "e6f7be3a3df1e2b267d08a978978bc53555980b4f3c4704d1e4dccacc23465c0"
+  },
+  {
+    "path": "ui-asset-diagnostics/fixture-r3-provenance.json",
+    "source_path": ".cache/ui-asset-gpu-project-r3-20261103/ui-asset-fixture-r3-provenance.json",
+    "bytes": 647,
+    "sha256": "26dfc0903ce5b8a7b54fda4635aca7171972e48f9e678eaf6dce1878c1123788"
+  },
+  {
+    "path": "ui-asset-diagnostics/fixture-r2-export.log",
+    "source_path": ".cache/ui-asset-gpu-r2-export-20261103.log",
+    "bytes": 376,
+    "sha256": "d0eaa7835f1830b052d555fb217dbdc8ae86f990794e05df88cd7527e0273577"
+  },
+  {
+    "path": "ui-asset-diagnostics/fixture-r3-export.log",
+    "source_path": ".cache/ui-asset-gpu-r3-export-20261103.log",
+    "bytes": 376,
+    "sha256": "b577e150d6151dfa3af18b64e2d7ad92af43fc2d42e2f2cb1828824864e85aa0"
+  },
+  {
+    "path": "ui-asset-diagnostics/host.json",
+    "source_path": "artifacts/web-ui-asset-host-2d34ca7-20261103/host.json",
+    "bytes": 18838,
+    "sha256": "d4bf6179f8bcbf6435e9e563bd6389a830ba7effda13c62b64eeba0658184f77"
+  },
+  {
+    "path": "ui-asset-diagnostics/fixture-r3-export.json",
+    "source_path": "artifacts/web-ui-asset-gpu-r3-2d34ca7-20261103/export.json",
+    "bytes": 68559,
+    "sha256": "314bc473d7298ebe455aae2d5ab9f3662f3e89a969ab922ef88d889e8cef9332"
+  },
+  {
+    "path": "ui-asset-diagnostics/runtime.json",
+    "source_path": "artifacts/web-ui-asset-gpu-r3-2d34ca7-20261103/runtime/runtime.json",
+    "bytes": 1443,
+    "sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6"
+  },
+  {
+    "path": "ui-asset-diagnostics/external-review/result.json",
+    "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/result.json",
+    "bytes": 2243,
+    "sha256": "648ed84ed3c7e1908baf3dfd1bbd0226e26ad5654004cd122ff1c1905a1ad9d2"
+  },
+  {
+    "path": "ui-asset-diagnostics/external-review/command.json",
+    "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/command.json",
+    "bytes": 1438,
+    "sha256": "15720846e3cd534cb7da3db065bf8c07f922ae73605078adee2db32f4af3c1e1"
+  },
+  {
+    "path": "ui-asset-diagnostics/external-review/fixed.diff",
+    "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/fixed.diff",
+    "bytes": 30158,
+    "sha256": "21fbe4cece27c20ab8916510de8f182b52ba6ced9570b2a541227a7210894dd9"
+  },
+  {
+    "path": "ui-asset-diagnostics/external-review/prompt.txt",
+    "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/prompt.txt",
+    "bytes": 99530,
+    "sha256": "6a208219e4246a524b04ae9aacdb30def23cf70fd855e31068332bae649b819d"
+  },
+  {
+    "path": "ui-asset-diagnostics/external-review/review.stdout.json",
+    "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/review.stdout.json",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "ui-asset-diagnostics/external-review/review.stderr.txt",
+    "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/review.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "ui-asset-diagnostics/main-events.json",
+    "source_path": null,
+    "bytes": 4043,
+    "sha256": "7e2b6de7f6db35c74173eaf086121884881fe65d0f9d60ca45aea7aec97ed864"
+  },
+  {
+    "path": "ui-asset-diagnostics/main-events-extraction.json",
+    "source_path": null,
+    "bytes": 944,
+    "sha256": "848aa39d9e475955e1e4ad8a15f7d25d43d16b8e357261926cf2359c05df8abc"
+  }
+]

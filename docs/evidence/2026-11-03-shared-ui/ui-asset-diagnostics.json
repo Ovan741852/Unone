@@ -1,0 +1,656 @@
+{
+  "schema": "unone.web.ui-asset-diagnostics.v1",
+  "recorded_at_utc": "2026-11-03T00:37:21.4021985Z",
+  "source_commit": "2d34ca70934dd8af8f6fce348a488529b487d8bd",
+  "status": "source-node-and-bounded-official-main-worker-validated",
+  "scope": "Passive Web host diagnostics and bounded fixture ownership acceptance; no Game14skip causal attribution, culling/loading policy change, FPS, GC, Native, SDK-wide, or all-leak-free acceptance",
+  "source_hash_scope": "Actual working-file byte SHA256, distinct from normalized Git LF digests. All preserved raw copies are byte-addressed evidence.",
+  "sources": [
+    {
+      "path": "web/shared/canvas-ui.mjs",
+      "sha256": "ff513237a4beccf9c116425270ad1f9bf908b40f212abf7da2738ea37b4f124b",
+      "bytes": 33294
+    },
+    {
+      "path": "web/player/main.js",
+      "sha256": "1bcac1c3ed0ff7d39e2f5b6cc1b9e072bb085741f419d52f6cd67fd8f4e14ac0",
+      "bytes": 31988
+    },
+    {
+      "path": "web/shared/canvas-ui-asset-diagnostics.test.mjs",
+      "sha256": "7dbc6421653f1e757ddc72a2ab46e0e702147d6a2e76e0ce557f5960602c47ee",
+      "bytes": 12172
+    },
+    {
+      "path": "web/shared/player-profile-ui-assets.test.mjs",
+      "sha256": "681eb15b2bb5ac67aeb5f74e5d45759bda5855790c82e18b0de2840c76f67a5a",
+      "bytes": 4669
+    },
+    {
+      "path": "web/shared/player-profile-main.test.mjs",
+      "sha256": "821c59a967e2c64510cf915a7b8125a7eda7effbfbf814099df2998c77fd3b90",
+      "bytes": 15747
+    },
+    {
+      "path": "scripts/web-export-host.mjs",
+      "sha256": "6922fed414341e17b4ffea5cfe2bd37620844d609a6f1597dd7eeaffb56d3f39",
+      "bytes": 9181
+    },
+    {
+      "path": "crates/unone-cli/src/export.rs",
+      "sha256": "8d6f336c9a8e0f49dcf781f8713493e1e1c08283f7c181d1c18c382e40b7def9",
+      "bytes": 64495
+    }
+  ],
+  "contract": {
+    "enabled_only": "Existing exact unone_profile=1 opt-in; observer installed after profiler creation",
+    "default_off": "Null observer, no new diagnostic Map/WeakMap, attrs, clock reads, events or per-frame report() calls",
+    "observer": "Internal setAssetObserver(fn|null), scalar-only assetDiagnostics() for the existing draw row",
+    "transition_kinds": [
+      "loading",
+      "acquire_ready",
+      "ready",
+      "failed",
+      "release",
+      "stale_result"
+    ],
+    "event_record_status": "ok means the observation was recorded, not the resource is ready; transition is an explicit primitive attr. This avoids automatic DOM publication for every asset state event.",
+    "bounds": {
+      "current_composition_asset_metadata": 256,
+      "emitted_transitions_per_composition": 128,
+      "attr_string_limit_utf16_code_units": 128,
+      "profiler_ring": "Existing configurable16..2048; no new unbounded trace ring",
+      "overflow": "Explicit cumulative metadata/event overflow and observer-failure counters; current_refs_known=false distinguishes omitted metadata from measured0"
+    },
+    "identity": "Trace epoch + entry token, independently from truncated ID prefix. asset_chars and asset_truncated are explicit; prefixes are not complete unique IDs.",
+    "attribution": "Entry-origin composition, origin-known flag, origin UI observation frame/generation, current composition/last UI frame, current-required and exact-entry identity. Async ready is not labeled as the Core completion frame.",
+    "references": "Aggregate ordinary refs and unique batch asset-list refs per instance. Rect/clip and opacity0 are geometry facts, not actual pixel visibility; batch_visibility_tested=false and no new per-quad scan.",
+    "lifecycle": "Observer exceptions are contained; disposal/set-null severs the profiler callback. Rendering, requiredAssets, readiness, errors, ownership, clipping, and loading remain unchanged.",
+    "ui_disabled": "Both actual source publishers provide setAssetObserver() no-op and assetDiagnostics()=>null. Source-extracted integration exercises profile-on and preserves existing completed/ready/pointer/report assertions; no newly compiled CLI execution is claimed."
+  },
+  "tests": {
+    "actual_old_lifecycle_red": {
+      "raw": "ui-asset-diagnostics/lifecycle-red.log",
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "exit": 1,
+      "scope": "Original captured Canvas actually executes pending load, ready waiter and composition release; missing observations [] fail against loading/ready/release. No substitute method or fake events."
+    },
+    "early_interface_red": {
+      "canvas_raw": "ui-asset-diagnostics/interface-red-canvas.log",
+      "canvas_tests": 10,
+      "canvas_fail": 10,
+      "scope": "Expected absence of the new internal observer interface in old source, not an existing Engine asset-lifecycle bug",
+      "corrected_main_raw": "ui-asset-diagnostics/interface-red-main.log",
+      "corrected_main_tests": 4,
+      "corrected_main_pass": 2,
+      "corrected_main_fail": 2,
+      "main_scope": "Actual old opt-in and draw extraction lack observer installation/correlation. Positive UI-off checks use current producer strings; they are not old-host acceptance."
+    },
+    "superseded_harness_failures": {
+      "raws": [
+        "ui-asset-diagnostics/superseded-main-selector-red.log",
+        "ui-asset-diagnostics/superseded-focused-selector.log"
+      ],
+      "focused_pass": 51,
+      "focused_fail": 1,
+      "reason": "Early main extraction assumed two leading spaces for cursorOutcome and stopped before actual execution. Corrected selector uses real statement boundaries. These failures are harness provenance, not Engine regressions."
+    },
+    "focused": {
+      "raw": "ui-asset-diagnostics/focused.log",
+      "tests": 54,
+      "pass": 54,
+      "fail": 0,
+      "skipped": 0,
+      "duration_ms": 2956.1577,
+      "executor": "/root/web_lifecycle",
+      "command": "node --test web/shared/canvas-ui-asset-diagnostics.test.mjs web/shared/player-profile-ui-assets.test.mjs web/shared/player-profile-main.test.mjs web/shared/canvas-ui.test.mjs web/shared/canvas-ui-publication.test.mjs web/shared/canvas-ui-image-handoff.test.mjs web/shared/image-broker-integration.test.mjs",
+      "scope": "Actual Canvas, real broker, real profiler and actual InstanceReceiver/main/worker semantics; controlled image/GPU boundaries, no Native or browser proof"
+    },
+    "full": {
+      "raw": "ui-asset-diagnostics/full-node.log",
+      "tests": 891,
+      "pass": 886,
+      "fail": 0,
+      "skipped": 5,
+      "duration_ms": 14309.2093,
+      "executor": "/root",
+      "command": null,
+      "command_scope": "Root actual regenerated full Node gate; exact shell command was not part of the supplied stdout and is not invented"
+    },
+    "actual_emitted_refresh": {
+      "raw": "ui-asset-diagnostics/actual-refresh.log",
+      "pass": 22,
+      "fail": 0,
+      "skipped": 0,
+      "duration_ms": 2286.4444,
+      "executor": "/root",
+      "scope": "Actual accepted production WASM source-ingestion refresh checks; expected invalid-project diagnostics inside the passed tests are not acceptance failures"
+    }
+  },
+  "source_reviews": [
+    {
+      "reviewer": "/root",
+      "status": "CLEAR",
+      "scope": "Independent final manual diff review; separate from actual full Node gate"
+    },
+    {
+      "reviewer": "/root/native_performance",
+      "status": "CLEAR",
+      "concrete_p1_p2": 0,
+      "scope": "Source-only: defaultOFF, nullable observer, weak scalar tags, caps/current_refs_known, stale origin/current/generation, unchanged ready/error/lifecycle and disposal callback release; no independent workload"
+    }
+  ],
+  "external_review": {
+    "status": "timed-out-incomplete",
+    "elapsed_ms": 45378.4252,
+    "elapsed_seconds": 45.3784252,
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "timed_out": true,
+    "cli_version": "2.1.308 (Claude Code)",
+    "read_only": true,
+    "tool_access": "none",
+    "base_revision": "c09510388b019df887680375a4f9c296dff5f52a",
+    "fixed_diff_sha256": "21fbe4cece27c20ab8916510de8f182b52ba6ced9570b2a541227a7210894dd9",
+    "supplied_postimages": [
+      {
+        "path": "web/shared/canvas-ui.mjs",
+        "bytes": 33294,
+        "sha256": "ff513237a4beccf9c116425270ad1f9bf908b40f212abf7da2738ea37b4f124b"
+      },
+      {
+        "path": "web/player/main.js",
+        "bytes": 31988,
+        "sha256": "1bcac1c3ed0ff7d39e2f5b6cc1b9e072bb085741f419d52f6cd67fd8f4e14ac0"
+      }
+    ],
+    "tracked_diff_paths": [
+      "crates/unone-cli/src/export.rs",
+      "scripts/web-export-host.mjs",
+      "web/player/main.js",
+      "web/shared/canvas-ui.mjs",
+      "web/shared/player-profile-main.test.mjs"
+    ],
+    "new_tests_or_docs_supplied": false,
+    "raw_directory": "ui-asset-diagnostics/external-review",
+    "limit": "No stdout/review disposition obtained. Timed-out-incomplete is not pass, waiver, or GPU acceptance. command.json remains the original running launch capture; result.json is final."
+  },
+  "host": {
+    "root": "D:/Projects/Unone/artifacts/web-ui-asset-host-2d34ca7-20261103",
+    "source_commit": "2d34ca70934dd8af8f6fce348a488529b487d8bd",
+    "fingerprint": "44b207fb770babe67c32f1689859dca35bb3cf5fd1693705ba5de9dfd6618a03",
+    "files": 111,
+    "metadata_raw": "ui-asset-diagnostics/host.json",
+    "runtime": {
+      "source_commit": "9c773e3c236bd6aa1b2325a4983e4848d99b6deb",
+      "manifest_sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6",
+      "javascript_sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01",
+      "wasm_sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd",
+      "profile": "release",
+      "dev_tools": false,
+      "preview_tools": false,
+      "phase_profile": false,
+      "sampling_profile": false,
+      "bytecode_optimization_level": 2,
+      "runtime_packages": {
+        "@unone/ui": "0.6.0"
+      },
+      "raw": "ui-asset-diagnostics/runtime.json",
+      "scope": "Previously verified9c production runtime reused; no new Core/WASM build, full SDK, or Native CLI acceptance"
+    }
+  },
+  "fixture": {
+    "r1": {
+      "raw": "ui-asset-diagnostics/fixture-r1-provenance.json",
+      "source_sha256": "360fd706ce1962f0a5d65fda39c937c066054b17781c32a5c9fb64bcb460f3b5",
+      "status": "rejected-before-publication",
+      "transcribed_labels": [
+        "page-a",
+        "page-b"
+      ],
+      "reason": "Short display labels did not satisfy UI stable URI format. Reason/labels are transcribed from preserved provenance, not a raw CLI failure capture.",
+      "raw_cli_failure_preserved": false
+    },
+    "r2": {
+      "raw": "ui-asset-diagnostics/fixture-r2-provenance.json",
+      "export_log": "ui-asset-diagnostics/fixture-r2-export.log",
+      "source_sha256": "cf7a135d64cfcab3e5e08e7fec478dc9650ff3298ce64b8a3896d3735446af66",
+      "status": "published-but-never-opened-in-browser",
+      "reason": "Guessed asset://fixture/page-a and page-b met URI format but did not match the existing texture:// catalog IDs; not browser acceptance"
+    },
+    "r3": {
+      "raw": "ui-asset-diagnostics/fixture-r3-provenance.json",
+      "export_log": "ui-asset-diagnostics/fixture-r3-export.log",
+      "export_manifest": "ui-asset-diagnostics/fixture-r3-export.json",
+      "source_sha256": "44b77935596b30a21f2ee7a8ca0891872f170699cd076f4aab4cf6c0c4201673",
+      "export_root": "D:/Projects/Unone/artifacts/web-ui-asset-gpu-r3-2d34ca7-20261103",
+      "release_root": "releases/3012a1720dbe8d78807584cc7f06a8067190e212bb3e96c5baf9de67e87b242b/",
+      "renderer": "official three-webgl",
+      "assets": [
+        "texture://fixture/page-a",
+        "texture://fixture/page-b"
+      ],
+      "protocol": "60warmup,100 hide3/show6 cycles,120 final hidden; protocol completes at1080. UIA retained until terminal; transparent cold UIB referenced only ticks120..239.",
+      "scope": "Official generic fixture only; no Product Game source, asset, save, prefetch policy or renderer changes"
+    }
+  },
+  "actual_host_acceptance": {
+    "assertion": "ui-asset-diagnostics/host-acceptance.json",
+    "validator_source": "ui-asset-diagnostics/host-acceptance-validator.mjs.txt",
+    "reported_actual_ok": true,
+    "executor": "/root",
+    "main": {
+      "profiler": "ON,ring64",
+      "endpoint": "ui-asset-diagnostics/main-end.json",
+      "png": "ui-asset-diagnostics/main.png",
+      "observer_frame": 5900,
+      "cached_metrics_frame": 5876,
+      "observed_utc": "2026-11-03T00:17:45.436Z",
+      "error": null,
+      "profile_error": null,
+      "terminal_cumulative_ui_asset_events": 5,
+      "loading_count": 0,
+      "event_overflow": 0,
+      "metadata_overflow": 0,
+      "observer_failures": 0,
+      "profiler_counts": {
+        "abandoned": 0,
+        "begun": 23583,
+        "cleared": 0,
+        "completed": 23583,
+        "dropped_attrs": 0,
+        "late_ends": 0,
+        "late_operations": 0,
+        "open": 0,
+        "orphan_marks": 0,
+        "overwritten": 23519,
+        "provider_errors": 0,
+        "publish_errors": 0,
+        "retained": 64
+      }
+    },
+    "worker": {
+      "profiler": "OFF",
+      "endpoint": "ui-asset-diagnostics/worker-end.json",
+      "png": "ui-asset-diagnostics/worker.png",
+      "observer_frame": 25697,
+      "cached_metrics_frame": 25676,
+      "observed_utc": "2026-11-03T00:24:54.261Z",
+      "profile_present": false,
+      "error": null,
+      "profile_error": null
+    },
+    "runs": [
+      {
+        "backend": "main",
+        "observed_utc": "2026-11-03T00:17:45.436Z",
+        "observer_frame": 5900,
+        "metrics_frame": 5876,
+        "sprite": {
+          "builds": 2,
+          "cpu_reserved_bytes_estimate": 0,
+          "entries": 0,
+          "epoch": 1,
+          "errors": 0,
+          "gpu_reserved_bytes_estimate": 0,
+          "handles": 0,
+          "idle_material_entries": 0,
+          "idle_material_limit": 2,
+          "image_leases": 0,
+          "legacy_fallback_sprites": 0,
+          "limits": {
+            "max_bytes": 1024,
+            "max_entries": 2
+          },
+          "live_textures": 0,
+          "pending": 0,
+          "ready": 0,
+          "retired": 2,
+          "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+          "supported": true,
+          "texture_builds": 1,
+          "texture_entries": 0,
+          "texture_retired": 1
+        },
+        "ui_gpu": {
+          "atlas_compactions": 0,
+          "atlas_page_size": 4096,
+          "atlas_pages": 1,
+          "atlas_uploads": 1308,
+          "backend": "three.js",
+          "dedicated_text_textures": 0,
+          "draw_calls": 1,
+          "image_textures": 0,
+          "last_rebuild_ms": 0.5,
+          "quads": 9,
+          "rebuilds": 1081,
+          "submits": 5880,
+          "text_rasters": 1308,
+          "text_slots": 9
+        },
+        "decoded": {
+          "loads": 2,
+          "resident_bytes_estimate": 256,
+          "active_entries": 0
+        },
+        "skip_counts": {
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "frame_pass_incomplete": 0,
+          "frame_resources_pending": 0,
+          "other": 0,
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "ui_assets_pending": 1,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "world_assets_pending": 1
+        }
+      },
+      {
+        "backend": "worker",
+        "observed_utc": "2026-11-03T00:24:54.261Z",
+        "observer_frame": 25697,
+        "metrics_frame": 25676,
+        "sprite": {
+          "builds": 2,
+          "cpu_reserved_bytes_estimate": 0,
+          "entries": 0,
+          "epoch": 1,
+          "errors": 0,
+          "gpu_reserved_bytes_estimate": 0,
+          "handles": 0,
+          "idle_material_entries": 0,
+          "idle_material_limit": 2,
+          "image_leases": 0,
+          "legacy_fallback_sprites": 0,
+          "limits": {
+            "max_bytes": 1024,
+            "max_entries": 2
+          },
+          "live_textures": 0,
+          "pending": 0,
+          "ready": 0,
+          "retired": 2,
+          "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+          "supported": true,
+          "texture_builds": 1,
+          "texture_entries": 0,
+          "texture_retired": 1
+        },
+        "ui_gpu": {
+          "atlas_compactions": 0,
+          "atlas_page_size": 4096,
+          "atlas_pages": 1,
+          "atlas_uploads": 4608,
+          "backend": "three.js",
+          "dedicated_text_textures": 0,
+          "draw_calls": 1,
+          "image_textures": 0,
+          "last_rebuild_ms": 0.4000000953674317,
+          "quads": 9,
+          "rebuilds": 4381,
+          "submits": 25680,
+          "text_rasters": 4608,
+          "text_slots": 9
+        },
+        "decoded": {
+          "loads": 2,
+          "resident_bytes_estimate": 256,
+          "active_entries": 0
+        },
+        "skip_counts": {
+          "cursor_assets_pending": 0,
+          "cursor_diagnostics": 0,
+          "frame_pass_incomplete": 0,
+          "frame_resources_pending": 0,
+          "other": 0,
+          "raster_unavailable": 0,
+          "raster_validation": 0,
+          "ui_assets_pending": 1,
+          "ui_diagnostics": 0,
+          "ui_target_unavailable": 0,
+          "world_assets_pending": 1
+        }
+      }
+    ],
+    "counter_interpretation": "Per backend texture_builds1 and material-entry builds2; builds are not an independent count of driver shader compiler calls. Final WORLD pool/cache owners0 and UI image textures0; atlas/Bloom allocations are separate. Two intentional128B decoded images remain256B with zero active consumer entries.",
+    "skip_scope": "Per backend1 initial world_assets_pending and1 intentional cold transparent-UIB ui_assets_pending; all other reported skip counts0. This does not repair or explain Game14skips.",
+    "sample_scope": "MainON/workerOFF,100-cycle protocol and endpoint ownership only; not every profiler/backend combination. Endpoint frames5900/25697 and cached metrics5876/25676 differ; PNGs were captured later and their exact frames are not established here. No same-frame or new visual-inspection claim.",
+    "teardown_scope": "These are running endpoint captures, not evidence of global browser/runtime teardown"
+  },
+  "captured_events": {
+    "raw": "ui-asset-diagnostics/main-events.json",
+    "extraction": "ui-asset-diagnostics/main-events-extraction.json",
+    "source_sha256": "4ff1202acb9d3dbd33816e65ea34f3318ee7a3d927ac577135988caebab43b26",
+    "source_bytes": 4849512,
+    "source_reads": 400,
+    "copied_repetitive_reads": 0,
+    "event_count": 3,
+    "source_byte_offset_zero_based": 4845467,
+    "source_byte_length": 4043,
+    "transitions": [
+      "acquire_ready",
+      "loading",
+      "ready"
+    ],
+    "facts": "A synchronous-ready; B loading and asynchronous-ready share entry token2, origin composition28 and UI observation frame120; loading1 ->0, ordinary_refs1, opacity_zero_refs1, batch_list_refs0, current_refs_known=true",
+    "release_events_captured": false,
+    "terminal_cumulative_events": 5,
+    "scope": "Exact3 prefix events only. Release events were not retained in the captured prefix; cumulative5 plus endpoint ownership is not a complete lifecycle trace or Core-completion-frame claim."
+  },
+  "limits": [
+    "No culling, placeholder, atomic-UI, loading-policy, requiredAssets or gameplay change",
+    "No attribution of private Game14skips, atlas/travel failures or large gaps",
+    "No FPS acceptance, GPU timing, GC-frequency, Native/process memory, total VRAM or global all-leak-free claim",
+    "No private Game payload/body/assets copied; only public engine sources in external review and generic fixture provenance",
+    "The external review is incomplete; internal source reviews and actual execution are separately scoped"
+  ],
+  "artifacts": [
+    {
+      "path": "ui-asset-diagnostics/lifecycle-red.log",
+      "source_path": ".cache/ui-asset-diagnostics-lifecycle-red-20261103.log",
+      "bytes": 1045,
+      "sha256": "a7cde191a5a71ac23d226ba34fd5132a58dba1a4b0ea936c574e36e3c333f952"
+    },
+    {
+      "path": "ui-asset-diagnostics/lifecycle-red-test-source.mjs.txt",
+      "source_path": ".cache/ui-asset-diagnostics-lifecycle-red-test-20261103.mjs.txt",
+      "bytes": 12172,
+      "sha256": "7dbc6421653f1e757ddc72a2ab46e0e702147d6a2e76e0ce557f5960602c47ee"
+    },
+    {
+      "path": "ui-asset-diagnostics/before-canvas-ui.mjs.txt",
+      "source_path": ".cache/ui-asset-diagnostics-before-canvas-ui-20261103.mjs.txt",
+      "bytes": 28783,
+      "sha256": "5322e4f2dc2ca4be236b78aaff6e617e7c63f6be3c211756d6bd081179d57e9c"
+    },
+    {
+      "path": "ui-asset-diagnostics/before-main.js.txt",
+      "source_path": ".cache/ui-asset-diagnostics-before-main-20261103.js.txt",
+      "bytes": 31859,
+      "sha256": "1416cce3c9c4c8e420718eed1e5cf50778f1aa2fbf252e8b275412776a99796c"
+    },
+    {
+      "path": "ui-asset-diagnostics/interface-red-canvas.log",
+      "source_path": ".cache/ui-asset-diagnostics-red-20261103-canvas-r2.log",
+      "bytes": 8157,
+      "sha256": "f426055601096d22eb1cb51b6787d72ce1ccef8dec36f03be139a7b8eb8856ab"
+    },
+    {
+      "path": "ui-asset-diagnostics/interface-red-main.log",
+      "source_path": ".cache/ui-asset-diagnostics-red-20261103-main-r2.log",
+      "bytes": 2387,
+      "sha256": "bbc54b67b84fb2e6317af62e9af7339f34aef42a6937d81ba9cdc98136c1745a"
+    },
+    {
+      "path": "ui-asset-diagnostics/superseded-main-selector-red.log",
+      "source_path": ".cache/ui-asset-diagnostics-red-20261103-main.log",
+      "bytes": 2397,
+      "sha256": "f9a8fb0fdce1353c1891844fb0753b5950d5a1e3adb683f0beb4164badc4fb2e"
+    },
+    {
+      "path": "ui-asset-diagnostics/superseded-focused-selector.log",
+      "source_path": ".cache/ui-asset-diagnostics-focused-20261103-r1.log",
+      "bytes": 6696,
+      "sha256": "104eb4f04cc6236477d6e707978d3cf47d754b2bd22afa0bc705e73e9136157c"
+    },
+    {
+      "path": "ui-asset-diagnostics/focused.log",
+      "source_path": ".cache/ui-asset-diagnostics-focused-20261103-r5.log",
+      "bytes": 5948,
+      "sha256": "a10577ec448e7fe5c6982a1143bb1a9ae0fd199b3bd62ade4190c1c2842a0066"
+    },
+    {
+      "path": "ui-asset-diagnostics/full-node.log",
+      "source_path": ".cache/ui-asset-diagnostics-full-node-20261103-r1.log",
+      "bytes": 91620,
+      "sha256": "5544e87ee568e24da836682a055d3a43b246bb4e248f3d064852b290a843e9ed"
+    },
+    {
+      "path": "ui-asset-diagnostics/actual-refresh.log",
+      "source_path": ".cache/ui-asset-diagnostics-actual-refresh-20261103-r1.log",
+      "bytes": 8673,
+      "sha256": "b4f4ddc32d13c6333ae22c514b13781f7aede7c63dde7770433784c77212550f"
+    },
+    {
+      "path": "ui-asset-diagnostics/host-acceptance.json",
+      "source_path": ".cache/ui-asset-host-2d34ca7-acceptance-20261103.json",
+      "bytes": 10134,
+      "sha256": "74994792dd8d3be22f7fb0d879a67005c7537fd096c79ebe44b061e907a9b764"
+    },
+    {
+      "path": "ui-asset-diagnostics/host-acceptance-validator.mjs.txt",
+      "source_path": ".cache/validate-ui-asset-host-2d34ca7-20261103.mjs",
+      "bytes": 5957,
+      "sha256": "8d06e8a4f93c9ee9c22d5026cf25454016f44c90e1b878f9d49e8f2020958218"
+    },
+    {
+      "path": "ui-asset-diagnostics/main-end.json",
+      "source_path": ".cache/ui-asset-main-2d34ca7-end-20261103.json",
+      "bytes": 32077,
+      "sha256": "aefa07e9c7a7dbc38897668a85ed6416108bf7b54db6f19b742ff6d4503b074a"
+    },
+    {
+      "path": "ui-asset-diagnostics/worker-end.json",
+      "source_path": ".cache/ui-asset-worker-2d34ca7-end-20261103.json",
+      "bytes": 20559,
+      "sha256": "34627052072498cd38c6818700ea87f6bb827399f36045b8bdc799c0e8807a13"
+    },
+    {
+      "path": "ui-asset-diagnostics/main.png",
+      "source_path": ".cache/ui-asset-main-2d34ca7-20261103.png",
+      "bytes": 33816,
+      "sha256": "60411daf8f1d78d6b4824150d26a2a160d0e39b3de173723e4c5ecab0a699eb7"
+    },
+    {
+      "path": "ui-asset-diagnostics/worker.png",
+      "source_path": ".cache/ui-asset-worker-2d34ca7-20261103.png",
+      "bytes": 34207,
+      "sha256": "839c446c76809b843e40e375657a856cfe9e1855e1399919544149a7dc306ac4"
+    },
+    {
+      "path": "ui-asset-diagnostics/fixture-r1-provenance.json",
+      "source_path": ".cache/ui-asset-gpu-project-20261103/ui-asset-fixture-provenance.json",
+      "bytes": 600,
+      "sha256": "bed204a2a4f7745d4df593118fe7f1deef325db3f1356920abaa7b1268c67785"
+    },
+    {
+      "path": "ui-asset-diagnostics/fixture-r2-provenance.json",
+      "source_path": ".cache/ui-asset-gpu-project-r2-20261103/ui-asset-fixture-r2-provenance.json",
+      "bytes": 864,
+      "sha256": "e6f7be3a3df1e2b267d08a978978bc53555980b4f3c4704d1e4dccacc23465c0"
+    },
+    {
+      "path": "ui-asset-diagnostics/fixture-r3-provenance.json",
+      "source_path": ".cache/ui-asset-gpu-project-r3-20261103/ui-asset-fixture-r3-provenance.json",
+      "bytes": 647,
+      "sha256": "26dfc0903ce5b8a7b54fda4635aca7171972e48f9e678eaf6dce1878c1123788"
+    },
+    {
+      "path": "ui-asset-diagnostics/fixture-r2-export.log",
+      "source_path": ".cache/ui-asset-gpu-r2-export-20261103.log",
+      "bytes": 376,
+      "sha256": "d0eaa7835f1830b052d555fb217dbdc8ae86f990794e05df88cd7527e0273577"
+    },
+    {
+      "path": "ui-asset-diagnostics/fixture-r3-export.log",
+      "source_path": ".cache/ui-asset-gpu-r3-export-20261103.log",
+      "bytes": 376,
+      "sha256": "b577e150d6151dfa3af18b64e2d7ad92af43fc2d42e2f2cb1828824864e85aa0"
+    },
+    {
+      "path": "ui-asset-diagnostics/host.json",
+      "source_path": "artifacts/web-ui-asset-host-2d34ca7-20261103/host.json",
+      "bytes": 18838,
+      "sha256": "d4bf6179f8bcbf6435e9e563bd6389a830ba7effda13c62b64eeba0658184f77"
+    },
+    {
+      "path": "ui-asset-diagnostics/fixture-r3-export.json",
+      "source_path": "artifacts/web-ui-asset-gpu-r3-2d34ca7-20261103/export.json",
+      "bytes": 68559,
+      "sha256": "314bc473d7298ebe455aae2d5ab9f3662f3e89a969ab922ef88d889e8cef9332"
+    },
+    {
+      "path": "ui-asset-diagnostics/runtime.json",
+      "source_path": "artifacts/web-ui-asset-gpu-r3-2d34ca7-20261103/runtime/runtime.json",
+      "bytes": 1443,
+      "sha256": "5e0eca9fbfa72c3a0afe07ed129c68c07ce9e1e4074069119ecb47b52e4590e6"
+    },
+    {
+      "path": "ui-asset-diagnostics/external-review/result.json",
+      "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/result.json",
+      "bytes": 2243,
+      "sha256": "648ed84ed3c7e1908baf3dfd1bbd0226e26ad5654004cd122ff1c1905a1ad9d2"
+    },
+    {
+      "path": "ui-asset-diagnostics/external-review/command.json",
+      "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/command.json",
+      "bytes": 1438,
+      "sha256": "15720846e3cd534cb7da3db065bf8c07f922ae73605078adee2db32f4af3c1e1"
+    },
+    {
+      "path": "ui-asset-diagnostics/external-review/fixed.diff",
+      "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/fixed.diff",
+      "bytes": 30158,
+      "sha256": "21fbe4cece27c20ab8916510de8f182b52ba6ced9570b2a541227a7210894dd9"
+    },
+    {
+      "path": "ui-asset-diagnostics/external-review/prompt.txt",
+      "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/prompt.txt",
+      "bytes": 99530,
+      "sha256": "6a208219e4246a524b04ae9aacdb30def23cf70fd855e31068332bae649b819d"
+    },
+    {
+      "path": "ui-asset-diagnostics/external-review/review.stdout.json",
+      "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/review.stdout.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-asset-diagnostics/external-review/review.stderr.txt",
+      "source_path": ".cache/ui-asset-diagnostics-source-review-20261103/review.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ui-asset-diagnostics/main-events.json",
+      "source_path": null,
+      "bytes": 4043,
+      "sha256": "7e2b6de7f6db35c74173eaf086121884881fe65d0f9d60ca45aea7aec97ed864"
+    },
+    {
+      "path": "ui-asset-diagnostics/main-events-extraction.json",
+      "source_path": null,
+      "bytes": 944,
+      "sha256": "848aa39d9e475955e1e4ad8a15f7d25d43d16b8e357261926cf2359c05df8abc"
+    }
+  ],
+  "artifact_index": {
+    "path": "ui-asset-diagnostics/file-index.json",
+    "sha256": "a7308ac07b2074bfe631067ff0adf2dd2488cda10447612bb8871e9f1954e25b"
+  }
+}

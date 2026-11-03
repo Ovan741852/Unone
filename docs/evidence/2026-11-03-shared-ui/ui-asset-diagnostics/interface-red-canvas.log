@@ -1,0 +1,124 @@
+✖ OFF observer stays null without diagnostic clock reads or emitted packets (0.7106ms)
+✖ real broker synchronous ready hit emits acquire_ready and never manufactures pending/loading (0.8398ms)
+✖ async success retains origin composition and distinguishes the latest UI observation frame (0.1998ms)
+✖ invalidated old completion cannot be attributed to a new entry for the same required asset (0.1299ms)
+✖ composition removal records release and stale result without changing required-asset behavior (0.109ms)
+✖ shared ordinary/batch references aggregate geometry facts without claiming batch visibility (0.0927ms)
+✖ metadata/event limits and long IDs remain explicit primitives without profiler dropped_attrs (0.6584ms)
+✖ observer throws cannot alter readiness, requestRender, original diagnostics or release (0.6893ms)
+✖ dispose disconnects its observer even while a late load completes (0.3637ms)
+✖ main and actual worker receiver trees share passive asset semantics without Core calls (1.2613ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 0
+ℹ fail 10
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.4035
+
+✖ failing tests:
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:30:1
+✖ OFF observer stays null without diagnostic clock reads or emitted packets (0.7106ms)
+  TypeError: f.ui.assetDiagnostics is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:32:21)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:40:1
+✖ real broker synchronous ready hit emits acquire_ready and never manufactures pending/loading (0.8398ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:44:8)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:50:1
+✖ async success retains origin composition and distinguishes the latest UI observation frame (0.1998ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:52:8)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:59:1
+✖ invalidated old completion cannot be attributed to a new entry for the same required asset (0.1299ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:61:8)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:68:1
+✖ composition removal records release and stale result without changing required-asset behavior (0.109ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:70:8)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:76:1
+✖ shared ordinary/batch references aggregate geometry facts without claiming batch visibility (0.0927ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:78:8)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:85:1
+✖ metadata/event limits and long IDs remain explicit primitives without profiler dropped_attrs (0.6584ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:87:8)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:96:1
+✖ observer throws cannot alter readiness, requestRender, original diagnostics or release (0.6893ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:98:8)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:105:1
+✖ dispose disconnects its observer even while a late load completes (0.3637ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:107:7)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at web\shared\canvas-ui-asset-diagnostics.test.mjs:112:1
+✖ main and actual worker receiver trees share passive asset semantics without Core calls (1.2613ms)
+  TypeError: f.ui.setAssetObserver is not a function
+      at TestContext.<anonymous> (file:///D:/Projects/Unone/web/shared/canvas-ui-asset-diagnostics.test.mjs:115:77)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)

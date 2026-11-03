@@ -1,0 +1,279 @@
+diff --git a/crates/unone-cli/src/export.rs b/crates/unone-cli/src/export.rs
+index 358393f..38c0bf2 100644
+--- a/crates/unone-cli/src/export.rs
++++ b/crates/unone-cli/src/export.rs
+@@ -292,17 +292,17 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
+                 .into_bytes();
+         }
+         if path == "player/main.js" {
+             let mut text = String::from_utf8(bytes)?;
+             if !settings.is_enabled("ui") {
+                 text = replace_required(
+                     text,
+                     "import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';",
+-                    "const disabledUiCompleted = Object.freeze({status:'completed'}); const createCanvasUi = () => ({draw:()=>disabledUiCompleted,ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})}); const loadPresentationFonts = async () => {};",
++                    "const disabledUiCompleted = Object.freeze({status:'completed'}); const createCanvasUi = () => ({draw:()=>disabledUiCompleted,ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},setAssetObserver(){},assetDiagnostics:()=>null,report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})}); const loadPresentationFonts = async () => {};",
+                 )?;
+                 text = replace_required(text,
+                     "import {createUiTextInputHost} from '../shared/ui-text-input.mjs';",
+                     "const createUiTextInputHost = () => ({draw:s=>s,pointer:()=>false,routeKey:()=>false,setExternalInput(){},suspend(){},dispose(){}});")?;
+                 text = replace_required(text,
+                     "import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';",
+                     "const createUiCursorHost = () => ({update:()=>disabledUiCompleted,ready:async()=>{},dispose(){},report:()=>({kind:'default'})}); const loadCursorImage = async () => null;")?;
+                 text = replace_required(text,
+diff --git a/scripts/web-export-host.mjs b/scripts/web-export-host.mjs
+index d96ed41..61e217a 100644
+--- a/scripts/web-export-host.mjs
++++ b/scripts/web-export-host.mjs
+@@ -21,17 +21,17 @@ export function resolveSystems(root,declared={}){
+  for(const [name,on]of Object.entries(declared)){const d=defaults.get(name);requireThat(d&&typeof on==='boolean'&&(on||d.optional),'WEB_REFRESH_SYSTEMS_INVALID',name);d.enabled=on;}
+  return [...defaults].filter(([,d])=>d.enabled).map(([name])=>name).sort(order);
+ }
+ function replace(text,from,to){requireThat(text.split(from).length===2,'WEB_REFRESH_HOST_CONTRACT',from);return text.replace(from,to);}
+ const disabledUi=new Set(['shared/ui-tree.js','shared/canvas-ui.mjs','shared/ui-text-input.mjs','shared/ui-cursor.mjs','shared/ui-style.mjs','shared/ui-presentation.mjs','shared/ui-image-batch.mjs','shared/ui-scroll.mjs','shared/ui-contract.mjs','shared/ui-geometry.mjs','renderer/ui-gpu.js']);
+ const profileMarkers=['PROFILE_IMPORT','PROFILE_INIT','PROFILE_FRAME','PROFILE_INPUT','PROFILE_TICK_END','PROFILE_TICK','PROFILE_POST_TICK','PROFILE_WAKE','PROFILE_ERROR','DEVELOPER_IMPORT','DEVELOPER_CONNECT'];
+ function player(source,on){
+  if(!on.has('ui')){
+-  source=replace(source,"import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';","const disabledUiCompleted=Object.freeze({status:'completed'});const createCanvasUi=()=>({draw:()=>disabledUiCompleted,ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})});const loadPresentationFonts=async()=>{};");
++  source=replace(source,"import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';","const disabledUiCompleted=Object.freeze({status:'completed'});const createCanvasUi=()=>({draw:()=>disabledUiCompleted,ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},setAssetObserver(){},assetDiagnostics:()=>null,report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})});const loadPresentationFonts=async()=>{};");
+   source=replace(source,"import {createUiTextInputHost} from '../shared/ui-text-input.mjs';","const createUiTextInputHost=()=>({draw:s=>s,pointer:()=>false,routeKey:()=>false,setExternalInput(){},suspend(){},dispose(){}});");
+   source=replace(source,"import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';","const createUiCursorHost=()=>({update:()=>disabledUiCompleted,ready:async()=>{},dispose(){},report:()=>({kind:'default'})});const loadCursorImage=async()=>null;");
+   source=replace(source,"import {createUiScrollHost} from '../shared/ui-scroll.mjs';","const createUiScrollHost=()=>({draw:s=>s,pointer:()=>false,routeKey:()=>false,routeWheel:()=>false,setExternalInput(){},cancel(){},dispose(){}});");
+  }
+  if(!on.has('audio'))source=replace(source,"import {createAudioPlayback} from '../shared/audio-playback.js';","const createAudioPlayback=async()=>null;");
+  if(!on.has('save')){
+   source=replace(source,'const next=serializedSavePayload(snapshot);if(next!==saved){localStorage.setItem(key,next);saved=next;}','');
+   source=replace(source,"try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}", 'project.restored_save=null;');
+diff --git a/web/player/main.js b/web/player/main.js
+index 66d8941..e101076 100644
+--- a/web/player/main.js
++++ b/web/player/main.js
+@@ -122,17 +122,17 @@ function drawFrame(pd,rafTime,rafStart,inFlight,drawSource,budgetMs){
+  playerCompletion.attempt();
+  try{return submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs);}catch(error){playerCompletion.error(drawSource,rafTime,startedAt,inFlight,performance.now(),snapshot?.world?.frame,budgetMs);throw error;}
+ }
+ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
+  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
+  if(pd)profiler.mark(pd,'interpolation_sample');
+  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
+  resourceHost?.collect();
+- const uiOutcome=renderUi(snapshot);if(pd)profiler.mark(pd,'ui_draw');const submittedAt=performance.now();renderMs=submittedAt-began;
++  const uiOutcome=renderUi(snapshot);if(pd){profiler.set(pd,uiRenderer.assetDiagnostics());profiler.mark(pd,'ui_draw');}const submittedAt=performance.now();renderMs=submittedAt-began;
+  const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
+  const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
+  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
+  document.body.dataset.playerFrame=String(snapshot.world.frame);
+  publishPhysical();
+  if(pd)profiler.mark(pd,'host_publish');
+  /* PROFILE_FRAME */
+  return combined;
+@@ -238,16 +238,17 @@ async function readImagePreloadPlan(catalog){
+  }finally{if(!complete)try{await reader.cancel();}catch{}reader.releaseLock?.();}
+  if(startupAbort.signal.aborted)throw startupCancelled();
+  let plan;try{plan=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,size)));}catch(error){throw Error(`IMAGE_PRELOAD_PLAN_JSON_INVALID: ${String(error.message??error)}`);}
+  return validateImagePreloadPlan(plan,catalog);
+ }
+ async function start(){
+  const profileOptions=playerProfileOptions(location.search);
+  if(profileOptions){profiler=createPlayerProfiler({limit:profileOptions.limit,publishTarget:document.body});document.body.dataset.playerProfileEnabled='1';
++  uiRenderer.setAssetObserver(attrs=>profiler.record('ui_asset','ok',attrs));
+   window.unonePlayerProfile=Object.freeze({report:()=>profiler.report(),clear:()=>profiler.clear(),publish:()=>profiler.publish()});}
+  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);
+  if(startupAbort.signal.aborted)throw startupCancelled();
+  withCatalog(project,assets);projectPayload=project;uiAssetManifest=assets;
+  const dataLoad=dataAssets(project);dataLoad.catch(()=>{});
+  // One immutable presentation index per fetched manifest. The player owns this JSON and adopts it,
+  // so the renderer never rebuilds the asset index per draw and in-place edits fail instead of drifting.
+  const assetCatalog=createAssetCatalog(assets,{adopt:true});
+diff --git a/web/shared/canvas-ui.mjs b/web/shared/canvas-ui.mjs
+index 3dc632c..ab87c2b 100644
+--- a/web/shared/canvas-ui.mjs
++++ b/web/shared/canvas-ui.mjs
+@@ -99,61 +99,99 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
+ // getPresenter to hand painting to the game renderer's GPU UI pass. Layout,
+ // routing, assets and diagnostics are shared by both.
+ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireAsset,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>(canvas?.ownerDocument??globalThis.document)?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null,getPresenter=()=>null}={}){
+   const ctx=canvas?canvas.getContext('2d'):null;if(canvas&&!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
+   const opacityPainter=createUiOpacityPainter(createSurface);
+   const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets,acquireAsset};
+   const readyWaiters=new Set();let requiredAssets=new Set();
+   let previous=null,paintKey=null,paintDefinitions=[],dirty=true,disposed=false,nodes=[],generation=0,batches=new Map(),prefix=[],references=[],gpuPrefix=0,loadingAssets=0;
++  let assetTrace=null,assetTraceEpoch=0;
++  function setAssetObserver(observer){
++    if(observer!==null&&typeof observer!=='function')throw Error('UI_ASSET_OBSERVER_INVALID');
++    assetTrace=!disposed&&observer?{observer,epoch:++assetTraceEpoch,refs:new Map(),entries:new WeakMap(),composition:0,frame:null,nextEntry:0,events:0,emitted:0,eventOverflow:0,metadataOverflow:0,failures:0}:null;
++  }
++  function traceReference(id,node,batch=false){
++    let ref=assetTrace.refs.get(id);if(!ref){if(assetTrace.refs.size>=256)return;ref={ordinary:0,batches:0,zero:0,candidate:0,outside:0};assetTrace.refs.set(id,ref);}
++    if(batch){ref.batches++;return;}ref.ordinary++;if((node.style?.opacity??1)<=0)ref.zero++;
++    const r=node.rect,c=node.clip,left=Math.max(0,c?.x??0),bottom=Math.max(0,c?.y??0),right=Math.min(100,c?c.x+c.width:100),top=Math.min(100,c?c.y+c.height:100);
++    if(r.x<right&&r.x+r.width>left&&r.y<top&&r.y+r.height>bottom)ref.candidate++;else ref.outside++;
++  }
++  function traceEntry(id,entry,originKnown){
++    if(!assetTrace||assetTrace.entries.has(entry)||!assetTrace.refs.has(id))return;
++    const ref=assetTrace.refs.get(id);assetTrace.entries.set(entry,{token:++assetTrace.nextEntry,composition:originKnown?assetTrace.composition:0,frame:originKnown?assetTrace.frame:null,generation,
++      ordinary:ref.ordinary,batches:ref.batches,zero:ref.zero,candidate:ref.candidate,outside:ref.outside});
++  }
++  function traceAsset(id,entry,transition,asynchronous=false,reason=''){
++    const trace=assetTrace;if(!trace)return;
++    try{
++      const origin=trace.entries.get(entry);if(!origin)return;
++      if(trace.events>=128){trace.eventOverflow++;return;}trace.events++;trace.emitted++;
++      const ref=trace.refs.get(id);
++      trace.observer({transition,asset:id.slice(0,128),asset_chars:id.length,asset_truncated:id.length>128,ui_asset_trace_epoch:trace.epoch,entry_token:origin.token,
++        origin_composition:origin.composition,origin_ui_frame:origin.frame,origin_known:origin.composition!==0,origin_asset_generation:origin.generation,
++        ui_composition:trace.composition,last_ui_frame:trace.frame,asset_generation:generation,current_required:requiredAssets.has(id),current_entry:assets.get(id)===entry,
++        asynchronous,release_reason:reason,entry_state:entry.state,loading_count:loadingAssets,disposed,
++        origin_ordinary_refs:origin.ordinary,origin_batch_list_refs:origin.batches,origin_opacity_zero_refs:origin.zero,origin_rect_clip_candidate_refs:origin.candidate,origin_rect_clip_outside_refs:origin.outside,
++        current_refs_known:ref!==undefined,ordinary_refs:ref?.ordinary??0,batch_list_refs:ref?.batches??0,
++        opacity_zero_refs:ref?.zero??0,rect_clip_candidate_refs:ref?.candidate??0,rect_clip_outside_refs:ref?.outside??0,batch_visibility_tested:false});
++    }catch{trace.failures++;}
++  }
++  function assetDiagnostics(){return assetTrace?{ui_asset_trace_epoch:assetTrace.epoch,ui_composition:assetTrace.composition,ui_loading_count:loadingAssets,ui_asset_metadata:assetTrace.refs.size,
++    ui_asset_metadata_limit:256,ui_asset_event_limit:128,ui_asset_events:assetTrace.emitted,ui_asset_event_overflow:assetTrace.eventOverflow,
++    ui_asset_metadata_overflow:assetTrace.metadataOverflow,ui_asset_observer_failures:assetTrace.failures}:null;}
+   const diagnostics=new Map(),quadDiagnosticKeys=new Map();let usage=null,renderMs=null,renderRegions=0;
+   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
+   const retireGpu=()=>getImageBatchPresenter()?.clear();
+   const outcome=()=>diagnostics.size?DRAW_SKIPPED.ui_diagnostics:loadingAssets?DRAW_SKIPPED.ui_assets_pending:DRAW_COMPLETED;
+   function notifyReady(){if(!readyWaiters.size)return;for(const check of [...readyWaiters])check();}
+   function ready(){
+     if(disposed)return Promise.reject(Error('UI_DISPOSED'));
+     for(const id of requiredAssets)ensureAsset(id);
+     return new Promise((resolve,reject)=>{const check=()=>{
+       let error;if(disposed)error=Error('UI_DISPOSED');else if(diagnostics.size){const first=diagnostics.values().next().value;error=Error(`${first.code}: ${first.node??first.asset??'ui'}; ${first.message}`);}
+       if(error){readyWaiters.delete(check);reject(error);}else if(!loadingAssets){readyWaiters.delete(check);resolve();}
+     };readyWaiters.add(check);check();});
+   }
+-  function releaseAsset(entry){if(entry.lease)entry.lease.release();else entry.image?.close?.();}
+-  function ensureAsset(id){if(assets.has(id))return assets.get(id);
++  function releaseAsset(entry,id,reason){try{if(entry.lease)entry.lease.release();else entry.image?.close?.();}finally{traceAsset(id,entry,'release',false,reason);}}
++  function ensureAsset(id){if(assets.has(id)){const entry=assets.get(id);if(assetTrace)traceEntry(id,entry,false);return entry;}
+     const entry={image:null,state:'loading',lease:null};assets.set(id,entry);const ticket=generation;
++    if(assetTrace)traceEntry(id,entry,true);
+     if(acquireAsset){
+-      const failed=error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}};
++      const failed=(error,asynchronous=true)=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';traceAsset(id,entry,'failed',asynchronous);try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}else traceAsset(id,entry,'stale_result',asynchronous,'rejected');};
+       try{
+         entry.lease=acquireAsset(id);
+         // A prepared image is usable in this draw. Scheduling another Promise
+         // turn here would manufacture an assets-pending frame on a cache hit.
+         if(entry.lease.state==='ready'){
+           const image=entry.lease.image;
+           if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');
+-          entry.image=image;entry.state='ready';return entry;
++          entry.image=image;entry.state='ready';traceAsset(id,entry,'acquire_ready');return entry;
+         }
+         loadingAssets++;
+-        if(entry.lease.state==='error'){failed(entry.lease.error);return entry;}
++        if(entry.lease.state==='error'){failed(entry.lease.error,false);return entry;}
++        traceAsset(id,entry,'loading');
+         entry.lease.promise.then(image=>{
+-          if(disposed||ticket!==generation||assets.get(id)!==entry){entry.lease.release();return;}
++          if(disposed||ticket!==generation||assets.get(id)!==entry){entry.lease.release();traceAsset(id,entry,'stale_result',true,'resolved');return;}
+           if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');
+-          entry.image=image;entry.state='ready';loadingAssets--;dirty=true;try{requestRender();}finally{notifyReady();}
++          entry.image=image;entry.state='ready';loadingAssets--;dirty=true;traceAsset(id,entry,'ready',true);try{requestRender();}finally{notifyReady();}
+         }).catch(failed);
+       }catch(error){
+         // Synchronous acquire/validation failures did not enter loadingAssets.
+         if(entry.state==='loading')entry.state='failed';entry.lease?.release();
++        traceAsset(id,entry,'failed');
+         try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}
+       }
+       return entry;
+     }
+     loadingAssets++;
++    traceAsset(id,entry,'loading');
+     Promise.resolve().then(()=>{if(!resolveAsset)throw Error('UI_ASSET_RESOLVER_REQUIRED');return resolveAsset(id);}).then(value=>typeof value==='string'||value instanceof URL?loadImage(value):value)
+-      .then(image=>{if(disposed||ticket!==generation||assets.get(id)!==entry){image?.close?.();return;}if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');entry.image=image;entry.state='ready';loadingAssets--;dirty=true;try{requestRender();}finally{notifyReady();}})
+-      .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}});
++      .then(image=>{if(disposed||ticket!==generation||assets.get(id)!==entry){image?.close?.();traceAsset(id,entry,'stale_result',true,'resolved');return;}if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');entry.image=image;entry.state='ready';loadingAssets--;dirty=true;traceAsset(id,entry,'ready',true);try{requestRender();}finally{notifyReady();}})
++      .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';traceAsset(id,entry,'failed',true);try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}else traceAsset(id,entry,'stale_result',true,'rejected');});
+     return entry;
+   }
+   function imageFailure(node,quadIndex,error){
+     let key=quadIndex===null?node.id:quadDiagnosticKeys.get(node.id)?.get(quadIndex);
+     const original=String(error.message).split(':')[0],code=quadIndex!==null&&original==='UI_SLICE_BOUNDS'?'UI_IMAGE_BATCH_SOURCE_BOUNDS':original;
+     if(key===undefined){let keys=quadDiagnosticKeys.get(node.id);if(!keys){keys=new Map();quadDiagnosticKeys.set(node.id,keys);}key=Symbol();keys.set(quadIndex,key);}
+     const asset=quadIndex===null?node.asset:batches.get(node)?.definition.quads[quadIndex]?.asset??node.asset;
+     const value={code,node:node.id,asset,message:error.message,...(quadIndex!==null?{quad:quadIndex}:{})};diagnostics.set(key,value);onDiagnostic(value);
+@@ -241,30 +279,33 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
+       else{
+         if(!canvas)return DRAW_SKIPPED.ui_target_unavailable;
+         const {width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}=options;
+         if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return DRAW_SKIPPED.ui_target_unavailable;
+         bw=Math.min(8192,Math.max(1,Math.round(width*dpr)));bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));scale=bw/width;
+         if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
+       }
+       const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=uiTreeGeneration(tree)??uiProjectionGeneration(tree)??JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
++      if(assetTrace)assetTrace.frame=Number.isSafeInteger(world?.frame)?world.frame:null;
+       let compositionChanged=false;
+       if(key!==previous||resourceChanged){const prepared=prepareUi(tree,imageBatches,batchResolver);usage=prepared.usage;nodes=prepared.nodes;batches=prepared.batches;routing.setNodes(nodes);previous=key;compositionChanged=true;
+         references=[];prefix=[];let leading=true;const used=new Set();
+-        for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets)used.add(id);}
+-          else if(node.kind==='image')used.add(node.asset);if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
++        if(assetTrace){assetTrace.composition++;assetTrace.events=0;assetTrace.refs.clear();}
++        for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets){used.add(id);if(assetTrace)traceReference(id,node,true);}}
++          else if(node.kind==='image'){used.add(node.asset);if(assetTrace)traceReference(node.asset,node);}if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
++        if(assetTrace)assetTrace.metadataOverflow+=used.size-assetTrace.refs.size;
+         // Pin the complete incoming set before outgoing releases can sweep
+         // the shared idle cache and evict an image needed by this very draw.
+         requiredAssets=used;
+         try{for(const id of used){if(disposed||requiredAssets!==used)break;ensureAsset(id);}}
+         finally{if(!disposed){
+           // Callbacks may throw or replace this composition synchronously.
+           // Retire against the latest required set, after its incoming pins.
+           if([...assets.keys()].some(id=>!requiredAssets.has(id))&&!(typeof acquireAsset==='function'&&getImageBatchPresenter()?.ownsImageLeases===true))retireGpu();
+-          for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
++          for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e,id,'composition');assets.delete(id);diagnostics.delete(id);}
+           batchResolver.prune(nodes);}}
+         if(disposed)throw Error('UI_DISPOSED');}
+       if(gpu){
+         // One serialization per node serves change detection and the presenter's text cache keys.
+         if(compositionChanged){nodeKeys=nodes.map(n=>JSON.stringify(n));const nextKey=nodeKeys.join(''),definitions=nodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
+           if(nextKey!==paintKey||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;paintKey=nextKey;paintDefinitions=definitions;}
+         const changed=dirty;dirty=false;
+         if(changed){for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
+@@ -305,15 +346,15 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
+           else if(node.kind==='text_input'){textInput(ctx,node,{x,y,width:w,height:h,viewportHeight:bh});renderRegions++;}
+           else if(['panel','slider','combobox'].includes(node.kind)){renderRegions++;}
+           else {text(ctx,node,x,y,w,h,scale);renderRegions++;}
+         }finally{if(c)ctx.restore();}}
+       renderMs=performance.now()-started;
+       notifyReady();
+       return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();
+     },
+-    pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,
++    pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,setAssetObserver,assetDiagnostics,
+     setFont(family){fontFamily=family;dirty=true;},
+-    invalidateAssets(){retireGpu();generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
++    invalidateAssets(){retireGpu();generation++;for(const [id,e]of assets)releaseAsset(e,id,'invalidate');assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
+     report(){const gpu=canvas?null:getPresenter();return {backend:canvas?'canvas2d':'three.js',...(gpu?{gpu:gpu.metrics()}:{}),nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
+-    dispose(){if(disposed)return;retireGpu();router.dispose();disposed=true;generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();},
++    dispose(){if(disposed)return;try{retireGpu();router.dispose();disposed=true;generation++;for(const [id,e]of assets)releaseAsset(e,id,'dispose');assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();}finally{assetTrace=null;}},
+   };
+ }
+diff --git a/web/shared/player-profile-main.test.mjs b/web/shared/player-profile-main.test.mjs
+index b045f9a..38831d8 100644
+--- a/web/shared/player-profile-main.test.mjs
++++ b/web/shared/player-profile-main.test.mjs
+@@ -23,17 +23,17 @@ class Remote{
+ async function fixture(profiler,{throwDraw=false,drawOutcome,uiOutcome={status:'completed'},cursorOutcome={status:'completed'}}={}){
+  let remote;class W extends Remote{constructor(){super();remote=this;}}
+  const backend=await createRuntimeBackend({kind:'worker',url:'http://unone.test/r.js',WorkerClass:W,...(profiler?{profiler}:{})});
+  const log=[],storage=new Map(),body={dataset:{}};
+  const renderer={draw(s){log.push(['render',s.world.frame]);profiler?.renderer.mark('frame_decode_validate');if(throwDraw)throw Error('RENDER_FAILED');profiler?.renderer.outcome('completed');return drawOutcome;},
+   metrics:()=>({}),};
+  const context={resourceHost:null,profiler,profileFlight:null,profileLastSource:null,backend,renderer,imageAssets:null,serializedSavePayload,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
+   bridgeMs:0,renderMs:0,renderCount:0,frozen:false,manualInput:null,lastStats:null,hasWorldPointer:false,saved:'null',key:'k',orderedQueue:null,scheduler:null,audio:null,
+-  input:{consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({})},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
++  input:{consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({}),assetDiagnostics:()=>null},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
+   document:{body},localStorage:{setItem:(k,v)=>{storage.set(k,v);log.push(['save']);}},publishPhysical(){},performance,JSON,Error,String};
+  vm.createContext(context);vm.runInContext(slice,context);context.acceptSnapshot(context.snapshot,{reset:true});
+  return {context,backend,log,storage,body,remote:()=>remote};
+ }
+ async function journey(f){
+  await f.context.tickOnce();f.context.draw();f.context.draw();
+  const a=f.context.tickOnce(),b=f.context.tickOnce();assert.equal(a,b,'in-flight tick is shared');await a;f.context.draw();
+ }

@@ -1,0 +1,20 @@
+{
+  "schema": "unone.ui-asset-event-extraction.v1",
+  "source_path": ".cache/ui-asset-main-2d34ca7-trace-20261103.json",
+  "source_sha256": "4ff1202acb9d3dbd33816e65ea34f3318ee7a3d927ac577135988caebab43b26",
+  "source_bytes": 4849512,
+  "source_observed_utc": "2026-11-03T00:16:10.715Z",
+  "source_reads": 400,
+  "omitted_repetitive_reads": 400,
+  "first_read_frame": "1",
+  "last_read_frame": "217",
+  "event_count": 3,
+  "source_property": "$.events",
+  "method": "Exact contiguous UTF8 byte slice of final top-level events array; no event field reconstruction",
+  "byte_offset_zero_based": 4845467,
+  "byte_length": 4043,
+  "byte_end_exclusive": 4849510,
+  "extracted_path": "main-events.json",
+  "extracted_sha256": "7e2b6de7f6db35c74173eaf086121884881fe65d0f9d60ca45aea7aec97ed864",
+  "scope": "Three captured prefix events only. Repeated reads, release events and complete lifecycle coverage are not reconstructed."
+}

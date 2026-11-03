@@ -1,0 +1,11 @@
+{
+  "schema": "unone.ui-asset-lifecycle-gpu-fixture.v3",
+  "source_sha256": "44b77935596b30a21f2ee7a8ca0891872f170699cd076f4aab4cf6c0c4201673",
+  "assets": [
+    "texture://fixture/page-a",
+    "texture://fixture/page-b"
+  ],
+  "base": "D:/Projects/Unone/.cache/ui-asset-gpu-project-r2-20261103",
+  "correction": "Use exact existing texture:// catalog IDs. R1 used display labels; R2 format-valid asset:// guesses did not match catalog and was never opened in a browser. No engine, catalog, PNG, Game production or readiness feedback changed.",
+  "scope": "Fixture-only validation correction; originalattempts and publishedR2 remain preserved."
+}

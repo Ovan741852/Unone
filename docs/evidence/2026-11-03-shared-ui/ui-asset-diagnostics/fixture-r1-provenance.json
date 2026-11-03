@@ -1,0 +1,8 @@
+{
+  "schema": "unone.ui-asset-lifecycle-gpu-fixture.v1",
+  "base": "D:/Projects/Unone/.cache/sprite-auto-gpu-project-20261103",
+  "source_sha256": "360fd706ce1962f0a5d65fda39c937c066054b17781c32a5c9fb64bcb460f3b5",
+  "base_source_sha256": "9bcf287b5aef6e7f019fe56849e43de322b23c3a8c2bceb8405ad000dc5b1012",
+  "protocol": "Original60warmup +100hide/show +120hidden; UIA warm until terminal, cold transparentB onlytick120..239.",
+  "scope": "Observer and ownership integration, not Game/FPS/leak acceptance. HiddenB may legitimately be pending under the current unchanged required-reference policy."
+}

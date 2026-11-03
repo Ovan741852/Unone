@@ -1,0 +1,31 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {inspectHostSnapshot} from '../scripts/web-export-host.mjs';
+const root='D:/Projects/Unone',hostRoot=root+'/artifacts/web-ui-asset-host-2d34ca7-20261103',fingerprint='44b207fb770babe67c32f1689859dca35bb3cf5fd1693705ba5de9dfd6618a03';
+const sha=b=>createHash('sha256').update(b).digest('hex'),pins=[];
+function read(file){const bytes=fs.readFileSync(root+'/'+file);pins.push({path:file,bytes:bytes.length,sha256:sha(bytes)});return JSON.parse(bytes);}
+const host=JSON.parse(fs.readFileSync(hostRoot+'/host.json'));assert.equal(host.source_commit,'2d34ca70934dd8af8f6fce348a488529b487d8bd');assert.equal(host.host_sha256,fingerprint);assert.equal(inspectHostSnapshot(hostRoot).sha256,fingerprint);assert.equal(host.files.length,111);
+const trace=read('.cache/ui-asset-main-2d34ca7-trace-20261103.json'),events=trace.events,a=events.find(e=>e.attrs.asset==='texture://fixture/page-a'),loading=events.find(e=>e.attrs.transition==='loading'),ready=events.find(e=>e.attrs.transition==='ready');
+assert(a&&loading&&ready);assert.equal(a.attrs.transition,'acquire_ready');assert.equal(a.attrs.asynchronous,false);
+assert.equal(loading.attrs.asset,'texture://fixture/page-b');assert.equal(loading.attrs.entry_token,ready.attrs.entry_token);assert.equal(loading.attrs.origin_composition,ready.attrs.origin_composition);assert.equal(loading.attrs.origin_ui_frame,120);assert.equal(ready.attrs.origin_ui_frame,120);assert.equal(ready.attrs.asynchronous,true);
+assert.equal(loading.attrs.loading_count,1);assert.equal(ready.attrs.loading_count,0);assert.equal(loading.attrs.opacity_zero_refs,1);assert.equal(loading.attrs.ordinary_refs,1);assert.equal(loading.attrs.batch_list_refs,0);assert.equal(loading.attrs.current_refs_known,true);
+const runs=[];
+for(const backend of ['main','worker']){
+ const raw=read('.cache/ui-asset-'+backend+'-2d34ca7-end-20261103.json'),d=raw.data,p=d.performance,s=p.sprite_resources;
+ assert(Number(d.frame)>=1080);assert.equal(d.error,null);assert.equal(d.profile_error,null);assert.equal(d.visibility,'visible');assert.equal(p.backend.backend,backend);
+ assert.equal(s.builds,2);assert.equal(s.texture_builds,1);assert.equal(s.retired,2);assert.equal(s.texture_retired,1);
+ for(const key of ['entries','texture_entries','handles','live_textures','image_leases','pending','ready','errors','cpu_reserved_bytes_estimate','gpu_reserved_bytes_estimate','idle_material_entries'])assert.equal(s[key],0,backend+'/'+key);
+ assert.equal(p.texture_cache.entries,0);assert.equal(p.texture_cache.decoded_texture_bytes_estimate,0);assert.equal(p.ui.gpu.image_textures,0);assert.equal(p.ui.gpu.dedicated_text_textures,0);
+ assert.equal(p.decoded_images.loads,2);assert.equal(p.decoded_images.resident_entries,2);assert.equal(p.decoded_images.resident_bytes_estimate,256);assert.equal(p.decoded_images.active_entries,0);assert.equal(p.decoded_images.loading,0);
+ for(const[k,v]of Object.entries(p.completion.skip_counts))assert.equal(v,['ui_assets_pending','world_assets_pending'].includes(k)?1:0,backend+'/skip/'+k);
+ if(backend==='main'){
+  assert.equal(d.profile.limit,64);const last=d.profile.draw_attrs.at(-1).attrs;assert.equal(last.ui_asset_events,5);assert.equal(last.ui_loading_count,0);
+  for(const key of ['ui_asset_event_overflow','ui_asset_metadata_overflow','ui_asset_observer_failures'])assert.equal(last[key],0);
+  for(const key of ['dropped_attrs','late_ends','late_operations','provider_errors','publish_errors'])assert.equal(d.profile.counts[key],0);
+ }else assert.equal(d.profile_present,false);
+ runs.push({backend,observed_utc:raw.observed_utc,observer_frame:Number(d.frame),metrics_frame:p.completion.simulation_frame,sprite:s,ui_gpu:p.ui.gpu,decoded:{loads:p.decoded_images.loads,resident_bytes_estimate:p.decoded_images.resident_bytes_estimate,active_entries:p.decoded_images.active_entries},skip_counts:p.completion.skip_counts});
+}
+const log=fs.readFileSync(root+'/.cache/ui-asset-diagnostics-actual-refresh-20261103-r1.log','utf8');assert(/pass 22\b/.test(log)&&/fail 0\b/.test(log)&&/skipped 0\b/.test(log));
+const report={schema:'unone.ui-asset-host-acceptance.v1',ok:true,source_commit:host.source_commit,host_root:hostRoot,host_sha256:fingerprint,host_files:111,fixture_source_sha256:'44b77935596b30a21f2ee7a8ca0891872f170699cd076f4aab4cf6c0c4201673',actual_refresh:{passed:22,failed:0,skipped:0},pins,observed_asset_prefix:events,runs,limits:['Captured prefix contains A synchronous-ready and B loading/ready; release events fell outside the captured ring. Terminal cumulative5events plus ownership counters are separate evidence, not a full lifecycle trace.','TransparentB is intentionally required and causes1UIpending under unchanged existing policy; this does not attribute Game14skips or change culling.','100-cycle protocol and terminal GPU ownership only; no GameFPS, totalGPU/processheap, GCfrequency or globalleak claim.','Main profilerON and Worker profilerOFF are explicit; Node focused tests separately cover shared receiver semantics.','Cachedmetrics, endpointJSON and laterPNG differ in frame; no same-frame claim.','Initial fixture shortlabels were rejected; R2 guessed URI was never opened. R3 uses exact catalog texture:// IDs; all earlier files remain preserved.','Official source-ingestionrefresh uses accepted9c production WASM; not fullSDK/newNativeCLI. WindowsNative final remains4551blocked.']};
+fs.writeFileSync(root+'/.cache/ui-asset-host-2d34ca7-acceptance-20261103.json',JSON.stringify(report,null,2)+'\n',{flag:'wx'});console.log(JSON.stringify({ok:true,commit:host.source_commit,host_sha256:fingerprint,actual_refresh:22,observed_prefix:events.map(e=>e.attrs.transition),backends:runs.map(r=>({backend:r.backend,frame:r.observer_frame,world_pending:r.skip_counts.world_assets_pending,ui_pending:r.skip_counts.ui_assets_pending,ui_image_textures:r.ui_gpu.image_textures}))}));

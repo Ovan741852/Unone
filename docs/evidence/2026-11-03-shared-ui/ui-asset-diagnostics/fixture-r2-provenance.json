@@ -1,0 +1,19 @@
+{
+  "schema": "unone.ui-asset-lifecycle-gpu-fixture.v2",
+  "base": "D:/Projects/Unone/.cache/ui-asset-gpu-project-20261103",
+  "source_sha256": "cf7a135d64cfcab3e5e08e7fec478dc9650ff3298ce64b8a3896d3735446af66",
+  "remapped": {
+    "page-a": "asset://fixture/page-a",
+    "page-b": "asset://fixture/page-b"
+  },
+  "changed": [
+    "scripts\\main.luau"
+  ],
+  "prior_attempt": {
+    "status": "rejected-before-publication",
+    "code": "LUAU_RUNTIME_ERROR",
+    "source_sha256": "360fd706ce1962f0a5d65fda39c937c066054b17781c32a5c9fb64bcb460f3b5",
+    "reason": "UI image validation requires a stable URI ID. World sprite short IDs were reused incorrectly. Original fixture remains unchanged; no raw CLI-output file was captured for that attempt."
+  },
+  "scope": "Fixture-only ID correction; no engine, Game production, image bytes or readiness feedback change."
+}
