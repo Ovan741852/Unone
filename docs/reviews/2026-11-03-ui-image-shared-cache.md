@@ -39,3 +39,10 @@ Actual official Web main/worker rendering and the seven Game scenes remain
 pending for this slice. No Game, text raster key, Core or Native binary changed.
 Windows Native final execution remains blocked by App Control 4551. No global
 leak-free, no-frequent-GC or 60 FPS conclusion follows from these source checks.
+
+Later historical B main evidence records 100 idle reuses, two UI builds and
+two retirements, with final UI/shared-controller/Sprite live owners zero. It is
+one terminal capture, not a continuous soak, worker acceptance or C validation.
+The saved image is JPEG despite its original `.png` suffix. See the exact
+[endpoint and export state](../evidence/2026-11-03-shared-ui/ui-image-text-export-state.json)
+for raw bytes, counters, the unobserved gap, and remaining browser-policy block.

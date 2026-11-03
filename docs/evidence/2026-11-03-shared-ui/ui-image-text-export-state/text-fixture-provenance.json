@@ -1,0 +1,81 @@
+{
+  "schema": "unone.ui-text-translation-fixture.v1",
+  "status": "source-prepared-not-typechecked-or-executed",
+  "base": "D:\\Projects\\Unone\\.cache\\ui-image-cache-gpu-project-20261103",
+  "output": "D:\\Projects\\Unone\\.cache\\ui-text-translation-gpu-project-20261103",
+  "canonical_boundary": "Before -- Ordinary sprite fixture; canonical declarations above copied unchanged.",
+  "base_source_sha256": "560997ffc1cfdc3c941cda41eb851eb2196014efe761d06b8f5df249c259bb61",
+  "source_sha256": "993c01b30f91e245cd99e946f1f50f2cf95bc8db4fbb76f9e9baaa421b34697c",
+  "protocol": {
+    "default_mode": "integer",
+    "animated_updates": 60,
+    "then": "Static root indefinitely; no dynamic counter text",
+    "root_publications_default": 61,
+    "dx": "1 physical px/update",
+    "dy": "floor(step/2) physical pixels",
+    "negative_modes": [
+      "TextFractional:dx0.5/dy0.25px each update",
+      "TextClip:fixed viewport, child shift0.5px/update",
+      "TextStyle:color/weight/font-size alternation every10updates"
+    ],
+    "mode_selection": "Existing public button actions via input.wasPressed; no host control hook",
+    "same_old_new_source": true,
+    "root_children": 12,
+    "logical_children_including_scroll": 13,
+    "text_paint_leaves": 12,
+    "viewport": "Fixed1280x800 drawing buffer,DPR1 recommended (binary-exact normalized coordinate scale); other sizes may expose floating phase differences. No live DPR changes.",
+    "dimension_source": "api.projected.getViewport, not aspect-only ui.getViewport",
+    "small_viewport": "Initial root ingests; movement waits until width>=1200 and height>=600, protocol_runnable explicitlyfalse",
+    "renderer": "Official three-webgl; inherited Bloom/render pipeline/font monospace",
+    "legacy": "Public style-omitted ui.text only; no private fontSize/lineHeight fields",
+    "text_input": "Public textInput disabled and unfocused; no injected caret/selection/IME events",
+    "acceptance": "Compare oldB/newC same fixed size/backend/browser/font, final mode/step60 screenshot and text_rasters/atlas_uploads deltas. Negative modes require pixel parity, not a reduction claim."
+  },
+  "limits": [
+    "No Core/Node/GPU/browser/export/typecheck executed",
+    "No Game/product files, B fixture or production renderer edits",
+    "PASS/protocol_final is author protocol only, not rendered-pixel/FPS/GC proof"
+  ],
+  "files": [
+    {
+      "path": "project.unone.json",
+      "bytes": 1028,
+      "sha256": "bef10251ec85cf154ea27976c15d113a6c6a4c3c1ca75d92af167c2f319e84c1"
+    },
+    {
+      "path": "player.presentation.json",
+      "bytes": 189,
+      "sha256": "69da4a6ecae1c38527c5775c52309c12d52229bda8db50bd986db8c728129b96"
+    },
+    {
+      "path": "player.image-assets.json",
+      "bytes": 193,
+      "sha256": "00e89d7f86695ceec21cffb32352448970ad4d543d37c10ef6e134eb38f524bd"
+    },
+    {
+      "path": "assets.json",
+      "bytes": 269,
+      "sha256": "8e42ea457568867b9a5281a1e3fff264f6fefbca11df80427a8cf09d41b812d0"
+    },
+    {
+      "path": "scenes/main.scene.json",
+      "bytes": 1548,
+      "sha256": "760917e0892f3af725a2e7dd79b5c26cdc6bc1fba1881fb299c9ce7e88c27482"
+    },
+    {
+      "path": "assets/page-a.png",
+      "bytes": 94,
+      "sha256": "5297e6c5e7b85f79cf6dc1b5442af2ca8a9d32f878cc6c5276f3b01b2e7f5bfb"
+    },
+    {
+      "path": "assets/page-b.png",
+      "bytes": 96,
+      "sha256": "a49e2a901b99c0bb410f54aebaab78fe430e7e75a04b57776528369668f914b6"
+    },
+    {
+      "path": "scripts/main.luau",
+      "bytes": 58273,
+      "sha256": "993c01b30f91e245cd99e946f1f50f2cf95bc8db4fbb76f9e9baaa421b34697c"
+    }
+  ]
+}

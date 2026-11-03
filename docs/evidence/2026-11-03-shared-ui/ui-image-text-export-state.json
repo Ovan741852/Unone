@@ -1,0 +1,191 @@
+{
+  "schema": "unone.ui-image-text-export-state-evidence.v1",
+  "created_utc": "2026-11-03T14:06:50.443Z",
+  "code_commits": {
+    "b": "d7b4afcab8db547a9fae25832974606ac50fdc24",
+    "c": "f6124b4aa7adb79cd19c0ff0991adfaee21d6c64"
+  },
+  "frozen_c_host_sha256": "5c5d8aaac157bc6406e60277c70a2c98281b49db9a28a1d11c0af9169efb6606",
+  "verified": {
+    "frozen_files": 222,
+    "export_files": 884,
+    "bundle_files": 666,
+    "actual_refresh_passed": 22
+  },
+  "b_main": {
+    "scope": "Historical actual main terminal only; 100cycles on B, not C.",
+    "observer_frame": 2594141,
+    "ui_builds": 2,
+    "ui_idle_hits": 100,
+    "ui_retired": 2,
+    "final_ui_and_shared_controller_owners": 0,
+    "image_encoding": "JPEG1280x720; original mislabeled .png bytes copied unchanged as .jpg. Not lossless pixel-parity evidence.",
+    "acceptance": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/b-main-acceptance.json"
+  },
+  "unaccepted": {
+    "c_browser_pixels": true,
+    "c_main_worker_gpu": true,
+    "game_seven_scene_60fps": true,
+    "game_memory_gc": true,
+    "native_final": true
+  },
+  "stop_reason": {
+    "surface": "new official Windows ComputerUse @oai/sky",
+    "reason": "Tool could not determine current browser URL with sufficient confidence to enforce policy, stopped this turn. No bypass or alternate private protocol was used.",
+    "cua_namespace": "removed by tool update",
+    "new_c_browser_pages_opened": 0
+  },
+  "limits": [
+    "Bmain terminal is not continuous12hoursoak, totalVRAM/processheap/GC or all-renderer-completion evidence.",
+    "No new C page was opened before ComputerUse policy stopped the turn; exports andNode gates do not substitute for actualplayer acceptance.",
+    "Native remains4551blocked; no bypass, replacementrenderer, gate change or fabricated FPS.",
+    "Root verified immutable frozenfiles even while unrelated current source edits continued; do not adopt currentHEAD as tested candidate.",
+    "Initial export-validator runtime hyphen filename assumption was rejected before report creation; corrected using actual inventory underscore filename. Initial BPNG format assumption was also rejected; rawJPEG retained unchanged."
+  ],
+  "files": [
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/export-state.json",
+      "source": ".cache/ui-image-text-export-state-20261103.json",
+      "bytes": 4470,
+      "sha256": "c4ef1b0cf8345cdffa7e968051ba1c3cdc1b8d72d271584df64a780e7be480b7"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/export-state-validator.mjs.txt",
+      "source": ".cache/validate-ui-image-text-exports-20261103.mjs",
+      "bytes": 4875,
+      "sha256": "1b7793d935fd87ff8855b2508f89a949d7ca0c9d5e63ffe2adceb25e2c48f2d3"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/export-state-validator.log",
+      "source": ".cache/ui-image-text-export-state-validator-20261103.log",
+      "bytes": 173,
+      "sha256": "2a1341b5612608581ab1b4314c30d14d94d291fc1c938dbfaac95ffbb507d3a3"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/actual-refresh.log",
+      "source": ".cache/ui-image-text-actual-refresh-20261103-r1.log",
+      "bytes": 8673,
+      "sha256": "1d019fa6012e939d7ae24fcbbed8a4fec135e179cd9f9ea1c1cfd7f7a948a024"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/b-main-raw.json",
+      "source": ".cache/ui-image-cache-b-main-20261103.json",
+      "bytes": 157761,
+      "sha256": "48ed6ee4cbd1d1bca54fb40e25878751de855c157de79e2b15bd6cdd006e8165"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/b-main-original.jpg",
+      "source": ".cache/ui-image-cache-b-main-20261103.png",
+      "bytes": 34771,
+      "sha256": "7f98f0b91d2e88eb273636dbba50d4547c55e88426b09913ea3e58998a2249c9"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/b-main-acceptance.json",
+      "source": ".cache/ui-image-cache-b-main-acceptance-20261103.json",
+      "bytes": 10233,
+      "sha256": "42fedad0c044411808f57d8059ba82bb7c1bfd47cd5e7596215a6f2a2f3108d2"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/b-main-verifier.mjs.txt",
+      "source": ".cache/verify-ui-image-cache-b-main-20261103.mjs",
+      "bytes": 10724,
+      "sha256": "129219e57d903252b965b01e3b7d00e47cbcfb115cec8e7c1644111897a79faa"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/b-main-rejected-png-assumption.mjs.txt",
+      "source": ".cache/verify-ui-image-cache-b-main-png-assumption-rejected-20261103.mjs",
+      "bytes": 9752,
+      "sha256": "ce047814ebeb69584381bba0310078ef7e95e9b3a567f1820d7ad22133960eea"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/image-owner-fixture.luau",
+      "source": ".cache/ui-image-cache-gpu-project-20261103/scripts/main.luau",
+      "bytes": 58700,
+      "sha256": "560997ffc1cfdc3c941cda41eb851eb2196014efe761d06b8f5df249c259bb61"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/image-owner-fixture-provenance.json",
+      "source": ".cache/ui-image-cache-gpu-project-20261103/ui-image-cache-fixture-provenance.json",
+      "bytes": 2033,
+      "sha256": "cbf2a46e220a81fae91901859b39ccd36d2b7329874287721f6f060d1fb94b67"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/text-fixture.luau",
+      "source": ".cache/ui-text-translation-gpu-project-20261103/scripts/main.luau",
+      "bytes": 58273,
+      "sha256": "993c01b30f91e245cd99e946f1f50f2cf95bc8db4fbb76f9e9baaa421b34697c"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/text-fixture-provenance.json",
+      "source": ".cache/ui-text-translation-gpu-project-20261103/fixture-provenance.json",
+      "bytes": 3694,
+      "sha256": "95701c898d985037b6a1b9dd625401ed539f93d597911e2d1b83535cd6a6a470"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/host-b.json",
+      "source": "artifacts/web-ui-image-cache-host-d7b4afc-20261103/host.json",
+      "bytes": 18838,
+      "sha256": "8db53f7b81915adaaaae657cf91b6b9726be7adb472827d86b66aac83e1a9716"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/host-c.json",
+      "source": "artifacts/web-ui-image-text-host-f6124b4-20261103/host.json",
+      "bytes": 18838,
+      "sha256": "60445e12db77b01e199caec4d3ff0eeda4b3a37c672d93384bd1050908d8161a"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/validation-bundle.json",
+      "source": "artifacts/ui-image-text-validation-20261103/validation-bundle.json",
+      "bytes": 148667,
+      "sha256": "81d3b9e66dd714d408d4803a9e24a819b44d389510e915f904074d51091d7fe9"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/image-owner-b-export.json",
+      "source": "artifacts/web-ui-image-cache-gpu-d7b4afc-20261103/export.json",
+      "bytes": 68561,
+      "sha256": "41973801a609531b120691819220e9caa2f656ba4cbaff39f77b4d7b58e39a30"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/image-owner-c-export.json",
+      "source": "artifacts/web-ui-image-cache-gpu-f6124b4-20261103/export.json",
+      "bytes": 68561,
+      "sha256": "f535d4fb6c7993cae52abd856a57457b4166f25519460061277ed8876bc7030d"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/text-b-export.json",
+      "source": "artifacts/web-ui-text-gpu-d7b4afc-20261103/export.json",
+      "bytes": 68556,
+      "sha256": "bc8c73497fa4c1a367d2be652e47c2899925d25614811d4a2a3d0ac02cfd515f"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/text-c-export.json",
+      "source": "artifacts/web-ui-text-gpu-f6124b4-20261103/export.json",
+      "bytes": 68556,
+      "sha256": "9e5467ab8642b7078af58dd7d0af6cfa025a64bdc7b047f9837abb121218549f"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/text-b-export.log",
+      "source": ".cache/ui-image-text-text-b-export-20261103.log",
+      "bytes": 372,
+      "sha256": "9994a7871410a63e4040f0eae4deb48eae8475223151f2e0af2fb038d9be62b0"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/text-c-export.log",
+      "source": ".cache/ui-image-text-text-c-export-20261103.log",
+      "bytes": 372,
+      "sha256": "d6deb0cdb0b9f559a36136f0a2c5cea69d9f64f1d3147de510257386d1402f7f"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/owner-c-export.log",
+      "source": ".cache/ui-image-text-owner-c-export-20261103.log",
+      "bytes": 379,
+      "sha256": "b13b3c5959d5b1502b3520e40b5bb2e9446b76bd4bd0c55c3cf90eaecec3c1c9"
+    },
+    {
+      "path": "docs/evidence/2026-11-03-shared-ui/ui-image-text-export-state/owner-b-export.log",
+      "source": ".cache/ui-image-cache-b-gpu-export-20261103.log",
+      "bytes": 379,
+      "sha256": "7efa8545827bbfbfa851cbe2356821fe43509de56d837536919ddf3c02bd3f19"
+    }
+  ]
+}

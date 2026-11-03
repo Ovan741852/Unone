@@ -44,3 +44,12 @@ are indexed in [the source evidence](../evidence/2026-11-03-shared-ui/ui-text-ra
 Actual official Web main/worker and same-fixture pixel comparison must follow
 the source commit. No Native, Core or Game binary changed. Windows Native
 final execution remains blocked by App Control 4551 and is not counted passed.
+
+Subsequent actual source-refresh checks passed 22/22, and 884 inventory entries
+across four exports were rehashed against their saved manifests. The frozen C
+host is `f6124b4` / `5c5d8aaa…`. New C browser pixels and main/worker GPU checks
+remain **not run**: the updated Windows Computer Use tool stopped because it
+could not reliably determine the browser URL. Historical B main endpoint
+ownership results are separate and do not qualify C, worker, seven-scene FPS,
+process memory or GC. Exact artifacts and the stop are preserved in
+[the export/acceptance state](../evidence/2026-11-03-shared-ui/ui-image-text-export-state.json).

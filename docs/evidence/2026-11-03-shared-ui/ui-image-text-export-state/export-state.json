@@ -1,0 +1,115 @@
+{
+  "schema": "unone.ui-image-text-pre-gpu-acceptance.v1",
+  "created_utc": "2026-11-03T14:05:52.039Z",
+  "ok": true,
+  "hosts": [
+    {
+      "path": "artifacts/web-ui-image-cache-host-d7b4afc-20261103",
+      "commit": "d7b4afcab8db547a9fae25832974606ac50fdc24",
+      "host_sha256": "7227efa9020de7cf43483a3122958567799ca95a3ff76f740a7d922f0d5aa9fd",
+      "verified_files": 111
+    },
+    {
+      "path": "artifacts/web-ui-image-text-host-f6124b4-20261103",
+      "commit": "f6124b4aa7adb79cd19c0ff0991adfaee21d6c64",
+      "host_sha256": "5c5d8aaac157bc6406e60277c70a2c98281b49db9a28a1d11c0af9169efb6606",
+      "verified_files": 111
+    }
+  ],
+  "exports": [
+    {
+      "path": "artifacts/web-ui-text-gpu-d7b4afc-20261103",
+      "release_root": "releases/811a7ab9ad87adc305eabb0f34403c6569306a86a13946463b62616f4a183486/",
+      "verified_files": 221
+    },
+    {
+      "path": "artifacts/web-ui-text-gpu-f6124b4-20261103",
+      "release_root": "releases/8a703d490d91b0f22c2d529857791766c48babbc199df35102a38ba624483591/",
+      "verified_files": 221
+    },
+    {
+      "path": "artifacts/web-ui-image-cache-gpu-f6124b4-20261103",
+      "release_root": "releases/a5f6e66cb4fcb4aebe49b98f48697078c8b615b9ecb7144812c9a2d4c70c2f59/",
+      "verified_files": 221
+    },
+    {
+      "path": "artifacts/web-ui-image-cache-gpu-d7b4afc-20261103",
+      "release_root": "releases/d1cf8b48cfd671068a8b0d43592688ef203b5f1216ff4f1728ee9b5a295d90e3/",
+      "verified_files": 221
+    }
+  ],
+  "verified_export_files": 884,
+  "verified_bundle_files": 666,
+  "text_fixture_logical_differences": [
+    "web/renderer/ui-gpu.js",
+    "web/shared/canvas-ui.mjs"
+  ],
+  "production_wasm": {
+    "path": "runtime/unone_player.wasm",
+    "bytes": 5301301,
+    "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+  },
+  "actual_refresh": {
+    "passed": 22,
+    "failed": 0,
+    "skipped": 0
+  },
+  "pins": [
+    {
+      "path": "artifacts/web-ui-image-cache-host-d7b4afc-20261103/host.json",
+      "bytes": 18838,
+      "sha256": "8db53f7b81915adaaaae657cf91b6b9726be7adb472827d86b66aac83e1a9716"
+    },
+    {
+      "path": "artifacts/web-ui-image-text-host-f6124b4-20261103/host.json",
+      "bytes": 18838,
+      "sha256": "60445e12db77b01e199caec4d3ff0eeda4b3a37c672d93384bd1050908d8161a"
+    },
+    {
+      "path": "artifacts/web-ui-text-gpu-d7b4afc-20261103/export.json",
+      "bytes": 68556,
+      "sha256": "bc8c73497fa4c1a367d2be652e47c2899925d25614811d4a2a3d0ac02cfd515f"
+    },
+    {
+      "path": "artifacts/web-ui-text-gpu-f6124b4-20261103/export.json",
+      "bytes": 68556,
+      "sha256": "9e5467ab8642b7078af58dd7d0af6cfa025a64bdc7b047f9837abb121218549f"
+    },
+    {
+      "path": "artifacts/web-ui-image-cache-gpu-f6124b4-20261103/export.json",
+      "bytes": 68561,
+      "sha256": "f535d4fb6c7993cae52abd856a57457b4166f25519460061277ed8876bc7030d"
+    },
+    {
+      "path": "artifacts/web-ui-image-cache-gpu-d7b4afc-20261103/export.json",
+      "bytes": 68561,
+      "sha256": "41973801a609531b120691819220e9caa2f656ba4cbaff39f77b4d7b58e39a30"
+    },
+    {
+      "path": "artifacts/ui-image-text-validation-20261103/validation-bundle.json",
+      "bytes": 148667,
+      "sha256": "81d3b9e66dd714d408d4803a9e24a819b44d389510e915f904074d51091d7fe9"
+    }
+  ],
+  "acceptance": {
+    "c_source_node": "passed;934pass/0fail/5skip, with57focused and2independent sourceCLEAR",
+    "c_export_ingestion": "passed",
+    "c_actual_browser_pixels": "not-run",
+    "c_main_worker_gpu": "not-run",
+    "game_seven_scene_60fps": "not-run",
+    "game_memory_gc": "not-run",
+    "native": "blocked-windows-app-control4551;not-passed"
+  },
+  "browser_stop": {
+    "surface": "new official Windows ComputerUse @oai/sky",
+    "reason": "Tool could not determine current browser URL with sufficient confidence to enforce policy, stopped this turn. No bypass or alternate private protocol was used.",
+    "cua_namespace": "removed by tool update",
+    "new_c_browser_pages_opened": 0
+  },
+  "limits": [
+    "Frozen files are rehashed independently of current dirty source; unrelated concurrent source edits are excluded.",
+    "Expected negative integration fixtures emit rejected-project diagnostics;22tests all passed, no failure is hidden.",
+    "Export/source checks are not officialGPU render, glyphpixel, GameFPS, memory orGC acceptance.",
+    "PreviousB main endpoint is separate historical actualGPU evidence; it does not qualify C or worker."
+  ]
+}

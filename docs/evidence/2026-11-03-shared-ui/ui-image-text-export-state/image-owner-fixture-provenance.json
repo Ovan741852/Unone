@@ -1,0 +1,61 @@
+{
+  "schema": "unone.ui-image-shared-cache-gpu-fixture.v1",
+  "source": "D:\\Projects\\Unone\\.cache\\ui-asset-gpu-project-r3-20261103",
+  "output": "D:\\Projects\\Unone\\.cache\\ui-image-cache-gpu-project-20261103",
+  "protocol": {
+    "cycles": 100,
+    "hide_ticks": 3,
+    "show_ticks": 6,
+    "tail_ticks": 120,
+    "expected_end_tick": 1080
+  },
+  "changes": [
+    "A follows visible phase; two image leaves reference the same asset.",
+    "B changes to opaque and still exercises a true cold request.",
+    "The authored shared policy retains 512 bytes and 16 frames; entry limit is4 to admit three distinct physical GPU textures.",
+    "World A and UI A require distinct sampler/color-space GPU owners; decoded image may be shared."
+  ],
+  "expected": {
+    "ui_image_builds": 2,
+    "world_texture_builds": 1,
+    "terminal_registered_owners": 0
+  },
+  "scope": "Protocol and ownership fixture; no GameFPS, totalprocessmemory or GC claim.",
+  "files": [
+    {
+      "path": "scripts/main.luau",
+      "bytes": 58700,
+      "sha256": "560997ffc1cfdc3c941cda41eb851eb2196014efe761d06b8f5df249c259bb61"
+    },
+    {
+      "path": "player.presentation.json",
+      "bytes": 189,
+      "sha256": "69da4a6ecae1c38527c5775c52309c12d52229bda8db50bd986db8c728129b96"
+    },
+    {
+      "path": "project.unone.json",
+      "bytes": 981,
+      "sha256": "776e7d049f0f444d1912f800acb72f79790255970f492657ee5fc248b81a5899"
+    },
+    {
+      "path": "assets.json",
+      "bytes": 269,
+      "sha256": "8e42ea457568867b9a5281a1e3fff264f6fefbca11df80427a8cf09d41b812d0"
+    },
+    {
+      "path": "assets/page-a.png",
+      "bytes": 94,
+      "sha256": "5297e6c5e7b85f79cf6dc1b5442af2ca8a9d32f878cc6c5276f3b01b2e7f5bfb"
+    },
+    {
+      "path": "assets/page-b.png",
+      "bytes": 96,
+      "sha256": "a49e2a901b99c0bb410f54aebaab78fe430e7e75a04b57776528369668f914b6"
+    },
+    {
+      "path": "scenes/main.scene.json",
+      "bytes": 1548,
+      "sha256": "760917e0892f3af725a2e7dd79b5c26cdc6bc1fba1881fb299c9ce7e88c27482"
+    }
+  ]
+}

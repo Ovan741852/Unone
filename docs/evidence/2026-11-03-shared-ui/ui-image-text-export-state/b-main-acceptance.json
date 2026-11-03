@@ -1,0 +1,274 @@
+{
+  "schema": "unone.ui-image-cache.main-endpoint-audit.v1",
+  "status": "bounded-main-endpoint-verified",
+  "created_utc": "2026-11-03T14:03:26.701Z",
+  "source_commit": "d7b4afcab8db547a9fae25832974606ac50fdc24",
+  "host": {
+    "root": "artifacts/web-ui-image-cache-host-d7b4afc-20261103",
+    "sha256": "7227efa9020de7cf43483a3122958567799ca95a3ff76f740a7d922f0d5aa9fd",
+    "files": 111,
+    "metadata_source_clean": true
+  },
+  "export": {
+    "root": "artifacts/web-ui-image-cache-gpu-d7b4afc-20261103",
+    "release": "d1cf8b48cfd671068a8b0d43592688ef203b5f1216ff4f1728ee9b5a295d90e3",
+    "indexed_files": 221,
+    "inventory_renderer": "three-webgl",
+    "mode": "source-ingestion-refresh"
+  },
+  "fixture": {
+    "script_sha256": "560997ffc1cfdc3c941cda41eb851eb2196014efe761d06b8f5df249c259bb61",
+    "protocol": {
+      "cycles": 100,
+      "hide_ticks": 3,
+      "show_ticks": 6,
+      "tail_ticks": 120,
+      "expected_end_tick": 1080
+    },
+    "screenshot": {
+      "actual_mime": "image/jpeg",
+      "filename_extension": ".png",
+      "extension_mismatch": true,
+      "width": 1280,
+      "height": 720,
+      "lossless_pixel_parity_usable": false
+    },
+    "screenshot_manual_read": {
+      "cycles": 100,
+      "hides": 101,
+      "shows": 100,
+      "failures": 0,
+      "tick": 2594142,
+      "scope": "Screenshot shows the authored protocol; it is not a GPU receipt."
+    }
+  },
+  "endpoint": {
+    "observed_utc": "2026-11-03T13:36:10.032Z",
+    "observer_frame": 2594141,
+    "metrics_frame": 2594112,
+    "last_profile_draw_frame": 2594138,
+    "drawing_buffer": [
+      1280,
+      720
+    ],
+    "renderer": "three-webgl",
+    "renderer_mode": "official",
+    "backend": "main",
+    "error": null,
+    "profile_error": null,
+    "visibility_at_observation": "visible"
+  },
+  "verified": {
+    "ui": {
+      "builds": 2,
+      "owner_lookups": 193,
+      "idle_promotions": 100,
+      "retired": 2,
+      "live": 0,
+      "active": 0,
+      "cached": 0,
+      "bytes_estimate": 0
+    },
+    "shared_registered_cache": {
+      "enabled": true,
+      "entries": 0,
+      "decoded_texture_bytes_estimate": 0,
+      "pinned_bytes_estimate": 0,
+      "loading": 0,
+      "evicted": 2,
+      "released_bytes_estimate": 256,
+      "pressure_bytes": 0,
+      "pressure_entries": 0,
+      "scope": "Registered world and catalog-image UI GPU owners share this one policy. Active/prepared/persistent owners are protected; UI and sprite samplers remain distinct physical textures.",
+      "policy": {
+        "max_bytes": 512,
+        "max_entries": 4,
+        "idle_frames": 16
+      },
+      "policy_source": "authored",
+      "estimate_excludes": "driver allocation, encoded files, browser decode copies, glyph atlases, data textures and render targets"
+    },
+    "sprite_pool": {
+      "supported": true,
+      "epoch": 1,
+      "entries": 0,
+      "texture_entries": 0,
+      "handles": 0,
+      "live_textures": 0,
+      "image_leases": 0,
+      "pending": 0,
+      "ready": 0,
+      "errors": 0,
+      "cpu_reserved_bytes_estimate": 0,
+      "gpu_reserved_bytes_estimate": 0,
+      "builds": 2,
+      "retired": 2,
+      "texture_builds": 1,
+      "texture_retired": 1,
+      "idle_material_entries": 0,
+      "idle_material_limit": 4,
+      "limits": {
+        "max_bytes": 1024,
+        "max_entries": 2
+      },
+      "scope": "Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.",
+      "legacy_fallback_sprites": 0
+    },
+    "decoded_images": {
+      "catalog_generation": 1,
+      "disposed": false,
+      "limits": {
+        "sceneMaxBytes": 1024,
+        "sceneMaxEntries": 2,
+        "unusedMaxBytes": 16777216,
+        "unusedMaxEntries": 128
+      },
+      "preload_plan": {
+        "version": 1,
+        "groups": 1,
+        "startup_groups": [
+          "ordinary"
+        ],
+        "budget": {
+          "max_bytes": 1024,
+          "max_entries": 2
+        }
+      },
+      "resident_entries": 2,
+      "resident_bytes_estimate": 256,
+      "active_entries": 0,
+      "active_bytes_estimate": 0,
+      "scene_entries": 1,
+      "scene_bytes_estimate": 128,
+      "unused_entries": 1,
+      "unused_bytes_estimate": 128,
+      "loading": 0,
+      "active_tasks": 0,
+      "queued_tasks": 0,
+      "loads": 2,
+      "reuses": 104,
+      "evictions": 0,
+      "closed_images": 0,
+      "released_bytes_estimate": 0,
+      "pressure_bytes": 0,
+      "pressure_entries": 0,
+      "preparation": {
+        "declared_entries": 1,
+        "scene_declared_entries": 1,
+        "startup_entries": 1,
+        "required_entries": 1,
+        "required_ready_entries": 1,
+        "startup_groups": [
+          "ordinary"
+        ],
+        "duplicate_references": 2,
+        "admitted_entries": 1,
+        "ready_entries": 1,
+        "reserved_bytes": 128,
+        "partial": false,
+        "unsupported": [],
+        "budget_skipped": [],
+        "errors": [],
+        "cancelled": false
+      },
+      "scope": "Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation."
+    },
+    "skip_counts": {
+      "raster_unavailable": 0,
+      "raster_validation": 0,
+      "frame_resources_pending": 0,
+      "frame_pass_incomplete": 0,
+      "world_assets_pending": 1,
+      "ui_assets_pending": 1,
+      "ui_diagnostics": 0,
+      "ui_target_unavailable": 0,
+      "cursor_assets_pending": 0,
+      "cursor_diagnostics": 0,
+      "other": 0
+    },
+    "profile_faults": {
+      "begun": 10376613,
+      "completed": 10376613,
+      "open": 0,
+      "retained": 64,
+      "overwritten": 10376549,
+      "cleared": 0,
+      "abandoned": 0,
+      "late_ends": 0,
+      "late_operations": 0,
+      "orphan_marks": 0,
+      "dropped_attrs": 0,
+      "provider_errors": 0,
+      "publish_errors": 0
+    },
+    "ui_asset_cumulative": {
+      "events": 205,
+      "event_overflow": 0,
+      "metadata_overflow": 0,
+      "observer_failures": 0
+    }
+  },
+  "runtime_files": [
+    {
+      "path": "runtime/unone-player.js",
+      "bytes": 102845,
+      "sha256": "cadfae5ec7f73daf36046a6519ca5292b3777e23719ae6435006b1da29b39a01"
+    },
+    {
+      "path": "runtime/unone_player.wasm",
+      "bytes": 5301301,
+      "sha256": "869d9cca6968cca564e3a057960f98a7c4dbb6c7189f065f38fa84429dfa4efd"
+    }
+  ],
+  "pins": [
+    {
+      "path": ".cache/ui-image-cache-b-main-20261103.json",
+      "bytes": 157761,
+      "sha256": "48ed6ee4cbd1d1bca54fb40e25878751de855c157de79e2b15bd6cdd006e8165"
+    },
+    {
+      "path": "artifacts/web-ui-image-cache-host-d7b4afc-20261103/host.json",
+      "bytes": 18838,
+      "sha256": "8db53f7b81915adaaaae657cf91b6b9726be7adb472827d86b66aac83e1a9716"
+    },
+    {
+      "path": "artifacts/web-ui-image-cache-gpu-d7b4afc-20261103/export.json",
+      "bytes": 68561,
+      "sha256": "41973801a609531b120691819220e9caa2f656ba4cbaff39f77b4d7b58e39a30"
+    },
+    {
+      "path": ".cache/ui-image-cache-gpu-project-20261103/ui-image-cache-fixture-provenance.json",
+      "bytes": 2033,
+      "sha256": "cbf2a46e220a81fae91901859b39ccd36d2b7329874287721f6f060d1fb94b67"
+    },
+    {
+      "path": ".cache/ui-image-cache-gpu-project-20261103/scripts/main.luau",
+      "bytes": 58700,
+      "sha256": "560997ffc1cfdc3c941cda41eb851eb2196014efe761d06b8f5df249c259bb61"
+    },
+    {
+      "path": "artifacts/web-ui-image-cache-gpu-d7b4afc-20261103/releases/d1cf8b48cfd671068a8b0d43592688ef203b5f1216ff4f1728ee9b5a295d90e3/content/project.json",
+      "bytes": 62962,
+      "sha256": "6c61c1a2e6226a18da1b39e05e39273df9b04d9b20a98aa8317619558bedbee8"
+    },
+    {
+      "path": ".cache/ui-image-cache-b-main-20261103.png",
+      "bytes": 34771,
+      "sha256": "7f98f0b91d2e88eb273636dbba50d4547c55e88426b09913ea3e58998a2249c9"
+    }
+  ],
+  "limits": [
+    "This audit reads stored files only. No browser, Core, Native binary, GPU or test was executed by the verifier.",
+    "The screenshot, DOM observer frame, cached performance frame and retained profile frame differ. No exact same-frame join is claimed.",
+    "The screenshot has historical .png filename but actual JPEG signature. Original bytes are retained unchanged; no lossless or exact-pixel-parity claim. A first verifier correctly rejected its incorrect PNG assumption before this format-aware audit.",
+    "Capture followed a long interrupted interval. The endpoint reports an elapsed clock and frame count; it does not establish uninterrupted foreground visibility, a continuous 12-hour soak trace or stable FPS throughout.",
+    "Only the main backend has this endpoint. It does not pass worker, combined B+C, Game seven-scene, C glyph-pixel parity, memory or GC acceptance.",
+    "Logical UI owners were built twice, promoted from idle100 times and retired twice; engine counters do not count driver allocations or physical VRAM reclamation.",
+    "Zero registered image/cache/Sprite owners excludes glyph atlas pages, Bloom/render targets, driver allocations and browser copies. Two decoded images remain intentionally resident: one128B scene pin plus one128B unused entry, with no active lease.",
+    "Profiler fault counters are zero, but10,376,549 events were overwritten and only64 remain. Cumulative205 UI asset events is not a preserved full lifecycle trace.",
+    "The cold B request and startup world request caused one pending skip each. No claim that genuine loading was eliminated.",
+    "The inventory/source/host metadata identities and fixture payload match locally. This child audit does not independently rehash all111 host or221 export files; Root performs that closure separately. Network-served bytes were not independently captured.",
+    "WASM capacity16MiB is a single capacity observation, not live heap, retained memory, a GC-frequency measure or proof of no memory leak.",
+    "Native final execution remains App Control4551 blocked and is not counted passed."
+  ]
+}
