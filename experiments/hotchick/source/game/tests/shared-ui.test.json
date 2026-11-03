@@ -1,0 +1,8 @@
+{
+  "name": "official-ui-package-declared",
+  "frames": 1,
+  "seed": 42,
+  "assertions": [{"observation": {"key": "uiPackage", "equals": {
+    "name": "@unone/ui", "version": "0.2.0", "declared": true
+  }}}]
+}

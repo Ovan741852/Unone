@@ -1,0 +1,448 @@
+{
+  "schema": "hotchick.unone-handoff.v1",
+  "release": "release-025",
+  "source_sdk_ui": "0.2.0",
+  "base_commit": "d7b4afcab8db547a9fae25832974606ac50fdc24",
+  "files": [
+    {
+      "path": "source/benchmark-game/presentation/bench-renderer.mjs",
+      "source_path": "benchmark-game/presentation/bench-renderer.mjs",
+      "bytes": 12302,
+      "sha256": "7631b29c65308b2c0354447726d1d5c97622874a0a3691344d8526f1ff9ddc17",
+      "original_sha256": "7631b29c65308b2c0354447726d1d5c97622874a0a3691344d8526f1ff9ddc17",
+      "transform": "none"
+    },
+    {
+      "path": "source/benchmark-game/scenes/main.scene.json",
+      "source_path": "benchmark-game/scenes/main.scene.json",
+      "bytes": 138,
+      "sha256": "86b2ce7ab15aea9ed3fcdb5c52ec3d8d37af4a565dc40b507e024e25432eac0d",
+      "original_sha256": "86b2ce7ab15aea9ed3fcdb5c52ec3d8d37af4a565dc40b507e024e25432eac0d",
+      "transform": "none"
+    },
+    {
+      "path": "source/benchmark-game/scripts/main.luau",
+      "source_path": "benchmark-game/scripts/main.luau",
+      "bytes": 22703,
+      "sha256": "675355b63fb96ab6aa1de4a9a53448460e5a40294600f6156a1ffa87927f02e8",
+      "original_sha256": "675355b63fb96ab6aa1de4a9a53448460e5a40294600f6156a1ffa87927f02e8",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/player.presentation.json",
+      "source_path": "game/player.presentation.json",
+      "bytes": 7153,
+      "sha256": "278fdcdf34c8136ff07dd6239166de020e37d7f5d740c4735f5247e3e8b309db",
+      "original_sha256": "278fdcdf34c8136ff07dd6239166de020e37d7f5d740c4735f5247e3e8b309db",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/card-shader.mjs",
+      "source_path": "game/presentation/card-shader.mjs",
+      "bytes": 9685,
+      "sha256": "5bfc0020ded47b59ceb5a54e9b723889b8478a24478ff0eda35f5f2da01c72ec",
+      "original_sha256": "5bfc0020ded47b59ceb5a54e9b723889b8478a24478ff0eda35f5f2da01c72ec",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/cards.css",
+      "source_path": "game/presentation/cards.css",
+      "bytes": 15891,
+      "sha256": "db91ed0f333402814b5c9116458084c0350e191b764674f04ce0d54d5de2d1dc",
+      "original_sha256": "db91ed0f333402814b5c9116458084c0350e191b764674f04ce0d54d5de2d1dc",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/cards.mjs",
+      "source_path": "game/presentation/cards.mjs",
+      "bytes": 24768,
+      "sha256": "1dc4b0aa0327cd0e6511c3109349a776c0ba963e39ff21137317e5896ccb66ad",
+      "original_sha256": "1dc4b0aa0327cd0e6511c3109349a776c0ba963e39ff21137317e5896ccb66ad",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/game-panels.mjs",
+      "source_path": "game/presentation/game-panels.mjs",
+      "bytes": 5499,
+      "sha256": "8de33ccaceb666d1f6652ad69fc42238f69a4371b8e4f07eb315f2379c7b0d70",
+      "original_sha256": "8de33ccaceb666d1f6652ad69fc42238f69a4371b8e4f07eb315f2379c7b0d70",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/game-renderer.mjs",
+      "source_path": "game/presentation/game-renderer.mjs",
+      "bytes": 77463,
+      "sha256": "5e2022a5353f3f0c874821f0bfef397e8a3edd003cc9e1846ea9d50ca4fd65aa",
+      "original_sha256": "5e2022a5353f3f0c874821f0bfef397e8a3edd003cc9e1846ea9d50ca4fd65aa",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/game-ui.css",
+      "source_path": "game/presentation/game-ui.css",
+      "bytes": 33373,
+      "sha256": "d7a29218b9d87f2349d1c2f6be75423d6511d1a5ed5fcffab1de5d737bec06b7",
+      "original_sha256": "d7a29218b9d87f2349d1c2f6be75423d6511d1a5ed5fcffab1de5d737bec06b7",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/landscape.mjs",
+      "source_path": "game/presentation/landscape.mjs",
+      "bytes": 4706,
+      "sha256": "9004e84061c82ef3b1d6853ff657c7714899e86b87ba94a9124a18ceae0f07bb",
+      "original_sha256": "9004e84061c82ef3b1d6853ff657c7714899e86b87ba94a9124a18ceae0f07bb",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/project.unone.json",
+      "source_path": "game/project.unone.json",
+      "bytes": 798,
+      "sha256": "d0a0d1e130efb0d7de4a734a17cbf85136e8ff348cb0216bedae832dcddeb515",
+      "original_sha256": "d0a0d1e130efb0d7de4a734a17cbf85136e8ff348cb0216bedae832dcddeb515",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/scenes/main.scene.json",
+      "source_path": "game/scenes/main.scene.json",
+      "bytes": 10993,
+      "sha256": "e3cfae4004d77a9eb8950fe7915c566ab7aabe9b51cae3c2ada0fa6f2eddcb4e",
+      "original_sha256": "e3cfae4004d77a9eb8950fe7915c566ab7aabe9b51cae3c2ada0fa6f2eddcb4e",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/scripts/main.luau",
+      "source_path": "game/scripts/main.luau",
+      "bytes": 107152,
+      "sha256": "2074770c42bd8999072de73eeaf8e8ad3774e8fc930ab4377c04cdeb4981561b",
+      "original_sha256": "2074770c42bd8999072de73eeaf8e8ad3774e8fc930ab4377c04cdeb4981561b",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/acceptance.py",
+      "source_path": "game/tests/acceptance.py",
+      "bytes": 59087,
+      "sha256": "5c1a738b931be13cdb02d349614c228542634730e4434eace8b9c1b37e2eeb61",
+      "original_sha256": "5c1a738b931be13cdb02d349614c228542634730e4434eace8b9c1b37e2eeb61",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/auto_skip_acceptance.py",
+      "source_path": "game/tests/auto_skip_acceptance.py",
+      "bytes": 11075,
+      "sha256": "e6ecad0c1db4c59d14018c173999b4036f801b1004cd124e590687ee23456404",
+      "original_sha256": "e6ecad0c1db4c59d14018c173999b4036f801b1004cd124e590687ee23456404",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/batch_card_acceptance.py",
+      "source_path": "game/tests/batch_card_acceptance.py",
+      "bytes": 19496,
+      "sha256": "ced3e86d273fb361ce8cbc4841c2334f6c6bb1f81c32e3374b8599c133f97652",
+      "original_sha256": "ced3e86d273fb361ce8cbc4841c2334f6c6bb1f81c32e3374b8599c133f97652",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/card_acceptance.py",
+      "source_path": "game/tests/card_acceptance.py",
+      "bytes": 15477,
+      "sha256": "afb8951bb56a04d2cd7d618f71881e716f7152c968064bd472f9d0bd97321084",
+      "original_sha256": "afb8951bb56a04d2cd7d618f71881e716f7152c968064bd472f9d0bd97321084",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/card_seed_acceptance.py",
+      "source_path": "game/tests/card_seed_acceptance.py",
+      "bytes": 10109,
+      "sha256": "24be1d7f272038de00c6a27901c0f208c17008eb5749c8d5bda956def14355d0",
+      "original_sha256": "24be1d7f272038de00c6a27901c0f208c17008eb5749c8d5bda956def14355d0",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/eunbi_acceptance.py",
+      "source_path": "game/tests/eunbi_acceptance.py",
+      "bytes": 14024,
+      "sha256": "ea8f43d0b8414362b836783919b10ad9a3277dcf68875a0d227f60830b22505a",
+      "original_sha256": "ea8f43d0b8414362b836783919b10ad9a3277dcf68875a0d227f60830b22505a",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/flower-cost.test.json",
+      "source_path": "game/tests/flower-cost.test.json",
+      "bytes": 384,
+      "sha256": "301d5a7900b3b58f04e1a02d1955466376dc56ccc908c6288c0af683651c7abf",
+      "original_sha256": "301d5a7900b3b58f04e1a02d1955466376dc56ccc908c6288c0af683651c7abf",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/gallery-input-paused.test.json",
+      "source_path": "game/tests/gallery-input-paused.test.json",
+      "bytes": 505,
+      "sha256": "7ef49d0d1c8d31607fd515b7ce8c7cd55fe92c9948ddca6f04d8f9db0360e7a5",
+      "original_sha256": "7ef49d0d1c8d31607fd515b7ce8c7cd55fe92c9948ddca6f04d8f9db0360e7a5",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/idle-wallet.test.json",
+      "source_path": "game/tests/idle-wallet.test.json",
+      "bytes": 219,
+      "sha256": "7024753617b740879453070fa61224ffdb6c260b7b620e767b299779ce0df964",
+      "original_sha256": "7024753617b740879453070fa61224ffdb6c260b7b620e767b299779ce0df964",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/like-cost.test.json",
+      "source_path": "game/tests/like-cost.test.json",
+      "bytes": 273,
+      "sha256": "2f3f8bfd9be88b77b2ff3041e84431c8874004596a96046de728a1b6b01c5f90",
+      "original_sha256": "2f3f8bfd9be88b77b2ff3041e84431c8874004596a96046de728a1b6b01c5f90",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/preview-no-bet.test.json",
+      "source_path": "game/tests/preview-no-bet.test.json",
+      "bytes": 309,
+      "sha256": "ec9cc36492fe25e93d9cab441f2c754d034f675cf537d973e27b96f9e98b5f2a",
+      "original_sha256": "ec9cc36492fe25e93d9cab441f2c754d034f675cf537d973e27b96f9e98b5f2a",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/rocket-cost.test.json",
+      "source_path": "game/tests/rocket-cost.test.json",
+      "bytes": 383,
+      "sha256": "0444baf11490512cd54aa688858fd435919dc197d2a58afb7c178b69ca5cdb85",
+      "original_sha256": "0444baf11490512cd54aa688858fd435919dc197d2a58afb7c178b69ca5cdb85",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/shared-ui.test.json",
+      "source_path": "game/tests/shared-ui.test.json",
+      "bytes": 210,
+      "sha256": "835e4a64a6fa65bf4d4b4d329bedb247a60d8360a4feb8357f9c76426be0d695",
+      "original_sha256": "835e4a64a6fa65bf4d4b4d329bedb247a60d8360a4feb8357f9c76426be0d695",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/skip_large_acceptance.py",
+      "source_path": "game/tests/skip_large_acceptance.py",
+      "bytes": 20209,
+      "sha256": "ac2e9322b56bd96b64721bdf82da69297683bf3a742c0d4ba8c5689d84c968d1",
+      "original_sha256": "ac2e9322b56bd96b64721bdf82da69297683bf3a742c0d4ba8c5689d84c968d1",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/yeseul_acceptance.py",
+      "source_path": "game/tests/yeseul_acceptance.py",
+      "bytes": 14455,
+      "sha256": "07e32537924ade1ce3bb2506054ec7ff08a6829a416c72496fd18ac5fb0ae211",
+      "original_sha256": "07e32537924ade1ce3bb2506054ec7ff08a6829a416c72496fd18ac5fb0ae211",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/app.js",
+      "source_path": "scripts/card-tool/app.js",
+      "bytes": 17084,
+      "sha256": "d1ee6caca385000ed303521b40706520dc63bafe802d37b919dda5846b05e78a",
+      "original_sha256": "d1ee6caca385000ed303521b40706520dc63bafe802d37b919dda5846b05e78a",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/card_tool.py",
+      "source_path": "scripts/card-tool/card_tool.py",
+      "bytes": 25156,
+      "sha256": "0c0c62c1d3ba292fb28aac7842a0a6d48970c8038144d8456b3fabc2508adb31",
+      "original_sha256": "0c0c62c1d3ba292fb28aac7842a0a6d48970c8038144d8456b3fabc2508adb31",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/index.html",
+      "source_path": "scripts/card-tool/index.html",
+      "bytes": 4142,
+      "sha256": "593fdc578c38fc8da29658844000760ac117d6955df76acd797d93af9512c94e",
+      "original_sha256": "593fdc578c38fc8da29658844000760ac117d6955df76acd797d93af9512c94e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/qa_browser.mjs",
+      "source_path": "scripts/card-tool/qa_browser.mjs",
+      "bytes": 7929,
+      "sha256": "9602b867a672d7f2df201dd6388bfcf48283bd889065c864e0d796efc7571df5",
+      "original_sha256": "9602b867a672d7f2df201dd6388bfcf48283bd889065c864e0d796efc7571df5",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/README.md",
+      "source_path": "scripts/card-tool/README.md",
+      "bytes": 2782,
+      "sha256": "8fc45f59f361f4957dc2c9c441f051618dd1a4b6dd419a895d17a4d1681bab8e",
+      "original_sha256": "8fc45f59f361f4957dc2c9c441f051618dd1a4b6dd419a895d17a4d1681bab8e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/requirements.txt",
+      "source_path": "scripts/card-tool/requirements.txt",
+      "bytes": 7,
+      "sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "original_sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/style.css",
+      "source_path": "scripts/card-tool/style.css",
+      "bytes": 8665,
+      "sha256": "58f8b2afa70388bc5eb70db5441e16c9a874ae78f870830549b35c60d5ad4901",
+      "original_sha256": "58f8b2afa70388bc5eb70db5441e16c9a874ae78f870830549b35c60d5ad4901",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/cdp-client.mjs",
+      "source_path": "scripts/cdp-client.mjs",
+      "bytes": 2052,
+      "sha256": "4864325240d99b3b07c9d019b8d4a8d8ef6db629892002cc3db14e21c2b17707",
+      "original_sha256": "4864325240d99b3b07c9d019b8d4a8d8ef6db629892002cc3db14e21c2b17707",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/app.js",
+      "source_path": "scripts/media-tool/app.js",
+      "bytes": 35885,
+      "sha256": "e996d8a592d0db1452fa21dd2c434edee7f0dbba3b912d81938a2b931cc6013e",
+      "original_sha256": "e996d8a592d0db1452fa21dd2c434edee7f0dbba3b912d81938a2b931cc6013e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/index.html",
+      "source_path": "scripts/media-tool/index.html",
+      "bytes": 9695,
+      "sha256": "5670970b41dfe0a0520425941bcff91f64c378b86655634251f0f3fd06ede79e",
+      "original_sha256": "5670970b41dfe0a0520425941bcff91f64c378b86655634251f0f3fd06ede79e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/media_tool.py",
+      "source_path": "scripts/media-tool/media_tool.py",
+      "bytes": 40845,
+      "sha256": "6eb0102b2dbd0d916c65aac38f974cff6e08427d1002f66a6ab2032477805d47",
+      "original_sha256": "6eb0102b2dbd0d916c65aac38f974cff6e08427d1002f66a6ab2032477805d47",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/README.md",
+      "source_path": "scripts/media-tool/README.md",
+      "bytes": 2970,
+      "sha256": "d803f2b0fa2233d4b3903c091b3f7593e425e00b706b2c9635473938da83b5fc",
+      "original_sha256": "bd2e5762d9a8460303824d57c1d649c80ac982e196faf0e106981108e2f78efb",
+      "transform": "UTF-8 BOM normalization / relative launcher example"
+    },
+    {
+      "path": "source/scripts/media-tool/requirements.txt",
+      "source_path": "scripts/media-tool/requirements.txt",
+      "bytes": 7,
+      "sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "original_sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/style.css",
+      "source_path": "scripts/media-tool/style.css",
+      "bytes": 15355,
+      "sha256": "4ace8affb29381b1427f304e8857a35a8b202731bd40f43c928a529eabcc7211",
+      "original_sha256": "4ace8affb29381b1427f304e8857a35a8b202731bd40f43c928a529eabcc7211",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/probe_symbol_browser.mjs",
+      "source_path": "scripts/probe_symbol_browser.mjs",
+      "bytes": 2517,
+      "sha256": "3c1407e730302983f248055da1f65273bf97bb76b50f0cd9f325ad244ee301e2",
+      "original_sha256": "3c1407e730302983f248055da1f65273bf97bb76b50f0cd9f325ad244ee301e2",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-card-tool.py",
+      "source_path": "scripts/qa-card-tool.py",
+      "bytes": 8327,
+      "sha256": "c1dd88831d0849e833707534a6a4156f60fc9180bca2a16795f76ebdbdfb70e0",
+      "original_sha256": "c1dd88831d0849e833707534a6a4156f60fc9180bca2a16795f76ebdbdfb70e0",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-collection-polish.mjs",
+      "source_path": "scripts/qa-collection-polish.mjs",
+      "bytes": 21227,
+      "sha256": "dbc1ba4697dc33501c674778667c93b8b3eb485984f07d5a975b97ec1974cc74",
+      "original_sha256": "dbc1ba4697dc33501c674778667c93b8b3eb485984f07d5a975b97ec1974cc74",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-landscape.mjs",
+      "source_path": "scripts/qa-landscape.mjs",
+      "bytes": 7984,
+      "sha256": "f761244e30c1cf71a6584a3c3395df6cef5bd9287c8d8f0aebd9ccc294b0d699",
+      "original_sha256": "f761244e30c1cf71a6584a3c3395df6cef5bd9287c8d8f0aebd9ccc294b0d699",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-media-tool.py",
+      "source_path": "scripts/qa-media-tool.py",
+      "bytes": 22345,
+      "sha256": "8859d43a0db3d21f479cc9c19381b18974159b086289705a14555a505398ace0",
+      "original_sha256": "8859d43a0db3d21f479cc9c19381b18974159b086289705a14555a505398ace0",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-medium-concurrency.mjs",
+      "source_path": "scripts/qa-medium-concurrency.mjs",
+      "bytes": 8645,
+      "sha256": "0ab32912ee457e700ff3ce64e520c3a31e6978442cb27cdfd2f27496c0ecc8b9",
+      "original_sha256": "0ab32912ee457e700ff3ce64e520c3a31e6978442cb27cdfd2f27496c0ecc8b9",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-pack-sequence.mjs",
+      "source_path": "scripts/qa-pack-sequence.mjs",
+      "bytes": 11228,
+      "sha256": "1716443cfb8e3d69dc6d0f5f00af4a353d099a9e6a18360a33b5ced0a696727c",
+      "original_sha256": "1716443cfb8e3d69dc6d0f5f00af4a353d099a9e6a18360a33b5ced0a696727c",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-runtime-fixes.mjs",
+      "source_path": "scripts/qa-runtime-fixes.mjs",
+      "bytes": 16140,
+      "sha256": "6ae07e1b1f56c7bb8d38b6e1d3b8dd2be00a0c94b15bc6406b8f5100bdc6da3a",
+      "original_sha256": "6ae07e1b1f56c7bb8d38b6e1d3b8dd2be00a0c94b15bc6406b8f5100bdc6da3a",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/run_symbol_benchmark.mjs",
+      "source_path": "scripts/run_symbol_benchmark.mjs",
+      "bytes": 6941,
+      "sha256": "a81510668e3f9b3b18e3516991a2070b2683b08a6aa0062f4e6f02a4e558a15f",
+      "original_sha256": "a81510668e3f9b3b18e3516991a2070b2683b08a6aa0062f4e6f02a4e558a15f",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/summarize_symbol_benchmark.py",
+      "source_path": "scripts/summarize_symbol_benchmark.py",
+      "bytes": 29350,
+      "sha256": "8009f63eb3d7c728953cc8a1cbaf445827296242e20ccf6207e8bc2267265b14",
+      "original_sha256": "8009f63eb3d7c728953cc8a1cbaf445827296242e20ccf6207e8bc2267265b14",
+      "transform": "none"
+    },
+    {
+      "path": "source/Start-CardTool.ps1",
+      "source_path": "Start-CardTool.ps1",
+      "bytes": 1023,
+      "sha256": "91e29b4d0e1b4d630755ae875bd7ac32231aa35142b8da71bf97c226e0941fb6",
+      "original_sha256": "91e29b4d0e1b4d630755ae875bd7ac32231aa35142b8da71bf97c226e0941fb6",
+      "transform": "none"
+    },
+    {
+      "path": "source/Start-MediaTool.ps1",
+      "source_path": "Start-MediaTool.ps1",
+      "bytes": 1050,
+      "sha256": "dd1e005fd8c27e1881a5c16249f2dd3281cf899d4088ad6a98c8c8e85cf0b7ca",
+      "original_sha256": "dd1e005fd8c27e1881a5c16249f2dd3281cf899d4088ad6a98c8c8e85cf0b7ca",
+      "transform": "none"
+    }
+  ]
+}

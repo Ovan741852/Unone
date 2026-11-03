@@ -1,0 +1,56 @@
+// Presentation-only CDP fixture. Native CardDrawAll atomic/credit tests run separately.
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {CdpClient} from './cdp-client.mjs';
+const out='artifacts/playable/qa-pack-sequence';fs.mkdirSync(out,{recursive:true});
+const cdp=await CdpClient.connect(),cases=[],errors=[];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const source=fs.readFileSync('game/presentation/cards.mjs','utf8'),style=fs.readFileSync('game/presentation/game-ui.css','utf8')+'\n'+fs.readFileSync('game/presentation/cards.css','utf8');
+const media=fs.readdirSync('game/presentation/assets/cards').filter(x=>x.endsWith('.webp')).slice(0,3).map(file=>'data:image/webp;base64,'+fs.readFileSync('game/presentation/assets/cards/'+file).toString('base64'));
+async function run({count,reduced,legacy=false}){
+ const {targetId}=await cdp.send('Target.createTarget',{url:'about:blank'}),{sessionId:s}=await cdp.send('Target.attachToTarget',{targetId,flatten:true});const ev=x=>cdp.evaluate(s,x),name=`${legacy?'legacy-023':'current'}-${count}-${reduced?'reduced':'full'}`;
+ cdp.listeners.add(e=>{if(e.sessionId===s&&e.method==='Runtime.exceptionThrown')errors.push({name,...e.params.exceptionDetails});});
+ const wait=async(fn,label,timeout=7000)=>{const end=Date.now()+timeout;while(Date.now()<end){const result=await fn();if(result)return result;await sleep(12);}throw Error(`${name}: ${label}`);};
+ const screenshot=async phase=>{const r=await cdp.send('Page.captureScreenshot',{format:'png'},s);fs.writeFileSync(`${out}/${name}-${phase}.png`,Buffer.from(r.data,'base64'));};
+ try{
+  await cdp.send('Page.enable',{},s);await cdp.send('Runtime.enable',{},s);await cdp.send('Emulation.setDeviceMetricsOverride',{width:1280,height:720,deviceScaleFactor:1,mobile:false},s);await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:reduced?'reduce':'no-preference'}]},s);
+  const code=legacy?fs.readFileSync('artifacts/playable/release-023/content/presentation/cards.mjs','utf8'):source;
+  const css=legacy?fs.readFileSync('artifacts/playable/release-023/content/presentation/game-ui.css','utf8')+'\n'+fs.readFileSync('artifacts/playable/release-023/content/presentation/cards.css','utf8'):style;
+  await ev(`(async()=>{const st=document.createElement('style');st.textContent=${JSON.stringify(css)};document.head.append(st);document.body.innerHTML='<div class="hc-game-ui"><section class="hc-modal"><div class="hc-modal-card is-pack"><div class="hc-modal-heading"><h2>心動卡包</h2></div><div class="hc-modal-body"></div></div></section><div class="hc-card-inspection-layer" style="position:absolute;inset:0;z-index:66;pointer-events:auto" hidden></div></div>';const{createCards}=await import('data:text/javascript;base64,${Buffer.from(code).toString('base64')}');const images=${JSON.stringify(media)},definitions=[['n-a','N'],['r-b','R'],['sr-a','SR'],['n-b','N'],['r-a','R'],['sr-b','SR']];window.fx={calls:[],events:[],catalog:definitions.map(([id,rarity])=>({id,name:id,characterId:'fixture',rarity,imageAsset:rarity,count:0})),drawsAvailable:${count},threshold:1000,capacity:10,ready:true,canDraw:true};window.phaseLog=[];new MutationObserver(()=>{const p=document.querySelector('.hc-card-pack-overlay')?.dataset.phase;if(p&&window.phaseLog.at(-1)?.phase!==p)window.phaseLog.push({phase:p,time:performance.now()});}).observe(document.body,{subtree:true,attributes:true,attributeFilter:['data-phase'],childList:true});window.ctrl=createCards({asset:rarity=>images[{N:0,R:1,SR:2}[rarity]],viewerRoot:document.querySelector('.hc-card-inspection-layer'),action:code=>{window.fx.calls.push(code);setTimeout(()=>{const order=['n-a','sr-b','r-a','n-b','sr-a','r-b','n-a','sr-b','r-b','n-b'],owned={},items=order.slice(0,${count}).map((cardId,index)=>{owned[cardId]=(owned[cardId]||0)+1;return{serial:index+1,cardId,isNew:owned[cardId]===1,count:owned[cardId]}});window.fx={...window.fx,drawsAvailable:0,lastBatch:{serial:1,size:${count},items},lastDraw:items.at(-1),catalog:window.fx.catalog.map(c=>({...c,count:owned[c.id]||0}))};window.ctrl.update(window.fx);},20)}});window.ctrl.mountPack(document.querySelector('.hc-modal-body'),window.fx);})()`);
+  await sleep(260);assert.equal(await ev('document.querySelectorAll(".hc-sealed-pack").length'),count);await ev(`(()=>{const button=document.querySelector('[data-card-action=open-pack]');window.openAt=performance.now();button.click();button.click()})()`);
+  const observations={};
+  if(!legacy){
+   for(const phase of ['charge','tear','backs','reveal']){
+    await wait(()=>ev(`document.querySelector('.hc-card-pack-overlay')?.dataset.phase===${JSON.stringify(phase)}`),`phase ${phase}`);
+    observations[phase]=await ev(`({time:performance.now()-window.openAt,phase:window.ctrl.metadata().packPhase,cards:document.querySelectorAll('.hc-opening-card').length,results:document.querySelectorAll('.hc-batch-result').length,animations:document.getAnimations().map(a=>({playState:a.playState,duration:a.effect.getTiming().duration}))})`);
+    assert.equal(observations[phase].results,0);
+    if(phase==='backs'){observations.backTransforms=await ev(`Array.from(document.querySelectorAll('.hc-opening-card .hc-collectible')).map(n=>getComputedStyle(n).transform)`);assert.equal(observations.backTransforms.length,count);assert(observations.backTransforms.every(t=>t.startsWith('matrix3d(-1,')));}
+    await sleep(reduced?30:({charge:300,tear:280,backs:430,reveal:600})[phase]);
+    observations[phase].midpoint=await ev(`({time:performance.now()-window.openAt,phase:window.ctrl.metadata().packPhase,half:document.querySelector('.hc-pack-half')?getComputedStyle(document.querySelector('.hc-pack-half')).transform:null,card:document.querySelector('.hc-opening-card .hc-collectible')?getComputedStyle(document.querySelector('.hc-opening-card .hc-collectible')).transform:null,revealed:window.ctrl.metadata().revealedCount})`);
+    if(!reduced&&phase==='tear')assert.notEqual(observations[phase].midpoint.half,'matrix(1, 0, 0, 1, 0, 0)');
+    await screenshot(phase);
+   }
+  }
+  await wait(()=>ev('document.querySelectorAll(".hc-batch-result").length==='+count),'visible final results');
+  const firstResultsAt=await ev('performance.now()-window.openAt');
+  await wait(()=>ev(`['results','complete'].includes(window.ctrl.metadata().packPhase)`),'sequence complete');
+  const result=await ev(`({elapsed:performance.now()-window.openAt,phases:window.phaseLog.map(p=>({...p,time:p.time-window.openAt})),calls:window.fx.calls,results:Array.from(document.querySelectorAll('.hc-batch-result')).map(n=>({id:n.dataset.cardId,serial:Number(n.dataset.drawSerial),rarity:n.dataset.rarity,text:n.textContent})),batch:window.fx.lastBatch,metadata:window.ctrl.metadata()})`);
+  assert.deepEqual(result.calls,['CardDrawAll']);assert.equal(result.batch.size,count);
+  if(!legacy){
+   const ranks={SR:0,R:1,N:2};const expected=result.batch.items.map((item,index)=>({item,index,rarity:result.results.find(r=>r.id===item.cardId).rarity})).sort((a,b)=>ranks[a.rarity]-ranks[b.rarity]||a.index-b.index).map(x=>x.item.serial);
+   assert.deepEqual(result.results.map(r=>r.serial),expected);assert.deepEqual(result.phases.filter(p=>p.time>=0).map(p=>p.phase),['charge','tear','backs','reveal','results']);assert(firstResultsAt>=(reduced?800:count===10?3900:3000));assert(firstResultsAt<(reduced?1800:6000));await sleep(reduced?90:240);await screenshot('results');
+   await ev(`window.ctrl.mount(document.querySelector('.hc-modal-body'),window.fx,'fixture')`);const collection=await ev(`Array.from(document.querySelectorAll('.hc-card-tile')).map(n=>({id:n.dataset.cardId,rarity:n.dataset.rarity}))`);assert.deepEqual(collection.map(c=>c.rarity),['SR','SR','R','R','N','N']);assert.deepEqual(collection.map(c=>c.id),['sr-a','sr-b','r-b','r-a','n-a','n-b']);result.collection=collection;
+   await ev(`document.querySelector('[data-card-id="r-a"]').click()`);const initialPose=await ev('window.ctrl.getViewerPose()');assert.equal(initialPose.cardId,'r-a');assert.equal(initialPose.rotationY,0);assert.equal(initialPose.zoom,1);assert(initialPose.rect.width>0);
+   await ev(`window.ctrl.setShaderReady('wrong-card',true)`);assert.equal(await ev('window.ctrl.metadata().shaderReady'),false);await ev(`window.ctrl.setShaderReady('r-a',true)`);assert.equal(await ev('window.ctrl.metadata().shaderReady'),true);assert.deepEqual(await ev(`Array.from(document.querySelectorAll('.hc-card-viewer .hc-collectible,.hc-card-viewer .hc-card-front,.hc-card-viewer .hc-card-back,.hc-card-viewer .hc-card-stamp')).map(n=>getComputedStyle(n).visibility)`),['hidden','hidden','hidden','hidden']);const hiddenPose=await ev('window.ctrl.getViewerPose()');assert.deepEqual(hiddenPose.rect,initialPose.rect);
+   await ev(`document.querySelector('.hc-card-stage').focus()`);await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',code:'ArrowRight',key:'ArrowRight',windowsVirtualKeyCode:39},s);await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',code:'ArrowRight',key:'ArrowRight',windowsVirtualKeyCode:39},s);const rotatedPose=await ev('window.ctrl.getViewerPose()');assert.equal(rotatedPose.rotationY,15);assert.deepEqual(rotatedPose.rect,initialPose.rect);
+   await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',code:'Equal',key:'+',windowsVirtualKeyCode:187},s);await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',code:'Equal',key:'+',windowsVirtualKeyCode:187},s);const zoomedPose=await ev('window.ctrl.getViewerPose()');assert(Math.abs(zoomedPose.rect.width-initialPose.rect.width*1.15)<1);assert.equal(zoomedPose.zoom,1.15);await ev(`window.ctrl.setShaderReady('r-a',false)`);assert.equal(await ev('getComputedStyle(document.querySelector(".hc-card-viewer .hc-collectible")).visibility'),'visible');await ev(`window.ctrl.escape();document.querySelector('[data-card-id="n-a"]').click();window.ctrl.setShaderReady('n-a',true)`);assert.equal(await ev('window.ctrl.metadata().shaderReady'),false);assert.equal(await ev('getComputedStyle(document.querySelector(".hc-card-viewer .hc-collectible")).visibility'),'visible');await ev('window.ctrl.escape()');assert.equal(await ev('window.ctrl.getViewerPose()'),null);result.poseContract={initialPose,hiddenPose,rotatedPose,zoomedPose};
+  }
+  await ev('window.ctrl.release()');assert.equal(await ev('document.getAnimations().length'),0);cases.push({name,count,reduced,legacy,firstResultsAt,observations,...result});
+ }finally{await cdp.send('Target.closeTarget',{targetId});}
+}
+try{
+ if(fs.existsSync('artifacts/playable/release-023/content/presentation/cards.mjs'))await run({count:10,reduced:true,legacy:true});
+ for(const reduced of [false,true])for(const count of [3,10])await run({count,reduced});
+ assert.equal(errors.length,0);fs.writeFileSync(`${out}/acceptance.json`,JSON.stringify({ok:true,coverage:'Presentation fixture only. Native atomic draws, RNG, credits and ownership are verified separately.',cases,errors},null,2));console.log(JSON.stringify({ok:true,cases:cases.map(({name,firstResultsAt,calls})=>({name,firstResultsAt,calls})),errors},null,2));
+}catch(error){fs.writeFileSync(`${out}/failure.json`,JSON.stringify({error:String(error),cases,errors},null,2));throw error;}
+finally{cdp.close();}

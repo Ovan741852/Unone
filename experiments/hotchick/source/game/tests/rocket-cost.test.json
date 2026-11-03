@@ -1,0 +1,9 @@
+{
+  "name": "rocket-cost-once-for-all-missiles",
+  "frames": 2,
+  "seed": 42,
+  "input_sequence": [{"actions": {"WeaponRocket": true}, "pointer": {"position": {"x": -4.8057, "y": -0.6181}, "down": true}}, {"actions": {}}],
+  "assertions": [{"observation": {"key": "wallet", "equals": {
+    "balance": 9850, "bet": 10, "weapon": "rocket", "rounds": 1, "spent": 150, "won": 0
+  }}}]
+}

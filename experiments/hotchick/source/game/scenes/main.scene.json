@@ -1,0 +1,311 @@
+{
+  "entities": [],
+  "camera": {
+    "position": {
+      "x": 0,
+      "y": 0
+    },
+    "zoom": 1,
+    "view_height": 10
+  },
+  "shader_materials": {
+    "card_foil": {
+      "uniforms": {"strength": 1.0, "motion": 1.0},
+      "fragment": "// GPU foil: light is fixed in framebuffer space; rotating the mesh changes its UV/depth relation to that light.\nfloat cardMask(vec2 uv){vec2 q=abs((uv-0.5)*vec2(0.6666667,1.0))-vec2(0.2983333,0.465);float d=length(max(q,0.0))+min(max(q.x,q.y),0.0)-0.035;return 1.0-smoothstep(-0.0015,0.0015,d);}\nvec3 cardRainbow(float h){return 0.5+0.5*cos(6.2831853*(vec3(0.0,0.3333333,0.6666667)+h));}\nvec4 unoneShade(vec2 uv,vec4 color){\n float amount=clamp(strength,0.0,1.5);\n float idle=unone_time*0.055*clamp(motion,0.0,1.0);\n float screenLight=dot(gl_FragCoord.xy,vec2(0.0028,0.0017));\n float depthLight=(gl_FragCoord.z-0.5)*1600.0;\n float optical=uv.x*1.25+uv.y*0.8-screenLight+depthLight*0.46+idle;\n float ribbon=pow(max(0.0,cos(optical*6.2831853)),5.0);\n float wide=0.5+0.5*sin(optical*3.1415927+0.8);\n vec2 face=(uv-vec2(0.5,0.72))*vec2(3.3,4.0);\n float protection=1.0-0.56*exp(-dot(face,face));\n vec3 spectrum=cardRainbow(optical*0.47+screenLight*0.17);\n vec3 foil=spectrum*(0.10+0.34*ribbon)+vec3(0.19)*pow(ribbon,3.0);\n vec3 rgb=color.rgb*(1.0+amount*protection*(0.07*wide+0.10*ribbon))+foil*amount*protection;\n return vec4(clamp(rgb,0.0,1.0),color.a*cardMask(uv));\n}"
+    },
+    "card_diamond": {
+      "uniforms": {"strength": 1.0, "motion": 1.0},
+      "fragment": "// GPU prism facets: framebuffer light and actual mesh depth drive refraction and specular response.\nfloat cardMask(vec2 uv){vec2 q=abs((uv-0.5)*vec2(0.6666667,1.0))-vec2(0.2983333,0.465);float d=length(max(q,0.0))+min(max(q.x,q.y),0.0)-0.035;return 1.0-smoothstep(-0.0015,0.0015,d);}\nfloat facetHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}\nvec3 prismColor(float h){return 0.5+0.5*cos(6.2831853*(vec3(0.0,0.3333333,0.6666667)+h));}\nvec4 unoneShade(vec2 uv,vec4 color){\n float amount=clamp(strength,0.0,1.5);\n float idle=unone_time*0.045*clamp(motion,0.0,1.0);\n vec2 grid=uv*vec2(12.0,18.0),cell=floor(grid),local=fract(grid);\n float triangle=step(1.0,local.x+local.y),seed=facetHash(cell+vec2(triangle*7.0,triangle*13.0));\n float screenLight=dot(gl_FragCoord.xy,vec2(0.0031,-0.0022));\n float depthLight=(gl_FragCoord.z-0.5)*1800.0;\n float optical=uv.x*1.5-uv.y*0.6+screenLight+depthLight*0.62+idle;\n float facet=0.5+0.5*sin(optical*4.6+seed*6.2831853);\n float specular=pow(facet,12.0);\n float diagonal=abs(local.x+local.y-1.0);\n float edge=1.0-smoothstep(0.005,0.025,min(min(local.x,local.y),diagonal));\n vec2 sparklePos=vec2(0.17+seed*0.65,0.17+facetHash(cell+19.0)*0.65);\n vec2 delta=abs(local-sparklePos);\n float sparkle=(1.0-smoothstep(0.006,0.026,min(delta.x,delta.y)))*(1.0-smoothstep(0.035,0.24,max(delta.x,delta.y)));\n sparkle*=pow(max(0.0,sin(optical*5.3+seed*15.0)),14.0);\n vec2 face=(uv-vec2(0.5,0.72))*vec2(3.2,4.1);\n float protection=1.0-0.62*exp(-dot(face,face));\n vec3 prism=prismColor(optical*0.28+seed*0.46);\n vec3 rgb=color.rgb*(1.0+amount*protection*0.12*facet)+prism*amount*protection*(0.08+0.19*facet+0.30*specular)+vec3(0.78,0.85,1.0)*amount*protection*(0.08*edge+0.72*sparkle);\n return vec4(clamp(rgb,0.0,1.0),color.a*cardMask(uv));\n}"
+    }
+  },
+  "particle_effects": {
+    "card_ambience": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "soft_gold", "count": 12, "interval_frames": 1, "lifetime_frames": 300,
+          "emission_shape": "box", "spread": {"x": 8, "y": 4.5, "z": 0},
+          "velocity_mode": "vector", "velocity_min": {"x": -0.07, "y": 0.06, "z": 0},
+          "velocity_max": {"x": 0.07, "y": 0.16, "z": 0}, "gravity": {"x": 0, "y": 0, "z": 0},
+          "size_start": 0.018, "size_end": 0.07, "size_easing": "ease_out",
+          "color_start": [1, 0.76, 0.37, 0.34], "color_end": [1, 0.88, 0.63, 0],
+          "color_easing": "smooth_step", "sprite_shape": "soft_circle", "additive": true
+        },
+        {
+          "id": "pink_glow", "count": 6, "interval_frames": 1, "lifetime_frames": 300,
+          "emission_shape": "box", "spread": {"x": 8, "y": 4.5, "z": 0},
+          "velocity_mode": "vector", "velocity_min": {"x": -0.06, "y": 0.05, "z": 0},
+          "velocity_max": {"x": 0.06, "y": 0.14, "z": 0}, "gravity": {"x": 0, "y": 0, "z": 0},
+          "size_start": 0.016, "size_end": 0.055, "size_easing": "ease_out",
+          "color_start": [1, 0.38, 0.65, 0.28], "color_end": [1, 0.67, 0.82, 0],
+          "color_easing": "smooth_step", "sprite_shape": "diamond", "additive": true
+        }
+      ]
+    },
+    "love_burst_small": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "pink",
+          "count": 6,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "emission_shape": "point",
+          "velocity_mode": "vector",
+          "velocity_min": {
+            "x": -1.2,
+            "y": -0.78,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 1.2,
+            "y": 1.32,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": -0.6,
+            "z": 0
+          },
+          "size_start": 0.13,
+          "size_end": 0.015,
+          "size_easing": "ease_out",
+          "color_start": [
+            1,
+            0.22,
+            0.58,
+            1
+          ],
+          "color_end": [
+            1,
+            0.55,
+            0.76,
+            0
+          ],
+          "color_easing": "smooth_step",
+          "sprite_shape": "diamond",
+          "additive": true
+        },
+        {
+          "id": "gold",
+          "count": 2,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "emission_shape": "point",
+          "velocity_mode": "vector",
+          "velocity_min": {
+            "x": -0.96,
+            "y": -0.78,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 0.96,
+            "y": 1.32,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": -0.6,
+            "z": 0
+          },
+          "size_start": 0.104,
+          "size_end": 0.015,
+          "size_easing": "ease_out",
+          "color_start": [
+            1,
+            0.8,
+            0.3,
+            0.95
+          ],
+          "color_end": [
+            1,
+            0.55,
+            0.18,
+            0
+          ],
+          "color_easing": "smooth_step",
+          "sprite_shape": "soft_circle",
+          "additive": true
+        }
+      ]
+    },
+    "love_burst_medium": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "pink",
+          "count": 14,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "emission_shape": "point",
+          "velocity_mode": "vector",
+          "velocity_min": {
+            "x": -1.7,
+            "y": -1.105,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 1.7,
+            "y": 1.87,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": -0.6,
+            "z": 0
+          },
+          "size_start": 0.16,
+          "size_end": 0.015,
+          "size_easing": "ease_out",
+          "color_start": [
+            1,
+            0.22,
+            0.58,
+            1
+          ],
+          "color_end": [
+            1,
+            0.55,
+            0.76,
+            0
+          ],
+          "color_easing": "smooth_step",
+          "sprite_shape": "diamond",
+          "additive": true
+        },
+        {
+          "id": "gold",
+          "count": 4,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "emission_shape": "point",
+          "velocity_mode": "vector",
+          "velocity_min": {
+            "x": -1.36,
+            "y": -1.105,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 1.36,
+            "y": 1.87,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": -0.6,
+            "z": 0
+          },
+          "size_start": 0.128,
+          "size_end": 0.015,
+          "size_easing": "ease_out",
+          "color_start": [
+            1,
+            0.8,
+            0.3,
+            0.95
+          ],
+          "color_end": [
+            1,
+            0.55,
+            0.18,
+            0
+          ],
+          "color_easing": "smooth_step",
+          "sprite_shape": "soft_circle",
+          "additive": true
+        }
+      ]
+    },
+    "love_burst_large": {
+      "version": 1,
+      "duration_frames": 1,
+      "emitters": [
+        {
+          "id": "pink",
+          "count": 28,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "emission_shape": "point",
+          "velocity_mode": "vector",
+          "velocity_min": {
+            "x": -2.2,
+            "y": -1.4300000000000002,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 2.2,
+            "y": 2.4200000000000004,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": -0.6,
+            "z": 0
+          },
+          "size_start": 0.19,
+          "size_end": 0.015,
+          "size_easing": "ease_out",
+          "color_start": [
+            1,
+            0.22,
+            0.58,
+            1
+          ],
+          "color_end": [
+            1,
+            0.55,
+            0.76,
+            0
+          ],
+          "color_easing": "smooth_step",
+          "sprite_shape": "diamond",
+          "additive": true
+        },
+        {
+          "id": "gold",
+          "count": 8,
+          "interval_frames": 1,
+          "lifetime_frames": 36,
+          "emission_shape": "point",
+          "velocity_mode": "vector",
+          "velocity_min": {
+            "x": -1.7600000000000002,
+            "y": -1.4300000000000002,
+            "z": 0
+          },
+          "velocity_max": {
+            "x": 1.7600000000000002,
+            "y": 2.4200000000000004,
+            "z": 0
+          },
+          "gravity": {
+            "x": 0,
+            "y": -0.6,
+            "z": 0
+          },
+          "size_start": 0.152,
+          "size_end": 0.015,
+          "size_easing": "ease_out",
+          "color_start": [
+            1,
+            0.8,
+            0.3,
+            0.95
+          ],
+          "color_end": [
+            1,
+            0.55,
+            0.18,
+            0
+          ],
+          "color_easing": "smooth_step",
+          "sprite_shape": "soft_circle",
+          "additive": true
+        }
+      ]
+    }
+  }
+}

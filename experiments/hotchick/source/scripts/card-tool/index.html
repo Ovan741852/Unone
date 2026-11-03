@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>卡片工坊</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true">✂</span><div><h1>卡片工坊</h1><p>同一個比例，每張都剛剛好。</p></div></div><nav class="top-actions"><button id="example-btn">載入本次 14 張</button><button id="import-btn">匯入配方</button><button id="export-btn" disabled>儲存配方</button><input id="recipe-file" type="file" accept=".json,application/json" hidden></nav></header>
+  <main>
+    <section class="add-bar" aria-label="加入圖片"><button id="upload-btn" class="accent">＋ 加入圖片</button><input id="image-files" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden><span class="or">或</span><input id="source-path" type="text" placeholder="貼上本機圖片路徑" aria-label="本機圖片路徑"><button id="probe-btn">載入路徑</button><span class="output-chip">2:3 <i></i> 600 × 900 <i></i> WebP</span></section>
+    <div id="message" role="status" class="message" hidden></div>
+    <div class="workspace">
+      <aside class="queue-panel"><div class="panel-title"><h2>待裁切</h2><span id="queue-count">0 張</span></div><div id="queue-list" class="queue-list"><p class="empty-queue">加入圖片，或直接拖放到畫面。</p></div></aside>
+      <section class="editor-panel"><div class="editor-heading"><div><h2 id="selected-name">選擇一張圖片</h2><p id="source-size">拖曳框線調整裁切範圍，比例固定 2:3。</p></div><div class="editor-actions"><button id="reset-crop" disabled>重設</button><button id="center-crop" disabled>置中</button></div></div><div id="stage" class="stage"><div id="editor-empty"><span aria-hidden="true">▧</span><h3>把圖片放進來</h3><p>拖曳調整範圍，所有成品統一為 600 × 900。</p></div><canvas id="crop-canvas" aria-label="拖曳或調整固定 2 比 3 的裁切框" hidden></canvas></div><div class="editor-foot"><span>拖曳框內移動 · 拖曳四角縮放</span><span>原始圖片不會被修改</span></div></section>
+      <aside class="settings-panel"><div class="panel-title"><h2>裁切範圍</h2><span>原圖像素</span></div><div class="crop-fields"><label>X<input id="crop-x" type="number" min="0" step="0.1" disabled></label><label>Y<input id="crop-y" type="number" min="0" step="0.1" disabled></label><label>寬<input id="crop-w" type="number" min="0.1" step="0.1" disabled></label><label>高<input id="crop-h" type="number" min="0.1" step="0.1" disabled></label></div><label class="filename-label">成品檔名<input id="output-name" type="text" placeholder="card-01.webp" disabled></label><div class="card-actions"><button id="duplicate-btn" disabled>另存一個裁切</button><button id="remove-btn" class="quiet-danger" disabled>移除</button></div><div class="uniform-note"><strong>600 × 900</strong><span>每張都維持 2:3 · WebP 品質 92</span></div><label class="destination-label">輸出資料夾<input id="output-directory" type="text" aria-label="輸出資料夾"></label><label class="check"><input id="overwrite" type="checkbox">允許覆寫同名成品</label><div class="build-actions"><button id="validate-btn" disabled>檢查配方</button><button id="build-btn" class="accent" disabled>產生全部卡片</button></div><div id="progress-wrap" class="progress-wrap" hidden><progress id="progress" max="1" value="0"></progress><span id="progress-text">準備中</span></div></aside>
+    </div>
+    <section id="results" class="results" hidden><div class="results-heading"><div><h2>成品已完成</h2><p id="result-location"></p></div><a id="download-all" class="button accent" href="#" download>下載全部 ZIP</a></div><div id="result-grid" class="result-grid"></div><div id="metadata-links" class="metadata-links"></div></section>
+  </main>
+  <div id="drop-overlay" class="drop-overlay" hidden>放開滑鼠，加入圖片</div>
+  <script type="module" src="app.js"></script>
+</body></html>

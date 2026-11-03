@@ -1,0 +1,9 @@
+{
+  "name": "like-cost-once-per-round",
+  "frames": 2,
+  "seed": 42,
+  "input": {"WeaponLike": true, "Fire": true},
+  "assertions": [{"observation": {"key": "wallet", "equals": {
+    "balance": 9990, "bet": 10, "weapon": "like", "rounds": 1, "spent": 10, "won": 0
+  }}}]
+}

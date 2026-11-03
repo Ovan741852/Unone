@@ -1,0 +1,32 @@
+{
+  "bundle_manifest": "bundles/manifest.json",
+  "entry_script": "scripts/main.luau",
+  "main_scene": "scenes/main.scene.json",
+  "name": "HotChick 海王試玩",
+  "runtime_packages": {
+    "@unone/ui": "0.2.0"
+  },
+  "systems": {
+    "audio": false,
+    "camera2d": true,
+    "camera3d": false,
+    "effekseer": false,
+    "jobs": false,
+    "particle": true,
+    "physics2d": false,
+    "physics3d": false,
+    "random": true,
+    "save": false,
+    "spine": false,
+    "ui": true
+  },
+  "test_files": [
+    "tests/idle-wallet.test.json",
+    "tests/like-cost.test.json",
+    "tests/flower-cost.test.json",
+    "tests/rocket-cost.test.json",
+    "tests/preview-no-bet.test.json",
+    "tests/shared-ui.test.json",
+    "tests/gallery-input-paused.test.json"
+  ]
+}

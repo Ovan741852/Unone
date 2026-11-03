@@ -1,0 +1,210 @@
+{
+  "schema": "hotchick.handoff-smoke.v1",
+  "passed": true,
+  "scope": "Text syntax and synthetic asset-tool CLI only",
+  "checks": [
+    {
+      "name": "python-ast",
+      "detail": "game/tests/acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/auto_skip_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/batch_card_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/card_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/card_seed_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/eunbi_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/skip_large_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/yeseul_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/card-tool/card_tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/media-tool/media_tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/qa-card-tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/qa-media-tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/summarize_symbol_benchmark.py"
+    },
+    {
+      "name": "json-parse",
+      "detail": "benchmark-game/scenes/main.scene.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/player.presentation.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/project.unone.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/scenes/main.scene.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/flower-cost.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/gallery-input-paused.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/idle-wallet.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/like-cost.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/preview-no-bet.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/rocket-cost.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/shared-ui.test.json"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "benchmark-game/presentation/bench-renderer.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/card-shader.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/cards.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/game-panels.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/game-renderer.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/landscape.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/card-tool/app.js"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/card-tool/qa_browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/cdp-client.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/media-tool/app.js"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/probe_symbol_browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-collection-polish.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-landscape.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-medium-concurrency.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-pack-sequence.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-runtime-fixes.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/run_symbol_benchmark.mjs"
+    },
+    {
+      "name": "unchanged-tool-copies"
+    },
+    {
+      "name": "card-cli-validate"
+    },
+    {
+      "name": "card-cli-build"
+    },
+    {
+      "name": "media-cli-validate"
+    },
+    {
+      "name": "media-cli-build"
+    },
+    {
+      "name": "card-webp-600x900"
+    },
+    {
+      "name": "atlas-metadata-dimensions-and-unused-alpha"
+    },
+    {
+      "name": "video-h264-dimensions-and-full-decode"
+    },
+    {
+      "name": "poster-dimensions"
+    },
+    {
+      "name": "source-sha256-unchanged"
+    }
+  ],
+  "skips": [],
+  "generated_media_committed": false,
+  "not_executed": [
+    "Original asset-dependent QA suites",
+    "Full-game native acceptance",
+    "Browser rendering, video concurrency, GPU shader and frame-time tests"
+  ],
+  "passed_checks": 51,
+  "skipped_groups": 0
+}

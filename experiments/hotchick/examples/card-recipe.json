@@ -1,0 +1,11 @@
+{
+  "schema": "hotchick.cards.recipe.v1",
+  "output_directory": "assets/generated/example-cards",
+  "preserve_originals": false,
+  "sources": [{"id": "abstract", "path": "assets/source/abstract.png"}],
+  "outputs": [{
+    "id": "abstract", "source": "abstract", "filename": "abstract.webp",
+    "crop": {"x": 0, "y": 0, "width": 360, "height": 540},
+    "width": 600, "height": 900, "quality": 92
+  }]
+}
