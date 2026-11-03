@@ -50,6 +50,15 @@ Retain checks for demonstrated silent failure, data loss or inconsistent state.
 
 ## Recorded reviews
 
+- 2026-11-03: the opt-in Web host profiler now links Canvas asset transitions
+  and pending draws through bounded scalar metadata. Required references and
+  actual visibility remain distinct; no loading, clipping or resource policy
+  changes. Actual old-module lifecycle negative control, 54 focused checks and
+  886/891 full Node tests (five skipped) are preserved. Independent and manual
+  source review found no concrete P1/P2. The separate fixed-diff, tool-free
+  Claude attempt timed out after 45.378 seconds with no output and remains
+  incomplete. Frozen-host validation is separate from source/Node evidence.
+
 - 2026-11-03: the official production player's opt-in host profiler can now
   record bounded passive wake metadata. Default-off execution adds no Core
   calls, packet or observer clock. Simulation timing and the legacy wake hook

@@ -72,6 +72,36 @@ main profiler consumer contains record/sink failures and attempts to set
 clock, tolerance, tick count or schedule order is changed. Active profiling
 still adds observer work: validate production cadence separately.
 
+The same opt-in host profiler records `ui_asset` events for Canvas image
+acquisition and retirement. Event status is `ok`; read the `transition` attribute
+(`acquire_ready`, `loading`, `ready`, `failed`, `release` or `stale_result`) for
+the asset lifecycle. A ready broker hit attaches synchronously and is never
+reported as a new loading interval. Existing draw rows include `ui_composition`,
+`ui_loading_count` and bounded-diagnostic counters to link pending draws.
+
+Entry tokens are unique within `ui_asset_trace_epoch`. Origin composition,
+asset generation and UI observation frame remain separate from the current
+composition, generation, last UI frame, `current_entry` and `current_required`.
+An asynchronous completion does not identify the Core frame that completed it.
+Asset strings are capped at 128 UTF-16 code units, with full length and explicit
+truncation flags; a prefix is not a complete or unique ID.
+
+Reference metadata is capped at 256 assets and transition events at 128 per
+composition, with cumulative overflow/failure counters. `current_refs_known`
+distinguishes a missing metadata row from known zero references. Ordinary-image
+opacity and rectangle/clip counts are descriptive; shared references are
+aggregated. Batch references count definition asset-list membership, and
+`batch_visibility_tested=false`: no new per-quad visibility scan is performed.
+Required references are not necessarily painted pixels. These diagnostics do
+not change acquisition, loading, clipping, rendering or resource lifetime.
+
+The internal observer is installed only when profiling is enabled. Disabled
+execution creates no diagnostic Map, event attributes, packet or clock read.
+Origin tags are weak and scalar-only; they retain no Game node or image alias.
+Observer exceptions are isolated from original errors, readiness waiters and
+render requests. Disposal disconnects the observer. This is host diagnostics,
+not a new Game API, asset-preload policy or FPS acceptance result.
+
 Engine 0.2.0's official Web player exposes a read-only endpoint without enabling
 the developer profiler:
 

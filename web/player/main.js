@@ -127,7 +127,7 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  if(pd)profiler.mark(pd,'interpolation_sample');
  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
  resourceHost?.collect();
- const uiOutcome=renderUi(snapshot);if(pd)profiler.mark(pd,'ui_draw');const submittedAt=performance.now();renderMs=submittedAt-began;
+  const uiOutcome=renderUi(snapshot);if(pd){profiler.set(pd,uiRenderer.assetDiagnostics());profiler.mark(pd,'ui_draw');}const submittedAt=performance.now();renderMs=submittedAt-began;
  const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
  const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
@@ -243,6 +243,7 @@ async function readImagePreloadPlan(catalog){
 async function start(){
  const profileOptions=playerProfileOptions(location.search);
  if(profileOptions){profiler=createPlayerProfiler({limit:profileOptions.limit,publishTarget:document.body});document.body.dataset.playerProfileEnabled='1';
+  uiRenderer.setAssetObserver(attrs=>profiler.record('ui_asset','ok',attrs));
   window.unonePlayerProfile=Object.freeze({report:()=>profiler.report(),clear:()=>profiler.clear(),publish:()=>profiler.publish()});}
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);
  if(startupAbort.signal.aborted)throw startupCancelled();

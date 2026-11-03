@@ -297,7 +297,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                 text = replace_required(
                     text,
                     "import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';",
-                    "const disabledUiCompleted = Object.freeze({status:'completed'}); const createCanvasUi = () => ({draw:()=>disabledUiCompleted,ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})}); const loadPresentationFonts = async () => {};",
+                    "const disabledUiCompleted = Object.freeze({status:'completed'}); const createCanvasUi = () => ({draw:()=>disabledUiCompleted,ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},setAssetObserver(){},assetDiagnostics:()=>null,report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})}); const loadPresentationFonts = async () => {};",
                 )?;
                 text = replace_required(text,
                     "import {createUiTextInputHost} from '../shared/ui-text-input.mjs';",

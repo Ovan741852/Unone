@@ -28,7 +28,7 @@ async function fixture(profiler,{throwDraw=false,drawOutcome,uiOutcome={status:'
   metrics:()=>({}),};
  const context={resourceHost:null,profiler,profileFlight:null,profileLastSource:null,backend,renderer,imageAssets:null,serializedSavePayload,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
   bridgeMs:0,renderMs:0,renderCount:0,frozen:false,manualInput:null,lastStats:null,hasWorldPointer:false,saved:'null',key:'k',orderedQueue:null,scheduler:null,audio:null,
-  input:{consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({})},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
+  input:{consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({}),assetDiagnostics:()=>null},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
   document:{body},localStorage:{setItem:(k,v)=>{storage.set(k,v);log.push(['save']);}},publishPhysical(){},performance,JSON,Error,String};
  vm.createContext(context);vm.runInContext(slice,context);context.acceptSnapshot(context.snapshot,{reset:true});
  return {context,backend,log,storage,body,remote:()=>remote};

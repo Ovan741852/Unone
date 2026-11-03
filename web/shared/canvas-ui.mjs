@@ -104,6 +104,40 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
   const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets,acquireAsset};
   const readyWaiters=new Set();let requiredAssets=new Set();
   let previous=null,paintKey=null,paintDefinitions=[],dirty=true,disposed=false,nodes=[],generation=0,batches=new Map(),prefix=[],references=[],gpuPrefix=0,loadingAssets=0;
+  let assetTrace=null,assetTraceEpoch=0;
+  function setAssetObserver(observer){
+    if(observer!==null&&typeof observer!=='function')throw Error('UI_ASSET_OBSERVER_INVALID');
+    assetTrace=!disposed&&observer?{observer,epoch:++assetTraceEpoch,refs:new Map(),entries:new WeakMap(),composition:0,frame:null,nextEntry:0,events:0,emitted:0,eventOverflow:0,metadataOverflow:0,failures:0}:null;
+  }
+  function traceReference(id,node,batch=false){
+    let ref=assetTrace.refs.get(id);if(!ref){if(assetTrace.refs.size>=256)return;ref={ordinary:0,batches:0,zero:0,candidate:0,outside:0};assetTrace.refs.set(id,ref);}
+    if(batch){ref.batches++;return;}ref.ordinary++;if((node.style?.opacity??1)<=0)ref.zero++;
+    const r=node.rect,c=node.clip,left=Math.max(0,c?.x??0),bottom=Math.max(0,c?.y??0),right=Math.min(100,c?c.x+c.width:100),top=Math.min(100,c?c.y+c.height:100);
+    if(r.x<right&&r.x+r.width>left&&r.y<top&&r.y+r.height>bottom)ref.candidate++;else ref.outside++;
+  }
+  function traceEntry(id,entry,originKnown){
+    if(!assetTrace||assetTrace.entries.has(entry)||!assetTrace.refs.has(id))return;
+    const ref=assetTrace.refs.get(id);assetTrace.entries.set(entry,{token:++assetTrace.nextEntry,composition:originKnown?assetTrace.composition:0,frame:originKnown?assetTrace.frame:null,generation,
+      ordinary:ref.ordinary,batches:ref.batches,zero:ref.zero,candidate:ref.candidate,outside:ref.outside});
+  }
+  function traceAsset(id,entry,transition,asynchronous=false,reason=''){
+    const trace=assetTrace;if(!trace)return;
+    try{
+      const origin=trace.entries.get(entry);if(!origin)return;
+      if(trace.events>=128){trace.eventOverflow++;return;}trace.events++;trace.emitted++;
+      const ref=trace.refs.get(id);
+      trace.observer({transition,asset:id.slice(0,128),asset_chars:id.length,asset_truncated:id.length>128,ui_asset_trace_epoch:trace.epoch,entry_token:origin.token,
+        origin_composition:origin.composition,origin_ui_frame:origin.frame,origin_known:origin.composition!==0,origin_asset_generation:origin.generation,
+        ui_composition:trace.composition,last_ui_frame:trace.frame,asset_generation:generation,current_required:requiredAssets.has(id),current_entry:assets.get(id)===entry,
+        asynchronous,release_reason:reason,entry_state:entry.state,loading_count:loadingAssets,disposed,
+        origin_ordinary_refs:origin.ordinary,origin_batch_list_refs:origin.batches,origin_opacity_zero_refs:origin.zero,origin_rect_clip_candidate_refs:origin.candidate,origin_rect_clip_outside_refs:origin.outside,
+        current_refs_known:ref!==undefined,ordinary_refs:ref?.ordinary??0,batch_list_refs:ref?.batches??0,
+        opacity_zero_refs:ref?.zero??0,rect_clip_candidate_refs:ref?.candidate??0,rect_clip_outside_refs:ref?.outside??0,batch_visibility_tested:false});
+    }catch{trace.failures++;}
+  }
+  function assetDiagnostics(){return assetTrace?{ui_asset_trace_epoch:assetTrace.epoch,ui_composition:assetTrace.composition,ui_loading_count:loadingAssets,ui_asset_metadata:assetTrace.refs.size,
+    ui_asset_metadata_limit:256,ui_asset_event_limit:128,ui_asset_events:assetTrace.emitted,ui_asset_event_overflow:assetTrace.eventOverflow,
+    ui_asset_metadata_overflow:assetTrace.metadataOverflow,ui_asset_observer_failures:assetTrace.failures}:null;}
   const diagnostics=new Map(),quadDiagnosticKeys=new Map();let usage=null,renderMs=null,renderRegions=0;
   const reportError=(id,error)=>{const value={code:'UI_ASSET_FAILED',asset:id,message:String(error?.message??error)};diagnostics.set(id,value);onDiagnostic(value);};
   const retireGpu=()=>getImageBatchPresenter()?.clear();
@@ -117,11 +151,12 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       if(error){readyWaiters.delete(check);reject(error);}else if(!loadingAssets){readyWaiters.delete(check);resolve();}
     };readyWaiters.add(check);check();});
   }
-  function releaseAsset(entry){if(entry.lease)entry.lease.release();else entry.image?.close?.();}
-  function ensureAsset(id){if(assets.has(id))return assets.get(id);
+  function releaseAsset(entry,id,reason){try{if(entry.lease)entry.lease.release();else entry.image?.close?.();}finally{traceAsset(id,entry,'release',false,reason);}}
+  function ensureAsset(id){if(assets.has(id)){const entry=assets.get(id);if(assetTrace)traceEntry(id,entry,false);return entry;}
     const entry={image:null,state:'loading',lease:null};assets.set(id,entry);const ticket=generation;
+    if(assetTrace)traceEntry(id,entry,true);
     if(acquireAsset){
-      const failed=error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}};
+      const failed=(error,asynchronous=true)=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';traceAsset(id,entry,'failed',asynchronous);try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}else traceAsset(id,entry,'stale_result',asynchronous,'rejected');};
       try{
         entry.lease=acquireAsset(id);
         // A prepared image is usable in this draw. Scheduling another Promise
@@ -129,26 +164,29 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
         if(entry.lease.state==='ready'){
           const image=entry.lease.image;
           if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');
-          entry.image=image;entry.state='ready';return entry;
+          entry.image=image;entry.state='ready';traceAsset(id,entry,'acquire_ready');return entry;
         }
         loadingAssets++;
-        if(entry.lease.state==='error'){failed(entry.lease.error);return entry;}
+        if(entry.lease.state==='error'){failed(entry.lease.error,false);return entry;}
+        traceAsset(id,entry,'loading');
         entry.lease.promise.then(image=>{
-          if(disposed||ticket!==generation||assets.get(id)!==entry){entry.lease.release();return;}
+          if(disposed||ticket!==generation||assets.get(id)!==entry){entry.lease.release();traceAsset(id,entry,'stale_result',true,'resolved');return;}
           if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');
-          entry.image=image;entry.state='ready';loadingAssets--;dirty=true;try{requestRender();}finally{notifyReady();}
+          entry.image=image;entry.state='ready';loadingAssets--;dirty=true;traceAsset(id,entry,'ready',true);try{requestRender();}finally{notifyReady();}
         }).catch(failed);
       }catch(error){
         // Synchronous acquire/validation failures did not enter loadingAssets.
         if(entry.state==='loading')entry.state='failed';entry.lease?.release();
+        traceAsset(id,entry,'failed');
         try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}
       }
       return entry;
     }
     loadingAssets++;
+    traceAsset(id,entry,'loading');
     Promise.resolve().then(()=>{if(!resolveAsset)throw Error('UI_ASSET_RESOLVER_REQUIRED');return resolveAsset(id);}).then(value=>typeof value==='string'||value instanceof URL?loadImage(value):value)
-      .then(image=>{if(disposed||ticket!==generation||assets.get(id)!==entry){image?.close?.();return;}if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');entry.image=image;entry.state='ready';loadingAssets--;dirty=true;try{requestRender();}finally{notifyReady();}})
-      .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}});
+      .then(image=>{if(disposed||ticket!==generation||assets.get(id)!==entry){image?.close?.();traceAsset(id,entry,'stale_result',true,'resolved');return;}if(!image||!(image.naturalWidth??image.width))throw Error('UI_IMAGE_INVALID');entry.image=image;entry.state='ready';loadingAssets--;dirty=true;traceAsset(id,entry,'ready',true);try{requestRender();}finally{notifyReady();}})
+      .catch(error=>{if(!disposed&&ticket===generation&&assets.get(id)===entry){if(entry.state==='loading')loadingAssets--;entry.state='failed';traceAsset(id,entry,'failed',true);try{reportError(id,error);dirty=true;requestRender();}finally{notifyReady();}}else traceAsset(id,entry,'stale_result',true,'rejected');});
     return entry;
   }
   function imageFailure(node,quadIndex,error){
@@ -246,11 +284,14 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
         if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
       }
       const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=uiTreeGeneration(tree)??uiProjectionGeneration(tree)??JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
+      if(assetTrace)assetTrace.frame=Number.isSafeInteger(world?.frame)?world.frame:null;
       let compositionChanged=false;
       if(key!==previous||resourceChanged){const prepared=prepareUi(tree,imageBatches,batchResolver);usage=prepared.usage;nodes=prepared.nodes;batches=prepared.batches;routing.setNodes(nodes);previous=key;compositionChanged=true;
         references=[];prefix=[];let leading=true;const used=new Set();
-        for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets)used.add(id);}
-          else if(node.kind==='image')used.add(node.asset);if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
+        if(assetTrace){assetTrace.composition++;assetTrace.events=0;assetTrace.refs.clear();}
+        for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets){used.add(id);if(assetTrace)traceReference(id,node,true);}}
+          else if(node.kind==='image'){used.add(node.asset);if(assetTrace)traceReference(node.asset,node);}if(node.kind!=='input_region'&&node.kind!=='image_batch')leading=false;}
+        if(assetTrace)assetTrace.metadataOverflow+=used.size-assetTrace.refs.size;
         // Pin the complete incoming set before outgoing releases can sweep
         // the shared idle cache and evict an image needed by this very draw.
         requiredAssets=used;
@@ -259,7 +300,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
           // Callbacks may throw or replace this composition synchronously.
           // Retire against the latest required set, after its incoming pins.
           if([...assets.keys()].some(id=>!requiredAssets.has(id))&&!(typeof acquireAsset==='function'&&getImageBatchPresenter()?.ownsImageLeases===true))retireGpu();
-          for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e);assets.delete(id);diagnostics.delete(id);}
+          for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e,id,'composition');assets.delete(id);diagnostics.delete(id);}
           batchResolver.prune(nodes);}}
         if(disposed)throw Error('UI_DISPOSED');}
       if(gpu){
@@ -310,10 +351,10 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       notifyReady();
       return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();
     },
-    pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,
+    pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,setAssetObserver,assetDiagnostics,
     setFont(family){fontFamily=family;dirty=true;},
-    invalidateAssets(){retireGpu();generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
+    invalidateAssets(){retireGpu();generation++;for(const [id,e]of assets)releaseAsset(e,id,'invalidate');assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
     report(){const gpu=canvas?null:getPresenter();return {backend:canvas?'canvas2d':'three.js',...(gpu?{gpu:gpu.metrics()}:{}),nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
-    dispose(){if(disposed)return;retireGpu();router.dispose();disposed=true;generation++;for(const e of assets.values())releaseAsset(e);assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();},
+    dispose(){if(disposed)return;try{retireGpu();router.dispose();disposed=true;generation++;for(const [id,e]of assets)releaseAsset(e,id,'dispose');assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();}finally{assetTrace=null;}},
   };
 }
