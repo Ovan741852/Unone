@@ -291,7 +291,14 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     let write_file = |artifact: &Path, bytes: &[u8], report: &mut ImportReport| -> Result<(), Box<Diagnostic>> {
         if std::fs::read(artifact).ok().as_deref() == Some(bytes) { report.unchanged += 1; return Ok(()) }
         if let Some(parent) = artifact.parent() { std::fs::create_dir_all(parent).map_err(|e| error("IMPORT_WRITE_FAILED", e.to_string()))?; }
-        std::fs::write(artifact, bytes).map_err(|e| error("IMPORT_WRITE_FAILED", format!("{}: {e}", artifact.display())))?;
+        // Written beside it and renamed over it: a copy of the project hard-linked
+        // to the old product keeps its bytes, and a failure leaves the old one whole.
+        let mut temporary = artifact.as_os_str().to_owned();
+        temporary.push(".importing");
+        let temporary = PathBuf::from(temporary);
+        std::fs::write(&temporary, bytes)
+            .and_then(|()| std::fs::rename(&temporary, artifact))
+            .map_err(|e| error("IMPORT_WRITE_FAILED", format!("{}: {e}", artifact.display())))?;
         report.written += 1;
         Ok(())
     };

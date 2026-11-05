@@ -104,9 +104,16 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     assert_eq!((edited.up_to_date, edited.written), (false, 1));
     assert_eq!(std::fs::read(dir.join("imported/pal.dat")).unwrap(), std::fs::read(original.join("DATA/pal.dat")).unwrap());
     // A changed source file reruns what depends on it.
+    let linked = dir.join("imported/linked-copy.png");
+    std::fs::hard_link(dir.join("imported/atlas.png"), &linked).unwrap();
+    let before = std::fs::read(&linked).unwrap();
     write(&original.join("DATA/pixels.dat"), [1u8, 1, 2]);
     let changed = unone_engine::prepare_imports(&dir).unwrap();
     assert_eq!((changed.ran, changed.written), (2, 2));
+    // The product is replaced, not rewritten: a copy hard-linked to it keeps its bytes.
+    assert_eq!(std::fs::read(&linked).unwrap(), before);
+    assert_ne!(std::fs::read(dir.join("imported/atlas.png")).unwrap(), before);
+    assert!(!dir.join("imported/atlas.png.importing").exists());
     // On a machine without the installation, produced files are kept but marked unverified.
     std::fs::remove_file(dir.join(".unone/import-roots.json")).unwrap();
     let offline = unone_engine::prepare_imports(&dir).unwrap();
