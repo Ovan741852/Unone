@@ -34,10 +34,29 @@ fn long_bracket_end(src: &[u8], mut i: usize, level: usize) -> usize {
     src.len()
 }
 
+/// One string literal: where it opens and ends, its first line, its decoded
+/// length, and its text when that is the source as written (no escapes, no
+/// interpolation).
+pub(crate) struct Literal<'a> {
+    pub start: usize,
+    pub end: usize,
+    pub line: usize,
+    pub bytes: usize,
+    pub text: Option<&'a str>,
+}
+
 /// String literals of at least `min_bytes` decoded bytes, in source order.
 pub fn embedded_literals(source: &str, min_bytes: usize) -> Vec<EmbeddedLiteral> {
-    let src = source.as_bytes();
     let mut found = Vec::new();
+    for_each_literal(source, |literal| {
+        if literal.bytes >= min_bytes { found.push(EmbeddedLiteral { line: literal.line, bytes: literal.bytes }); }
+    });
+    found
+}
+
+/// Visits every string literal in source order; comments are not literals.
+pub(crate) fn for_each_literal<'a>(source: &'a str, mut visit: impl FnMut(Literal<'a>)) {
+    let src = source.as_bytes();
     let (mut i, mut line) = (0, 1);
     let count_lines = |from: usize, to: usize| src[from..to].iter().filter(|&&c| c == b'\n').count();
     while i < src.len() {
@@ -58,14 +77,15 @@ pub fn embedded_literals(source: &str, min_bytes: usize) -> Vec<EmbeddedLiteral>
                 let (start, body) = (i, i + level + 2);
                 i = long_bracket_end(src, body, level);
                 let bytes = i.saturating_sub(level + 2).saturating_sub(body);
-                if bytes >= min_bytes { found.push(EmbeddedLiteral { line, bytes }); }
+                visit(Literal { start, end: i, line, bytes, text: None });
                 line += count_lines(start, i);
             }
             quote @ (b'"' | b'\'' | b'`') => {
-                let (start, mut bytes) = (i, 0);
+                let (start, mut bytes, mut plain) = (i, 0, true);
                 i += 1;
                 while i < src.len() && src[i] != quote {
                     if src[i] == b'\\' {
+                        plain = false;
                         i += 1;
                         match src.get(i) {
                             Some(c) if c.is_ascii_digit() => { let digits = src[i..].iter().take(3).take_while(|c| c.is_ascii_digit()).count(); i += digits; }
@@ -81,14 +101,16 @@ pub fn embedded_literals(source: &str, min_bytes: usize) -> Vec<EmbeddedLiteral>
                     }
                     bytes += 1;
                 }
+                let closed = src.get(i) == Some(&quote);
+                let text = (plain && closed).then(|| &source[start + 1..i])
+                    .filter(|text| quote != b'`' || !text.contains('{'));
                 i += 1;
-                if bytes >= min_bytes { found.push(EmbeddedLiteral { line, bytes }); }
+                visit(Literal { start, end: i.min(src.len()), line, bytes, text });
                 line += count_lines(start, i.min(src.len()));
             }
             _ => i += 1,
         }
     }
-    found
 }
 
 /// One error per script file that embeds data, naming the literals.

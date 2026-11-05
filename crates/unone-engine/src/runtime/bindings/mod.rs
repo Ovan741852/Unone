@@ -140,7 +140,61 @@ pub(super) fn build_api(
     )?;
     #[cfg(not(feature = "audio"))]
     api.set("audio", unavailable(lua, "audio")?)?;
+    name_unknown_members(lua, &api, "api".to_string())?;
     Ok(api)
+}
+
+/// Make reading a member the API does not have name it.
+///
+/// A plain table answers nil, which surfaces as "attempt to call a nil value"
+/// with no name at all, for the mistake AI authors make most: a method guessed
+/// from another engine. Existing members are read directly, so this costs
+/// nothing until the read that was about to fail anyway. Tables that already
+/// answer unknown reads (api.debug, compiled-out systems) or are frozen keep
+/// what they have.
+fn name_unknown_members(lua: &Lua, table: &Table, path: String) -> mlua::Result<()> {
+    let children: Vec<(String, Table)> = table
+        .pairs::<Value, Value>()
+        .filter_map(|pair| match pair {
+            Ok((Value::String(name), Value::Table(child))) => Some(name.to_str().map(|name| (name.to_string(), child))),
+            Ok(_) => None,
+            Err(error) => Some(Err(error)),
+        })
+        .collect::<mlua::Result<_>>()?;
+    for (name, child) in children {
+        if child.metatable().is_none() && !child.is_readonly() {
+            name_unknown_members(lua, &child, format!("{path}.{name}"))?;
+        }
+    }
+    let meta = lua.create_table()?;
+    meta.set("__index", lua.create_function(move |_, (table, key): (Table, Value)| {
+        let Value::String(name) = key else { return Ok(Value::Nil) };
+        let name = name.to_str()?.to_string();
+        Err(mlua::Error::RuntimeError(unknown_member_message(&path, &name, &table)?))
+    })?)?;
+    table.set_metatable(Some(meta))
+}
+
+fn unknown_member_message(path: &str, name: &str, table: &Table) -> mlua::Result<String> {
+    let mut members: Vec<String> = Vec::new();
+    for pair in table.pairs::<Value, Value>() {
+        if let (Value::String(member), _) = pair? {
+            members.push(member.to_str()?.to_string());
+        }
+    }
+    members.sort();
+    let closest = crate::suggest::closest(name, members.iter().map(String::as_str), 3);
+    let hint = if closest.is_empty() {
+        let shown: Vec<&str> = members.iter().map(String::as_str).take(12).collect();
+        format!("{path} has: {}", shown.join(", "))
+    } else {
+        let shown: Vec<String> = closest.iter().map(|member| format!("{path}.{member}")).collect();
+        format!("Closest: {}", shown.join(", "))
+    };
+    Ok(format!(
+        "API_UNKNOWN_MEMBER: {path}.{name} does not exist. {hint}. Find the right API with: game api search \"{}\"",
+        crate::suggest::words(name).join(" ")
+    ))
 }
 
 /// Reject option-table keys a binding does not read.

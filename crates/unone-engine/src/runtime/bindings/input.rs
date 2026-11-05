@@ -32,19 +32,22 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     input_api.set(
         "isDown",
         lua.create_function(move |_, action: String| {
-            Ok(input_state
-                .borrow()
-                .down
-                .get(&action)
-                .copied()
-                .unwrap_or(false))
+            let input = input_state.borrow();
+            #[cfg(feature = "dev-tools")]
+            input.note_action_read(&action);
+            Ok(input.down.get(&action).copied().unwrap_or(false))
         })?,
     )?;
 
     let pressed_input = Rc::clone(&input);
     input_api.set(
         "wasPressed",
-        lua.create_function(move |_, action: String| Ok(pressed_input.borrow().pressed.contains(&action)))?,
+        lua.create_function(move |_, action: String| {
+            let input = pressed_input.borrow();
+            #[cfg(feature = "dev-tools")]
+            input.note_action_read(&action);
+            Ok(input.pressed.contains(&action))
+        })?,
     )?;
     let any_pressed_input = Rc::clone(&input);
     input_api.set(
@@ -61,7 +64,12 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let released_input = Rc::clone(&input);
     input_api.set(
         "wasReleased",
-        lua.create_function(move |_, action: String| Ok(released_input.borrow().released.contains(&action)))?,
+        lua.create_function(move |_, action: String| {
+            let input = released_input.borrow();
+            #[cfg(feature = "dev-tools")]
+            input.note_action_read(&action);
+            Ok(input.released.contains(&action))
+        })?,
     )?;
 
     let pointer_position_input = Rc::clone(&input);

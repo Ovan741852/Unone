@@ -114,6 +114,14 @@ mark the canonical block; refresh it with
 preserves surrounding game code and rejects missing/duplicate/malformed markers.
 Never point `api typings --output` at an existing game entry script.
 
+Action names are not free-form strings. A name is real when a host key produces it
+(`game api describe input.isDown` lists them), a UI node publishes it, or
+`project.unone.json` declares it in `"input_actions":["Jump","Debug_*"]`. `check`, `run` and
+`test` report any other name as `INPUT_ACTION_UNKNOWN`, whether a script reads it or a test
+feeds it: an error once the list is declared, even empty, and a warning until then. New
+starters declare it. Do not silence the error with a name nothing presses; fix the spelling
+or bind the action to a control.
+
 Use `kit.createSlider({id=...,value=...,min=...,max=...,step=...})` for numeric
 sliders. Create and retain each control once in `Game.start`; publish
 `control.view({rect=...,trackRect=...})`, and call `control.update(api.input)`

@@ -171,6 +171,20 @@ struct InputState {
     ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
     pending_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
     pending_presentation: crate::PresentationResourceInput,
+    /// Every name scripts have asked about, for INPUT_ACTION_UNKNOWN. Shared, not
+    /// copied, when a reload snapshots this state.
+    #[cfg(feature = "dev-tools")]
+    action_reads: Rc<RefCell<BTreeSet<String>>>,
+}
+
+#[cfg(feature = "dev-tools")]
+impl InputState {
+    fn note_action_read(&self, action: &str) {
+        let mut reads = self.action_reads.borrow_mut();
+        if !reads.contains(action) {
+            reads.insert(action.to_string());
+        }
+    }
 }
 
 // Host writes may arrive several times between ticks. Publish one read-only
@@ -463,18 +477,24 @@ impl EngineRuntime {
             .map(|line| line.trim() == "--!strict")
             .unwrap_or(false);
         let mut result = EngineResult::success(CheckReport {
-            project: config.name,
+            project: config.name.clone(),
             script: paths.entry_script.display().to_string(),
             strict_mode,
             entrypoints,
             type_check: None,
         });
+        let mut actions = crate::input_actions::ScriptActions::default();
         for (path, text) in project_scripts(&paths, &source) {
             let shown = path.strip_prefix(&paths.root).unwrap_or(&path);
             if let Some(diagnostic) = crate::script_data::embedded_data_diagnostic(shown, &text) {
                 result.ok = false;
                 result.diagnostics.push(diagnostic);
             }
+            actions.scan(shown, &text);
+        }
+        if let Some(diagnostic) = actions.diagnostic(&config) {
+            result.ok &= !crate::input_actions::is_error(&diagnostic);
+            result.diagnostics.push(diagnostic);
         }
         if !strict_mode {
             result.diagnostics.push(Diagnostic::warning(
@@ -1104,6 +1124,8 @@ impl EngineRuntime {
         seed: u64,
         input_sequence: Option<&[InputFrame]>,
     ) -> EngineResult<RunReport> {
+        #[cfg(feature = "dev-tools")]
+        let mut actions = crate::input_actions::RunActions::new(self.input.borrow().down.keys(), input_sequence);
         for frame_index in 0..frames {
             let tick = if let Some(input_sequence) = input_sequence {
                 let default_frame;
@@ -1121,6 +1143,8 @@ impl EngineRuntime {
             if let Err(err) = tick {
                 return EngineResult::failure(*err);
             }
+            #[cfg(feature = "dev-tools")]
+            actions.note_ui(self.ui.borrow().as_ref());
         }
         let world = self.observe();
         let digest = match observation_digest(&world) {
@@ -1135,7 +1159,8 @@ impl EngineRuntime {
                 ));
             }
         };
-        EngineResult::success(RunReport {
+        #[allow(unused_mut)]
+        let mut result = EngineResult::success(RunReport {
             jobs: self.jobs_report(),
             project: self.config.name.clone(),
             seed,
@@ -1146,7 +1171,25 @@ impl EngineRuntime {
             save_payload: self.save_payload(),
             trace: self.trace.borrow().clone(),
             performance: self.performance_report(),
-        })
+        });
+        #[cfg(feature = "dev-tools")]
+        {
+            let reads = Rc::clone(&self.input.borrow().action_reads);
+            let reads = reads.borrow();
+            let diagnostic = actions.diagnostic(&self.config, &reads, || {
+                let mut scripts = crate::input_actions::ScriptActions::default();
+                let entry = fs::read_to_string(&self.paths.entry_script).unwrap_or_default();
+                for (path, text) in project_scripts(&self.paths, &entry) {
+                    scripts.scan(path.strip_prefix(&self.paths.root).unwrap_or(&path), &text);
+                }
+                scripts
+            });
+            if let Some(diagnostic) = diagnostic {
+                result.ok = !crate::input_actions::is_error(&diagnostic);
+                result.diagnostics.push(diagnostic);
+            }
+        }
+        result
     }
 
     /// Time what a host pays to receive each observation.
@@ -1403,6 +1446,7 @@ impl EngineRuntime {
             ));
         }
         let mut cases = Vec::new();
+        let mut warnings = Vec::new();
         for test_path in paths.test_files {
             let text = match fs::read_to_string(&test_path) {
                 Ok(text) => text,
@@ -1424,6 +1468,22 @@ impl EngineRuntime {
                     ));
                 }
             };
+            if spec.assertions.is_empty() {
+                let mut diagnostic = Diagnostic::error(
+                    "TEST_NO_ASSERTIONS",
+                    "Test checks nothing",
+                    format!(
+                        "{} declares no assertions, so it would pass whatever the game does. A running game is not evidence; assert what this case should have produced.",
+                        test_path.display()
+                    ),
+                );
+                diagnostic.suggested_actions = vec![ActionSuggestion {
+                    action: "add_assertion".to_string(),
+                    description: "Add an entity, observation or UI entry to `assertions`, for example {\"observation\":{\"key\":\"score\",\"equals\":1}}; test.schema.json lists every form.".to_string(),
+                    command: Some("game schema test".to_string()),
+                }];
+                return EngineResult::failure(diagnostic);
+            }
             for (index, assertion) in spec.assertions.iter().enumerate() {
                 if let Err(error) = assertion.validate() {
                     return EngineResult::failure(Diagnostic::error(
@@ -1478,6 +1538,13 @@ impl EngineRuntime {
                 }
             };
             let mut failures = Vec::new();
+            for diagnostic in run.diagnostics {
+                if crate::input_actions::is_error(&diagnostic) {
+                    failures.push(format!("{}: {}", diagnostic.code, diagnostic.explanation));
+                } else {
+                    warnings.push(diagnostic);
+                }
+            }
             if let Err(error) = runtime.host_time_replay_complete() {
                 failures.push(error);
             }
@@ -1497,11 +1564,13 @@ impl EngineRuntime {
             });
         }
         let passed = cases.iter().all(|case| case.passed);
-        EngineResult::success(TestSuiteReport {
+        let mut result = EngineResult::success(TestSuiteReport {
             project: config.name,
             passed,
             cases,
-        })
+        });
+        result.diagnostics = crate::input_actions::suite_warning(warnings).into_iter().collect();
+        result
     }
 
     pub fn observe(&self) -> WorldSnapshot {
@@ -2172,23 +2241,89 @@ fn classify_analyzer_result(
         }];
         return Err(Box::new(diagnostic));
     }
+    // What to read first: the first real error, not a lint line printed before it.
+    let issues: Vec<AnalyzerIssue> = output.lines().filter_map(parse_analyzer_issue).collect();
+    let first = issues.iter().find(|issue| issue.kind.ends_with("Error")).or(issues.first());
     let mut diagnostic = Diagnostic::error(
         "LUAU_TYPECHECK_FAILED",
-        "Luau static analyzer found type or lint issues",
-        "The entry script passes the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.",
+        match first {
+            Some(issue) => format!("{}: {}", issue.kind, issue.message),
+            None => "Luau static analyzer found type or lint issues".to_string(),
+        },
+        match first {
+            Some(issue) => format!(
+                "luau-analyze reported {} issue(s); this one is at {}:{}:{}. Scripts must pass it before hot reload or running tests.",
+                issues.len(), issue.file, issue.line, issue.column
+            ),
+            None => "The scripts pass the runtime contract but not official luau-analyze; fix the typecheck output before hot reload or running tests.".to_string(),
+        },
     );
+    diagnostic.source = first.map(|issue| SourceLocation {
+        file: issue.file.clone(),
+        line: Some(issue.line),
+        column: Some(issue.column),
+    });
     diagnostic.facts = serde_json::json!({
         "tool": tool,
         "exit_code": exit_code,
         "files": files,
+        "issues": issues.iter().take(20).map(|issue| serde_json::json!({
+            "file": issue.file, "line": issue.line, "column": issue.column,
+            "kind": issue.kind, "message": issue.message,
+        })).collect::<Vec<_>>(),
         "output": output,
     });
-    diagnostic.suggested_actions = vec![ActionSuggestion {
+    if let Some(member) = first.and_then(|issue| missing_api_member(&issue.message)) {
+        diagnostic.suggested_actions.push(ActionSuggestion {
+            action: "search_api".to_string(),
+            description: format!("{member} is not part of that API; find the one that does this and use its exact name."),
+            command: Some(format!("game api search \"{}\"", crate::suggest::words(member).join(" "))),
+        });
+    }
+    diagnostic.suggested_actions.push(ActionSuggestion {
         action: "fix_typecheck".to_string(),
-        description: "Fix Luau type or lint issues using the files, line numbers, and messages in the output.".to_string(),
+        description: "Fix the issues listed in facts.issues, then run the check again.".to_string(),
         command: Some("game check --types --json".to_string()),
-    }];
+    });
     Err(Box::new(diagnostic))
+}
+
+/// One `file:line.col-line.col: Kind: message` line of `--formatter=gnu` output.
+#[cfg(feature = "dev-tools")]
+#[derive(Debug, PartialEq)]
+struct AnalyzerIssue {
+    file: String,
+    line: u32,
+    column: u32,
+    kind: String,
+    message: String,
+}
+
+#[cfg(feature = "dev-tools")]
+fn parse_analyzer_issue(text: &str) -> Option<AnalyzerIssue> {
+    // A Windows path has a colon of its own, so find the one before the position.
+    for (colon, _) in text.match_indices(':') {
+        let Some((span, detail)) = text[colon + 1..].split_once(": ") else { return None };
+        let start = span.split_once('-').map_or(span, |(start, _)| start);
+        let Some((line, column)) = start.split_once('.') else { continue };
+        let (Ok(line), Ok(column)) = (line.parse(), column.parse()) else { continue };
+        let (kind, message) = detail.split_once(": ")?;
+        return Some(AnalyzerIssue {
+            file: text[..colon].to_string(),
+            line,
+            column,
+            kind: kind.to_string(),
+            message: message.to_string(),
+        });
+    }
+    None
+}
+
+/// `isActionJustPressed` from "Key 'isActionJustPressed' not found in table 'InputApi'".
+#[cfg(feature = "dev-tools")]
+fn missing_api_member(message: &str) -> Option<&str> {
+    let (member, table) = message.strip_prefix("Key '")?.split_once("' not found in table '")?;
+    table.strip_suffix('\'')?.ends_with("Api").then_some(member)
 }
 
 #[cfg(feature = "dev-tools")]
@@ -2290,6 +2425,20 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
             command: Some("game project inspect --json".to_string()),
         },
     ];
+    if let Some((_, detail)) = message.split_once("API_UNKNOWN_MEMBER: ") {
+        let detail = detail.lines().next().unwrap_or(detail);
+        if let Some((name, _)) = detail.split_once(" does not exist.") {
+            diagnostic.summary = format!("{name} does not exist");
+        }
+        diagnostic.likely_causes = vec!["The API name was guessed, or comes from another engine".to_string()];
+        if let Some((_, command)) = detail.split_once("Find the right API with: ") {
+            diagnostic.suggested_actions = vec![ActionSuggestion {
+                action: "search_api".to_string(),
+                description: "Find the API that does this, then use its exact name.".to_string(),
+                command: Some(command.to_string()),
+            }];
+        }
+    }
     diagnostic
 }
 
@@ -2876,6 +3025,33 @@ return Game
     /// a genuine type error exits 1 carrying the TypeError text. So a failing
     /// exit with nothing to say is the tool dying, never a type error, and the
     /// author must not be told to fix a script that was never checked.
+    #[test]
+    fn a_type_error_is_stated_in_the_summary_with_its_location() {
+        let output = "C:/game/scripts/main.luau:3.1-3.5: LocalUnused: Variable 'x' is never used\n\
+            C:/game/scripts/helper.luau:1018.8-1018.36: TypeError: Key 'isActionJustPressed' not found in table 'InputApi'\n\
+            a line that is not an issue"
+            .to_string();
+        let error = super::classify_analyzer_result(false, Some(1), output, "tool".to_string(), Vec::new())
+            .expect_err("a reported type error fails");
+        assert_eq!(error.code, "LUAU_TYPECHECK_FAILED");
+        assert_eq!(error.summary, "TypeError: Key 'isActionJustPressed' not found in table 'InputApi'", "the error, not the lint before it");
+        assert!(error.explanation.contains("2 issue(s)"), "{}", error.explanation);
+        let source = error.source.as_ref().expect("the issue's location");
+        assert_eq!((source.file.as_str(), source.line, source.column), ("C:/game/scripts/helper.luau", Some(1018), Some(8)));
+        assert_eq!(error.facts["issues"].as_array().unwrap().len(), 2);
+        assert_eq!(error.suggested_actions[0].command.as_deref(), Some(r#"game api search "is action just pressed""#));
+
+        let other = super::classify_analyzer_result(false, Some(1), "main.luau:2.19-2.32: TypeError: Expected 'number', but got 'string'".to_string(), "tool".to_string(), Vec::new())
+            .expect_err("a reported type error fails");
+        assert_eq!(other.summary, "TypeError: Expected 'number', but got 'string'");
+        assert_eq!(other.suggested_actions[0].action, "fix_typecheck", "only a missing API member points at the API search");
+
+        let unparsed = super::classify_analyzer_result(false, Some(1), "something unexpected".to_string(), "tool".to_string(), Vec::new())
+            .expect_err("output means it failed");
+        assert_eq!(unparsed.summary, "Luau static analyzer found type or lint issues");
+        assert!(unparsed.source.is_none());
+    }
+
     #[test]
     fn an_analyzer_that_fails_silently_is_not_reported_as_a_type_error() {
         let tool = "luau-analyze".to_string();

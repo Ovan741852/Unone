@@ -266,6 +266,8 @@ The entry script produced by `project init` **inlines the engine's Luau type con
 
 The complete fields and assertion structure of `.test.json` are defined by the package's `test.schema.json`. `game test` treats each test file as an independent deterministic case and returns an observation digest, save payload, and assertion failures; save/restore fields are for `GAME_PLAN` requirements only. Do not use a UI screenshot as a test assertion.
 
+Every case must assert something: a test with no `assertions` is refused with `TEST_NO_ASSERTIONS`, because it would pass whatever the game does.
+
 For example, `project.unone.json` can set `"test_files": ["tests/opening.test.json"]`, and a test file consists of `name`, optional `frames` / `seed` / `input` / `input_sequence` / `load_save`, and `assertions`. `load_save` is only for a `GAME_PLAN` restore check. An assertion chooses exactly one of: `observation` for full JSON-value equality, `ui` for full typed UI-tree equality (including nested reusable components), or `entity` + `field` (currently `transform.x` / `transform.y`) for numeric comparison.
 
 If only the runtime contract is needed, omit `--types`. A local Windows binary from an official Luau release can be used, or set:
@@ -327,6 +329,10 @@ cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json ru
 ```powershell
 cargo run -p unone-cli -- --project D:/Projects/Unone_Games/minimal-2d --json test
 ```
+
+Input names are checked. A name is real when a host key produces it (`game api describe input.isDown` lists them), a UI node publishes it, or `project.unone.json` declares it in `"input_actions"` (a trailing `*` declares a family: `"Debug_*"`). `check` scans scripts for literal `input.isDown/wasPressed/wasReleased("name")` reads and literal `action = "name"` fields, including branches no run reaches; `run` and `test` also cover names built at runtime, names in `input` / `input_sequence` / `--action`, and the actions the UI actually published. Anything else is `INPUT_ACTION_UNKNOWN` with the nearest real name: an error once `input_actions` is declared, even empty, and a warning until then. `game project init` declares it.
+
+A member the API does not have fails where it is read with `API_UNKNOWN_MEMBER`, naming it, the closest real members and the `game api search` that finds the right one. `LUAU_TYPECHECK_FAILED` states the first error in `summary`, its location in `source`, and every issue in `facts.issues`.
 
 The test manifest lives in the game project and contains frames, seed, input, optional per-frame `input_sequence`, and assertions. Each `input_sequence` frame may contain `actions` and `pointer`; missing frames clear the actions and pointer-down state to prevent sticky input. When a test fails, first classify it as:
 

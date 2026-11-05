@@ -143,7 +143,8 @@ fn developer_recording_captures_time_before_start_and_replay_requires_the_tape()
 fn deterministic_tests_and_ui_preview_require_replay_time_and_consume_the_tape() {
     let dir = tempfile::tempdir().unwrap();
     std::fs::write(dir.path().join("main.luau"), SOURCE).unwrap();
-    std::fs::write(dir.path().join("clock.test.json"), json!({"name":"clock", "frames":1}).to_string()).unwrap();
+    std::fs::write(dir.path().join("clock.test.json"), json!({"name":"clock", "frames":1,
+        "assertions":[{"observation":{"key":"values","equals":[4294967297u64,4294967298u64,4294967379u64]}}]}).to_string()).unwrap();
     for policy in [json!({"mode":"live"}), json!({"mode":"record"}), json!({"mode":"replay","tape":tape()})] {
         let replay = policy["mode"] == "replay";
         std::fs::write(dir.path().join("project.unone.json"), json!({

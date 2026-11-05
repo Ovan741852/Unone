@@ -871,9 +871,11 @@
   "description": "One test case, one file.\n\nUnknown keys are rejected: a test file with a misspelled or invented key\nused to load with that key ignored, so a file whose assertions lived under\nthe wrong name passed green while checking nothing.",
   "properties": {
     "assertions": {
+      "description": "What this case checks; a case with none is rejected (TEST_NO_ASSERTIONS).",
       "items": {
         "$ref": "#/$defs/TestAssertion"
       },
+      "minItems": 1,
       "type": "array"
     },
     "frames": {

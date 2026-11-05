@@ -46,6 +46,12 @@ pub struct ProjectConfig {
     /// unknown ids instead of treating a typo as a disabled system.
     #[serde(default)]
     pub systems: BTreeMap<String, bool>,
+    /// The game's own input action names, beyond host key names and the actions
+    /// its UI publishes; `Prefix*` declares a family. A name nothing can produce
+    /// can never fire, so check, run and test report it: as an error once this
+    /// list is declared, even empty, and as a warning while it is not.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_actions: Option<Vec<String>>,
     /// Which gates `verify` runs, in what order, and which of them are
     /// advisory.
     ///
@@ -219,7 +225,9 @@ pub struct TestSpec {
     /// live or record.
     #[serde(default)]
     pub host_time: Option<crate::HostTimeTape>,
+    /// What this case checks; a case with none is rejected (TEST_NO_ASSERTIONS).
     #[serde(default)]
+    #[cfg_attr(feature = "dev-tools", schemars(length(min = 1)))]
     pub assertions: Vec<TestAssertion>,
 }
 

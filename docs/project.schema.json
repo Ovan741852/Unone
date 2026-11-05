@@ -449,6 +449,16 @@
       ],
       "description": "Importers and read-only import roots for assets declaring `import`."
     },
+    "input_actions": {
+      "description": "The game's own input action names, beyond host key names and the actions\nits UI publishes; `Prefix*` declares a family. A name nothing can produce\ncan never fire, so check, run and test report it: as an error once this\nlist is declared, even empty, and as a warning while it is not.",
+      "items": {
+        "type": "string"
+      },
+      "type": [
+        "array",
+        "null"
+      ]
+    },
     "job_scripts": {
       "additionalProperties": {
         "type": "string"
