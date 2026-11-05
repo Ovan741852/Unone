@@ -98,6 +98,7 @@ export async function loadPresentationFonts(ui={},resolveSource=source=>source){
 // Pass a 2D canvas to paint with Canvas2D (tools, previews), or null with
 // getPresenter to hand painting to the game renderer's GPU UI pass. Layout,
 // routing, assets and diagnostics are shared by both.
+const DATA_TEXTURE_ASSET='data-texture://';
 export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireAsset,onAction,onSlider,onDiagnostic=()=>{},requestRender=()=>{},fontFamily='sans-serif',textColor='#ffffff',createSurface=()=>(canvas?.ownerDocument??globalThis.document)?.createElement('canvas')??new OffscreenCanvas(1,1),getImageBatchPresenter=()=>null,getPresenter=()=>null}={}){
   const ctx=canvas?canvas.getContext('2d'):null;if(canvas&&!ctx)throw Error('UI_CANVAS_2D_UNAVAILABLE');
   const opacityPainter=createUiOpacityPainter(createSurface);
@@ -153,6 +154,11 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
   }
   function releaseAsset(entry,id,reason){try{if(entry.lease)entry.lease.release();else entry.image?.close?.();}finally{traceAsset(id,entry,'release',false,reason);}}
   function ensureAsset(id){if(assets.has(id)){const entry=assets.get(id);if(assetTrace)traceEntry(id,entry,false);return entry;}
+    // A runtime data texture has no file: the GPU presenter reads it by ID at draw.
+    if(id.startsWith(DATA_TEXTURE_ASSET)){
+      if(!getPresenter()?.showsDataTextures)throw Error(`UI_DATA_TEXTURE_UNSUPPORTED: ${id} needs the official GPU UI`);
+      const entry={image:null,state:'ready',lease:null};assets.set(id,entry);return entry;
+    }
     const entry={image:null,state:'loading',lease:null};assets.set(id,entry);const ticket=generation;
     if(assetTrace)traceEntry(id,entry,true);
     if(acquireAsset){

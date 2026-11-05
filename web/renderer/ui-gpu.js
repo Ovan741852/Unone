@@ -38,6 +38,7 @@ void main(){
  else{color=texture2D(uiTexture,vUv)*vColor.a;if(mode<2.5)color*=coverage(vBox,vParams.x);}
  gl_FragColor=color*vParams.w;
 }`;
+const DATA_TEXTURE_ASSET='data-texture://';
 const imageSize=image=>[image?.naturalWidth??image?.width,image?.naturalHeight??image?.height];
 const capacityFor=n=>2**Math.ceil(Math.log2(Math.max(64,n)));
 const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
@@ -45,7 +46,7 @@ const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
 // placement stays in the quad; retain the complete style conservatively.
 const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placeholder,node.text_edit,node.style,node.align,node.fontSize,node.lineHeight]);
 
-export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null}={}){
+export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null}={}){
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
  const positions=new THREE.BufferAttribute(new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),3),index=new THREE.BufferAttribute(new Uint16Array([0,1,2,0,2,3]),1);
  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
@@ -202,12 +203,17 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   try{
   const clipOf=c=>c?[c.x*W/100,(100-c.y-c.height)*H/100,(c.x+c.width)*W/100,(100-c.y)*H/100]:screen;
   const meet=(a,b)=>[Math.max(a[0],b[0]),Math.max(a[1],b[1]),Math.min(a[2],b[2]),Math.min(a[3],b[3])];
+  // A file's decoded image, or a runtime data texture's (data-texture://<id>).
+  const source=asset=>{
+   if(asset.startsWith(DATA_TEXTURE_ASSET)){const texture=dataTextures?.get(asset.slice(DATA_TEXTURE_ASSET.length));return texture?{image:texture.image,texture}:null;}
+   const entry=images.get(asset);return entry?.image?{image:entry.image,texture:null}:null;
+  };
   const rect=(x,y,w,h,extra)=>prims.push({origin:[x,y],axisX:[w,0],axisY:[0,h],uv:FULL_UV,color:WHITE,border:NONE,box:[x,y,w,h],radius:0,width:0,opacity:1,...extra});
   function image(node,x,y,w,h,radius,opacity,clip){
-   const entry=images.get(node.asset);if(!entry?.image)return;
+   const entry=source(node.asset);if(!entry)return;
    const pad=node.style?.padding??{},left=(pad.left??0)*unit,top=(pad.top??0)*unit;
    const cw=Math.max(0,w-left-(pad.right??0)*unit),ch=Math.max(0,h-top-(pad.bottom??0)*unit);if(!cw||!ch)return;
-   const [iw,ih]=imageSize(entry.image),texture=imageTexture(node.asset,entry.image,usedImages,created,promoted),cx=x+left,cy=y+top,inner=meet(clip,[cx,cy,cx+cw,cy+ch]);
+   const [iw,ih]=imageSize(entry.image),texture=entry.texture??imageTexture(node.asset,entry.image,usedImages,created,promoted),cx=x+left,cy=y+top,inner=meet(clip,[cx,cy,cx+cw,cy+ch]);
    const quad=(dx,dy,dw,dh,uv)=>rect(dx,dy,dw,dh,{mode:IMAGE,texture,uv,box:[x,y,w,h],radius,opacity,clip:inner});
    try{
     if(node.slice){
@@ -221,13 +227,13 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    const instance=batches.get(node),t=instance.transform,stage=meet(clip,clipOf(instance.clip));
    const point=(sx,sy)=>[(t.a*sx+t.c*sy+t.tx)*W/100,H-(t.b*sx+t.d*sy+t.ty)*H/100];
    instance.definition.quads.forEach((q,i)=>{
-    const entry=images.get(q.asset);if(!entry?.image)return;
+    const entry=source(q.asset);if(!entry)return;
     const [iw,ih]=imageSize(entry.image),s=q.source,r=q.rect;
     if(s&&(s.x+s.width>iw||s.y+s.height>ih)){imageError(node,i,Error(`UI_SLICE_BOUNDS: source exceeds image ${iw}x${ih}`));return;}
     let origin,axisX,axisY;
     if(instance.pixelSnap){const snapped=imageBatchSnappedRect(instance,r,W,H);if(!snapped.width||!snapped.height)return;origin=[snapped.x,snapped.y];axisX=[snapped.width,0];axisY=[0,snapped.height];}
     else{const tl=point(r.x,r.y+r.height),tr=point(r.x+r.width,r.y+r.height),bl=point(r.x,r.y);origin=tl;axisX=[tr[0]-tl[0],tr[1]-tl[1]];axisY=[bl[0]-tl[0],bl[1]-tl[1]];}
-    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:imageTexture(q.asset,entry.image,usedImages,created,promoted)});
+    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:entry.texture??imageTexture(q.asset,entry.image,usedImages,created,promoted)});
    });
   }
   function text(node,x,y,w,h,radius,opacity,clip,bounds){
@@ -289,6 +295,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  return {
   // Drawing-buffer pixels the UI lays out against, and the CSS->device scale.
   target(){if(disposed||!available()||renderer.getContext().isContextLost())return null;renderer.getDrawingBufferSize(size);return {width:size.x,height:size.y,scale:renderer.getPixelRatio()};},
+  showsDataTextures:!!dataTextures,
   draw(context){
    if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');
    if(drawing)throw Error('UI_DRAW_REENTRANT');if(disposed)return {skipped:true,regions:0};drawing=true;

@@ -35,5 +35,21 @@ Applying a new scene clears data textures. A texture bound to a material
 sampler cannot be removed (`DATA_TEXTURE_BOUND`); unbind it first with
 `api.shader.setTexture(material, sampler, nil)`.
 
+## In the UI
+
+A UI image or image batch quad can show an `rgba8` data texture by naming it
+`data-texture://<id>`, for pictures a game draws itself, such as a minimap:
+
+```luau
+api.texture.set("minimap", {width = 128, height = 128, format = "rgba8", data = pixels})
+api.ui.imageBatch.define("minimap", {bounds = {x = 0, y = 0, width = 128, height = 128},
+    quads = {{asset = "data-texture://minimap", rect = {x = 0, y = 0, width = 128, height = 128}}}})
+```
+
+Updating the texture changes the picture without touching the UI tree. Set the
+texture before the tree that names it, keep its size, and write premultiplied
+alpha. A missing texture draws nothing. Only the official GPU UI can show one;
+other hosts report `UI_DATA_TEXTURE_UNSUPPORTED`.
+
 The official WebGL2 player supports data textures. The native player rejects
 them (`HOST_DATA_TEXTURE_UNSUPPORTED`) instead of drawing without them.
