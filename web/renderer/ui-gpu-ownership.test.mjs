@@ -90,3 +90,15 @@ for(const method of ['clear','contextLost','dispose'])test(`${method} detaches a
   if(method!=='dispose'){f.draw([f.image('a'),f.text('restored')]);assert.equal(f.ui.metrics().image_textures,1);assert.equal(f.ui.metrics().dedicated_text_textures,1);}
  }finally{f.dispose();}
 });
+
+test('a run outgrowing its buffer frees nothing the other runs still draw with',async()=>{
+ const f=await fixture();try{
+  f.draw([f.image('a'),f.image('b')]);const [first,second]=f.meshes,old=first.geometry;
+  // Three's dispose frees the GPU buffers of every attribute and the index of the geometry.
+  const buffers=geometry=>[geometry.index,...Object.values(geometry.attributes)].map(attribute=>attribute.data??attribute);
+  let freed=null;old.addEventListener('dispose',()=>{freed=buffers(old);});
+  f.draw([...Array.from({length:65},(_,i)=>({...f.image('a'),id:'a'+i})),f.image('b')]);
+  assert.notEqual(first.geometry,old);assert.ok(freed);assert.equal(second.visible,true);
+  for(const buffer of buffers(second.geometry))assert.ok(!freed.includes(buffer),'A live run lost its quad buffer');
+ }finally{f.dispose();}
+});

@@ -48,7 +48,7 @@ const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placehold
 
 export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null}={}){
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
- const positions=new THREE.BufferAttribute(new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),3),index=new THREE.BufferAttribute(new Uint16Array([0,1,2,0,2,3]),1);
+ const quadPositions=new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),quadIndex=new Uint16Array([0,1,2,0,2,3]);
  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
  const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
@@ -98,7 +98,9 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  function runAt(i,needed){
   let r=runs[i];if(r&&r.capacity>=needed)return r;
   const capacity=capacityFor(needed),geometry=new THREE.InstancedBufferGeometry(),buffer=new THREE.InstancedInterleavedBuffer(new Float32Array(capacity*STRIDE),STRIDE,1);
-  buffer.setUsage(THREE.DynamicDrawUsage);geometry.setIndex(index);geometry.setAttribute('position',positions);
+  // Each geometry owns its quad attributes: disposing a geometry frees the GPU
+  // buffers of all its attributes, and a vertex array bound at that moment loses them.
+  buffer.setUsage(THREE.DynamicDrawUsage);geometry.setIndex(new THREE.BufferAttribute(quadIndex,1));geometry.setAttribute('position',new THREE.BufferAttribute(quadPositions,3));
   ATTRIBUTES.forEach((name,k)=>geometry.setAttribute(name,new THREE.InterleavedBufferAttribute(buffer,4,k*4)));
   if(r){r.geometry.dispose();r.mesh.geometry=geometry;Object.assign(r,{geometry,buffer,capacity});return r;}
   const mesh=new THREE.Mesh(geometry,material());mesh.frustumCulled=false;mesh.renderOrder=i;scene.add(mesh);
