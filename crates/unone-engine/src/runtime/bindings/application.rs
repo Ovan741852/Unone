@@ -13,5 +13,6 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         world.borrow_mut().application.request_quit();
         Ok(())
     })?)?;
+    api.set("presenting", lua.create_function(|_, ()| Ok(crate::application::host_presenting()))?)?;
     Ok(api)
 }

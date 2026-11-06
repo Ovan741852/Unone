@@ -169,6 +169,10 @@ export type ApplicationApi = {
     -- Monotonic host intent; native exits after successfully presenting this state.
     -- The game owns confirmation. Headless records the latch without GPU evidence.
     requestQuit: () -> (),
+    -- False on a tick the host runs to catch up, whose output no one will see: another tick
+    -- follows before the next frame. For skipping presentation work, never for rules:
+    -- replays and native runs always say true.
+    presenting: () -> boolean,
 }
 
 export type PhysicalModifiers = {shift:boolean,control:boolean,alt:boolean,meta:boolean,alt_graph:boolean?,caps_lock:boolean?,num_lock:boolean?}

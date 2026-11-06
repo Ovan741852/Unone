@@ -960,6 +960,16 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "api.application.setEscapeBehavior('action')", vec!["application.requestQuit", "input.wasPressed"],
         ),
         descriptor(
+            "application.presenting", "application",
+            "Whether this tick's output can reach the screen.",
+            "Skip building what is only shown (scene, UI, observations for a viewer) on a tick the host runs to catch up.",
+            "Never for rules: a replay and a native run always say true, so state must not depend on it. It is a hint, not a promise of a frame.",
+            vec![], "boolean", vec![],
+            "Available from start/update. False only between a Web host's catch-up ticks of one frame; the last tick of each frame says true.",
+            vec![],
+            "if not api.application.presenting() then return end", vec!["application.requestQuit"],
+        ),
+        descriptor(
             "application.requestQuit", "application",
             "Latch a host-neutral application quit request after game-owned confirmation.",
             "Confirm an explicit exit action in game Luau, then let the native host finish presentation and reporting.",

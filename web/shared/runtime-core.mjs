@@ -45,7 +45,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  return {module,trace:()=>lastTrace,close(){if(closed)return;closed=true;loaded=false;latest=undefined;pending=[];pool?.close();pool=null;spatial.close();releaseObservationResources(module);module._unone_web_unload_project?.();},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),fault:fault?String(fault):null};},async execute(command){
   if(closed)throw Error('RUNTIME_CLOSED');
   if(profile)lastTrace={kind:String(command?.kind),start_ms:performance.now(),marks:[]};
-  const allowed={load:['payload','seed','data'],tick:['input'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
+  const allowed={load:['payload','seed','data'],tick:['input','presenting'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
   if(!command||!Object.hasOwn(allowed,command.kind)||Object.keys(command).some(k=>k!=='kind'&&!allowed[command.kind].includes(k)))throw Error('RUNTIME_COMMAND_INVALID');
   if(command.kind!=='load'&&!loaded)throw Error('RUNTIME_NOT_LOADED');
   switch(command.kind){
@@ -66,7 +66,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
     } else policy={workers:0,reason:'jobs_disabled'};
     loaded=true;latest=withSpriteResourcePlan(latest);return latest;
    }
-   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');send('_unone_web_set_input_frame',command.input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');latest=withSpriteResourcePlan(latest);return latest;
+   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);send('_unone_web_set_input_frame',command.input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');latest=withSpriteResourcePlan(latest);return latest;
    case 'hostTime':if(typeof module._unone_web_host_time_request!=='function')throw Error('HOST_TIME_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_host_time_request',command.request);return read();
    case 'ui':if(typeof module._unone_web_ui_request!=='function')throw Error('UI_SCROLL_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_ui_request',command.request);latest=read();return latest;
    case 'aspect':if(!Number.isFinite(command.value)||command.value<=0)throw Error('VIEWPORT_INVALID');if(module._unone_web_set_viewport_aspect(command.value)!==0)throw Error(JSON.stringify(read()));return latest;

@@ -53,7 +53,7 @@ export function createAsyncScheduler({
     if(diagnostic){diagnostic.due=due;diagnostic.admitted=count;diagnostic.lost=lost;diagnostic.acc_after_ms=acc;}
     if(count>0){
      preparationStart=now();tag=onPreparationStart?.();
-     while(steps<count&&started&&!hidden()&&!paused&&token===generation&&acc+toleranceMs>=stepMs){acc-=stepMs;if(diagnostic){diagnostic.acc_after_ms=acc;diagnostic.attempted_steps++;}await tick();steps++;}
+     while(steps<count&&started&&!hidden()&&!paused&&token===generation&&acc+toleranceMs>=stepMs){acc-=stepMs;if(diagnostic){diagnostic.acc_after_ms=acc;diagnostic.attempted_steps++;}await tick(steps+1>=count);steps++;}
      preparationReported=true;onPreparationEnd?.(tag,at,preparationStart,now(),steps,!started||hidden()||paused||token!==generation,stepMs);
     }
    }

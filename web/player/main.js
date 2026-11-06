@@ -137,13 +137,13 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  /* PROFILE_FRAME */
  return combined;
 }
-async function advance(){
- if(!profiler)return advanceFrame(null);
+async function advance(presenting){
+ if(!profiler)return advanceFrame(null,presenting);
  const pu=profiler.begin('update');profileFlight=pu.id;
- try{await advanceFrame(pu);}catch(error){profiler.end(pu,'error',{error});throw error;}
+ try{await advanceFrame(pu,presenting);}catch(error){profiler.end(pu,'error',{error});throw error;}
  profiler.end(pu,'ok');
 }
-async function advanceFrame(pu){
+async function advanceFrame(pu,presenting){
  const began=performance.now(),browserInput=manualInput==null;let frame=manualInput??input.consumeFrame();manualInput=null;
  // The camera may follow a moving entity while the physical mouse stays still.
  // Reproject the consumed screen sample, preserving queued down/up edges and
@@ -154,7 +154,7 @@ async function advanceFrame(pu){
  if(pu)profiler.mark(pu,'input_consume');
  /* PROFILE_INPUT */
  let nextSnapshot;
- try{nextSnapshot=await backend.request({kind:'tick',input:frame},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);}
+ try{nextSnapshot=await backend.request({kind:'tick',input:frame,presenting:presenting!==false},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);}
  catch(error){if(orderedQueue)try{orderedQueue.terminate(String(error.message??error));}catch{}publishPhysical();throw error;}
  if(pu){profiler.mark(pu,'backend_request');profiler.set(pu,{command:profiler.sourceOf(nextSnapshot),snapshot_frame:nextSnapshot?.world?.frame??null});}
  /* PROFILE_TICK_END */
@@ -168,7 +168,7 @@ async function advanceFrame(pu){
  /* PROFILE_POST_TICK */
 }
 // A tick request while one is in flight shares it; profiling records that request as coalesced.
-function tickOnce(){if(tickFlight){if(profiler)profiler.record('update_request','coalesced',{joined:profileFlight});return tickFlight;}tickFlight=advance().finally(()=>{tickFlight=null;});return tickFlight;}
+function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update_request','coalesced',{joined:profileFlight});return tickFlight;}tickFlight=advance(presenting).finally(()=>{tickFlight=null;});return tickFlight;}
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
@@ -194,7 +194,7 @@ async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  if(sample().state!=='presented')return false;
  assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
- scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:()=>frozen?undefined:tickOnce(),render:draw,onError:fail,
+ scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:presenting=>frozen?undefined:tickOnce(presenting),render:draw,onError:fail,
   onWakeDiagnostic:profiler?recordSchedulerWake:null,
   onRafEnd:(at,start,end,flight,budget)=>{playerCompletion.rafEnd(at,start,end,flight,budget);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
   onPreparationEnd:(tag,at,start,end,steps,cancelled,budget)=>playerCompletion.preparationEnd(tag,at,start,end,steps,cancelled,budget),

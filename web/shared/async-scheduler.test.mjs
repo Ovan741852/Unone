@@ -233,3 +233,14 @@ test('ordinary fixed ticks consume clicks against the private projector of the p
  for(const at of [20,30,40]){pending={screenX:99.5,worldAtArrival:99.5+visibleCamera};await h.frame(at);}
  assert.deepEqual(picks,[199.5,299.5,399.5]);assert.equal(visibleCamera,privateCamera);h.scheduler.stop();
 });
+
+test('a frame\'s catch-up ticks say only the last one presents',async()=>{
+ let time=0,id=0;const frames=new Map(),said=[];
+ const scheduler=createAsyncScheduler({stepMs:10,now:()=>time,raf:fn=>{frames.set(++id,fn);return id;},cancelRaf:n=>frames.delete(n),
+  visibilityTarget:{hidden:false,addEventListener(){},removeEventListener(){}},tick:async presenting=>{said.push(presenting);},render(){},onError(e){throw e;}});
+ scheduler.start();
+ const run=async ms=>{time+=ms;const [n,fn]=[...frames][0];frames.delete(n);fn(time);await flush();};
+ await run(0);await run(35);assert.deepEqual(said,[false,false,true]);
+ said.length=0;await run(10);assert.deepEqual(said,[true]);
+ scheduler.stop();
+});

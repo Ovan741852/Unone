@@ -1,4 +1,5 @@
 mod application;
+pub use application::set_host_presenting;
 pub use application::{ApplicationState, EscapeBehavior};
 mod script_bytecode;
 #[cfg(feature = "dev-tools")]

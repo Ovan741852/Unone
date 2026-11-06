@@ -995,6 +995,13 @@ pub unsafe extern "C" fn unone_web_spatial_request(pointer: *const u8, length: u
     }
 }
 
+/// Whether the next tick's output can reach the screen (api.application.presenting).
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_set_presenting(presenting: i32) -> i32 {
+    unone_engine::set_host_presenting(presenting != 0);
+    0
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_tick() -> i32 {
     if unone_web_init() != 0 {

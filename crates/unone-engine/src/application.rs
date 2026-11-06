@@ -50,3 +50,29 @@ mod tests {
         });
     }
 }
+
+thread_local! {
+    static HOST_PRESENTING: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
+}
+
+/// Host hint for the next tick: false while it is catching up and another tick follows before
+/// anything reaches the screen. Hosts that show every tick never call this.
+pub fn set_host_presenting(presenting: bool) {
+    HOST_PRESENTING.with(|value| value.set(presenting));
+}
+
+pub(crate) fn host_presenting() -> bool {
+    HOST_PRESENTING.with(|value| value.get())
+}
+
+#[cfg(test)]
+mod presenting_tests {
+    #[test]
+    fn a_host_says_whether_the_next_tick_is_shown() {
+        assert!(super::host_presenting());
+        super::set_host_presenting(false);
+        assert!(!super::host_presenting());
+        super::set_host_presenting(true);
+        assert!(super::host_presenting());
+    }
+}
