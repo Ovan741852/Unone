@@ -1,5 +1,8 @@
 use super::{ApiState, Lua, Table};
-use crate::{audio::AudioOptions, world::Vec2};
+use crate::{
+    audio::{AudioChange, AudioOptions},
+    world::Vec2,
+};
 use std::rc::Rc;
 
 #[cfg(feature = "audio")]
@@ -33,6 +36,50 @@ pub(super) fn audio(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             world
                 .audio
                 .start_loop(&asset, &options, frame)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let voice_audio_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
+    audio_api.set(
+        "voice",
+        lua.create_function(move |_, (asset, options): (String, Option<Table>)| {
+            super::ensure_not_view(&view, "audio.voice")?;
+            let options = audio_options(options)?;
+            let mut world = voice_audio_world.borrow_mut();
+            let frame = world.frame;
+            world
+                .audio
+                .start_voice(&asset, &options, frame)
+                .map_err(mlua::Error::RuntimeError)
+        })?,
+    )?;
+    let set_audio_world = Rc::clone(&world);
+    let view = Rc::clone(&state.pure_view);
+    audio_api.set(
+        "set",
+        lua.create_function(move |_, (handle, change): (String, Table)| {
+            super::ensure_not_view(&view, "audio.set")?;
+            super::reject_unknown_keys(&change, &["x", "y", "volume", "speed", "pan"], "audio.set change")?;
+            let x = change.get::<Option<f64>>("x")?;
+            let y = change.get::<Option<f64>>("y")?;
+            let position = match (x, y) {
+                (None, None) => None,
+                (x, y) => Some(Vec2 {
+                    x: x.unwrap_or(0.0),
+                    y: y.unwrap_or(0.0),
+                }),
+            };
+            let change = AudioChange {
+                volume: change.get::<Option<f64>>("volume")?,
+                speed: change.get::<Option<f64>>("speed")?,
+                pan: change.get::<Option<f64>>("pan")?,
+                position,
+            };
+            set_audio_world
+                .borrow_mut()
+                .audio
+                .change(&handle, &change)
                 .map_err(mlua::Error::RuntimeError)
         })?,
     )?;
@@ -156,7 +203,7 @@ fn audio_options(options: Option<Table>) -> mlua::Result<AudioOptions> {
     let Some(options) = options else {
         return Ok(AudioOptions::default());
     };
-    super::reject_unknown_keys(&options, &["x", "y", "volume", "speed", "category", "entity"], "audio options")?;
+    super::reject_unknown_keys(&options, &["x", "y", "volume", "speed", "category", "entity", "pan"], "audio options")?;
     let x = options.get::<Option<f64>>("x")?;
     let y = options.get::<Option<f64>>("y")?;
     let position = match (x, y) {
@@ -172,5 +219,6 @@ fn audio_options(options: Option<Table>) -> mlua::Result<AudioOptions> {
         category: options.get::<Option<String>>("category")?,
         position,
         entity: options.get::<Option<String>>("entity")?,
+        pan: options.get::<Option<f64>>("pan")?,
     })
 }

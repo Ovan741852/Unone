@@ -681,6 +681,17 @@ export type AudioOptions = {
     -- Attach the sound to an entity; the engine keeps it on that entity and
     -- stops it when the entity is gone.
     entity: string?,
+    -- Left (-1) to right (1).
+    pan: number?,
+}
+
+-- What audio.set changes on a live source. Anything left out stays.
+export type AudioChange = {
+    volume: number?,
+    speed: number?,
+    pan: number?,
+    x: number?,
+    y: number?,
 }
 
 -- Semantic audio requests. The engine owns which sound starts, which one a
@@ -689,6 +700,10 @@ export type AudioOptions = {
 export type AudioApi = {
     play: (asset: string, options: AudioOptions?) -> string,
     loop: (asset: string, options: AudioOptions?) -> string,
+    -- A clip played once that the game keeps hold of: it can be changed and
+    -- stopped while it plays, and is live until audio.stop.
+    voice: (asset: string, options: AudioOptions?) -> string,
+    set: (handle: string, change: AudioChange) -> boolean,
     stop: (handle: string) -> boolean,
     stopAll: () -> number,
     pause: (handle: string) -> boolean,

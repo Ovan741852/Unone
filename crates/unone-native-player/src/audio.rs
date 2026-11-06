@@ -6,6 +6,12 @@
 use std::{
     collections::{BTreeMap, BTreeSet},
     io::Cursor,
+    num::NonZero,
+    sync::{
+        Arc,
+        atomic::{AtomicU32, Ordering},
+    },
+    time::Duration,
 };
 
 use rodio::{Decoder, DeviceSinkBuilder, MixerDeviceSink, Player, Source};
@@ -14,11 +20,77 @@ use unone_engine::{AudioPhase, WorldSnapshot};
 
 use crate::Package;
 
+/// Left (-1) to right (1), changed while the source plays.
+#[derive(Clone)]
+struct SharedPan(Arc<AtomicU32>);
+
+impl SharedPan {
+    fn new(pan: f64) -> Self {
+        Self(Arc::new(AtomicU32::new((pan as f32).to_bits())))
+    }
+
+    fn set(&self, pan: f64) {
+        self.0.store((pan as f32).to_bits(), Ordering::Relaxed);
+    }
+
+    /// Equal-power gains for the left and right channels.
+    fn gains(&self) -> (f32, f32) {
+        let pan = f32::from_bits(self.0.load(Ordering::Relaxed)).clamp(-1.0, 1.0);
+        let angle = (pan + 1.0) * std::f32::consts::FRAC_PI_4;
+        (angle.cos(), angle.sin())
+    }
+}
+
+/// A mono or stereo source played as stereo through a pan.
+struct PannedSource<S> {
+    input: S,
+    pan: SharedPan,
+    right: Option<f32>,
+}
+
+impl<S: Source<Item = f32>> Iterator for PannedSource<S> {
+    type Item = f32;
+
+    fn next(&mut self) -> Option<f32> {
+        if let Some(right) = self.right.take() {
+            return Some(right);
+        }
+        let (left_gain, right_gain) = self.pan.gains();
+        let left = self.input.next()?;
+        let right = if self.input.channels().get() >= 2 {
+            self.input.next().unwrap_or(left)
+        } else {
+            left
+        };
+        self.right = Some(right * right_gain);
+        Some(left * left_gain)
+    }
+}
+
+impl<S: Source<Item = f32>> Source for PannedSource<S> {
+    fn current_span_len(&self) -> Option<usize> {
+        None
+    }
+
+    fn channels(&self) -> NonZero<u16> {
+        NonZero::new(2).expect("two is not zero")
+    }
+
+    fn sample_rate(&self) -> NonZero<u32> {
+        self.input.sample_rate()
+    }
+
+    fn total_duration(&self) -> Option<Duration> {
+        self.input.total_duration()
+    }
+}
+
 pub struct NativeAudio {
     stream: Option<MixerDeviceSink>,
     assets: BTreeMap<String, Vec<u8>>,
     declared_levels: BTreeMap<String, f32>,
     loops: BTreeMap<String, Player>,
+    pans: BTreeMap<String, SharedPan>,
     one_shots: Vec<Player>,
     failures: Vec<String>,
     unavailable: Option<String>,
@@ -89,6 +161,7 @@ mod tests {
             assets: BTreeMap::from([(String::from("audio://tone"), wav)]),
             declared_levels: BTreeMap::new(),
             loops: BTreeMap::new(),
+            pans: BTreeMap::new(),
             one_shots: Vec::new(),
             failures: Vec::new(),
             unavailable: None,
@@ -109,6 +182,7 @@ impl NativeAudio {
             assets: BTreeMap::new(),
             declared_levels: BTreeMap::new(),
             loops: BTreeMap::new(),
+            pans: BTreeMap::new(),
             one_shots: Vec::new(),
             failures: Vec::new(),
             unavailable: None,
@@ -246,6 +320,9 @@ impl NativeAudio {
             );
         sink.set_volume(gain.clamp(0.0, 1.0));
         sink.set_speed(source.speed as f32);
+        if let Some(pan) = self.pans.get(&source.handle) {
+            pan.set(source.pan);
+        }
         if source.paused {
             sink.pause();
         } else {
@@ -260,9 +337,11 @@ impl NativeAudio {
         let Some(sink) = self.sink() else {
             return;
         };
-        match self.decode(&source.asset, true) {
+        match self.decode(&source.asset, !source.once) {
             Ok(decoded) => {
-                sink.append(decoded);
+                let pan = SharedPan::new(source.pan);
+                sink.append(PannedSource { input: decoded, pan: pan.clone(), right: None });
+                self.pans.insert(source.handle.clone(), pan);
                 sink.set_speed(source.speed as f32);
                 self.loops.insert(source.handle.clone(), sink);
                 self.update_loop(source, snapshot);
@@ -282,6 +361,7 @@ impl NativeAudio {
                     if let Some(sink) = self.loops.remove(&event.handle) {
                         sink.stop();
                     }
+                    self.pans.remove(&event.handle);
                 }
                 unone_engine::AudioEventKind::Play if !event.looping => {
                     let Some(sink) = self.sink() else {
@@ -289,7 +369,11 @@ impl NativeAudio {
                     };
                     match self.decode(&event.asset, false) {
                         Ok(decoded) => {
-                            sink.append(decoded);
+                            sink.append(PannedSource {
+                                input: decoded,
+                                pan: SharedPan::new(event.pan),
+                                right: None,
+                            });
                             sink.set_volume(
                                 (event.volume as f32
                                     * Self::bus_gain(
@@ -323,6 +407,7 @@ impl NativeAudio {
             if let Some(sink) = self.loops.remove(&handle) {
                 sink.stop();
             }
+            self.pans.remove(&handle);
         }
         for source in &snapshot.audio_loops {
             self.start_loop(source, snapshot);

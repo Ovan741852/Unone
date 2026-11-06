@@ -89,6 +89,15 @@ pub struct AssetEncoding {
     pub decoder: String,
     #[serde(default)]
     pub companions: Vec<AssetCompanion>,
+    /// Decode the first time it is used instead of before the game starts. For
+    /// a bank too large to decode up front; its first use starts late by as long
+    /// as the decode takes. Audio only.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub on_demand: bool,
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]

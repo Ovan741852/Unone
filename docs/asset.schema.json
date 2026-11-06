@@ -46,6 +46,10 @@
         },
         "mime": {
           "type": "string"
+        },
+        "on_demand": {
+          "description": "Decode the first time it is used instead of before the game starts. For\na bank too large to decode up front; its first use starts late by as long\nas the decode takes. Audio only.",
+          "type": "boolean"
         }
       },
       "required": [

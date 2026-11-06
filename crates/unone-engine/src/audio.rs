@@ -152,6 +152,9 @@ pub struct AudioEvent {
     pub position: Option<Vec2>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub entity: Option<String>,
+    /// Left (-1) to right (1). Centre is left out of the observation.
+    #[serde(skip_serializing_if = "is_centre")]
+    pub pan: f64,
     #[serde(rename = "loop")]
     pub looping: bool,
     pub frame: u64,
@@ -159,6 +162,10 @@ pub struct AudioEvent {
 
 fn is_false(value: &bool) -> bool {
     !*value
+}
+
+fn is_centre(value: &f64) -> bool {
+    *value == 0.0
 }
 
 /// Bus levels a settings screen changes at runtime.
@@ -215,6 +222,13 @@ pub struct AudioLoop {
     /// makes no sound. This is the pause menu, not a stop.
     #[serde(skip_serializing_if = "is_false")]
     pub paused: bool,
+    /// Left (-1) to right (1). Centre is left out of the observation.
+    #[serde(skip_serializing_if = "is_centre")]
+    pub pan: f64,
+    /// A voice: the clip plays once and then there is silence until the game
+    /// stops the handle. The engine never learns when a clip ends.
+    #[serde(skip_serializing_if = "is_false")]
+    pub once: bool,
     pub started_frame: u64,
     pub phase: AudioPhase,
     /// Frame the current phase began, and how long it lasts. A fade is frame
@@ -233,6 +247,33 @@ pub struct AudioOptions {
     pub position: Option<Vec2>,
     /// Attach the sound to an entity instead of a fixed point.
     pub entity: Option<String>,
+    /// Left (-1) to right (1).
+    pub pan: Option<f64>,
+}
+
+/// What `audio.set` changes on a playing source. Anything left out stays.
+#[derive(Debug, Clone, Default)]
+pub struct AudioChange {
+    pub volume: Option<f64>,
+    pub speed: Option<f64>,
+    pub pan: Option<f64>,
+    pub position: Option<Vec2>,
+}
+
+fn check_speed(speed: f64) -> Result<f64, String> {
+    if !speed.is_finite() || speed <= 0.0 {
+        return Err(format!(
+            "Audio speed must be a finite number greater than 0; received {speed}."
+        ));
+    }
+    Ok(speed)
+}
+
+fn check_pan(pan: f64) -> Result<f64, String> {
+    if !pan.is_finite() || !(-1.0..=1.0).contains(&pan) {
+        return Err(format!("Audio pan must be between -1 and 1; received {pan}."));
+    }
+    Ok(pan)
 }
 
 impl AudioOptions {
@@ -244,11 +285,8 @@ impl AudioOptions {
                 "Audio volume must be between 0 and 1; received {volume}."
             ));
         }
-        if !speed.is_finite() || speed <= 0.0 {
-            return Err(format!(
-                "Audio speed must be a finite number greater than 0; received {speed}."
-            ));
-        }
+        check_speed(speed)?;
+        check_pan(self.pan.unwrap_or(0.0))?;
         if let Some(position) = self.position
             && (!position.x.is_finite() || !position.y.is_finite())
         {
@@ -330,6 +368,7 @@ impl AudioBus {
             speed,
             position: options.position,
             entity: options.entity.clone(),
+            pan: options.pan.unwrap_or(0.0),
             looping: false,
             frame,
         });
@@ -342,6 +381,62 @@ impl AudioBus {
         asset: &str,
         options: &AudioOptions,
         frame: u64,
+    ) -> Result<String, String> {
+        self.start_source(asset, options, frame, false)
+    }
+
+    /// Start a voice: a clip played once that the game keeps hold of, so it can
+    /// be changed and stopped while it plays. It counts as a live source until
+    /// `stop`, which the game calls when it knows the clip is over.
+    pub fn start_voice(
+        &mut self,
+        asset: &str,
+        options: &AudioOptions,
+        frame: u64,
+    ) -> Result<String, String> {
+        self.start_source(asset, options, frame, true)
+    }
+
+    /// Change a live source. Reports whether the handle is live.
+    pub fn change(&mut self, handle: &str, change: &AudioChange) -> Result<bool, String> {
+        if let Some(volume) = change.volume {
+            check_volume(volume, "source")?;
+        }
+        if let Some(speed) = change.speed {
+            check_speed(speed)?;
+        }
+        if let Some(pan) = change.pan {
+            check_pan(pan)?;
+        }
+        if let Some(position) = change.position
+            && (!position.x.is_finite() || !position.y.is_finite())
+        {
+            return Err("Audio position must be finite.".to_string());
+        }
+        let Some(source) = self.loops.iter_mut().find(|source| source.handle == handle) else {
+            return Ok(false);
+        };
+        if let Some(volume) = change.volume {
+            source.volume = volume;
+        }
+        if let Some(speed) = change.speed {
+            source.speed = speed;
+        }
+        if let Some(pan) = change.pan {
+            source.pan = pan;
+        }
+        if change.position.is_some() {
+            source.position = change.position;
+        }
+        Ok(true)
+    }
+
+    fn start_source(
+        &mut self,
+        asset: &str,
+        options: &AudioOptions,
+        frame: u64,
+        once: bool,
     ) -> Result<String, String> {
         let (volume, speed) = self.check(asset, options)?;
         let rules = options
@@ -384,6 +479,8 @@ impl AudioBus {
             position: options.position,
             entity: options.entity.clone(),
             paused: false,
+            pan: options.pan.unwrap_or(0.0),
+            once,
             started_frame: frame,
             phase: if fade_in > 0 {
                 AudioPhase::FadingIn
@@ -402,6 +499,7 @@ impl AudioBus {
             speed,
             position: options.position,
             entity: options.entity.clone(),
+            pan: options.pan.unwrap_or(0.0),
             looping: true,
             frame,
         });
@@ -435,6 +533,7 @@ impl AudioBus {
             speed: source.speed,
             position: source.position,
             entity: source.entity.clone(),
+            pan: source.pan,
             looping: true,
             frame,
         };
@@ -589,6 +688,52 @@ fn check_volume(volume: f64, what: &str) -> Result<f64, String> {
         ));
     }
     Ok(volume)
+}
+
+#[cfg(test)]
+mod voice_tests {
+    use super::*;
+
+    fn bus() -> AudioBus {
+        AudioBus::default()
+    }
+
+    #[test]
+    fn a_voice_is_a_live_source_that_plays_once_and_can_change() {
+        let mut audio = bus();
+        let options = AudioOptions { pan: Some(-0.5), volume: Some(0.5), ..Default::default() };
+        let handle = audio.start_voice("sfx://hit", &options, 3).unwrap();
+        assert!(audio.loops[0].once);
+        assert_eq!(audio.loops[0].pan, -0.5);
+        let change = AudioChange { pan: Some(0.25), volume: Some(0.1), ..Default::default() };
+        assert!(audio.change(&handle, &change).unwrap());
+        assert_eq!((audio.loops[0].pan, audio.loops[0].volume), (0.25, 0.1));
+        assert!(audio.stop(&handle, 4));
+        assert!(audio.loops.is_empty());
+        assert!(!audio.change(&handle, &change).unwrap());
+    }
+
+    #[test]
+    fn a_loop_stays_a_loop_and_pan_is_checked() {
+        let mut audio = bus();
+        audio.start_loop("music://a", &AudioOptions::default(), 0).unwrap();
+        assert!(!audio.loops[0].once);
+        let wide = AudioOptions { pan: Some(1.5), ..Default::default() };
+        assert!(audio.play("sfx://a", &wide, 0).unwrap_err().contains("pan"));
+        let handle = audio.loops[0].handle.clone();
+        let change = AudioChange { pan: Some(f64::NAN), ..Default::default() };
+        assert!(audio.change(&handle, &change).unwrap_err().contains("pan"));
+    }
+
+    #[test]
+    fn centre_and_loops_leave_the_observation_as_it_was() {
+        let mut audio = bus();
+        audio.start_loop("music://a", &AudioOptions::default(), 0).unwrap();
+        let value = serde_json::to_value(&audio.loops[0]).unwrap();
+        assert!(value.get("pan").is_none() && value.get("once").is_none());
+        let event = serde_json::to_value(&audio.events[0]).unwrap();
+        assert!(event.get("pan").is_none());
+    }
 }
 
 #[cfg(test)]

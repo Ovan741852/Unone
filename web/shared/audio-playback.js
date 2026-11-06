@@ -81,7 +81,10 @@ export async function createAudioPlayback({
     Object.entries(config?.audio?.categories ?? {}).map(([name, rules]) => [name, rules?.volume ?? 1])
   );
   const buffers = new Map();
-  const decoded = await Promise.all(declared.map(async (asset) => {
+  const onDemand = new Map(
+    declared.filter((asset) => asset?.encoding?.on_demand === true).map((asset) => [asset.id, asset])
+  );
+  const decodeAsset = async (asset) => {
     try {
       requireAssetEncoding(asset, "audio");
       let bytes;
@@ -98,7 +101,8 @@ export async function createAudioPlayback({
     } catch (error) {
       return { asset, buffer: null, error: audioError(error) };
     }
-  }));
+  };
+  const decoded = await Promise.all(declared.filter((asset) => !onDemand.has(asset.id)).map(decodeAsset));
   const failures = [];
   for (const result of decoded) {
     if (result.buffer) buffers.set(result.asset.id, result.buffer);
@@ -121,11 +125,46 @@ export async function createAudioPlayback({
     lastWorld: null,
   };
 
+  // An on-demand asset starts decoding the first time it is asked for. A voice
+  // or loop retries on the next sync; a one-shot waits here until it is decoded.
+  const decoding = new Set();
+  const waitingOneShots = new Map();
+  function decodeOnDemand(assetId) {
+    if (decoding.has(assetId)) return;
+    decoding.add(assetId);
+    decodeAsset(onDemand.get(assetId)).then((result) => {
+      onDemand.delete(assetId);
+      decoding.delete(assetId);
+      if (result.buffer) state.buffers.set(assetId, result.buffer);
+      else recordRuntimeFailure(`${assetId}: ${result.error}`);
+      const waiting = waitingOneShots.get(assetId) ?? [];
+      waitingOneShots.delete(assetId);
+      if (result.buffer && contextUsable()) for (const play of waiting) play(result.buffer);
+    });
+  }
   function bufferFor(assetId) {
     const buffer = state.buffers.get(assetId);
     if (buffer) return buffer;
+    if (onDemand.has(assetId)) {
+      decodeOnDemand(assetId);
+      return null;
+    }
     if (!state.missing.has(assetId)) state.missing.add(assetId);
     return null;
+  }
+
+  // Volume, then pan where this browser has a panner.
+  function route(contextValue, node, level, pan) {
+    const gain = contextValue.createGain();
+    gain.gain.value = level;
+    const panner = contextValue.createStereoPanner?.() ?? null;
+    if (panner) {
+      panner.pan.value = pan ?? 0;
+      node.connect(gain).connect(panner).connect(state.master);
+    } else {
+      node.connect(gain).connect(state.master);
+    }
+    return { gain, panner };
   }
 
   function recordRuntimeFailure(message) {
@@ -155,18 +194,23 @@ export async function createAudioPlayback({
       const eventKey = `${event.frame ?? world.frame ?? 0}:${index}:${event.handle ?? ""}:${event.asset ?? ""}`;
       if (state.processedEvents.has(eventKey)) continue;
       state.processedEvents.add(eventKey);
+      const level = (event.volume ?? 1) * audioBusGain(world, event.category, state.declaredLevels);
+      const play = (buffer) => {
+        try {
+          const node = contextValue.createBufferSource();
+          node.buffer = buffer;
+          node.playbackRate.value = event.speed ?? 1;
+          route(contextValue, node, level, event.pan);
+          node.start();
+        } catch (error) {
+          recordRuntimeFailure(`one-shot ${event.asset}: ${audioError(error)}`);
+        }
+      };
       const buffer = bufferFor(event.asset);
-      if (!buffer) continue;
-      try {
-        const node = contextValue.createBufferSource();
-        node.buffer = buffer;
-        node.playbackRate.value = event.speed ?? 1;
-        const gain = contextValue.createGain();
-        gain.gain.value = (event.volume ?? 1) * audioBusGain(world, event.category, state.declaredLevels);
-        node.connect(gain).connect(state.master);
-        node.start();
-      } catch (error) {
-        recordRuntimeFailure(`one-shot ${event.asset}: ${audioError(error)}`);
+      if (buffer) play(buffer);
+      else if (decoding.has(event.asset)) {
+        if (!waitingOneShots.has(event.asset)) waitingOneShots.set(event.asset, []);
+        waitingOneShots.get(event.asset).push(play);
       }
     }
 
@@ -184,12 +228,11 @@ export async function createAudioPlayback({
         try {
           const node = contextValue.createBufferSource();
           node.buffer = buffer;
-          node.loop = true;
+          node.loop = source.once !== true;
           node.playbackRate.value = source.speed ?? 1;
-          const gain = contextValue.createGain();
-          node.connect(gain).connect(state.master);
+          const { gain, panner } = route(contextValue, node, 0, source.pan);
           node.start();
-          playing = { node, gain };
+          playing = { node, gain, panner };
           state.live.set(handle, playing);
         } catch (error) {
           recordRuntimeFailure(`loop ${source.asset}: ${audioError(error)}`);
@@ -199,6 +242,7 @@ export async function createAudioPlayback({
         playing.node.playbackRate.value = source.speed ?? 1;
       }
       playing.gain.gain.value = audioLoopGain(world, source, state.declaredLevels);
+      if (playing.panner) playing.panner.pan.value = source.pan ?? 0;
     }
   };
 

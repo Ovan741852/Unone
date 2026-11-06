@@ -538,6 +538,8 @@ fn descriptors() -> Vec<SystemDescriptor> {
             vec![
                 "api.audio.play",
                 "api.audio.loop",
+                "api.audio.voice",
+                "api.audio.set",
                 "api.audio.stop",
                 "api.audio.stopAll",
             ],
