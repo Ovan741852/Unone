@@ -1,7 +1,7 @@
 //! Where a project's ticks go: replays a test file's input to reach a state,
 //! then samples Luau functions and VM GC over further ticks. Not part of the
 //! regular suite; run on an optimized sampling build:
-//! UNONE_TICK_PROJECT=<dir> UNONE_TICK_INPUT=<test.json or input array> [UNONE_TICK_FRAMES=120]
+//! UNONE_TICK_PROJECT=<dir> UNONE_TICK_INPUT=<test.json or input array> [UNONE_TICK_FRAMES=120] [UNONE_TICK_TOP=25]
 //! cargo test --release -p unone-engine --features sampling-profile --test tick_profile -- --ignored --nocapture
 //! With `--features phase-profile` instead, it times the engine's own phases
 //! (script, UI conversion and validation, observation, snapshot) per tick.
@@ -55,7 +55,7 @@ fn tick_profile() {
     for (label, key) in [("self", "self_samples"), ("inclusive", "inclusive_samples")] {
         functions.sort_by_key(|f| std::cmp::Reverse(f[key].as_u64().unwrap_or(0)));
         println!("top {label} ({total} samples):");
-        for f in functions.iter().take(25) {
+        for f in functions.iter().take(std::env::var("UNONE_TICK_TOP").ok().and_then(|v| v.parse().ok()).unwrap_or(25)) {
             println!("  {:5.1}%  {} {}:{}", f[key].as_u64().unwrap_or(0) as f64 * 100. / total,
                 f["name"].as_str().unwrap_or("?"), f["source"].as_str().unwrap_or("?"), f["line"]);
         }
