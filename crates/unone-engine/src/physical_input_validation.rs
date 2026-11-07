@@ -7,7 +7,7 @@ fn viewport(v:&Viewport)->Result<(),String>{need(v.revision>0&&v.revision<=MAX_S
 fn point(p:&Point)->Result<(),String>{need(finite(p.x)&&finite(p.y),"point")?;viewport(&p.viewport)}
 fn event(e:&PhysicalEvent)->Result<(),String>{
  let c=&e.common;need(["browser","host_synthetic","fixture"].contains(&c.origin.as_str()),"origin")?;
- let control=matches!(e.data,EventData::Capture{..}|EventData::Focus{..}|EventData::Reset{..}|EventData::Viewport{..});
+ let control=matches!(e.data,EventData::Capture{..}|EventData::Focus{..}|EventData::Reset{..}|EventData::Viewport{..}|EventData::Network{..});
  need(if control{c.route=="control"}else{["game","engine_ui","host_ui"].contains(&c.route.as_str())},"route")?;
  match &e.data {
   EventData::Key{code,location,state,..}=>need(!code.is_empty()&&code.len()<=128&&*location<=3&&["down","up"].contains(&state.as_str()),"key"),
@@ -22,6 +22,8 @@ fn event(e:&PhysicalEvent)->Result<(),String>{
    (scope=="pointer")==pointer_id.is_some()&&pointer_id.is_none_or(|id|id<=MAX_SAFE)&&
    ["blur","hidden","host_pause","focus_left_game","pointer_cancel","lost_capture","load"].contains(&reason.as_str()),"reset"),
   EventData::Viewport{viewport:v}=>viewport(v),
+  EventData::Network{state,peer,data}=>need(["open","message","peer_join","peer_leave","closed","error"].contains(&state.as_str())&&*peer<=MAX_SAFE&&
+   data.as_ref().is_none_or(|d|d.len()<=crate::NETWORK_MAX_TEXT),"network"),
  }
 }
 pub(crate) fn validate(b:&PhysicalBatch)->Result<(),String>{

@@ -28,6 +28,7 @@ mod shader;
 mod spatial;
 mod sprite;
 pub(super) mod value;
+mod network;
 
 pub(super) fn build_api(
     lua: &Lua,
@@ -41,6 +42,7 @@ pub(super) fn build_api(
     api.set("render", render::bind(lua, state)?)?;
     api.set("hostTime", host_time::bind(lua, state)?)?;
     api.set("application", application::bind(lua, state)?)?;
+    api.set("network", network::bind(lua, state)?)?;
     api.set("heightfield", heightfield::bind(lua, state)?)?;
     api.set("geometry3d", geometry3d::bind(lua, state)?)?;
     api.set("texture", texture::bind(lua, state)?)?;

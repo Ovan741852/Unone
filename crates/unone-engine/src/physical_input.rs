@@ -61,6 +61,9 @@ pub enum EventData {
   #[cfg_attr(feature="dev-tools",schemars(with="u64"))]
   #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="present")]pointer_id:Option<u64>,reason:String},
  Viewport {viewport:Viewport},
+ Network {state:String,peer:u64,
+  #[cfg_attr(feature="dev-tools",schemars(with="String"))]
+  #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="present")]data:Option<String>},
 }
 #[derive(Debug,Clone,Serialize,PartialEq,Eq)]
 pub struct PhysicalReceipt {pub profile:&'static str,pub epoch:u64,pub through_sequence:u64}

@@ -1014,6 +1014,9 @@ pub struct WorldSnapshot {
     /// Sounds the game asked for on this frame.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub audio_events: Vec<AudioEvent>,
+    /// What the game asked the host to send or open on the tick before this snapshot.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub network_commands: Vec<crate::NetworkCommand>,
     /// Loops the host should currently be playing.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub audio_loops: Vec<AudioLoop>,
@@ -1117,6 +1120,7 @@ pub(crate) struct World {
     #[cfg(feature = "physics3d")]
     pub physics3d: Option<crate::rigid3d::PhysicsWorld3D>,
     pub particles: crate::particle::ParticleWorld,
+    pub(crate) network: crate::network::NetworkState,
     pub frame: u64,
     /// True while a tick's script and physics run, before `frame` advances.
     /// Clips started then first appear in the next observation, not this one.
@@ -1531,6 +1535,7 @@ impl World {
                 })
                 .collect(),
             ground_contacts: self.ground_contacts.clone(),
+            network_commands: self.network.of_tick(self.frame.wrapping_sub(1)),
             audio_events: self
                 .audio
                 .events
@@ -2338,6 +2343,7 @@ mod tests {
             ui_cursor:None,projected_geometry:BTreeMap::new(),projected_frame:None,projected_revision:0,
             projected_viewport:Default::default(),projected_world_hidden:false,
             application: Default::default(),
+            network: Default::default(),
             heightfields: BTreeMap::new(),
             heightfield_revision: 0,
             geometry3d: BTreeMap::new(),

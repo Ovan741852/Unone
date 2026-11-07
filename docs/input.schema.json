@@ -284,6 +284,31 @@
             "viewport"
           ],
           "type": "object"
+        },
+        {
+          "properties": {
+            "data": {
+              "type": "string"
+            },
+            "kind": {
+              "const": "network",
+              "type": "string"
+            },
+            "peer": {
+              "format": "uint64",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "state",
+            "peer"
+          ],
+          "type": "object"
         }
       ],
       "properties": {

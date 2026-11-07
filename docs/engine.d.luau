@@ -163,6 +163,14 @@ export type ProjectedApi = {
 }
 
 export type EscapeBehavior = "action" | "quit"
+-- A room of sessions exchanging text, in order (docs/network.md). What arrives are "network" rows of
+-- input.getPhysicalBatch: open (peer: mine), peer_join, peer_leave, message (peer, data), closed, error.
+export type NetworkApi = {
+    open: (options: {room: string, url: string?}) -> (),
+    send: (data: string) -> (),
+    close: () -> (),
+}
+
 export type ApplicationApi = {
     -- Defaults to quit. Action mode publishes neutral Escape input for game policy.
     setEscapeBehavior: (behavior: EscapeBehavior) -> (),
@@ -186,7 +194,8 @@ export type PhysicalInputEvent = PhysicalCommon & (
     | {kind:"capture",pointer_id:number,captured:boolean,source:"got"|"lost"}
     | {kind:"focus",focused:boolean,scope:"game"|"window"}
     | {kind:"reset",scope:"all"|"pointer",pointer_id:number?,reason:string}
-    | {kind:"viewport",viewport:PhysicalViewport})
+    | {kind:"viewport",viewport:PhysicalViewport}
+    | {kind:"network",state:"open"|"message"|"peer_join"|"peer_leave"|"closed"|"error",peer:number,data:string?})
 export type PhysicalInputBatch = {profile:"ordered_physical_v1",epoch:number,after_sequence:number,through_sequence:number,events:{PhysicalInputEvent}}
 export type InputApi = {
     -- Current successful-tick text editing event; nil when no event for this ID.
@@ -972,6 +981,7 @@ export type EngineApi = {
     bytes: BytesApi,
     hostTime: HostTimeApi,
     application: ApplicationApi,
+    network: NetworkApi,
     spatial: SpatialApi,
     shader: ShaderApi,
     jobs: JobsApi,

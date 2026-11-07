@@ -113,6 +113,7 @@ export function createOrderedPhysicalRouter({canvas,window:win=window,document:d
  listen(doc,'focusin',e=>{const next=!hostTarget(e);if(next===gameFocused)return;gameFocused=next;focus(next,'game','focus_left_game');});
  listen(win,'resize',()=>{if(active())geometry.viewport();});listen(win,'scroll',()=>{if(active())geometry.viewport();},true);
  return{
+  network(state,peer,data){if(disposed)return;queue.append({...common('network','control','host_synthetic'),state,peer,...(data===undefined?{}:{data})});},
   activate(){if(disposed||ready)return;ready=true;focused=doc.hasFocus?.()??true;reset('load');geometry.viewport();focus(focused,'window','blur');},
   setPaused(value){if(paused===value)return;paused=value;if(value&&ready)reset('host_pause');},
   report:()=>({...queue.report(),admission:disposed?'disposed':active()?'active':ready?'suspended':'waiting_ready',viewport_revision:geometry.revision()}),

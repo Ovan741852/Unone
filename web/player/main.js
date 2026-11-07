@@ -16,6 +16,7 @@ import {createPresentationInterpolator} from '../shared/presentation-interpolati
 import {createAudioPlayback} from '../shared/audio-playback.js';
 import {requireAssetEncoding,createAssetCatalog,createImageAssetBroker,validateImagePreloadPlan,IMAGE_PRELOAD_PLAN_MAX_BYTES} from '../shared/asset-encoding.js';
 import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.js';
+import {createNetworkHost} from '../shared/network-host.mjs';
 import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileOptions} from '../shared/raster-diagnostics.mjs';
 import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from '../shared/startup-presentation.mjs';
 import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '../shared/player-completion.mjs';
@@ -45,7 +46,7 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
  if(!asset)throw Error(`UI_CURSOR_ASSET_MISSING: ${assetId}`);requireAssetEncoding(asset,'image');
  return loadCursorImage(new URL(`content/${asset.source}`,document.baseURI).href);
 }});
-let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null;
+let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null,networkHost=null;
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
 const playerCompletion=createPlayerCompletionMetrics();
@@ -163,6 +164,7 @@ async function advanceFrame(pu,presenting){
  /* PROFILE_TICK */
  audio?.sync(snapshot.world);
  if(pu)profiler.mark(pu,'audio_sync');
+ if(orderedRouter){networkHost??=createNetworkHost({row:(state,peer,data)=>orderedRouter.network(state,peer,data)});networkHost.sync(snapshot.world);}
  persistSave();
  if(pu)profiler.mark(pu,'save_persist');
  /* PROFILE_POST_TICK */

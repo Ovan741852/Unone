@@ -2,7 +2,7 @@ const common=['sequence','received_us','origin','route','kind'];
 const shapes={key:['code','location','state','repeat','is_composing','modifiers'],
  pointer:['pointer_id','pointer_type','phase','button','buttons','point?','modifiers'],
  wheel:['delta_x','delta_y','delta_z','unit','point','modifiers'],capture:['pointer_id','captured','source'],
- focus:['focused','scope'],reset:['scope','pointer_id?','reason'],viewport:['viewport']};
+ focus:['focused','scope'],reset:['scope','pointer_id?','reason'],viewport:['viewport'],network:['state','peer','data?']};
 const fail=s=>{throw Error('INPUT_PHYSICAL_INVALID: '+s);};
 export const safe=n=>Number.isSafeInteger(n)&&n>=0;
 const finite=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=1e9;
@@ -19,9 +19,10 @@ function modifiers(v){object(v,['shift','control','alt','meta'],['alt_graph','ca
 export function validatePhysicalEvent(e){
  const shape=shapes[e?.kind];if(!shape)fail('kind');object(e,[...common,...shape.filter(s=>!s.endsWith('?'))],shape.filter(s=>s.endsWith('?')).map(s=>s.slice(0,-1)));
  if(!safe(e.sequence)||e.sequence<1||!safe(e.received_us)||!['browser','host_synthetic','fixture'].includes(e.origin))fail('common');
- const control=['capture','focus','reset','viewport'].includes(e.kind);
+ const control=['capture','focus','reset','viewport','network'].includes(e.kind);
  if(control?e.route!=='control':!['game','engine_ui','host_ui'].includes(e.route))fail('route');
  if(e.modifiers)modifiers(e.modifiers);
+ if(e.kind==='network'&&(!['open','message','peer_join','peer_leave','closed','error'].includes(e.state)||!safe(e.peer)||(e.data!==undefined&&(typeof e.data!=='string'||new TextEncoder().encode(e.data).length>65536))))fail('network');
  if(e.kind==='key'&&(!(typeof e.code==='string'&&e.code.length>0&&new TextEncoder().encode(e.code).length<=128)||!Number.isInteger(e.location)||e.location<0||e.location>3||!['down','up'].includes(e.state)||typeof e.repeat!=='boolean'||typeof e.is_composing!=='boolean'))fail('key');
  if(e.pointer_id!==undefined&&!safe(e.pointer_id))fail('pointer id');
  if(e.kind==='pointer'){

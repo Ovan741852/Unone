@@ -1,4 +1,6 @@
 mod application;
+mod network;
+pub use network::{NetworkCommand, NETWORK_MAX_TEXT};
 pub use application::set_host_presenting;
 pub use application::{ApplicationState, EscapeBehavior};
 mod script_bytecode;

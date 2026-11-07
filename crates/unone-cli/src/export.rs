@@ -74,6 +74,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/ordered-physical-queue.mjs",
         "shared/ordered-physical-router.mjs",
         "shared/physical-input.js",
+        "shared/network-host.mjs",
         "shared/webgpu-snapshot.js",
         "shared/heightfields.js",
         "shared/audio-playback.js",

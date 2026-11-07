@@ -31,6 +31,11 @@ test('rect position alone changes mapping identity, raw wheel units and key rows
  const rows=s.rows();assert.deepEqual(rows.slice(3).map(e=>e.kind),['viewport','wheel','key']);assert.equal(rows[3].viewport.revision,2);
  assert.deepEqual([rows[4].delta_y,rows[4].unit,rows[4].point.x],[-3,'line',96]);assert.equal(rows[5].modifiers.alt_graph,true);assert.equal(rows[5].location,2);assert.equal(rows[5].route,'engine_ui');
 });
+test('network rows go in order, whatever the focus',()=>{
+ const s=setup();s.router.activate();s.win.emit('blur');
+ s.router.network('message',4,'hi');s.router.network('peer_leave',4);
+ const rows=s.rows().filter(r=>r.kind==='network');assert.deepEqual(rows.map(r=>[r.kind,r.state,r.peer,r.data,r.route]),[['network','message',4,'hi','control'],['network','peer_leave',4,undefined,'control']]);
+});
 test('a function key is kept from the browser but its reload, full screen and tools keys are not',()=>{
  const s=setup();s.router.activate();let prevented=[];
  for(const code of ['F1','F4','F5','F11','F12','KeyA'])s.win.emit('keydown',{code,location:0,repeat:false,isComposing:false,preventDefault(){prevented.push(code);}});
