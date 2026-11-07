@@ -62,6 +62,8 @@ function createKeySession({win,queue,common,active,listen,routeKey}){
  const keys=new Map();
  function key(e,state){
   if(!active())return;
+  // A function key is the game's, not the browser's (F1 would open its help); reload, full screen and its tools stay.
+  if(state==='down'&&/^F([1-9]|1[0-2])$/.test(e.code??'')&&!['F5','F11','F12'].includes(e.code))e.preventDefault?.();
   const id=e.code+':'+e.location;if(state==='down'&&!e.repeat)keys.delete(id);
   if(!keys.has(id)&&keys.size>=256)queue.terminate('KEY_CAPACITY');
   if((state==='up'||e.repeat)&&!keys.has(id))keys.set(id,'host_ui');

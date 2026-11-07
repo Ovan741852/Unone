@@ -31,6 +31,11 @@ test('rect position alone changes mapping identity, raw wheel units and key rows
  const rows=s.rows();assert.deepEqual(rows.slice(3).map(e=>e.kind),['viewport','wheel','key']);assert.equal(rows[3].viewport.revision,2);
  assert.deepEqual([rows[4].delta_y,rows[4].unit,rows[4].point.x],[-3,'line',96]);assert.equal(rows[5].modifiers.alt_graph,true);assert.equal(rows[5].location,2);assert.equal(rows[5].route,'engine_ui');
 });
+test('a function key is kept from the browser but its reload, full screen and tools keys are not',()=>{
+ const s=setup();s.router.activate();let prevented=[];
+ for(const code of ['F1','F4','F5','F11','F12','KeyA'])s.win.emit('keydown',{code,location:0,repeat:false,isComposing:false,preventDefault(){prevented.push(code);}});
+ assert.deepEqual(prevented,['F1','F4']);
+});
 test('blur preserves queued edges and inserts one barrier; cancellation and lost capture do not duplicate release',()=>{
  const s=setup();s.router.activate();s.canvas.emit('pointerdown',pointer);s.canvas.emit('pointercancel',{...pointer,buttons:0});
  s.canvas.emit('lostpointercapture',{pointerId:8});s.win.emit('blur');s.win.emit('keydown',{code:'KeyA',location:0,repeat:false,isComposing:false});
