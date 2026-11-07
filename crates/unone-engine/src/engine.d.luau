@@ -940,6 +940,7 @@ export type BytesApi = {
     -- Direct content comparisons; no temporary payload/string/view or positive memo.
     equals: (left: buffer, right: buffer) -> boolean,
     equalsRange: (left: buffer, leftOffset: number, right: buffer, rightOffset: number, length: number) -> boolean,
+    yuv420ToRgba: (y: buffer, yStride: number, u: buffer, v: buffer, uvStride: number, width: number, height: number, out: buffer) -> (),
 }
 
 -- Data assets are manifest entries of kind "data". encoding.decoder names the
@@ -965,11 +966,18 @@ export type RenderApi = {
     getPass: (id: string) -> RenderPassState,
 }
 
+export type NetworkApi = {
+    open: (options: {room: string, url: string?}) -> (),
+    send: (data: string) -> (),
+    close: () -> (),
+}
+
 export type EngineApi = {
     assets: AssetsApi,
     sprite: SpriteApi,
     render: RenderApi,
     bytes: BytesApi,
+    network: NetworkApi,
     hostTime: HostTimeApi,
     application: ApplicationApi,
     spatial: SpatialApi,

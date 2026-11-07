@@ -3014,6 +3014,16 @@ fn byte_view_descriptors() -> Vec<ApiDescriptor> {
             vec!["BYTES_BUFFER_REQUIRED", "BYTES_ARGUMENTS_INVALID", "BYTES_RANGE_INVALID"],
             "assert(api.bytes.equalsRange(rom, offset, expected, 0, buffer.len(expected)))", vec!["bytes.equals", "bytes.span", "bytes.snapshot"],
         ),
+        descriptor(
+            "bytes.yuv420ToRgba", "bytes", "Convert whole Y, U and V planes (4:2:0) into RGBA bytes.",
+            "Decoded video pictures: a script pays for this conversion per pixel, and on the Web it is half of a picture's cost.",
+            "BT.601 full range in 8.8 fixed point: R = Y + 359V/256, G = Y - (88U + 183V)/256, B = Y + 454U/256, with U and V less 128; alpha 255. Width and height must be even.",
+            vec![parameter("y", "buffer", "Luma plane"), parameter("yStride", "number", "Bytes per luma row"), parameter("u", "buffer", "Cb plane"), parameter("v", "buffer", "Cr plane"), parameter("uvStride", "number", "Bytes per chroma row"), parameter("width", "number", "Pixels across"), parameter("height", "number", "Pixels down"), parameter("out", "buffer", "Exactly width * height * 4 bytes")],
+            "nil", vec!["Writes out"],
+            "All sizes validate before anything is written.",
+            vec!["BYTES_RANGE_INVALID"],
+            "api.bytes.yuv420ToRgba(y, 320, u, v, 160, 320, 352, rgba)", vec!["texture.set"],
+        ),
     ]
 }
 
