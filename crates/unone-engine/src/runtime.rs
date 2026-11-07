@@ -48,6 +48,8 @@ mod phase_profile;
 mod memory;
 #[cfg(feature = "dev-tools")]
 mod replay_adapter;
+#[cfg(feature = "dev-tools")]
+pub(crate) mod script_watchdog;
 #[cfg(feature = "preview-tools")]
 mod vm_metrics;
 use bindings::build_api;
@@ -396,6 +398,8 @@ impl EngineRuntime {
         let ui = self.api.get::<Table>("ui").map_err(|e| e.to_string())?;
         let render = ui.get::<Function>("_materialize").map_err(|e| e.to_string())?;
         let request = bindings::value::json_to_lua(&self.lua, request).map_err(|e| e.to_string())?;
+        #[cfg(feature = "dev-tools")]
+        let _watch = script_watchdog::watch(&self.lua, "A UI view callback", script_watchdog::limit(&self.config));
         render.call::<bool>(request).map_err(|e| e.to_string())?;
         Ok(())
     }
@@ -433,12 +437,14 @@ impl EngineRuntime {
         if let Err(error) = install_require(&lua, &config, &paths, modules) {
             return EngineResult::failure(*error);
         }
-        let value = match lua
+        let watch = script_watchdog::watch(&lua, script_watchdog::TOP_LEVEL, script_watchdog::limit(&config));
+        let evaluated = lua
             .load(&source)
             .set_name(paths.entry_script.to_string_lossy())
             .set_mode(mlua::ChunkMode::Text)
-            .eval::<Value>()
-        {
+            .eval::<Value>();
+        drop(watch);
+        let value = match evaluated {
             Ok(value) => value,
             Err(err) => return EngineResult::failure(script_diagnostic(&paths, err.to_string())),
         };
@@ -1253,6 +1259,9 @@ impl EngineRuntime {
             None
         };
         let (script, script_time) = timed(|| {
+            // Dropped before vm_probe finishes, which restores the same slot.
+            #[cfg(feature = "dev-tools")]
+            let _watch = script_watchdog::watch(&self.lua, "Game.update", script_watchdog::limit(&self.config));
             #[cfg(feature = "jobs")]
             if self.systems.is_enabled("jobs") {
                 jobs::pump_schedules(&self.lua, &self.jobs, &self.api)
@@ -1816,9 +1825,13 @@ impl EngineRuntime {
             },
         };
         let modules = self.module_sources()?;
+        let limit = script_watchdog::limit(&self.config);
         if !is_reload {
             install_require(&self.lua, &self.config, &self.paths, ScriptModules::Source(Rc::clone(&modules)))?;
-            let table = timed_startup(&mut self.startup, StartupPhase::Script, || evaluate_script(&self.lua, &self.paths, &source))?;
+            let table = timed_startup(&mut self.startup, StartupPhase::Script, || {
+                let _watch = script_watchdog::watch(&self.lua, script_watchdog::TOP_LEVEL, limit);
+                evaluate_script(&self.lua, &self.paths, &source)
+            })?;
             // Optional developer metadata must not invoke gameplay metatables or
             // break existing games that already use a non-table `replay` field.
             if let Ok(Value::Table(adapter)) = table.raw_get::<Value>("replay") {
@@ -1826,8 +1839,11 @@ impl EngineRuntime {
             }
             let update_fn = script_entrypoint(&table, "update", &self.paths)?;
             let start_fn = script_entrypoint(&table, "start", &self.paths)?;
-            timed_startup(&mut self.startup, StartupPhase::Start, || start_fn.call::<()>(self.api.clone()))
-                .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
+            timed_startup(&mut self.startup, StartupPhase::Start, || {
+                let _watch = script_watchdog::watch(&self.lua, "Game.start", limit);
+                start_fn.call::<()>(self.api.clone())
+            })
+            .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))?;
             self.startup.luau_heap_after_start_bytes = self.lua.used_memory();
             self.update_fn = update_fn;
             self.loaded_script_digest = script_digest(&source, &modules);
@@ -1844,7 +1860,9 @@ impl EngineRuntime {
         self.input.borrow().physical.healthy().map_err(|e|Box::new(script_diagnostic(&self.paths,e)))?;
         let candidate_lua = determinism::new_vm()?;
         install_require(&candidate_lua, &self.config, &self.paths, ScriptModules::Source(Rc::clone(&modules)))?;
+        let watch = script_watchdog::watch(&candidate_lua, script_watchdog::TOP_LEVEL, limit);
         let table = evaluate_script(&candidate_lua, &self.paths, &source)?;
+        drop(watch);
         // The adapter belongs to the candidate VM just like its update
         // function. Publish the new registry only with a successful reload.
         if let Ok(Value::Table(adapter)) = table.raw_get::<Value>("replay") {
@@ -1901,9 +1919,10 @@ impl EngineRuntime {
         };
         let candidate_time = host_time::TimeScope::begin(&candidate_api_state.host_time, "reload", self.world.borrow().frame)
             .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
-        if let Some(on_reload) = on_reload
-            && let Err(err) = on_reload.call::<()>(candidate_api.clone())
-        {
+        let watch = script_watchdog::watch(&candidate_lua, "Game.onReload", limit);
+        let reloaded = on_reload.map_or(Ok(()), |on_reload| on_reload.call::<()>(candidate_api.clone()));
+        drop(watch);
+        if let Err(err) = reloaded {
             self.restore_failed_reload(rollback);
             return Err(Box::new(script_diagnostic(&self.paths, err.to_string())));
         }
@@ -2439,6 +2458,8 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
             }];
         }
     }
+    #[cfg(feature = "dev-tools")]
+    script_watchdog::describe(&message, &mut diagnostic);
     diagnostic
 }
 

@@ -448,6 +448,7 @@ fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
         "main_scene": "scenes/main.scene.json",
         "systems": systems,
         "input_actions": [],
+        "script_time_limit_seconds": 60,
         "test_files": [
             "tests/bootstrap-idle.test.json",
             "tests/bootstrap-input.test.json",

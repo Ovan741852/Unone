@@ -25,6 +25,7 @@ impl EngineRuntime {
         let previous = state.borrow().sampling_suspended;
         state.borrow_mut().sampling_suspended = true;
         let _resume = Resume { state, previous };
+        let _watch = script_watchdog::watch(&self.lua, "A Game.replay callback", script_watchdog::limit(&self.config));
         let result = (|| -> mlua::Result<serde_json::Value> {
             let adapter: Table = self.lua.named_registry_value("unone.replay.adapter")?;
             let callback: Function = adapter.get(method)?;

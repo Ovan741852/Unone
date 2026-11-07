@@ -122,6 +122,13 @@ feeds it: an error once the list is declared, even empty, and a warning until th
 starters declare it. Do not silence the error with a name nothing presses; fix the spelling
 or bind the action to a control.
 
+A script call that never returns does not hang the tools. Any one call (top-level code,
+`start`, `onReload`, a single `update`) that outlasts `script_time_limit_seconds` ends with
+`SCRIPT_TIME_LIMIT_EXCEEDED`, the line it stopped on and the stack, and `pcall` cannot keep it
+running. New starters declare 60; a project that declares nothing gets 600, so declare a short
+limit to find a hang sooner. Fix the loop. If the work is real, spread it over frames or a job
+before raising the limit. Players and Web builds do not enforce it.
+
 Use `kit.createSlider({id=...,value=...,min=...,max=...,step=...})` for numeric
 sliders. Create and retain each control once in `Game.start`; publish
 `control.view({rect=...,trackRect=...})`, and call `control.update(api.input)`

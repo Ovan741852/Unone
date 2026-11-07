@@ -82,7 +82,8 @@ fn step(
 /// Run every gate: types, assets, screen layout, and the deterministic tests.
 ///
 /// Every step runs even after one fails, because an author needs the whole
-/// picture to plan, not just the first thing that broke.
+/// picture to plan, not just the first thing that broke. A hung game is the one
+/// exception; see [`already_hung`].
 pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
     let project_root = project_root.as_ref();
     let (config, paths) = match ProjectPaths::discover(project_root) {
@@ -106,24 +107,42 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
             "assets" => steps.push(assets_step(project_root, *required)),
             "layout" => {
                 if config.ui_previews.is_empty() {
-                    steps.push(layout_step(project_root, None, &paths.root, *required));
+                    steps.push(if already_hung(&steps) {
+                        not_run("layout", "game ui preview --strict", *required)
+                    } else {
+                        layout_step(project_root, None, &paths.root, *required)
+                    });
                 } else {
                     for preview in &config.ui_previews {
-                        steps.push(layout_step(
-                            project_root,
-                            Some(preview),
-                            &paths.root,
-                            *required,
-                        ));
+                        steps.push(if already_hung(&steps) {
+                            not_run(&format!("layout:{}", preview.name), "game ui preview --strict", *required)
+                        } else {
+                            layout_step(project_root, Some(preview), &paths.root, *required)
+                        });
                     }
                 }
             }
-            "tests" => steps.push(tests_step(project_root, &paths, *required)),
+            "tests" => steps.push(if already_hung(&steps) {
+                not_run("tests", "game test", *required)
+            } else {
+                tests_step(project_root, &paths, *required)
+            }),
             _ => unreachable!("resolve_plan rejects unknown ids"),
         }
     }
 
     finish(config.name, steps, step_source)
+}
+
+/// The exception to running every gate: each gate that runs a hung game waits
+/// out the whole time limit to report the same line, so a project with several
+/// previews would keep the verdict from its author for minutes.
+fn already_hung(steps: &[VerifyStep]) -> bool {
+    steps.iter().flat_map(|step| &step.diagnostics).any(|diagnostic| diagnostic.code == crate::runtime::script_watchdog::CODE)
+}
+
+fn not_run(name: &str, command: &str, required: bool) -> VerifyStep {
+    step(name, command, resolve_status(false, required), "not run: the script hit its time limit in an earlier gate", Vec::new())
 }
 
 /// Which gates to run, and whether each one may fail without failing the run.

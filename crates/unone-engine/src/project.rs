@@ -52,6 +52,12 @@ pub struct ProjectConfig {
     /// list is declared, even empty, and as a warning while it is not.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub input_actions: Option<Vec<String>>,
+    /// Longest one call into the script may run under the developer tools
+    /// before it is stopped with `SCRIPT_TIME_LIMIT_EXCEEDED`: the script's
+    /// top-level code, `start`, `onReload` or a single `update`. Undeclared
+    /// means 600; new projects declare 60. Players do not enforce it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub script_time_limit_seconds: Option<std::num::NonZeroU32>,
     /// Which gates `verify` runs, in what order, and which of them are
     /// advisory.
     ///

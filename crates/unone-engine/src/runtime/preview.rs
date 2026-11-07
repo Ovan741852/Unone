@@ -263,6 +263,8 @@ impl EngineRuntime {
                 };
                 // No registry borrow survives arbitrary Lua execution. Failure can
                 // leave Lua/game changes; do not promise rollback of a Lua heap.
+                #[cfg(feature = "dev-tools")]
+                let _watch = script_watchdog::watch(&self.lua, "A developer tool callback", script_watchdog::limit(&self.config));
                 callback.call::<()>(value)?;
                 if checkbox {
                     self.debug_tools

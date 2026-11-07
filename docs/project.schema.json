@@ -494,6 +494,15 @@
       "description": "Exact versions of SDK-bundled Luau runtime packages used by this project.\nDeclare @unone/ui before using api.ui.components constructors. This is\ncompatibility data, not a network resolver or filesystem module loader.",
       "type": "object"
     },
+    "script_time_limit_seconds": {
+      "description": "Longest one call into the script may run under the developer tools\nbefore it is stopped with `SCRIPT_TIME_LIMIT_EXCEEDED`: the script's\ntop-level code, `start`, `onReload` or a single `update`. Undeclared\nmeans 600; new projects declare 60. Players do not enforce it.",
+      "format": "uint32",
+      "minimum": 1,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
     "systems": {
       "additionalProperties": {
         "type": "boolean"

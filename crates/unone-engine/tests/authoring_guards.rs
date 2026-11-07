@@ -183,3 +183,155 @@ fn an_input_actions_entry_must_be_a_name_or_a_prefix_family() {
     assert!(!check.ok);
     assert_eq!(check.diagnostics[0].code, "INPUT_ACTIONS_INVALID");
 }
+
+const TIME_LIMIT: &str = "SCRIPT_TIME_LIMIT_EXCEEDED";
+
+fn one_second() -> Value {
+    json!({"script_time_limit_seconds": 1})
+}
+
+fn assert_stopped(error: &Diagnostic, summary: &str, file: &str, line: u32) {
+    assert_eq!(error.code, TIME_LIMIT, "{}", error.explanation);
+    assert_eq!(error.summary, summary);
+    let source = error.source.as_ref().expect("the stuck line is reported");
+    assert!(source.file.ends_with(file), "{source:?}");
+    assert_eq!(source.line, Some(line), "{}", error.explanation);
+    assert!(error.explanation.contains("stack traceback"), "{}", error.explanation);
+}
+
+#[test]
+fn a_runaway_update_ends_every_command_with_the_line_it_stuck_on() {
+    let dir = tempdir().unwrap();
+    let script = "return {start=function(api) end, update=function(api)\nlocal done = false\nwhile not done do\nend\nend}";
+    write_project(dir.path(), one_second(), script, OK_TEST);
+    let stuck = "Game.update did not return within 1 s";
+
+    assert!(EngineRuntime::check(dir.path()).ok, "check does not run update");
+    let error = EngineRuntime::load_with_seed(dir.path(), 1).unwrap().tick().unwrap_err();
+    assert_stopped(&error, stuck, "main.luau", 3);
+
+    let run = EngineRuntime::load_with_seed(dir.path(), 1).unwrap().run(5, 1);
+    assert!(!run.ok);
+    assert_stopped(&run.diagnostics[0], stuck, "main.luau", 3);
+
+    let tests = EngineRuntime::run_tests(dir.path());
+    assert!(!tests.ok);
+    assert_stopped(&tests.diagnostics[0], stuck, "main.luau", 3);
+}
+
+#[test]
+fn a_runaway_start_or_top_level_stops_too_and_check_sees_the_top_level() {
+    let dir = tempdir().unwrap();
+    write_project(dir.path(), one_second(), "return {update=function(api) end,\nstart=function(api)\nwhile true do end\nend}", OK_TEST);
+    let error = EngineRuntime::load_with_seed(dir.path(), 1).err().unwrap();
+    assert_stopped(&error, "Game.start did not return within 1 s", "main.luau", 3);
+
+    write_project(dir.path(), one_second(), "while true do\nend\nreturn {start=function(api) end, update=function(api) end}", OK_TEST);
+    let error = EngineRuntime::load_with_seed(dir.path(), 1).err().unwrap();
+    assert_stopped(&error, "The script's top-level code did not return within 1 s", "main.luau", 1);
+    let check = EngineRuntime::check(dir.path());
+    assert!(!check.ok);
+    assert_stopped(&check.diagnostics[0], "The script's top-level code did not return within 1 s", "main.luau", 1);
+}
+
+#[test]
+fn the_reported_file_is_the_module_that_is_stuck() {
+    let dir = tempdir().unwrap();
+    write_project(dir.path(), one_second(), "local slow = require('./slow')\nreturn {start=function(api) end, update=function(api) slow() end}", OK_TEST);
+    fs::write(dir.path().join("scripts/slow.luau"), "return function()\n\nwhile true do\nend\nend").unwrap();
+    let error = EngineRuntime::load_with_seed(dir.path(), 1).unwrap().tick().unwrap_err();
+    assert_stopped(&error, "Game.update did not return within 1 s", "slow.luau", 3);
+}
+
+#[test]
+fn a_script_cannot_catch_the_limit_and_keep_running() {
+    for update in [
+        "while true do pcall(function() while true do end end) end",
+        "xpcall(function() while true do end end, function() while true do end end)\nwhile true do end",
+        "while true do pcall(coroutine.wrap(function() while true do end end)) end",
+        "local thread = coroutine.create(function() while true do end end)\nwhile true do coroutine.resume(thread) end",
+    ] {
+        let dir = tempdir().unwrap();
+        write_project(dir.path(), one_second(), &game(update), OK_TEST);
+        let error = EngineRuntime::load_with_seed(dir.path(), 1).unwrap().tick().unwrap_err();
+        assert_eq!(error.code, TIME_LIMIT, "{update}\n{}", error.explanation);
+    }
+}
+
+#[test]
+fn a_reload_that_hangs_fails_and_the_running_script_carries_on() {
+    let dir = tempdir().unwrap();
+    write_project(dir.path(), one_second(), &game(""), OK_TEST);
+    let mut runtime = EngineRuntime::load_with_seed(dir.path(), 1).unwrap();
+    runtime.tick().unwrap();
+
+    let on_reload = "return {start=function(api) end, update=function(api) end, onReload=function(api)\nwhile true do end\nend}";
+    let error = runtime.reload_source(on_reload).unwrap_err();
+    assert_eq!(error.code, TIME_LIMIT, "{}", error.explanation);
+    assert_eq!(error.summary, "Game.onReload did not return within 1 s");
+
+    let error = runtime.reload_source("while true do end\nreturn {}").unwrap_err();
+    assert_eq!(error.code, TIME_LIMIT, "{}", error.explanation);
+
+    runtime.tick().unwrap();
+}
+
+#[test]
+fn a_replay_callback_that_hangs_fails_with_the_limit_in_its_explanation() {
+    let dir = tempdir().unwrap();
+    let script = "return {start=function(api) end, update=function(api) end, replay={id='x',version='1',restore=function()\nwhile true do end\nend}}";
+    write_project(dir.path(), one_second(), script, OK_TEST);
+    let runtime = EngineRuntime::load_with_seed(dir.path(), 1).unwrap();
+    let error = runtime.replay_adapter_call("restore", json!({})).unwrap_err();
+    assert_eq!(error.code, "REPLAY_ADAPTER_FAILED");
+    assert!(error.explanation.contains(TIME_LIMIT), "{}", error.explanation);
+}
+
+#[test]
+fn a_call_that_returns_is_untouched_and_the_limit_is_declared_in_whole_seconds() {
+    let dir = tempdir().unwrap();
+    let script = game("local sum = 0\nfor i = 1, 1000 do sum += i end\napi.observation.set('sum', sum)");
+    let digest = |config: Value| {
+        write_project(dir.path(), config, &script, OK_TEST);
+        EngineRuntime::load_with_seed(dir.path(), 1).unwrap().run(30, 1).value.unwrap().observation_digest
+    };
+    assert_eq!(digest(json!({})), digest(json!({"script_time_limit_seconds": 600})));
+
+    write_project(dir.path(), json!({"script_time_limit_seconds": 0}), &script, OK_TEST);
+    assert_eq!(EngineRuntime::check(dir.path()).diagnostics[0].code, "PROJECT_CONFIG_INVALID");
+}
+
+#[test]
+fn verify_reports_a_hung_game_once_instead_of_waiting_out_every_gate() {
+    let dir = tempdir().unwrap();
+    let config = json!({
+        "script_time_limit_seconds": 1,
+        "ui_previews": [{"name": "first", "frames": 1}, {"name": "second", "frames": 1}],
+    });
+    write_project(dir.path(), config, &game("while true do end"), OK_TEST);
+    let report = verify(dir.path()).value.unwrap();
+    let stuck: Vec<_> = report.steps.iter().filter(|step| !step.diagnostics.is_empty() && step.diagnostics[0].code == TIME_LIMIT).map(|step| step.name.as_str()).collect();
+    assert_eq!(stuck, ["layout:first"]);
+    for name in ["layout:second", "tests"] {
+        let step = report.steps.iter().find(|step| step.name == name).unwrap();
+        assert_eq!(step.status, StepStatus::Failed, "{name}");
+        assert!(step.summary.starts_with("not run"), "{name}: {}", step.summary);
+    }
+}
+
+#[test]
+fn the_reported_line_is_the_loop_even_when_a_pcall_caught_the_first_error() {
+    let dir = tempdir().unwrap();
+    let script = "return {start=function(api) end, update=function(api)\nlocal ok = pcall(function()\nwhile true do\nend\nend)\napi.observation.set('ok', ok)\nend}";
+    write_project(dir.path(), one_second(), script, OK_TEST);
+    let error = EngineRuntime::load_with_seed(dir.path(), 1).unwrap().tick().unwrap_err();
+    assert_stopped(&error, "Game.update did not return within 1 s", "main.luau", 3);
+}
+
+#[test]
+fn a_new_project_declares_a_short_limit() {
+    let dir = tempdir().unwrap();
+    unone_engine::init_project(dir.path(), "starter").value.unwrap();
+    let config: Value = serde_json::from_str(&fs::read_to_string(dir.path().join("project.unone.json")).unwrap()).unwrap();
+    assert_eq!(config["script_time_limit_seconds"], 60);
+}
