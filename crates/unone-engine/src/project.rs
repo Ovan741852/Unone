@@ -402,6 +402,9 @@ impl TestAssertion {
             if observation.key.trim().is_empty() {
                 return Err("Observation assertion key cannot be empty.".to_string());
             }
+            if observation.equals.is_some() == observation.includes.is_some() {
+                return Err("An observation assertion gives exactly one of equals (the whole value) or includes (only the keys given).".to_string());
+            }
             if self.has_numeric_comparator() {
                 return Err(
                     "Observation assertions cannot provide numeric comparators.".to_string()
@@ -531,7 +534,13 @@ fn default_preview_seed() -> u64 {
 #[serde(deny_unknown_fields)]
 pub struct ObservationAssertion {
     pub key: String,
-    pub equals: serde_json::Value,
+    /// The whole value, JSON-equal (numbers by value).
+    #[serde(default, deserialize_with = "crate::physical_input::present")]
+    pub equals: Option<serde_json::Value>,
+    /// Only the keys given, at every depth: the observed object may hold more.
+    /// Arrays still match item by item. Give this or `equals`, not both.
+    #[serde(default, deserialize_with = "crate::physical_input::present")]
+    pub includes: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

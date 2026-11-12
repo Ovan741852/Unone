@@ -38,6 +38,7 @@ mod plugins;
 mod prepare;
 mod session;
 mod sync;
+mod test_runs;
 #[cfg(test)]
 mod ui_preview_tests;
 
@@ -166,7 +167,24 @@ enum Command {
         #[arg(long, conflicts_with = "action")]
         input_sequence: Option<PathBuf>,
     },
-    Test,
+    /// Run the project's deterministic tests: all, or those chosen.
+    Test {
+        /// Only tests whose name or project-relative path contains this text; repeat for more.
+        #[arg(long)]
+        filter: Vec<String>,
+        /// Only shard K of N (for example 2/4) of the tests chosen: every N-th from the K-th.
+        #[arg(long, value_parser = parse_shard)]
+        shard: Option<(usize, usize)>,
+        /// Run this many tests at once, each in its own process; 0 is one per processor.
+        #[arg(long, default_value_t = 1)]
+        jobs: usize,
+        /// List the tests chosen (path, name, frames) without running them.
+        #[arg(long)]
+        list: bool,
+        /// Exactly this project-relative test file; what a worker of --jobs runs.
+        #[arg(long, hide = true)]
+        file: Vec<String>,
+    },
     Observe,
     Preview {
         #[arg(long, help = "Reload the entry Luau script when its file changes")]
@@ -1065,8 +1083,23 @@ fn run() -> Result<ExitCode> {
                 print_result(runtime.run(frames, seed), cli.json)
             }
         }
-        Command::Test => {
-            let result = EngineRuntime::run_tests(&cli.project);
+        Command::Test { filter, shard, jobs, list, file } => {
+            // A worker of --jobs (given --file) leaves the times to the run that started it.
+            let worker = !file.is_empty();
+            let selection = unone_engine::TestSelection { filters: filter, files: file, shard };
+            if list {
+                return print_result(EngineRuntime::list_tests(&cli.project, &selection), cli.json);
+            }
+            let jobs = test_runs::workers(jobs);
+            let result = if jobs > 1 {
+                test_runs::run(&cli.project, cli.sdk.as_deref(), &selection, jobs)
+            } else {
+                let result = EngineRuntime::run_tests_with(&cli.project, &selection);
+                if let Some(report) = result.value.as_ref().filter(|_| !worker) {
+                    test_runs::write_times(&cli.project, &report.cases);
+                }
+                result
+            };
             let passed = result.ok
                 && result
                     .value
@@ -1146,6 +1179,17 @@ fn run() -> Result<ExitCode> {
         Command::Mcp => mcp::serve(&cli.project),
         Command::Session { schema } => session::serve(&cli.project, schema),
     }
+}
+
+/// `K/N` with 1 <= K <= N.
+fn parse_shard(text: &str) -> std::result::Result<(usize, usize), String> {
+    let (k, n) = text.split_once('/').ok_or_else(|| format!("'{text}' is not K/N, for example 2/4"))?;
+    let k: usize = k.trim().parse().map_err(|_| format!("'{text}': K is not a whole number"))?;
+    let n: usize = n.trim().parse().map_err(|_| format!("'{text}': N is not a whole number"))?;
+    if k == 0 || k > n {
+        return Err(format!("'{text}': give 1 <= K <= N"));
+    }
+    Ok((k, n))
 }
 
 fn print_result<T: serde::Serialize>(result: EngineResult<T>, json: bool) -> Result<ExitCode> {

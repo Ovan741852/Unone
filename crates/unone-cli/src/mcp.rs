@@ -587,7 +587,15 @@ fn tool_definitions() -> Vec<Value> {
             "unone_test",
             "Run game tests",
             "Run the project's deterministic test manifests and return every case, failure, digest, and semantic diagnostic.",
-            object_schema(json!({})),
+            object_schema(json!({
+                "properties": {
+                    "filter": {
+                        "type": "array",
+                        "description": "Only tests whose name or project-relative path contains one of these texts; omitted runs every test.",
+                        "items": {"type": "string"}
+                    }
+                }
+            })),
             true,
             true,
         ),
@@ -958,7 +966,13 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             Err(diagnostic) => argument_error(*diagnostic),
         },
         "unone_run" => run_tool(project, arguments),
-        "unone_test" => tool_result(EngineRuntime::run_tests(project)),
+        "unone_test" => match optional_string_array(arguments, "filter") {
+            Ok(filters) => tool_result(EngineRuntime::run_tests_with(
+                project,
+                &unone_engine::TestSelection { filters, ..Default::default() },
+            )),
+            Err(diagnostic) => argument_error(*diagnostic),
+        },
         "unone_observe" => match EngineRuntime::load(project) {
             Ok(runtime) => tool_result(EngineResult::success(runtime.observe())),
             Err(diagnostic) => tool_result(EngineResult::<Value>::failure(*diagnostic)),

@@ -1,5 +1,3 @@
-#[cfg(feature = "dev-tools")]
-use crate::project::TestSpec;
 use std::{cell::RefCell, collections::{BTreeMap, BTreeSet}, path::PathBuf, rc::Rc, sync::Arc};
 #[cfg(feature = "dev-tools")]
 use std::{env, fs, path::Path, process::Command, time::SystemTime};
@@ -48,6 +46,10 @@ mod phase_profile;
 mod memory;
 #[cfg(feature = "dev-tools")]
 mod replay_adapter;
+#[cfg(feature = "dev-tools")]
+mod test_suite;
+#[cfg(feature = "dev-tools")]
+pub use test_suite::{SelectedTest, TestSelection, test_suite_diagnostics};
 #[cfg(feature = "dev-tools")]
 pub(crate) mod script_watchdog;
 #[cfg(feature = "preview-tools")]
@@ -136,17 +138,23 @@ pub struct RunReport {
     pub performance: PerformanceReport,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, serde::Deserialize)]
 pub struct TestCaseReport {
     pub name: String,
+    /// The test file, relative to the project root.
+    #[serde(default)]
+    pub path: String,
     pub passed: bool,
     pub frames: u64,
     pub observation_digest: Option<String>,
     pub save_payload: Option<serde_json::Value>,
     pub failures: Vec<String>,
+    /// Wall-clock milliseconds the case took, loading included; not part of any digest.
+    #[serde(default)]
+    pub elapsed_ms: u64,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, serde::Deserialize)]
 pub struct TestSuiteReport {
     pub project: String,
     pub passed: bool,
@@ -1441,147 +1449,6 @@ impl EngineRuntime {
         report
     }
 
-    #[cfg(feature = "dev-tools")]
-    pub fn run_tests(project_root: impl AsRef<Path>) -> EngineResult<TestSuiteReport> {
-        let (config, paths) = match ProjectPaths::discover(project_root) {
-            Ok(value) => value,
-            Err(diagnostic) => return EngineResult::failure(*diagnostic),
-        };
-        if paths.test_files.is_empty() {
-            return EngineResult::failure(Diagnostic::error(
-                "TESTS_NOT_CONFIGURED",
-                "The project has no test files configured",
-                "Add .test.json files to the test_files array in project.unone.json.",
-            ));
-        }
-        let mut cases = Vec::new();
-        let mut warnings = Vec::new();
-        for test_path in paths.test_files {
-            let text = match fs::read_to_string(&test_path) {
-                Ok(text) => text,
-                Err(err) => {
-                    return EngineResult::failure(Diagnostic::error(
-                        "TEST_READ_FAILED",
-                        "Unable to read test file",
-                        format!("{}: {}", test_path.display(), err),
-                    ));
-                }
-            };
-            let spec: TestSpec = match serde_json::from_str(&text) {
-                Ok(spec) => spec,
-                Err(err) => {
-                    return EngineResult::failure(Diagnostic::error(
-                        "TEST_INVALID",
-                        "Test file is not valid JSON",
-                        format!("{}: {}", test_path.display(), err),
-                    ));
-                }
-            };
-            if spec.assertions.is_empty() {
-                let mut diagnostic = Diagnostic::error(
-                    "TEST_NO_ASSERTIONS",
-                    "Test checks nothing",
-                    format!(
-                        "{} declares no assertions, so it would pass whatever the game does. A running game is not evidence; assert what this case should have produced.",
-                        test_path.display()
-                    ),
-                );
-                diagnostic.suggested_actions = vec![ActionSuggestion {
-                    action: "add_assertion".to_string(),
-                    description: "Add an entity, observation or UI entry to `assertions`, for example {\"observation\":{\"key\":\"score\",\"equals\":1}}; test.schema.json lists every form.".to_string(),
-                    command: Some("game schema test".to_string()),
-                }];
-                return EngineResult::failure(diagnostic);
-            }
-            for (index, assertion) in spec.assertions.iter().enumerate() {
-                if let Err(error) = assertion.validate() {
-                    return EngineResult::failure(Diagnostic::error(
-                        "TEST_ASSERTION_INVALID",
-                        "Test assertion does not satisfy the single-target contract",
-                        format!(
-                            "{} assertions[{index}]: {error}. Fix it according to test.schema.json in the package.",
-                            test_path.display()
-                        ),
-                    ));
-                }
-            }
-            // The case's own tape, else the project's policy, which must replay.
-            let host_time = match spec.host_time.clone() {
-                Some(tape) => Some(crate::HostTimeConfig::Replay { tape }),
-                None => {
-                    if let Err(diagnostic) = Self::require_replayable_host_time(&config) {
-                        return EngineResult::failure(*diagnostic);
-                    }
-                    None
-                }
-            };
-            let mut runtime = match Self::load_with_seed_save_and_host_time(
-                &paths.root,
-                spec.seed,
-                spec.load_save.clone(),
-                host_time,
-            ) {
-                Ok(runtime) => runtime,
-                Err(diagnostic) => return EngineResult::failure(*diagnostic),
-            };
-            for (action, is_down) in &spec.input {
-                runtime.set_input(action.clone(), *is_down);
-            }
-            let run = if spec.input_sequence.is_empty() {
-                runtime.run(spec.frames, spec.seed)
-            } else {
-                runtime.run_with_input_sequence(spec.frames, spec.seed, &spec.input_sequence)
-            };
-            let report = match run.value {
-                Some(report) => report,
-                None => {
-                    return EngineResult::failure(
-                        run.diagnostics.into_iter().next().unwrap_or_else(|| {
-                            Diagnostic::error(
-                                "TEST_RUN_FAILED",
-                                "Test execution failed",
-                                "The test runtime produced no result.",
-                            )
-                        }),
-                    );
-                }
-            };
-            let mut failures = Vec::new();
-            for diagnostic in run.diagnostics {
-                if crate::input_actions::is_error(&diagnostic) {
-                    failures.push(format!("{}: {}", diagnostic.code, diagnostic.explanation));
-                } else {
-                    warnings.push(diagnostic);
-                }
-            }
-            if let Err(error) = runtime.host_time_replay_complete() {
-                failures.push(error);
-            }
-            for assertion in &spec.assertions {
-                match evaluate_assertion(&report.world, assertion) {
-                    Ok(()) => {}
-                    Err(failure) => failures.push(failure),
-                }
-            }
-            cases.push(TestCaseReport {
-                name: spec.name,
-                passed: failures.is_empty(),
-                frames: report.frames,
-                observation_digest: Some(report.observation_digest),
-                save_payload: report.save_payload,
-                failures,
-            });
-        }
-        let passed = cases.iter().all(|case| case.passed);
-        let mut result = EngineResult::success(TestSuiteReport {
-            project: config.name,
-            passed,
-            cases,
-        });
-        result.diagnostics = crate::input_actions::suite_warning(warnings).into_iter().collect();
-        result
-    }
-
     pub fn observe(&self) -> WorldSnapshot {
         #[cfg(feature = "phase-profile")]
         let mut snapshot = phase_profile::measure(&self.lua,phase_profile::Phase::WorldSnapshot,||self.world.borrow().snapshot());
@@ -2466,166 +2333,6 @@ fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
 fn hex_digest(bytes: &[u8]) -> String {
     let digest = Sha256::digest(bytes);
     digest.iter().map(|byte| format!("{byte:02x}")).collect()
-}
-
-/// JSON equality with numbers compared by value: Luau has one number type, so
-/// an observed 2.0 and an expected 2 (or 4294967297.0 and 4294967297) agree.
-#[cfg(feature = "dev-tools")]
-fn json_equal(actual: &serde_json::Value, expected: &serde_json::Value) -> bool {
-    use serde_json::Value;
-    match (actual, expected) {
-        (Value::Number(a), Value::Number(b)) => match (integral(a), integral(b)) {
-            (Some(a), Some(b)) => a == b,
-            _ => a.as_f64() == b.as_f64(),
-        },
-        (Value::Array(a), Value::Array(b)) => a.len() == b.len() && a.iter().zip(b).all(|(a, b)| json_equal(a, b)),
-        (Value::Object(a), Value::Object(b)) => {
-            a.len() == b.len() && a.iter().all(|(key, value)| b.get(key).is_some_and(|other| json_equal(value, other)))
-        }
-        _ => actual == expected,
-    }
-}
-
-/// An integral JSON number exactly, whether written as an integer or a float.
-#[cfg(feature = "dev-tools")]
-fn integral(number: &serde_json::Number) -> Option<i128> {
-    if let Some(value) = number.as_i64() {
-        return Some(i128::from(value));
-    }
-    if let Some(value) = number.as_u64() {
-        return Some(i128::from(value));
-    }
-    let value = number.as_f64()?;
-    (value.fract() == 0.0 && value.abs() < 1e38).then_some(value as i128)
-}
-
-#[cfg(feature = "dev-tools")]
-fn evaluate_assertion(
-    world: &WorldSnapshot,
-    assertion: &crate::project::TestAssertion,
-) -> Result<(), String> {
-    if let Some(ui) = &assertion.ui {
-        let actual = world
-            .ui
-            .as_deref()
-            .ok_or_else(|| "UI tree does not exist.".to_string())?;
-        let expected = UiTree::from_json_for_viewport_with_resources(ui.equals.clone(),crate::ui::UI_REFERENCE_ASPECT,&world.ui_image_batches)
-            .map_err(|error| format!("UI assertion is not a valid UI tree: {error}"))?;
-        if actual != &expected {
-            return Err(format!(
-                "UI tree does not equal the expected value; actual={} expected={}",
-                serde_json::to_string(actual).unwrap_or_else(|_| "<unserializable>".to_string()),
-                serde_json::to_string(&expected).unwrap_or_else(|_| "<unserializable>".to_string())
-            ));
-        }
-        return Ok(());
-    }
-    if let Some(animation) = &assertion.animation {
-        let entity = world
-            .entities
-            .get(&animation.entity)
-            .ok_or_else(|| format!("Entity '{}' does not exist.", animation.entity))?;
-        let actual = serde_json::to_value(&entity.animation)
-            .map_err(|error| format!("Unable to serialize animation state: {error}"))?;
-        if !json_equal(&actual, &animation.equals) {
-            return Err(format!(
-                "Entity '{}' animation = {actual}, does not equal expected {}.",
-                animation.entity, animation.equals
-            ));
-        }
-        return Ok(());
-    }
-    if let Some(effects) = &assertion.effects {
-        let actual = serde_json::to_value(&world.effects)
-            .map_err(|error| format!("Unable to serialize effects: {error}"))?;
-        if !json_equal(&actual, &effects.equals) {
-            return Err(format!(
-                "effects = {actual}, does not equal expected {}.",
-                effects.equals
-            ));
-        }
-        return Ok(());
-    }
-    if let Some(audio) = &assertion.audio {
-        if let Some(expected) = &audio.events {
-            let actual = serde_json::to_value(&world.audio_events)
-                .map_err(|error| format!("Unable to serialize audio events: {error}"))?;
-            if !json_equal(&actual, expected) {
-                return Err(format!(
-                    "audio events = {actual}, does not equal expected {expected}."
-                ));
-            }
-        }
-        if let Some(expected) = &audio.loops {
-            let actual = serde_json::to_value(&world.audio_loops)
-                .map_err(|error| format!("Unable to serialize audio loops: {error}"))?;
-            if !json_equal(&actual, expected) {
-                return Err(format!(
-                    "audio loops = {actual}, does not equal expected {expected}."
-                ));
-            }
-        }
-        return Ok(());
-    }
-    if let Some(observation) = &assertion.observation {
-        let actual = world
-            .observations
-            .get(&observation.key)
-            .ok_or_else(|| format!("Observation '{}' does not exist.", observation.key))?;
-        if !json_equal(actual, &observation.equals) {
-            return Err(format!(
-                "Observation '{}' = {}, does not equal expected {}.",
-                observation.key, actual, observation.equals
-            ));
-        }
-        return Ok(());
-    }
-    let entity_id = assertion
-        .entity
-        .as_deref()
-        .ok_or_else(|| "Assertion must provide entity/field or observation.".to_string())?;
-    let field = assertion
-        .field
-        .as_deref()
-        .ok_or_else(|| "Entity assertion must provide field.".to_string())?;
-    let entity = world
-        .entities
-        .get(entity_id)
-        .ok_or_else(|| format!("Entity '{}' does not exist.", entity_id))?;
-    let actual = match field {
-        "transform.x" => entity.transform.x,
-        "transform.y" => entity.transform.y,
-        field => {
-            return Err(format!(
-                "Unsupported assertion field '{field}'; currently supported fields are transform.x and transform.y."
-            ));
-        }
-    };
-    if let Some(expected) = assertion.equals
-        && (actual - expected).abs() > 0.000_001
-    {
-        return Err(format!(
-            "{} {} does not equal expected {}.",
-            entity_id, field, expected
-        ));
-    }
-    if let Some(expected) = assertion.greater_than
-        && actual <= expected
-    {
-        return Err(format!(
-            "{} {} = {} is not greater than {}.",
-            entity_id, field, actual, expected
-        ));
-    }
-    if let Some(expected) = assertion.less_than
-        && actual >= expected
-    {
-        return Err(format!(
-            "{} {} = {} is not less than {}.",
-            entity_id, field, actual, expected
-        ));
-    }
-    Ok(())
 }
 
 #[cfg(all(test, feature = "dev-tools"))]

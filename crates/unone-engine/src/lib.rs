@@ -175,7 +175,7 @@ pub use runtime::{
     TypeCheckReport, encode_observation, observation_digest,
 };
 #[cfg(feature = "dev-tools")]
-pub use runtime::read_script_modules;
+pub use runtime::{SelectedTest, TestSelection, read_script_modules, test_suite_diagnostics};
 pub use scene::parse_scene_fragment;
 #[cfg(feature = "dev-tools")]
 pub use schema::{SCHEMA_NAMES, contract_schema};

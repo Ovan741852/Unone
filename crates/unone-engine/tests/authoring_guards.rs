@@ -214,9 +214,13 @@ fn a_runaway_update_ends_every_command_with_the_line_it_stuck_on() {
     assert!(!run.ok);
     assert_stopped(&run.diagnostics[0], stuck, "main.luau", 3);
 
+    // The suite still reports: this case failed with the line it stuck on.
     let tests = EngineRuntime::run_tests(dir.path());
-    assert!(!tests.ok);
+    assert!(tests.ok, "{:?}", tests.diagnostics);
     assert_stopped(&tests.diagnostics[0], stuck, "main.luau", 3);
+    let case = &tests.value.unwrap().cases[0];
+    assert!(!case.passed);
+    assert!(case.failures[0].starts_with(TIME_LIMIT) && case.failures[0].ends_with("main.luau:3)"), "{:?}", case.failures);
 }
 
 #[test]
