@@ -151,18 +151,22 @@ fn file_stamp(path: &Path) -> Option<FileStamp> {
 /// were, so an unchanged project is recognised by metadata alone (as make and
 /// ninja do). A file whose time is not older than the stamp may have changed
 /// within one clock tick of being recorded, so it never counts as unchanged.
+/// The project file counts by what imports read of it (`config`), so adding a
+/// test or a system to it leaves the imports up to date.
 #[derive(Serialize, Deserialize)]
 struct ImportStamp {
     engine: String,
     written_ns: u64,
+    #[serde(default)]
+    config: String,
     roots: BTreeMap<String, Option<PathBuf>>,
     files: BTreeMap<PathBuf, Option<FileStamp>>,
     imports: usize,
     unverified: Vec<String>,
 }
-fn stamped_report(path: &Path, roots: &BTreeMap<String, Option<PathBuf>>) -> Option<ImportReport> {
+fn stamped_report(path: &Path, roots: &BTreeMap<String, Option<PathBuf>>, config: &str) -> Option<ImportReport> {
     let stamp: ImportStamp = serde_json::from_slice(&std::fs::read(path).ok()?).ok()?;
-    if stamp.engine != env!("CARGO_PKG_VERSION") || stamp.roots != *roots { return None; }
+    if stamp.engine != env!("CARGO_PKG_VERSION") || stamp.roots != *roots || stamp.config != config { return None; }
     for (file, recorded) in &stamp.files {
         if file_stamp(file) != *recorded || recorded.as_ref().is_some_and(|r| r.modified_ns >= stamp.written_ns) { return None; }
     }
@@ -194,11 +198,13 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     let import_config = config.import.clone().unwrap_or_default();
     let roots = resolve_roots(&root, &import_config);
     let stamp_path = root.join(STAMP_FILE);
-    if let Some(report) = stamped_report(&stamp_path, &roots) { return Ok(report); }
+    // What imports read of the project file: its import section and where the manifest is.
+    let config_digest = sha256(&serde_json::to_vec(&json!({"import": config.import, "asset_manifest": config.asset_manifest})).unwrap_or_default());
+    if let Some(report) = stamped_report(&stamp_path, &roots, &config_digest) { return Ok(report); }
     let _ = std::fs::remove_file(&stamp_path);
     // Each file is stamped before it is read, so a change while reading shows next time.
     let mut files: BTreeMap<PathBuf, Option<FileStamp>> = BTreeMap::new();
-    for path in [paths.config.clone(), root.join(LOCAL_ROOTS_FILE)].into_iter().chain(paths.asset_manifest.clone()) {
+    for path in [root.join(LOCAL_ROOTS_FILE)].into_iter().chain(paths.asset_manifest.clone()) {
         let stamp = file_stamp(&path);
         files.insert(path, stamp);
     }
@@ -390,7 +396,7 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     for (_, _, file, stamp) in reads.into_values() { files.insert(file, stamp); }
     let written_ns = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
         .ok().and_then(|now| u64::try_from(now.as_nanos()).ok()).unwrap_or(0);
-    let stamp = ImportStamp { engine: env!("CARGO_PKG_VERSION").to_string(), written_ns, roots, files,
+    let stamp = ImportStamp { engine: env!("CARGO_PKG_VERSION").to_string(), written_ns, config: config_digest, roots, files,
         imports: report.imports, unverified: report.unverified.clone() };
     if let Ok(text) = serde_json::to_vec(&stamp) { let _ = std::fs::write(&stamp_path, text); }
     Ok(report)

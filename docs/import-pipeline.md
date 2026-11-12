@@ -105,9 +105,10 @@ module source, node, params and input values; assets sharing one run reuse it,
 and a project checked this way costs only hashing its sources. A file is
 rewritten only when its bytes change. After a successful prepare,
 `.unone/import-stamp.json` records the size and modification time of every file
-it read or wrote (project file, manifest, local roots file, importer modules,
-root sources, products, provenance) and where each root resolved. While all of
-them still match, the next prepare reports `up_to_date` without reading a source
+it read or wrote (manifest, local roots file, importer modules, root sources,
+products, provenance), where each root resolved, and a hash of what imports read
+of the project file (its `import` section and `asset_manifest`), so adding a test
+or a system there changes nothing. While all of them still match, the next prepare reports `up_to_date` without reading a source
 (make/ninja style); a file whose time is not older than the stamp counts as
 changed, so an edit within one clock tick of the stamp is never missed. Delete
 the stamp to force the full content check. `.unone/import-provenance.json` records, for every

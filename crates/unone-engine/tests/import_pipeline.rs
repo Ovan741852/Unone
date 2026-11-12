@@ -93,6 +93,16 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     let again = unone_engine::prepare_imports(&dir).unwrap();
     assert!(again.up_to_date);
     assert_eq!((again.imports, again.ran, again.cached, again.written, again.unchanged), (3, 0, 0, 0, 0));
+    // The project file counts by what imports read of it: a test added to it changes nothing they do.
+    let config = dir.join("project.unone.json");
+    let mut edited: Value = serde_json::from_slice(&std::fs::read(&config).unwrap()).unwrap();
+    edited["test_files"] = json!(["tests/new.test.json"]);
+    write(&config, edited.to_string());
+    assert!(unone_engine::prepare_imports(&dir).unwrap().up_to_date, "a new test is not an import change");
+    edited["import"]["roots"]["original"]["description"] = json!("described again");
+    write(&config, edited.to_string());
+    assert!(!unone_engine::prepare_imports(&dir).unwrap().up_to_date, "its import section is");
+    assert!(unone_engine::prepare_imports(&dir).unwrap().up_to_date);
     // Without the stamp, every product is checked by content: all from the cache, none rewritten.
     std::fs::remove_file(dir.join(".unone/import-stamp.json")).unwrap();
     let checked = unone_engine::prepare_imports(&dir).unwrap();
