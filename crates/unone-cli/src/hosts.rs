@@ -343,6 +343,10 @@ pub struct PresentationUi {
     pub font_source: Option<String>,
     pub font_family: Option<String>,
     pub fonts: Vec<PresentationFontFace>,
+    /// Build-time settings for faces declared with `subset: true`. Players
+    /// never read them, so the packaged presentation omits them.
+    #[serde(skip_serializing)]
+    pub font_subset: Option<FontSubsetSettings>,
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -352,9 +356,39 @@ pub struct PresentationFontFace {
     pub source: String,
     #[serde(default = "default_font_weight")]
     pub weight: u16,
+    /// Web exports cut this face down to the characters the game shows
+    /// (`crate::font_subset`). Every face naming the same source must agree.
+    #[serde(default, skip_serializing)]
+    pub subset: bool,
 }
 
 fn default_font_weight() -> u16 { 400 }
+
+/// Characters the build cannot see in the game's content, and what to do when
+/// no packaged face has a character the game shows.
+#[derive(Default, serde::Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct FontSubsetSettings {
+    /// Characters that only appear at run time, such as the characters a
+    /// player may use in a name.
+    pub runtime_text: String,
+    /// Project-relative UTF-8 files whose every character appears at run time.
+    pub runtime_text_files: Vec<String>,
+    /// Characters the content contains but never shows; they are not reported
+    /// as missing. They are still kept when a face has them.
+    pub ignore_missing: String,
+    pub missing: MissingGlyphPolicy,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MissingGlyphPolicy {
+    /// A character no packaged face has fails the export.
+    #[default]
+    Error,
+    /// The export succeeds and reports the characters as a warning.
+    Warn,
+}
 
 impl PresentationUi {
     pub fn validate_fonts(&self) -> Result<()> {
@@ -375,8 +409,33 @@ impl PresentationUi {
                 "UI_FONT_FORMAT_UNSUPPORTED: ui.fonts supports shared TTF/OTF faces");
             ensure!(faces.insert((&face.family, face.weight)), "UI_FONT_DUPLICATE: family and weight must identify a unique packaged face");
         }
+        // Subsetting rewrites a packaged file, so it is a property of the source.
+        let mut subset_by_source = std::collections::BTreeMap::new();
+        let legacy = self.font_source.iter().map(|source| (source.as_str(), false));
+        for (source, subset) in legacy.chain(self.fonts.iter().map(|face| (face.source.as_str(), face.subset))) {
+            ensure!(*subset_by_source.entry(source).or_insert(subset) == subset,
+                "UI_FONT_SUBSET_CONFLICT: every face packaging {source} must declare the same \"subset\" (font_source faces are never subset)");
+        }
+        if let Some(settings) = &self.font_subset {
+            ensure!(self.subset_enabled(),
+                "UI_FONT_SUBSET_UNUSED: ui.font_subset has no effect because no ui.fonts face declares \"subset\": true");
+            for path in &settings.runtime_text_files {
+                ensure!(safe_relative_path(path),
+                    "UI_FONT_SUBSET_PATH_INVALID: runtime_text_files must use safe project-relative forward-slash paths: {path}");
+            }
+        }
         Ok(())
     }
+
+    /// Whether any face asks Web exports to subset it.
+    pub fn subset_enabled(&self) -> bool {
+        self.fonts.iter().any(|face| face.subset)
+    }
+}
+
+pub(crate) fn safe_relative_path(path: &str) -> bool {
+    !path.is_empty() && !path.contains(['\\', ':', '%', '?', '#']) && !path.chars().any(char::is_control)
+        && !path.starts_with('/') && path.split('/').all(|part| !part.is_empty() && part != "." && part != "..")
 }
 #[derive(Default, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]

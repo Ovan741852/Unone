@@ -55,6 +55,9 @@ settings and fails closed on web-only keys. Host identities and capability table
 see [portable SDK](portable-sdk.md).
 For shared UI fonts, declare named/weighted TTF or OTF faces in `ui.fonts` and
 use typed styles on the existing UI leaves; see [typography and styling](ui-styling.md).
+Web exports cut faces marked `"subset": true` down to the text the game shows
+and report coverage in `export.json` `font_subset`; see
+[subset faces](ui-styling.md#subset-faces-in-web-exports).
 
 From the repository root:
 

@@ -131,6 +131,94 @@ Export copies the declared font faces. Include their accompanying license
 notices in the distribution too; neighboring source files are not copied
 automatically.
 
+### Subset faces in Web exports
+
+A Chinese, Japanese or Korean face is several megabytes, and a game shows a few
+thousand of its characters. Mark a face `"subset": true` and every Web export
+(`game export web`, `game project prepare --target web`) packages only the
+glyphs for the text the game shows. Nothing else changes: the family names,
+weights and paths stay the same, and projects that mark no face export exactly
+as before. The subsetter is part of the CLI; no Python, fontTools or other tool
+is needed.
+
+```json
+{
+  "ui": {
+    "font_family": "Reading UI",
+    "fonts": [
+      {"family": "Reading UI", "source": "fonts/NotoSansTC-Regular.ttf", "weight": 400, "subset": true},
+      {"family": "Reading UI", "source": "fonts/NotoSansTC-Bold.ttf", "weight": 700, "subset": true},
+      {"family": "Name UI", "source": "fonts/NotoSerifTC-SemiBold.ttf", "weight": 600}
+    ],
+    "font_subset": {
+      "runtime_text": "０１２３４５６７８９",
+      "runtime_text_files": ["text/player-name-characters.txt"],
+      "ignore_missing": "�",
+      "missing": "error"
+    }
+  }
+}
+```
+
+Each export reads the text from the content it is about to ship, so the subset
+can never be older than the scripts and data:
+
+- string literals in the entry script, its modules and job scripts (comments do
+  not count; escapes are resolved; an interpolated string contributes its
+  literal parts and the literals inside its `{...}` expressions);
+- every string value in the main scene;
+- data assets read with the `json` loader (string values) or the `text` loader
+  (the whole text). `bytes` and game-registered loaders are not read; the report
+  lists them under `text.skipped_data_assets`.
+
+Text a game builds at run time from literal pieces is covered, because each
+piece is a literal. Characters that only arrive at run time (a player's name,
+network or save text, codepoints computed in Luau) are invisible to the build:
+declare them in `ui.font_subset.runtime_text` or, one or more per line, in the
+UTF-8 files named by `runtime_text_files`. Printable ASCII (U+0020 to U+007E) is
+always kept so numbers and Latin text formatted at run time still render. JSON
+object keys are kept too, but as identifiers they are never reported missing.
+
+A shown character (not whitespace, a control or an invisible format character)
+that no packaged face has, subset or not, is missing. With `"missing": "error"`,
+the default, the export fails with `UI_FONT_GLYPHS_MISSING`, naming each
+character and the first places it appears, such as `U+7F3A [scripts/main.luau:12]`.
+With `"warn"` the export succeeds and returns the same code as a warning. Put
+characters that the content contains but never shows, such as a U+FFFD
+sentinel, in `ignore_missing`; they are then not reported, and are still kept
+when a face has them.
+
+The export result (`export.json`, and `export` in the `project prepare` result)
+carries a `font_subset` report, schema `unone.font-subset.v1`. For every packaged
+font file it lists the faces naming it, whether it was subset, `original_bytes`
+and `bytes`, `original_glyphs` and `glyphs`, the `characters` it maps, how many
+shown characters it `covered`, its own `missing_count` and first 200 `missing`
+characters (another face may still cover them), and the `dropped_tables`. The
+top-level `missing` list holds the characters no face has, with their places.
+
+What a subset face keeps and loses:
+
+- Only static TrueType (`glyf`) faces can be subset. CFF/OTF outlines, variable
+  fonts, collections and color fonts fail with `UI_FONT_SUBSET_UNSUPPORTED`;
+  package static TTF instances (font downloads usually include them) or leave
+  the face whole. A face whose OS/2 `fsType` forbids subsetting fails with
+  `UI_FONT_SUBSET_FORBIDDEN`.
+- Outlines, hinting, horizontal and vertical metrics, `name` (copyright and
+  license) and `OS/2` are kept. OpenType layout tables (GSUB, GPOS, GDEF, kern)
+  are dropped: CJK and plain Latin draw the same, but Latin kerning and
+  ligatures are lost. Text that is not legible without layout (Arabic, Indic
+  scripts, Thai, combining marks and similar) fails with
+  `UI_FONT_SUBSET_SHAPING_UNSUPPORTED` when the face has layout tables; leave
+  such faces whole.
+- Every face naming the same file must agree on `subset`
+  (`UI_FONT_SUBSET_CONFLICT`); legacy `font_source` faces are never subset.
+  `font_subset` without a subset face fails with `UI_FONT_SUBSET_UNUSED`.
+- Development exports (`--development`) keep whole faces, because reloaded
+  scripts may show new text, but still check coverage. Native (Windows) exports
+  and the source-ingestion refresh script ship faces whole.
+- A subset is a modified font. Make sure the license allows it (the SIL Open
+  Font License does) and ship the license notice.
+
 Check the actual rendered strings against the packaged fonts, including Chinese
 characters, arrows, punctuation and ellipsis. FontFace `loaded` status and a
 successful export only show that the file is usable, not that it contains those

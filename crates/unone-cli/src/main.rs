@@ -27,6 +27,8 @@ mod assets;
 mod capabilities;
 mod diagnostics_replay;
 mod export;
+mod font_subset;
+mod truetype_subset;
 mod web_dependencies;
 mod hosts;
 mod sdk;
@@ -450,9 +452,17 @@ fn main() -> ExitCode {
     }
 }
 
+/// A successful export or SDK result, with the warnings its report carries.
+fn exported(value: serde_json::Value) -> EngineResult<serde_json::Value> {
+    let warnings = font_subset::diagnostics(&value);
+    let mut result = EngineResult::success(value);
+    result.diagnostics.extend(warnings);
+    result
+}
+
 fn print_sdk_result(result: Result<serde_json::Value>, json:bool)->Result<ExitCode>{
     match result {
-        Ok(value)=>print_result(EngineResult::success(value),json),
+        Ok(value)=>print_result(exported(value),json),
         Err(error)=>print_result(EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error("SDK_OPERATION_FAILED","SDK operation failed",format!("{error:#}"))),json),
     }
 }
@@ -483,7 +493,7 @@ fn run() -> Result<ExitCode> {
                 sdk::template_root(Some(root)).and_then(|templates| export::web_with_templates(&cli.project,&output,runtime.as_deref(),development,&templates))
             } else { export::web(&cli.project, &output, runtime.as_deref(), development) };
             match result {
-                Ok(value) => print_result(EngineResult::success(value), cli.json),
+                Ok(value) => print_result(exported(value), cli.json),
                 Err(error) => print_result(
                     EngineResult::<serde_json::Value>::failure(unone_engine::Diagnostic::error(
                         "EXPORT_FAILED",

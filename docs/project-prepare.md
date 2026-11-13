@@ -55,6 +55,12 @@ Successful JSON has the normal CLI result envelope. `value.schema` is
 }
 ```
 
+For a Web target whose `player.presentation.json` marks faces `"subset": true`,
+`export.font_subset` is the [font subset report](ui-styling.md#subset-faces-in-web-exports).
+A shown character that no packaged face has fails the export stage with
+`UI_FONT_GLYPHS_MISSING`, or, under `ui.font_subset.missing: "warn"`, is
+returned as a warning diagnostic of that code beside a ready result.
+
 For Web, `launch` is `{ "kind": "static", "root": <output>,
 "entry": "index.html" }`. For Windows, Core selects the single `.exe` named
 by the hash-verified SDK runtime descriptor and returns its canonical SDK path

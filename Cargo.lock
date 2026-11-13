@@ -3215,6 +3215,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "tempfile",
+ "ttf-parser",
  "unone-engine",
  "wgpu",
  "windows-sys 0.61.2",

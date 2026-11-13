@@ -113,6 +113,122 @@ pub(crate) fn for_each_literal<'a>(source: &'a str, mut visit: impl FnMut(Litera
     }
 }
 
+/// The decoded text of every string literal in a Luau source, with the line
+/// it starts on, in source order. Escapes are resolved, a long bracket drops
+/// the newline right after its opening, and an interpolated string gives its
+/// literal parts plus the literals inside its `{...}` expressions. Comments
+/// are not literals. Bytes that do not form UTF-8 (binary escapes such as
+/// `"\255"`) are left out: they cannot be displayed text.
+pub fn string_literal_texts(source: &str) -> Vec<(usize, String)> {
+    let mut texts = Vec::new();
+    collect_literal_texts(source, 0, &mut texts);
+    texts
+}
+
+fn collect_literal_texts(source: &str, line_offset: usize, out: &mut Vec<(usize, String)>) {
+    for_each_literal(source, |literal| {
+        let line = line_offset + literal.line;
+        if let Some(text) = literal.text {
+            out.push((line, text.to_owned()));
+            return;
+        }
+        let raw = &source[literal.start..literal.end];
+        let bytes = raw.as_bytes();
+        if bytes[0] == b'[' {
+            let level = bytes[1..].iter().take_while(|&&c| c == b'=').count();
+            let close = format!("]{}]", "=".repeat(level));
+            let open = level + 2;
+            let end = if raw.len() >= open + close.len() && raw.ends_with(&close) { raw.len() - close.len() } else { raw.len() };
+            let mut body = &raw[open.min(end)..end];
+            body = body.strip_prefix("\r\n").or_else(|| body.strip_prefix('\n')).or_else(|| body.strip_prefix('\r')).unwrap_or(body);
+            out.push((line, body.to_owned()));
+            return;
+        }
+        let quote = bytes[0];
+        let end = if raw.len() >= 2 && bytes[raw.len() - 1] == quote { raw.len() - 1 } else { raw.len() };
+        let body = &raw[1..end];
+        let text = decode_quoted(body, quote == b'`', |offset, expression| {
+            let expression_line = line + body[..offset].matches('\n').count();
+            collect_literal_texts(expression, expression_line - 1, out);
+        });
+        out.push((line, text));
+    });
+}
+
+/// Resolves the escapes of a quoted literal's body. In an interpolated string
+/// each `{expression}` is handed to `expression` (with its byte offset in the
+/// body) instead of becoming text.
+fn decode_quoted(body: &str, interpolated: bool, mut expression: impl FnMut(usize, &str)) -> String {
+    let src = body.as_bytes();
+    let mut decoded = Vec::with_capacity(src.len());
+    let mut i = 0;
+    while i < src.len() {
+        match src[i] {
+            b'\\' => {
+                i += 1;
+                let Some(&c) = src.get(i) else { break };
+                match c {
+                    b'a' => { decoded.push(7); i += 1; }
+                    b'b' => { decoded.push(8); i += 1; }
+                    b'f' => { decoded.push(12); i += 1; }
+                    b'n' => { decoded.push(b'\n'); i += 1; }
+                    b'r' => { decoded.push(b'\r'); i += 1; }
+                    b't' => { decoded.push(b'\t'); i += 1; }
+                    b'v' => { decoded.push(11); i += 1; }
+                    b'z' => { i += 1; while i < src.len() && src[i].is_ascii_whitespace() { i += 1; } }
+                    b'x' => {
+                        let hex = body.get(i + 1..i + 3).and_then(|h| u8::from_str_radix(h, 16).ok());
+                        if let Some(byte) = hex { decoded.push(byte); i += 3; } else { i += 1; }
+                    }
+                    b'u' if src.get(i + 1) == Some(&b'{') => {
+                        let close = src[i..].iter().position(|&c| c == b'}').map(|p| i + p);
+                        let value = close.and_then(|close| u32::from_str_radix(&body[i + 2..close], 16).ok()).and_then(char::from_u32);
+                        if let Some(ch) = value { decoded.extend_from_slice(ch.encode_utf8(&mut [0; 4]).as_bytes()); }
+                        i = close.map_or(src.len(), |close| close + 1);
+                    }
+                    b'0'..=b'9' => {
+                        let digits = src[i..].iter().take(3).take_while(|c| c.is_ascii_digit()).count();
+                        if let Ok(byte) = body[i..i + digits].parse::<u8>() { decoded.push(byte); }
+                        i += digits;
+                    }
+                    b'\r' => { decoded.push(b'\n'); i += if src.get(i + 1) == Some(&b'\n') { 2 } else { 1 }; }
+                    _ => {
+                        // \\ \" \' \` \{ and a backslash-newline stand for themselves.
+                        let width = body[i..].chars().next().map_or(1, char::len_utf8);
+                        decoded.extend_from_slice(&src[i..i + width]);
+                        i += width;
+                    }
+                }
+            }
+            b'{' if interpolated => {
+                let start = i + 1;
+                let (mut depth, mut j) = (1usize, start);
+                while j < src.len() {
+                    match src[j] {
+                        b'{' => depth += 1,
+                        b'}' => { depth -= 1; if depth == 0 { break; } }
+                        quote @ (b'"' | b'\'') => {
+                            j += 1;
+                            while j < src.len() && src[j] != quote { j += if src[j] == b'\\' { 2 } else { 1 }; }
+                        }
+                        _ => {}
+                    }
+                    j += 1;
+                }
+                let end = j.min(src.len());
+                expression(start, &body[start..end]);
+                i = end + 1;
+            }
+            _ => {
+                let width = body[i..].chars().next().map_or(1, char::len_utf8);
+                decoded.extend_from_slice(&src[i..i + width]);
+                i += width;
+            }
+        }
+    }
+    decoded.utf8_chunks().map(|chunk| chunk.valid()).collect()
+}
+
 /// One error per script file that embeds data, naming the literals.
 pub fn embedded_data_diagnostic(path: &Path, source: &str) -> Option<Diagnostic> {
     let literals = embedded_literals(source, EMBEDDED_DATA_BYTES);
@@ -160,5 +276,22 @@ mod tests {
         let diagnostic = embedded_data_diagnostic(Path::new("main.luau"), &source).unwrap();
         assert_eq!((diagnostic.code.as_str(), diagnostic.facts["count"].as_u64()), ("SCRIPT_EMBEDDED_DATA", Some(2)));
         assert!(embedded_data_diagnostic(Path::new("main.luau"), "return {}").is_none());
+    }
+
+    #[test]
+    fn literal_texts_are_decoded_with_their_lines() {
+        let source = "-- \"註解\" is not text\nlocal a = \"中文\"\nlocal b = '\\u{5879}\\x41\\066\\228\\184\\173'\nlocal c = \"\\0\\255bin\"\nlocal d = [==[\n長字串]==]\nlocal e = `第{n}章{ok and \"是\" or '否'}完`\nlocal f = \"a\\z\n    b\\\"\"\n";
+        let texts = string_literal_texts(source);
+        let lines: Vec<(usize, &str)> = texts.iter().map(|(line, text)| (*line, text.as_str())).collect();
+        assert_eq!(lines, [
+            (2, "中文"),
+            (3, "塹AB中"),
+            (4, "\0bin"),
+            (5, "長字串"),
+            (7, "是"),
+            (7, "否"),
+            (7, "第章完"),
+            (8, "ab\""),
+        ], "escapes resolve, invalid UTF-8 bytes drop, interpolation yields its parts and inner literals");
     }
 }

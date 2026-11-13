@@ -6,6 +6,8 @@ pub use application::{ApplicationState, EscapeBehavior};
 mod script_bytecode;
 #[cfg(feature = "dev-tools")]
 mod script_data;
+#[cfg(feature = "dev-tools")]
+pub use script_data::string_literal_texts;
 mod suggest;
 #[cfg(feature = "dev-tools")]
 mod input_actions;

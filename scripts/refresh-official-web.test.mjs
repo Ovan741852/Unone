@@ -32,7 +32,11 @@ test('new import/derived formats fail specifically; unchanged derived products r
 });
 test('fresh presentation/fonts/extensions are copied; unknown fields and unsupported renderer never pass',t=>{
  const root=temporary(t),dir=project(root),b=base(root);write(dir,'fonts/a.ttf','font');write(dir,'passes/custom.mjs','export function createPass(){}');write(dir,'player.presentation.json',{renderer_mode:'official',ui:{fonts:[{family:'A',source:'fonts/a.ttf'}]},render_extensions:[{kind:'studio.custom',module:'passes/custom.mjs'}]});
- const c=assembleContent(dir,b);assert(c.files.has('content/fonts/a.ttf'));assert(c.files.has('content/passes/custom.mjs'));assert.equal(c.presentation.ui.fonts[0].weight,400);
+ const c=assembleContent(dir,b);assert(c.files.has('content/fonts/a.ttf'));assert(c.files.has('content/passes/custom.mjs'));assert.equal(c.presentation.ui.fonts[0].weight,400);assert.equal(c.font_subset_skipped,false);
+ write(dir,'player.presentation.json',{ui:{fonts:[{family:'A',source:'fonts/a.ttf',subset:true}],font_subset:{runtime_text:'字'}}});
+ const subset=assembleContent(dir,b);assert.equal(subset.font_subset_skipped,true,'the refresh reports that it ships marked faces whole');
+ assert.deepEqual(JSON.parse(subset.files.get('content/presentation.json').data).ui,{font_source:null,font_family:null,fonts:[{family:'A',source:'fonts/a.ttf',weight:400}]},'build-only subset settings never reach players');
+ write(dir,'player.presentation.json',{ui:{fonts:[{family:'A',source:'fonts/a.ttf',subset:'yes'}]}});assert.throws(()=>assembleContent(dir,b),/WEB_REFRESH_FONT_INVALID/);
  write(dir,'player.presentation.json',{postprocessing:{}});assert.throws(()=>assembleContent(dir,b),/PRESENTATION_INVALID/);write(dir,'player.presentation.json',{renderer_mode:'custom'});assert.throws(()=>assembleContent(dir,b),/OFFICIAL_ONLY/);
 });
 test('closed asset shapes, traversal, duplicate ids and unsafe JSON integers fail before publication',t=>{

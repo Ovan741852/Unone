@@ -223,6 +223,9 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     // in case authoring files changed after the early compatibility preflight.
     validate_runtime_packages(&config.runtime_packages, &manifest)?;
     files.extend(content);
+    // Font subsets cover the text this export ships, read before scripts become bytecode.
+    let subset_requested = crate::hosts::load_presentation(project)?.is_some_and(|p| p.ui.subset_enabled());
+    let game_text = if subset_requested { Some(crate::font_subset::collect_text(&files)?) } else { None };
     // Production players load the entry script and its modules precompiled with
     // their exact compiler settings; development players keep source for hot reload.
     if !development {
@@ -239,6 +242,10 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         );
     }
     let presentation = append_presentation(project, &mut files)?;
+    let font_subset = match game_text {
+        Some(text) => crate::font_subset::apply(project, &presentation.ui, text, &mut files, development)?,
+        None => None,
+    };
     files.push((
         "runtime/runtime.json".into(),
         serde_json::to_vec(&manifest)?,
@@ -401,7 +408,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             "export destination collision: {path}"
         );
     }
-    let report = json!({"version":1,"project":config.name,"release_root":release_root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let mut report = json!({"version":1,"project":config.name,"release_root":release_root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    if let Some(font_subset) = font_subset { report["font_subset"] = font_subset; }
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {

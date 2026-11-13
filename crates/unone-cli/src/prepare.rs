@@ -234,6 +234,7 @@ pub(crate) fn project_prepare(
             return result;
         }
     };
+    result.diagnostics.extend(crate::font_subset::diagnostics(&exported));
     if let Some(report) = result.value.as_mut() {
         report.export = Some(exported.clone());
         // The exporter includes its own selection evidence. Keep the preflight
