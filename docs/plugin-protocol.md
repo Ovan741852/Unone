@@ -56,6 +56,10 @@ outer `result.ok` and inner `result.value.ok`. A missing endpoint or normal
 login is a connection/authentication gap, not permission to read a vault, guess
 ports or claim upload completion. See Koncrate-Editor's `docs/plugin-upload.md`
 for the concrete client bootstrap; this repository does not install that Host.
+For manifest-sized requests, pass the complete wrapped JSON through
+`--request-file` to avoid Windows command-line length limits. The same 65536-byte
+serialized request cap applies. The CLI preserves both envelopes and exits
+nonzero for a failed inner `host.scout` result; it never retries an upload.
 
 ## Manifest
 
