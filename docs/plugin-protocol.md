@@ -27,6 +27,26 @@ The same operations are available to an AI host as
 MCP. Plugin tools are discovered from `unone_plugin_inspect`; the MCP tool
 surface is not hard-coded to a plugin count.
 
+### Uploading a completed plugin to Koncrate
+
+Distribution to the Koncrate marketplace belongs to its authenticated Host,
+not the simulation Core or an invented `game plugin upload` command. Its Scout
+entry is `plugins.upload`: ask `recommend` for "upload a Koncrate plugin" or
+"上傳插件", then `describe` that operation and explicitly `call` its current
+contractHash with the completed Koncrate catalogue `manifest` JSON object.
+Visibility defaults to `private`; `public` submits for review. Confirm the
+actual returned plugin ID/status with `plugins.inspect`.
+
+This submits a manifest, not a ZIP or arbitrary executable files. An Unone
+`unone.plugin.v1` manifest is not automatically a Koncrate catalogue package;
+do not convert formats by guessing fields. The upload descriptor documents its
+scope and example. It reuses the Host session, accepts no provider token or
+custom URL, and never installs or executes the plugin. After an uncertain
+response, use `plugins.manage` with `action: list_created`, then inspect an
+actual matching ID. If no unique record matches, keep the outcome unconfirmed
+instead of resubmitting. Host/client metadata must be refreshed after updating
+the Koncrate Host to expose the new operation.
+
 ## Manifest
 
 ```json
