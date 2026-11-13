@@ -9,10 +9,13 @@ $ErrorActionPreference='Stop'
 function Assert-CurrentNativeRuntimePackages {
  param(
   [Parameter(Mandatory=$true)][object]$Descriptor,
-  [Parameter(Mandatory=$true)][object]$UiPackage
+  [Parameter(Mandatory=$true)][object]$UiPackage,
+  [Parameter(Mandatory=$true)][object]$GesturesPackage
  )
  $failure='NATIVE_RUNTIME_PACKAGES_STALE: Windows capability binary runtime package versions do not match current source. Rebuild the Windows runtime from current source before packaging this target'
  $expected=[Collections.Generic.Dictionary[string,string]]::new([StringComparer]::Ordinal)
+ if($GesturesPackage.name -cne '@unone/gestures' -or $GesturesPackage.version -isnot [string] -or [string]::IsNullOrWhiteSpace($GesturesPackage.version)){throw 'Invalid canonical gestures runtime package manifest'}
+ $expected.Add($GesturesPackage.name,$GesturesPackage.version)
  if(@($Descriptor.compiled_systems) -ccontains 'ui'){
   if($UiPackage.name -cne '@unone/ui' -or $UiPackage.version -isnot [string] -or [string]::IsNullOrWhiteSpace($UiPackage.version)){throw 'Invalid canonical UI runtime package manifest'}
   $expected.Add($UiPackage.name,$UiPackage.version)
@@ -73,7 +76,8 @@ $descriptor=(& $windows --describe | ConvertFrom-Json)
 if($LASTEXITCODE -ne 0){throw 'Native capability query failed'}
 if($null -eq $descriptor.readiness){throw 'Native capability query missing readiness contract'}
 $uiPackage=Get-Content -LiteralPath (Join-Path $repo 'packages/unone-ui/package.unone.json') -Raw | ConvertFrom-Json
-Assert-CurrentNativeRuntimePackages -Descriptor $descriptor -UiPackage $uiPackage
+$gesturesPackage=Get-Content -LiteralPath (Join-Path $repo 'packages/unone-gestures/package.unone.json') -Raw | ConvertFrom-Json
+Assert-CurrentNativeRuntimePackages -Descriptor $descriptor -UiPackage $uiPackage -GesturesPackage $gesturesPackage
 New-Item -ItemType Directory -Path $output | Out-Null
 Copy-Item -LiteralPath $source -Destination (Join-Path $output $name)
 $files=@(@{path=$name;sha256=(Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()})

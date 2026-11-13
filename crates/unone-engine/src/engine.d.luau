@@ -186,9 +186,48 @@ export type PhysicalInputEvent = PhysicalCommon & (
     | {kind:"capture",pointer_id:number,captured:boolean,source:"got"|"lost"}
     | {kind:"focus",focused:boolean,scope:"game"|"window"}
     | {kind:"reset",scope:"all"|"pointer",pointer_id:number?,reason:string}
-    | {kind:"viewport",viewport:PhysicalViewport})
+    | {kind:"viewport",viewport:PhysicalViewport}
+    | {kind:"network",state:"open"|"message"|"peer_join"|"peer_leave"|"closed"|"error",peer:number,data:string?})
 export type PhysicalInputBatch = {profile:"ordered_physical_v1",epoch:number,after_sequence:number,through_sequence:number,events:{PhysicalInputEvent}}
+export type GestureViewport = {
+    read revision:number, read width:number, read height:number,
+    read rect_left:number, read rect_top:number, read css_width:number, read css_height:number, read device_pixel_ratio:number,
+}
+export type GesturePoint = {read x:number, read y:number, read inside:boolean, read viewport:GestureViewport}
+export type GestureOptions = {
+    -- Distances use physical canvas pixels, not normalized UI or CSS pixels.
+    panThreshold: number?, -- default 6, finite >= 0
+    minPinchDistance: number?, -- default 2, finite > 0
+    enabled: boolean?, -- default true; changes cancel held contacts
+    accept: ((point: GesturePoint) -> boolean)?, -- tested only on game-owned down
+}
+export type GestureEvent = {
+    read kind: "pan" | "transform",
+    read phase: "start" | "change" | "end" | "cancel",
+    read x: number, read y: number, read previousX: number, read previousY: number,
+    read deltaX: number, read deltaY: number,
+    read scale: number, -- new distance / previous distance; spread > 1
+    read rotation: number, -- incremental radians, clockwise in top-left/y-down space
+    read viewport: GestureViewport,
+    read reason: string?,
+}
+export type GestureResult = {
+    read consumed: boolean, read captured: boolean, read contacts: number, read events: {read [number]:GestureEvent},
+}
+export type GestureRecognizer = {
+    -- Feed EVERY physical row exactly once in source order, including control/UI rows.
+    -- Pure Luau recognition: does not consume Core input or apply camera/actions.
+    read process: (event: PhysicalInputEvent) -> GestureResult,
+    read cancel: () -> GestureResult,
+    read setEnabled: (enabled: boolean) -> GestureResult,
+    read status: () -> {read enabled: boolean, read contacts: number, read captured: boolean},
+}
+export type GesturesApi = {
+    info: () -> {read name: string, read version: string, read kind: string, read entry: string, read api: string, read license: string, read declared: boolean},
+    create: (options: GestureOptions?) -> GestureRecognizer,
+}
 export type InputApi = {
+    gestures: GesturesApi,
     -- Current successful-tick text editing event; nil when no event for this ID.
     getTextInputInteraction: (id: string) -> UiTextInputInteraction?,
     -- Tick-scope detached ordered ingress; nil outside update or for legacy input.

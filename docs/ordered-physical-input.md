@@ -10,6 +10,12 @@ replay uses the same `InputFrame` JSON without opening a browser.
 It returns nil during start, reload, inspection and outside a tick. Reading it
 does not consume events. Mutating a returned table never changes another read.
 
+For reusable touch recognition use the official
+[`@unone/gestures` package](input-gestures.md): pan, pinch, rotation and safe
+cancellation over these same rows. The opt-in Web router sets canvas
+`touch-action: none` for its lifetime, restoring its previous inline style on
+disposal; this prevents browser page gestures from cancelling game pointers.
+
 The batch contains `profile`, a positive safe-integer `epoch`, `after_sequence`,
 `through_sequence`, and dense `events`. Rows retain admitted source order across
 keys, pointers, wheel and lifecycle facts. Each row contains `sequence`,

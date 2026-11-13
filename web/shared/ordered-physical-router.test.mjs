@@ -8,6 +8,7 @@ class Target{
 }
 function setup(routes={}){
  const canvas=new Target(),win=new Target(),doc=new Target();let us=0,rect={left:10,top:20,width:100,height:50};
+ const styles=new Map();canvas.style={getPropertyValue:k=>styles.get(k)?.value??'',getPropertyPriority:k=>styles.get(k)?.priority??'',setProperty:(k,value,priority='')=>styles.set(k,{value,priority}),removeProperty:k=>styles.delete(k)};
  Object.assign(canvas,{width:400,height:200,getBoundingClientRect:()=>rect});win.devicePixelRatio=2;doc.hidden=false;doc.hasFocus=()=>true;
  const q=createOrderedPhysicalQueue({epoch:3}),calls=[];
  const router=createOrderedPhysicalRouter({canvas,window:win,document:doc,queue:q,nowUs:()=>++us,
@@ -15,6 +16,18 @@ function setup(routes={}){
  const rows=()=>q.lease().events;return{canvas,win,doc,q,router,calls,rows,setRect:r=>rect=r};
 }
 const pointer={pointerId:8,pointerType:'mouse',button:0,buttons:1,clientX:35,clientY:30,shiftKey:true};
+
+test('ordered canvas owns browser touch actions and restores only its own inline value',()=>{
+ const s=setup();assert.equal(s.canvas.style.getPropertyValue('touch-action'),'none');
+ s.router.dispose();assert.equal(s.canvas.style.getPropertyValue('touch-action'),'');
+ const changed=setup();changed.canvas.style.setProperty('touch-action','pan-y','important');
+ changed.router.dispose();assert.equal(changed.canvas.style.getPropertyValue('touch-action'),'pan-y');
+ assert.equal(changed.canvas.style.getPropertyPriority('touch-action'),'important');
+ const canvas=new Target(),win=new Target(),doc=new Target();let value='manipulation',priority='important';
+ canvas.style={getPropertyValue:()=>value,getPropertyPriority:()=>priority,setProperty:(_k,v,p='')=>{value=v;priority=p;}};
+ const router=createOrderedPhysicalRouter({canvas,window:win,document:doc,queue:createOrderedPhysicalQueue({epoch:1})});
+ assert.equal(value,'none');assert.equal(priority,'');router.dispose();assert.equal(value,'manipulation');assert.equal(priority,'important');
+});
 test('actual router preserves reservation before nested capture, edge modifiers and continuous physical geometry',()=>{
  const s=setup({pointer:(e,k,c)=>{if(k==='down')c.emit('gotpointercapture',{pointerId:8});return 'engine_ui';}});
  s.canvas.emit('pointerdown',pointer);assert.equal(s.q.report().pending,0,'not admitted before READY');s.router.activate();

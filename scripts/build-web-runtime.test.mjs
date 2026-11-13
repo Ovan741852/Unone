@@ -4,9 +4,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
-import {officialPlayerContract,selectedSystems,buildEnvironment,destination,checkWasm,main} from './build-web-runtime.mjs';
+import {officialPlayerContract,selectedSystems,buildEnvironment,destination,checkWasm,main,bundledRuntimePackages} from './build-web-runtime.mjs';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const ps=fs.readFileSync(path.join(root,'scripts/build-web-live.ps1'),'utf8');
+
+test('runtime inventory includes the input-owned gestures package without requiring UI',()=>{
+ const gesture=JSON.parse(fs.readFileSync(path.join(root,'packages/unone-gestures/package.unone.json'),'utf8'));
+ const ui=JSON.parse(fs.readFileSync(path.join(root,'packages/unone-ui/package.unone.json'),'utf8'));
+ assert.deepEqual(bundledRuntimePackages(root,['world','input']),{[gesture.name]:gesture.version});
+ assert.deepEqual(bundledRuntimePackages(root,['world','input','ui']),{[gesture.name]:gesture.version,[ui.name]:ui.version});
+});
 
 test('extracts the existing official player ABI, conditional particle ABI and linker policy',()=>{
  const production=officialPlayerContract(ps),diagnostic=officialPlayerContract(ps,{diagnostic:true});

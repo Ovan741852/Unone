@@ -894,7 +894,7 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Exact versions of SDK-bundled Luau runtime packages used by this project.\nDeclare @unone/ui before using api.ui.components constructors. This is\ncompatibility data, not a network resolver or filesystem module loader.",
+          "description": "Exact versions of SDK-bundled Luau runtime packages used by this project.\nDeclare @unone/ui for api.ui.components and @unone/gestures for\napi.input.gestures.create. This is\ncompatibility data, not a network resolver or filesystem module loader.",
           "type": "object"
         },
         "script_time_limit_seconds": {

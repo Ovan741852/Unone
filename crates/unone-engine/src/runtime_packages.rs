@@ -3,6 +3,15 @@ use std::collections::BTreeMap;
 
 use crate::{Diagnostic, SystemSettings};
 
+pub(crate) fn gestures_source() -> &'static str {
+    include_str!("../../../packages/unone-gestures/src/gestures.luau")
+}
+
+pub(crate) fn gestures_info() -> serde_json::Value {
+    serde_json::from_str(include_str!("../../../packages/unone-gestures/package.unone.json"))
+        .expect("bundled gestures package manifest")
+}
+
 #[cfg(feature = "ui")]
 pub(crate) fn ui_components_source() -> &'static str {
     include_str!("../../../packages/unone-ui/src/components.luau")
@@ -17,17 +26,23 @@ pub(crate) fn ui_components_info() -> serde_json::Value {
 /// Exact package versions implemented by this binary for the enabled systems.
 /// Runtime descriptors use the same registry as validation and API binding.
 pub fn compiled_runtime_packages(settings: &SystemSettings) -> BTreeMap<String, String> {
+    let gestures = gestures_info();
+    #[allow(unused_mut)] // UI is optional; required Core input owns gestures.
+    let mut packages = BTreeMap::from([(
+        gestures["name"].as_str().expect("package name").to_owned(),
+        gestures["version"].as_str().expect("package version").to_owned(),
+    )]);
     #[cfg(feature = "ui")]
     if settings.is_enabled("ui") {
         let info = ui_components_info();
-        return BTreeMap::from([(
+        packages.insert(
             info["name"].as_str().expect("package name").to_owned(),
             info["version"].as_str().expect("package version").to_owned(),
-        )]);
+        );
     }
     #[cfg(not(feature = "ui"))]
     let _ = settings;
-    BTreeMap::new()
+    packages
 }
 
 pub(crate) fn validate_runtime_packages(
@@ -60,6 +75,10 @@ pub(crate) fn validate_runtime_packages(
 #[cfg(feature = "dev-tools")]
 pub fn runtime_package_files() -> Vec<(&'static str, &'static str)> {
     vec![
+        ("packages/unone-gestures/package.unone.json", include_str!("../../../packages/unone-gestures/package.unone.json")),
+        ("packages/unone-gestures/src/gestures.luau", gestures_source()),
+        ("packages/unone-gestures/README.md", include_str!("../../../packages/unone-gestures/README.md")),
+        ("docs/input-gestures.md", include_str!("../../../docs/input-gestures.md")),
         ("packages/unone-ui/package.unone.json", include_str!("../../../packages/unone-ui/package.unone.json")),
         ("packages/unone-ui/src/components.luau", include_str!("../../../packages/unone-ui/src/components.luau")),
         ("packages/unone-ui/README.md", include_str!("../../../packages/unone-ui/README.md")),
@@ -89,6 +108,7 @@ mod tests {
         let settings = SystemSettings::default();
         let available = compiled_runtime_packages(&settings);
         assert_eq!(available.get("@unone/ui").unwrap(), "0.6.0");
+        assert_eq!(available.get("@unone/gestures").unwrap(), "0.1.0");
         validate_runtime_packages(&available, &settings).unwrap();
         for required in [
             BTreeMap::from([("@unone/ui".into(), "99.0.0".into())]),
@@ -99,7 +119,7 @@ mod tests {
             assert_eq!(error.facts["required_packages"], serde_json::to_value(required).unwrap());
         }
         let disabled = SystemSettings::resolve(&BTreeMap::from([("ui".into(), false)])).unwrap();
-        assert!(compiled_runtime_packages(&disabled).is_empty());
+        assert_eq!(compiled_runtime_packages(&disabled), BTreeMap::from([("@unone/gestures".into(), "0.1.0".into())]));
         assert!(validate_runtime_packages(&available, &disabled).is_err());
         validate_runtime_packages(&BTreeMap::new(), &disabled).unwrap();
     }
@@ -112,6 +132,8 @@ mod tests {
         let docs = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/engine.d.luau");
         assert_eq!(std::fs::read_to_string(docs).unwrap().replace("\r\n", "\n"), crate::api::typings().replace("\r\n", "\n"));
         assert!(files.iter().any(|(path, _)| *path == "packages/unone-ui/src/components.luau"));
+        assert!(files.iter().any(|(path, text)| *path == "packages/unone-gestures/src/gestures.luau" && *text == gestures_source()));
+        assert!(files.iter().any(|(path, text)| *path == "docs/input-gestures.md" && text.contains("api.input.gestures.create")));
         assert!(files.iter().any(|(path, text)| *path == "docs/ui-components.md" && text.contains("api.ui.components.create")));
     }
 }

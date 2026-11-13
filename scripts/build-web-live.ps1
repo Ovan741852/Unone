@@ -96,6 +96,9 @@ if ($Player) {
         $exports += @('particle_alloc', 'particle_sample', 'particle_output_ptr', 'particle_output_len')
     }
     $runtimePackages = @{}
+    $gesturesPackage = Get-Content -LiteralPath (Join-Path $repoRoot 'packages/unone-gestures/package.unone.json') -Raw | ConvertFrom-Json
+    if ($gesturesPackage.name -ne '@unone/gestures' -or [string]::IsNullOrWhiteSpace($gesturesPackage.version)) { throw 'Invalid canonical gestures runtime package manifest' }
+    $runtimePackages[$gesturesPackage.name] = [string]$gesturesPackage.version
     if ($compiledSystems -contains 'ui') {
         $uiPackage = Get-Content -LiteralPath (Join-Path $repoRoot 'packages/unone-ui/package.unone.json') -Raw | ConvertFrom-Json
         if ($uiPackage.name -ne '@unone/ui' -or [string]::IsNullOrWhiteSpace($uiPackage.version)) { throw 'Invalid canonical UI runtime package manifest' }

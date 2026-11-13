@@ -1,0 +1,132 @@
+{
+  "name": "pan",
+  "frames": 4,
+  "seed": 42,
+  "input_sequence": [
+    {},
+    {
+      "physical": {
+        "profile": "ordered_physical_v1",
+        "epoch": 1,
+        "after_sequence": 0,
+        "through_sequence": 3,
+        "events": [
+          {
+            "kind": "pointer",
+            "pointer_id": 1,
+            "pointer_type": "touch",
+            "phase": "down",
+            "button": 0,
+            "buttons": 1,
+            "point": {
+              "x": 240,
+              "y": 600,
+              "inside": true,
+              "viewport": {
+                "revision": 1,
+                "width": 720,
+                "height": 1280,
+                "rect_left": 0,
+                "rect_top": 0,
+                "css_width": 360,
+                "css_height": 640,
+                "device_pixel_ratio": 2
+              }
+            },
+            "modifiers": {
+              "shift": false,
+              "control": false,
+              "alt": false,
+              "meta": false
+            },
+            "sequence": 1,
+            "received_us": 1000,
+            "origin": "fixture",
+            "route": "game"
+          },
+          {
+            "kind": "pointer",
+            "pointer_id": 1,
+            "pointer_type": "touch",
+            "phase": "move",
+            "button": 0,
+            "buttons": 1,
+            "point": {
+              "x": 365,
+              "y": 625,
+              "inside": true,
+              "viewport": {
+                "revision": 1,
+                "width": 720,
+                "height": 1280,
+                "rect_left": 0,
+                "rect_top": 0,
+                "css_width": 360,
+                "css_height": 640,
+                "device_pixel_ratio": 2
+              }
+            },
+            "modifiers": {
+              "shift": false,
+              "control": false,
+              "alt": false,
+              "meta": false
+            },
+            "sequence": 2,
+            "received_us": 2000,
+            "origin": "fixture",
+            "route": "game"
+          },
+          {
+            "kind": "pointer",
+            "pointer_id": 1,
+            "pointer_type": "touch",
+            "phase": "up",
+            "button": 0,
+            "buttons": 0,
+            "point": {
+              "x": 365,
+              "y": 625,
+              "inside": true,
+              "viewport": {
+                "revision": 1,
+                "width": 720,
+                "height": 1280,
+                "rect_left": 0,
+                "rect_top": 0,
+                "css_width": 360,
+                "css_height": 640,
+                "device_pixel_ratio": 2
+              }
+            },
+            "modifiers": {
+              "shift": false,
+              "control": false,
+              "alt": false,
+              "meta": false
+            },
+            "sequence": 3,
+            "received_us": 3000,
+            "origin": "fixture",
+            "route": "game"
+          }
+        ]
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "observation": {
+        "key": "gesture",
+        "equals": {
+          "x": 125,
+          "y": 25,
+          "zoom": 1,
+          "rotation": 0,
+          "contacts": 0,
+          "captured": false
+        }
+      }
+    }
+  ]
+}

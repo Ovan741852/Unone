@@ -21,12 +21,14 @@ gameplay evidence, so inspect the exported player before claiming visual complet
 The official [`@unone/ui` shared component package](docs/ui-components.md) ships
 with Core and the portable SDK. Declare its exact bundled version in
 `runtime_packages`, following the [package contract](docs/ui-components.md).
+
 Discover `ui.components.info` / `ui.components.create`, then use the module's
 typed text/button/slider/combobox/panel/image/component/screen constructors and
 scrollView/virtualList/virtualGrid wrappers, or the same methods on a themed kit.
 Search `"create button"`, `"button click"`, `"按下瞬間"`, `"滑桿"` or `"下拉選單"`
 for callable controls and semantic action guidance. `input.wasPressed` /
 `wasReleased` read non-consuming edges; `isDown` reads held state.
+
 The kit composes
 project-owned theme styles and instance IDs into the existing `ui.setRoot` tree;
 custom Luau factories remain valid. Themes, content, state, actions, screen flow
@@ -50,6 +52,13 @@ The SDK root README and optional browser/font tools are bundled with its guides.
 [ScrollView / VirtualList / VirtualGrid](docs/ui-scroll.md) provide Web clipped
 scroll content and fixed-cell virtualization. The guide covers the local
 coordinate rule, stable keys, UI-only materialization and unsupported native hosts.
+
+The official [`@unone/gestures` touch package](docs/input-gestures.md) supplies
+single-finger pan and two-finger translation, pinch and rotation as pure Luau.
+Declare version `0.1.0`, discover `input.gestures.create`, and feed every ordered
+physical input row to one persistent recognizer. Cameras, picking and game
+commands remain authored. The official ordered Web canvas owns browser touch
+actions; native live device support retains its documented host limits.
 
 ### Product architecture and marketplace direction
 

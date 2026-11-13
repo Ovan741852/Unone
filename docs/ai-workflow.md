@@ -362,6 +362,13 @@ Use `api.save.set(value)`/`api.save.get()` only when GAME_PLAN requires persiste
 
 ## 3.3.1 Official UI components, typography and style discovery
 
+For touch gesture authoring, search `game api search "pinch"` / `"手勢"`,
+describe `input.gestures.info` and `input.gestures.create`, and follow
+[the shared gesture contract](input-gestures.md). Declare the exact bundled
+`@unone/gestures` version. A persistent pure Luau recognizer owns pan/pinch/
+rotation mechanics over every ordered physical row; project code owns hit
+regions, cameras and actions. UI sliders/scroll helpers keep their own lifecycle.
+
 Start shared controls with the official [`@unone/ui` package](ui-components.md),
 which ships as pure Luau with Core and the portable SDK. Search
 `game api search "UI package"`, `"shared components"`, `"button component"`,

@@ -4,9 +4,11 @@ import {serializedSavePayload} from './save-publication.mjs';
 const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
 function entry(backend){
  const q=createOrderedPhysicalQueue({epoch:1});q.append({kind:'reset',route:'control',origin:'fixture',received_us:1,scope:'all',reason:'load'});
- const context={resourceHost:null,serializedSavePayload,profiler:null,profileFlight:null,performance:{now:()=>0},manualInput:null,input:{consumeFrame:()=>({actions:{}})},hasWorldPointer:false,orderedQueue:q,
+ const context={resourceHost:null,serializedSavePayload,orderedRouter:null,profiler:null,profileFlight:null,performance:{now:()=>0},manualInput:null,input:{consumeFrame:()=>({actions:{}})},hasWorldPointer:false,orderedQueue:q,
   backend,acceptSnapshot:value=>context.snapshot=value,audio:null,snapshot:{save_payload:{}},saved:'{}',publishPhysical(){},localStorage:{setItem(){}},key:'fixture'};
- vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+source.slice(source.indexOf('async function advance(){'),source.indexOf('function tickOnce()')),context);return{q,context};
+ const start=source.indexOf('async function advance('),end=source.indexOf('function tickOnce(');
+ assert(start>=0&&end>start,'actual player advance implementation must be present');
+ vm.createContext(context);vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+source.slice(start,end),context);return{q,context};
 }
 test('actual player advance leases one prefix, accepts exact Core world receipt, then admits later arrivals',async()=>{
  let finish;const {q,context}=entry({request:command=>new Promise(resolve=>{finish=()=>resolve({world:{physical_input_receipt:{profile:'ordered_physical_v1',epoch:1,through_sequence:command.input.physical.through_sequence}},save_payload:{}});})});

@@ -190,14 +190,20 @@
     "ObservationAssertion": {
       "additionalProperties": false,
       "properties": {
-        "equals": true,
+        "equals": {
+          "default": null,
+          "description": "The whole value, JSON-equal (numbers by value)."
+        },
+        "includes": {
+          "default": null,
+          "description": "Only the keys given, at every depth: the observed object may hold more.\nArrays still match item by item. Give this or `equals`, not both."
+        },
         "key": {
           "type": "string"
         }
       },
       "required": [
-        "key",
-        "equals"
+        "key"
       ],
       "type": "object"
     },
@@ -449,6 +455,31 @@
           "required": [
             "kind",
             "viewport"
+          ],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "data": {
+              "type": "string"
+            },
+            "kind": {
+              "const": "network",
+              "type": "string"
+            },
+            "peer": {
+              "format": "uint64",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "state",
+            "peer"
           ],
           "type": "object"
         }

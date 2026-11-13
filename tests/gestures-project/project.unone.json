@@ -1,0 +1,9 @@
+{
+  "name": "Unone Gesture Lab",
+  "entry_script": "main.luau",
+  "runtime_packages": {"@unone/gestures":"0.1.0","@unone/ui":"0.6.0"},
+  "systems": {"ui":true,"camera2d":false,"camera3d":false,"physics2d":false,"physics3d":false,"random":false,"save":false,"audio":false,"spine":false,"particle":false,"effekseer":false,"jobs":false},
+  "input_actions": ["Reset","Pause"],
+  "script_time_limit_seconds": 10,
+  "test_files": ["pan.test.json","pinch.test.json","rotation.test.json","ui-cancel.test.json"]
+}

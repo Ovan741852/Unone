@@ -4,6 +4,17 @@ use std::rc::Rc;
 pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let input = Rc::clone(&state.input);
     let input_api = lua.create_table()?;
+    let package_info = crate::runtime_packages::gestures_info();
+    let declared = state.runtime_packages.get("@unone/gestures")
+        .is_some_and(|version| package_info["version"].as_str() == Some(version.as_str()));
+    let view = Rc::clone(&state.pure_view);
+    let guard = lua.create_function(move |_, ()| {
+        super::ensure_not_view(&view, "input.gestures")
+    })?;
+    let gestures: Table = lua.load(crate::runtime_packages::gestures_source())
+        .set_name("@packages/unone-gestures")
+        .call((super::value::json_to_lua(lua, package_info)?, declared, guard))?;
+    input_api.set("gestures", gestures)?;
     let physical_input=Rc::clone(&input);
     input_api.set("getPhysicalBatch",lua.create_function(move |lua,():()| {
         match &physical_input.borrow().physical.active {

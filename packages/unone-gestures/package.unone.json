@@ -1,0 +1,8 @@
+{
+  "name": "@unone/gestures",
+  "version": "0.1.0",
+  "kind": "unone-luau-runtime",
+  "entry": "src/gestures.luau",
+  "api": "api.input.gestures",
+  "license": "MIT OR Apache-2.0"
+}

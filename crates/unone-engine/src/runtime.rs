@@ -265,7 +265,6 @@ struct ApiState {
     sprite_resources: Rc<RefCell<sprite_resources::Registry>>,
     host_time: Rc<RefCell<crate::host_time::HostTime>>,
     spatial: Rc<RefCell<spatial::SpatialJobs>>,
-    #[cfg(feature = "ui")]
     runtime_packages: BTreeMap<String, String>,
     #[cfg(feature = "jobs")]
     jobs: Rc<RefCell<jobs::Jobs>>,
@@ -795,7 +794,6 @@ impl EngineRuntime {
             sprite_resources: Rc::clone(&sprite_resources),
             host_time: Rc::clone(&host_time),
             spatial: Rc::new(RefCell::new(spatial::SpatialJobs::new())),
-            #[cfg(feature = "ui")]
             runtime_packages: config.runtime_packages.clone(),
             #[cfg(feature = "jobs")]
             jobs: Rc::new(RefCell::new(jobs::Jobs::default())),
@@ -1754,7 +1752,6 @@ impl EngineRuntime {
             sprite_resources: Rc::new(RefCell::new(self.sprite_resources.borrow().clone())),
             host_time: Rc::new(RefCell::new(self.host_time.borrow().clone())),
             spatial: Rc::new(RefCell::new(self.spatial.borrow().reload_candidate())),
-            #[cfg(feature = "ui")]
             runtime_packages: self.config.runtime_packages.clone(),
             #[cfg(feature = "jobs")]
             jobs: Rc::new(RefCell::new(self.jobs.borrow().reload_candidate())),

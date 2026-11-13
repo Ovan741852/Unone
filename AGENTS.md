@@ -60,6 +60,13 @@ to ask the user for permission before every routine change.
 
 ## AI-first layout decisions
 
+For touch pan, pinch zoom, rotation or 手勢, search `game api search "pinch"`
+and describe `input.gestures.create`. Use the official pure Luau
+`@unone/gestures` 0.1.0 runtime package, declared exactly in `runtime_packages`.
+Read [the gesture contract](docs/input-gestures.md), enable Web
+`physical_input: ordered_physical_v1`, and feed every physical row in order.
+Keep picking, camera bounds and game actions in project Luau.
+
 Start shared controls with the official `@unone/ui` pure Luau package, bundled
 with Core and the SDK. Search `game api search "UI package"` / `"shared components"`
 / `"button component"` / `"card component"` / `"官方UI套件"` / `"共用元件"` /

@@ -21,7 +21,8 @@ pub struct ProjectConfig {
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub job_scripts: BTreeMap<String, String>,
     /// Exact versions of SDK-bundled Luau runtime packages used by this project.
-    /// Declare @unone/ui before using api.ui.components constructors. This is
+    /// Declare @unone/ui for api.ui.components and @unone/gestures for
+    /// api.input.gestures.create. This is
     /// compatibility data, not a network resolver or filesystem module loader.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub runtime_packages: BTreeMap<String, String>,

@@ -1,0 +1,69 @@
+{
+  "package": {
+    "name": "@unone/gestures",
+    "version": "0.1.0"
+  },
+  "date": "2026-11-13",
+  "renderer": "official",
+  "gesture_source_sha256_lf": "64e4bddc90dfbf545c2f4d76de76a821cf1ddfa91df01c46dfd6996f7cb008d7",
+  "validation": {
+    "workspace": {
+      "command": "cargo test --workspace -j 6",
+      "passed": 906,
+      "failed": 0,
+      "ignored": 12,
+      "suites": 83,
+      "scope": "UI-enabled workspace; input-only ApiState cfg fix subsequently checked by both gesture feature configurations"
+    },
+    "gesture_final_default": {
+      "command": "cargo test -p unone-engine --test gestures -j 6",
+      "passed": 8,
+      "failed": 0
+    },
+    "gesture_final_core_only": {
+      "command": "cargo test -p unone-engine --no-default-features --test gestures -j 6",
+      "passed": 7,
+      "failed": 0
+    },
+    "web_input_and_runtime_builder_tests": 44,
+    "strict_fixture_gates": 4,
+    "fixture_replays": 4,
+    "native_wasm_final_checkpoints": 4,
+    "native_runtime_package_inventory_guard": "current accepted, missing gesture package rejected",
+    "browser": {
+      "host": "local official production Web export in Chrome",
+      "input": "CDP touchStart/touchMove/touchEnd through browser Pointer Events",
+      "canvas_touch_action": "none",
+      "pinch_zoom": 2,
+      "rotation_degrees": 90,
+      "remaining_finger_pan_suppressed": true,
+      "fresh_single_finger_pan_verified": true,
+      "error_log_empty": true,
+      "physical_ios_or_android_device_verified": false
+    }
+  },
+  "runtime_artifact": {
+    "profile": "release",
+    "bytecode_optimization_level": 2,
+    "compiled_systems": [
+      "input",
+      "observation",
+      "ui",
+      "world"
+    ],
+    "runtime_packages": {
+      "@unone/ui": "0.6.0",
+      "@unone/gestures": "0.1.0"
+    },
+    "wasm_sha256": "cc810724fb885c988ae0faf072f7431602177d4711196dd0755465399e4e3d3f",
+    "javascript_sha256": "8d5dcc2ddfca0d93933bc2726e12665f351efbc4c6d24e33edfb7ad955fbf98e",
+    "source_base_commit": "a7be81833479bc352bc69899ee377cd46abeec63",
+    "source_dirty": true,
+    "note": "Pre-commit local acceptance artifact; no binary SDK or GitHub Release publication is claimed."
+  },
+  "screenshots": {
+    "before.jpg": "1b04ccf17b4496f14a7bf0b7e11dd53ecb1437fb330eda26670e5267cefd951d",
+    "pinch.jpg": "3563827f88f6461b83013f2b08d7b4601a430d2b6da9082356779e0d075a8243",
+    "rotation-pan.jpg": "28daae7a70b2321ce77533e667df6096ad1d9cbbe6bcb4fa41d59c99e4ccfe85"
+  }
+}

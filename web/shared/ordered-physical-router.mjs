@@ -77,6 +77,10 @@ function createKeySession({win,queue,common,active,listen,routeKey}){
 export function createOrderedPhysicalRouter({canvas,window:win=window,document:doc=document,queue,nowUs=()=>Math.floor(performance.now()*1000),
  routePointer=()=> 'game',routeKey=()=> 'game',routeWheel=()=> 'game',routeCapture=()=>{},onError=error=>{throw error;}}){
  let ready=false,disposed=false,paused=false,focused=true,gameFocused=true;const listeners=[],previousTabIndex=canvas.tabIndex;canvas.tabIndex=0;
+ // This opt-in canvas owns touch gestures; browser page pan/pinch would cancel
+ // the Pointer Events before the Luau recognizer could finish them.
+ const style=canvas.style,previousTouchAction=style?.getPropertyValue('touch-action')??'',previousTouchPriority=style?.getPropertyPriority('touch-action')??'';
+ style?.setProperty('touch-action','none');
  const active=()=>ready&&!disposed&&!paused&&!doc.hidden&&focused&&gameFocused;
  const common=(kind,route='control',origin='browser')=>({kind,route,origin,received_us:nowUs()});
  function listen(target,type,fn,options){
@@ -117,6 +121,10 @@ export function createOrderedPhysicalRouter({canvas,window:win=window,document:d
   activate(){if(disposed||ready)return;ready=true;focused=doc.hasFocus?.()??true;reset('load');geometry.viewport();focus(focused,'window','blur');},
   setPaused(value){if(paused===value)return;paused=value;if(value&&ready)reset('host_pause');},
   report:()=>({...queue.report(),admission:disposed?'disposed':active()?'active':ready?'suspended':'waiting_ready',viewport_revision:geometry.revision()}),
-  dispose(){if(disposed)return;disposed=true;for(const remove of listeners)remove();pointers.dispose();keys.dispose();canvas.tabIndex=previousTabIndex;},
+  dispose(){if(disposed)return;disposed=true;for(const remove of listeners)remove();pointers.dispose();keys.dispose();canvas.tabIndex=previousTabIndex;
+   if(style?.getPropertyValue('touch-action')==='none'&&!style.getPropertyPriority('touch-action')){
+    if(previousTouchAction)style.setProperty('touch-action',previousTouchAction,previousTouchPriority);else style.removeProperty('touch-action');
+   }
+  },
  };
 }
