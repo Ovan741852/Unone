@@ -47,6 +47,16 @@ actual matching ID. If no unique record matches, keep the outcome unconfirmed
 instead of resubmitting. Host/client metadata must be refreshed after updating
 the Koncrate Host to expose the new operation.
 
+For an external AI chat without a Koncrate domain tool, use the Koncrate-Editor
+Host's existing `scripts/viewer-tools.mjs` with its explicitly enabled
+`development-tools.json`. The outer catalogue exposes `host.scout`; describe it
+and wrap domain recommend/describe/call requests in `arguments.request` using
+the outer hash. The selected domain call uses its own inner hash. Check both
+outer `result.ok` and inner `result.value.ok`. A missing endpoint or normal
+login is a connection/authentication gap, not permission to read a vault, guess
+ports or claim upload completion. See Koncrate-Editor's `docs/plugin-upload.md`
+for the concrete client bootstrap; this repository does not install that Host.
+
 ## Manifest
 
 ```json

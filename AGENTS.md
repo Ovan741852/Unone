@@ -9,6 +9,14 @@ branches unless the user explicitly asks for one.
 This applies to all coding agents working in this repo, including
 Claude Code and Codex.
 
+## Plugin distribution
+
+For publishing a completed plugin to Koncrate, read
+[the plugin distribution workflow](docs/plugin-protocol.md#uploading-a-completed-plugin-to-koncrate).
+Use Koncrate's authenticated Scout, through its explicit Host client when the
+chat has no domain tool. Source commits do not upload a plugin or install an MCP
+tool in another chat; report missing Host/login separately from submission.
+
 ## Default game presentation
 
 Use the official Unone player for game presentation. Start with
