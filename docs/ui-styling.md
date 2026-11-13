@@ -190,7 +190,8 @@ when a face has them.
 
 The export result (`export.json`, and `export` in the `project prepare` result)
 carries a `font_subset` report, schema `unone.font-subset.v1`. For every packaged
-font file it lists the faces naming it, whether it was subset, `original_bytes`
+font file it lists its `source` and packaged `output` (and the `instance` axis
+values of a variable face), the faces naming it, whether it was subset, `original_bytes`
 and `bytes`, `original_glyphs` and `glyphs`, the `characters` it maps, how many
 shown characters it `covered`, its own `missing_count` and first 200 `missing`
 characters (another face may still cover them), and the `dropped_tables`. The
@@ -198,11 +199,18 @@ top-level `missing` list holds the characters no face has, with their places.
 
 What a subset face keeps and loses:
 
-- Only static TrueType (`glyf`) faces can be subset. CFF/OTF outlines, variable
-  fonts, collections and color fonts fail with `UI_FONT_SUBSET_UNSUPPORTED`;
-  package static TTF instances (font downloads usually include them) or leave
-  the face whole. A face whose OS/2 `fsType` forbids subsetting fails with
-  `UI_FONT_SUBSET_FORBIDDEN`.
+- Only TrueType (`glyf`) faces can be subset. CFF/OTF outlines, collections
+  and color fonts fail with `UI_FONT_SUBSET_UNSUPPORTED`; package a TrueType
+  face or leave the face whole. A face whose OS/2 `fsType` forbids subsetting
+  fails with `UI_FONT_SUBSET_FORBIDDEN`.
+- A variable TrueType face (such as `NotoSansTC[wght].ttf` as published) may be
+  declared once per weight; each weight is packaged as its own static instance,
+  `fonts/NotoSansTC[wght].w600.ttf`, with the `wght` axis at that weight and
+  other axes at their defaults, and the packaged presentation names those files.
+  The instance keeps the font's points exactly as it stores them (composites
+  are drawn flattened) and its advances; glyph hinting instructions and the
+  variation tables are not kept. A weight outside the font's axis fails with
+  `UI_FONT_SUBSET_WEIGHT_OUT_OF_RANGE`.
 - Outlines, hinting, horizontal and vertical metrics, `name` (copyright and
   license) and `OS/2` are kept. OpenType layout tables (GSUB, GPOS, GDEF, kern)
   are dropped: CJK and plain Latin draw the same, but Latin kerning and

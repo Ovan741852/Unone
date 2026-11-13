@@ -10,7 +10,7 @@
 //! stale. A shown character that no packaged face has is reported with where
 //! it appears; by default that fails the export.
 
-use anyhow::{anyhow, bail, Context, Result};
+use anyhow::{anyhow, bail, ensure, Context, Result};
 use serde_json::{json, Value};
 use std::collections::{BTreeMap, BTreeSet};
 use std::{fs, path::Path};
@@ -116,17 +116,27 @@ pub(crate) fn collect_text(files: &[(String, Vec<u8>)]) -> Result<GameText> {
     Ok(text)
 }
 
-/// One packaged font file and the faces that name it.
+/// One packaged font file and the faces (name, weight) that name it.
 struct FontSource {
     path: String,
-    faces: Vec<String>,
+    faces: Vec<(String, u16)>,
     subset: bool,
 }
 
-/// Subsets the faces that ask for it in place in `files` and returns the
-/// report, or `None` when no face asks. Development exports keep whole faces
-/// (reloaded scripts may show new text) but still check coverage.
-pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, files: &mut [(String, Vec<u8>)], development: bool) -> Result<Option<Value>> {
+/// `fonts/Sans[wght].ttf` at 600 is packaged as `fonts/Sans[wght].w600.ttf`.
+fn instance_path(path: &str, weight: u16) -> String {
+    match path.rsplit_once('.') {
+        Some((stem, extension)) if !extension.contains('/') => format!("{stem}.w{weight}.{extension}"),
+        _ => format!("{path}.w{weight}"),
+    }
+}
+
+/// Subsets the faces that ask for it in `files` and returns the report, or
+/// `None` when no face asks. Static faces are replaced in place; a variable
+/// face is replaced by one instance file per declared weight, and the
+/// packaged presentation names those files. Development exports keep whole
+/// faces (reloaded scripts may show new text) but still check coverage.
+pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, files: &mut Vec<(String, Vec<u8>)>, development: bool) -> Result<Option<Value>> {
     if !ui.subset_enabled() { return Ok(None); }
     let default_settings = Default::default();
     let settings = ui.font_subset.as_ref().unwrap_or(&default_settings);
@@ -142,10 +152,10 @@ pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, fil
     let mut sources: Vec<FontSource> = Vec::new();
     let legacy = ui.font_source.iter().map(|path| (path, ui.font_family.clone().unwrap_or_default(), 400, false));
     for (path, family, weight, subset) in legacy.chain(ui.fonts.iter().map(|face| (&face.source, face.family.clone(), face.weight, face.subset))) {
-        let name = format!("{family} {weight}");
+        let face = (format!("{family} {weight}"), weight);
         match sources.iter_mut().find(|source| &source.path == path) {
-            Some(source) => source.faces.push(name),
-            None => sources.push(FontSource { path: path.clone(), faces: vec![name], subset }),
+            Some(source) => source.faces.push(face),
+            None => sources.push(FontSource { path: path.clone(), faces: vec![face], subset }),
         }
     }
     let index_of = |files: &[(String, Vec<u8>)], path: &str| files.iter().position(|(p, _)| p == &format!("content/{path}"))
@@ -161,13 +171,16 @@ pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, fil
     let keep: BTreeSet<char> = text.chars.keys().chain(&text.key_chars).copied().chain((0x20u8..0x7F).map(char::from)).collect();
 
     let mut faces = Vec::with_capacity(sources.len());
+    // (source, weight, packaged path) of each variable-font instance.
+    let mut instances: Vec<(String, u16, String)> = Vec::new();
     for (source, coverage) in sources.iter().zip(&coverage) {
         let index = index_of(files, &source.path)?;
         let original = files[index].1.len();
         let missing: Vec<char> = required.difference(coverage).copied().collect();
-        let mut face = json!({
+        let row = |names: Vec<&String>| json!({
             "source": source.path,
-            "faces": source.faces,
+            "output": source.path,
+            "faces": names,
             "subset": source.subset && !development,
             "original_bytes": original,
             "bytes": original,
@@ -176,23 +189,61 @@ pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, fil
             "missing_count": missing.len(),
             "missing": missing.iter().take(LISTED_PER_FACE).map(|ch| character(*ch)).collect::<Vec<_>>(),
         });
-        if source.subset && !development {
-            let bytes = &files[index].1;
-            let layout = [b"GSUB", b"GPOS"].into_iter().filter(|tag| truetype_subset::has_table(bytes, tag)).count() > 0;
-            let shaped: Vec<char> = keep.intersection(coverage).copied().filter(|ch| needs_layout(*ch)).collect();
-            if layout && !shaped.is_empty() {
-                bail!("UI_FONT_SUBSET_SHAPING_UNSUPPORTED: {} needs OpenType layout (GSUB/GPOS) for {}, which subsetting does not keep; set \"subset\": false for this face",
-                    source.path, list(&shaped, 10));
-            }
-            let result = truetype_subset::subset(bytes, &keep).map_err(|error| anyhow!("{error:#} (font {})", source.path))?;
+        if !source.subset || development {
+            faces.push(row(source.faces.iter().map(|(name, _)| name).collect()));
+            continue;
+        }
+        let bytes = files[index].1.clone();
+        let layout = [b"GSUB", b"GPOS"].into_iter().filter(|tag| truetype_subset::has_table(&bytes, tag)).count() > 0;
+        let shaped: Vec<char> = keep.intersection(coverage).copied().filter(|ch| needs_layout(*ch)).collect();
+        if layout && !shaped.is_empty() {
+            bail!("UI_FONT_SUBSET_SHAPING_UNSUPPORTED: {} needs OpenType layout (GSUB/GPOS) for {}, which subsetting does not keep; set \"subset\": false for this face",
+                source.path, list(&shaped, 10));
+        }
+        // A variable font becomes one static instance per declared weight,
+        // each packaged as its own file; a static font is subset in place.
+        let variable = truetype_subset::is_variable(&bytes);
+        let weights: Vec<Option<u16>> = if variable {
+            source.faces.iter().map(|(_, weight)| *weight).collect::<BTreeSet<_>>().into_iter().map(Some).collect()
+        } else {
+            vec![None]
+        };
+        for weight in weights {
+            let result = truetype_subset::subset(&bytes, &keep, weight.unwrap_or(400))
+                .map_err(|error| anyhow!("{error:#} (font {}{})", source.path, weight.map_or(String::new(), |w| format!(" at weight {w}"))))?;
+            let mut face = row(source.faces.iter().filter(|(_, w)| weight.is_none_or(|weight| *w == weight)).map(|(name, _)| name).collect());
             face["bytes"] = json!(result.bytes.len());
             face["original_glyphs"] = json!(result.original_glyphs);
             face["glyphs"] = json!(result.glyphs);
             face["characters"] = json!(result.characters);
             face["dropped_tables"] = json!(result.dropped_tables);
-            files[index].1 = result.bytes;
+            match weight {
+                Some(weight) => {
+                    let output = instance_path(&source.path, weight);
+                    ensure!(index_of(files, &output).is_err(), "UI_FONT_SUBSET_PATH_CONFLICT: the instance of {} at weight {weight} would replace the packaged file {output}", source.path);
+                    face["output"] = json!(output);
+                    face["instance"] = json!({"wght": weight});
+                    files.push((format!("content/{output}"), result.bytes));
+                    instances.push((source.path.clone(), weight, output));
+                }
+                None => files[index].1 = result.bytes,
+            }
+            faces.push(face);
         }
-        faces.push(face);
+        if variable {
+            // Every face of this file now names an instance.
+            let whole = format!("content/{}", source.path);
+            files.retain(|(path, _)| path != &whole);
+        }
+    }
+    if !instances.is_empty() {
+        let at = index_of(files, "presentation.json")?;
+        let mut presentation: Value = serde_json::from_slice(&files[at].1)?;
+        for face in presentation["ui"]["fonts"].as_array_mut().into_iter().flatten() {
+            let named = |(source, weight, _): &&(String, u16, String)| face["source"] == json!(source) && face["weight"] == json!(weight);
+            if let Some((_, _, output)) = instances.iter().find(named) { face["source"] = json!(output); }
+        }
+        files[at].1 = serde_json::to_vec(&presentation)?;
     }
     let missing: Vec<char> = required.difference(&covered).copied().collect();
     if settings.missing == MissingGlyphPolicy::Error && !missing.is_empty() {
@@ -205,7 +256,7 @@ pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, fil
     Ok(Some(json!({
         "schema": SCHEMA,
         "applied": !development,
-        "note": if development { "Development exports keep whole faces so reloaded scripts can show new text; coverage is still checked." } else { "Faces marked subset keep only the glyphs for the collected text and printable ASCII. OpenType layout tables (kerning, ligatures) are dropped from them." },
+        "note": if development { "Development exports keep whole faces so reloaded scripts can show new text; coverage is still checked." } else { "Faces marked subset keep only the glyphs for the collected text and printable ASCII. OpenType layout tables (kerning, ligatures) are dropped from them; a variable face becomes one static instance per declared weight." },
         "missing_policy": settings.missing,
         "text": {
             "characters": text.chars.len(),
@@ -411,6 +462,36 @@ mod tests {
         assert_eq!(report["font_subset"]["missing"], json!([]));
         assert_eq!(report["font_subset"]["faces"][0]["missing_count"], 1);
         assert_eq!((report["font_subset"]["faces"][1]["subset"].as_bool(), report["font_subset"]["faces"][1]["missing_count"].as_u64()), (Some(false), Some(0)));
+    }
+
+    #[test]
+    fn a_variable_face_ships_one_static_instance_per_declared_weight() {
+        let fonts = json!([
+            {"family": "Fixture", "source": "fonts/a.ttf", "weight": 400, "subset": true},
+            {"family": "Fixture", "source": "fonts/a.ttf", "weight": 900, "subset": true},
+            {"family": "Alias", "source": "fonts/a.ttf", "weight": 900, "subset": true}]);
+        let project = Project::new(json!({"fonts": fonts}));
+        fs::write(project.dir.path().join("fonts/a.ttf"), fixture::font(fixture::Options { variable: true, ..Default::default() })).unwrap();
+        let (output, report) = project.export("instances", false).unwrap();
+        assert!(!output.join("content/fonts/a.ttf").exists(), "the whole variable font is not shipped");
+        let presentation: Value = serde_json::from_slice(&fs::read(output.join("content/presentation.json")).unwrap()).unwrap();
+        let sources: Vec<&str> = presentation["ui"]["fonts"].as_array().unwrap().iter().map(|face| face["source"].as_str().unwrap()).collect();
+        assert_eq!(sources, ["fonts/a.w400.ttf", "fonts/a.w900.ttf", "fonts/a.w900.ttf"]);
+        for (row, weight) in report["font_subset"]["faces"].as_array().unwrap().iter().zip([400u16, 900]) {
+            let path = format!("fonts/a.w{weight}.ttf");
+            assert_eq!((row["output"].as_str(), row["instance"]["wght"].as_u64()), (Some(path.as_str()), Some(u64::from(weight))));
+            let bytes = fs::read(output.join("content").join(&path)).unwrap();
+            assert!(!truetype_subset::is_variable(&bytes));
+            assert_eq!(ttf_parser::Face::parse(&bytes, 0).unwrap().weight().to_number(), weight);
+            assert_eq!(coverage(&bytes).unwrap(), ['A', 'Z', '文', '字', '\u{20000}'].into());
+        }
+        assert_eq!(report["font_subset"]["faces"][1]["faces"], json!(["Fixture 900", "Alias 900"]));
+
+        // Development keeps the variable font whole, under its own name.
+        let (output, _) = project.export("instances-development", true).unwrap();
+        assert!(output.join("content/fonts/a.ttf").exists());
+        let presentation = fs::read_to_string(output.join("content/presentation.json")).unwrap();
+        assert!(!presentation.contains(".w400."), "{presentation}");
     }
 
     #[test]

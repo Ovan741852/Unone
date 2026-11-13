@@ -10,11 +10,19 @@
 //! most notably the OpenType layout tables (GSUB, GPOS, GDEF, kern). Callers
 //! must refuse text that cannot render without them.
 //!
-//! CFF outlines, variable fonts, collections and color glyphs are refused
-//! with `UI_FONT_SUBSET_UNSUPPORTED` rather than written incompletely.
+//! A variable TrueType font becomes a static instance: its `wght` axis is set
+//! to the face's weight (other axes stay at their defaults), every kept glyph
+//! is redrawn from the varied outline as a simple quadratic glyph (composites
+//! flattened, glyph instructions not kept), advances follow HVAR/VVAR or the
+//! phantom points, and the variation tables are dropped.
+//!
+//! CFF outlines, collections and color glyphs are refused with
+//! `UI_FONT_SUBSET_UNSUPPORTED` rather than written incompletely.
 
 use anyhow::{anyhow, bail, ensure, Context, Result};
+use std::borrow::Cow;
 use std::collections::BTreeSet;
+use ttf_parser::{GlyphId, OutlineBuilder};
 
 pub(crate) struct Subset {
     pub bytes: Vec<u8>,
@@ -49,15 +57,22 @@ pub(crate) fn has_table(font: &[u8], tag: &[u8; 4]) -> bool {
     directory(font).is_ok_and(|tables| tables.iter().any(|(t, _)| t == tag))
 }
 
-pub(crate) fn subset(font: &[u8], wanted: &BTreeSet<char>) -> Result<Subset> {
+/// Whether the font varies; its subsets are static instances, one per weight.
+pub(crate) fn is_variable(font: &[u8]) -> bool {
+    has_table(font, b"fvar")
+}
+
+/// Cuts the font down to `wanted`. A variable font becomes a static instance
+/// at `weight`; a static font ignores it.
+pub(crate) fn subset(font: &[u8], wanted: &BTreeSet<char>, weight: u16) -> Result<Subset> {
     let tables = directory(font)?;
     let get = |tag: &[u8; 4]| tables.iter().find(|(t, _)| t == tag).map(|(_, data)| *data);
     let need = |tag: &[u8; 4]| get(tag).with_context(|| format!("UI_FONT_INVALID: the font has no {} table", tag_name(tag)));
-    for (tag, what) in [(b"fvar", "a variable font; package static instances"), (b"gvar", "a variable font; package static instances"),
-        (b"CFF ", "CFF outlines"), (b"CFF2", "CFF2 outlines"), (b"COLR", "color glyphs"), (b"sbix", "color bitmap glyphs"),
+    for (tag, what) in [(b"CFF ", "CFF outlines"), (b"CFF2", "CFF2 outlines"), (b"COLR", "color glyphs"), (b"sbix", "color bitmap glyphs"),
         (b"CBDT", "color bitmap glyphs"), (b"SVG ", "SVG glyphs")] {
-        ensure!(get(tag).is_none(), "UI_FONT_SUBSET_UNSUPPORTED: the font has {what}, which subsetting does not support; set \"subset\": false for this face or package a static TrueType (glyf) face");
+        ensure!(get(tag).is_none(), "UI_FONT_SUBSET_UNSUPPORTED: the font has {what}, which subsetting does not support; set \"subset\": false for this face or package a TrueType (glyf) face");
     }
+    let variable = get(b"fvar").is_some();
     if let Some(os2) = get(b"OS/2") {
         let fs_type = be16(os2, 8)?;
         ensure!(fs_type & 0x0100 == 0, "UI_FONT_SUBSET_FORBIDDEN: the font's OS/2 fsType forbids subsetting; set \"subset\": false for this face");
@@ -83,7 +98,17 @@ pub(crate) fn subset(font: &[u8], wanted: &BTreeSet<char>) -> Result<Subset> {
         Ok(&glyf[start..end])
     };
 
-    let face = ttf_parser::Face::parse(font, 0).map_err(|error| anyhow!("UI_FONT_INVALID: the font cannot be parsed: {error}"))?;
+    let mut face = ttf_parser::Face::parse(font, 0).map_err(|error| anyhow!("UI_FONT_INVALID: the font cannot be parsed: {error}"))?;
+    if variable {
+        let wght = ttf_parser::Tag::from_bytes(b"wght");
+        if let Some(axis) = face.variation_axes().into_iter().find(|axis| axis.tag == wght) {
+            let value = f32::from(weight);
+            ensure!((axis.min_value..=axis.max_value).contains(&value),
+                "UI_FONT_SUBSET_WEIGHT_OUT_OF_RANGE: weight {weight} lies outside the font's wght axis ({}..{}); declare a weight the font covers",
+                axis.min_value, axis.max_value);
+            face.set_variation(wght, value).context("UI_FONT_INVALID: the variation axes cannot be set")?;
+        }
+    }
     let mut new_id = vec![u16::MAX; num_glyphs];
     let mut order: Vec<u16> = Vec::new();
     let mut add = |gid: u16, order: &mut Vec<u16>| -> Result<u16> {
@@ -104,9 +129,10 @@ pub(crate) fn subset(font: &[u8], wanted: &BTreeSet<char>) -> Result<Subset> {
         }
     }
     let mut mapping: Vec<(u32, u16)> = mapping.into_iter().map(|(cp, old)| add(old, &mut order).map(|new| (cp, new))).collect::<Result<_>>()?;
-    // Composite glyphs pull in their components, transitively.
+    // Composite glyphs pull in their components, transitively. An instance
+    // draws composites flattened, so it needs no components.
     let mut next = 0;
-    while next < order.len() {
+    while next < order.len() && !variable {
         let data = glyph(order[next] as usize)?;
         for position in component_positions(data)? {
             add(be16(data, position)?, &mut order)?;
@@ -115,15 +141,24 @@ pub(crate) fn subset(font: &[u8], wanted: &BTreeSet<char>) -> Result<Subset> {
     }
     mapping.sort_unstable();
 
+    let drawn: Vec<Option<Drawn>> = if variable {
+        order.iter().map(|&old| draw(&face, GlyphId(old), stored_points(&glyph, old as usize, 0))).collect::<Result<_>>()?
+    } else {
+        Vec::new()
+    };
     let mut glyf_out = Vec::new();
     let mut offsets = Vec::with_capacity(order.len() + 1);
-    for &old in &order {
+    for (index, &old) in order.iter().enumerate() {
         offsets.push(glyf_out.len());
-        let data = glyph(old as usize)?;
+        let data: Cow<[u8]> = if variable {
+            drawn[index].as_ref().map_or(Cow::Borrowed(&[][..]), |drawn| Cow::Borrowed(drawn.data.as_slice()))
+        } else {
+            Cow::Borrowed(glyph(old as usize)?)
+        };
         let start = glyf_out.len();
-        glyf_out.extend_from_slice(data);
-        for position in component_positions(data)? {
-            let renumbered = new_id[be16(data, position)? as usize];
+        glyf_out.extend_from_slice(&data);
+        for position in component_positions(&data)? {
+            let renumbered = new_id[be16(&data, position)? as usize];
             glyf_out[start + position..start + position + 2].copy_from_slice(&renumbered.to_be_bytes());
         }
         while glyf_out.len() % 4 != 0 { glyf_out.push(0); }
@@ -140,15 +175,50 @@ pub(crate) fn subset(font: &[u8], wanted: &BTreeSet<char>) -> Result<Subset> {
     let mut head_out = head.to_vec();
     head_out[8..12].copy_from_slice(&[0; 4]);
     head_out[50..52].copy_from_slice(&(u16::from(!short_loca)).to_be_bytes());
-    out.push((*b"head", head_out));
     let mut maxp_out = maxp.to_vec();
     maxp_out[4..6].copy_from_slice(&(order.len() as u16).to_be_bytes());
+    let mut horizontal = read_metrics(hhea, hmtx, num_glyphs, &order).context("UI_FONT_INVALID: horizontal metrics")?;
+    let mut vertical = match (get(b"vhea"), get(b"vmtx")) {
+        (Some(vhea), Some(vmtx)) => Some((vhea, read_metrics(vhea, vmtx, num_glyphs, &order).context("UI_FONT_INVALID: vertical metrics")?)),
+        _ => None,
+    };
+    if variable {
+        // Bounds, metrics and maxima of the redrawn glyphs.
+        let boxes: Vec<[i16; 4]> = drawn.iter().flatten().map(|drawn| drawn.bounds).collect();
+        if !boxes.is_empty() {
+            let bounds = [boxes.iter().map(|b| b[0]).min(), boxes.iter().map(|b| b[1]).min(), boxes.iter().map(|b| b[2]).max(), boxes.iter().map(|b| b[3]).max()];
+            for (index, value) in bounds.into_iter().flatten().enumerate() {
+                head_out[36 + index * 2..38 + index * 2].copy_from_slice(&value.to_be_bytes());
+            }
+        }
+        if maxp_out.len() >= 32 {
+            let points = drawn.iter().flatten().map(|drawn| drawn.points).max().unwrap_or(0);
+            let contours = drawn.iter().flatten().map(|drawn| drawn.contours).max().unwrap_or(0);
+            for (at, value) in [(6, points), (8, contours), (10, 0), (12, 0), (28, 0), (30, 0)] {
+                maxp_out[at..at + 2].copy_from_slice(&(value.min(0xFFFF) as u16).to_be_bytes());
+            }
+        }
+        for (index, (&old, drawn)) in order.iter().zip(&drawn).enumerate() {
+            let advance = face.glyph_hor_advance(GlyphId(old)).unwrap_or(horizontal[index].0);
+            horizontal[index] = (advance, drawn.as_ref().map_or(0, |drawn| drawn.bounds[0] as u16));
+            if let Some((_, values)) = vertical.as_mut() {
+                // Keep each glyph's vertical origin (top of its box plus the top bearing).
+                let original = glyph(old as usize)?;
+                let side = match (drawn, original.len() >= 10) {
+                    (Some(drawn), true) => ((be16(original, 8)? as i16 as i32 + values[index].1 as i16 as i32) - drawn.bounds[3] as i32) as i16 as u16,
+                    _ => values[index].1,
+                };
+                values[index] = (face.glyph_ver_advance(GlyphId(old)).unwrap_or(values[index].0), side);
+            }
+        }
+    }
+    out.push((*b"head", head_out));
     out.push((*b"maxp", maxp_out));
-    let (hhea_out, hmtx_out) = metrics(hhea, hmtx, num_glyphs, &order).context("UI_FONT_INVALID: horizontal metrics")?;
+    let (hhea_out, hmtx_out) = write_metrics(hhea, &horizontal);
     out.push((*b"hhea", hhea_out));
     out.push((*b"hmtx", hmtx_out));
-    if let (Some(vhea), Some(vmtx)) = (get(b"vhea"), get(b"vmtx")) {
-        let (vhea_out, vmtx_out) = metrics(vhea, vmtx, num_glyphs, &order).context("UI_FONT_INVALID: vertical metrics")?;
+    if let Some((vhea, values)) = vertical {
+        let (vhea_out, vmtx_out) = write_metrics(vhea, &values);
         out.push((*b"vhea", vhea_out));
         out.push((*b"vmtx", vmtx_out));
     }
@@ -169,9 +239,12 @@ pub(crate) fn subset(font: &[u8], wanted: &BTreeSet<char>) -> Result<Subset> {
                 os2_out[66..68].copy_from_slice(&(last.0.min(0xFFFF) as u16).to_be_bytes());
             }
         }
+        if variable && os2_out.len() >= 6 { os2_out[4..6].copy_from_slice(&weight.to_be_bytes()); }
         out.push((*b"OS/2", os2_out));
     }
     for tag in KEPT {
+        // STAT describes the axes an instance no longer has.
+        if variable && tag == b"STAT" { continue; }
         if let Some(data) = get(tag) { out.push((*tag, data.to_vec())); }
     }
     let written: BTreeSet<[u8; 4]> = out.iter().map(|(tag, _)| *tag).collect();
@@ -236,9 +309,9 @@ fn component_positions(glyph: &[u8]) -> Result<Vec<usize>> {
     Ok(positions)
 }
 
-/// Rebuilds `hhea`+`hmtx` (or `vhea`+`vmtx`, same layout) for the new glyph
-/// order, writing one long metric per glyph until the trailing advances repeat.
-fn metrics(header: &[u8], table: &[u8], num_glyphs: usize, order: &[u16]) -> Result<(Vec<u8>, Vec<u8>)> {
+/// The (advance, side bearing) of each glyph in `order` from `hhea`+`hmtx`
+/// (or `vhea`+`vmtx`, same layout).
+fn read_metrics(header: &[u8], table: &[u8], num_glyphs: usize, order: &[u16]) -> Result<Vec<(u16, u16)>> {
     ensure!(header.len() >= 36, "header is truncated");
     let long = (be16(header, 34)? as usize).min(num_glyphs);
     ensure!(long >= 1, "no long metrics");
@@ -246,18 +319,196 @@ fn metrics(header: &[u8], table: &[u8], num_glyphs: usize, order: &[u16]) -> Res
         if gid < long { Ok((be16(table, gid * 4)?, be16(table, gid * 4 + 2)?)) }
         else { Ok((be16(table, (long - 1) * 4)?, be16(table, long * 4 + (gid - long) * 2)?)) }
     };
-    let values: Vec<(u16, u16)> = order.iter().map(|&gid| metric(gid as usize)).collect::<Result<_>>()?;
+    order.iter().map(|&gid| metric(gid as usize)).collect()
+}
+
+/// Rebuilds the header and metrics table, writing one long metric per glyph
+/// until the trailing advances repeat.
+fn write_metrics(header: &[u8], values: &[(u16, u16)]) -> (Vec<u8>, Vec<u8>) {
     let last = values.last().expect("subset keeps .notdef").0;
     let repeated = values.iter().rev().take_while(|(advance, _)| *advance == last).count();
     let long_out = values.len() - repeated + 1;
     let mut header_out = header.to_vec();
     header_out[34..36].copy_from_slice(&(long_out as u16).to_be_bytes());
+    let widest = values.iter().map(|(advance, _)| *advance).max().unwrap_or(0);
+    header_out[10..12].copy_from_slice(&widest.to_be_bytes());
     let mut table_out = Vec::with_capacity(long_out * 4 + (values.len() - long_out) * 2);
     for (index, (advance, side)) in values.iter().enumerate() {
         if index < long_out { table_out.extend_from_slice(&advance.to_be_bytes()); }
         table_out.extend_from_slice(&side.to_be_bytes());
     }
-    Ok((header_out, table_out))
+    (header_out, table_out)
+}
+
+/// A glyph redrawn as a simple TrueType glyph.
+struct Drawn {
+    data: Vec<u8>,
+    /// xMin, yMin, xMax, yMax.
+    bounds: [i16; 4],
+    points: usize,
+    contours: usize,
+}
+
+/// Contours as ttf-parser draws them: each on-curve point, each quadratic
+/// control point, and the implied on-curve midpoints between two controls.
+#[derive(Default)]
+struct Contours {
+    contours: Vec<Vec<(f32, f32, bool)>>,
+    cubic: bool,
+}
+
+impl OutlineBuilder for Contours {
+    fn move_to(&mut self, x: f32, y: f32) { self.contours.push(vec![(x, y, true)]); }
+    fn line_to(&mut self, x: f32, y: f32) {
+        if let Some(contour) = self.contours.last_mut() { contour.push((x, y, true)); }
+    }
+    fn quad_to(&mut self, x1: f32, y1: f32, x: f32, y: f32) {
+        if let Some(contour) = self.contours.last_mut() { contour.extend([(x1, y1, false), (x, y, true)]); }
+    }
+    fn curve_to(&mut self, _: f32, _: f32, _: f32, _: f32, _: f32, _: f32) { self.cubic = true; }
+    fn close(&mut self) {}
+}
+
+/// The on-curve flags of a glyph's stored points, contour by contour, with
+/// composites expanded in drawing order. `None` when they cannot be read.
+fn stored_points<'a>(glyph: &dyn Fn(usize) -> Result<&'a [u8]>, gid: usize, depth: usize) -> Option<Vec<Vec<bool>>> {
+    let data = glyph(gid).ok()?;
+    if data.is_empty() { return Some(Vec::new()); }
+    let contours = be16(data, 0).ok()? as i16;
+    if contours < 0 {
+        if depth > 8 { return None; }
+        let mut all = Vec::new();
+        for position in component_positions(data).ok()? {
+            all.extend(stored_points(glyph, be16(data, position).ok()? as usize, depth + 1)?);
+        }
+        return Some(all);
+    }
+    let ends: Vec<usize> = (0..contours as usize).map(|index| be16(data, 10 + index * 2).map(usize::from)).collect::<Result<_>>().ok()?;
+    let total = ends.last().map_or(0, |end| end + 1);
+    let mut at = 12 + contours as usize * 2 + be16(data, 10 + contours as usize * 2).ok()? as usize;
+    let mut flags = Vec::with_capacity(total);
+    while flags.len() < total {
+        let flag = *data.get(at)?;
+        at += 1;
+        let repeat = if flag & 0x08 != 0 { at += 1; *data.get(at - 1)? as usize } else { 0 };
+        flags.extend(std::iter::repeat_n(flag & 0x01 != 0, repeat + 1));
+    }
+    flags.truncate(total);
+    let mut start = 0;
+    Some(ends.iter().map(|&end| { let contour = flags.get(start..=end).unwrap_or_default().to_vec(); start = end + 1; contour }).collect())
+}
+
+/// What ttf-parser emits for a contour of stored points with these flags:
+/// each entry is a stored point's index (`None` for an implied midpoint) and
+/// whether it is on the curve. Mirrors its glyf outline builder.
+fn emitted(flags: &[bool]) -> Vec<(Option<usize>, bool)> {
+    let mut out = Vec::new();
+    let (mut first_on, mut first_off, mut last_off): (Option<Option<usize>>, Option<usize>, Option<usize>) = (None, None, None);
+    for (index, &on) in flags.iter().enumerate() {
+        if first_on.is_none() {
+            if on { first_on = Some(Some(index)); out.push((Some(index), true)); }
+            else if first_off.is_some() { first_on = Some(None); last_off = Some(index); out.push((None, true)); }
+            else { first_off = Some(index); }
+        } else {
+            match (last_off, on) {
+                (Some(control), true) => { last_off = None; out.extend([(Some(control), false), (Some(index), true)]); }
+                (Some(control), false) => { last_off = Some(index); out.extend([(Some(control), false), (None, true)]); }
+                (None, true) => out.push((Some(index), true)),
+                (None, false) => last_off = Some(index),
+            }
+        }
+    }
+    if let (Some(_), Some(last)) = (first_off, last_off) {
+        last_off = None;
+        out.extend([(Some(last), false), (None, true)]);
+    }
+    match (first_on, first_off, last_off) {
+        (Some(start), Some(control), _) | (Some(start), None, Some(control)) => out.extend([(Some(control), false), (start, true)]),
+        (Some(start), None, None) => out.push((start, true)),
+        _ => {}
+    }
+    out
+}
+
+/// Redraws a glyph at the face's current variation as a simple glyph without
+/// instructions. Given the stored points of the glyph, it writes exactly
+/// those points (varied and rounded), so implied midpoints stay implied as
+/// the font had them; a contour that does not line up falls back to writing
+/// what was drawn. `None` is an empty glyph (a space).
+fn draw(face: &ttf_parser::Face, glyph: GlyphId, stored: Option<Vec<Vec<bool>>>) -> Result<Option<Drawn>> {
+    let mut drawing = Contours::default();
+    if face.outline_glyph(glyph, &mut drawing).is_none() { return Ok(None); }
+    ensure!(!drawing.cubic, "UI_FONT_SUBSET_UNSUPPORTED: glyph {} has cubic curves", glyph.0);
+    let round = |(x, y, on): (f32, f32, bool)| (x.round().clamp(-32768.0, 32767.0) as i32, y.round().clamp(-32768.0, 32767.0) as i32, on);
+    let stored = stored.filter(|stored| stored.len() == drawing.contours.len());
+    let same = |a: f32, b: f32| (a - b).abs() < 1e-3;
+    let mut contours: Vec<Vec<(i16, i16, bool)>> = Vec::new();
+    for (index, mut contour) in drawing.contours.into_iter().enumerate() {
+        if let Some(flags) = stored.as_ref().map(|stored| &stored[index]) {
+            let template = emitted(flags);
+            if template.len() == contour.len() && template.iter().zip(&contour).all(|(t, d)| t.1 == d.2) {
+                let points: Option<Vec<(i16, i16, bool)>> = (0..flags.len()).map(|point| {
+                    let at = template.iter().position(|t| t.0 == Some(point))?;
+                    let (x, y, _) = round(contour[at]);
+                    Some((x as i16, y as i16, flags[point]))
+                }).collect();
+                if let Some(points) = points.filter(|points| !points.is_empty()) {
+                    contours.push(points);
+                    continue;
+                }
+            }
+        }
+        // The closing segment ends where the contour began.
+        if contour.len() > 1 {
+            let (first, last) = (contour[0], contour[contour.len() - 1]);
+            if last.2 && same(first.0, last.0) && same(first.1, last.1) { contour.pop(); }
+        }
+        let rounded: Vec<(i32, i32, bool)> = contour.iter().map(|&point| round(point)).collect();
+        // An on-curve point exactly halfway between two control points (after
+        // rounding) is implied and need not be written. The first point stays,
+        // so the contour starts where it did.
+        let count = rounded.len();
+        let points: Vec<(i16, i16, bool)> = (0..count).filter(|&index| {
+            let (x, y, on) = rounded[index];
+            let (before, after) = (rounded[(index + count - 1) % count], rounded[(index + 1) % count]);
+            index == 0 || !(on && !before.2 && !after.2 && before.0 + after.0 == 2 * x && before.1 + after.1 == 2 * y)
+        }).map(|index| (rounded[index].0 as i16, rounded[index].1 as i16, rounded[index].2)).collect();
+        if !points.is_empty() { contours.push(points); }
+    }
+    if contours.is_empty() { return Ok(None); }
+    let all = || contours.iter().flatten();
+    let bounds = [all().map(|p| p.0).min().unwrap(), all().map(|p| p.1).min().unwrap(), all().map(|p| p.0).max().unwrap(), all().map(|p| p.1).max().unwrap()];
+    let mut data = Vec::new();
+    data.extend_from_slice(&(contours.len() as i16).to_be_bytes());
+    for value in bounds { data.extend_from_slice(&value.to_be_bytes()); }
+    let mut end = 0usize;
+    for contour in &contours {
+        end += contour.len();
+        data.extend_from_slice(&((end - 1) as u16).to_be_bytes());
+    }
+    data.extend_from_slice(&0u16.to_be_bytes());
+    // Flags with short and repeated encodings, then x and y deltas.
+    let (mut flags, mut xs, mut ys) = (Vec::new(), Vec::new(), Vec::new());
+    let (mut x, mut y) = (0i32, 0i32);
+    for &(px, py, on) in all() {
+        let mut flag = u8::from(on);
+        for (delta, short, same_or_positive, out) in [(i32::from(px) - x, 0x02, 0x10, &mut xs), (i32::from(py) - y, 0x04, 0x20, &mut ys)] {
+            if delta == 0 { flag |= same_or_positive; }
+            else if delta.abs() <= 255 { flag |= short | if delta > 0 { same_or_positive } else { 0 }; out.push(delta.unsigned_abs() as u8); }
+            else { out.extend_from_slice(&(delta as i16).to_be_bytes()); }
+        }
+        (x, y) = (i32::from(px), i32::from(py));
+        flags.push(flag);
+    }
+    let mut index = 0;
+    while index < flags.len() {
+        let run = flags[index..].iter().take(256).take_while(|&&flag| flag == flags[index]).count();
+        if run > 1 { data.extend_from_slice(&[flags[index] | 0x08, (run - 1) as u8]); } else { data.push(flags[index]); }
+        index += run;
+    }
+    data.extend_from_slice(&xs);
+    data.extend_from_slice(&ys);
+    Ok(Some(Drawn { data, bounds, points: end, contours: contours.len() }))
 }
 
 /// A cmap with a format 4 subtable for the BMP and, when a character lies
@@ -420,6 +671,9 @@ pub(crate) mod fixture {
         pub fs_type: u16,
         /// Arabic alef, so layout-dependent text can be tested.
         pub arabic: bool,
+        /// A wght axis (100..900, default 400): at 900 'A' raises its apex by
+        /// 100 units and widens its advance by 40.
+        pub variable: bool,
         pub extra_tables: Vec<([u8; 4], Vec<u8>)>,
     }
 
@@ -428,14 +682,19 @@ pub(crate) mod fixture {
     pub(crate) const CHARACTERS: [(char, u16); 6] = [('A', 1), ('Z', 2), ('中', 3), ('文', 4), ('字', 5), ('\u{20000}', 6)];
 
     fn simple(points: &[(i16, i16)]) -> Vec<u8> {
-        let (xs, ys): (Vec<i16>, Vec<i16>) = points.iter().copied().unzip();
+        curved(&points.iter().map(|&(x, y)| (x, y, true)).collect::<Vec<_>>())
+    }
+
+    /// One contour; `false` marks a quadratic control point.
+    fn curved(points: &[(i16, i16, bool)]) -> Vec<u8> {
+        let (xs, ys): (Vec<i16>, Vec<i16>) = points.iter().map(|&(x, y, _)| (x, y)).unzip();
         let mut glyph = Vec::new();
         for value in [1, *xs.iter().min().unwrap(), *ys.iter().min().unwrap(), *xs.iter().max().unwrap(), *ys.iter().max().unwrap()] {
             glyph.extend_from_slice(&value.to_be_bytes());
         }
         glyph.extend_from_slice(&(points.len() as u16 - 1).to_be_bytes());
         glyph.extend_from_slice(&0u16.to_be_bytes());
-        glyph.extend(std::iter::repeat_n(1u8, points.len()));
+        glyph.extend(points.iter().map(|&(_, _, on)| u8::from(on)));
         for column in [&xs, &ys] {
             let mut previous = 0i16;
             for &value in column.iter() { glyph.extend_from_slice(&(value - previous).to_be_bytes()); previous = value; }
@@ -467,7 +726,8 @@ pub(crate) mod fixture {
             simple(&[(10, 0), (10, 100), (490, 600), (490, 700)]),
             simple(&[(100, 100), (100, 600), (600, 600), (600, 100)]),
             composite(&[(3, 0, 0), (2, 50, 20)]),
-            simple(&[(20, 20), (20, 680), (680, 680)]),
+            // Two control points in a row imply an on-curve point between them.
+            curved(&[(20, 20, true), (20, 680, false), (680, 680, false), (680, 20, true)]),
             simple(&[(0, 0), (0, 500), (500, 500), (500, 0), (250, 250)]),
         ];
         let mut characters = CHARACTERS.to_vec();
@@ -512,6 +772,29 @@ pub(crate) mod fixture {
         mapping.sort_unstable();
         let mut tables = vec![(*b"head", head), (*b"hhea", hhea), (*b"maxp", maxp), (*b"hmtx", hmtx), (*b"loca", loca),
             (*b"glyf", glyf), (*b"cmap", super::cmap(&mapping).unwrap()), (*b"OS/2", os2), (*b"post", post), (*b"name", name)];
+        if options.variable {
+            // fvar: one wght axis, 100..900, default 400, named by name ID 256.
+            let fvar = fields(&[(1, 2), (0, 2), (16, 2), (2, 2), (1, 2), (20, 2), (0, 2), (8, 2),
+                (i64::from(u32::from_be_bytes(*b"wght")), 4), (100 << 16, 4), (400 << 16, 4), (900 << 16, 4), (0, 2), (256, 2)]);
+            // gvar: glyph 1 ('A': three points, then four phantom points) has one
+            // tuple peaking at wght=900 with private "all points" numbers.
+            let words = |values: &[i64]| -> Vec<u8> {
+                let mut packed = vec![0x40 | (values.len() as u8 - 1)];
+                packed.extend(fields(&values.iter().map(|&v| (v, 2)).collect::<Vec<_>>()));
+                packed
+            };
+            let mut serialized = vec![0u8];
+            serialized.extend(words(&[0, 0, 0, 0, 40, 0, 0]));
+            serialized.extend(words(&[0, 100, 0, 0, 0, 0, 0]));
+            let mut variation = fields(&[(1, 2), (10, 2), (serialized.len() as i64, 2), (0xA000, 2), (0x4000, 2)]);
+            variation.extend(serialized);
+            variation.resize(variation.len().div_ceil(4) * 4, 0);
+            let array = 20 + (count as usize + 1) * 4;
+            let mut gvar = fields(&[(1, 2), (0, 2), (1, 2), (0, 2), (array as i64, 4), (count, 2), (1, 2), (array as i64, 4)]);
+            for gid in 0..=count { gvar.extend(fields(&[(if gid >= 2 { variation.len() as i64 } else { 0 }, 4)])); }
+            gvar.extend(variation);
+            tables.extend([(*b"fvar", fvar), (*b"gvar", gvar)]);
+        }
         tables.extend(options.extra_tables);
         super::assemble(tables)
     }
@@ -542,7 +825,7 @@ mod tests {
     fn subset_maps_only_requested_characters_and_draws_them_identically() {
         let original = fixture::font(fixture::Options::default());
         let wanted: BTreeSet<char> = ['A', '文', '\u{20000}', '缺'].into();
-        let result = subset(&original, &wanted).unwrap();
+        let result = subset(&original, &wanted, 400).unwrap();
         assert_eq!(coverage(&result.bytes).unwrap(), ['A', '文', '\u{20000}'].into(), "only requested characters the font has stay mapped");
         // .notdef, A, 文, U+20000, then 文's components 中 and Z (kept as glyphs, not characters).
         assert_eq!((result.glyphs, result.original_glyphs, result.characters), (6, 8, 3));
@@ -562,8 +845,8 @@ mod tests {
     fn subset_is_deterministic_and_drops_layout_tables_it_cannot_renumber() {
         let font = fixture::font(fixture::Options { extra_tables: vec![(*b"GSUB", vec![0; 10]), (*b"kern", vec![0; 4])], ..Default::default() });
         let wanted: BTreeSet<char> = ['A', '字'].into();
-        let first = subset(&font, &wanted).unwrap();
-        assert_eq!(first.bytes, subset(&font, &wanted).unwrap().bytes);
+        let first = subset(&font, &wanted, 400).unwrap();
+        assert_eq!(first.bytes, subset(&font, &wanted, 400).unwrap().bytes);
         assert_eq!(first.dropped_tables, ["GSUB", "kern"]);
         assert_eq!(coverage(&first.bytes).unwrap(), wanted);
     }
@@ -573,14 +856,39 @@ mod tests {
         let wanted: BTreeSet<char> = ['A'].into();
         let mut cff = fixture::font(fixture::Options::default());
         cff[0..4].copy_from_slice(b"OTTO");
-        let variable = fixture::font(fixture::Options { extra_tables: vec![(*b"fvar", vec![0; 16])], ..Default::default() });
         let color = fixture::font(fixture::Options { extra_tables: vec![(*b"COLR", vec![0; 14])], ..Default::default() });
         let forbidden = fixture::font(fixture::Options { fs_type: 0x0100, ..Default::default() });
-        for (font, code) in [(cff, "UI_FONT_SUBSET_UNSUPPORTED"), (variable, "UI_FONT_SUBSET_UNSUPPORTED"), (color, "UI_FONT_SUBSET_UNSUPPORTED"),
+        for (font, code) in [(cff, "UI_FONT_SUBSET_UNSUPPORTED"), (color, "UI_FONT_SUBSET_UNSUPPORTED"),
             (forbidden, "UI_FONT_SUBSET_FORBIDDEN"), (b"not a font".to_vec(), "UI_FONT_INVALID")] {
-            let message = subset(&font, &wanted).err().unwrap().to_string();
+            let message = subset(&font, &wanted, 400).err().unwrap().to_string();
             assert!(message.contains(code), "{message}");
         }
+    }
+
+    #[test]
+    fn variable_fonts_become_static_instances_at_the_declared_weight() {
+        let font = fixture::font(fixture::Options { variable: true, ..Default::default() });
+        assert!(is_variable(&font));
+        let original = Face::parse(&font, 0).unwrap();
+        let wanted: BTreeSet<char> = ['A', '文', '字'].into();
+        let (apex, _) = drawing(&original, 'A');
+        assert!(apex.contains(&"L250,700".to_string()), "{apex:?}");
+        for (weight, y, advance) in [(400, 700, 510), (650, 750, 530), (900, 800, 550)] {
+            let result = subset(&font, &wanted, weight).unwrap();
+            assert!(!is_variable(&result.bytes) && !has_table(&result.bytes, b"gvar"), "an instance does not vary");
+            assert!(result.dropped_tables.contains(&"fvar".to_string()) && result.dropped_tables.contains(&"gvar".to_string()));
+            let instance = Face::parse(&result.bytes, 0).unwrap();
+            let (path, width) = drawing(&instance, 'A');
+            let expected: Vec<String> = apex.iter().map(|step| if step == "L250,700" { format!("L250,{y}") } else { step.clone() }).collect();
+            assert_eq!((path, width), (expected, Some(advance)), "weight {weight}");
+            assert_eq!(instance.weight().to_number(), weight, "OS/2 names the instance's weight");
+            // Composites come out flattened; curves keep their implied points.
+            for ch in ['文', '字'] { assert_eq!(drawing(&instance, ch), drawing(&original, ch), "{ch} at weight {weight}"); }
+        }
+        let curve = draw(&original, original.glyph_index('字').unwrap(), None).unwrap().unwrap();
+        assert_eq!(curve.points, 4, "the implied midpoint between two control points is not written");
+        let message = subset(&font, &wanted, 950).err().unwrap().to_string();
+        assert!(message.contains("UI_FONT_SUBSET_WEIGHT_OUT_OF_RANGE"), "{message}");
     }
 
     /// UNONE_FONT_SUBSET_FONT=<font.ttf> UNONE_FONT_SUBSET_TEXT=<utf-8 file>
@@ -593,7 +901,7 @@ mod tests {
         let text = std::fs::read_to_string(std::env::var("UNONE_FONT_SUBSET_TEXT").unwrap()).unwrap();
         let wanted: BTreeSet<char> = text.chars().chain((0x20u8..0x7F).map(char::from)).collect();
         let started = std::time::Instant::now();
-        let result = subset(&font, &wanted).unwrap();
+        let result = subset(&font, &wanted, 400).unwrap();
         let elapsed = started.elapsed();
         let (before, after) = (Face::parse(&font, 0).unwrap(), Face::parse(&result.bytes, 0).unwrap());
         let kept = coverage(&result.bytes).unwrap();
@@ -604,6 +912,55 @@ mod tests {
             assert_eq!(before.glyph_ver_advance(old), after.glyph_ver_advance(new), "U+{:04X} vertical advance", ch as u32);
         }
         if let Ok(out) = std::env::var("UNONE_FONT_SUBSET_OUT") { std::fs::write(out, &result.bytes).unwrap(); }
+        println!("{} -> {} bytes, {} -> {} glyphs, {} characters, dropped {:?}, {elapsed:?}",
+            font.len(), result.bytes.len(), result.original_glyphs, result.glyphs, result.characters, result.dropped_tables);
+    }
+
+    /// Steps of a drawing with their coordinates, for comparisons with a tolerance.
+    #[derive(Default)]
+    struct Steps(Vec<(char, Vec<f32>)>);
+    impl OutlineBuilder for Steps {
+        fn move_to(&mut self, x: f32, y: f32) { self.0.push(('M', vec![x, y])); }
+        fn line_to(&mut self, x: f32, y: f32) { self.0.push(('L', vec![x, y])); }
+        fn quad_to(&mut self, x1: f32, y1: f32, x: f32, y: f32) { self.0.push(('Q', vec![x1, y1, x, y])); }
+        fn curve_to(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x: f32, y: f32) { self.0.push(('C', vec![x1, y1, x2, y2, x, y])); }
+        fn close(&mut self) { self.0.push(('Z', Vec::new())); }
+    }
+
+    /// UNONE_FONT_SUBSET_FONT=<variable.ttf> UNONE_FONT_SUBSET_REFERENCE=<static instance by another tool>
+    /// UNONE_FONT_SUBSET_WEIGHT=<wght> UNONE_FONT_SUBSET_TEXT=<utf-8 file> cargo test -p unone-cli --bin game
+    /// real_variable -- --ignored --nocapture
+    #[test]
+    #[ignore = "needs a real variable font, a reference instance and text named by environment variables"]
+    fn real_variable_font_instance_matches_a_reference_instance() {
+        let font = std::fs::read(std::env::var("UNONE_FONT_SUBSET_FONT").unwrap()).unwrap();
+        let reference = std::fs::read(std::env::var("UNONE_FONT_SUBSET_REFERENCE").unwrap()).unwrap();
+        let weight: u16 = std::env::var("UNONE_FONT_SUBSET_WEIGHT").unwrap().parse().unwrap();
+        let text = std::fs::read_to_string(std::env::var("UNONE_FONT_SUBSET_TEXT").unwrap()).unwrap();
+        let wanted: BTreeSet<char> = text.chars().chain((0x20u8..0x7F).map(char::from)).collect();
+        let started = std::time::Instant::now();
+        let result = subset(&font, &wanted, weight).unwrap();
+        let elapsed = started.elapsed();
+        let (expected, actual) = (Face::parse(&reference, 0).unwrap(), Face::parse(&result.bytes, 0).unwrap());
+        let (mut compared, mut largest) = (0, 0f32);
+        for ch in coverage(&result.bytes).unwrap() {
+            let (want, got) = (expected.glyph_index(ch).unwrap(), actual.glyph_index(ch).unwrap());
+            let (mut a, mut b) = (Steps::default(), Steps::default());
+            expected.outline_glyph(want, &mut a);
+            actual.outline_glyph(got, &mut b);
+            if std::env::var("UNONE_FONT_SUBSET_DEBUG").is_ok() && a.0.len() == b.0.len() && a.0.iter().zip(&b.0).any(|(x, y)| x.0 != y.0) { println!("REF {:?}
+OUR {:?}", a.0, b.0); }
+            assert_eq!(a.0.iter().map(|s| s.0).collect::<String>(), b.0.iter().map(|s| s.0).collect::<String>(), "U+{:04X} steps", ch as u32);
+            for (x, y) in a.0.iter().zip(&b.0) {
+                for (p, q) in x.1.iter().zip(&y.1) { largest = largest.max((p - q).abs()); }
+            }
+            let advances = (expected.glyph_hor_advance(want).unwrap() as i32, actual.glyph_hor_advance(got).unwrap() as i32);
+            assert!((advances.0 - advances.1).abs() <= 1, "U+{:04X} advance {advances:?}", ch as u32);
+            compared += 1;
+        }
+        assert!(largest <= 1.0, "largest coordinate difference {largest}");
+        if let Ok(out) = std::env::var("UNONE_FONT_SUBSET_OUT") { std::fs::write(out, &result.bytes).unwrap(); }
+        println!("{compared} characters within {largest} units of the reference");
         println!("{} -> {} bytes, {} -> {} glyphs, {} characters, dropped {:?}, {elapsed:?}",
             font.len(), result.bytes.len(), result.original_glyphs, result.glyphs, result.characters, result.dropped_tables);
     }
