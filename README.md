@@ -164,6 +164,13 @@ public API index; there is no separate list to find and no method names to guess
 Optional AI tools use the same protocol instead of adding engine-specific
 dependencies. Discover and test them with `game plugin list`, `game plugin
 inspect`, and `game plugin test`; see [docs/plugin-protocol.md](docs/plugin-protocol.md).
+
+**將完成的插件上傳 Koncrate：** 讀
+[Koncrate 上傳操作文件](https://github.com/Ovan741852/Koncrate-Editor/blob/main/docs/plugin-upload.md)，
+向已連線的 Koncrate Scout 查詢上傳入口並 describe `plugins.upload`，取得步驟、
+參數與線上文件。Unone Core／CLI／MCP 目前沒有內建 Koncrate 商店接口；
+`unone_plugin_*` 是本機插件操作，不代表已有商店連線。Host 接線見該文件。
+
 For the complete AI authoring-to-runtime handoff, use `game project sync --json`;
 it composes pack, verify, and full bundle activation without requiring a Viewer.
 The bundled Blender bridge is optional and can validate/stage scene data without
