@@ -841,7 +841,7 @@ pub(crate) fn llms_txt() -> String {
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 29] {
+fn authoring_files() -> [(&'static str, &'static str); 31] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/profiling.md", include_str!("../../../docs/profiling.md")),
@@ -864,9 +864,13 @@ fn authoring_files() -> [(&'static str, &'static str); 29] {
         ("docs/ui-presentation-input.md", include_str!("../../../docs/ui-presentation-input.md")),
         ("docs/ordered-physical-input.md", include_str!("../../../docs/ordered-physical-input.md")),
         ("docs/rollback.md", include_str!("../../../docs/rollback.md")),
+        ("docs/web-image-assets.md", include_str!("../../../docs/web-image-assets.md")),
         ("scripts/serve-player.py", include_str!("../../../scripts/serve-player.py")),
         ("scripts/verify-ui-example-browser.mjs", include_str!("../../../scripts/verify-ui-example-browser.mjs")),
         ("scripts/audit-ui-fonts.py", include_str!("../../../scripts/audit-ui-fonts.py")),
+        // Publishes player.image-assets.json into a Web export; it verifies
+        // itself and the asset template against this SDK's sdk.json.
+        ("scripts/prepare-web-image-assets.mjs", include_str!("../../../scripts/prepare-web-image-assets.mjs")),
         ("examples/spatial-diagnostics/README.md", include_str!("../../../examples/spatial-diagnostics/README.md")),
         ("examples/spatial-diagnostics/project.unone.json", include_str!("../../../examples/spatial-diagnostics/project.unone.json")),
         ("examples/spatial-diagnostics/scene.json", include_str!("../../../examples/spatial-diagnostics/scene.json")),
@@ -933,14 +937,14 @@ fn native_export_staged(
     native_asset_gate(&assets, &metadata)?;
     // Native players are release builds and load the entry and modules as
     // bytecode compiled for their own codegen setting.
-    crate::export::precompile_scripts(&mut files, metadata["native_codegen_compiled"] == true)?;
+    let script_sources = crate::export::precompile_scripts(&mut files, metadata["native_codegen_compiled"] == true)?;
     let runtime_files = runtime_files(&metadata)?;
     if host.id == "windows" {
         for (name, _) in &runtime_files {
             files.push((name.clone(), fs::read(safe(runtime, name)?)?));
         }
     }
-    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"error_policy":error_policy,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"error_policy":error_policy,"script_sources":script_sources,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
     std::fs::create_dir_all(output)?;
     for (path, bytes) in &files {
         let p = output.join(path);
@@ -1216,6 +1220,7 @@ mod tests {
         pack(&source, &[runtime], &output).unwrap();
         let mut manifest = load(&output).unwrap();
         let added = ["README.md", "llms.txt", "docs/spatial-batches.md", "docs/projected-geometry.md", "scripts/serve-player.py", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py",
+            "scripts/prepare-web-image-assets.mjs", "docs/web-image-assets.md",
             "examples/spatial-diagnostics/README.md", "examples/spatial-diagnostics/project.unone.json", "examples/spatial-diagnostics/scene.json", "examples/spatial-diagnostics/main.luau", "tools/benchmark-spatial.mjs"];
         for name in added {
             assert!(manifest.files.iter().any(|file| file.path == name), "missing documented SDK entry: {name}");

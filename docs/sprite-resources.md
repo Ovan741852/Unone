@@ -82,7 +82,8 @@ old-epoch completions cannot restore retired resources. See the
 
 Host resource plans and scalar receipts travel outside the canonical World.
 `presentation_resources` is recorded input, containing resource and appearance
-receipts. Manual/replay input stays authoritative. Failed ticks retain admitted
+receipts, and the image group reports described in
+[game requests](web-image-assets.md#game-requests). Manual/replay input stays authoritative. Failed ticks retain admitted
 feedback and roll back the appearance transaction. GPU/image objects never cross
 the worker boundary. Reload/session/context epochs fence late completions.
 

@@ -53,6 +53,14 @@ pub struct HostProject {
     /// only a player presenting a released game sends a lenient policy.
     #[serde(default)]
     pub error_policy: Option<crate::ErrorPolicy>,
+    /// Group names from the project's image plan (player.image-assets.json),
+    /// written by the export; api.assets.imageGroups accepts only these.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub image_groups: Vec<String>,
+    /// Set by a host that applies api.assets.imageGroups requests and reports
+    /// each group's state as recorded input; status reads unsupported otherwise.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub image_group_host: bool,
 }
 
 impl HostProject {
@@ -141,6 +149,8 @@ impl HostProject {
             asset_catalog: self.asset_catalog,
             data,
             error_policy,
+            image_groups: self.image_groups,
+            image_group_host: self.image_group_host,
         })
     }
 }

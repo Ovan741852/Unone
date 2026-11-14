@@ -98,3 +98,15 @@ test('broker errors are synchronous diagnostics and disposed pending leases cann
  const host=createUiCursorHost({...f,getImageAssets:()=>failedBroker,onError:e=>errors.push(e)});f.emit(74,60);assert.equal(host.update(image).reason,'cursor_diagnostics');await assert.rejects(host.ready(),/UI_CURSOR_ASSET_FAILED/);assert.equal(errors.length,1);host.dispose();assert.equal(released,1);
  const g=surface();let resolve;const pending=new Promise(done=>{resolve=done;}),lease={state:'loading',image:null,promise:pending,release(){released++;}},pendingBroker={acquire:()=>lease},other=createUiCursorHost({...g,getImageAssets:()=>pendingBroker,onError:e=>errors.push(e)});g.emit(74,60);other.update(image);other.dispose();resolve({width:17,height:19});await Promise.resolve();await Promise.resolve();assert.equal(g.calls.filter(c=>c[0]==='draw').length,0);assert.equal(released,2);
 });
+test('an unchanged cursor reads layout once per change and clears nothing it did not draw',()=>{
+ const f=surface();let reads=0;const box=f.target.getBoundingClientRect;f.target.getBoundingClientRect=()=>{reads++;return box();};
+ const host=createUiCursorHost({...f,loadImage:()=>new Promise(()=>{})});
+ for(let i=0;i<600;i++)host.update({kind:'default'});
+ assert.equal(reads,1,'600 unchanged frames read the layout once');
+ assert.equal(f.calls.filter(c=>c[0]==='clear').length,0,'a layer with nothing drawn is not cleared');
+ f.focusHandlers.get('resize')();host.update({kind:'default'});assert.equal(reads,2,'a window resize reads it again');
+ f.focusHandlers.get('scroll')();host.update({kind:'default'});assert.equal(reads,3,'so does a scroll');
+ f.target.width=2560;host.update({kind:'default'});assert.equal(reads,4,'and a new drawing buffer');
+ host.update({kind:'default'});assert.equal(reads,4);
+ host.dispose();assert.equal(f.focusHandlers.has('resize'),false);assert.equal(f.focusHandlers.has('scroll'),false);
+});

@@ -737,14 +737,21 @@ impl ApplicationHandler for App {
                 event_loop.exit();
             }
             WindowEvent::Resized(s) => {
-                // A game that keeps its design shape holds the window to it; the
+                // A game that keeps its design shape holds the window to it, following
+                // the side the user dragged (a height-only drag sets the width); the
                 // corrected size arrives as another Resized.
                 if let Some(display) = self.runtime.display().filter(|display| display.aspect == unone_engine::AspectMode::Keep)
                     && s.width > 0 && s.height > 0 && self.input_replay.is_none()
                 {
-                    let height = (f64::from(s.width) / display.aspect_ratio()).round().max(1.0) as u32;
-                    if height.abs_diff(s.height) > 1 && let Some(window) = &self.window {
-                        let _ = window.request_inner_size(winit::dpi::PhysicalSize::new(s.width, height));
+                    let aspect = display.aspect_ratio();
+                    let [was_width, was_height] = self.renderer.as_ref().map_or([s.width, s.height], |r| r.resolution());
+                    let (width, height) = if s.width.abs_diff(was_width) >= s.height.abs_diff(was_height) {
+                        (s.width, (f64::from(s.width) / aspect).round().max(1.0) as u32)
+                    } else {
+                        ((f64::from(s.height) * aspect).round().max(1.0) as u32, s.height)
+                    };
+                    if (width.abs_diff(s.width) > 1 || height.abs_diff(s.height) > 1) && let Some(window) = &self.window {
+                        let _ = window.request_inner_size(winit::dpi::PhysicalSize::new(width, height));
                     }
                 }
                 if let Err(e) = replay::update_runtime_viewport(&mut self.runtime,self.input_replay.is_some(),s.width,s.height) {

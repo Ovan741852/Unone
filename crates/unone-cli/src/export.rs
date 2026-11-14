@@ -33,6 +33,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/projected-raster-profile-expected.js",
         "renderer/renderer-clear-lifecycle.js",
         "shared/startup-presentation.mjs",
+        "shared/startup-screen.mjs",
         "shared/player-completion.mjs",
         "shared/player-performance-feed.mjs",
         "shared/retained-image-generation.mjs",
@@ -88,6 +89,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/async-scheduler.mjs",
         "shared/runtime-core.mjs",
         "shared/sprite-resource-host.mjs",
+        "shared/image-group-host.mjs",
         "shared/spatial-host.mjs",
         "shared/spatial-metrics.mjs",
         "shared/spatial-gpu.mjs",
@@ -231,10 +233,10 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     let game_text = if subset_requested { Some(crate::font_subset::collect_text(&files)?) } else { None };
     // Production players load the entry script and its modules precompiled with
     // their exact compiler settings; development players keep source for hot reload.
-    if !development {
+    let script_sources = if development { None } else {
         let native_codegen = manifest["cargo_features"].as_array().is_some_and(|f| f.iter().any(|v| v == "native-codegen"));
-        precompile_scripts(&mut files, native_codegen)?;
-    }
+        Some(precompile_scripts(&mut files, native_codegen)?)
+    };
     let compiled = manifest["compiled_systems"].as_array()
         .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
     for id in settings.enabled_ids() {
@@ -400,6 +402,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     let index = fs::read_to_string(repo.join("web/player/index.html"))?
         .replace("__RUNTIME_JS__", manifest["javascript"].as_str().unwrap());
+    let index = apply_startup_screen(index, presentation.startup.as_ref(), &config.name)?;
     let module_dependencies=crate::web_dependencies::validate(&files)?;
     let (release_root,index)=seal_web_generation(&mut files,&index)?;
     files.push(("index.html".into(), index.into_bytes()));
@@ -414,6 +417,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     let mut report = json!({"version":1,"project":config.name,"release_root":release_root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     report["error_policy"] = serde_json::to_value(error_policy)?;
+    if let Some(sources) = script_sources { report["script_sources"] = sources; }
     if let Some(font_subset) = font_subset { report["font_subset"] = font_subset; }
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
@@ -589,6 +593,9 @@ mod tests {
         let lengths = decl["modules"].as_object().unwrap();
         assert_eq!(lengths.keys().map(String::as_str).collect::<Vec<_>>(), ["shared.luau", "world/a.luau"]);
         assert_eq!(lengths.values().map(|n| n.as_u64().unwrap()).sum::<u64>(), bytes.len() as u64);
+        let report: Value = serde_json::from_slice(&fs::read(output.join("export.json")).unwrap()).unwrap();
+        assert_eq!(report["script_sources"]["entry_sha256"], super::digest(&fs::read(scripts.join("main.luau")).unwrap()));
+        assert_eq!(report["script_sources"]["modules"]["world/a.luau"], super::digest(b"return require('../shared')"));
 
         descriptor["preview_tools"] = json!(true);
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
@@ -597,6 +604,8 @@ mod tests {
         let payload = serde_json::from_slice::<Value>(&fs::read(development.join("content/project.json")).unwrap()).unwrap();
         assert!(payload.get("script_module_bytecode").is_none());
         assert_eq!(payload["script_modules"]["world/a.luau"], "return require('../shared')");
+        let report: Value = serde_json::from_slice(&fs::read(development.join("export.json")).unwrap()).unwrap();
+        assert!(report.get("script_sources").is_none(), "a source export carries the source itself");
     }
 
     #[test]
@@ -605,7 +614,9 @@ mod tests {
             "script_modules":{"a.luau":"return 1"}});
         for (codegen, level) in [(false, "/t0/"), (true, "/t1/")] {
             let mut files = vec![("content/project.json".to_string(), serde_json::to_vec(&payload).unwrap())];
-            super::precompile_scripts(&mut files, codegen).unwrap();
+            let sources = super::precompile_scripts(&mut files, codegen).unwrap();
+            assert_eq!(sources, json!({"entry_sha256": super::digest(payload["script"].as_str().unwrap().as_bytes()),
+                "modules": {"a.luau": super::digest(b"return 1")}}), "the publisher checks the project against these");
             let compiled: Value = serde_json::from_slice(&files[0].1).unwrap();
             assert!(compiled["script_bytecode"]["format"].as_str().unwrap().contains(level));
             assert_eq!(compiled["script_module_bytecode"]["format"], compiled["script_bytecode"]["format"]);
@@ -717,6 +728,23 @@ mod tests {
         assert!(seal_web_generation(&mut input.clone(),"<head><base href='x'></head>").is_err());
     }
     #[test]
+    fn exports_carry_the_image_plans_group_names_and_refuse_an_unknown_one() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        let script = "return {start=function(api) api.assets.imageGroups.preload('town') end,update=function(api) end}";
+        fs::write(root.join("main.luau"), script).unwrap();
+        fs::write(root.join("project.unone.json"), serde_json::to_vec(&json!({"name":"groups","entry_script":"main.luau"})).unwrap()).unwrap();
+        let error = content(root).err().unwrap().to_string();
+        assert!(error.contains("IMAGE_GROUP_UNKNOWN"), "{error}");
+        fs::write(root.join("player.image-assets.json"), serde_json::to_vec(&json!({"version":1,"groups":{"town":[],"map":[]},"startup":[]})).unwrap()).unwrap();
+        let (_, _, _, files) = content(root).unwrap();
+        let project = &files.iter().find(|(path, _)| path == "content/project.json").unwrap().1;
+        let payload: Value = serde_json::from_slice(project).unwrap();
+        assert_eq!(payload["image_groups"], json!(["map", "town"]));
+        assert!(payload.get("image_group_host").is_none(), "only a host that holds the images sets it");
+    }
+
+    #[test]
     fn web_exports_write_the_error_policy_their_variant_runs() {
         let dir=tempfile::tempdir().unwrap();
         let resolved=|declared:Option<Value>,development:bool| {
@@ -750,6 +778,48 @@ mod tests {
         assert!(files.iter().any(|(p,b)|p=="content/font.ttf"&&b==b"fixture-font-bytes"));
         fs::write(dir.path().join("player.presentation.json"),br#"{"ui":{"font_source":"font.ttf"}}"#).unwrap();
         assert!(append_presentation(dir.path(),&mut vec![]).err().unwrap().to_string().contains("UI_FONT_FAMILY_REQUIRED"));
+    }
+    #[test]
+    fn startup_screen_packages_a_checked_logo_and_writes_it_into_the_player_page() {
+        let dir=tempfile::tempdir().unwrap();
+        fs::create_dir(dir.path().join("brand")).unwrap();
+        let png=b"\x89PNG\r\n\x1a\nrest-of-a-logo".to_vec();
+        fs::write(dir.path().join("brand/logo.png"),&png).unwrap();
+        let declare=|startup:Value|fs::write(dir.path().join("player.presentation.json"),serde_json::to_vec(&json!({"startup":startup})).unwrap()).unwrap();
+        declare(json!({"logo":"brand/logo.png","background":"#F5F0E6"}));
+        let mut files=vec![];let presentation=append_presentation(dir.path(),&mut files).unwrap();
+        assert!(files.iter().any(|(path,bytes)|path=="content/brand/logo.png"&&*bytes==png),"the export copies the declared logo");
+        let written:Value=serde_json::from_slice(&files.iter().find(|(path,_)|path=="content/presentation.json").unwrap().1).unwrap();
+        assert!(written.get("startup").is_none(),"players read the startup screen from index.html, not presentation.json");
+        let template=fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../web/player/index.html")).unwrap();
+        let page=apply_startup_screen(template.clone(),presentation.startup.as_ref(),"Tea & \"Cakes\"").unwrap();
+        assert!(page.contains(r#"<img class="unone-startup-logo" src="content/brand/logo.png" alt="Tea &amp; &quot;Cakes&quot;">"#));
+        assert!(!page.contains("UNONE_STARTUP_LOGO")&&!page.contains("aria-label=\"Unone\""),"the project logo replaces the Unone logo");
+        assert!(page.contains("#unone-startup{--startup-bg:#f5f0e6;--startup-fg:#111827;--startup-accent:#0369a1;--startup-error:#b91c1c}"),"a light background gets dark text and darker bar/error colours");
+        assert_eq!(apply_startup_screen(template.clone(),None,"x").unwrap(),template,"undeclared keeps the Unone startup screen");
+        let dark=crate::hosts::StartupScreen{background:Some("#0a0a20".into()),..Default::default()};
+        let page=apply_startup_screen(template.clone(),Some(&dark),"x").unwrap();
+        assert!(page.contains("#unone-startup{--startup-bg:#0a0a20;--startup-fg:#f3f4f6}")&&page.contains("aria-label=\"Unone\""),"a dark background keeps light text, the default colours and the Unone logo");
+        for (startup,file,code) in [
+            (json!({"logo":"../logo.png"}),None,"STARTUP_LOGO_PATH_INVALID"),
+            (json!({"logo":"brand/logo.gif"}),None,"STARTUP_LOGO_FORMAT_UNSUPPORTED"),
+            (json!({"logo":"brand/fake.png"}),Some(b"GIF89a".to_vec()),"STARTUP_LOGO_FORMAT_UNSUPPORTED"),
+            (json!({"logo":"brand/empty.svg"}),Some(Vec::new()),"STARTUP_LOGO_SIZE_INVALID"),
+            (json!({"logo":"brand/huge.svg"}),Some([b"<svg>".as_slice(),&vec![b' ';crate::hosts::STARTUP_LOGO_MAX_BYTES][..]].concat()),"STARTUP_LOGO_SIZE_INVALID"),
+            (json!({"logo":"brand/absent.png"}),None,"STARTUP_LOGO_MISSING"),
+            (json!({"background":"teal"}),None,"STARTUP_BACKGROUND_INVALID"),
+            (json!({"background":"#12345"}),None,"STARTUP_BACKGROUND_INVALID"),
+        ] {
+            if let Some(bytes)=file{fs::write(dir.path().join(startup["logo"].as_str().unwrap()),bytes).unwrap();}
+            declare(startup.clone());
+            let error=format!("{:#}",append_presentation(dir.path(),&mut vec![]).err().unwrap());
+            assert!(error.contains(code),"{startup}: {error}");
+        }
+        declare(json!({"logo":"brand/logo.png","title":"x"}));
+        assert!(append_presentation(dir.path(),&mut vec![]).is_err(),"unknown startup fields fail");
+        fs::write(dir.path().join("brand/mark.svg"),br#"<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"/>"#).unwrap();
+        declare(json!({"logo":"brand/mark.svg"}));
+        append_presentation(dir.path(),&mut vec![]).unwrap();
     }
     #[test]
     fn shared_font_catalog_packages_faces_rejects_invalid_entries_and_hashes_bytes() {
@@ -883,8 +953,63 @@ pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)
     for face in &presentation.ui.fonts {
         append_font(project, &face.source, files)?;
     }
+    if let Some(logo) = presentation.startup.as_ref().and_then(|startup| startup.logo.as_ref()) {
+        let bytes = fs::read(inside(project, logo).with_context(|| format!("STARTUP_LOGO_MISSING: {logo}"))?)?;
+        crate::hosts::validate_startup_logo(logo, &bytes)?;
+        push_unique_content_file(files, format!("content/{logo}"), bytes)?;
+    }
     push_unique_content_file(files, "content/presentation.json".into(), serde_json::to_vec(&presentation)?)?;
     Ok(presentation)
+}
+
+const STARTUP_LOGO_BEGIN: &str = "<!--UNONE_STARTUP_LOGO-->";
+const STARTUP_LOGO_END: &str = "<!--/UNONE_STARTUP_LOGO-->";
+const STARTUP_THEME: &str = "/*UNONE_STARTUP_THEME*/";
+const STARTUP_DARK_TEXT: &str = "#111827";
+const STARTUP_LIGHT_TEXT: &str = "#f3f4f6";
+/// The page's bar and error colours suit its dark default; dark text on a
+/// light background gets darker ones that still contrast.
+const STARTUP_LIGHT_THEME_COLORS: &str = ";--startup-accent:#0369a1;--startup-error:#b91c1c";
+
+/// Writes the project's startup screen into the player page, so the logo and
+/// background show before any script loads. scripts/web-export-host.mjs
+/// applies the same rules for source refreshes.
+pub(crate) fn apply_startup_screen(mut index: String, startup: Option<&crate::hosts::StartupScreen>, name: &str) -> Result<String> {
+    let Some(startup) = startup else { return Ok(index) };
+    if let Some(logo) = &startup.logo {
+        ensure!(index.matches(STARTUP_LOGO_BEGIN).count() == 1 && index.matches(STARTUP_LOGO_END).count() == 1,
+            "PLAYER_TEMPLATE_CONTRACT_CHANGED: expected one startup logo region");
+        let (begin, end) = (index.find(STARTUP_LOGO_BEGIN).unwrap(), index.find(STARTUP_LOGO_END).unwrap() + STARTUP_LOGO_END.len());
+        ensure!(begin < end, "PLAYER_TEMPLATE_CONTRACT_CHANGED: startup logo region is out of order");
+        index.replace_range(begin..end, &format!("<img class=\"unone-startup-logo\" src=\"content/{}\" alt=\"{}\">", html_attribute(logo), html_attribute(name)));
+    }
+    if let Some(background) = &startup.background {
+        let background = background.to_ascii_lowercase();
+        let foreground = startup_foreground(&background);
+        let extra = if foreground == STARTUP_DARK_TEXT { STARTUP_LIGHT_THEME_COLORS } else { "" };
+        let theme = format!("#unone-startup{{--startup-bg:{background};--startup-fg:{foreground}{extra}}}");
+        index = replace_required(index, STARTUP_THEME, &theme)?;
+    }
+    Ok(index)
+}
+
+fn html_attribute(value: &str) -> String {
+    value.replace('&', "&amp;").replace('"', "&quot;").replace('\'', "&#39;").replace('<', "&lt;").replace('>', "&gt;")
+}
+
+/// WCAG relative luminance of a validated #rrggbb colour.
+fn relative_luminance(color: &str) -> f64 {
+    let channel = |at: usize| {
+        let value = f64::from(u8::from_str_radix(&color[at..at + 2], 16).unwrap_or(0)) / 255.0;
+        if value <= 0.04045 { value / 12.92 } else { ((value + 0.055) / 1.055).powf(2.4) }
+    };
+    0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5)
+}
+
+/// The dark or light text colour with the higher contrast ratio on the background.
+fn startup_foreground(background: &str) -> &'static str {
+    let (back, dark, light) = (relative_luminance(background), relative_luminance(STARTUP_DARK_TEXT), relative_luminance(STARTUP_LIGHT_TEXT));
+    if (back + 0.05) / (dark + 0.05) > (light + 0.05) / (back + 0.05) { STARTUP_DARK_TEXT } else { STARTUP_LIGHT_TEXT }
 }
 
 fn append_font(project: &Path, path: &str, files: &mut Vec<(String, Vec<u8>)>) -> Result<()> {
@@ -907,19 +1032,24 @@ fn validate_renderer_file_path(path: &str) -> Result<()> {
 /// served beside it, so the player neither parses source out of JSON nor
 /// compiles at load. Every module is compiled, required at start or not.
 /// `native_codegen` must match the target runtime, whose bytecode format
-/// includes its type-information level.
-pub(crate) fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, native_codegen: bool) -> Result<()> {
+/// includes its type-information level. Returns the SHA-256 of each source it
+/// compiled, so tools that check an export against its project (the image
+/// plan publisher) can still do so once the source is gone.
+pub(crate) fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, native_codegen: bool) -> Result<Value> {
     let index = files.iter().position(|(path, _)| path == "content/project.json").context("content/project.json missing")?;
     let mut payload: Value = serde_json::from_slice(&files[index].1)?;
     let source = payload.as_object_mut().and_then(|p| p.remove("script")).context("ENTRY_SCRIPT_MISSING")?;
-    let compiled = unone_engine::compile_production_script(source.as_str().context("ENTRY_SCRIPT_MISSING")?, native_codegen)
+    let source = source.as_str().context("ENTRY_SCRIPT_MISSING")?.to_owned();
+    let mut sources = json!({"entry_sha256": digest(source.as_bytes())});
+    let compiled = unone_engine::compile_production_script(&source, native_codegen)
         .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
     let decl = unone_engine::ScriptBytecodeDecl { source: "script.luaubc".into(), format: compiled.format, byte_length: compiled.bytes.len() };
     payload["script_bytecode"] = serde_json::to_value(&decl)?;
     let mut bytecode_files = vec![(decl.source, compiled.bytes)];
     if let Some(modules) = payload.as_object_mut().and_then(|p| p.remove("script_modules")) {
-        let sources: std::collections::BTreeMap<String, String> = serde_json::from_value(modules)?;
-        let compiled = unone_engine::compile_production_modules(&sources, native_codegen)
+        let modules: std::collections::BTreeMap<String, String> = serde_json::from_value(modules)?;
+        sources["modules"] = json!(modules.iter().map(|(path, text)| (path.clone(), digest(text.as_bytes()))).collect::<std::collections::BTreeMap<_, _>>());
+        let compiled = unone_engine::compile_production_modules(&modules, native_codegen)
             .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
         let decl = unone_engine::ScriptModuleBytecodeDecl { source: "script-modules.luaubc".into(), format: compiled.format,
             byte_length: compiled.bytes.len(), modules: compiled.modules };
@@ -932,7 +1062,7 @@ pub(crate) fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, native_code
     for (source, bytes) in bytecode_files {
         push_unique_content_file(files, format!("content/{source}"), bytes)?;
     }
-    Ok(())
+    Ok(sources)
 }
 
 /// Initial engine-owned custom shader API executes on the WebGL2 player only.
@@ -1016,6 +1146,10 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
     let script_modules = unone_engine::read_script_modules(&entry).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
     let mut payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(&entry)?,"scene":scene});
     if !script_modules.is_empty() { payload["script_modules"] = json!(script_modules); }
+    // Every player validates api.assets.imageGroups names against the plan the
+    // project declares, whether or not its host holds the images.
+    let image_groups = unone_engine::image_group_names(project).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
+    if !image_groups.is_empty() { payload["image_groups"] = json!(image_groups); }
     // Data assets travel as content files; the payload only declares them.
     let mut asset_catalog = Vec::new();
     let data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {

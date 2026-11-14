@@ -107,6 +107,10 @@ pub struct SourceProject {
     pub asset_catalog: Vec<crate::AssetCatalogEntry>,
     /// Strict unless a presenting host opts in; in force from `Game.start` on.
     pub error_policy: crate::ErrorPolicy,
+    /// Group names from the project's image plan; empty without one.
+    pub image_groups: Vec<String>,
+    /// The host applies api.assets.imageGroups requests and reports their state.
+    pub image_group_host: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -269,6 +273,7 @@ struct PointerState {
 #[derive(Clone)]
 struct ApiState {
     sprite_resources: Rc<RefCell<sprite_resources::Registry>>,
+    image_groups: Rc<RefCell<crate::image_groups::Registry>>,
     host_time: Rc<RefCell<crate::host_time::HostTime>>,
     spatial: Rc<RefCell<spatial::SpatialJobs>>,
     runtime_packages: BTreeMap<String, String>,
@@ -360,6 +365,7 @@ struct ReloadRollbackState {
 
 pub struct EngineRuntime {
     sprite_resources: Rc<RefCell<sprite_resources::Registry>>,
+    image_groups: Rc<RefCell<crate::image_groups::Registry>>,
     host_time: Rc<RefCell<crate::host_time::HostTime>>,
     spatial: Rc<RefCell<spatial::SpatialJobs>>,
     #[cfg(feature = "jobs")]
@@ -594,7 +600,7 @@ impl EngineRuntime {
         // Imported assets' files are brought up to date before anything reads them.
         let mut startup = crate::performance::StartupCost::default();
         timed_startup(&mut startup, StartupPhase::Imports, || crate::import::prepare_imports(project_root.as_ref()))?;
-        let (config, paths, world, data_assets, catalog) = timed_startup(&mut startup, StartupPhase::Project, || {
+        let (config, paths, world, data_assets, catalog, image_groups) = timed_startup(&mut startup, StartupPhase::Project, || {
             let (mut config, paths) = ProjectPaths::discover(project_root)?;
             if host_time.is_some() {
                 config.host_time = host_time;
@@ -606,9 +612,11 @@ impl EngineRuntime {
             let (decls, data) = crate::data_assets::read_from_project(&paths)?;
             let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
             let catalog = crate::sprite_resources::read_catalog(&paths)?;
-            Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog))
+            let image_groups = crate::image_groups::image_group_names(&paths.root)?;
+            Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog, image_groups))
         })?;
-        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict())?;
+        // Tools validate requests against the plan, but no host holds the images.
+        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false))?;
         (runtime.startup.imports_ms, runtime.startup.project_ms) = (startup.imports_ms, startup.project_ms);
         Ok(runtime)
     }
@@ -717,6 +725,8 @@ impl EngineRuntime {
             data,
             asset_catalog,
             error_policy,
+            image_groups,
+            image_group_host,
         } = project;
         let module_count = script_modules.len().max(script_module_bytecode.len());
         if module_count > MAX_SCRIPT_MODULES {
@@ -767,6 +777,7 @@ impl EngineRuntime {
             data_assets,
             asset_catalog,
             error_policy,
+            (image_groups, image_group_host),
         )
     }
 
@@ -785,8 +796,11 @@ impl EngineRuntime {
         data_assets: crate::data_assets::DataAssets,
         asset_catalog: Vec<crate::AssetCatalogEntry>,
         error_policy: crate::ErrorPolicy,
+        (image_groups, image_group_host): (Vec<String>, bool),
     ) -> Result<Self, Box<Diagnostic>> {
         let errors = Rc::new(RefCell::new(crate::error_policy::ErrorState::new(error_policy)));
+        let image_groups = Rc::new(RefCell::new(crate::image_groups::Registry::new(image_groups, image_group_host)
+            .map_err(|e| Box::new(Diagnostic::error("IMAGE_PLAN_INVALID", "Invalid image group names", e)))?));
         let data_assets = Rc::new(RefCell::new(data_assets));
         let sprite_resources = Rc::new(RefCell::new(sprite_resources::Registry::new(asset_catalog)
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
@@ -809,6 +823,7 @@ impl EngineRuntime {
         let script_profile = Rc::new(RefCell::new(crate::performance::ScriptProfile::default()));
         let api_state = ApiState {
             sprite_resources: Rc::clone(&sprite_resources),
+            image_groups: Rc::clone(&image_groups),
             host_time: Rc::clone(&host_time),
             spatial: Rc::new(RefCell::new(spatial::SpatialJobs::new())),
             runtime_packages: config.runtime_packages.clone(),
@@ -876,6 +891,7 @@ impl EngineRuntime {
         })?;
         let mut runtime = Self {
             sprite_resources,
+            image_groups,
             host_time,
             spatial: Rc::clone(&api_state.spatial),
             #[cfg(feature = "jobs")]
@@ -1017,6 +1033,12 @@ impl EngineRuntime {
     /// What a lenient policy has recovered from; None until the first recovery.
     pub fn recovered_errors(&self) -> Option<crate::RecoveredErrors> {
         self.errors.borrow().report()
+    }
+
+    /// The image groups the game wants held, outside World. `groups` is
+    /// present only when they changed since revision `after`.
+    pub fn image_group_plan_since(&self, after: Option<u64>) -> crate::ImageGroupPlanUpdate {
+        self.image_groups.borrow().plan_since(after)
     }
 
     /// Name this project reports itself as.
@@ -1276,6 +1298,8 @@ impl EngineRuntime {
         let sprite_tick = sprite_resources::Tick::begin(&self.sprite_resources, &self.world,
             &self.input.borrow().pending_presentation)
             .map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
+        let image_group_tick = crate::image_groups::Tick::begin(&self.image_groups,
+            &self.input.borrow().pending_presentation.image_groups);
         #[cfg(feature = "phase-profile")]
         let phase_tick = phase_profile::TickScope::begin(&self.lua, self.world.borrow().frame + 1);
         let spatial_fault = Rc::clone(&self.spatial);
@@ -1470,6 +1494,7 @@ impl EngineRuntime {
         host_time_tick.commit().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         input_tick.commit();
         sprite_tick.commit();
+        image_group_tick.commit();
         snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
         #[cfg(feature = "phase-profile")]
         if let Some(scope)=phase_tick { scope.complete(); }
@@ -1835,6 +1860,7 @@ impl EngineRuntime {
         };
         let candidate_api_state = ApiState {
             sprite_resources: Rc::new(RefCell::new(self.sprite_resources.borrow().clone())),
+            image_groups: Rc::new(RefCell::new(self.image_groups.borrow().clone())),
             host_time: Rc::new(RefCell::new(self.host_time.borrow().clone())),
             spatial: Rc::new(RefCell::new(self.spatial.borrow().reload_candidate())),
             runtime_packages: self.config.runtime_packages.clone(),
@@ -1887,6 +1913,7 @@ impl EngineRuntime {
         }
         self.spatial = Rc::clone(&candidate_api_state.spatial);
         self.sprite_resources = Rc::clone(&candidate_api_state.sprite_resources);
+        self.image_groups = Rc::clone(&candidate_api_state.image_groups);
         self.host_time = Rc::clone(&candidate_api_state.host_time);
         self.spatial.borrow_mut().loaded();
         #[cfg(feature = "jobs")]

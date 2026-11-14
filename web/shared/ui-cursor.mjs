@@ -29,7 +29,13 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  const previous=target.style.cursor,images=new Map(),readyWaiters=new Set();let spec={kind:'default'},pointer=null,disposed=false,visible=false,rect=null;
  Object.assign(layer.style,{position:'fixed',pointerEvents:'none',zIndex:'2147483000'});
  function restore(){if(target.style.cursor==='none')target.style.cursor=previous;}
- function clear(){context.clearRect(0,0,layer.width,layer.height);visible=false;rect=null;restore();}
+ // Nothing else draws on the layer: a layer with no cursor on it needs no clearing every frame.
+ function clear(){if(visible)context.clearRect(0,0,layer.width,layer.height);visible=false;rect=null;restore();}
+ // The target's CSS rectangle is read again only after a resize, scroll, pointer entry or a new
+ // drawing-buffer size, not on every frame (each read can force a synchronous layout).
+ let layout=null;const invalidate=()=>{layout=null;};
+ const observer=typeof globalThis.ResizeObserver==='function'?new globalThis.ResizeObserver(invalidate):null;observer?.observe(target);
+ focus?.addEventListener('resize',invalidate);focus?.addEventListener('scroll',invalidate,{passive:true,capture:true});
  function retire(asset,entry){entry.retired=true;entry.lease?.release();entry.lease=null;entry.image=null;if(images.get(asset)===entry)images.delete(asset);}
  function resource(asset){
   const broker=getImageAssets?.()??null;
@@ -51,9 +57,13 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
   return entry;
  }
  function render(){
-  if(disposed)return DRAW_SKIPPED.cursor_diagnostics;const css=target.getBoundingClientRect(),width=target.width,height=target.height;
-  if(layer.width!==width)layer.width=width;if(layer.height!==height)layer.height=height;
-  Object.assign(layer.style,{left:css.left+'px',top:css.top+'px',width:css.width+'px',height:css.height+'px'});
+  if(disposed)return DRAW_SKIPPED.cursor_diagnostics;const width=target.width,height=target.height;
+  if(!layout||layout.width!==width||layout.height!==height){
+   const box=target.getBoundingClientRect();layout={css:box,width,height};
+   if(layer.width!==width)layer.width=width;if(layer.height!==height)layer.height=height;
+   Object.assign(layer.style,{left:box.left+'px',top:box.top+'px',width:box.width+'px',height:box.height+'px'});
+  }
+  const css=layout.css;
   clear();
   if(!pointer||css.width<=0||css.height<=0||width<=0||height<=0||spec.kind==='default')return DRAW_COMPLETED;
   const x=(pointer.x-css.left)*width/css.width,y=(pointer.y-css.top)*height/css.height;
@@ -72,7 +82,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  function notifyReady(){if(!readyWaiters.size)return;const value=readiness();if(value===DRAW_SKIPPED.cursor_assets_pending)return;
   for(const waiter of readyWaiters)value===DRAW_COMPLETED?waiter.resolve():waiter.reject(Error(disposed?'UI_CURSOR_DISPOSED':'UI_CURSOR_ASSET_FAILED'));readyWaiters.clear();}
  function renderAndNotify(){const value=render();notifyReady();return value;}
- function move(event){pointer=event.pointerType==='touch'?null:{x:event.clientX,y:event.clientY};renderAndNotify();}
+ function move(event){if(event.type==='pointerenter')layout=null;pointer=event.pointerType==='touch'?null:{x:event.clientX,y:event.clientY};renderAndNotify();}
  function leave(){pointer=null;clear();notifyReady();}
  target.addEventListener('pointermove',move,{passive:true});target.addEventListener('pointerenter',move,{passive:true});
  target.addEventListener('pointerleave',leave,{passive:true});focus?.addEventListener('blur',leave);
@@ -87,6 +97,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
   report(){let leases=0;for(const entry of images.values())if(entry.lease)leases++;return {mode:spec.kind,asset:spec.asset??null,visible,rect:rect?{...rect}:null,shared_image_leases:leases,units:'drawing_buffer_pixels',input:'passive real pointer; no event injection'};},
   invalidateAssets(){for(const [asset,entry]of images)retire(asset,entry);if(!disposed&&spec.kind==='image')resource(spec.asset);return renderAndNotify();},
   dispose(){if(disposed)return;disposed=true;clear();for(const [asset,entry]of images)retire(asset,entry);notifyReady();target.removeEventListener('pointermove',move);
-   target.removeEventListener('pointerenter',move);target.removeEventListener('pointerleave',leave);focus?.removeEventListener('blur',leave);},
+   target.removeEventListener('pointerenter',move);target.removeEventListener('pointerleave',leave);focus?.removeEventListener('blur',leave);
+   focus?.removeEventListener('resize',invalidate);focus?.removeEventListener('scroll',invalidate,{capture:true});observer?.disconnect();},
  };
 }

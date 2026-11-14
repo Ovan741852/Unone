@@ -11,6 +11,7 @@ import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
 import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
 import {createSpriteResourceHost} from '../shared/sprite-resource-host.mjs';
+import {createImageGroupHost} from '../shared/image-group-host.mjs';
 import {payloadDataSources,playerSeed,textureCatalog} from '../shared/load-project.js';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
@@ -23,10 +24,13 @@ import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '..
 import {createPlayerPerformanceFeed} from '../shared/player-performance-feed.mjs';
 import {serializedSavePayload} from '../shared/save-publication.mjs';
 import {playerErrorPolicy,createRecoveryReporter} from '../shared/player-errors.mjs';
+import {createStartupScreen} from '../shared/startup-screen.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
-const canvas=document.querySelector('#game'),status=document.querySelector('#status');
-let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null;
+const canvas=document.querySelector('#game');
+// index.html's startup screen: the real startup steps up to the first presented frame, then any fatal error.
+const startupScreen=createStartupScreen({root:document.querySelector('#unone-startup'),body:document.body,boot:window.playerBoot});
+let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null,imageGroupHost=null;
 const removeAssetGroupsAccessor=installPlayerAssetGroups(window,()=>imageAssets);
 const gamepadInput=createGamepadPolling();
 // Game UI is drawn by the renderer's ui pass inside the WebGL frame; #ui-layer
@@ -87,7 +91,7 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
  textInputs.setExternalInput(Boolean(physicalProfile));
@@ -110,28 +114,39 @@ function uiPassHidden(snapshot){return Boolean(snapshot.world?.render_pipeline?.
 // Core checks sprite resources against the manifest this player loads anyway.
 function withCatalog(project,manifest){const catalog=textureCatalog(manifest);if(catalog.length)project.asset_catalog=catalog;return project;}
 // Declared data assets are fetched as bytes for the core's api.assets loaders.
-function dataAssets(project){return Promise.all(payloadDataSources(project).map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);return {id:asset.id,bytes:new Uint8Array(await r.arrayBuffer())};}));}
+function dataAssets(project,onProgress=null){const sources=payloadDataSources(project);let loaded=0;return Promise.all(sources.map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);const bytes=new Uint8Array(await r.arrayBuffer());onProgress?.(++loaded,sources.length);return {id:asset.id,bytes};}));}
 // The project's display (project.unone.json): with aspect "keep" the stage is the largest
 // rectangle of the design shape that fits the window, centred, the page showing around it;
 // otherwise it fills the window and the game takes the device's shape.
-let stageDisplay=null,reportedViewport=null;
+let stageDisplay=null;
 function fitStage(){const display=stageDisplay,keep=display?.aspect==='keep'&&display.width>0&&display.height>0;
- const width=keep?Math.min(innerWidth,innerHeight*display.width/display.height):innerWidth,height=keep?width*display.height/display.width:innerHeight;
+ // Whole CSS pixels: the drawing buffer is sized from the rounded clientWidth/clientHeight, and a
+ // fractional stage would scale it by a fraction of a pixel.
+ const width=keep?Math.max(1,Math.floor(Math.min(innerWidth,innerHeight*display.width/display.height))):innerWidth,height=keep?Math.max(1,Math.floor(width*display.height/display.width)):innerHeight;
  for(const element of [canvas,document.querySelector('#ui-layer')]){
   if(!keep){for(const property of ['inset','left','top','width','height'])element.style.removeProperty(property);continue;}
-  Object.assign(element.style,{inset:'auto',left:`${(innerWidth-width)/2}px`,top:`${(innerHeight-height)/2}px`,width:`${width}px`,height:`${height}px`});
+  Object.assign(element.style,{inset:'auto',left:`${Math.floor((innerWidth-width)/2)}px`,top:`${Math.floor((innerHeight-height)/2)}px`,width:`${width}px`,height:`${height}px`});
  }
 }
-function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
-function resizeStageViewport(){
- fitStage();
- if(!snapshot||!backend||startupAbort.signal.aborted)return Promise.resolve();
- const [width,height]=physicalViewport();
- if(reportedViewport?.[0]===width&&reportedViewport?.[1]===height)return Promise.resolve();
- reportedViewport=[width,height];
- return backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true}));
-}
-function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession)resourceHost?.reset();resourceHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
+// The player's pixel ratio for the drawing buffer: the device's, capped at 2.
+function playerPixelRatio(){return Math.min(window.devicePixelRatio||1,2);}
+// The renderer's actual ratio once it exists, so the runtime is told the drawing buffer's real size.
+function physicalViewport(){const ratio=renderer?.pixelRatio?.()??playerPixelRatio();return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
+// A device pixel ratio change (browser zoom, another monitor) moves the drawing buffer with it,
+// unless a presentation hook set its own ratio: that one is the game's choice and stays.
+let appliedPixelRatio=null;
+function followPixelRatio(){const ratio=playerPixelRatio();
+ if(appliedPixelRatio===null||ratio===appliedPixelRatio||typeof renderer?.setPixelRatio!=='function'||renderer.pixelRatio?.()!==appliedPixelRatio)return;
+ renderer.setPixelRatio(ratio);appliedPixelRatio=ratio;}
+// Resize events come in bursts while a window edge is dragged: the stage and pixel ratio follow
+// each one, the runtime hears once a frame and only about a size it has not been told.
+let sentViewport=null,viewportQueued=false;
+function sendViewport(){viewportQueued=false;if(!snapshot||!backend||startupAbort.signal.aborted)return Promise.resolve();const [width,height]=physicalViewport();
+ if(sentViewport?.[0]===width&&sentViewport?.[1]===height)return;sentViewport=[width,height];
+ return backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);}
+function viewportChanged(){fitStage();followPixelRatio();if(!snapshot||!backend||startupAbort.signal.aborted)return;if(!viewportQueued){viewportQueued=true;requestAnimationFrame(sendViewport);}}
+function resizeStageViewport(){fitStage();followPixelRatio();return sendViewport();}
+function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession){resourceHost?.reset();imageGroupHost?.reset();}resourceHost?.acceptSnapshot(snapshot);imageGroupHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 // Each load or restart starts a new session seed; ?seed= reproduces a reported one.
 function sessionSeed(){const {seed,source}=playerSeed(location.search);metrics.seed=seed;metrics.seed_source=source;document.body.dataset.playerSeed=seed;return seed;}
 function persistSave(){const next=serializedSavePayload(snapshot);if(next!==saved){localStorage.setItem(key,next);saved=next;}}
@@ -154,10 +169,11 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
  resourceHost?.collect();
   const uiOutcome=renderUi(snapshot);if(pd){profiler.set(pd,uiRenderer.assetDiagnostics());profiler.mark(pd,'ui_draw');}const submittedAt=performance.now();renderMs=submittedAt-began;
- const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
+ const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);const cursorReport=JSON.stringify(cursorHost.report());if(document.body.dataset.playerCursor!==cursorReport)document.body.dataset.playerCursor=cursorReport;
  const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
- document.body.dataset.playerFrame=String(snapshot.world.frame);
+ // Diagnostics attributes are rewritten only when they change: a write is a DOM mutation.
+ const frameText=String(snapshot.world.frame);if(document.body.dataset.playerFrame!==frameText)document.body.dataset.playerFrame=frameText;
  publishPhysical();
  if(pd)profiler.mark(pd,'host_publish');
  /* PROFILE_FRAME */
@@ -180,10 +196,11 @@ async function advanceFrame(pu,presenting){
  if(browserInput&&hasWorldPointer)frame.pointer={...frame.pointer,position:projectScreenPointer(canvas,frame.pointer.screen_position,snapshot)};
  if(orderedQueue){if(!browserInput)throw Error('INPUT_PHYSICAL_MANUAL_UNSUPPORTED: ordered ingress owns the tick batch');frame.physical=orderedQueue.lease();}
  const resourceInput=resourceHost?.leaseInput(frame,{live:browserInput});if(resourceInput)frame=resourceInput.frame;
+ const groupInput=imageGroupHost?.leaseInput(frame,{live:browserInput});if(groupInput)frame=groupInput.frame;
  if(pu)profiler.mark(pu,'input_consume');
  /* PROFILE_INPUT */
  let nextSnapshot;
- try{nextSnapshot=await backend.request({kind:'tick',input:frame,presenting:presenting!==false},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);}
+ try{nextSnapshot=await backend.request({kind:'tick',input:frame,presenting:presenting!==false},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);imageGroupHost?.commitInput(groupInput?.token);}
  catch(error){if(orderedQueue)try{orderedQueue.terminate(String(error.message??error));}catch{}publishPhysical();throw error;}
  if(pu){profiler.mark(pu,'backend_request');profiler.set(pu,{command:profiler.sourceOf(nextSnapshot),snapshot_frame:nextSnapshot?.world?.frame??null});}
  /* PROFILE_TICK_END */
@@ -202,9 +219,10 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});reportedViewport=projectPayload.viewport_size;await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
+ startupScreen.start('present');
  const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
  const gate=checked?renderer.startupPresentation:null;
  if(checked&&!gate)throw Error('PLAYER_STARTUP_PRESENTATION_CONTRACT_MISSING');
@@ -223,7 +241,7 @@ async function finishStartup(presentation,kind){
  metrics.raster=renderer.metrics().raster;
  if(startupAbort.signal.aborted)throw startupCancelled();
  if(sample().state!=='presented')return false;
- assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
+ assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));startupScreen.ready();
  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:presenting=>frozen?undefined:tickOnce(presenting),render:draw,onError:fail,
   onWakeDiagnostic:profiler?recordSchedulerWake:null,
   onRafEnd:(at,start,end,flight,budget)=>{playerCompletion.rafEnd(at,start,end,flight,budget);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
@@ -232,6 +250,10 @@ async function finishStartup(presentation,kind){
  /* DEVELOPER_CONNECT */
  if(performanceFeed)publishPerformanceFeed();
  scheduler.start();
+
+ // A pixel ratio change with no new window size (another monitor) fires no resize event: watch the
+ // current resolution, and watch again for the next one after each change.
+ const watchRatio=()=>window.matchMedia?.(`(resolution: ${window.devicePixelRatio}dppx)`)?.addEventListener?.('change',()=>{viewportChanged();watchRatio();},{once:true});watchRatio();
  };
  canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
  try{
@@ -270,14 +292,17 @@ async function readImagePreloadPlan(catalog){
  return validateImagePreloadPlan(plan,catalog);
 }
 async function start(){
+ startupScreen.start('content');
  const profileOptions=playerProfileOptions(location.search);
  if(profileOptions){profiler=createPlayerProfiler({limit:profileOptions.limit,publishTarget:document.body});document.body.dataset.playerProfileEnabled='1';
   uiRenderer.setAssetObserver(attrs=>profiler.record('ui_asset','ok',attrs));
   window.unonePlayerProfile=Object.freeze({report:()=>profiler.report(),clear:()=>profiler.clear(),publish:()=>profiler.publish()});}
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);
  if(startupAbort.signal.aborted)throw startupCancelled();
- withCatalog(project,assets);projectPayload=project;uiAssetManifest=assets;
- const dataLoad=dataAssets(project);dataLoad.catch(()=>{});
+ startupScreen.complete('content');withCatalog(project,assets);projectPayload=project;uiAssetManifest=assets;
+ // Data assets load beside image preparation, fonts and the runtime; Game.start waits for them.
+ startupScreen.start('images');startupScreen.start('data');
+ const dataLoad=dataAssets(project,(loaded,total)=>startupScreen.progress('data',loaded,total));dataLoad.then(()=>startupScreen.complete('data'),()=>{});
  // One immutable presentation index per fetched manifest. The player owns this JSON and adopts it,
  // so the renderer never rebuilds the asset index per draw and in-place edits fail instead of drifting.
  const assetCatalog=createAssetCatalog(assets,{adopt:true});
@@ -285,40 +310,52 @@ async function start(){
  if(startupAbort.signal.aborted)throw startupCancelled();
  imagePreloadPlan=preloadPlan;
  imageAssets=createImageAssetBroker(assetCatalog,{resolveAssetUrl:asset=>new URL('content/'+asset.source,document.baseURI).href,preloadPlan});
+ // Game requests (api.assets.imageGroups) need a published plan; without one Core reports unsupported.
+ if(preloadPlan)imageGroupHost=createImageGroupHost({getGroups:()=>imageAssets?.groups});
  // Scene declarations own future render dependencies, including hidden sprites.
  // Prepare an explicitly bounded plan before simulation and the READY barrier.
- const preparation=await imageAssets.prepareScene(project.scene);
+ const preparation=await imageAssets.prepareScene(project.scene,{onProgress:({done,total})=>startupScreen.progress('images',done,total)});
  if(startupAbort.signal.aborted)throw startupCancelled();
- assertRequiredImagePreparation(preloadPlan,preparation);
+ assertRequiredImagePreparation(preloadPlan,preparation);startupScreen.complete('images');
  errorPolicy=playerErrorPolicy(presentation,location.search);
  physicalProfile=presentation.physical_input;
  if(physicalProfile!==undefined&&(physicalProfile!=='ordered_physical_v1'||(presentation.renderer_mode??'official')!=='official'))throw Error('INPUT_PHYSICAL_PROFILE_UNSUPPORTED: official Web ordered_physical_v1 only');
  configurePhysical();
- await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI));
+ startupScreen.start('fonts');
+ await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI),(loaded,total)=>startupScreen.progress('fonts',loaded,total));
  if(startupAbort.signal.aborted)throw startupCancelled();
+ startupScreen.complete('fonts');
  if(presentation.ui?.font_family??presentation.ui?.fonts?.[0]?.family)uiRenderer.setFont(presentation.ui.font_family??presentation.ui.fonts[0].family);
  const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,document.baseURI).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  const requirePhysicalViewport=presentation.physical_input!==undefined||presentation.projected_raster==='upper_left_checked'||presentation.projected_material_profile!==undefined;
+ startupScreen.start('runtime');
  backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,...(profiler?{profiler}:{})});
  if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
+ startupScreen.complete('runtime');
  metrics.runtime_ready_ms=performance.now()-window.playerBoot;metrics.error_policy=errorPolicy??'strict';
  document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
  try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
  stageDisplay=project.config.display??null;fitStage();
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
- project.viewport_size=physicalViewport();
+ project.viewport_size=physicalViewport();sentViewport=project.viewport_size;
  if(errorPolicy)project.error_policy=errorPolicy;
+ if(imageGroupHost)project.image_group_host=true;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  const data=await dataLoad;if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
+ startupScreen.start('game');
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:sessionSeed(),data}),{reset:true,newSession:true});
- reportedViewport=project.viewport_size;await resizeStageViewport();
+ await resizeStageViewport();
+ startupScreen.complete('game');startupScreen.start('renderer');
  const renderPasses=await renderExtensions(presentation.render_extensions);
  renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
+ appliedPixelRatio=renderer.pixelRatio?.()??null;
  resourceHost=createSpriteResourceHost(renderer);resourceHost.acceptSnapshot(snapshot);
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
+ startupScreen.complete('renderer');startupScreen.start('audio');
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
  if(startupAbort.signal.aborted){const retiringAudio=audio;audio=null;retiringAudio?.dispose();throw startupCancelled();}
+ startupScreen.complete('audio');
  await finishStartup(presentation,kind);
 }
 function pointer(event,down,kind){const sample=pointerSample(event,down);if(!sample)return;input.updatePointer(sample,kind);hasWorldPointer=true;}
@@ -335,9 +372,8 @@ canvas.addEventListener('pointermove',e=>{if(!orderedRouter)legacyPointer.route(
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
-// Fit immediately during asynchronous startup too; the backend joins once loaded.
-window.addEventListener('resize',()=>{void resizeStageViewport().catch(fail);});
+window.addEventListener('resize',()=>viewportChanged());
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
+window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

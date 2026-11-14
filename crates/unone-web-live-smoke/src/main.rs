@@ -904,6 +904,40 @@ pub unsafe extern "C" fn unone_web_sprite_resources_request(pointer: *const u8, 
     }
 }
 
+/// The image groups the game wants held (api.assets.imageGroups), outside World.
+/// Read-only: it never ticks, and the host reports group states back as input.
+/// # Safety
+/// `pointer` must be the current allocation returned by unone_web_alloc.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_image_groups_request(pointer: *const u8, length: usize) -> i32 {
+    #[derive(serde::Deserialize)]
+    #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+    enum Request { Plan { after: Option<u64> } }
+    let result = (|| -> Result<serde_json::Value, String> {
+        let request = INPUT_BUFFER.with(|input| {
+            let input = input.borrow();
+            if pointer.is_null() || pointer != input.as_ptr() || length != input.len() || length == 0 || length > 1024 {
+                return Err("IMAGE_GROUP_REQUEST_INVALID: use current owned allocation, 1..1024 bytes".to_string());
+            }
+            serde_json::from_slice::<Request>(&input).map_err(|e| format!("IMAGE_GROUP_REQUEST_INVALID: {e}"))
+        })?;
+        RUNTIME.with(|runtime| {
+            let runtime = runtime.borrow();
+            let runtime = runtime.as_ref().ok_or("RUNTIME_NOT_LOADED")?;
+            let Request::Plan { after } = request;
+            if after.is_some_and(|revision| revision > 9_007_199_254_740_991) {
+                return Err("IMAGE_GROUP_REQUEST_INVALID: after must be a safe integer".into());
+            }
+            serde_json::to_value(runtime.image_group_plan_since(after)).map_err(|e| e.to_string())
+        })
+    })();
+    match result {
+        Ok(value) => { OUTPUT.with(|output| { let mut output = output.borrow_mut(); output.clear();
+            serde_json::to_writer(&mut *output, &value).expect("plain image group plan"); }); 0 },
+        Err(error) => { write_error(error); -1 },
+    }
+}
+
 /// Detached host-time report/tape transport. It never samples or advances World.
 /// # Safety
 /// `pointer` must be the current allocation returned by unone_web_alloc.
@@ -1721,6 +1755,34 @@ fn actual_publication_phase_windows_cover_all_paths_preserve_digest_and_freeze()
         assert_eq!(unone_web_tick(),0);assert_eq!(request(r#"{"method":"profile"}"#)["publication"],stopped);
         unone_web_unload_project();
     }
+}
+
+#[cfg(test)]
+#[test]
+fn image_group_abi_returns_the_held_groups_only_when_they_change() {
+    let script="return {start=function(api) api.assets.imageGroups.preload('town') end,update=function(api) if api.input.isDown('Enter') then api.assets.imageGroups.load('town') end api.observation.set('state',api.assets.imageGroups.status('town').state) end}";
+    let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"groups","entry_script":"main.luau"},"script":script,"image_groups":["town"],"image_group_host":true})).unwrap();
+    assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(),payload.len(),42) },0);
+    let plan=|after:serde_json::Value|{
+        let request=serde_json::to_vec(&serde_json::json!({"kind":"plan","after":after})).unwrap();
+        let pointer=unone_web_alloc(request.len());
+        unsafe { std::ptr::copy_nonoverlapping(request.as_ptr(),pointer,request.len()); }
+        assert_eq!(unsafe { unone_web_image_groups_request(pointer,request.len()) },0);
+        OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap())
+    };
+    assert_eq!(plan(serde_json::Value::Null),serde_json::json!({"revision":1,"groups":{"town":"preload"}}));
+    assert_eq!(plan(serde_json::json!(1)),serde_json::json!({"revision":1}));
+    let frame=serde_json::to_vec(&serde_json::json!({"actions":{"Enter":true},"presentation_resources":{"image_groups":[{"name":"town","state":"loading","total":2,"ready":1,"bytes":64}]}})).unwrap();
+    assert_eq!(unsafe { unone_web_set_input_frame(frame.as_ptr(),frame.len()) },0);
+    assert_eq!(unone_web_tick(),0);
+    let world=OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap())["world"].clone();
+    assert_eq!(world["observations"]["state"],"loading");
+    assert!(world.get("image_groups").is_none(),"requests never enter the World snapshot");
+    assert_eq!(plan(serde_json::json!(1)),serde_json::json!({"revision":2,"groups":{"town":"load"}}));
+    let request=br#"{"kind":"plan","after":null}"#;
+    assert_eq!(unsafe { unone_web_image_groups_request(request.as_ptr(),request.len()) },-1,"only the owned allocation is read");
+    assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().current_frame()),1);
+    unone_web_unload_project();
 }
 
 #[cfg(test)]

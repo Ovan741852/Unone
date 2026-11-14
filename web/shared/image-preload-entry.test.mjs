@@ -5,6 +5,8 @@ import vm from 'node:vm';
 import * as images from './asset-encoding.js';
 import {startupCancelled} from './startup-presentation.mjs';
 import {playerErrorPolicy} from './player-errors.mjs';
+import {createStartupScreen} from './startup-screen.mjs';
+import {createImageGroupHost} from './image-group-host.mjs';
 
 const encoder=new TextEncoder(),MAX=1024*1024;
 const ID='texture://shared',URL_TEXT='https://player.invalid/releases/'+'a'.repeat(64)+'/content/image-assets.json';
@@ -24,12 +26,12 @@ function response(chunks,{status=200,failRead=null,onRead=()=>{}}={}){
 }
 function host({metas=[meta('content/image-assets.json')],reply=response([encoder.encode(JSON.stringify(plan()))]),preparation}={}){
   const fetches=[],counts={catalogs:0,brokers:0,preparations:0,backends:0,ready:0};
-  const context={...images,JSON,URL,URLSearchParams,TextDecoder,Uint8Array,AbortController,startupCancelled,startupAbort:new AbortController(),
+  const context={...images,JSON,URL,URLSearchParams,TextDecoder,Uint8Array,AbortController,startupCancelled,startupAbort:new AbortController(),startupScreen:createStartupScreen({schedule(){}}),
     document:{baseURI:'https://player.invalid/releases/'+'a'.repeat(64)+'/',
       querySelectorAll:selector=>selector.includes('unone-image-assets')?metas:selector.includes('unone-image-preload-version')?[meta('1')]:[],
       querySelector:()=>({content:'https://player.invalid/runtime.js'})},
     fetch:async(url,options)=>{fetches.push({url:String(url),options});return typeof reply==='function'?reply(context):reply.value;},
-    playerProfileOptions:()=>null,playerErrorPolicy,location:{search:''},profiler:null,projectPayload:null,uiAssetManifest:null,withCatalog:project=>project,imageAssets:null,imagePreloadPlan:null,
+    playerProfileOptions:()=>null,playerErrorPolicy,location:{search:''},profiler:null,projectPayload:null,uiAssetManifest:null,withCatalog:project=>project,imageAssets:null,imagePreloadPlan:null,imageGroupHost:null,createImageGroupHost,
     dataAssets:async()=>[],
     json:async url=>url==='content/project.json'?{config:{name:'preload-entry'},scene:{entities:[]}}:url==='content/assets.json'?{assets:[{id:ID,kind:'texture2d',source:'shared.png'}]}:{},
     createAssetCatalog:value=>{counts.catalogs++;return images.createAssetCatalog(value);},

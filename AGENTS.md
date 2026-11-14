@@ -165,6 +165,12 @@ returns false and reports it (`api.ui.inspect().last_rejection`), and skips a fa
 `Game.update` until `max_consecutive_script_errors` frames fail in a row. That is the
 `error_policy` in `player.presentation.json`; see [runtime errors](docs/player-export.md#runtime-errors).
 
+To warm, hold or drop large art by place or screen, declare groups in `player.image-assets.json` and
+call `api.assets.imageGroups.preload/load/unload(name)` from Luau; read progress with `status(name)`.
+Do not patch the player's `main.js` or reach for `window.unonePlayerAssets` from game code. An unknown
+name raises `IMAGE_GROUP_UNKNOWN` everywhere; only the official Web player with a published plan holds
+images, so treat status `unsupported` like `ready`. See [game requests](docs/web-image-assets.md#game-requests).
+
 Use `kit.createSlider({id=...,value=...,min=...,max=...,step=...})` for numeric
 sliders. Create and retain each control once in `Game.start`; publish
 `control.view({rect=...,trackRect=...})`, and call `control.update(api.input)`

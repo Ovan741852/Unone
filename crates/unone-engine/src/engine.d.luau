@@ -1010,6 +1010,36 @@ export type AssetsApi = {
     load: (id: string) -> any,
     -- Add or replace a loader; values it decoded are decoded again on next load.
     registerLoader: (name: string, loader: AssetLoader) -> (),
+    -- Groups declared in player.image-assets.json, held by the official Web player.
+    imageGroups: ImageGroupsApi,
+}
+
+-- Presentation only: requests and reports never enter World or its digest.
+-- "unsupported" means no host holds groups here (CLI, previews, native, a Web
+-- export without a published image plan).
+export type ImageGroupState = "idle" | "loading" | "ready" | "error" | "unloaded" | "unsupported"
+export type ImageGroupRequest = "preload" | "load" | "unload"
+export type ImageGroupStatus = {
+    name: string,
+    -- The host's last report (one round trip behind a new request).
+    state: ImageGroupState,
+    -- The game's latest call for this group; nil before any.
+    requested: ImageGroupRequest?,
+    -- Distinct images, and how many are decoded; 0 before the host reports.
+    total: number,
+    ready: number,
+    -- Decoded RGBA estimate (width * height * 4) the group reserves.
+    bytes: number,
+    error: string?,
+}
+export type ImageGroupsApi = {
+    -- Decode in the background and hold until unload.
+    preload: (name: string) -> (),
+    -- Hold as the current working set (promotes a preload without decoding again).
+    load: (name: string) -> (),
+    -- Release what no other group, scene or drawn image still uses.
+    unload: (name: string) -> (),
+    status: (name: string) -> ImageGroupStatus,
 }
 
 -- Passes declared in project.unone.json render_pipeline (scene, ao, fog, bloom,

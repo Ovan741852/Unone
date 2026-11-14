@@ -66,11 +66,15 @@ pub struct PresentationResourceInput {
     pub resources: Vec<SpriteResourceReceipt>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub appearances: Vec<SpriteAppearanceReceipt>,
+    /// State of the image groups the game asked for (api.assets.imageGroups).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub image_groups: Vec<crate::ImageGroupReceipt>,
 }
 
 impl PresentationResourceInput {
-    pub fn is_empty(&self) -> bool { self.resources.is_empty() && self.appearances.is_empty() }
+    pub fn is_empty(&self) -> bool { self.resources.is_empty() && self.appearances.is_empty() && self.image_groups.is_empty() }
     pub fn validate(&self) -> Result<(), String> {
+        crate::image_groups::validate_receipts(&self.image_groups)?;
         if self.resources.len() > MAX_PRESENTATION_RECEIPTS || self.appearances.len() > MAX_PRESENTATION_RECEIPTS {
             return Err("INPUT_PRESENTATION_INVALID: at most 256 resource and 256 appearance receipts per tick".into());
         }

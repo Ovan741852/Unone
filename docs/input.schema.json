@@ -48,6 +48,62 @@
       ],
       "type": "object"
     },
+    "ImageGroupReceipt": {
+      "additionalProperties": false,
+      "description": "One group's state, reported by the host that holds the images.",
+      "properties": {
+        "bytes": {
+          "description": "Decoded RGBA estimate (width × height × 4) the group reserves; images it\nshares with another held group count in both.",
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "error": {
+          "description": "Why the group failed; only with state `error`.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "ready": {
+          "description": "How many of them are decoded and ready.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "state": {
+          "$ref": "#/$defs/ImageGroupState"
+        },
+        "total": {
+          "description": "Distinct images in the group.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "state",
+        "total",
+        "ready",
+        "bytes"
+      ],
+      "type": "object"
+    },
+    "ImageGroupState": {
+      "description": "A group's state as the host last reported it.",
+      "enum": [
+        "idle",
+        "loading",
+        "ready",
+        "error",
+        "unloaded"
+      ],
+      "type": "string"
+    },
     "Modifiers": {
       "additionalProperties": false,
       "properties": {
@@ -445,6 +501,13 @@
         "appearances": {
           "items": {
             "$ref": "#/$defs/SpriteAppearanceReceipt"
+          },
+          "type": "array"
+        },
+        "image_groups": {
+          "description": "State of the image groups the game asked for (api.assets.imageGroups).",
+          "items": {
+            "$ref": "#/$defs/ImageGroupReceipt"
           },
           "type": "array"
         },

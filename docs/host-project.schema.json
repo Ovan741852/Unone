@@ -2436,6 +2436,17 @@
       "default": null,
       "description": "How this runtime answers recoverable errors. Omitted means strict:\nonly a player presenting a released game sends a lenient policy."
     },
+    "image_group_host": {
+      "description": "Set by a host that applies api.assets.imageGroups requests and reports\neach group's state as recorded input; status reads unsupported otherwise.",
+      "type": "boolean"
+    },
+    "image_groups": {
+      "description": "Group names from the project's image plan (player.image-assets.json),\nwritten by the export; api.assets.imageGroups accepts only these.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
     "job_sources": {
       "additionalProperties": {
         "type": "string"
