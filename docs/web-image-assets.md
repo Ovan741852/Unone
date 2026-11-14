@@ -59,6 +59,9 @@ Broker unit tests cover synchronous sharing, hidden-scene dependency collection,
 
 ## Formal image preload plans
 
+Runtime group control is also available through the official Web host, using
+the same broker and the same validated plan. See [runtime image groups](#runtime-image-groups).
+
 The official player owns image decoding, shared decoded-image leases and GPU
 texture lifetime. A project may declare image groups for a required startup
 working set. This does not create entities, allocate a second renderer or move
@@ -87,6 +90,22 @@ share one decoded image. Group names may contain 1–128 UTF-8 bytes; IDs may
 contain 1–2048. The plan allows at most 128 groups, 4096 references per group
 and 16384 references in total. Raw and canonical JSON are each limited to
 1 MiB. Unknown fields fail explicitly.
+
+The optional `dimensions` record avoids runtime HTTP header inspection:
+
+```json
+"dimensions": {
+  "image://terrain": {"format":"png", "width":2048, "height":2048}
+}
+```
+
+Only group-member IDs are accepted, with positive integer dimensions up to
+65536 per axis, and `png`/`jpeg`/`webp` formats matching the declared encoding.
+The trusted publisher checks these values against bounded prefixes of the
+sealed image files. The browser still validates the actual decoded dimensions;
+metadata is an admission estimate, never permission to accept different pixels.
+This avoids fetching the full file twice when a CDN ignores the old Range
+header request. Omit metadata to retain the existing inspection route.
 
 The selected startup groups are required before the official player's READY
 boundary. Unsupported decoding, required budget admission failure or cancellation
@@ -146,3 +165,70 @@ Preflight failures create no output. A copy/write failure preserves its
 incomplete output for diagnosis; `export.json` is written last and marks a
 completed publication. Select another fresh output after a failure. The tool
 does not delete or overwrite an existing export.
+
+## Runtime image groups
+
+`window.unonePlayerAssets` is installed in production and development official
+Web players. This is a reusable presentation resource primitive: the game
+chooses its groups, navigation and next-screen policy. It does not change World
+state, instantiate entities, load audio, or replace the official renderer.
+
+```js
+await window.unonePlayerAssets.preload('next-screen');
+await window.unonePlayerAssets.load('current-screen');
+window.unonePlayerAssets.unload('previous-screen');
+const one = window.unonePlayerAssets.status('current-screen');
+const summary = window.unonePlayerAssets.snapshot();
+const diagnostic = window.unonePlayerAssets.snapshot({includeTimings:true});
+```
+
+Both preload and load prepare/decode and hold the group's shared image leases
+until unload. Preload marks an authored background warm set; load promotes that
+same set to the current retained working set. They share the bounded two-task
+broker queue, not separate decoders or caches. Load is asynchronous and does not
+block or pause simulation. Repeated pending requests for one group share one
+promise; load promotes an existing preload without reserving or decoding twice.
+
+Only names from the validated image plan are allowed. Missing groups and calls
+before broker readiness reject explicitly. The aggregate unique group-held
+decoded estimate is limited by the plan's max_bytes/max_entries, with atomic
+admission after bounded metadata checks. Overlapping groups reserve a shared
+asset once. Choose small explicit warm sets; preloading the entire catalog is
+not a default strategy. Scene/startup and renderer owners are separate and can
+overlap these estimates; this is not an overall browser or GPU memory limit.
+
+Unload cancels that group's pending work and releases its ownership. It evicts
+only images with no remaining scene, group or active renderer/UI/GPU owner.
+It cannot break a still-visible image. An unload followed immediately by load
+has a new request epoch; stale completion cannot publish into or release the
+replacement. Failures roll back all of that group's reservations and leases.
+An actual HTML image retirement drops ownership; browser/OS memory reclamation
+and GPU collection remain independently managed.
+
+Status rows include name, catalog_generation, state (idle/loading/ready/error/
+unloaded), mode, total, ready, held, reserved_bytes_estimate, cache_hits,
+cancelled, elapsed_ms and error. Snapshot adds the group budget and aggregate
+held counts, bounded loading totals and broker residency/reuse/eviction counts.
+Status and snapshot are detached frozen views. Querying never acquires images
+or advances the game. The production facade has no arbitrary URL or code route.
+
+## Loading diagnostics
+
+The broker retains at most 128 scalar load records. Ordinary snapshot queries
+return broker-generation cumulative totals only; includeTimings opts into the
+detached record array. total_elapsed_ms sums per-image readiness durations;
+parallel waits overlap, so it is not total startup time. Rows
+contain queued/start/completion times, elapsed_ms, queue_ms, load_event_ms,
+decode_ms, nullable Resource Timing network_ms/transfer_bytes/encoded_body_bytes,
+and outcome/error. load_event_ms includes browser fetch and event delivery, not
+just network service. decode_ms is measured around the default Image.decode
+wait; injected decoders without timing return null. Missing or zero restricted
+transfer sizes are null, not evidence of a free cache hit. Times use the main
+host performance clock; none are GPU, physical presentation or OS-memory values.
+
+The existing `window.unonePlayerPerformance.snapshot()` includes image_assets
+with the current group/broker/loading summary. For startup, retain the existing
+playerMetrics runtime_ready_ms and first_presented_ms plus Resource Timing.
+For navigation, compare the group elapsed_ms and loading/cache counters around
+the same user actions, and keep successful-submission, dropped-step and frame
+interval measurements separate. See [profiling](profiling.md).

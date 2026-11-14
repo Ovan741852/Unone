@@ -1,4 +1,6 @@
 import {IMAGE_DIMENSIONS_MAX_PREFIX_BYTES,inspectImageDimensions} from './image-dimensions.mjs';
+export const imageDimensionsPrefixLimit=IMAGE_DIMENSIONS_MAX_PREFIX_BYTES;
+export function inspectAuthoredImageDimensions(bytes){return inspectImageDimensions(bytes);}
 // Accepted decoder routes, not a guarantee that bytes decode on this device.
 export const DECODER_ROUTES = Object.freeze({
   mesh: { "unone-mesh-json": "application/json" },
@@ -129,7 +131,7 @@ function quotedUtf8Length(text) {
   return bytes;
 }
 export function validateImagePreloadPlan(value, catalog) {
-  const specs = assetCatalogSpecs(catalog); preloadRecord(value, 'plan', ['version','groups','startup','budget']);
+  const specs = assetCatalogSpecs(catalog); preloadRecord(value, 'plan', ['version','groups','startup','budget','dimensions']);
   if (!Object.hasOwn(value, 'version') || !Object.hasOwn(value, 'groups') || !Object.hasOwn(value, 'startup') || value.version !== IMAGE_PRELOAD_PLAN_VERSION) preloadInvalid('version1, groups and startup are required');
   const budget = Object.hasOwn(value, 'budget') ? value.budget : null;
   if (Object.hasOwn(value, 'budget')) preloadRecord(budget, 'budget', ['max_bytes','max_entries']);
@@ -148,6 +150,15 @@ export function validateImagePreloadPlan(value, catalog) {
   preloadArray(value.startup, 'startup', 128); const startup = [], seen = new Set();
   for (const name of value.startup) { preloadString(name, 'startup group', 128); if (!Object.hasOwn(groups, name) || seen.has(name)) preloadInvalid('startup groups must exist and be unique'); reserve(quotedUtf8Length(name) + (startup.length ? 1 : 0)); seen.add(name); startup.push(name); }
   const canonical = { version: IMAGE_PRELOAD_PLAN_VERSION, groups: Object.freeze(groups), startup: Object.freeze(startup), budget: canonicalBudget };
+  if(Object.hasOwn(value,'dimensions')){
+    preloadRecord(value.dimensions,'dimensions');const referenced=new Set(Object.values(groups).flat()),dimensions={};
+    if(Object.keys(value.dimensions).length>16384)preloadInvalid('dimensions exceeds16384');
+    for(const [id,d]of Object.entries(value.dimensions)){if(!referenced.has(id))preloadInvalid('dimension asset must belong to a group: '+id);preloadRecord(d,'dimensions entry',['format','width','height']);
+      if(!['png','jpeg','webp'].includes(d.format)||!Number.isSafeInteger(d.width)||!Number.isSafeInteger(d.height)||d.width<=0||d.height<=0||d.width>65536||d.height>65536||!Number.isSafeInteger(d.width*d.height*4))preloadInvalid('dimensions must be bounded raster sizes');
+      if(specs.get(id).encoding&&specs.get(id).encoding.format!==d.format)preloadInvalid('dimensions format disagrees with manifest: '+id);
+      Object.defineProperty(dimensions,id,{value:Object.freeze({format:d.format,width:d.width,height:d.height}),enumerable:true});
+    }canonical.dimensions=Object.freeze(dimensions);
+  }
   if (utf8Length(JSON.stringify(canonical)) > IMAGE_PRELOAD_PLAN_MAX_BYTES) preloadInvalid('canonical encoded plan exceeds1MiB');
   return Object.freeze(canonical);
 }
@@ -165,17 +176,18 @@ function imageDimensions(image) {
   if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width <= 0 || height <= 0 || !Number.isSafeInteger(width * height * 4)) throw imageError('IMAGE_ASSET_DIMENSIONS');
   return { width, height, bytes: width * height * 4 };
 }
-function loadDecodedImage(url, { signal } = {}) {
+const imageClock = () => globalThis.performance?.now?.() ?? Date.now();
+function loadDecodedImage(url, { signal, onTiming } = {}) {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) { reject(abortImageError()); return; }
-    const image = new Image(); let settled = false, loaded = false;
+    const image = new Image(),started=imageClock(); let settled = false, loaded = false;
     const cleanup = () => { image.onload = image.onerror = null; signal?.removeEventListener('abort', abort); };
     const fail = (error, cancelPending = false) => { if (settled) return; settled = true; cleanup(); if (cancelPending && !loaded) image.removeAttribute?.('src'); closeDecodedImage(image); reject(error); };
     const abort = () => fail(abortImageError(), true);
     image.onload = () => {
-      if (settled) return; loaded = true;
+      if (settled) return; loaded = true;const loadedAt=imageClock(),hasDecode=typeof image.decode==='function';
       let decoded; try { imageDimensions(image); decoded = image.decode?.(); } catch (error) { fail(error); return; }
-      Promise.resolve(decoded).then(() => { if (settled) return; settled = true; cleanup(); resolve(image); }, fail);
+      Promise.resolve(decoded).then(() => { if (settled) return; settled = true; cleanup();try{onTiming?.({load_event_ms:Math.max(0,loadedAt-started),decode_ms:hasDecode?Math.max(0,imageClock()-loadedAt):null});}catch{} resolve(image); }, fail);
     };
     image.onerror = () => fail(imageError('IMAGE_ASSET_LOAD_FAILED', String(url)));
     signal?.addEventListener('abort', abort, { once: true }); image.src = String(url);
@@ -220,8 +232,16 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
   const plan = preloadPlan === null ? null : validateImagePreloadPlan(preloadPlan, catalog);
   if (plan) { sceneMaxBytes = plan.budget.max_bytes; sceneMaxEntries = plan.budget.max_entries; }
   const planSummary = plan ? Object.freeze({ version: plan.version, groups: Object.keys(plan.groups).length, startup_groups: plan.startup, budget: plan.budget }) : null;
+  const authoredDimensions=id=>plan?.dimensions&&Object.hasOwn(plan.dimensions,id)?plan.dimensions[id]:null;
   const entries = new Map(), imageOwners = new Map(), queue = []; let running = 0, stamp = 0, disposed = false, planEpoch = 0, planController = null, sceneLeases = new Map(), preparation = null;
   let loads = 0, reuses = 0, evictions = 0, closedImages = 0, releasedBytes = 0;
+  const loadTimings=[];let loadingTotalMs=0,completedLoads=0,failedLoads=0,cancelledLoads=0;
+  function recordLoad(entry,state,error){
+    const end=imageClock(),row={id:entry.id,state,queued_at_ms:entry.queuedAt,started_at_ms:entry.startedAt,completed_at_ms:end,elapsed_ms:Math.max(0,end-entry.queuedAt),queue_ms:entry.startedAt===null?null:Math.max(0,entry.startedAt-entry.queuedAt),load_event_ms:entry.imageTiming?.load_event_ms??null,decode_ms:entry.imageTiming?.decode_ms??null,network_ms:null,transfer_bytes:null,encoded_body_bytes:null,error:error?String(error?.code??error?.name??'IMAGE_ASSET_ERROR'):null};
+    if(entry.url)try{const rows=globalThis.performance?.getEntriesByName?.(entry.url,'resource'),resource=rows?.[rows.length-1];if(resource&&resource.startTime>=entry.queuedAt){row.network_ms=Number.isFinite(resource.duration)?resource.duration:null;row.transfer_bytes=resource.transferSize>0?resource.transferSize:null;row.encoded_body_bytes=resource.encodedBodySize>0?resource.encodedBodySize:null;}}catch{}
+    loadTimings.push(Object.freeze(row));if(loadTimings.length>128)loadTimings.shift();
+    if(state==='ready'){completedLoads++;loadingTotalMs+=row.elapsed_ms;}else if(state==='cancelled')cancelledLoads++;else failedLoads++;
+  }
   const limits = Object.freeze({ sceneMaxBytes, sceneMaxEntries, unusedMaxBytes, unusedMaxEntries });
   const ownImage = image => imageOwners.set(image, (imageOwners.get(image) ?? 0) + 1);
   const dropImage = image => { const remaining = (imageOwners.get(image) ?? 1) - 1; if (remaining) imageOwners.set(image, remaining); else { imageOwners.delete(image); closeDecodedImage(image); closedImages++; } };
@@ -262,6 +282,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     for (const entry of unused) { if (bytes <= unusedMaxBytes && count <= unusedMaxEntries) break; bytes -= entry.bytes; count--; forget(entry); }
   }
   function entryFor(id, reservation = null) {
+    reservation??=authoredDimensions(id);
     const asset = specFor(id); let entry = entries.get(id);
     if (entry) {
       if (reservation) {
@@ -270,18 +291,18 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
       }
       reuses++; return entry;
     }
-    entry = { id, asset, state: 'loading', image: null, error: null, bytes: 0, external: 0, scene: 0, stamp: ++stamp, retired: false, controller: new AbortController(), reservation };
+    entry = { id, asset, state: 'loading', image: null, error: null, bytes: 0, external: 0, scene: 0, stamp: ++stamp, retired: false, controller: new AbortController(), reservation,queuedAt:imageClock(),startedAt:null,url:null,imageTiming:null };
     entries.set(id, entry); loads++;
     entry.promise = schedule(async () => {
-      const url = await resolveAssetUrl(asset); if (entry.controller.signal.aborted) throw abortImageError();
-      const image = await loadImage(url, { signal: entry.controller.signal, asset });
+      entry.startedAt=imageClock();const url = await resolveAssetUrl(asset);entry.url=String(url); if (entry.controller.signal.aborted) throw abortImageError();
+      const image = await loadImage(url, { signal: entry.controller.signal, asset,onTiming:value=>{entry.imageTiming=value;} });
       if (!image || typeof image !== 'object') throw imageError('IMAGE_ASSET_INVALID', id);
       ownImage(image);
       if (disposed || entry.retired || entry.controller.signal.aborted || entries.get(id) !== entry) { dropImage(image); throw abortImageError(); }
       let dimensions; try { dimensions = imageDimensions(image); } catch (error) { dropImage(image); throw error; }
       if (entry.reservation && (dimensions.width !== entry.reservation.width || dimensions.height !== entry.reservation.height)) { dropImage(image); throw imageError('IMAGE_ASSET_DIMENSIONS_CHANGED', id); }
-      entry.image = image; entry.bytes = dimensions.bytes; entry.state = 'ready'; entry.stamp = ++stamp; sweep(); return image;
-    }, entry.controller.signal).catch(error => { if (!entry.image) { entry.state = 'error'; entry.error = error; } throw error; });
+      entry.image = image; entry.bytes = dimensions.bytes; entry.state = 'ready'; entry.stamp = ++stamp;recordLoad(entry,'ready'); sweep(); return image;
+    }, entry.controller.signal).catch(error => { if (!entry.image) { entry.state = 'error'; entry.error = error; }recordLoad(entry,error?.name==='AbortError'?'cancelled':'error',error); throw error; });
     // Consumers own rejection handling; unused/released async work must never
     // manufacture an unhandled rejection during teardown.
     entry.promise.catch(() => {}); return entry;
@@ -308,7 +329,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     for (const id of ids.slice(sceneMaxEntries)) result.budget_skipped.push({ id, reason: 'scene_entry_budget' });
     const worker = async work => { while (!controller.signal.aborted && position < candidates.length) { const index = position++; await work(candidates[index], index); } };
     const inspect = async (id, index) => {
-      try { const asset = specFor(id), known = entries.get(id); const metadata = known?.reservation ?? await schedule(async () => inspectImage(await resolveAssetUrl(asset), { signal: controller.signal, asset }), controller.signal);
+      try { const asset = specFor(id), known = entries.get(id); const metadata = known?.reservation ?? authoredDimensions(id) ?? await schedule(async () => inspectImage(await resolveAssetUrl(asset), { signal: controller.signal, asset }), controller.signal);
         if (!metadata || metadata.format !== 'png') { inspected[index] = { id, unsupported: true }; return; }
         const dimensions = imageDimensions(metadata); inspected[index] = { id, ...dimensions, format: 'png' };
       } catch (error) { inspected[index] = { id, error }; }
@@ -340,22 +361,75 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     if (!result.cancelled) preparation = freezePreparation(result); else freezePreparation(result);
     return result;
   }
-  const metadataInspector = createImageMetadataInspector({specFor, entries, resolveAssetUrl, inspectImage:inspectImage===inspectPngImage?inspectRasterImage:inspectImage, schedule,
+  const metadataInspector = createImageMetadataInspector({specFor, entries, dimensions:plan?.dimensions,resolveAssetUrl, inspectImage:inspectImage===inspectPngImage?inspectRasterImage:inspectImage, schedule,
     maxEntries: Math.max(1, sceneMaxEntries, unusedMaxEntries)});
+  const groups=createImageAssetGroups({catalog,plan,inspect:metadataInspector.inspect,acquire:leaseFor,isReady:id=>entries.get(id)?.state==='ready',evict:ids=>{for(const id of ids){const entry=entries.get(id);if(entry&&!entry.external&&!entry.scene)forget(entry);}}});
   return Object.freeze({
     acquire: id => leaseFor(id), prepareScene, inspect: metadataInspector.inspect,
-    report() {
+    groups,
+    report({includeTimings=false}={}) {
       let residentBytes = 0, activeBytes = 0, sceneBytes = 0, unusedBytes = 0, activeEntries = 0, sceneEntries = 0, unusedEntries = 0, loading = 0;
       for (const entry of entries.values()) { residentBytes += entry.bytes; if (entry.state === 'loading') loading++; if (entry.external) { activeEntries++; activeBytes += entry.bytes; } if (entry.scene) { sceneEntries++; sceneBytes += entry.bytes; } if (!entry.external && !entry.scene) { unusedEntries++; unusedBytes += entry.bytes; } }
-      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene and active sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
+      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary,groups:groups.snapshot(),loading_metrics:{completed:completedLoads,failed:failedLoads,cancelled:cancelledLoads,total_elapsed_ms:loadingTotalMs,recent_capacity:128,...(includeTimings?{recent:loadTimings.slice()}:{}),scope:'Queue and image readiness wall time; load_event includes browser fetch/event wait. Resource Timing values are nullable, zero transfer is ambiguous. Decode duration only when supplied by the default HTML image loader.'}, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene, active and group sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
     },
-    dispose() { if (disposed) return; disposed = true; metadataInspector.dispose(); planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
+    dispose() { if (disposed) return; disposed = true;groups.dispose(); metadataInspector.dispose(); planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
   });
+}
+
+// Runtime image groups are presentation leases, not game rules or a second
+// decoder/cache. Membership is authorized only by the validated image plan.
+function createImageAssetGroups({catalog,plan,inspect,acquire,isReady,evict}) {
+  const specs=plan?.groups??Object.freeze({}),records=new Map(),reservations=new Map();let disposed=false,epoch=0,admission=Promise.resolve(),heldBytes=0;
+  const budget=Object.freeze({max_bytes:plan?.budget.max_bytes??64*1024*1024,max_entries:plan?.budget.max_entries??128});
+  function nameOf(name){if(typeof name!=='string'||!Object.hasOwn(specs,name))throw imageError('IMAGE_ASSET_GROUP_MISSING',String(name));return name;}
+  function row(name){const r=records.get(name);return Object.freeze({name,catalog_generation:catalog.generation,state:r?.state??'idle',mode:r?.mode??null,total:new Set(specs[name]).size,ready:r?.ready??0,held:r?.leases.size??0,reserved_bytes_estimate:r?.reservedBytes??0,cache_hits:r?.cacheHits??0,cancelled:r?.cancelled??false,elapsed_ms:r?Math.max(0,(r.completedAt??imageClock())-r.startedAt):0,error:r?.error??null});}
+  function release(r){
+    const ids=[...r.leases.keys()];for(const lease of r.leases.values())lease.release();r.leases.clear();
+    for(const id of r.reservedIds){const value=reservations.get(id);if(!value)continue;value.owners.delete(r);if(!value.owners.size){heldBytes-=value.bytes;reservations.delete(id);}}
+    r.reservedIds=[];r.reservedBytes=0;evict(ids);
+  }
+  function request(name,mode){
+    nameOf(name);if(disposed)throw imageError('IMAGE_ASSET_BROKER_DISPOSED');
+    const current=records.get(name);
+    if(current&&(current.state==='loading'||current.state==='ready')){if(mode==='load')current.mode='load';return current.state==='ready'?Promise.resolve(row(name)):current.promise;}
+    const r={name,epoch:++epoch,mode,state:'loading',ready:0,leases:new Map(),reservedIds:[],reservedBytes:0,cacheHits:0,cancelled:false,error:null,startedAt:imageClock(),completedAt:null,controller:new AbortController(),promise:null};records.set(name,r);
+    const live=()=>!disposed&&!r.controller.signal.aborted&&records.get(name)===r;
+    r.promise=(async()=>{
+      try{
+        const ids=[...new Set(specs[name])];
+        if(ids.length>budget.max_entries)throw imageError('IMAGE_ASSET_GROUP_BUDGET',name);
+        const metadata=await Promise.all(ids.map(id=>inspect(id,{signal:r.controller.signal})));
+        const reserve=admission.then(()=>{
+          if(!live())throw abortImageError();
+          let bytes=0,count=0;for(let i=0;i<ids.length;i++)if(!reservations.has(ids[i])){bytes+=metadata[i].bytes;count++;}
+          if(heldBytes+bytes>budget.max_bytes||reservations.size+count>budget.max_entries)throw imageError('IMAGE_ASSET_GROUP_BUDGET',name);
+          for(let i=0;i<ids.length;i++){const id=ids[i];let value=reservations.get(id);if(!value){value={bytes:metadata[i].bytes,owners:new Set()};reservations.set(id,value);heldBytes+=value.bytes;}value.owners.add(r);r.reservedIds.push(id);r.reservedBytes+=value.bytes;
+            if(isReady(id))r.cacheHits++;r.leases.set(id,acquire(id,'external',metadata[i]));}
+        });admission=reserve.catch(()=>{});await reserve;
+        await Promise.all([...r.leases.values()].map(lease=>lease.promise.then(()=>{if(live()&&lease.state==='ready')r.ready++;})));
+        if(!live())throw abortImageError();r.state='ready';r.completedAt=imageClock();return row(name);
+      }catch(error){
+        if(records.get(name)===r){r.cancelled=r.controller.signal.aborted||disposed||error?.name==='AbortError';r.state=r.cancelled?'unloaded':'error';r.error=r.cancelled?null:String(error?.message??error).slice(0,256);r.completedAt=imageClock();r.controller.abort();release(r);}
+        throw error;
+      }
+    })();r.promise.catch(()=>{});return r.promise;
+  }
+  function unload(name){nameOf(name);const r=records.get(name);if(r&&(r.state==='loading'||r.state==='ready'||r.state==='error')){r.cancelled=r.state==='loading';r.state='unloaded';r.completedAt=imageClock();r.controller.abort();release(r);}return row(name);}
+  const api={preload:name=>request(name,'preload'),load:name=>request(name,'load'),unload,status:name=>{nameOf(name);return row(name);},snapshot(){return Object.freeze({version:1,available:!!plan,catalog_generation:catalog.generation,disposed,budget,held_entries:reservations.size,held_bytes_estimate:heldBytes,groups:Object.freeze(Object.keys(specs).map(row)),scope:'Group-owned decoded RGBA estimates only; overlapping groups share one reservation and broker image. Scene/renderer owners can retain additional or overlapping pixels. Unload never closes another active owner; browser/OS and GPU reclamation are not measured.'});},dispose(){if(disposed)return;disposed=true;for(const name of records.keys())unload(name);}};
+  return Object.freeze(api);
+}
+
+export function installPlayerAssetGroups(target,getBroker){
+  if(!target||typeof getBroker!=='function')throw imageError('IMAGE_ASSET_GROUP_HOST_INVALID');
+  if('unonePlayerAssets'in target)return ()=>{};
+  const manager=()=>{const value=getBroker()?.groups;if(!value)throw imageError('IMAGE_ASSET_GROUPS_NOT_READY');return value;};
+  const api=Object.freeze({preload:name=>{try{return manager().preload(name);}catch(error){return Promise.reject(error);}},load:name=>{try{return manager().load(name);}catch(error){return Promise.reject(error);}},unload:name=>manager().unload(name),status:name=>name===undefined?api.snapshot():manager().status(name),snapshot:(options={})=>{if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>k!=='includeTimings')||('includeTimings'in options&&typeof options.includeTimings!=='boolean'))throw imageError('IMAGE_ASSET_GROUP_OPTIONS_INVALID');const broker=getBroker();if(!broker)return Object.freeze({version:1,available:false,groups:Object.freeze([])});const report=broker.report(options);const loading=Object.freeze({...report.loading_metrics,...(report.loading_metrics.recent?{recent:Object.freeze(report.loading_metrics.recent)}:{})});return Object.freeze({...report.groups,loading,broker:Object.freeze({resident_entries:report.resident_entries,resident_bytes_estimate:report.resident_bytes_estimate,loading:report.loading,active_tasks:report.active_tasks,queued_tasks:report.queued_tasks,loads:report.loads,reuses:report.reuses,evictions:report.evictions})});}});
+  Object.defineProperty(target,'unonePlayerAssets',{value:api,configurable:true});return ()=>{if(target.unonePlayerAssets===api)delete target.unonePlayerAssets;};
 }
 
 // Metadata has no pixel lease. Each caller owns only its cancellation; one
 // cancelled prefetch must not abort inspection still needed by another owner.
-function createImageMetadataInspector({specFor, entries, resolveAssetUrl, inspectImage, schedule, maxEntries}) {
+function createImageMetadataInspector({specFor, entries, dimensions,resolveAssetUrl, inspectImage, schedule, maxEntries}) {
   const records = new Map(); let disposed = false;
   function start(id, asset) {
     if (records.size >= maxEntries) {
@@ -377,6 +451,7 @@ function createImageMetadataInspector({specFor, entries, resolveAssetUrl, inspec
   function inspect(id, {signal} = {}) {
     const asset = specFor(id);
     if (disposed || signal?.aborted) return Promise.reject(abortImageError());
+    if(dimensions&&Object.hasOwn(dimensions,id))return Promise.resolve(Object.freeze({...dimensions[id],...imageDimensions(dimensions[id])}));
     const image = entries.get(id);
     if (image?.state === 'ready') return Promise.resolve(Object.freeze({format: asset.encoding?.format ?? 'decoded', ...imageDimensions(image.image)}));
     if (image?.reservation) return Promise.resolve(Object.freeze({format: 'png', ...imageDimensions(image.reservation)}));

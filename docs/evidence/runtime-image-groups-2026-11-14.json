@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-14",
+  "scope": "Official Web image-plan group lifetime, loading diagnostics and local publisher tests; game browser evidence owned by GodOfWar integration",
+  "base_commit": "77557b59c0a025a1752abe0aa909220acc86b6e9",
+  "source_branch": "main",
+  "node_tests": 157,
+  "node_passed": 157,
+  "node_failed": 0,
+  "new_group_lifecycle_tests": 11,
+  "full_suite_before_disposal_guard_followup": true,
+  "disposal_guard_followup_tests": 34,
+  "disposal_guard_followup_passed": 34,
+  "disposal_guard_followup_failed": 0,
+  "disposal_guard_followup_log": "artifacts/group-tests-lifecycle-followup.log",
+  "new_publisher_dimensions_test": 1,
+  "cli_build": "cargo build -p unone-cli succeeded",
+  "wasm_abi_changed": false,
+  "existing_audio_runtime_wasm_sha256": "32c3472bf1e3d35b7321c642c6842c1c916d6b4ae24eab3659db829399d75b40",
+  "test_log": "artifacts/group-tests-final.log",
+  "test_command": "node --test web/shared/image-*.test.mjs web/shared/ui-cursor-image-handoff.test.mjs web/renderer/ui-gpu-ownership.test.mjs web/renderer/ui-gpu-image-cache.test.mjs web/renderer/texture-cache-lifecycle.test.mjs web/shared/player-profile-main.test.mjs scripts/prepare-web-image-assets.test.mjs",
+  "coverage": ["group coalescing and promotion", "overlapping unique-byte admission", "bounded aggregate budget", "safe unload with active renderer owner", "pending cancellation and new generation", "authored dimensions and actual decoder mismatch", "header-free startup with verified dimensions", "pre-readiness facade", "nullable load/decode/network timing", "prototype-sensitive group and asset IDs", "sealed publisher dimension verification", "existing image retirement", "GPU UI ownership", "cursor handoff", "actual player profiler and worker completion"]
+}

@@ -125,6 +125,7 @@ reset, decode another world, or send a worker command. The default window is
 | `skipped_draws`, `unknown_draws`, `error_draws`, `skip_counts` | Non-completion counts, with fixed resource/context/diagnostic reasons. |
 | `dropped_steps_total`, `paused` | Session-relative scheduler drops, or null if unavailable; current pause state. |
 | `completed_intervals` | Window p95/p99 and coverage endpoints/sample count from a fixed 512-entry numeric ring. |
+| `image_assets` | Official image-group holds/budgets, broker residency/reuse/eviction counts and bounded loading totals; null before the optional host accessor exists. Use `unonePlayerAssets.snapshot({includeTimings:true})` for at most 128 image-readiness records. See [image loading diagnostics](web-image-assets.md#loading-diagnostics). |
 
 Measure counter/frame deltas over host wall time. RAF callbacks alone do not
 prove rendering; completed submission alone does not prove 60 Hz simulation or

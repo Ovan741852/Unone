@@ -156,3 +156,9 @@ test('the only permitted SDK dependency must itself remain import-free',t=>{
   assert.equal(result.status,1);assert.match(result.stderr,/VALIDATOR_IMPORTS_UNSUPPORTED/);assert(!fs.existsSync(f.output));
  }
 });
+
+test('authored raster dimensions are verified against sealed image bytes before publication',async t=>{
+ const f=fixture(t);f.plan.dimensions={'image://fixture/a':{format:'png',width:2,height:3}};write(f.project,'player.image-assets.json',JSON.stringify(f.plan));
+ const result=await prepareWebImageAssets(f.args());const content=JSON.parse(fs.readFileSync(path.join(f.output,'content/image-assets.json')));assert.deepEqual(content.dimensions,f.plan.dimensions);assert.equal(result.image_assets.startup_preflight.required_entries,1);
+ const stale=fixture(t);stale.plan.dimensions={'image://fixture/a':{format:'png',width:4,height:3}};write(stale.project,'player.image-assets.json',JSON.stringify(stale.plan));await rejectsBeforeOutput(stale,/AUTHORED_DIMENSIONS_MISMATCH/);
+});

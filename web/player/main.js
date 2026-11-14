@@ -14,7 +14,7 @@ import {createSpriteResourceHost} from '../shared/sprite-resource-host.mjs';
 import {payloadDataSources,playerSeed,textureCatalog} from '../shared/load-project.js';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
-import {requireAssetEncoding,createAssetCatalog,createImageAssetBroker,validateImagePreloadPlan,IMAGE_PRELOAD_PLAN_MAX_BYTES} from '../shared/asset-encoding.js';
+import {requireAssetEncoding,createAssetCatalog,createImageAssetBroker,validateImagePreloadPlan,installPlayerAssetGroups,IMAGE_PRELOAD_PLAN_MAX_BYTES} from '../shared/asset-encoding.js';
 import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.js';
 import {createNetworkHost} from '../shared/network-host.mjs';
 import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileOptions} from '../shared/raster-diagnostics.mjs';
@@ -27,6 +27,7 @@ import {playerErrorPolicy,createRecoveryReporter} from '../shared/player-errors.
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
 let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null;
+const removeAssetGroupsAccessor=installPlayerAssetGroups(window,()=>imageAssets);
 // Game UI is drawn by the renderer's ui pass inside the WebGL frame; #ui-layer
 // only hosts the cursor overlay and the text-input/scroll DOM hosts.
 document.querySelector('#ui-layer').replaceChildren();
@@ -56,7 +57,7 @@ const recovery=createRecoveryReporter({target:document.body});
 const playerCompletion=createPlayerCompletionMetrics();
 function readPlayerPerformance(options={}){
  if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples'].includes(key)))throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
- return playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false});
+ return Object.freeze({...playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false}),image_assets:window.unonePlayerAssets?.snapshot()??null});
 }
 const removePerformanceAccessor=installPlayerPerformanceAccessor(window,readPlayerPerformance);
 let performanceFeed=createPlayerPerformanceFeed({search:location.search,target:document.body,
@@ -314,6 +315,6 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
+window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

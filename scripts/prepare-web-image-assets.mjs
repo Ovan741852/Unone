@@ -166,6 +166,17 @@ function requiredBudgetPreflight(plan,assets,logical){
  return{required_entries:required.size,known_rgba_bytes_estimate:knownBytes,unknown_dimension_assets:unknown,scope:'24-byte PNG IHDR estimate only; the official browser still validates decoding and admission before READY'};
 }
 
+function validateAuthoredDimensions(plan,assets,logical,validator){
+ const byId=new Map(assets.assets.map(asset=>[asset.id,asset]));
+ for(const [id,expected]of Object.entries(plan.dimensions??{})){
+  const asset=byId.get(id),file=logical.get('content/'+asset.source);requireThat(file,'IMAGE_PRELOAD_DIMENSION_SOURCE_MISSING',id);
+  const fd=fs.openSync(file.source,'r'),prefix=Buffer.alloc(Math.min(file.bytes,validator.imageDimensionsPrefixLimit));let count;
+  try{count=fs.readSync(fd,prefix,0,prefix.length,0);}finally{fs.closeSync(fd);}
+  const actual=validator.inspectAuthoredImageDimensions(prefix.subarray(0,count));
+  requireThat(actual&&actual.format===expected.format&&actual.width===expected.width&&actual.height===expected.height,'IMAGE_PRELOAD_AUTHORED_DIMENSIONS_MISMATCH',id);
+ }
+}
+
 export async function prepareWebImageAssets({project,inputExport,output,plan}){
  requireThat(typeof project==='string'&&typeof inputExport==='string'&&typeof output==='string'&&(plan===undefined||typeof plan==='string'),'IMAGE_PRELOAD_ARGUMENTS','--project --input-export --output [--plan]');
  const checks=new Set(),projectRoot=guardExisting(path.resolve(project),checks),inputRoot=guardExisting(path.resolve(inputExport),checks),out=path.resolve(output);
@@ -191,6 +202,7 @@ export async function prepareWebImageAssets({project,inputExport,output,plan}){
  const projectIdentity=validateProject(projectRoot,payload,assets,logical,checks);
  const planFile=plan?guardExisting(path.resolve(plan),checks):safeFile(projectRoot,'player.image-assets.json',checks),rawPlan=boundedPlan(planFile,validator.IMAGE_PRELOAD_PLAN_MAX_BYTES);
  const canonicalPlan=validator.validateImagePreloadPlan(JSON.parse(utf8(rawPlan)),validator.createAssetCatalog(assets)),planBytes=Buffer.from(JSON.stringify(canonicalPlan),'utf8');
+ validateAuthoredDimensions(canonicalPlan,assets,logical,validator);
  requireThat(planBytes.length<=validator.IMAGE_PRELOAD_PLAN_MAX_BYTES,'IMAGE_PRELOAD_PLAN_LIMIT');
  const preflight=requiredBudgetPreflight(canonicalPlan,assets,logical);
  const oldPlan=metadataTags(htmlWithoutBase,'unone-image-assets');requireThat(oldPlan.length<=1&&oldPlan.every(tag=>tag.content===PLAN_PATH&&tag.at>headStart&&tag.at<headEnd),'IMAGE_PRELOAD_META_CONFLICT');
