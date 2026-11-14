@@ -82,6 +82,17 @@ test('reapplying an owned sidecar is deterministic and creates no inner index',a
 test('stale script or asset project bytes fail before output',async t=>{
  for(const name of ['scripts/main.luau','assets/a.png']){const f=fixture(t);fs.appendFileSync(path.join(f.project,name),'changed');await rejectsBeforeOutput(f,/IMAGE_PRELOAD_PROJECT_STALE/);}
 });
+test('a production export ships bytecode and is checked against the source hashes the CLI recorded',async t=>{
+ const bytecode=()=>{const f=fixture(t);const payload=JSON.parse(f.logical.get('content/project.json'));delete payload.script;
+  payload.script_bytecode={source:'script.luaubc',format:'luau-bytecode-v6/o2/t0/unone-engine-0.2.0',byte_length:4};
+  f.logical.set('content/project.json',Buffer.from(JSON.stringify(payload)));f.logical.set('content/script.luaubc',Buffer.from([1,2,3,4]));f.seal();return f;};
+ const record=(f,sources)=>{const m=JSON.parse(fs.readFileSync(path.join(f.input,'export.json')));m.script_sources=sources;write(f.input,'export.json',JSON.stringify(m));};
+ await rejectsBeforeOutput(bytecode(),/IMAGE_PRELOAD_PROJECT_STALE.*no source hash/);
+ const stale=bytecode();record(stale,{entry_sha256:'0'.repeat(64)});await rejectsBeforeOutput(stale,/IMAGE_PRELOAD_PROJECT_STALE.*entry script/);
+ const fresh=bytecode(),entry=hash(fs.readFileSync(path.join(fresh.project,'scripts/main.luau')));record(fresh,{entry_sha256:entry});
+ const report=await prepareWebImageAssets(fresh.args());
+ assert.equal(report.script_sources.entry_sha256,entry,'a republished export keeps the hashes');
+});
 test('the plan must still hold every group the export recorded for scripts',async t=>{
  const withGroups=names=>{const f=fixture(t);const payload=JSON.parse(f.logical.get('content/project.json'));payload.image_groups=names;f.logical.set('content/project.json',Buffer.from(JSON.stringify(payload)));f.seal();return f;};
  await rejectsBeforeOutput(withGroups(['map','town']),/IMAGE_PRELOAD_GROUPS_STALE.*town/);

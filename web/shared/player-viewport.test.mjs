@@ -15,7 +15,7 @@ const plain=value=>JSON.parse(JSON.stringify(value));
 function fixture({devicePixelRatio=1,rendererRatio=null}={}){
  const frames=[],requests=[],fits=[],ratios=[];
  const context={
-  window:{devicePixelRatio},canvas:{clientWidth:800,clientHeight:600},
+  snapshot:{world:{}},startupAbort:{signal:{aborted:false}},window:{devicePixelRatio},canvas:{clientWidth:800,clientHeight:600},
   renderer:rendererRatio===null?null:{ratio:rendererRatio,pixelRatio(){return this.ratio;},setPixelRatio(value){ratios.push(value);this.ratio=value;}},
   requestAnimationFrame:callback=>frames.push(callback),fitStage:()=>fits.push(true),
   backend:{request:command=>{requests.push(command);return Promise.resolve({world:{}});}},acceptSnapshot(){},fail(error){throw error;},

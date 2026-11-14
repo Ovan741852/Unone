@@ -233,10 +233,10 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     let game_text = if subset_requested { Some(crate::font_subset::collect_text(&files)?) } else { None };
     // Production players load the entry script and its modules precompiled with
     // their exact compiler settings; development players keep source for hot reload.
-    if !development {
+    let script_sources = if development { None } else {
         let native_codegen = manifest["cargo_features"].as_array().is_some_and(|f| f.iter().any(|v| v == "native-codegen"));
-        precompile_scripts(&mut files, native_codegen)?;
-    }
+        Some(precompile_scripts(&mut files, native_codegen)?)
+    };
     let compiled = manifest["compiled_systems"].as_array()
         .context("RUNTIME_CAPABILITIES_MISSING: rebuild the runtime with scripts/build-web-live.ps1 -Player -Project <project-directory>")?;
     for id in settings.enabled_ids() {
@@ -417,6 +417,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     let mut report = json!({"version":1,"project":config.name,"release_root":release_root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
     report["error_policy"] = serde_json::to_value(error_policy)?;
+    if let Some(sources) = script_sources { report["script_sources"] = sources; }
     if let Some(font_subset) = font_subset { report["font_subset"] = font_subset; }
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
@@ -592,6 +593,9 @@ mod tests {
         let lengths = decl["modules"].as_object().unwrap();
         assert_eq!(lengths.keys().map(String::as_str).collect::<Vec<_>>(), ["shared.luau", "world/a.luau"]);
         assert_eq!(lengths.values().map(|n| n.as_u64().unwrap()).sum::<u64>(), bytes.len() as u64);
+        let report: Value = serde_json::from_slice(&fs::read(output.join("export.json")).unwrap()).unwrap();
+        assert_eq!(report["script_sources"]["entry_sha256"], super::digest(&fs::read(scripts.join("main.luau")).unwrap()));
+        assert_eq!(report["script_sources"]["modules"]["world/a.luau"], super::digest(b"return require('../shared')"));
 
         descriptor["preview_tools"] = json!(true);
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
@@ -600,6 +604,8 @@ mod tests {
         let payload = serde_json::from_slice::<Value>(&fs::read(development.join("content/project.json")).unwrap()).unwrap();
         assert!(payload.get("script_module_bytecode").is_none());
         assert_eq!(payload["script_modules"]["world/a.luau"], "return require('../shared')");
+        let report: Value = serde_json::from_slice(&fs::read(development.join("export.json")).unwrap()).unwrap();
+        assert!(report.get("script_sources").is_none(), "a source export carries the source itself");
     }
 
     #[test]
@@ -608,7 +614,9 @@ mod tests {
             "script_modules":{"a.luau":"return 1"}});
         for (codegen, level) in [(false, "/t0/"), (true, "/t1/")] {
             let mut files = vec![("content/project.json".to_string(), serde_json::to_vec(&payload).unwrap())];
-            super::precompile_scripts(&mut files, codegen).unwrap();
+            let sources = super::precompile_scripts(&mut files, codegen).unwrap();
+            assert_eq!(sources, json!({"entry_sha256": super::digest(payload["script"].as_str().unwrap().as_bytes()),
+                "modules": {"a.luau": super::digest(b"return 1")}}), "the publisher checks the project against these");
             let compiled: Value = serde_json::from_slice(&files[0].1).unwrap();
             assert!(compiled["script_bytecode"]["format"].as_str().unwrap().contains(level));
             assert_eq!(compiled["script_module_bytecode"]["format"], compiled["script_bytecode"]["format"]);
@@ -1010,19 +1018,24 @@ fn validate_renderer_file_path(path: &str) -> Result<()> {
 /// served beside it, so the player neither parses source out of JSON nor
 /// compiles at load. Every module is compiled, required at start or not.
 /// `native_codegen` must match the target runtime, whose bytecode format
-/// includes its type-information level.
-pub(crate) fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, native_codegen: bool) -> Result<()> {
+/// includes its type-information level. Returns the SHA-256 of each source it
+/// compiled, so tools that check an export against its project (the image
+/// plan publisher) can still do so once the source is gone.
+pub(crate) fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, native_codegen: bool) -> Result<Value> {
     let index = files.iter().position(|(path, _)| path == "content/project.json").context("content/project.json missing")?;
     let mut payload: Value = serde_json::from_slice(&files[index].1)?;
     let source = payload.as_object_mut().and_then(|p| p.remove("script")).context("ENTRY_SCRIPT_MISSING")?;
-    let compiled = unone_engine::compile_production_script(source.as_str().context("ENTRY_SCRIPT_MISSING")?, native_codegen)
+    let source = source.as_str().context("ENTRY_SCRIPT_MISSING")?.to_owned();
+    let mut sources = json!({"entry_sha256": digest(source.as_bytes())});
+    let compiled = unone_engine::compile_production_script(&source, native_codegen)
         .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
     let decl = unone_engine::ScriptBytecodeDecl { source: "script.luaubc".into(), format: compiled.format, byte_length: compiled.bytes.len() };
     payload["script_bytecode"] = serde_json::to_value(&decl)?;
     let mut bytecode_files = vec![(decl.source, compiled.bytes)];
     if let Some(modules) = payload.as_object_mut().and_then(|p| p.remove("script_modules")) {
-        let sources: std::collections::BTreeMap<String, String> = serde_json::from_value(modules)?;
-        let compiled = unone_engine::compile_production_modules(&sources, native_codegen)
+        let modules: std::collections::BTreeMap<String, String> = serde_json::from_value(modules)?;
+        sources["modules"] = json!(modules.iter().map(|(path, text)| (path.clone(), digest(text.as_bytes()))).collect::<std::collections::BTreeMap<_, _>>());
+        let compiled = unone_engine::compile_production_modules(&modules, native_codegen)
             .map_err(|error| anyhow::anyhow!("SCRIPT_COMPILE_FAILED: {error}"))?;
         let decl = unone_engine::ScriptModuleBytecodeDecl { source: "script-modules.luaubc".into(), format: compiled.format,
             byte_length: compiled.bytes.len(), modules: compiled.modules };
@@ -1035,7 +1048,7 @@ pub(crate) fn precompile_scripts(files: &mut Vec<(String, Vec<u8>)>, native_code
     for (source, bytes) in bytecode_files {
         push_unique_content_file(files, format!("content/{source}"), bytes)?;
     }
-    Ok(())
+    Ok(sources)
 }
 
 /// Initial engine-owned custom shader API executes on the WebGL2 player only.

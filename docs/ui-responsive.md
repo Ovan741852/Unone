@@ -52,6 +52,12 @@ Undeclared means 1280 x 720 (16:9), expanding; `game project init` declares
 (`PROJECT_CONFIG_INVALID`). UI coordinates stay the 0..100 design space either
 way; `display` only fixes the shape that space is laid out for.
 
+The Web host fits both canvas and UI layer during asynchronous startup, before
+the backend has a loaded snapshot. It reconciles any viewport change that
+occurred while the project load was in flight, then sends later physical-size
+changes only when the reported dimensions differ. Resizing during image/runtime
+loading therefore does not leave the stage at its earlier size.
+
 ## Create once, resolve in a pure View
 
 `createResponsiveLayout` snapshots its options. Retain the model and call
