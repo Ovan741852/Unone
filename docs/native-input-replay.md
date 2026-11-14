@@ -76,6 +76,11 @@ restored save and the digest does not depend on earlier play. The report shows
 `save.disabled_reason: "input_replay"`; `--save` is rejected with
 `NATIVE_SAVE_REPLAY_CONFLICT`.
 
+Replay also runs the strict error policy, so it stops at the first refused UI
+publish or failing update. To replay a released session that recovered from
+such errors, pass `--error-policy package`; see
+[runtime errors](player-export.md#runtime-errors).
+
 The final `input_replay` report includes the SHA-256 of the exact file bytes,
 `frame_count`, `applied_frames` (actual sequence entries consumed),
 `simulation_ticks`, `empty_frames_after_sequence`, `exhausted`, and successful

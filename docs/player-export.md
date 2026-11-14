@@ -49,9 +49,10 @@ explicit file and enables persistence for headless and bounded test runs; it is
 rejected with `NATIVE_SAVE_REPLAY_CONFLICT` under `--input-sequence`. Projects that
 disable the `save` system persist nothing on either player.
 
-A production Web player keeps a game running through an over-budget UI frame or
-an occasional `Game.update` error; development players and every CLI run fail
-fast. See [runtime errors](#runtime-errors).
+Production Web players and interactive native play keep a game running through
+an over-budget UI frame or an occasional `Game.update` error; development
+players, native tool runs and every CLI run fail fast. See
+[runtime errors](#runtime-errors).
 
 `player.presentation.json` includes the **web-wasm** overlay (bloom, worker backend,
 interpolation) and shared UI/font settings. Native wgpu packages the UI/font
@@ -214,9 +215,12 @@ policy is strict unless a host sends another one:
 
 | Run | Policy |
 | --- | --- |
-| `game check`, `run`, `test`, previews, replays, `--rollback`, development Web players (`export web --development`), native players | strict: the error stops the run with its diagnostic |
+| `game check`, `run`, `test`, previews, replays, `--rollback`, development Web players (`export web --development`) | strict: the error stops the run with its diagnostic |
 | production Web player (`export web`, `project prepare --target web`, `refresh-official-web.mjs`) | `player.presentation.json` `error_policy`, or the release default below when it declares none |
-| production Web player opened with `?unone_errors=strict` | strict, for QA runs that must fail loudly |
+| interactive native play (`export platform --target windows`/`android-*`) | the same package policy |
+| native tool runs (`--input-sequence`, `--headless`, `--frames N>0`, `--seconds S>0`, `--capture-dir`) | strict, like their fixed seed and disabled save |
+| production Web player opened with `?unone_errors=strict`; native player with `--error-policy strict` | strict, for QA runs that must fail loudly |
+| native player with `--error-policy package` | the package policy, also for a tool run (a headless check of release behavior, or replaying a session that recovered) |
 
 ```json
 "error_policy": {
@@ -246,10 +250,9 @@ strict value (`"fail"`; 60), so `{"script_errors":"continue"}` alone keeps
   failures (jobs, spatial, physical input, physics) stay fatal.
 
 The export writes the policy each player runs into `content/presentation.json`
-and the export report's `error_policy`: production exports write the declared
-or release policy, development exports always write the strict one. A native
-export rejects a declared `error_policy` with `HOST_PRESENTATION_UNSUPPORTED`,
-because the native player is still strict.
+and the export report's `error_policy`: production Web and native exports write
+the declared or release policy, development exports always write the strict
+one. A package without one (an older export) runs strict.
 
 What a lenient player recovered from is published, never silent:
 
@@ -257,11 +260,15 @@ What a lenient player recovered from is published, never silent:
   `last_ui_rejection`, `script_errors`, `consecutive_script_errors` and
   `last_script_error` (`{frame, code, message}`). Strict snapshots never carry
   it, so their digests are unchanged;
-- `document.body.dataset.playerRecoveredErrors`, the same JSON, for QA tools;
-- a `UNONE_PLAYER_RECOVERED ...` console warning, at most one per kind every
-  5 s, counting what it skipped;
-- a small non-interactive notice at the bottom left while recoveries continue;
-- `UNONE_PLAYER_READY` metrics `error_policy` (`"strict"` or the policy sent).
+- Web: `document.body.dataset.playerRecoveredErrors`, the same JSON, for QA
+  tools; a small non-interactive notice at the bottom left while recoveries
+  continue; `UNONE_PLAYER_READY` metrics `error_policy` (`"strict"` or the
+  policy sent);
+- native: the report's `error_policy` `{policy, source, recovered_errors}`, where
+  `source` is `package`, `tool_run`, `flag` or `package_missing`; `--describe`
+  declares the contract under `error_policy`;
+- a `UNONE_PLAYER_RECOVERED ...` warning (browser console; native stderr or
+  logcat), at most one per kind every 5 s, counting what it skipped.
 
 A game that wants its own fallback reads the `setRoot` result or
 `api.ui.inspect().last_rejection`, and can copy the rejection into an
@@ -270,7 +277,8 @@ observation so tests see it. Under the strict policy a game may still `pcall`
 
 Tests: `cargo test -p unone-engine --test error_policy`, the Web bridge's
 `c_abi_error_policy_keeps_the_previous_screen_or_fails_strictly`,
-`node --test web/shared/player-errors.test.mjs`, and, against a built runtime,
+`node --test web/shared/player-errors.test.mjs`, the native player's
+`cargo test --lib -- error_policy recovery`, and, against a built runtime,
 `node scripts/verify-error-policy-wasm.mjs --runtime <player-runtime-dir>`, which
 drives the emitted WASM through the player's own runtime core.
 

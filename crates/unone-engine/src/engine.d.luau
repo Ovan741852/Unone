@@ -377,8 +377,8 @@ export type UiApi = {
     components: UiComponentsApi,
     -- True when published. A tree over a capacity limit (UI_NODE_LIMIT,
     -- UI_DEPTH_LIMIT, UI_STRING_LIMIT, UI_VIRTUAL_ITEM_LIMIT) raises under the
-    -- strict default and returns false in a production Web player, which keeps
-    -- the previous screen; inspect().last_rejection says why.
+    -- strict default and returns false in a production Web or native player,
+    -- which keeps the previous screen; inspect().last_rejection says why.
     setRoot: (root: UiScreen) -> boolean,
     -- Current host width/height ratio, also used by anchored placement.
     -- Read-only environment data; pass to components.createResponsiveLayout().resolve.

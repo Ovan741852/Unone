@@ -79,8 +79,8 @@ skins. See [the current scope contract](ui-styling.md#explicit-background-scopes
 
 | 執行情境 | `api.ui.setRoot` 遇到容量拒絕 |
 | --- | --- |
-| `game check`、`run`、`test`、預覽、replay、開發版 Web player（嚴格，預設） | 照舊拋出 `UI_NODE_LIMIT: path=..., node=..., used=..., limit=...`，跑測試或檢查不會悄悄通過超限畫面 |
-| 正式版 Web player（`error_policy.ui_capacity="keep_previous"`，正式匯出預設） | 回傳 `false`，保留上一個有效畫面，這次 update 其餘部分照常執行 |
+| `game check`、`run`、`test`、預覽、replay、開發版 Web player、native 工具執行（headless、`--frames`、`--seconds`、replay、capture）（嚴格，預設） | 照舊拋出 `UI_NODE_LIMIT: path=..., node=..., used=..., limit=...`，跑測試或檢查不會悄悄通過超限畫面 |
+| 正式版 Web player、native 一般遊玩（`error_policy.ui_capacity="keep_previous"`，正式匯出預設） | 回傳 `false`，保留上一個有效畫面，這次 update 其餘部分照常執行 |
 
 成功發布一律回傳 `true`。任何模式下，每次容量拒絕都記在 `api.ui.inspect()`：
 
@@ -93,9 +93,10 @@ end
 ```
 
 `inspect().rejections` 是累計次數。正式版 player 另外把它放進快照的
-`world.recovered_errors`、`document.body.dataset.playerRecoveredErrors`，並以限流的
-console 警告和左下角小提示回報；嚴格模式的快照不含這個欄位。虛擬清單的視窗請求
-若會超限，也會保留原本已發布的視窗。設定、預設值與 `?unone_errors=strict`
+`world.recovered_errors`；Web 版還有 `document.body.dataset.playerRecoveredErrors`、
+限流的 console 警告和左下角小提示，native 版是報告的 `error_policy` 與 stderr 警告。
+嚴格模式的快照不含這個欄位。虛擬清單的視窗請求若會超限，也會保留原本已發布的視窗。
+設定、預設值、`?unone_errors=strict` 與 native 的 `--error-policy`
 見 [player 的執行期錯誤政策](player-export.md#runtime-errors)。
 
 `api.ui.imageBatch.define` 讓已發布的樹超限時仍然拋錯：那是資源變更，不是發布，

@@ -158,9 +158,9 @@ limit to find a hang sooner. Fix the loop. If the work is real, spread it over f
 before raising the limit. Players and Web builds do not enforce it.
 
 `api.ui.setRoot` returns true when it publishes. A screen over its node, depth or string budget
-(`UI_NODE_LIMIT` and friends) raises in `check`, `run`, `test`, previews and development players,
-so do not wrap `setRoot` in `pcall` to get past it: shrink the screen or raise
-`budget.max_nodes` on purpose. A production Web player instead keeps the previous screen,
+(`UI_NODE_LIMIT` and friends) raises in `check`, `run`, `test`, previews, development players and
+native tool runs, so do not wrap `setRoot` in `pcall` to get past it: shrink the screen or raise
+`budget.max_nodes` on purpose. A production Web player or interactive native play instead keeps the previous screen,
 returns false and reports it (`api.ui.inspect().last_rejection`), and skips a failing
 `Game.update` until `max_consecutive_script_errors` frames fail in a row. That is the
 `error_policy` in `player.presentation.json`; see [runtime errors](docs/player-export.md#runtime-errors).
