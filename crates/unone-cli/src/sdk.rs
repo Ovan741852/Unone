@@ -663,6 +663,8 @@ pub fn pack(source: &Path, runtimes: &[PathBuf], output: &Path) -> Result<Value>
         };
         files.push((path.to_string(), bytes));
     }
+    // An index for AI agents, generated from the guides above.
+    files.push(("llms.txt".into(), llms_txt().into_bytes()));
     for name in template_files() {
         files.push((
             format!("templates/web/{name}"),
@@ -792,10 +794,54 @@ mod schema_pack_tests {
     }
 }
 
+/// `llms.txt` for the SDK root (llmstxt.org): what an AI author should run
+/// before writing code, and every bundled guide with its first sentence.
+/// Generated from the same compiled docs the SDK ships, so it never drifts.
+pub(crate) fn llms_txt() -> String {
+    fn summary(source: &str) -> (String, String) {
+        let mut lines = source.lines();
+        let title = lines.by_ref().find_map(|line| line.strip_prefix("# ")).unwrap_or("Guide").trim().to_string();
+        let paragraph: Vec<&str> = lines
+            .skip_while(|line| line.trim().is_empty())
+            .take_while(|line| !line.trim().is_empty() && !line.starts_with('#') && !line.starts_with("```") && !line.starts_with('|'))
+            .collect();
+        let text = paragraph.join(" ");
+        // Keep link text, drop link targets, and stop at the first sentence.
+        let mut plain = String::new();
+        let mut rest = text.as_str();
+        while let Some(open) = rest.find("](") {
+            plain.push_str(&rest[..open]);
+            rest = rest[open..].find(')').map_or("", |close| &rest[open + close + 1..]);
+        }
+        plain.push_str(rest);
+        let plain = plain.replace('[', "");
+        let sentence = plain.split_inclusive(". ").next().unwrap_or("").trim().to_string();
+        (title, sentence)
+    }
+    let mut out = String::from(
+        "# Unone SDK\n\n> An AI-first game engine: game code in Luau, a deterministic Rust core, and official Web and native players. Use the tools below instead of guessing APIs.\n\n\
+         Before writing code:\n\n\
+         - `game find \"<need>\"`: existing engine APIs, render passes, systems, official packages, local plugins and marketplace plugins, in the order to prefer them.\n\
+         - `game api search \"<meaning>\"`, then `game api describe <name>`: the exact API, its errors and an example.\n\
+         - `game systems list`: which engine systems this project runs.\n\
+         - `game verify`: types, assets, layouts and tests in one verdict.\n\n## Guides\n\n",
+    );
+    let packages = unone_engine::runtime_package_files();
+    let guides = authoring_files().into_iter().chain(packages).filter(|(path, _)| path.ends_with(".md"));
+    let mut seen = BTreeSet::new();
+    for (path, source) in guides {
+        if seen.insert(path) {
+            let (title, sentence) = summary(source);
+            out.push_str(&format!("- [{title}]({path}): {sentence}\n"));
+        }
+    }
+    out
+}
+
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 26] {
+fn authoring_files() -> [(&'static str, &'static str); 28] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/profiling.md", include_str!("../../../docs/profiling.md")),
@@ -805,6 +851,8 @@ fn authoring_files() -> [(&'static str, &'static str); 26] {
         ("docs/render-pipeline.md", include_str!("../../../docs/render-pipeline.md")),
         ("docs/find.md", include_str!("../../../docs/find.md")),
         ("docs/lighting.md", include_str!("../../../docs/lighting.md")),
+        ("docs/input-gamepad.md", include_str!("../../../docs/input-gamepad.md")),
+        ("docs/materials.md", include_str!("../../../docs/materials.md")),
         ("docs/projected-geometry.md", include_str!("../../../docs/projected-geometry.md")),
         ("docs/projected-raster.md", include_str!("../../../docs/projected-raster.md")),
         ("docs/projected-frame.md", include_str!("../../../docs/projected-frame.md")),
@@ -1154,12 +1202,13 @@ mod tests {
         let output = temp.path().join("sdk");
         pack(&source, &[runtime], &output).unwrap();
         let mut manifest = load(&output).unwrap();
-        let added = ["README.md", "docs/spatial-batches.md", "docs/projected-geometry.md", "scripts/serve-player.py", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py",
+        let added = ["README.md", "llms.txt", "docs/spatial-batches.md", "docs/projected-geometry.md", "scripts/serve-player.py", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py",
             "examples/spatial-diagnostics/README.md", "examples/spatial-diagnostics/project.unone.json", "examples/spatial-diagnostics/scene.json", "examples/spatial-diagnostics/main.luau", "tools/benchmark-spatial.mjs"];
         for name in added {
             assert!(manifest.files.iter().any(|file| file.path == name), "missing documented SDK entry: {name}");
             assert!(output.join(name).is_file());
         }
+        assert!(fs::read_to_string(output.join("llms.txt")).unwrap().contains("](docs/find.md)"));
         let guide = "docs/spatial-batches.md";
         assert_eq!(fs::read_to_string(output.join(guide)).unwrap(), include_str!("../../../docs/spatial-batches.md"));
         assert!(fs::read_to_string(output.join("README.md")).unwrap().contains("](docs/spatial-batches.md)"));
@@ -1232,5 +1281,22 @@ mod tests {
             }
         }))
         .unwrap();
+    }
+}
+
+#[cfg(test)]
+mod llms_tests {
+    #[test]
+    fn llms_txt_lists_the_tools_and_every_bundled_guide_once() {
+        let text = super::llms_txt();
+        assert!(text.starts_with("# Unone SDK\n\n> "));
+        assert!(text.contains("`game find \"<need>\"`") && text.contains("`game api search"));
+        for (path, _) in super::authoring_files().into_iter().filter(|(path, _)| path.ends_with(".md")) {
+            assert_eq!(text.matches(&format!("]({path})")).count(), 1, "{path}");
+        }
+        let lighting = text.lines().find(|line| line.contains("](docs/lighting.md)")).unwrap();
+        assert!(lighting.starts_with("- [Lighting](docs/lighting.md): A scene can light its 3D content"), "{lighting}");
+        let summary = &lighting[lighting.find("): ").unwrap() + 3..];
+        assert!(!summary.contains("]("), "link targets are dropped from summaries: {summary}");
     }
 }

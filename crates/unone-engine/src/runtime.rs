@@ -176,6 +176,8 @@ struct InputState {
     pressed: BTreeSet<String>,
     released: BTreeSet<String>,
     pointer: PointerState,
+    /// Connected gamepads' sticks and triggers this tick (buttons are actions).
+    gamepads: Vec<crate::project::GamepadInput>,
     ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     pending_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
@@ -1112,6 +1114,7 @@ impl EngineRuntime {
             }
             input.physical.stage(frame.physical.clone()).map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_INVALID","Physical input admission rejected",e)))?;
             input.down = frame.actions.clone();
+            input.gamepads = frame.gamepads.clone();
             input.pending_ui_sliders.extend(frame.ui_sliders.clone());
             input.pending_ui_text_inputs.extend(frame.ui_text_inputs.clone());
             if !frame.presentation_resources.is_empty() { input.pending_presentation = frame.presentation_resources.clone(); }

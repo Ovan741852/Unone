@@ -40,6 +40,13 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   const textEvents = [], textActive = new Map();
   const textPhases = new Set(['change', 'submit', 'cancel', 'focus', 'blur']);
   const physicalActions=createActionQueue(),screenButtons=new Map();
+  // Polled gamepads (player-input.js readGamepads): held buttons and raw axes.
+  let gamepads=[];
+  function setGamepads(states){
+    if(!Array.isArray(states))throw new TypeError('GAMEPAD_INPUT_INVALID: a list of gamepad states is required');
+    gamepads=states.map(({slot,left_x,left_y,right_x,right_y,left_trigger,right_trigger,buttons=[]})=>({
+      slot,left_x,left_y,right_x,right_y,left_trigger,right_trigger,buttons:[...buttons]}));
+  }
   const sliderPhases = new Set(['start', 'drag', 'end', 'cancel']);
   function cancelSliders() {
     const active = new Map([...sliderConsumedActive, ...sliderActive]);
@@ -132,8 +139,9 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
       if(secondary.down)physical.push(action);
       if(secondary.pointer){framePointer={...secondary.pointer,down:framePointer.down};advanceSecondary=false;}
     }
+    const padActions=gamepads.flatMap(pad=>pad.buttons.flatMap(button=>[`Gamepad_${button}`,`Gamepad${pad.slot}_${button}`]));
     const actions = Object.fromEntries(
-      [...new Set([...held, ...pressed, ...semanticHeld,...physical])].sort().map((action) => [action, true])
+      [...new Set([...held, ...pressed, ...semanticHeld,...physical,...padActions])].sort().map((action) => [action, true])
     );
     pressed.clear();
     // A quick tap must reach the model as start, then end on separate ticks.
@@ -155,6 +163,7 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     }
     textEvents.splice(0, textEvents.length, ...textRemaining);
     return { actions, pointer: framePointer, ...(consumed.size ? {ui_sliders:Object.fromEntries(sliders)} : {}),
+      ...(gamepads.length ? {gamepads:gamepads.map(({buttons,...axes})=>axes)} : {}),
       ...(textConsumed.size ? {ui_text_inputs:Object.fromEntries(texts)} : {}) };
   }
 
@@ -182,6 +191,7 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     setHeld,
     queuePhysicalAction,
     queueScreenAction,
+    setGamepads,
     updatePointer,
     consumeFrame,
     releasePointer,

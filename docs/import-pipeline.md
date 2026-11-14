@@ -86,6 +86,14 @@ its file as bytes). Every importer input must be connected with a matching
 type; an `image` product needs a `texture2d` asset. Imports that read each
 other's products run in dependency order; a cycle fails.
 
+## Bundled importers
+
+The `org.unone.gltf` plugin ships a glTF 2.0 binary (`.glb`) importer and the
+tools that wire it into a project: `gltf.apply` copies the importer, registers
+it as `unone.gltf.mesh`, adds an import root and declares the mesh and texture
+assets (see `plugins/org.unone.gltf/README.md`). `game find "import gltf model"`
+finds it.
+
 ## Roots
 
 A root is a read-only directory outside the project. The engine looks for it in

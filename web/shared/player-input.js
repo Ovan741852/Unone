@@ -5,6 +5,26 @@ const namedKeys={ArrowLeft:'Left',ArrowRight:'Right',ArrowUp:'Up',ArrowDown:'Dow
   ShiftLeft:'ShiftLeft',ShiftRight:'ShiftRight',ControlLeft:'ControlLeft',ControlRight:'ControlRight',AltLeft:'AltLeft',AltRight:'AltRight',
   Minus:'Minus',Equal:'Equal',Numpad8:'Numpad8',Numpad2:'Numpad2',Numpad4:'Numpad4',Numpad6:'Numpad6',Numpad7:'Numpad7',Numpad9:'Numpad9'};
 
+// Gamepad buttons in the W3C "standard" mapping order (crates/unone-engine
+// GAMEPAD_BUTTONS); each pressed one becomes Gamepad_<name> and Gamepad<slot>_<name>.
+export const GAMEPAD_BUTTONS=['A','B','X','Y','LB','RB','LT','RT','Back','Start','LS','RS','Up','Down','Left','Right','Home'];
+const clampUnit=(value,min)=>Number.isFinite(value)?Math.max(min,Math.min(1,value)):0;
+
+// navigator.getGamepads() to the engine's raw gamepad states: slot = index + 1
+// (slots 1-4), stick y positive up, triggers 0..1, plus the pressed button names.
+export function readGamepads(pads) {
+  const states=[];
+  for(const pad of pads??[]) {
+    if(!pad?.connected||!(pad.index>=0&&pad.index<4))continue;
+    const axis=index=>clampUnit(pad.axes?.[index]??0,-1),button=index=>pad.buttons?.[index];
+    const trigger=index=>clampUnit(button(index)?.value??(button(index)?.pressed?1:0),0);
+    states.push({slot:pad.index+1,left_x:axis(0),left_y:-axis(1),right_x:axis(2),right_y:-axis(3),
+      left_trigger:trigger(6),right_trigger:trigger(7),
+      buttons:GAMEPAD_BUTTONS.filter((_,index)=>Boolean(button(index)?.pressed))});
+  }
+  return states.sort((a,b)=>a.slot-b.slot);
+}
+
 export function physicalKeyAction(code) {
   if(/^Key[A-Z]$/.test(code))return code.slice(3);
   if(/^Digit[0-9]$/.test(code))return code.slice(5);

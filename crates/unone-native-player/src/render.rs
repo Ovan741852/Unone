@@ -41,6 +41,8 @@ struct Batch {
     asset: String,
     revision: u64,
     lod: usize,
+    /// The scene material this batch's entities name, if any.
+    material: Option<String>,
 }
 struct LodCache {
     revision: u64,
@@ -690,6 +692,14 @@ pub struct Renderer {
     particles: crate::particles::Particles,
     /// Scene lighting: the mesh pipeline's group 2 and the sun's shadow pass.
     lighting: crate::lighting::LightingGpu,
+    /// Scene materials: the mesh pipeline's group 3.
+    materials: crate::lighting::MaterialsGpu,
+    /// Primitives with a material start from white rather than their grey.
+    white_texture: Arc<wgpu::BindGroup>,
+    /// Draws the environment panorama as the sky.
+    sky_pipeline: wgpu::RenderPipeline,
+    /// .hdr data assets by id, decoded when lighting.environment names one.
+    environment_sources: BTreeMap<String, Vec<u8>>,
     /// Present when presentation "antialias": true selected 4x MSAA.
     msaa: Option<Msaa>,
     surface: wgpu::Surface<'static>,
@@ -1377,9 +1387,37 @@ impl Renderer {
             label: None,
             source: wgpu::ShaderSource::Wgsl(include_str!("render.wgsl").into()),
         });
-        let lighting = crate::lighting::LightingGpu::new(&device, &texture_layout);
+        let lighting = crate::lighting::LightingGpu::new(&device, &queue, &texture_layout);
+        let materials = crate::lighting::MaterialsGpu::new(&device);
         // Vertices are position, uv and normal (lighting::mesh_vertices).
-        let pipeline=device.create_render_pipeline(&wgpu::RenderPipelineDescriptor{label:None,layout:Some(&device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor{label:None,bind_group_layouts:&[Some(&camera_layout),Some(&texture_layout),Some(&lighting.layout)],immediate_size:0})),vertex:wgpu::VertexState{module:&shader,entry_point:Some("vs"),buffers:&[Some(wgpu::VertexBufferLayout{array_stride:32,step_mode:wgpu::VertexStepMode::Vertex,attributes:&wgpu::vertex_attr_array![0=>Float32x3,1=>Float32x2,5=>Float32x3]}),Some(wgpu::VertexBufferLayout{array_stride:40,step_mode:wgpu::VertexStepMode::Instance,attributes:&wgpu::vertex_attr_array![2=>Float32x3,3=>Float32x4,4=>Float32x3]})],compilation_options:Default::default()},fragment:Some(wgpu::FragmentState{module:&shader,entry_point:Some("fs"),targets:&[Some(wgpu::ColorTargetState{format,blend:None,write_mask:wgpu::ColorWrites::ALL})],compilation_options:Default::default()}),primitive:wgpu::PrimitiveState{cull_mode:None,..Default::default()},depth_stencil:Some(wgpu::DepthStencilState{format:wgpu::TextureFormat::Depth32Float,depth_write_enabled:Some(true),depth_compare:Some(wgpu::CompareFunction::Less),stencil:Default::default(),bias:Default::default()}),multisample:wgpu::MultisampleState{count:samples,..Default::default()},multiview_mask:None,cache:None});
+        let pipeline=device.create_render_pipeline(&wgpu::RenderPipelineDescriptor{label:None,layout:Some(&device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor{label:None,bind_group_layouts:&[Some(&camera_layout),Some(&texture_layout),Some(&lighting.layout),Some(&materials.layout)],immediate_size:0})),vertex:wgpu::VertexState{module:&shader,entry_point:Some("vs"),buffers:&[Some(wgpu::VertexBufferLayout{array_stride:32,step_mode:wgpu::VertexStepMode::Vertex,attributes:&wgpu::vertex_attr_array![0=>Float32x3,1=>Float32x2,5=>Float32x3]}),Some(wgpu::VertexBufferLayout{array_stride:40,step_mode:wgpu::VertexStepMode::Instance,attributes:&wgpu::vertex_attr_array![2=>Float32x3,3=>Float32x4,4=>Float32x3]})],compilation_options:Default::default()},fragment:Some(wgpu::FragmentState{module:&shader,entry_point:Some("fs"),targets:&[Some(wgpu::ColorTargetState{format,blend:None,write_mask:wgpu::ColorWrites::ALL})],compilation_options:Default::default()}),primitive:wgpu::PrimitiveState{cull_mode:None,..Default::default()},depth_stencil:Some(wgpu::DepthStencilState{format:wgpu::TextureFormat::Depth32Float,depth_write_enabled:Some(true),depth_compare:Some(wgpu::CompareFunction::Less),stencil:Default::default(),bias:Default::default()}),multisample:wgpu::MultisampleState{count:samples,..Default::default()},multiview_mask:None,cache:None});
+        let sky_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+            label: Some("native-sky"),
+            layout: Some(&device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                label: Some("native-sky"),
+                bind_group_layouts: &[Some(&camera_layout), Some(&texture_layout), Some(&lighting.layout), Some(&materials.layout)],
+                immediate_size: 0,
+            })),
+            vertex: wgpu::VertexState { module: &shader, entry_point: Some("vs_sky"), buffers: &[], compilation_options: Default::default() },
+            fragment: Some(wgpu::FragmentState {
+                module: &shader,
+                entry_point: Some("fs_sky"),
+                targets: &[Some(wgpu::ColorTargetState { format, blend: None, write_mask: wgpu::ColorWrites::ALL })],
+                compilation_options: Default::default(),
+            }),
+            primitive: wgpu::PrimitiveState::default(),
+            // Drawn first, behind everything, writing no depth.
+            depth_stencil: Some(wgpu::DepthStencilState {
+                format: wgpu::TextureFormat::Depth32Float,
+                depth_write_enabled: Some(false),
+                depth_compare: Some(wgpu::CompareFunction::Always),
+                stencil: Default::default(),
+                bias: Default::default(),
+            }),
+            multisample: wgpu::MultisampleState { count: samples, ..Default::default() },
+            multiview_mask: None,
+            cache: None,
+        });
         let sprite_camera = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("native-sprite-camera"),
             size: 16,
@@ -1459,6 +1497,15 @@ impl Renderer {
             .as_array()
             .ok_or("ASSET_MANIFEST_INVALID")?;
         let assets_by_id = index_assets(assets)?;
+        // .hdr data assets, kept for lighting.environment and decoded on demand.
+        let mut environment_sources = BTreeMap::new();
+        for asset in assets.iter().filter(|asset| asset["kind"] == "data") {
+            if let (Some(id), Some(source)) = (asset["id"].as_str(), asset["source"].as_str())
+                && source.to_ascii_lowercase().ends_with(".hdr")
+            {
+                environment_sources.insert(id.to_string(), package.get(&format!("content/{source}"))?.to_vec());
+            }
+        }
         let texture_catalog = crate::sprite_resources::TextureCatalog::new(assets)?;
         let mut meshes = BTreeMap::new();
         let mut textures: BTreeMap<String, Arc<wgpu::BindGroup>> = BTreeMap::new();
@@ -1619,6 +1666,7 @@ impl Renderer {
         // ownership; ordinary and prepared sprite assets are demand-loaded below.
         let persistent_textures=textures.keys().cloned().collect();
         let builtin_texture = solid_texture(&device, &queue, &texture_layout, [230, 236, 245, 255]);
+        let white_texture = solid_texture(&device, &queue, &texture_layout, [255, 255, 255, 255]);
         meshes.insert(
             "mesh://primitive/box".to_string(),
             builtin_box(&device, builtin_texture.clone()),
@@ -1649,6 +1697,10 @@ impl Renderer {
             particles,
             lighting,
             msaa,
+            materials,
+            white_texture,
+            sky_pipeline,
+            environment_sources,
             presentation_batches: serde_json::json!([]),
             lod_enabled: true,
             lods,
@@ -1776,6 +1828,7 @@ impl Renderer {
             asset: asset.into(),
             revision: 0,
             lod: 0,
+            material: None,
         });
         if b.capacity < bytes.len() {
             b.capacity = bytes.len().next_power_of_two();
@@ -1934,18 +1987,32 @@ impl Renderer {
                 ]
                 .map(|x| x as f32);
                 let bytes: &[u8] = bytemuck::cast_slice(&v);
-                match groups.get_mut(m.asset.as_str()) {
+                // One batch per asset and material, keyed "asset\u{1}material".
+                let key = match &m.material {
+                    Some(material) => format!("{}\u{1}{material}", m.asset),
+                    None => m.asset.clone(),
+                };
+                match groups.get_mut(key.as_str()) {
                     Some(records) => records.extend_from_slice(bytes),
                     None => {
-                        groups.insert(m.asset.clone(), bytes.to_vec());
+                        groups.insert(key, bytes.to_vec());
                     }
                 }
             }
         }
         groups.retain(|_, records| !records.is_empty());
-        for (asset, records) in &groups {
-            self.batch(&format!("entities:{asset}"), asset, records, 0)?;
+        for (key, records) in &groups {
+            let (asset, material) = match key.split_once('\u{1}') {
+                Some((asset, material)) => (asset, Some(material.to_string())),
+                None => (key.as_str(), None),
+            };
+            let id = format!("entities:{key}");
+            self.batch(&id, asset, records, 0)?;
+            if let Some(batch) = self.batches.get_mut(&id) {
+                batch.material = material;
+            }
         }
+        self.materials.update(&self.device, &self.queue, &s.materials);
         self.entity_records = groups;
         self.batches.retain(|_, b| b.count > 0);
         let c = s.camera3d.as_ref().ok_or("NATIVE_CAMERA3D_REQUIRED")?;
@@ -1954,6 +2021,20 @@ impl Renderer {
                 .prepare(&self.device, &self.queue, &s.particles, c);
             self.uploaded += self.particles.uploaded as u64;
             self.last_particle = Some((s.frame, view));
+        }
+        let wanted = s.lighting.as_ref().and_then(|lighting| lighting.environment.as_ref()).map(|environment| environment.map.as_str());
+        if wanted != self.lighting.environment_key() {
+            match wanted {
+                Some(id) => {
+                    let bytes = self.environment_sources.get(id).ok_or_else(|| {
+                        format!("NATIVE_ENVIRONMENT_MAP_INVALID: lighting.environment.map '{id}' must be a declared data asset whose source is an .hdr file")
+                    })?;
+                    let (width, height, rgb) = crate::environment::decode_hdr(bytes)?;
+                    let map = crate::environment::prepare(width, height, rgb);
+                    self.lighting.set_environment(&self.device, &self.queue, Some((id, &map)));
+                }
+                None => self.lighting.set_environment(&self.device, &self.queue, None),
+            }
         }
         self.lighting.update(&self.device, &self.queue, s.lighting.as_ref(), [c.target.x as f32, c.target.y as f32, c.target.z as f32]);
         let values = view.uniform();
@@ -2103,13 +2184,25 @@ impl Renderer {
             occlusion_query_set: None,
             multiview_mask: None,
         });
+        if self.lighting.background && self.world_visible && self.pipeline_scene() {
+            pass.set_pipeline(&self.sky_pipeline);
+            pass.set_bind_group(0, &self.camera_group, &[]);
+            pass.set_bind_group(1, &*self.white_texture, &[]);
+            pass.set_bind_group(2, &self.lighting.group, &[]);
+            pass.set_bind_group(3, self.materials.group(None), &[]);
+            pass.draw(0..3, 0..1);
+            self.draws += 1;
+        }
         pass.set_pipeline(&self.pipeline);
         pass.set_bind_group(0, &self.camera_group, &[]);
         pass.set_bind_group(2, &self.lighting.group, &[]);
         if self.world_visible && self.pipeline_scene() {
         for b in self.batches.values() {
             let m = &self.meshes[&b.asset];
-            pass.set_bind_group(1, &*m.texture, &[]);
+            let primitive = b.asset.starts_with("mesh://primitive/");
+            let texture = if primitive && b.material.is_some() { &self.white_texture } else { &m.texture };
+            pass.set_bind_group(1, &**texture, &[]);
+            pass.set_bind_group(3, self.materials.group(b.material.as_deref()), &[]);
             pass.set_vertex_buffer(0, m.vertices.slice(..));
             pass.set_vertex_buffer(1, b.buffers[b.slot].slice(..));
             pass.set_index_buffer(m.indices.slice(..), wgpu::IndexFormat::Uint32);

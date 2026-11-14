@@ -1,0 +1,22 @@
+{
+  "api": "unone.plugin.v1",
+  "id": "org.unone.pathtrace",
+  "name": "Unone Path Trace",
+  "version": "0.1.0",
+  "description": "Path-traced stills of a project's 3D scene (soft shadows, reflections, sky light) for store pages, trailers and lighting reference, using the same materials, lights and HDR environment as the players.",
+  "entry": {"command": "node", "args": ["plugin.mjs"]},
+  "capabilities": ["render.offline", "render.still"],
+  "permissions": ["project.read", "project.write"],
+  "keywords": [
+    "path tracing", "path tracer", "ray tracing", "offline render", "still image", "screenshot", "beauty shot", "store page", "marketing", "trailer frame",
+    "路徑追蹤", "光線追蹤", "離線渲染", "截圖", "宣傳圖", "商店圖"
+  ],
+  "tools": [
+    {"name": "plugin.test", "title": "Check the tracer", "description": "Load the tracer module.", "input_schema": {"type": "object"}},
+    {"name": "pathtrace.render", "title": "Render a still", "description": "Path-trace the scene file (main_scene by default) from its camera to a PNG (renders/still.png by default). Entities as declared in the scene; runtime spawns and lighting changes are not included.", "input_schema": {"type": "object", "properties": {
+      "scene": {"type": "string"}, "output": {"type": "string"},
+      "width": {"type": "integer", "minimum": 1, "maximum": 4096}, "height": {"type": "integer", "minimum": 1, "maximum": 4096},
+      "samples": {"type": "integer", "minimum": 1, "maximum": 4096, "description": "Rays per pixel; default 16. More is smoother and slower."},
+      "bounces": {"type": "integer", "minimum": 0, "maximum": 16}, "exposure": {"type": "number"}, "seed": {"type": "integer"}}}}
+  ]
+}

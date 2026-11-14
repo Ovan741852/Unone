@@ -5,7 +5,7 @@ import {createUiTextInputHost} from '../shared/ui-text-input.mjs';
 import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';
 import {createUiScrollHost} from '../shared/ui-scroll.mjs';
 import {createHostInput} from '../shared/host-input.js';
-import {createLegacyPointerRouting,routeBrowserKey,routeBrowserPointer} from '../shared/player-input.js';
+import {createLegacyPointerRouting,routeBrowserKey,routeBrowserPointer,readGamepads} from '../shared/player-input.js';
 import {createOrderedPhysicalQueue} from '../shared/ordered-physical-queue.mjs';
 import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
@@ -145,7 +145,10 @@ async function advance(presenting){
  profiler.end(pu,'ok');
 }
 async function advanceFrame(pu,presenting){
- const began=performance.now(),browserInput=manualInput==null;let frame=manualInput??input.consumeFrame();manualInput=null;
+ const began=performance.now(),browserInput=manualInput==null;
+ // Gamepads are polled once per tick (docs/input-gamepad.md).
+ if(browserInput&&typeof navigator!=='undefined'&&navigator.getGamepads)input.setGamepads(readGamepads(navigator.getGamepads()));
+ let frame=manualInput??input.consumeFrame();manualInput=null;
  // The camera may follow a moving entity while the physical mouse stays still.
  // Reproject the consumed screen sample, preserving queued down/up edges and
  // leaving developer-supplied world coordinates untouched.
@@ -283,7 +286,7 @@ async function start(){
  const data=await dataLoad;if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:sessionSeed(),data}),{reset:true,newSession:true});
  const renderPasses=await renderExtensions(presentation.render_extensions);
- renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
+ renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  resourceHost=createSpriteResourceHost(renderer);resourceHost.acceptSnapshot(snapshot);
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));

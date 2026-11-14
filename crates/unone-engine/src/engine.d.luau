@@ -226,8 +226,16 @@ export type GesturesApi = {
     info: () -> {read name: string, read version: string, read kind: string, read entry: string, read api: string, read license: string, read declared: boolean},
     create: (options: GestureOptions?) -> GestureRecognizer,
 }
+-- One connected gamepad (docs/input-gamepad.md). Sticks are -1..1 with y up,
+-- after a radial deadzone; triggers 0..1. Buttons are actions: Gamepad_A
+-- (any pad) or Gamepad1_A..Gamepad4_A, read with isDown/wasPressed.
+export type GamepadState = { slot: number, leftStick: Vec2, rightStick: Vec2, leftTrigger: number, rightTrigger: number }
 export type InputApi = {
     gestures: GesturesApi,
+    -- Slot 1..4, or the lowest connected slot when omitted; nil when not connected.
+    getGamepad: (slot: number?) -> GamepadState?,
+    -- Every connected gamepad, by slot.
+    getGamepads: () -> {GamepadState},
     -- Current successful-tick text editing event; nil when no event for this ID.
     getTextInputInteraction: (id: string) -> UiTextInputInteraction?,
     -- Tick-scope detached ordered ingress; nil outside update or for legacy input.
@@ -1008,10 +1016,22 @@ export type RenderApi = {
 -- Scene lighting (docs/lighting.md): ambient, one sun with optional shadows,
 -- up to eight point lights. Colours are "#rrggbb"; intensity 1 is full light.
 export type AmbientLight = { color: string?, intensity: number? }
+export type HemisphereLight = { sky: string?, ground: string?, intensity: number? }
+-- map: a data asset id whose source is an .hdr panorama; lights materials.
+export type Environment = { map: string, intensity: number?, rotation: number?, background: boolean? }
 export type Shadows = { size: number?, distance: number?, bias: number? }
 export type SunLight = { direction: Vec3, color: string?, intensity: number?, shadows: Shadows? }
 export type PointLight = { position: Vec3, color: string?, intensity: number?, range: number? }
-export type Lighting = { ambient: AmbientLight?, sun: SunLight?, points: {PointLight}? }
+export type Lighting = { ambient: AmbientLight?, hemisphere: HemisphereLight?, environment: Environment?, sun: SunLight?, points: {PointLight}? }
+-- A surface material (docs/materials.md): colour multiplies the mesh texture,
+-- metallic and roughness 0..1, emissive glow. mesh3d.material names one.
+export type Material = { color: string?, metallic: number?, roughness: number?, emissive: string?, emissive_intensity: number? }
+export type MaterialApi = {
+    -- Add or replace a named material; invalid ones leave it as it was.
+    set: (name: string, material: Material) -> (),
+    -- A copy with defaults filled in, or nil when no such material exists.
+    get: (name: string) -> Material?,
+}
 export type LightingApi = {
     -- Replace the scene lighting; nil turns lighting off (unlit 3D). Invalid lighting leaves it as it was.
     set: (lighting: Lighting?) -> (),
@@ -1030,6 +1050,7 @@ export type EngineApi = {
     sprite: SpriteApi,
     render: RenderApi,
     lighting: LightingApi,
+    material: MaterialApi,
     bytes: BytesApi,
     network: NetworkApi,
     hostTime: HostTimeApi,

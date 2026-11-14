@@ -20,6 +20,12 @@ pub struct Lighting {
     /// Light reaching every surface equally.
     #[serde(default)]
     pub ambient: AmbientLight,
+    /// Sky light from above fading to ground light from below, added to ambient.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hemisphere: Option<HemisphereLight>,
+    /// An HDR panorama lighting meshes with materials (image-based light).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub environment: Option<Environment>,
     /// One directional light, such as the sun or the moon.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sun: Option<SunLight>,
@@ -44,6 +50,38 @@ impl Default for AmbientLight {
     fn default() -> Self {
         Self { color: white(), intensity: ambient_intensity() }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct Environment {
+    /// A declared `data` asset whose source is a Radiance .hdr equirectangular panorama.
+    pub map: String,
+    /// [0,16], default 1.
+    #[serde(default = "one")]
+    pub intensity: f64,
+    /// Degrees around the up axis, [-360, 360], default 0.
+    #[serde(default)]
+    pub rotation: f64,
+    /// Also draw the panorama behind the scene as its sky; default false.
+    #[serde(default)]
+    pub background: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct HemisphereLight {
+    /// Light from straight above, "#rrggbb"; default "#ffffff".
+    #[serde(default = "white")]
+    pub sky: String,
+    /// Light from straight below, "#rrggbb"; default "#444444".
+    #[serde(default = "ground")]
+    pub ground: String,
+    /// [0,16], default 0.5. A surface tilted halfway gets the mix.
+    #[serde(default = "hemisphere_intensity")]
+    pub intensity: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -109,6 +147,12 @@ fn white() -> String {
 fn one() -> f64 {
     1.
 }
+fn ground() -> String {
+    "#444444".into()
+}
+fn hemisphere_intensity() -> f64 {
+    0.5
+}
 fn ambient_intensity() -> f64 {
     0.3
 }
@@ -148,6 +192,18 @@ impl Lighting {
     pub fn validate(&self) -> Result<(), String> {
         color(&self.ambient.color, "ambient.color")?;
         range(self.ambient.intensity, "ambient.intensity", 0., 16., false)?;
+        if let Some(environment) = &self.environment {
+            if environment.map.trim().is_empty() || environment.map.len() > 256 {
+                return Err("environment.map must name a declared data asset holding an .hdr panorama".into());
+            }
+            range(environment.intensity, "environment.intensity", 0., 16., false)?;
+            range(environment.rotation, "environment.rotation", -360., 360., false)?;
+        }
+        if let Some(hemisphere) = &self.hemisphere {
+            color(&hemisphere.sky, "hemisphere.sky")?;
+            color(&hemisphere.ground, "hemisphere.ground")?;
+            range(hemisphere.intensity, "hemisphere.intensity", 0., 16., false)?;
+        }
         if let Some(sun) = &self.sun {
             position(&sun.direction, "sun.direction")?;
             let length = (sun.direction.x.powi(2) + sun.direction.y.powi(2) + sun.direction.z.powi(2)).sqrt();

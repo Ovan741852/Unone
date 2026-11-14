@@ -114,6 +114,9 @@ pub struct Mesh3DData {
     pub asset: String,
     #[serde(default = "default_true")]
     pub visible: bool,
+    /// A material the scene declares or api.material.set added (docs/materials.md).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub material: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -451,6 +454,9 @@ pub struct SceneFile {
     /// Absent: 3D content stays unlit.
     #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub lighting: Option<crate::Lighting>,
+    /// Named surface materials mesh3d components refer to (docs/materials.md).
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
+    pub materials: BTreeMap<String, crate::Material>,
 }
 
 impl Serialize for SceneFile {
@@ -490,6 +496,9 @@ impl Serialize for SceneFile {
         object.insert("camera".into(), camera);
         if let Some(lighting) = &self.lighting {
             object.insert("lighting".into(), serde_json::to_value(lighting).map_err(S::Error::custom)?);
+        }
+        if !self.materials.is_empty() {
+            object.insert("materials".into(), serde_json::to_value(&self.materials).map_err(S::Error::custom)?);
         }
         serde_json::Value::Object(object).serialize(serializer)
     }
@@ -560,6 +569,8 @@ struct SceneFileWire {
     camera3d: Option<Camera3DData>,
     #[serde(default)]
     lighting: Option<crate::Lighting>,
+    #[serde(default)]
+    materials: BTreeMap<String, crate::Material>,
 }
 
 impl<'de> Deserialize<'de> for SceneFile {
@@ -579,6 +590,7 @@ impl<'de> Deserialize<'de> for SceneFile {
             camera,
             camera3d,
             lighting: wire.lighting,
+            materials: wire.materials,
         })
     }
 }
@@ -1040,6 +1052,9 @@ pub struct WorldSnapshot {
     /// Present only when the scene declares lighting or api.lighting.set ran.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lighting: Option<crate::Lighting>,
+    /// Surface materials, present once the scene or api.material.set adds one.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub materials: BTreeMap<String, crate::Material>,
 }
 
 #[derive(Debug, Clone)]
@@ -1154,6 +1169,8 @@ pub(crate) struct World {
     pub render_pipeline: Option<crate::RenderPipeline>,
     /// The scene's lighting as api.lighting.set last left it.
     pub lighting: Option<crate::Lighting>,
+    /// Named surface materials (scene declarations and api.material.set).
+    pub materials: BTreeMap<String, crate::Material>,
 }
 
 impl World {
@@ -1188,6 +1205,7 @@ impl World {
         self.shader_materials = scene.shader_materials;
         self.physics = scene.physics;
         self.lighting = scene.lighting;
+        self.materials = scene.materials;
         self.camera_state = match scene.camera3d {
             Some(camera) => CameraState::from_perspective(camera),
             None => CameraState::from_orthographic(scene.camera),
@@ -1295,6 +1313,11 @@ impl World {
             .map_err(|error| format!("ENTITY_COMPONENTS_INVALID: {error}"))?;
         crate::scene::validate_runtime_entity(&entity)
             .map_err(|diagnostic| format!("{}: {}", diagnostic.code, diagnostic.explanation))?;
+        if let Some(material) = entity.mesh3d.as_ref().and_then(|mesh| mesh.material.as_ref())
+            && !self.materials.contains_key(material)
+        {
+            return Err(format!("MATERIAL_UNKNOWN: Entity '{id}' mesh3d names material '{material}', which no scene declaration or api.material.set added"));
+        }
         if let Some(material) = &entity.shader_material
             && (entity.sprite.is_none() || !self.shader_materials.contains_key(material))
         {
@@ -1490,6 +1513,7 @@ impl World {
         WorldSnapshot {
             render_pipeline: self.render_pipeline.clone(),
             lighting: self.lighting.clone(),
+            materials: self.materials.clone(),
             physical_input_receipt:None,
             projected_geometry:self.projected_geometry.clone(),
             projected_frame:self.projected_frame.clone(),
@@ -2389,6 +2413,7 @@ mod tests {
             particles: crate::particle::ParticleWorld::default(),
             render_pipeline: None,
             lighting: None,
+            materials: BTreeMap::new(),
         }
     }
 

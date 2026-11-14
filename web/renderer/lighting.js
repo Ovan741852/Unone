@@ -10,9 +10,11 @@ export const MAX_POINT_LIGHTS = 8;
 
 export function createLighting(THREE, renderer, world) {
   const ambient = new THREE.AmbientLight(0xffffff, 0);
+  // Sky from +y, ground from -y; Three mixes them by the normal's height.
+  const hemisphere = new THREE.HemisphereLight(0xffffff, 0x444444, 0);
   const sun = new THREE.DirectionalLight(0xffffff, 0);
   const points = Array.from({length: MAX_POINT_LIGHTS}, () => new THREE.PointLight(0xffffff, 0, 10, 0));
-  for (const light of [ambient, sun, sun.target, ...points]) { light.visible = false; world.add(light); }
+  for (const light of [ambient, hemisphere, sun, sun.target, ...points]) { light.visible = false; world.add(light); }
   // No cost while no light casts shadows: Three skips the shadow pass and
   // compiles programs without shadow code.
   if (renderer?.shadowMap) { renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap; }
@@ -23,6 +25,7 @@ export function createLighting(THREE, renderer, world) {
     state.lit = Boolean(lighting);
     state.shadows = false;
     ambient.visible = state.lit;
+    hemisphere.visible = Boolean(lighting?.hemisphere);
     sun.visible = sun.target.visible = Boolean(lighting?.sun);
     sun.castShadow = false;
     for (let index = 0; index < MAX_POINT_LIGHTS; index++) {
@@ -39,6 +42,10 @@ export function createLighting(THREE, renderer, world) {
     if (!lighting) return state;
     ambient.color.set(lighting.ambient.color);
     ambient.intensity = lighting.ambient.intensity * Math.PI;
+    if (lighting.hemisphere) {
+      hemisphere.color.set(lighting.hemisphere.sky);hemisphere.groundColor.set(lighting.hemisphere.ground);
+      hemisphere.intensity = lighting.hemisphere.intensity * Math.PI;
+    }
     const light = lighting.sun;
     if (light) {
       // The shadow box: a cube of half-width `distance` around the camera
@@ -77,6 +84,6 @@ export function createLighting(THREE, renderer, world) {
     get lit() { return state.lit; },
     get shadows() { return state.shadows; },
     metrics() { return {lit: state.lit, shadows: state.shadows, point_lights: points.filter(light => light.visible).length}; },
-    dispose() { sun.shadow.map?.dispose();for (const light of [ambient, sun, sun.target, ...points]) world.remove(light); },
+    dispose() { sun.shadow.map?.dispose();for (const light of [ambient, hemisphere, sun, sun.target, ...points]) world.remove(light); },
   };
 }

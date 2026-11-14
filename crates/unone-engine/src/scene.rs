@@ -153,6 +153,20 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
         ));
     }
 
+    if scene.materials.len() > crate::material::MAX_MATERIALS {
+        return Err(scene_error(source, "SCENE_MATERIAL_INVALID", "Too many materials", format!("At most {} materials may be declared", crate::material::MAX_MATERIALS)));
+    }
+    for (name, material) in &scene.materials {
+        material.validate(name).map_err(|explanation| scene_error(source, "SCENE_MATERIAL_INVALID", "Scene material is invalid", &explanation))?;
+    }
+    for entity in &scene.entities {
+        if let Some(material) = entity.mesh3d.as_ref().and_then(|mesh| mesh.material.as_ref())
+            && !scene.materials.contains_key(material)
+        {
+            return Err(scene_error(source, "SCENE_MATERIAL_INVALID", "Unknown material",
+                format!("Entity '{}' mesh3d names material '{material}', which the scene's materials do not declare.", entity.id)));
+        }
+    }
     if let Some(lighting) = &scene.lighting
         && let Err(explanation) = lighting.validate()
     {

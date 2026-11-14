@@ -160,6 +160,25 @@ return {
   },
   broken = {inputs = {data = "bytes"}, outputs = {data = "bytes"}, run = function() return {data = "text"} end},
 }"#;
+    /// The bundled glTF importer (plugins/org.unone.gltf) on its fixture: a
+    /// textured quad under a node translated by (1, 2, 3) and scaled by 2.
+    #[test]
+    fn the_bundled_gltf_importer_flattens_nodes_flips_uvs_and_keeps_the_texture() {
+        const IMPORTER: &str = include_str!("../../../../plugins/org.unone.gltf/importer/unone-gltf.luau");
+        const GLB: &[u8] = include_bytes!("../../../../plugins/org.unone.gltf/test/fixtures/quad.glb");
+        let inputs = BTreeMap::from([("model".into(), ImportValue::Bytes(GLB.to_vec()))]);
+        let outputs = run_import_node("unone-gltf.luau", IMPORTER, "mesh", &inputs, &serde_json::json!({"texture": "texture://quad"})).unwrap();
+        let ImportValue::Json(mesh) = &outputs["mesh"] else { panic!("mesh is json") };
+        assert_eq!(mesh["positions"], serde_json::json!([1, 2, 3, 3, 2, 3, 3, 4, 3, 1, 4, 3]));
+        assert_eq!(mesh["uvs"], serde_json::json!([0, 0, 1, 0, 1, 1, 0, 1]), "glTF top-left UVs become bottom-left");
+        assert_eq!(mesh["indices"], serde_json::json!([0, 1, 2, 0, 2, 3]));
+        assert_eq!(mesh["texture"], "texture://quad");
+        let ImportValue::Bytes(png) = &outputs["texture"] else { panic!("texture is bytes") };
+        assert!(png.starts_with(b"\x89PNG"), "the embedded PNG passes through unchanged");
+        let error = run_import_node("unone-gltf.luau", IMPORTER, "mesh", &BTreeMap::from([("model".into(), ImportValue::Bytes(b"{}".to_vec()))]), &serde_json::json!({"texture": "t"})).unwrap_err();
+        assert!(error.contains("GLTF_IMPORT_FAILED") && error.contains("GLB"), "{error}");
+    }
+
     #[test]
     fn nodes_declare_typed_ports_and_run_pure() {
         let nodes = describe_import_nodes("nodes.luau", MODULE).unwrap();

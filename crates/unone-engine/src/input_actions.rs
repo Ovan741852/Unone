@@ -28,9 +28,21 @@ const READERS: [&str; 3] = ["isDown", "wasPressed", "wasReleased"];
 const LISTED_NAMES: usize = 8;
 const FACT_NAMES: usize = 50;
 
+/// Gamepad_A (any pad) or Gamepad1_A to Gamepad4_A, for every standard button.
+fn is_gamepad_button(name: &str) -> bool {
+    let Some(rest) = name.strip_prefix("Gamepad") else { return false };
+    let button = match rest.as_bytes().first() {
+        Some(b'_') => &rest[1..],
+        Some(slot @ b'1'..=b'4') if rest.as_bytes().get(1) == Some(&b'_') && (*slot - b'0') <= crate::project::GAMEPAD_SLOTS => &rest[2..],
+        _ => return false,
+    };
+    crate::project::GAMEPAD_BUTTONS.contains(&button)
+}
+
 fn is_host_key(name: &str) -> bool {
     let single = |text: &str, valid: fn(&u8) -> bool| text.len() == 1 && valid(&text.as_bytes()[0]);
-    HOST_KEYS.contains(&name)
+    is_gamepad_button(name)
+        || HOST_KEYS.contains(&name)
         || single(name, |c| c.is_ascii_uppercase() || c.is_ascii_digit())
         || name.strip_prefix("Key").is_some_and(|rest| single(rest, u8::is_ascii_uppercase))
         || name.strip_prefix("Digit").is_some_and(|rest| single(rest, u8::is_ascii_digit))
@@ -376,6 +388,16 @@ mod tests {
         assert_eq!(names(reported), ["Fed", "Held", "Later"]);
         let declared = config(Some(&["Fed", "Held", "Later"]));
         assert!(run.diagnostic(&declared, &reads, || panic!("scripts are read only when a name is still unknown")).is_none());
+    }
+
+    #[test]
+    fn gamepad_buttons_are_host_names_for_any_pad_and_slots_one_to_four() {
+        for name in ["Gamepad_A", "Gamepad_Home", "Gamepad1_LT", "Gamepad4_Start"] {
+            assert!(is_host_key(name), "{name}");
+        }
+        for name in ["Gamepad5_A", "Gamepad0_A", "Gamepad_Z", "Gamepad1A", "Gamepad_", "GamepadA"] {
+            assert!(!is_host_key(name), "{name}");
+        }
     }
 
     #[test]

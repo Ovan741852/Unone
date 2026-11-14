@@ -259,6 +259,55 @@ pub struct InputFrame {
     /// Recorded presentation feedback, accepted only with a successful tick.
     #[serde(default, skip_serializing_if = "crate::PresentationResourceInput::is_empty")]
     pub presentation_resources: crate::PresentationResourceInput,
+    /// Sticks and triggers of each connected gamepad (docs/input-gamepad.md).
+    /// Buttons arrive as actions: Gamepad_A for any pad, Gamepad1_A for slot 1.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub gamepads: Vec<GamepadInput>,
+}
+
+/// Gamepad buttons in the W3C standard order; each becomes the actions
+/// `Gamepad_<name>` (any pad) and `Gamepad<slot>_<name>`.
+pub const GAMEPAD_BUTTONS: [&str; 17] =
+    ["A", "B", "X", "Y", "LB", "RB", "LT", "RT", "Back", "Start", "LS", "RS", "Up", "Down", "Left", "Right", "Home"];
+pub const GAMEPAD_SLOTS: u8 = 4;
+
+/// One connected gamepad on this tick. Sticks are in [-1, 1] with y positive
+/// up; triggers in [0, 1]. Values are raw: api.input applies the deadzone.
+#[derive(Debug, Clone, PartialEq, Default, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct GamepadInput {
+    /// 1 to 4, the N in Gamepad<N>_A.
+    pub slot: u8,
+    #[serde(default)]
+    pub left_x: f64,
+    #[serde(default)]
+    pub left_y: f64,
+    #[serde(default)]
+    pub right_x: f64,
+    #[serde(default)]
+    pub right_y: f64,
+    #[serde(default)]
+    pub left_trigger: f64,
+    #[serde(default)]
+    pub right_trigger: f64,
+}
+
+impl GamepadInput {
+    pub fn validate(pads: &[GamepadInput]) -> Result<(), String> {
+        let mut seen = std::collections::BTreeSet::new();
+        for pad in pads {
+            if !(1..=GAMEPAD_SLOTS).contains(&pad.slot) || !seen.insert(pad.slot) {
+                return Err(format!("gamepad slot {} must be 1 to {GAMEPAD_SLOTS} and appear once", pad.slot));
+            }
+            let sticks = [pad.left_x, pad.left_y, pad.right_x, pad.right_y];
+            let triggers = [pad.left_trigger, pad.right_trigger];
+            if !sticks.iter().all(|v| v.is_finite() && (-1.0..=1.0).contains(v)) || !triggers.iter().all(|v| v.is_finite() && (0.0..=1.0).contains(v)) {
+                return Err(format!("gamepad slot {}: sticks must be in [-1, 1] and triggers in [0, 1]", pad.slot));
+            }
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
@@ -319,6 +368,8 @@ impl InputFrame {
                 || event.composing && matches!(event.phase,TextInputPhase::Submit)
         }) {return Err(Box::new(crate::Diagnostic::error("INPUT_FRAME_INVALID","Invalid semantic text input",
             "ui_text_inputs accepts at most 64 stable IDs, single-line UTF-8 text <=65536 bytes, no submit during composition")));}
+        GamepadInput::validate(&self.gamepads).map_err(|e| Box::new(crate::Diagnostic::error(
+            "INPUT_GAMEPAD_INVALID", "Invalid gamepad input", e)))?;
         if self.actions.keys().any(|action| action.trim().is_empty()) {
             return Err(Box::new(crate::Diagnostic::error(
                 "INPUT_FRAME_INVALID",

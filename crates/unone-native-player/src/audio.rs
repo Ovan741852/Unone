@@ -107,6 +107,7 @@ mod tests {
         let snapshot = unone_engine::WorldSnapshot {
             render_pipeline: None,
             lighting: None,
+            materials: Default::default(),
             network_commands: Vec::new(),
             ui_image_batches:Default::default(),
             projected_frame:None,

@@ -1,6 +1,9 @@
 use super::{ApiState, Lua, Table};
 use std::rc::Rc;
 
+/// Radial stick deadzone for api.input.getGamepad (docs/input-gamepad.md).
+const GAMEPAD_DEADZONE: f64 = 0.15;
+
 pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let input = Rc::clone(&state.input);
     let input_api = lua.create_table()?;
@@ -82,6 +85,49 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             Ok(input.released.contains(&action))
         })?,
     )?;
+
+    // Gamepads (docs/input-gamepad.md): a radial deadzone keeps resting sticks
+    // at zero and rescales the rest to reach 1. Triggers are unchanged.
+    let gamepad_table = |lua: &Lua, pad: &crate::project::GamepadInput| -> mlua::Result<Table> {
+        let stick = |x: f64, y: f64| -> mlua::Result<Table> {
+            let length = (x * x + y * y).sqrt();
+            let scale = if length <= GAMEPAD_DEADZONE { 0. } else { ((length - GAMEPAD_DEADZONE) / (1. - GAMEPAD_DEADZONE)).min(1.) / length };
+            let table = lua.create_table()?;
+            table.set("x", x * scale)?;
+            table.set("y", y * scale)?;
+            Ok(table)
+        };
+        let table = lua.create_table()?;
+        table.set("slot", pad.slot)?;
+        table.set("leftStick", stick(pad.left_x, pad.left_y)?)?;
+        table.set("rightStick", stick(pad.right_x, pad.right_y)?)?;
+        table.set("leftTrigger", pad.left_trigger)?;
+        table.set("rightTrigger", pad.right_trigger)?;
+        Ok(table)
+    };
+    let gamepad_input = Rc::clone(&input);
+    input_api.set("getGamepad", lua.create_function(move |lua, slot: Option<u8>| {
+        let input = gamepad_input.borrow();
+        let pad = match slot {
+            Some(slot) if !(1..=crate::project::GAMEPAD_SLOTS).contains(&slot) => {
+                return Err(mlua::Error::RuntimeError(format!("INPUT_GAMEPAD_SLOT_INVALID: slot must be 1 to {}, got {slot}", crate::project::GAMEPAD_SLOTS)));
+            }
+            Some(slot) => input.gamepads.iter().find(|pad| pad.slot == slot),
+            None => input.gamepads.iter().min_by_key(|pad| pad.slot),
+        };
+        pad.map(|pad| gamepad_table(lua, pad).map(mlua::Value::Table)).unwrap_or(Ok(mlua::Value::Nil))
+    })?)?;
+    let gamepads_input = Rc::clone(&input);
+    input_api.set("getGamepads", lua.create_function(move |lua, ()| {
+        let input = gamepads_input.borrow();
+        let mut pads: Vec<_> = input.gamepads.iter().collect();
+        pads.sort_by_key(|pad| pad.slot);
+        let list = lua.create_table()?;
+        for pad in pads {
+            list.push(gamepad_table(lua, pad)?)?;
+        }
+        Ok(list)
+    })?)?;
 
     let pointer_position_input = Rc::clone(&input);
     input_api.set(

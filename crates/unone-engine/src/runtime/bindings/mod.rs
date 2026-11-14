@@ -6,6 +6,7 @@ mod application;
 mod assets;
 mod render;
 mod lighting;
+mod material;
 mod audio;
 mod bytes;
 mod camera;
@@ -42,6 +43,7 @@ pub(super) fn build_api(
     api.set("assets", assets::bind(lua, state)?)?;
     api.set("render", render::bind(lua, state)?)?;
     api.set("lighting", lighting::bind(lua, state)?)?;
+    api.set("material", material::bind(lua, state)?)?;
     api.set("hostTime", host_time::bind(lua, state)?)?;
     api.set("application", application::bind(lua, state)?)?;
     api.set("network", network::bind(lua, state)?)?;

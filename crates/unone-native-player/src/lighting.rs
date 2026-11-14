@@ -7,8 +7,11 @@
 use unone_engine::Lighting;
 use wgpu::util::DeviceExt;
 
-/// render.wgsl `Light`: four vec4s, a mat4, two vec4[8] arrays and a vec4.
-pub const LIGHT_FLOATS: usize = 100;
+/// render.wgsl `Light`: four vec4s, a mat4, two vec4[8] arrays, four vec4s
+/// and nine spherical-harmonic vec4s.
+pub const LIGHT_FLOATS: usize = 148;
+/// render.wgsl `Material`: three vec4s.
+pub const MATERIAL_FLOATS: usize = 12;
 const POINTS: usize = unone_engine::MAX_POINT_LIGHTS;
 
 /// Area-weighted vertex normals as three.js BufferGeometry.computeVertexNormals
@@ -125,7 +128,87 @@ pub fn light_values(lighting: Option<&Lighting>, target: [f32; 3]) -> ([f32; LIG
         values[at..at + 3].copy_from_slice(&[color[0] * intensity, color[1] * intensity, color[2] * intensity]);
     }
     values[96] = lighting.points.len().min(POINTS) as f32;
+    if let Some(hemisphere) = &lighting.hemisphere {
+        let (sky, ground, intensity) = (linear(&hemisphere.sky), linear(&hemisphere.ground), hemisphere.intensity as f32);
+        values[100..104].copy_from_slice(&[sky[0] * intensity, sky[1] * intensity, sky[2] * intensity, 1.]);
+        values[104..107].copy_from_slice(&[ground[0] * intensity, ground[1] * intensity, ground[2] * intensity]);
+    }
     (values, shadow_size)
+}
+
+/// The Material uniform: linear colour with w = 1 (physically based), metallic
+/// and roughness, and emissive times its intensity. Meshes without a material
+/// use DEFAULT_MATERIAL, whose w = 0 keeps plain diffuse light.
+pub fn material_values(material: &unone_engine::Material) -> [f32; MATERIAL_FLOATS] {
+    let color = linear(&material.color);
+    let emissive = linear(&material.emissive);
+    let intensity = material.emissive_intensity as f32;
+    [
+        color[0], color[1], color[2], 1.,
+        material.metallic as f32, material.roughness as f32, 0., 0.,
+        emissive[0] * intensity, emissive[1] * intensity, emissive[2] * intensity, 0.,
+    ]
+}
+pub const DEFAULT_MATERIAL: [f32; MATERIAL_FLOATS] = [1., 1., 1., 0., 0., 1., 0., 0., 0., 0., 0., 0.];
+
+/// Group 3 of the mesh pipeline: one uniform per scene material.
+pub struct MaterialsGpu {
+    pub layout: wgpu::BindGroupLayout,
+    default_group: wgpu::BindGroup,
+    entries: std::collections::BTreeMap<String, (wgpu::Buffer, wgpu::BindGroup, [f32; MATERIAL_FLOATS])>,
+}
+
+impl MaterialsGpu {
+    pub fn new(device: &wgpu::Device) -> Self {
+        let layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+            label: Some("native-material"),
+            entries: &[wgpu::BindGroupLayoutEntry {
+                binding: 0,
+                visibility: wgpu::ShaderStages::FRAGMENT,
+                ty: wgpu::BindingType::Buffer { ty: wgpu::BufferBindingType::Uniform, has_dynamic_offset: false, min_binding_size: None },
+                count: None,
+            }],
+        });
+        let (_, default_group) = Self::entry(device, &layout, &DEFAULT_MATERIAL);
+        Self { layout, default_group, entries: Default::default() }
+    }
+
+    fn entry(device: &wgpu::Device, layout: &wgpu::BindGroupLayout, values: &[f32; MATERIAL_FLOATS]) -> (wgpu::Buffer, wgpu::BindGroup) {
+        let buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("native-material"),
+            contents: bytemuck::cast_slice(values),
+            usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+        });
+        let group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            label: Some("native-material"),
+            layout,
+            entries: &[wgpu::BindGroupEntry { binding: 0, resource: buffer.as_entire_binding() }],
+        });
+        (buffer, group)
+    }
+
+    /// Mirror the snapshot's materials; unchanged ones cost nothing.
+    pub fn update(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, materials: &std::collections::BTreeMap<String, unone_engine::Material>) {
+        self.entries.retain(|name, _| materials.contains_key(name));
+        for (name, material) in materials {
+            let values = material_values(material);
+            match self.entries.get_mut(name) {
+                Some((buffer, _, old)) if *old != values => {
+                    queue.write_buffer(buffer, 0, bytemuck::cast_slice(&values));
+                    *old = values;
+                }
+                Some(_) => {}
+                None => {
+                    let (buffer, group) = Self::entry(device, &self.layout, &values);
+                    self.entries.insert(name.clone(), (buffer, group, values));
+                }
+            }
+        }
+    }
+
+    pub fn group(&self, name: Option<&str>) -> &wgpu::BindGroup {
+        name.and_then(|name| self.entries.get(name)).map_or(&self.default_group, |(_, group, _)| group)
+    }
 }
 
 /// GPU state for lighting: group 2 of the mesh pipeline and the shadow pass.
@@ -142,6 +225,12 @@ pub struct LightingGpu {
     values: Option<[f32; LIGHT_FLOATS]>,
     /// Whether this frame renders the shadow pass.
     pub shadows: bool,
+    environment_view: wgpu::TextureView,
+    environment_sampler: wgpu::Sampler,
+    /// The loaded panorama: its data asset id, top mip level and SH coefficients.
+    environment: Option<(String, f32, [[f32; 3]; 9])>,
+    /// Whether this frame draws the panorama as the sky.
+    pub background: bool,
 }
 
 fn shadow_texture(device: &wgpu::Device, size: u32) -> wgpu::TextureView {
@@ -160,7 +249,7 @@ fn shadow_texture(device: &wgpu::Device, size: u32) -> wgpu::TextureView {
 }
 
 impl LightingGpu {
-    pub fn new(device: &wgpu::Device, texture_layout: &wgpu::BindGroupLayout) -> Self {
+    pub fn new(device: &wgpu::Device, queue: &wgpu::Queue, texture_layout: &wgpu::BindGroupLayout) -> Self {
         let uniform_entry = |binding, visibility| wgpu::BindGroupLayoutEntry {
             binding,
             visibility,
@@ -187,6 +276,22 @@ impl LightingGpu {
                     ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Comparison),
                     count: None,
                 },
+                wgpu::BindGroupLayoutEntry {
+                    binding: 3,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Texture {
+                        sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                        view_dimension: wgpu::TextureViewDimension::D2,
+                        multisampled: false,
+                    },
+                    count: None,
+                },
+                wgpu::BindGroupLayoutEntry {
+                    binding: 4,
+                    visibility: wgpu::ShaderStages::FRAGMENT,
+                    ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+                    count: None,
+                },
             ],
         });
         let uniform = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
@@ -205,7 +310,19 @@ impl LightingGpu {
         });
         // A 1x1 map stands in until a sun casts shadows.
         let shadow_view = shadow_texture(device, 1);
-        let group = Self::group(device, &layout, &uniform, &shadow_view, &sampler);
+        // A black 1x1 panorama stands in until a scene names one.
+        let environment_view = crate::environment::upload(device, queue, &crate::environment::EnvironmentMap { levels: vec![(1, 1, vec![0.; 3])], sh: [[0.; 3]; 9] });
+        let environment_sampler = device.create_sampler(&wgpu::SamplerDescriptor {
+            label: Some("native-environment"),
+            mag_filter: wgpu::FilterMode::Linear,
+            min_filter: wgpu::FilterMode::Linear,
+            mipmap_filter: wgpu::MipmapFilterMode::Linear,
+            // The panorama wraps around horizontally.
+            address_mode_u: wgpu::AddressMode::Repeat,
+            address_mode_v: wgpu::AddressMode::ClampToEdge,
+            ..Default::default()
+        });
+        let group = Self::group(device, &layout, &uniform, &shadow_view, &sampler, &environment_view, &environment_sampler);
         let shadow_camera_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
             label: Some("native-shadow-camera"),
             entries: &[uniform_entry(0, wgpu::ShaderStages::VERTEX)],
@@ -262,7 +379,8 @@ impl LightingGpu {
             multiview_mask: None,
             cache: None,
         });
-        Self { uniform, layout, group, sampler, shadow_view, shadow_size: 1, shadow_camera, shadow_camera_group, shadow_pipeline, values: None, shadows: false }
+        Self { uniform, layout, group, sampler, shadow_view, shadow_size: 1, shadow_camera, shadow_camera_group, shadow_pipeline, values: None, shadows: false,
+            environment_view, environment_sampler, environment: None, background: false }
     }
 
     fn group(
@@ -271,6 +389,8 @@ impl LightingGpu {
         uniform: &wgpu::Buffer,
         shadow: &wgpu::TextureView,
         sampler: &wgpu::Sampler,
+        environment: &wgpu::TextureView,
+        environment_sampler: &wgpu::Sampler,
     ) -> wgpu::BindGroup {
         device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("native-lighting"),
@@ -279,20 +399,53 @@ impl LightingGpu {
                 wgpu::BindGroupEntry { binding: 0, resource: uniform.as_entire_binding() },
                 wgpu::BindGroupEntry { binding: 1, resource: wgpu::BindingResource::TextureView(shadow) },
                 wgpu::BindGroupEntry { binding: 2, resource: wgpu::BindingResource::Sampler(sampler) },
+                wgpu::BindGroupEntry { binding: 3, resource: wgpu::BindingResource::TextureView(environment) },
+                wgpu::BindGroupEntry { binding: 4, resource: wgpu::BindingResource::Sampler(environment_sampler) },
             ],
         })
     }
 
+    /// The data asset id of the loaded panorama.
+    pub fn environment_key(&self) -> Option<&str> {
+        self.environment.as_ref().map(|(key, _, _)| key.as_str())
+    }
+
+    /// Load a decoded panorama (or none) into the lighting group.
+    pub fn set_environment(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, map: Option<(&str, &crate::environment::EnvironmentMap)>) {
+        match map {
+            Some((key, map)) => {
+                self.environment_view = crate::environment::upload(device, queue, map);
+                self.environment = Some((key.to_string(), (map.levels.len() - 1) as f32, map.sh));
+            }
+            None => {
+                self.environment_view = crate::environment::upload(device, queue, &crate::environment::EnvironmentMap { levels: vec![(1, 1, vec![0.; 3])], sh: [[0.; 3]; 9] });
+                self.environment = None;
+            }
+        }
+        self.group = Self::group(device, &self.layout, &self.uniform, &self.shadow_view, &self.sampler, &self.environment_view, &self.environment_sampler);
+    }
+
     /// Upload this frame's lighting; unchanged values cost nothing.
     pub fn update(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, lighting: Option<&Lighting>, target: [f32; 3]) {
-        let (values, shadow_size) = light_values(lighting, target);
+        let (mut values, shadow_size) = light_values(lighting, target);
         self.shadows = shadow_size.is_some();
+        let environment = lighting.and_then(|lighting| lighting.environment.as_ref());
+        self.background = false;
+        if let (Some(environment), Some((key, top, sh))) = (environment, &self.environment)
+            && *key == environment.map
+        {
+            values[108..112].copy_from_slice(&[environment.intensity as f32, (environment.rotation as f32).to_radians(), *top, 1.]);
+            for (index, coefficient) in sh.iter().enumerate() {
+                values[112 + index * 4..115 + index * 4].copy_from_slice(coefficient);
+            }
+            self.background = environment.background;
+        }
         if let Some(size) = shadow_size
             && size != self.shadow_size
         {
             self.shadow_view = shadow_texture(device, size);
             self.shadow_size = size;
-            self.group = Self::group(device, &self.layout, &self.uniform, &self.shadow_view, &self.sampler);
+            self.group = Self::group(device, &self.layout, &self.uniform, &self.shadow_view, &self.sampler, &self.environment_view, &self.environment_sampler);
         }
         if self.values != Some(values) {
             queue.write_buffer(&self.uniform, 0, bytemuck::cast_slice(&values));
@@ -382,6 +535,12 @@ mod tests {
         assert_eq!(&values[32..36], &[1., 2., 3., 4.]);
         assert_eq!(&values[64..68], &[1., 0., 0., 0.]);
         assert_eq!(values[96], 1.);
+        assert_eq!(&values[100..108], &[0.; 8], "no hemisphere");
         assert_eq!(light_values(None, [0.; 3]), ([0.; LIGHT_FLOATS], None), "unlit: the shader keeps the albedo");
+        let lighting: Lighting = serde_json::from_value(serde_json::json!({"hemisphere": {"sky": "#ffffff", "ground": "#000000", "intensity": 2}})).unwrap();
+        let (values, _) = light_values(Some(&lighting), [0.; 3]);
+        assert_eq!(&values[100..108], &[2., 2., 2., 1., 0., 0., 0., 0.]);
+        let gold: unone_engine::Material = serde_json::from_value(serde_json::json!({"color": "#ffffff", "metallic": 1, "roughness": 0.25, "emissive": "#ff0000", "emissive_intensity": 2})).unwrap();
+        assert_eq!(material_values(&gold), [1., 1., 1., 1., 1., 0.25, 0., 0., 2., 0., 0., 0.]);
     }
 }

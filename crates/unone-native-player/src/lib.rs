@@ -9,6 +9,8 @@ mod audio;
 mod particles;
 mod render;
 mod lighting;
+mod gamepad;
+mod environment;
 mod projected;
 mod presentation_raster;
 mod sprites;
@@ -372,6 +374,8 @@ struct App {
     save: save::SaveFile,
     replay_pending_presentation: bool,
     host_input: unone_engine::InputFrame,
+    /// Live controllers, created on the first interactive tick.
+    gamepads: Option<gamepad::Gamepads>,
     keyboard_input: keyboard::ActionQueue,
     mouse_right_input: mouse::ScreenButtonQueue,
     mouse_middle_input: mouse::ScreenButtonQueue,
@@ -433,6 +437,12 @@ impl App {
             let (right_down,middle_down,secondary_screen)=mouse::tick_secondary(primary_edge.is_some(),&mut self.mouse_right_input,&mut self.mouse_middle_input);
             if right_down { input.actions.insert("MouseRight".into(), true); }
             if middle_down {input.actions.insert("MouseMiddle".into(),true);}
+            // Measurement and report runs read no controllers, so their
+            // results never depend on what is plugged in.
+            if self.report.is_none() && !self.settings.headless {
+                let pads = self.gamepads.get_or_insert_with(gamepad::Gamepads::new).poll();
+                gamepad::apply(&pads, &mut input);
+            }
             if let Some(pointer) = primary_edge {
                 input.pointer = Some(pointer);
             } else if let Some([x, y]) = secondary_screen {
@@ -538,6 +548,7 @@ impl App {
             ui_input: Default::default(),
             cursor: [0., 0.],
             host_input: Default::default(),
+            gamepads: None,
             keyboard_input: Default::default(),
             mouse_right_input: Default::default(),
             mouse_middle_input:Default::default(),

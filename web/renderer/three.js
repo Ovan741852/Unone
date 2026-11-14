@@ -9,6 +9,7 @@ import {createWorldCurvature} from './world-curvature.js';
 import {createMeshEntityRenderer} from './mesh-entities.js';
 import {createBloom,normalizePostProcessing,BUILTIN_PASSES} from './bloom.js';
 import {createLighting} from './lighting.js';
+import {createEnvironment} from './hdr.js';
 import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 import { syncSpriteCell } from "./sprite-cells.js";
@@ -172,6 +173,8 @@ export async function createThreeRenderer(canvas, options = {}) {
   const camera3d = createPerspectiveCamera(THREE);
   const meshAssets = new Map();
   const lighting = createLighting(THREE,renderer,world3d);
+  // Scene-level: Three's environment and background belong to the root scene.
+  let environment = null;
   const instances = createInstanceRenderer(THREE,world3d,meshAssetFor,options.instanceMemory,lighting);
   const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor,lighting);
   const particles = createParticleRenderer(THREE,world3d);
@@ -510,6 +513,11 @@ export async function createThreeRenderer(canvas, options = {}) {
       camera3d.aspect=aspectOf(canvas)*(c.rect?c.rect.width/c.rect.height:1); camera3d.updateProjectionMatrix(); activeCamera=camera3d;
     }
     lighting.apply(world.camera3d?world.lighting:null,world.camera3d);
+    if(world.lighting?.environment||environment){
+      // Data assets keep their packaged path (content/<source>), not an image encoding.
+      environment??=createEnvironment(THREE,scene,options.loadDataAssetUrl??(asset=>typeof document==="undefined"?asset.source:new URL("content/"+asset.source,document.baseURI).href));
+      if(environment.sync(world.camera3d?world.lighting?.environment:null,specs))assetRequestPending=true;
+    }
     if(meshEntities.draw(world,worldVisible,specs))assetRequestPending=true;
     profile?.mark('scene_sync');
     heightfields.draw(worldVisible?terrain:[],specs);

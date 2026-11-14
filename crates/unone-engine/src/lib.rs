@@ -59,7 +59,9 @@ mod audio;
 mod data_assets;
 mod render_pipeline;
 mod lighting;
-pub use lighting::{AmbientLight, Lighting, MAX_POINT_LIGHTS, PointLight, SHADOW_MAP_SIZES, Shadows, SunLight};
+pub mod material;
+pub use material::Material;
+pub use lighting::{AmbientLight, Environment, HemisphereLight, Lighting, MAX_POINT_LIGHTS, PointLight, SHADOW_MAP_SIZES, Shadows, SunLight};
 pub use render_pipeline::{BUILTIN_RENDER_PASSES, RENDER_PASS_GUIDE, RenderParam, RenderPass, RenderPassGuide, RenderPipeline};
 pub use data_assets::{BUILTIN_DATA_LOADERS, DataAssetDecl};
 #[cfg(feature = "dev-tools")]
@@ -169,7 +171,7 @@ pub use performance::{
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{
-    AnimationAssertion, AudioAssertion, EffectsAssertion, InputFrame, ObservationAssertion,
+    AnimationAssertion, AudioAssertion, EffectsAssertion, GAMEPAD_BUTTONS, GAMEPAD_SLOTS, GamepadInput, InputFrame, ObservationAssertion,
     PointerInput, SliderInteraction, SliderPhase, TextInputInteraction, TextInputPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
     ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
     UiPreviewSpec, ImportConfig, ImporterSpec, ImportRoot,

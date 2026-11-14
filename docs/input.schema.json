@@ -1,6 +1,53 @@
 {
   "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
   "$defs": {
+    "GamepadInput": {
+      "additionalProperties": false,
+      "description": "One connected gamepad on this tick. Sticks are in [-1, 1] with y positive\nup; triggers in [0, 1]. Values are raw: api.input applies the deadzone.",
+      "properties": {
+        "left_trigger": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "left_x": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "left_y": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "right_trigger": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "right_x": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "right_y": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "slot": {
+          "description": "1 to 4, the N in Gamepad<N>_A.",
+          "format": "uint8",
+          "maximum": 255,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "slot"
+      ],
+      "type": "object"
+    },
     "Modifiers": {
       "additionalProperties": false,
       "properties": {
@@ -629,6 +676,13 @@
       },
       "default": {},
       "type": "object"
+    },
+    "gamepads": {
+      "description": "Sticks and triggers of each connected gamepad (docs/input-gamepad.md).\nButtons arrive as actions: Gamepad_A for any pad, Gamepad1_A for slot 1.",
+      "items": {
+        "$ref": "#/$defs/GamepadInput"
+      },
+      "type": "array"
     },
     "physical": {
       "$ref": "#/$defs/PhysicalBatch"

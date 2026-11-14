@@ -246,6 +246,58 @@
       ],
       "type": "object"
     },
+    "Environment": {
+      "additionalProperties": false,
+      "properties": {
+        "background": {
+          "default": false,
+          "description": "Also draw the panorama behind the scene as its sky; default false.",
+          "type": "boolean"
+        },
+        "intensity": {
+          "default": 1.0,
+          "description": "[0,16], default 1.",
+          "format": "double",
+          "type": "number"
+        },
+        "map": {
+          "description": "A declared `data` asset whose source is a Radiance .hdr equirectangular panorama.",
+          "type": "string"
+        },
+        "rotation": {
+          "default": 0.0,
+          "description": "Degrees around the up axis, [-360, 360], default 0.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "map"
+      ],
+      "type": "object"
+    },
+    "HemisphereLight": {
+      "additionalProperties": false,
+      "properties": {
+        "ground": {
+          "default": "#444444",
+          "description": "Light from straight below, \"#rrggbb\"; default \"#444444\".",
+          "type": "string"
+        },
+        "intensity": {
+          "default": 0.5,
+          "description": "[0,16], default 0.5. A surface tilted halfway gets the mix.",
+          "format": "double",
+          "type": "number"
+        },
+        "sky": {
+          "default": "#ffffff",
+          "description": "Light from straight above, \"#rrggbb\"; default \"#ffffff\".",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "Lighting": {
       "additionalProperties": false,
       "properties": {
@@ -256,6 +308,28 @@
             "intensity": 0.3
           },
           "description": "Light reaching every surface equally."
+        },
+        "environment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Environment"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "An HDR panorama lighting meshes with materials (image-based light)."
+        },
+        "hemisphere": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HemisphereLight"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Sky light from above fading to ground light from below, added to ambient."
         },
         "points": {
           "description": "Up to eight point lights; they cast no shadows.",
@@ -278,11 +352,52 @@
       },
       "type": "object"
     },
+    "Material": {
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "default": "#ffffff",
+          "description": "\"#rrggbb\" (sRGB) multiplying the mesh texture; default \"#ffffff\".\nPrimitive meshes with a material start from white.",
+          "type": "string"
+        },
+        "emissive": {
+          "default": "#000000",
+          "description": "\"#rrggbb\" light the surface gives off whatever the lighting; default \"#000000\".",
+          "type": "string"
+        },
+        "emissive_intensity": {
+          "default": 1.0,
+          "description": "[0,100], default 1.",
+          "format": "double",
+          "type": "number"
+        },
+        "metallic": {
+          "default": 0.0,
+          "description": "[0,1], default 0: 1 is bare metal tinted by `color`.",
+          "format": "double",
+          "type": "number"
+        },
+        "roughness": {
+          "default": 1.0,
+          "description": "[0,1], default 1: 0 is mirror-smooth, 1 fully rough.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
     "Mesh3DData": {
       "additionalProperties": false,
       "properties": {
         "asset": {
           "type": "string"
+        },
+        "material": {
+          "description": "A material the scene declares or api.material.set added (docs/materials.md).",
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "visible": {
           "default": true,
@@ -1420,6 +1535,14 @@
       ],
       "default": null,
       "description": "Ambient, sun and point lights for 3D content (docs/lighting.md).\nAbsent: 3D content stays unlit."
+    },
+    "materials": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Material"
+      },
+      "default": {},
+      "description": "Named surface materials mesh3d components refer to (docs/materials.md).",
+      "type": "object"
     },
     "particle_effects": {
       "additionalProperties": {

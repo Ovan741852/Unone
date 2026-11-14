@@ -1,0 +1,19 @@
+{
+  "api": "unone.plugin.v1",
+  "id": "org.unone.scatter",
+  "name": "Unone Scatter",
+  "version": "0.1.0",
+  "description": "Scatter trees, grass, rocks and props over an area or a heightfield: evenly spaced random points filtered by height, slope and your own rule, packed for api.instances3d.set. A pure, deterministic Luau module installed beside your scripts.",
+  "entry": {"command": "node", "args": ["plugin.mjs"]},
+  "capabilities": ["world.scatter", "world.vegetation"],
+  "permissions": ["project.read", "project.write"],
+  "keywords": [
+    "scatter", "vegetation", "foliage", "trees", "grass", "rocks", "props", "forest", "poisson disk", "terrain decoration", "instances",
+    "植被", "樹", "樹木", "草", "草地", "石頭", "散佈", "撒點", "森林"
+  ],
+  "tools": [
+    {"name": "plugin.test", "title": "Check the module", "description": "Check that the bundled Luau module is present.", "input_schema": {"type": "object"}},
+    {"name": "scatter.describe", "title": "Describe the module", "description": "The Luau API: Scatter.points(options), Scatter.heightAt(field, x, z) and Scatter.pack(points), with every option.", "input_schema": {"type": "object"}},
+    {"name": "scatter.install", "title": "Install the module", "description": "Copy unone-scatter.luau beside the project's entry script, so game code can require(\"./unone-scatter\"). Refuses to overwrite an edited copy unless force is true.", "input_schema": {"type": "object", "properties": {"force": {"type": "boolean"}}}}
+  ]
+}

@@ -7,6 +7,7 @@ light) that can cast shadows, and up to eight point lights. Without a
 ```json
 "lighting": {
   "ambient": {"color": "#ffffff", "intensity": 0.3},
+  "hemisphere": {"sky": "#a8c8ff", "ground": "#403020", "intensity": 0.5},
   "sun": {
     "direction": {"x": -0.4, "y": -1, "z": -0.3},
     "color": "#fff4e0", "intensity": 1,
@@ -39,6 +40,13 @@ the scene with `SCENE_LIGHTING_INVALID`; an invalid `set` fails with
 |---|---|---|
 | `ambient.color` | `"#ffffff"` | `"#rrggbb"` (sRGB) |
 | `ambient.intensity` | 0.3 | [0, 16] |
+| `hemisphere.sky` | `"#ffffff"` | `"#rrggbb"`: light from straight above |
+| `hemisphere.ground` | `"#444444"` | `"#rrggbb"`: light from straight below |
+| `hemisphere.intensity` | 0.5 | [0, 16]; a tilted surface gets the mix by its normal |
+| `environment.map` | required | a declared `data` asset whose source is a Radiance `.hdr` panorama |
+| `environment.intensity` | 1 | [0, 16] |
+| `environment.rotation` | 0 | [-360, 360] degrees around the up axis |
+| `environment.background` | false | also draw the panorama behind the scene |
 | `sun.direction` | required | any non-zero vector: the way the light travels |
 | `sun.color` | `"#ffffff"` | `"#rrggbb"` |
 | `sun.intensity` | 1 | [0, 16] |
@@ -57,10 +65,10 @@ Omit `sun.shadows` for a sun without shadows. Unknown fields fail.
 Lambert diffuse, with intensity 1 as full light:
 
 ```
-colour = albedo * (ambient + sun * max(n·l, 0) * shadow + Σ point * max(n·l, 0) * (1 - (d / range)^4)^2)
+colour = albedo * (ambient + hemisphere(n) + sun * max(n·l, 0) * shadow + Σ point * max(n·l, 0) * (1 - (d / range)^4)^2)
 ```
 
-`albedo` is the mesh texture, or the flat primitive colour `#e6ecf5` for
+Meshes with a [material](materials.md) are shaded physically instead (metallic/roughness, GGX highlights). `albedo` is the mesh texture, or the flat primitive colour `#e6ecf5` for
 `mesh://primitive/box` and `mesh://primitive/sphere`. Both faces of a
 triangle are lit: the side the camera sees uses the normal turned towards it.
 
@@ -73,6 +81,28 @@ triangle are lit: the side the camera sees uses the normal turned towards it.
   the box, surfaces are lit without shadow. Raise `size` or lower `distance`
   for sharper shadows; raise `bias` if lit surfaces show stripes (shadow acne).
   Point lights cast no shadows.
+
+## Environment
+
+An HDR panorama lights meshes that have a [material](materials.md): a sharp
+or blurred reflection by roughness, and soft sky light on the diffuse part, as
+three.js `MeshStandardMaterial` takes `scene.environment`. Meshes without a
+material ignore it. Declare the file as a data asset and name it:
+
+```json
+{"id": "sky", "kind": "data", "source": "assets/sky.hdr"}
+```
+
+```json
+"environment": {"map": "sky", "intensity": 1, "rotation": 30, "background": true}
+```
+
+The panorama is equirectangular (2:1), Radiance RGBE (`#?RADIANCE`, `-Y
+height +X width`, flat or run-length rows); its middle column faces +x. A
+missing or non-`.hdr` map fails with `ENVIRONMENT_MAP_INVALID` (Web) or
+`NATIVE_ENVIRONMENT_MAP_INVALID` (native). The Web player blurs reflections
+with Three's PMREM; native uses a box-filtered mip chain and nine-term
+spherical harmonics, so rough reflections differ slightly between hosts.
 
 Whole-screen looks (AO, fog, bloom, tone mapping, colour grade, vignette) are
 [render pipeline](render-pipeline.md) passes and combine with lighting.

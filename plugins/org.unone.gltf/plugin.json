@@ -1,0 +1,20 @@
+{
+  "api": "unone.plugin.v1",
+  "id": "org.unone.gltf",
+  "name": "Unone glTF",
+  "version": "0.1.0",
+  "description": "Import glTF 2.0 binary models (.glb) as static meshes with their base colour texture and a matching material, through the engine's import pipeline.",
+  "entry": {"command": "node", "args": ["plugin.mjs"]},
+  "capabilities": ["asset.import", "asset.import.gltf", "mesh.import"],
+  "permissions": ["project.read", "project.write"],
+  "keywords": [
+    "gltf", "glb", "3d model", "model import", "import model", "mesh import", "blender export", "sketchfab",
+    "模型", "匯入模型", "導入模型", "3D模型", "網格"
+  ],
+  "tools": [
+    {"name": "plugin.test", "title": "Test the importer wiring", "description": "Parse a generated GLB the way inspect does and check the bundled Luau importer is present.", "input_schema": {"type": "object"}},
+    {"name": "gltf.inspect", "title": "Inspect a GLB", "description": "Meshes, triangles, materials, textures, required extensions and what the importer will and will not read.", "input_schema": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]}},
+    {"name": "gltf.plan", "title": "Plan an import", "description": "Show the importer module, import root, asset declarations and scene material that gltf.apply would add, without writing anything.", "input_schema": {"type": "object", "properties": {"path": {"type": "string"}, "name": {"type": "string", "description": "Base name for mesh://<name>, texture://<name> and the material; defaults to the file name."}}, "required": ["path"]}},
+    {"name": "gltf.apply", "title": "Import a GLB", "description": "Copy the importer to import/unone-gltf.luau, register it and an import root, declare mesh://<name> and texture://<name> assets imported from the GLB, and add a material from the GLB's first material to the main scene. The engine converts the model the next time the project runs, tests, verifies or exports.", "input_schema": {"type": "object", "properties": {"path": {"type": "string"}, "name": {"type": "string"}, "force": {"type": "boolean"}}, "required": ["path"]}}
+  ]
+}
