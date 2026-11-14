@@ -577,7 +577,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,createdAt=n
  if(!foreground)notes.push('At least one run was not foreground and focused for its whole duration; check runs[].foreground before using its timings.');
  return {schema:SCHEMA,created_at:createdAt,tool:{name:'measure-web-export',script:'scripts/measure-web-export.mjs',node:process.version},
   artifact:exported.artifact,engine:exported.engine,execution:{...exported.execution,development:exported.development},
-  environment:{...browserInfo,os:{platform:process.platform,release:os.release(),arch:process.arch,cpu:os.cpus()[0]?.model??null,logical_cpus:os.cpus().length,memory_bytes:os.totalmem()}},
+  environment:{...browserInfo,os:{platform:process.platform,release:os.release(),arch:process.arch,cpu:os.cpus()[0]?.model?.trim()??null,logical_cpus:os.cpus().length,memory_bytes:os.totalmem()}},
   conditions:{viewport:options.viewport,device_pixel_ratio:options.dpr,seed:options.seed,backend_override:options.backend,focus_emulated:true,foreground_all_runs:foreground,
    network:options.network?{emulated:true,...options.network}:{emulated:false,note:'Loopback server: no network latency or bandwidth limit.'},cpu_throttle:options.cpuThrottle,
    server:{kind:'loopback static server',cache_control:options.cacheControl??'export cache_policy',cache_policy:options.cacheControl?null:exported.artifact.cache_policy,etag:true,compression:options.compress,timing_allow_origin:'*'},
