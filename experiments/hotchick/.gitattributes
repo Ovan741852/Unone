@@ -1,0 +1,7 @@
+# Source snapshots and their SHA-addressed manifests retain original bytes.
+* -text
+*.md text eol=lf
+source/** -text -whitespace
+validation/** -text -whitespace
+SOURCE-MANIFEST.json -text -whitespace
+HANDOFF-MANIFEST.json -text -whitespace

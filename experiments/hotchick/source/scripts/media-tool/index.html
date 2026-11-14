@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>海王素材工坊</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">▧</span><div><strong>素材工坊</strong><small>海王 · 本機影片工作台</small></div></div>
+    <div class="header-actions"><span class="service-badge" id="service-status">正在連線</span><button id="load-example" class="quiet">藝瑟範例</button><button id="import-recipe" class="quiet">匯入配方</button><button id="export-recipe" class="quiet" disabled>匯出配方</button></div>
+  </header>
+  <main class="workspace">
+    <section class="source-panel panel" aria-labelledby="source-heading">
+      <div class="section-heading"><div><small>01 · SOURCE</small><h2 id="source-heading">來源影片</h2></div><button id="pick-files" class="icon-button" title="加入影片" aria-label="加入影片">＋</button></div>
+      <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="選擇或拖入來源影片"><span aria-hidden="true">↥</span><strong>加入影片</strong><small>拖曳檔案，或點此選擇</small></div>
+      <form id="path-form" class="path-form"><label for="source-path">或貼上本機路徑</label><div class="input-action"><input id="source-path" type="text" spellcheck="false" placeholder="C:\影片\經典中獎.mp4"><button type="submit" id="probe-path">讀取</button></div></form>
+      <p class="source-count" id="source-count">尚未加入來源</p>
+      <div class="source-list" id="source-list" aria-label="來源清單"></div>
+    </section>
+
+    <section class="editor-panel panel" aria-labelledby="editor-heading">
+      <div class="section-heading"><div><small>02 · FRAME & TIME</small><h2 id="editor-heading">選片段與取景</h2></div><span class="source-meta" id="source-meta">未選擇影片</span></div>
+      <div class="video-stage" id="video-stage">
+        <video id="source-video" muted playsinline preload="metadata"></video>
+        <canvas id="crop-overlay" aria-label="影片裁切範圍"></canvas>
+        <div class="empty-stage" id="empty-stage"><span aria-hidden="true">▷</span><h3>從一段影片開始</h3><p>保留完整畫面，或框出女孩的特寫。</p><p>預覽、取片與輸出都在本機完成。</p></div>
+        <span class="preview-label" id="preview-label" hidden>來源預覽</span>
+      </div>
+      <div class="transport"><button id="play-toggle" class="icon-button" disabled aria-label="播放影片">▶</button><span id="current-time">0:00.00</span><input id="timeline" type="range" min="0" max="1" value="0" step="0.01" disabled aria-label="預覽時間"><span id="total-time">0:00.00</span><button id="mute-toggle" class="quiet" disabled aria-label="切換靜音">靜音</button></div>
+      <div class="trim-controls"><div class="trim-field"><label for="trim-start">片段起點 <span>秒</span></label><div class="input-action"><input id="trim-start" type="number" min="0" step="0.01" value="0" disabled><button id="set-start" disabled title="使用目前時間作起點">取目前</button></div></div><div class="trim-field"><label for="trim-end">片段終點 <span>秒</span></label><div class="input-action"><input id="trim-end" type="number" min="0" step="0.01" value="0" disabled><button id="set-end" disabled title="使用目前時間作終點">取目前</button></div></div><label class="check-label loop-check"><input id="loop-selection" type="checkbox" checked>循環所選片段</label></div>
+      <div class="preview-summary"><div><small>輸出取景預覽</small><strong id="selection-summary">加入影片後即可調整</strong><p id="crop-summary">原片不會被修改。</p></div><canvas id="output-preview" width="240" height="144" aria-label="輸出取景預覽"></canvas></div>
+    </section>
+
+    <aside class="settings-panel panel" aria-labelledby="settings-heading">
+      <div class="section-heading"><div><small>03 · OUTPUT</small><h2 id="settings-heading">輸出設定</h2></div></div>
+      <div class="field-pair"><label>角色代號<input id="character-id" type="text" value="yeseul" placeholder="yeseul" spellcheck="false"></label><label>角色名稱<input id="character-name" type="text" value="藝瑟" placeholder="藝瑟"></label></div>
+      <label>輸出用途<select id="output-preset"><option value="field">盤面圖集</option><option value="medium">中型演出</option><option value="large">滿版演出</option></select></label>
+      <div class="field-pair"><label>目標尺寸<select id="symbol-tier"><option value="small">小型</option><option value="medium">中型</option><option value="large">大型</option></select></label><label>風格代號<input id="style-id" list="style-options" type="text" value="classic" spellcheck="false"><datalist id="style-options"><option value="classic">經典</option><option value="halloween">萬聖</option><option value="summer">夏日</option><option value="christmas">聖誕</option></datalist></label></div>
+      <p class="preset-summary" id="preset-summary">128 px 圖塊 · 12 fps · WebP 圖集與海報</p>
+      <div class="field-pair"><label>圖集幀率<input id="atlas-fps" type="number" min="1" max="60" step="1" value="12"></label><label>圖塊尺寸<input id="atlas-tile" type="number" min="32" max="1024" step="2" value="128"></label></div>
+      <label class="check-label" id="small-gallery-label"><input id="small-gallery" type="checkbox" checked>小型同時產生回顧影片</label>
+      <div class="crop-heading"><strong>取景裁切</strong><label class="switch-label"><input id="crop-enabled" type="checkbox">啟用</label></div>
+      <div class="crop-presets"><button id="crop-full" class="quiet">完整畫面</button><button id="crop-square" class="quiet">中央方形</button></div>
+      <div class="crop-fields"><label>X<input id="crop-x" type="number" value="0" min="0" step="1"></label><label>Y<input id="crop-y" type="number" value="0" min="0" step="1"></label><label>寬度<input id="crop-width" type="number" value="0" min="2" step="1"></label><label>高度<input id="crop-height" type="number" value="0" min="2" step="1"></label></div>
+      <p class="field-note">拖動框內可移動，拖動四角可調整。數值為來源影片像素。</p>
+      <label>畫面填入方式<select id="fit-mode"><option value="contain">完整保留，空白處補邊</option><option value="cover">填滿畫面，裁去邊緣</option></select></label>
+      <div class="selected-output" id="selected-output" hidden><label>選取輸出的檔名<input id="output-file" type="text" spellcheck="false"></label><div class="field-pair"><label>輸出寬度<input id="output-width" type="number" min="2" step="2"></label><label>輸出高度<input id="output-height" type="number" min="2" step="2"></label></div><button id="update-output" class="secondary">套用到選取輸出</button><button id="cancel-output-edit" class="text-button">取消選取</button></div>
+      <button id="add-preset" class="primary full-width" disabled>加入輸出佇列</button>
+    </aside>
+
+    <section class="queue-panel panel" aria-labelledby="queue-heading">
+      <div class="section-heading"><div><small>04 · BUILD</small><h2 id="queue-heading">輸出佇列 <span class="count-badge" id="queue-count">0</span></h2></div><button id="clear-queue" class="quiet" disabled>清空佇列</button></div>
+      <div id="queue-empty" class="queue-empty">選好取景與片段後，加入一組輸出預設。</div>
+      <div class="queue-list" id="queue-list"></div>
+      <div class="build-options"><label class="output-directory">輸出資料夾<input id="output-directory" type="text" spellcheck="false" placeholder="連線後載入預設產物資料夾"></label><div class="build-flags"><label class="check-label"><input id="preserve-originals" type="checkbox" checked>保留原檔副本</label><label class="check-label"><input id="allow-overwrite" type="checkbox">覆寫同名產物</label></div><div class="build-actions"><button id="validate-recipe" class="secondary" disabled>檢查配方</button><button id="build-recipe" class="primary" disabled>產生素材</button></div></div>
+      <p class="field-note">輸出至獨立產物資料夾，確認效果後再換入遊戲。</p>
+      <details class="recipe-details"><summary>檢視 JSON 配方</summary><pre id="recipe-preview">尚未建立輸出配方。</pre></details>
+    </section>
+
+    <section class="results-panel panel" id="results-panel" hidden aria-labelledby="results-heading">
+      <div class="section-heading"><div><small>RESULTS</small><h2 id="results-heading">產生結果</h2></div><span id="build-state" class="service-badge">待開始</span></div>
+      <div class="progress-track"><div id="build-progress"></div></div><p id="build-progress-text" class="progress-text"></p>
+      <div id="build-error" class="build-error" hidden></div>
+      <div class="result-location"><code id="result-directory"></code><button id="copy-output-path" class="quiet">複製資料夾路徑</button></div>
+      <div class="result-list" id="result-list"></div><details class="log-details"><summary>工作紀錄</summary><pre id="build-log"></pre></details>
+    </section>
+  </main>
+  <div id="notice" class="notice" role="status" hidden></div>
+  <input id="source-files" type="file" accept="video/*,.mp4,.webm,.mov,.mkv" multiple hidden>
+  <input id="recipe-file" type="file" accept="application/json,.json" hidden>
+</body>
+</html>

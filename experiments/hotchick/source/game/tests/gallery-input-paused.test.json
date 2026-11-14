@@ -1,0 +1,19 @@
+{
+  "name": "gallery-help-cannot-reenable-lock-and-auto",
+  "frames": 8,
+  "seed": 42,
+  "input_sequence": [
+    {"actions": {"GalleryOpen": true}},
+    {"actions": {"ToggleLock": true, "ToggleAuto": true, "Fire": true}},
+    {"actions": {}},
+    {"actions": {"GalleryClose": true}},
+    {"actions": {}},
+    {"actions": {}}
+  ],
+  "assertions": [
+    {"observation": {"key": "wallet", "equals": {
+      "balance": 10000, "bet": 10, "weapon": "like",
+      "rounds": 0, "spent": 0, "won": 0
+    }}}
+  ]
+}

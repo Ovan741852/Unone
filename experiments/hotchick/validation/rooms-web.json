@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "tests": 15,
+  "cases": [
+    "version scope uses the actual content version and leaves local protocol fixtures intact",
+    "canonical board encodes all27 generations and signed40-bit birth times",
+    "HR transport requires native ACK, coalesces pending field packets and preserves held bits",
+    "joining waits for a fresh RoomSwitchGate ACK and both native and financial drain",
+    "two clients share canonical board and real server-derived roster without wallet changes",
+    "native actual shot relays exactly5 visual keys and raw bet becomes native bet index",
+    "aim plus8 shots and repeated field callbacks stay within the20-message platform budget",
+    "room switch preserves the old connection and context until native commit ACK",
+    "full-room failure restores old lease before its UI may resume",
+    "cancelled delayed join leaves the late room and keeps the existing membership",
+    "cancelling after advertise waits for old lease restoration before releasing the gate",
+    "untrusted fieldDirty payload only triggers a canonical roomSnapshot read",
+    "departed peers disappear and stale callbacks cannot change the new room",
+    "lease expiration gates new wagers and exposes an actionable room error",
+    "missing multiplayer capability stays explicit and never creates fake peers"
+  ],
+  "scope": "in-memory production room controller/functions/room source; no external network or wallet calls"
+}

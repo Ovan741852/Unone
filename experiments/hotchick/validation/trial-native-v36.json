@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "native_runs": 9,
+  "initial_balance": 10000,
+  "checks": [
+    "each fresh local runtime starts10000 with fresh progress; the removed TrialRefill input cannot add funds",
+    "remote paid and author demo keep the server wallet and cannot grant local startup points",
+    "boot pause receives initial card entropy and subsequent seed handshakes cannot replace its stream"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "hotchick.source-handoff-checks.v1",
+  "release": "release-036",
+  "passed": true,
+  "scope": "Executed from the delivered source copy; synthetic accounts, no production requests or currency operations",
+  "checksPassed": 127,
+  "checksSkipped": 0,
+  "commands": [
+    {"command": "node --test server/goldsaucer/functions.test.mjs server/goldsaucer/rooms.test.mjs", "passed": 42, "exitCode": 0, "externalDependency": "GOLDSAUCER_SOURCE points to a separate GoldSaucer checkout for the optional platform-bootstrap contract"},
+    {"command": "node scripts/qa-goldsaucer-server.mjs", "passed": 35, "exitCode": 0},
+    {"command": "node scripts/qa-goldsaucer-rooms.mjs", "passed": 15, "exitCode": 0},
+    {"command": "node scripts/qa-goldsaucer-trial.mjs", "passed": 9, "exitCode": 0},
+    {"command": "node scripts/qa-goldsaucer-bridge.mjs", "passed": 13, "exitCode": 0},
+    {"command": "node scripts/qa-wager-notices.mjs", "passed": 7, "exitCode": 0},
+    {"command": "node scripts/qa-platform-wager-notices.mjs", "passed": 6, "exitCode": 0}
+  ],
+  "assetToolSmoke": {"report": "RESULTS.json", "passed": 115, "skipped": 0},
+  "sourceManifestEntries": 130,
+  "fullGameRenderingRerun": false,
+  "latestEngineCompatibilityRerun": false,
+  "realCurrencyActions": 0
+}

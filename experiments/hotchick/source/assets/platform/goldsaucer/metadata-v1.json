@@ -1,0 +1,22 @@
+{
+  "schema": "hotchick.goldsaucer.branding.v1",
+  "title": "海王・心動時分",
+  "suggestedSlug": "heart-king",
+  "defaultLocale": "zh-Hant",
+  "description": "走進霓虹閃耀的心動舞台，化身海王，以點讚、送花與火箭追逐游動的女孩氣泡。捕獲目標，欣賞角色演出，收集愛心獎勵，累積卡包並收藏 N、R、SR 卡片。在「心動時分」回顧已解鎖影片，旋轉欣賞閃卡與鑽卡，打造你的專屬收藏。",
+  "cover": "cover-v1.webp",
+  "coverDimensions": [
+    1280,
+    800
+  ],
+  "generator": "Built-in image_gen",
+  "promptFile": "prompt-v1.txt",
+  "original": "cover-original-v1.png",
+  "createdDate": "2026-11-11",
+  "conversion": "Lanczos resize from generated original to exact 1280x800; WebP quality92",
+  "currencyStatus": "Platform converts the wallet on entry and automatically returns whole red diamonds on actual departure. Room switching stays in the same document and performs no exchange; the legacy autoCashOut flag below is ignored by the current platform.",
+  "currency": {
+    "autoBuyIn": true,
+    "autoCashOut": false
+  }
+}

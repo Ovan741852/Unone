@@ -1,0 +1,1049 @@
+{
+  "schema": "hotchick.unone-handoff.v1",
+  "release": "release-036",
+  "source_sdk_ui": "0.2.0",
+  "base_commit": "77557b59c0a025a1752abe0aa909220acc86b6e9",
+  "target_branch": "main",
+  "files": [
+    {
+      "path": "source/Start-CardTool.ps1",
+      "source_path": "Start-CardTool.ps1",
+      "bytes": 1023,
+      "sha256": "91e29b4d0e1b4d630755ae875bd7ac32231aa35142b8da71bf97c226e0941fb6",
+      "original_sha256": "91e29b4d0e1b4d630755ae875bd7ac32231aa35142b8da71bf97c226e0941fb6",
+      "transform": "none"
+    },
+    {
+      "path": "source/Start-Game.ps1",
+      "source_path": "Start-Game.ps1",
+      "bytes": 945,
+      "sha256": "11d62f6dea97c169088534ff52bed6a59eb8105b887fceeb69776da91ecf89d8",
+      "original_sha256": "11d62f6dea97c169088534ff52bed6a59eb8105b887fceeb69776da91ecf89d8",
+      "transform": "none"
+    },
+    {
+      "path": "source/Start-LanGame.ps1",
+      "source_path": "Start-LanGame.ps1",
+      "bytes": 1457,
+      "sha256": "f7702f1eee490b8456e3d0caf5b2e3567a7f5d2c9b002bcd9c4ce5c211ffedcf",
+      "original_sha256": "f7702f1eee490b8456e3d0caf5b2e3567a7f5d2c9b002bcd9c4ce5c211ffedcf",
+      "transform": "none"
+    },
+    {
+      "path": "source/Start-MediaTool.ps1",
+      "source_path": "Start-MediaTool.ps1",
+      "bytes": 1050,
+      "sha256": "dd1e005fd8c27e1881a5c16249f2dd3281cf899d4088ad6a98c8c8e85cf0b7ca",
+      "original_sha256": "dd1e005fd8c27e1881a5c16249f2dd3281cf899d4088ad6a98c8c8e85cf0b7ca",
+      "transform": "none"
+    },
+    {
+      "path": "source/assets/platform/goldsaucer/INTEGRATION.md",
+      "source_path": "assets/platform/goldsaucer/INTEGRATION.md",
+      "bytes": 23902,
+      "sha256": "949cf90fab98742a0da8627de33644eaa0b56820185767aafe6e361aaf2ea068",
+      "original_sha256": "949cf90fab98742a0da8627de33644eaa0b56820185767aafe6e361aaf2ea068",
+      "transform": "none"
+    },
+    {
+      "path": "source/assets/platform/goldsaucer/RTP.md",
+      "source_path": "assets/platform/goldsaucer/RTP.md",
+      "bytes": 2727,
+      "sha256": "42e30a6aa06a29aa8fc88b93064a55d59f0dc2c040efd9ec42d4a53d44764201",
+      "original_sha256": "42e30a6aa06a29aa8fc88b93064a55d59f0dc2c040efd9ec42d4a53d44764201",
+      "transform": "none"
+    },
+    {
+      "path": "source/assets/platform/goldsaucer/metadata-v1.json",
+      "source_path": "assets/platform/goldsaucer/metadata-v1.json",
+      "bytes": 1119,
+      "sha256": "333eafcc5e948190bb9ec0d07d287b5fb8a34453c840eeba1ef88b20d54d99a1",
+      "original_sha256": "333eafcc5e948190bb9ec0d07d287b5fb8a34453c840eeba1ef88b20d54d99a1",
+      "transform": "none"
+    },
+    {
+      "path": "source/assets/platform/goldsaucer/prompt-v1.txt",
+      "source_path": "assets/platform/goldsaucer/prompt-v1.txt",
+      "bytes": 1333,
+      "sha256": "bb849cf31da02d5716876774564eebf23a2ca99b325c2d237e34206d6d8bc75a",
+      "original_sha256": "bb849cf31da02d5716876774564eebf23a2ca99b325c2d237e34206d6d8bc75a",
+      "transform": "none"
+    },
+    {
+      "path": "source/assets/platform/goldsaucer/requirements-v3.json",
+      "source_path": "assets/platform/goldsaucer/requirements-v3.json",
+      "bytes": 2948,
+      "sha256": "c54c5c56189c84001a2651979aa84dcad3bb8861ab51cd932cb06054925ae122",
+      "original_sha256": "c54c5c56189c84001a2651979aa84dcad3bb8861ab51cd932cb06054925ae122",
+      "transform": "none"
+    },
+    {
+      "path": "source/benchmark-game/presentation/bench-renderer.mjs",
+      "source_path": "benchmark-game/presentation/bench-renderer.mjs",
+      "bytes": 12302,
+      "sha256": "7631b29c65308b2c0354447726d1d5c97622874a0a3691344d8526f1ff9ddc17",
+      "original_sha256": "7631b29c65308b2c0354447726d1d5c97622874a0a3691344d8526f1ff9ddc17",
+      "transform": "none"
+    },
+    {
+      "path": "source/benchmark-game/scenes/main.scene.json",
+      "source_path": "benchmark-game/scenes/main.scene.json",
+      "bytes": 138,
+      "sha256": "86b2ce7ab15aea9ed3fcdb5c52ec3d8d37af4a565dc40b507e024e25432eac0d",
+      "original_sha256": "86b2ce7ab15aea9ed3fcdb5c52ec3d8d37af4a565dc40b507e024e25432eac0d",
+      "transform": "none"
+    },
+    {
+      "path": "source/benchmark-game/scripts/main.luau",
+      "source_path": "benchmark-game/scripts/main.luau",
+      "bytes": 22703,
+      "sha256": "675355b63fb96ab6aa1de4a9a53448460e5a40294600f6156a1ffa87927f02e8",
+      "original_sha256": "675355b63fb96ab6aa1de4a9a53448460e5a40294600f6156a1ffa87927f02e8",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/AGENTS.md",
+      "source_path": "game/AGENTS.md",
+      "bytes": 2829,
+      "sha256": "cc4e1db2a4d19e9a90f395d119c1de210ebc51fcd054eb0830a169884ac772fa",
+      "original_sha256": "cc4e1db2a4d19e9a90f395d119c1de210ebc51fcd054eb0830a169884ac772fa",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/README.md",
+      "source_path": "game/README.md",
+      "bytes": 40640,
+      "sha256": "04f8d721ec50e6a7c1269a868f38feaeff7ceaa32e251e448ab7adbe2d2f1a9a",
+      "original_sha256": "04f8d721ec50e6a7c1269a868f38feaeff7ceaa32e251e448ab7adbe2d2f1a9a",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/player.presentation.json",
+      "source_path": "game/player.presentation.json",
+      "bytes": 7274,
+      "sha256": "6415423be2b1791867f69e7f3c517568652acaa2140c18f02b6d770a234f4520",
+      "original_sha256": "6415423be2b1791867f69e7f3c517568652acaa2140c18f02b6d770a234f4520",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/card-shader.mjs",
+      "source_path": "game/presentation/card-shader.mjs",
+      "bytes": 9685,
+      "sha256": "5bfc0020ded47b59ceb5a54e9b723889b8478a24478ff0eda35f5f2da01c72ec",
+      "original_sha256": "5bfc0020ded47b59ceb5a54e9b723889b8478a24478ff0eda35f5f2da01c72ec",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/cards.css",
+      "source_path": "game/presentation/cards.css",
+      "bytes": 16405,
+      "sha256": "1c4875accd9791bd8533eb1cf002bffc0c8dabbca65a9635f26742ad9b304f98",
+      "original_sha256": "1c4875accd9791bd8533eb1cf002bffc0c8dabbca65a9635f26742ad9b304f98",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/cards.mjs",
+      "source_path": "game/presentation/cards.mjs",
+      "bytes": 27592,
+      "sha256": "faabcad427121e3ee2067c49f3a472dedd59dbaf5e445a97120f87a82e32f9e7",
+      "original_sha256": "faabcad427121e3ee2067c49f3a472dedd59dbaf5e445a97120f87a82e32f9e7",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/game-panels.mjs",
+      "source_path": "game/presentation/game-panels.mjs",
+      "bytes": 18830,
+      "sha256": "4d75863f773c4a3757bded6c12719df32c7f3fa6ba7da8ebd4b60f2c84fd718d",
+      "original_sha256": "4d75863f773c4a3757bded6c12719df32c7f3fa6ba7da8ebd4b60f2c84fd718d",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/game-renderer.mjs",
+      "source_path": "game/presentation/game-renderer.mjs",
+      "bytes": 88566,
+      "sha256": "71608e4c68316423eb2515af21b24b09110e19c8c0e4f5fd8fc573c673183f07",
+      "original_sha256": "71608e4c68316423eb2515af21b24b09110e19c8c0e4f5fd8fc573c673183f07",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/game-ui.css",
+      "source_path": "game/presentation/game-ui.css",
+      "bytes": 39461,
+      "sha256": "c07b033770d709a8e872b85f4a22396a013587db92b9bd5d8cfe5c8606a1152a",
+      "original_sha256": "c07b033770d709a8e872b85f4a22396a013587db92b9bd5d8cfe5c8606a1152a",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/goldsaucer-rooms.mjs",
+      "source_path": "game/presentation/goldsaucer-rooms.mjs",
+      "bytes": 17570,
+      "sha256": "de53248d86b560ffa20141a423905e1c7e0fc6f80d4b114779adaed059e68ca4",
+      "original_sha256": "de53248d86b560ffa20141a423905e1c7e0fc6f80d4b114779adaed059e68ca4",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/goldsaucer-server.mjs",
+      "source_path": "game/presentation/goldsaucer-server.mjs",
+      "bytes": 34514,
+      "sha256": "e9495c539458c666038b0ac9c22bce69bc063ad82b477f637eedf4b5c45aa95e",
+      "original_sha256": "e9495c539458c666038b0ac9c22bce69bc063ad82b477f637eedf4b5c45aa95e",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/goldsaucer.mjs",
+      "source_path": "game/presentation/goldsaucer.mjs",
+      "bytes": 9732,
+      "sha256": "3dc0f9a57144431ce47be9ab36ce32cf67b8e47bf9c8414729ea64cccd871ec9",
+      "original_sha256": "3dc0f9a57144431ce47be9ab36ce32cf67b8e47bf9c8414729ea64cccd871ec9",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/presentation/landscape.mjs",
+      "source_path": "game/presentation/landscape.mjs",
+      "bytes": 4706,
+      "sha256": "9004e84061c82ef3b1d6853ff657c7714899e86b87ba94a9124a18ceae0f07bb",
+      "original_sha256": "9004e84061c82ef3b1d6853ff657c7714899e86b87ba94a9124a18ceae0f07bb",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/project.unone.json",
+      "source_path": "game/project.unone.json",
+      "bytes": 798,
+      "sha256": "d0a0d1e130efb0d7de4a734a17cbf85136e8ff348cb0216bedae832dcddeb515",
+      "original_sha256": "d0a0d1e130efb0d7de4a734a17cbf85136e8ff348cb0216bedae832dcddeb515",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/scenes/main.scene.json",
+      "source_path": "game/scenes/main.scene.json",
+      "bytes": 10993,
+      "sha256": "e3cfae4004d77a9eb8950fe7915c566ab7aabe9b51cae3c2ada0fa6f2eddcb4e",
+      "original_sha256": "e3cfae4004d77a9eb8950fe7915c566ab7aabe9b51cae3c2ada0fa6f2eddcb4e",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/scripts/main.luau",
+      "source_path": "game/scripts/main.luau",
+      "bytes": 144925,
+      "sha256": "5e7269061b1e1113753374bcf65c877d7e9f59b4112d62aec82599aebb300430",
+      "original_sha256": "5e7269061b1e1113753374bcf65c877d7e9f59b4112d62aec82599aebb300430",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/acceptance.py",
+      "source_path": "game/tests/acceptance.py",
+      "bytes": 59087,
+      "sha256": "5c1a738b931be13cdb02d349614c228542634730e4434eace8b9c1b37e2eeb61",
+      "original_sha256": "5c1a738b931be13cdb02d349614c228542634730e4434eace8b9c1b37e2eeb61",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/auto_skip_acceptance.py",
+      "source_path": "game/tests/auto_skip_acceptance.py",
+      "bytes": 11075,
+      "sha256": "e6ecad0c1db4c59d14018c173999b4036f801b1004cd124e590687ee23456404",
+      "original_sha256": "e6ecad0c1db4c59d14018c173999b4036f801b1004cd124e590687ee23456404",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/batch_card_acceptance.py",
+      "source_path": "game/tests/batch_card_acceptance.py",
+      "bytes": 19496,
+      "sha256": "ced3e86d273fb361ce8cbc4841c2334f6c6bb1f81c32e3374b8599c133f97652",
+      "original_sha256": "ced3e86d273fb361ce8cbc4841c2334f6c6bb1f81c32e3374b8599c133f97652",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/card_acceptance.py",
+      "source_path": "game/tests/card_acceptance.py",
+      "bytes": 15477,
+      "sha256": "afb8951bb56a04d2cd7d618f71881e716f7152c968064bd472f9d0bd97321084",
+      "original_sha256": "afb8951bb56a04d2cd7d618f71881e716f7152c968064bd472f9d0bd97321084",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/card_capacity_acceptance.py",
+      "source_path": "game/tests/card_capacity_acceptance.py",
+      "bytes": 9766,
+      "sha256": "0189b259c6553fa6e02b79eb39d7573875953c7b9bfa43eccecba9b9684745fc",
+      "original_sha256": "0189b259c6553fa6e02b79eb39d7573875953c7b9bfa43eccecba9b9684745fc",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/card_seed_acceptance.py",
+      "source_path": "game/tests/card_seed_acceptance.py",
+      "bytes": 10109,
+      "sha256": "24be1d7f272038de00c6a27901c0f208c17008eb5749c8d5bda956def14355d0",
+      "original_sha256": "24be1d7f272038de00c6a27901c0f208c17008eb5749c8d5bda956def14355d0",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/eunbi_acceptance.py",
+      "source_path": "game/tests/eunbi_acceptance.py",
+      "bytes": 14024,
+      "sha256": "ea8f43d0b8414362b836783919b10ad9a3277dcf68875a0d227f60830b22505a",
+      "original_sha256": "ea8f43d0b8414362b836783919b10ad9a3277dcf68875a0d227f60830b22505a",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/flower-cost.test.json",
+      "source_path": "game/tests/flower-cost.test.json",
+      "bytes": 387,
+      "sha256": "b5a47bad88079a40674ec21c287f88758d07ae1ee3528a586772dcdac38ced00",
+      "original_sha256": "b5a47bad88079a40674ec21c287f88758d07ae1ee3528a586772dcdac38ced00",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/gallery-input-paused.test.json",
+      "source_path": "game/tests/gallery-input-paused.test.json",
+      "bytes": 505,
+      "sha256": "7ef49d0d1c8d31607fd515b7ce8c7cd55fe92c9948ddca6f04d8f9db0360e7a5",
+      "original_sha256": "7ef49d0d1c8d31607fd515b7ce8c7cd55fe92c9948ddca6f04d8f9db0360e7a5",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/idle-wallet.test.json",
+      "source_path": "game/tests/idle-wallet.test.json",
+      "bytes": 219,
+      "sha256": "7024753617b740879453070fa61224ffdb6c260b7b620e767b299779ce0df964",
+      "original_sha256": "7024753617b740879453070fa61224ffdb6c260b7b620e767b299779ce0df964",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/like-cost.test.json",
+      "source_path": "game/tests/like-cost.test.json",
+      "bytes": 294,
+      "sha256": "9931ab0b83a996ff199ea3e35fc1b142516570c3b598e8b6b31d1e40408c514e",
+      "original_sha256": "9931ab0b83a996ff199ea3e35fc1b142516570c3b598e8b6b31d1e40408c514e",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/platform_acceptance.py",
+      "source_path": "game/tests/platform_acceptance.py",
+      "bytes": 7988,
+      "sha256": "d59df14e437cb2fedcccf1744882322301e446d156dcdc51f77e99a27a3796b6",
+      "original_sha256": "d59df14e437cb2fedcccf1744882322301e446d156dcdc51f77e99a27a3796b6",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/preview-no-bet.test.json",
+      "source_path": "game/tests/preview-no-bet.test.json",
+      "bytes": 309,
+      "sha256": "ec9cc36492fe25e93d9cab441f2c754d034f675cf537d973e27b96f9e98b5f2a",
+      "original_sha256": "ec9cc36492fe25e93d9cab441f2c754d034f675cf537d973e27b96f9e98b5f2a",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/remote_settlement_acceptance.py",
+      "source_path": "game/tests/remote_settlement_acceptance.py",
+      "bytes": 39409,
+      "sha256": "279b620399b9fea8d2cda4d820693b06b8c36bd1e2055aa3d3e1961fe499d1e8",
+      "original_sha256": "279b620399b9fea8d2cda4d820693b06b8c36bd1e2055aa3d3e1961fe499d1e8",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/rocket-cost.test.json",
+      "source_path": "game/tests/rocket-cost.test.json",
+      "bytes": 385,
+      "sha256": "cc961dd6eb298f60791eb4ae0ab08d253fd8812e53433df8878a22f7a1030f0d",
+      "original_sha256": "cc961dd6eb298f60791eb4ae0ab08d253fd8812e53433df8878a22f7a1030f0d",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/rooms_acceptance.py",
+      "source_path": "game/tests/rooms_acceptance.py",
+      "bytes": 14356,
+      "sha256": "56e67edb37fecab2575e15af72b4888b8feced44767aa09c1c8dcad01bd5d593",
+      "original_sha256": "56e67edb37fecab2575e15af72b4888b8feced44767aa09c1c8dcad01bd5d593",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/rtp_acceptance.py",
+      "source_path": "game/tests/rtp_acceptance.py",
+      "bytes": 12455,
+      "sha256": "d98ec5f61766b7a29c4a943cb5dbf7912eec7b16bb43e1bd107276eca2d1fa31",
+      "original_sha256": "d98ec5f61766b7a29c4a943cb5dbf7912eec7b16bb43e1bd107276eca2d1fa31",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/shared-ui.test.json",
+      "source_path": "game/tests/shared-ui.test.json",
+      "bytes": 210,
+      "sha256": "835e4a64a6fa65bf4d4b4d329bedb247a60d8360a4feb8357f9c76426be0d695",
+      "original_sha256": "835e4a64a6fa65bf4d4b4d329bedb247a60d8360a4feb8357f9c76426be0d695",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/skip_large_acceptance.py",
+      "source_path": "game/tests/skip_large_acceptance.py",
+      "bytes": 20209,
+      "sha256": "ac2e9322b56bd96b64721bdf82da69297683bf3a742c0d4ba8c5689d84c968d1",
+      "original_sha256": "ac2e9322b56bd96b64721bdf82da69297683bf3a742c0d4ba8c5689d84c968d1",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/trial_refill_acceptance.py",
+      "source_path": "game/tests/trial_refill_acceptance.py",
+      "bytes": 5801,
+      "sha256": "fcf67afe20bc8057b2e78c661b0e074198a4a0220a941722c8d90a9edc2ba858",
+      "original_sha256": "fcf67afe20bc8057b2e78c661b0e074198a4a0220a941722c8d90a9edc2ba858",
+      "transform": "none"
+    },
+    {
+      "path": "source/game/tests/yeseul_acceptance.py",
+      "source_path": "game/tests/yeseul_acceptance.py",
+      "bytes": 14455,
+      "sha256": "07e32537924ade1ce3bb2506054ec7ff08a6829a416c72496fd18ac5fb0ae211",
+      "original_sha256": "07e32537924ade1ce3bb2506054ec7ff08a6829a416c72496fd18ac5fb0ae211",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/Start-BenchmarkBrowser.ps1",
+      "source_path": "scripts/Start-BenchmarkBrowser.ps1",
+      "bytes": 1382,
+      "sha256": "bb25a90ab4781ad41c00678368d9d1707bc0d99ceb3a9820151a2191367511f8",
+      "original_sha256": "bb25a90ab4781ad41c00678368d9d1707bc0d99ceb3a9820151a2191367511f8",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/Start-SymbolBenchmark.ps1",
+      "source_path": "scripts/Start-SymbolBenchmark.ps1",
+      "bytes": 614,
+      "sha256": "590343739ac08be1dd825e05a601fae6ff55cfb6a65e2171bebd2e3185e69c64",
+      "original_sha256": "590343739ac08be1dd825e05a601fae6ff55cfb6a65e2171bebd2e3185e69c64",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/build_benchmark_assets.py",
+      "source_path": "scripts/build_benchmark_assets.py",
+      "bytes": 14057,
+      "sha256": "4e1b2bbf617cd55c7bd526a320e03858b69adf0bf13f18deedcd3ed022f6130d",
+      "original_sha256": "4e1b2bbf617cd55c7bd526a320e03858b69adf0bf13f18deedcd3ed022f6130d",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/build_sample_atlas.py",
+      "source_path": "scripts/build_sample_atlas.py",
+      "bytes": 15354,
+      "sha256": "b7b399e33d03d91e9ec31c902292023955949a1f4efd46f3f941b05dac8a626a",
+      "original_sha256": "b7b399e33d03d91e9ec31c902292023955949a1f4efd46f3f941b05dac8a626a",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/build_small_symbol_sample.py",
+      "source_path": "scripts/build_small_symbol_sample.py",
+      "bytes": 18056,
+      "sha256": "f5000560295fdafe963fd0fc1d9bf7d58362f450dc4cfe159eeedb9422b758e0",
+      "original_sha256": "f5000560295fdafe963fd0fc1d9bf7d58362f450dc4cfe159eeedb9422b758e0",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/README.md",
+      "source_path": "scripts/card-tool/README.md",
+      "bytes": 2782,
+      "sha256": "8fc45f59f361f4957dc2c9c441f051618dd1a4b6dd419a895d17a4d1681bab8e",
+      "original_sha256": "8fc45f59f361f4957dc2c9c441f051618dd1a4b6dd419a895d17a4d1681bab8e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/app.js",
+      "source_path": "scripts/card-tool/app.js",
+      "bytes": 17084,
+      "sha256": "d1ee6caca385000ed303521b40706520dc63bafe802d37b919dda5846b05e78a",
+      "original_sha256": "d1ee6caca385000ed303521b40706520dc63bafe802d37b919dda5846b05e78a",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/card_tool.py",
+      "source_path": "scripts/card-tool/card_tool.py",
+      "bytes": 25156,
+      "sha256": "0c0c62c1d3ba292fb28aac7842a0a6d48970c8038144d8456b3fabc2508adb31",
+      "original_sha256": "0c0c62c1d3ba292fb28aac7842a0a6d48970c8038144d8456b3fabc2508adb31",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/index.html",
+      "source_path": "scripts/card-tool/index.html",
+      "bytes": 4142,
+      "sha256": "593fdc578c38fc8da29658844000760ac117d6955df76acd797d93af9512c94e",
+      "original_sha256": "593fdc578c38fc8da29658844000760ac117d6955df76acd797d93af9512c94e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/qa_browser.mjs",
+      "source_path": "scripts/card-tool/qa_browser.mjs",
+      "bytes": 7929,
+      "sha256": "9602b867a672d7f2df201dd6388bfcf48283bd889065c864e0d796efc7571df5",
+      "original_sha256": "9602b867a672d7f2df201dd6388bfcf48283bd889065c864e0d796efc7571df5",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/requirements.txt",
+      "source_path": "scripts/card-tool/requirements.txt",
+      "bytes": 7,
+      "sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "original_sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/card-tool/style.css",
+      "source_path": "scripts/card-tool/style.css",
+      "bytes": 8665,
+      "sha256": "58f8b2afa70388bc5eb70db5441e16c9a874ae78f870830549b35c60d5ad4901",
+      "original_sha256": "58f8b2afa70388bc5eb70db5441e16c9a874ae78f870830549b35c60d5ad4901",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/cdp-client.mjs",
+      "source_path": "scripts/cdp-client.mjs",
+      "bytes": 2052,
+      "sha256": "4864325240d99b3b07c9d019b8d4a8d8ef6db629892002cc3db14e21c2b17707",
+      "original_sha256": "4864325240d99b3b07c9d019b8d4a8d8ef6db629892002cc3db14e21c2b17707",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/extract_dt2_ui.py",
+      "source_path": "scripts/extract_dt2_ui.py",
+      "bytes": 6245,
+      "sha256": "de78728617213ae7cb86fe343ffe0d40d91a2fbfe0b26389d9de06dc721b6100",
+      "original_sha256": "de78728617213ae7cb86fe343ffe0d40d91a2fbfe0b26389d9de06dc721b6100",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/matte_video_sample.py",
+      "source_path": "scripts/matte_video_sample.py",
+      "bytes": 8296,
+      "sha256": "d46a1f298b989e8a1070f98c0166c078f300f48c0780e195ddfed84c8780c28e",
+      "original_sha256": "d46a1f298b989e8a1070f98c0166c078f300f48c0780e195ddfed84c8780c28e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/README.md",
+      "source_path": "scripts/media-tool/README.md",
+      "bytes": 2990,
+      "sha256": "bd2e5762d9a8460303824d57c1d649c80ac982e196faf0e106981108e2f78efb",
+      "original_sha256": "bd2e5762d9a8460303824d57c1d649c80ac982e196faf0e106981108e2f78efb",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/app.js",
+      "source_path": "scripts/media-tool/app.js",
+      "bytes": 35885,
+      "sha256": "e996d8a592d0db1452fa21dd2c434edee7f0dbba3b912d81938a2b931cc6013e",
+      "original_sha256": "e996d8a592d0db1452fa21dd2c434edee7f0dbba3b912d81938a2b931cc6013e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/index.html",
+      "source_path": "scripts/media-tool/index.html",
+      "bytes": 9695,
+      "sha256": "5670970b41dfe0a0520425941bcff91f64c378b86655634251f0f3fd06ede79e",
+      "original_sha256": "5670970b41dfe0a0520425941bcff91f64c378b86655634251f0f3fd06ede79e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/media_tool.py",
+      "source_path": "scripts/media-tool/media_tool.py",
+      "bytes": 40845,
+      "sha256": "6eb0102b2dbd0d916c65aac38f974cff6e08427d1002f66a6ab2032477805d47",
+      "original_sha256": "6eb0102b2dbd0d916c65aac38f974cff6e08427d1002f66a6ab2032477805d47",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/requirements.txt",
+      "source_path": "scripts/media-tool/requirements.txt",
+      "bytes": 7,
+      "sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "original_sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/media-tool/style.css",
+      "source_path": "scripts/media-tool/style.css",
+      "bytes": 15355,
+      "sha256": "4ace8affb29381b1427f304e8857a35a8b202731bd40f43c928a529eabcc7211",
+      "original_sha256": "4ace8affb29381b1427f304e8857a35a8b202731bd40f43c928a529eabcc7211",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/package-goldsaucer.py",
+      "source_path": "scripts/package-goldsaucer.py",
+      "bytes": 9270,
+      "sha256": "10a4a6d5237b79d328b9436fa1c3c95ce906bd2138d6ec8a59a58dbe99a096d3",
+      "original_sha256": "10a4a6d5237b79d328b9436fa1c3c95ce906bd2138d6ec8a59a58dbe99a096d3",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/package_small_symbol_sample.py",
+      "source_path": "scripts/package_small_symbol_sample.py",
+      "bytes": 3317,
+      "sha256": "b3a77c05a5b00c2b13596d510a7045bd432f617d914419d7b09339ffeced7a00",
+      "original_sha256": "b3a77c05a5b00c2b13596d510a7045bd432f617d914419d7b09339ffeced7a00",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/package_symbol_benchmark.py",
+      "source_path": "scripts/package_symbol_benchmark.py",
+      "bytes": 4509,
+      "sha256": "9c82705910437ed1aba16772635b8a78ed4e25ab333532ac324a7c9f0c091086",
+      "original_sha256": "9c82705910437ed1aba16772635b8a78ed4e25ab333532ac324a7c9f0c091086",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/package_video_sample.py",
+      "source_path": "scripts/package_video_sample.py",
+      "bytes": 5189,
+      "sha256": "77c16c68e4f9f85f84df9e844576b3d39fbdb5f874db518b8935528ed7290792",
+      "original_sha256": "77c16c68e4f9f85f84df9e844576b3d39fbdb5f874db518b8935528ed7290792",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/prepare-goldsaucer-plugin-upload.py",
+      "source_path": "scripts/prepare-goldsaucer-plugin-upload.py",
+      "bytes": 1650,
+      "sha256": "9716448943c57f59327395c4ddee714e3ed5bcbe2f42269cf344a4edd28b3395",
+      "original_sha256": "9716448943c57f59327395c4ddee714e3ed5bcbe2f42269cf344a4edd28b3395",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/prepare-jiayi.py",
+      "source_path": "scripts/prepare-jiayi.py",
+      "bytes": 12367,
+      "sha256": "4433d8bbaff3b1489a03525e7e701eff646d8e87924c7d700e80ef9fa7c8be36",
+      "original_sha256": "4433d8bbaff3b1489a03525e7e701eff646d8e87924c7d700e80ef9fa7c8be36",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/prepare-mugi.py",
+      "source_path": "scripts/prepare-mugi.py",
+      "bytes": 12028,
+      "sha256": "bd2d36462f756523ec8230e6b394ac02156d7ba6f3fc0c3c74ffa0c9ca01671a",
+      "original_sha256": "bd2d36462f756523ec8230e6b394ac02156d7ba6f3fc0c3c74ffa0c9ca01671a",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/prepare-yeseul.py",
+      "source_path": "scripts/prepare-yeseul.py",
+      "bytes": 13808,
+      "sha256": "1b976ad54eb3e0826b8119c5df804904afd19dca8bef2aa4850ae4b306e6af34",
+      "original_sha256": "1b976ad54eb3e0826b8119c5df804904afd19dca8bef2aa4850ae4b306e6af34",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/probe_symbol_browser.mjs",
+      "source_path": "scripts/probe_symbol_browser.mjs",
+      "bytes": 2517,
+      "sha256": "3c1407e730302983f248055da1f65273bf97bb76b50f0cd9f325ad244ee301e2",
+      "original_sha256": "3c1407e730302983f248055da1f65273bf97bb76b50f0cd9f325ad244ee301e2",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-batch-cards.mjs",
+      "source_path": "scripts/qa-batch-cards.mjs",
+      "bytes": 10463,
+      "sha256": "3cd1fc2367f875f07df127f8f80a42c65ad43040e8be6a86459adbceff82fa9d",
+      "original_sha256": "3cd1fc2367f875f07df127f8f80a42c65ad43040e8be6a86459adbceff82fa9d",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-card-pack-capacity.mjs",
+      "source_path": "scripts/qa-card-pack-capacity.mjs",
+      "bytes": 9969,
+      "sha256": "c3ce9660d8fff6942a3b3e6455d6b2fef7a9a4f7a72400ec0b2152fa672df536",
+      "original_sha256": "c3ce9660d8fff6942a3b3e6455d6b2fef7a9a4f7a72400ec0b2152fa672df536",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-card-tool.py",
+      "source_path": "scripts/qa-card-tool.py",
+      "bytes": 8327,
+      "sha256": "c1dd88831d0849e833707534a6a4156f60fc9180bca2a16795f76ebdbdfb70e0",
+      "original_sha256": "c1dd88831d0849e833707534a6a4156f60fc9180bca2a16795f76ebdbdfb70e0",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-cards-integration.mjs",
+      "source_path": "scripts/qa-cards-integration.mjs",
+      "bytes": 9553,
+      "sha256": "a0e0deb47a5a509abac2785dd97eb063dbaf9e7122090963f1b83c33adb01289",
+      "original_sha256": "a0e0deb47a5a509abac2785dd97eb063dbaf9e7122090963f1b83c33adb01289",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-cards.mjs",
+      "source_path": "scripts/qa-cards.mjs",
+      "bytes": 13373,
+      "sha256": "dfba966c6361ce3084eb32323ce4f42d4570e08002bed99e373fb4759e2a5036",
+      "original_sha256": "dfba966c6361ce3084eb32323ce4f42d4570e08002bed99e373fb4759e2a5036",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-collection-polish.mjs",
+      "source_path": "scripts/qa-collection-polish.mjs",
+      "bytes": 21227,
+      "sha256": "dbc1ba4697dc33501c674778667c93b8b3eb485984f07d5a975b97ec1974cc74",
+      "original_sha256": "dbc1ba4697dc33501c674778667c93b8b3eb485984f07d5a975b97ec1974cc74",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-dt2-controls.mjs",
+      "source_path": "scripts/qa-dt2-controls.mjs",
+      "bytes": 11709,
+      "sha256": "0177efc213303569ff536df02e54599d065dc3d646a58cc639960cd111fcdbd0",
+      "original_sha256": "0177efc213303569ff536df02e54599d065dc3d646a58cc639960cd111fcdbd0",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-eunbi.mjs",
+      "source_path": "scripts/qa-eunbi.mjs",
+      "bytes": 14688,
+      "sha256": "13e8fe813cb9127393c090803650a0a42e05116795d671d5910204e7c338431f",
+      "original_sha256": "13e8fe813cb9127393c090803650a0a42e05116795d671d5910204e7c338431f",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-fast-cadence.mjs",
+      "source_path": "scripts/qa-fast-cadence.mjs",
+      "bytes": 8293,
+      "sha256": "a7f69ce62cc410d645d250d47f7e500d39e735ef9b50d835b9abd213bd80bdd6",
+      "original_sha256": "a7f69ce62cc410d645d250d47f7e500d39e735ef9b50d835b9abd213bd80bdd6",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-game.mjs",
+      "source_path": "scripts/qa-game.mjs",
+      "bytes": 8321,
+      "sha256": "01a6388ae01587b66e493417e85ef9cf2052c9c937cfea6c2bc3d5b7ab9513d7",
+      "original_sha256": "01a6388ae01587b66e493417e85ef9cf2052c9c937cfea6c2bc3d5b7ab9513d7",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-blocked-browser.mjs",
+      "source_path": "scripts/qa-goldsaucer-blocked-browser.mjs",
+      "bytes": 10244,
+      "sha256": "1e01b26b2f854444d532eac118c5125a5741852573da101969c97a77d284d513",
+      "original_sha256": "1e01b26b2f854444d532eac118c5125a5741852573da101969c97a77d284d513",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-bridge.mjs",
+      "source_path": "scripts/qa-goldsaucer-bridge.mjs",
+      "bytes": 13018,
+      "sha256": "147b5e326f913f5ae65aa06d7a4423effdf1b701f997f661282c2eff295c65d4",
+      "original_sha256": "147b5e326f913f5ae65aa06d7a4423effdf1b701f997f661282c2eff295c65d4",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-end-to-end.mjs",
+      "source_path": "scripts/qa-goldsaucer-end-to-end.mjs",
+      "bytes": 10531,
+      "sha256": "501cadf5960563d783a6d2cb557e0d4adb614377ba897f6e37a868c000b5e1b5",
+      "original_sha256": "501cadf5960563d783a6d2cb557e0d4adb614377ba897f6e37a868c000b5e1b5",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-live-trial.mjs",
+      "source_path": "scripts/qa-goldsaucer-live-trial.mjs",
+      "bytes": 5066,
+      "sha256": "cc386b75462a5a949058f2e92ffbe7e998eb013ab75f9ccb46824632d8619f75",
+      "original_sha256": "cc386b75462a5a949058f2e92ffbe7e998eb013ab75f9ccb46824632d8619f75",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-low-balance.mjs",
+      "source_path": "scripts/qa-goldsaucer-low-balance.mjs",
+      "bytes": 4316,
+      "sha256": "11eb1ce6b9ee78ab001afe89afb1224f6edae8f49f04059d246905dc6b733c95",
+      "original_sha256": "11eb1ce6b9ee78ab001afe89afb1224f6edae8f49f04059d246905dc6b733c95",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-notice-layout.mjs",
+      "source_path": "scripts/qa-goldsaucer-notice-layout.mjs",
+      "bytes": 2378,
+      "sha256": "77302931ac9e1cd3d0b80826032f932ed24f85fa968465292ff7faa57fe82f55",
+      "original_sha256": "77302931ac9e1cd3d0b80826032f932ed24f85fa968465292ff7faa57fe82f55",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-pack-stock-browser.mjs",
+      "source_path": "scripts/qa-goldsaucer-pack-stock-browser.mjs",
+      "bytes": 8798,
+      "sha256": "b62de9b43b5c807843d43316b3bdfa5738864ed89f918a771a0beab8e565c38d",
+      "original_sha256": "b62de9b43b5c807843d43316b3bdfa5738864ed89f918a771a0beab8e565c38d",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-package.mjs",
+      "source_path": "scripts/qa-goldsaucer-package.mjs",
+      "bytes": 5464,
+      "sha256": "34db16f8cfa6cefd7bee066b7f805bd0d80ba2fbda1e7c8fcf2d060823620aac",
+      "original_sha256": "34db16f8cfa6cefd7bee066b7f805bd0d80ba2fbda1e7c8fcf2d060823620aac",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-rooms-browser.mjs",
+      "source_path": "scripts/qa-goldsaucer-rooms-browser.mjs",
+      "bytes": 10582,
+      "sha256": "b1c23fea08e5b262389f02e50739b4e68174dcb0b635c75547bac639b70ea183",
+      "original_sha256": "b1c23fea08e5b262389f02e50739b4e68174dcb0b635c75547bac639b70ea183",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-rooms.mjs",
+      "source_path": "scripts/qa-goldsaucer-rooms.mjs",
+      "bytes": 19512,
+      "sha256": "3416c3f3f58035ee8c7ff88a9cf3cb0894d92cc84d21bc5656990bf7c7211715",
+      "original_sha256": "3416c3f3f58035ee8c7ff88a9cf3cb0894d92cc84d21bc5656990bf7c7211715",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-server.mjs",
+      "source_path": "scripts/qa-goldsaucer-server.mjs",
+      "bytes": 36742,
+      "sha256": "805541e09e08a181533768dd6122d0befaeb89bdddaf612054147419dfcb8fd0",
+      "original_sha256": "805541e09e08a181533768dd6122d0befaeb89bdddaf612054147419dfcb8fd0",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-smooth-browser.mjs",
+      "source_path": "scripts/qa-goldsaucer-smooth-browser.mjs",
+      "bytes": 7844,
+      "sha256": "ca1b4fd8d86c4d295b2ff276b2845ac5a1fc510b86265c0d36900914cc8481f1",
+      "original_sha256": "ca1b4fd8d86c4d295b2ff276b2845ac5a1fc510b86265c0d36900914cc8481f1",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-trial-browser.mjs",
+      "source_path": "scripts/qa-goldsaucer-trial-browser.mjs",
+      "bytes": 6416,
+      "sha256": "6e8aa5c8723344fe1b54b84b1605714d2626efa0f84f51efff1b4a79fb2da7da",
+      "original_sha256": "6e8aa5c8723344fe1b54b84b1605714d2626efa0f84f51efff1b4a79fb2da7da",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-goldsaucer-trial.mjs",
+      "source_path": "scripts/qa-goldsaucer-trial.mjs",
+      "bytes": 10350,
+      "sha256": "88ddd53f50444e47c4f03d33ee35e38107fc4088ab24a713d0f697a5bd9e7465",
+      "original_sha256": "88ddd53f50444e47c4f03d33ee35e38107fc4088ab24a713d0f697a5bd9e7465",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-jiayi-gallery.mjs",
+      "source_path": "scripts/qa-jiayi-gallery.mjs",
+      "bytes": 15944,
+      "sha256": "86834af922c8cef92862dba13736234defb53b99c900a89ec866b47356e94eba",
+      "original_sha256": "86834af922c8cef92862dba13736234defb53b99c900a89ec866b47356e94eba",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-landscape.mjs",
+      "source_path": "scripts/qa-landscape.mjs",
+      "bytes": 7984,
+      "sha256": "f761244e30c1cf71a6584a3c3395df6cef5bd9287c8d8f0aebd9ccc294b0d699",
+      "original_sha256": "f761244e30c1cf71a6584a3c3395df6cef5bd9287c8d8f0aebd9ccc294b0d699",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-media-tool-ui.mjs",
+      "source_path": "scripts/qa-media-tool-ui.mjs",
+      "bytes": 9637,
+      "sha256": "4638ed69f31d35db7986af02fafa6c7be12b7b4649ff3bd29318aea9a70e8279",
+      "original_sha256": "4638ed69f31d35db7986af02fafa6c7be12b7b4649ff3bd29318aea9a70e8279",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-media-tool.py",
+      "source_path": "scripts/qa-media-tool.py",
+      "bytes": 22345,
+      "sha256": "8859d43a0db3d21f479cc9c19381b18974159b086289705a14555a505398ace0",
+      "original_sha256": "8859d43a0db3d21f479cc9c19381b18974159b086289705a14555a505398ace0",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-medium-concurrency.mjs",
+      "source_path": "scripts/qa-medium-concurrency.mjs",
+      "bytes": 8645,
+      "sha256": "0ab32912ee457e700ff3ce64e520c3a31e6978442cb27cdfd2f27496c0ecc8b9",
+      "original_sha256": "0ab32912ee457e700ff3ce64e520c3a31e6978442cb27cdfd2f27496c0ecc8b9",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-mugi-gallery.mjs",
+      "source_path": "scripts/qa-mugi-gallery.mjs",
+      "bytes": 13024,
+      "sha256": "2fa9cb0df6bf685509a06875cf29e4c49954a5ac943bf34b1bab212b3f2530ab",
+      "original_sha256": "2fa9cb0df6bf685509a06875cf29e4c49954a5ac943bf34b1bab212b3f2530ab",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-pack-sequence.mjs",
+      "source_path": "scripts/qa-pack-sequence.mjs",
+      "bytes": 11228,
+      "sha256": "1716443cfb8e3d69dc6d0f5f00af4a353d099a9e6a18360a33b5ced0a696727c",
+      "original_sha256": "1716443cfb8e3d69dc6d0f5f00af4a353d099a9e6a18360a33b5ced0a696727c",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-platform-wager-notices.mjs",
+      "source_path": "scripts/qa-platform-wager-notices.mjs",
+      "bytes": 7328,
+      "sha256": "55645990a2d478646ca446b0bb83eec65f180df89fe42d227eece6d7b7066686",
+      "original_sha256": "55645990a2d478646ca446b0bb83eec65f180df89fe42d227eece6d7b7066686",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-rooms-fixture.mjs",
+      "source_path": "scripts/qa-rooms-fixture.mjs",
+      "bytes": 9909,
+      "sha256": "ec63872b03f1c62277b56818ee7af9c5bed6a7c2ba6b5a0874199513758854cd",
+      "original_sha256": "ec63872b03f1c62277b56818ee7af9c5bed6a7c2ba6b5a0874199513758854cd",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-runtime-fixes.mjs",
+      "source_path": "scripts/qa-runtime-fixes.mjs",
+      "bytes": 16140,
+      "sha256": "6ae07e1b1f56c7bb8d38b6e1d3b8dd2be00a0c94b15bc6406b8f5100bdc6da3a",
+      "original_sha256": "6ae07e1b1f56c7bb8d38b6e1d3b8dd2be00a0c94b15bc6406b8f5100bdc6da3a",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-skip-seen.mjs",
+      "source_path": "scripts/qa-skip-seen.mjs",
+      "bytes": 10447,
+      "sha256": "a3b157c9d90785c8f318b058b280d24291944b967dd68dd06636bcfe3b0eb885",
+      "original_sha256": "a3b157c9d90785c8f318b058b280d24291944b967dd68dd06636bcfe3b0eb885",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-ui-polish.mjs",
+      "source_path": "scripts/qa-ui-polish.mjs",
+      "bytes": 11407,
+      "sha256": "2d627d3c579120fbcfa6b5451b288b4e24c8fbddcfb0e7caa944f86f4f75e96c",
+      "original_sha256": "2d627d3c579120fbcfa6b5451b288b4e24c8fbddcfb0e7caa944f86f4f75e96c",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-wager-notices.mjs",
+      "source_path": "scripts/qa-wager-notices.mjs",
+      "bytes": 6471,
+      "sha256": "ec546db3d39710e40b13e4d1cbf90313717c5b52139f720ef3c129dae35b532e",
+      "original_sha256": "ec546db3d39710e40b13e4d1cbf90313717c5b52139f720ef3c129dae35b532e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-win-credit.mjs",
+      "source_path": "scripts/qa-win-credit.mjs",
+      "bytes": 8694,
+      "sha256": "8a520ae5f4fdfcd33fdd2f486036605b75bc404c42ac76776a70bde0639e9ff4",
+      "original_sha256": "8a520ae5f4fdfcd33fdd2f486036605b75bc404c42ac76776a70bde0639e9ff4",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-win-effects.mjs",
+      "source_path": "scripts/qa-win-effects.mjs",
+      "bytes": 8638,
+      "sha256": "2e732c6a29d9d488518b5ad5437a7aa2929308959d1d7b95a597d50392aba2fb",
+      "original_sha256": "2e732c6a29d9d488518b5ad5437a7aa2929308959d1d7b95a597d50392aba2fb",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/qa-yeseul.mjs",
+      "source_path": "scripts/qa-yeseul.mjs",
+      "bytes": 13994,
+      "sha256": "25131995726f7eeee562cfc205f583026fbfc66465a4a6be71b9b42758fe277e",
+      "original_sha256": "25131995726f7eeee562cfc205f583026fbfc66465a4a6be71b9b42758fe277e",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/render_small_symbol_preview.py",
+      "source_path": "scripts/render_small_symbol_preview.py",
+      "bytes": 3353,
+      "sha256": "401302cb9d5e6b5da99a4f83f71abe6aa5bbfe6096b0a32d7661b18948a6b332",
+      "original_sha256": "401302cb9d5e6b5da99a4f83f71abe6aa5bbfe6096b0a32d7661b18948a6b332",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/run_symbol_benchmark.mjs",
+      "source_path": "scripts/run_symbol_benchmark.mjs",
+      "bytes": 6941,
+      "sha256": "a81510668e3f9b3b18e3516991a2070b2683b08a6aa0062f4e6f02a4e558a15f",
+      "original_sha256": "a81510668e3f9b3b18e3516991a2070b2683b08a6aa0062f4e6f02a4e558a15f",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/serve-game.py",
+      "source_path": "scripts/serve-game.py",
+      "bytes": 2334,
+      "sha256": "945e0f269bba65e98a6338518b1e2d282f72470039ce595504d77d247c7b9336",
+      "original_sha256": "945e0f269bba65e98a6338518b1e2d282f72470039ce595504d77d247c7b9336",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/serve_symbol_benchmark.py",
+      "source_path": "scripts/serve_symbol_benchmark.py",
+      "bytes": 1005,
+      "sha256": "7740edc26c904b7f6fb5af3b8acc064c6a47a942290b89c4f95504cce8e1d124",
+      "original_sha256": "7740edc26c904b7f6fb5af3b8acc064c6a47a942290b89c4f95504cce8e1d124",
+      "transform": "none"
+    },
+    {
+      "path": "source/scripts/summarize_symbol_benchmark.py",
+      "source_path": "scripts/summarize_symbol_benchmark.py",
+      "bytes": 29350,
+      "sha256": "8009f63eb3d7c728953cc8a1cbaf445827296242e20ccf6207e8bc2267265b14",
+      "original_sha256": "8009f63eb3d7c728953cc8a1cbaf445827296242e20ccf6207e8bc2267265b14",
+      "transform": "none"
+    },
+    {
+      "path": "source/server/goldsaucer/functions.js",
+      "source_path": "server/goldsaucer/functions.js",
+      "bytes": 32040,
+      "sha256": "ad1bf0f96e48da30d0298b2df587daad4f03f72347b40b8f8292270d2f698a82",
+      "original_sha256": "ad1bf0f96e48da30d0298b2df587daad4f03f72347b40b8f8292270d2f698a82",
+      "transform": "none"
+    },
+    {
+      "path": "source/server/goldsaucer/functions.test.mjs",
+      "source_path": "server/goldsaucer/functions.test.mjs",
+      "bytes": 32185,
+      "sha256": "55386993244dba79a9647611f4657a062520f1a0e9e8714b0ba0a42dfa31f406",
+      "original_sha256": "55386993244dba79a9647611f4657a062520f1a0e9e8714b0ba0a42dfa31f406",
+      "transform": "none"
+    },
+    {
+      "path": "source/server/goldsaucer/platform-runtime.test.mts",
+      "source_path": "server/goldsaucer/platform-runtime.test.mts",
+      "bytes": 6555,
+      "sha256": "a777ad4c1b37288e8592b9825300f1310d404149a677bfc0e297ffe592aa2321",
+      "original_sha256": "a777ad4c1b37288e8592b9825300f1310d404149a677bfc0e297ffe592aa2321",
+      "transform": "none"
+    },
+    {
+      "path": "source/server/goldsaucer/room.js",
+      "source_path": "server/goldsaucer/room.js",
+      "bytes": 5661,
+      "sha256": "929cbc1cad85b2f6a53a34d62a21b6ed565ca4ee4501fa655b90c4171fce57ae",
+      "original_sha256": "929cbc1cad85b2f6a53a34d62a21b6ed565ca4ee4501fa655b90c4171fce57ae",
+      "transform": "none"
+    },
+    {
+      "path": "source/server/goldsaucer/rooms-runtime.test.mts",
+      "source_path": "server/goldsaucer/rooms-runtime.test.mts",
+      "bytes": 5744,
+      "sha256": "5c1a8b9e6ce596d8dd0a30dcc5eb56f665a7449d9d29de706bb090b7a776d71b",
+      "original_sha256": "5c1a8b9e6ce596d8dd0a30dcc5eb56f665a7449d9d29de706bb090b7a776d71b",
+      "transform": "none"
+    },
+    {
+      "path": "source/server/goldsaucer/rooms.test.mjs",
+      "source_path": "server/goldsaucer/rooms.test.mjs",
+      "bytes": 22236,
+      "sha256": "b02881628d086d2c673d8b20bbb6a045b9d5b8356e967d03a39198a22578063a",
+      "original_sha256": "b02881628d086d2c673d8b20bbb6a045b9d5b8356e967d03a39198a22578063a",
+      "transform": "none"
+    }
+  ]
+}

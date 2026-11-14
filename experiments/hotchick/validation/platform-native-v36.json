@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "runs": 28,
+  "checks": [
+    "pause-freezes-time-cooldown-targets-projectiles-and-paid-spend-with-AUTO-intent",
+    "resume-matches-uninterrupted-active-ticks-without-catch-up",
+    "paused-controls-cannot-mutate-game-and-simultaneous-pause-wins",
+    "manual-Fire-held-through-pause-requires-release-before-resuming",
+    "paid-award-heart-progress-and-credit-freeze-then-resume-exactly",
+    "platform-resume-preserves-independent-portrait-and-gallery-blocks"
+  ]
+}

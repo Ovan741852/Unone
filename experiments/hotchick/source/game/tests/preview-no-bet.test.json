@@ -1,0 +1,9 @@
+{
+  "name": "large-performance-preview-cannot-pay-or-charge",
+  "frames": 600,
+  "seed": 42,
+  "input_sequence": [{"actions": {"PreviewLarge": true}}],
+  "assertions": [{"observation": {"key": "wallet", "equals": {
+    "balance": 10000, "bet": 10, "weapon": "like", "rounds": 0, "spent": 0, "won": 0
+  }}}]
+}

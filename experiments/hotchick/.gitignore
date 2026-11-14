@@ -1,0 +1,9 @@
+source/.cache/
+source/.toolcache/
+source/artifacts/
+source/game/.unone/
+source/game/bundles/
+source/game/presentation/assets/
+source/game/presentation/three/
+**/__pycache__/
+*.pyc

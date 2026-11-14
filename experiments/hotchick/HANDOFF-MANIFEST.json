@@ -1,0 +1,909 @@
+{
+  "schema": "hotchick.handoff-files.v1",
+  "release": "release-036",
+  "target_branch": "main",
+  "base_commit": "77557b59c0a025a1752abe0aa909220acc86b6e9",
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "experiments/hotchick/.gitattributes",
+      "bytes": 240,
+      "sha256": "6bfb8bd839e0f258ed56644f50468467e5a9838b00449e25154b8faee3dc7262",
+      "git_blob_sha": "a66c7257e4e4664a7a7bff00be761082bd8d792d"
+    },
+    {
+      "path": "experiments/hotchick/.gitignore",
+      "bytes": 180,
+      "sha256": "364c76e2af1708ed5773422e63ca74eb3f0520476428c4fe5a1f92dea8041cfc",
+      "git_blob_sha": "ec1a895b4fe85b7cef0509793948270ae80bcdaf"
+    },
+    {
+      "path": "experiments/hotchick/examples/card-recipe.json",
+      "bytes": 404,
+      "sha256": "29bdb616541bb059e2cd35303158d8491eb2da0f8e9b4eae84157eb4dca0eb2e",
+      "git_blob_sha": "364c0647890b0cc45b5e4f6f994ba27f88eabe20"
+    },
+    {
+      "path": "experiments/hotchick/examples/media-recipe.json",
+      "bytes": 765,
+      "sha256": "77754fc856cc9c5f39df8081289d24df3db84840133efd0e5b6e06125960322f",
+      "git_blob_sha": "f999e179eaf43dc25587a9d9b5c88708d72d72ce"
+    },
+    {
+      "path": "experiments/hotchick/MODULE-CANDIDATES.md",
+      "bytes": 8222,
+      "sha256": "4e3040154a0c7b5969d508ccd6a039b3e1aa04592bb2d2ff4b4747ab339b8e88",
+      "git_blob_sha": "a7d680343ba9e04a3b50995f9c377c94cb31f4ae"
+    },
+    {
+      "path": "experiments/hotchick/README.md",
+      "bytes": 5072,
+      "sha256": "89edc8ee477e4004909a5f5c74ee246993c3134e41d908ab6de747e9841c2615",
+      "git_blob_sha": "edca5aff57b932001439278bd262a59646120bb2"
+    },
+    {
+      "path": "experiments/hotchick/source/assets/platform/goldsaucer/INTEGRATION.md",
+      "bytes": 23902,
+      "sha256": "949cf90fab98742a0da8627de33644eaa0b56820185767aafe6e361aaf2ea068",
+      "git_blob_sha": "e37b588ed2c8d593a415653da82c84879e585a39"
+    },
+    {
+      "path": "experiments/hotchick/source/assets/platform/goldsaucer/metadata-v1.json",
+      "bytes": 1119,
+      "sha256": "333eafcc5e948190bb9ec0d07d287b5fb8a34453c840eeba1ef88b20d54d99a1",
+      "git_blob_sha": "4bd110b997d939208c032eb5e4fef2d30e669152"
+    },
+    {
+      "path": "experiments/hotchick/source/assets/platform/goldsaucer/prompt-v1.txt",
+      "bytes": 1333,
+      "sha256": "bb849cf31da02d5716876774564eebf23a2ca99b325c2d237e34206d6d8bc75a",
+      "git_blob_sha": "2b998e3faf25589f117b4a013c3b74c2d7e2047b"
+    },
+    {
+      "path": "experiments/hotchick/source/assets/platform/goldsaucer/requirements-v3.json",
+      "bytes": 2948,
+      "sha256": "c54c5c56189c84001a2651979aa84dcad3bb8861ab51cd932cb06054925ae122",
+      "git_blob_sha": "796dc4555fc89b084a4433802b11588193302285"
+    },
+    {
+      "path": "experiments/hotchick/source/assets/platform/goldsaucer/RTP.md",
+      "bytes": 2727,
+      "sha256": "42e30a6aa06a29aa8fc88b93064a55d59f0dc2c040efd9ec42d4a53d44764201",
+      "git_blob_sha": "eb403ced83fc8407f09a23f801c5ff719f853648"
+    },
+    {
+      "path": "experiments/hotchick/source/benchmark-game/presentation/bench-renderer.mjs",
+      "bytes": 12302,
+      "sha256": "7631b29c65308b2c0354447726d1d5c97622874a0a3691344d8526f1ff9ddc17",
+      "git_blob_sha": "6b6642ccaf2b227642097056f315b9e15806b0e7"
+    },
+    {
+      "path": "experiments/hotchick/source/benchmark-game/scenes/main.scene.json",
+      "bytes": 138,
+      "sha256": "86b2ce7ab15aea9ed3fcdb5c52ec3d8d37af4a565dc40b507e024e25432eac0d",
+      "git_blob_sha": "5114150f81a6ce8a68322b287cddd68363bf453d"
+    },
+    {
+      "path": "experiments/hotchick/source/benchmark-game/scripts/main.luau",
+      "bytes": 22703,
+      "sha256": "675355b63fb96ab6aa1de4a9a53448460e5a40294600f6156a1ffa87927f02e8",
+      "git_blob_sha": "c0f8109fd3a7d06e2a113719f0429944c1686512"
+    },
+    {
+      "path": "experiments/hotchick/source/game/AGENTS.md",
+      "bytes": 2829,
+      "sha256": "cc4e1db2a4d19e9a90f395d119c1de210ebc51fcd054eb0830a169884ac772fa",
+      "git_blob_sha": "35474e2d1fd4cc8bac9e1c6d7d19edee74503f89"
+    },
+    {
+      "path": "experiments/hotchick/source/game/player.presentation.json",
+      "bytes": 7274,
+      "sha256": "6415423be2b1791867f69e7f3c517568652acaa2140c18f02b6d770a234f4520",
+      "git_blob_sha": "f14ccb8fb151d92bca8f3b1ab939c266d80a3f3b"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/card-shader.mjs",
+      "bytes": 9685,
+      "sha256": "5bfc0020ded47b59ceb5a54e9b723889b8478a24478ff0eda35f5f2da01c72ec",
+      "git_blob_sha": "a460fc392c99a05459fd1034cddd11b4ca31ec66"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/cards.css",
+      "bytes": 16405,
+      "sha256": "1c4875accd9791bd8533eb1cf002bffc0c8dabbca65a9635f26742ad9b304f98",
+      "git_blob_sha": "f78345ca31e7e8c8892199db224ac070fbd5522f"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/cards.mjs",
+      "bytes": 27592,
+      "sha256": "faabcad427121e3ee2067c49f3a472dedd59dbaf5e445a97120f87a82e32f9e7",
+      "git_blob_sha": "24c4077a530cb1ec7f318718c898400e8bfda65b"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/game-panels.mjs",
+      "bytes": 18830,
+      "sha256": "4d75863f773c4a3757bded6c12719df32c7f3fa6ba7da8ebd4b60f2c84fd718d",
+      "git_blob_sha": "eb124b744c89b0dc12bb710e3bd8a0e44d488452"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/game-renderer.mjs",
+      "bytes": 88566,
+      "sha256": "71608e4c68316423eb2515af21b24b09110e19c8c0e4f5fd8fc573c673183f07",
+      "git_blob_sha": "c053d78b02aaa9330d7694225874412eb5637f80"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/game-ui.css",
+      "bytes": 39461,
+      "sha256": "c07b033770d709a8e872b85f4a22396a013587db92b9bd5d8cfe5c8606a1152a",
+      "git_blob_sha": "971e491d2d4eff19147a2cce531ebb5500c83b77"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/goldsaucer-rooms.mjs",
+      "bytes": 17570,
+      "sha256": "de53248d86b560ffa20141a423905e1c7e0fc6f80d4b114779adaed059e68ca4",
+      "git_blob_sha": "96ca0d643eb173d66338e1c2ec744fab3437fe9c"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/goldsaucer-server.mjs",
+      "bytes": 34514,
+      "sha256": "e9495c539458c666038b0ac9c22bce69bc063ad82b477f637eedf4b5c45aa95e",
+      "git_blob_sha": "15e5416e230b6975a763c09969aeacb6f5f4d55c"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/goldsaucer.mjs",
+      "bytes": 9732,
+      "sha256": "3dc0f9a57144431ce47be9ab36ce32cf67b8e47bf9c8414729ea64cccd871ec9",
+      "git_blob_sha": "71a293df5b56a75da32a942d54b58701d3c9a9f7"
+    },
+    {
+      "path": "experiments/hotchick/source/game/presentation/landscape.mjs",
+      "bytes": 4706,
+      "sha256": "9004e84061c82ef3b1d6853ff657c7714899e86b87ba94a9124a18ceae0f07bb",
+      "git_blob_sha": "ce4180825cc40bb85d3e7d04b115defc564938e6"
+    },
+    {
+      "path": "experiments/hotchick/source/game/project.unone.json",
+      "bytes": 798,
+      "sha256": "d0a0d1e130efb0d7de4a734a17cbf85136e8ff348cb0216bedae832dcddeb515",
+      "git_blob_sha": "198c88193f9d644cd113dc27c589d5b25461066d"
+    },
+    {
+      "path": "experiments/hotchick/source/game/README.md",
+      "bytes": 40640,
+      "sha256": "04f8d721ec50e6a7c1269a868f38feaeff7ceaa32e251e448ab7adbe2d2f1a9a",
+      "git_blob_sha": "863725cb806ca758159c6ab29a7fc08f7b4969ad"
+    },
+    {
+      "path": "experiments/hotchick/source/game/scenes/main.scene.json",
+      "bytes": 10993,
+      "sha256": "e3cfae4004d77a9eb8950fe7915c566ab7aabe9b51cae3c2ada0fa6f2eddcb4e",
+      "git_blob_sha": "dfdc5129515da022a36861601b979d16ff7f7759"
+    },
+    {
+      "path": "experiments/hotchick/source/game/scripts/main.luau",
+      "bytes": 144925,
+      "sha256": "5e7269061b1e1113753374bcf65c877d7e9f59b4112d62aec82599aebb300430",
+      "git_blob_sha": "7893fd8a2ee3a6816ef4b107c1e2fbe0799e0717"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/acceptance.py",
+      "bytes": 59087,
+      "sha256": "5c1a738b931be13cdb02d349614c228542634730e4434eace8b9c1b37e2eeb61",
+      "git_blob_sha": "9748cba6a08af4cd867c87e40de6a146a880722a"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/auto_skip_acceptance.py",
+      "bytes": 11075,
+      "sha256": "e6ecad0c1db4c59d14018c173999b4036f801b1004cd124e590687ee23456404",
+      "git_blob_sha": "d29d01704a4ffbdc383864d5a9f007fa3c0d4eeb"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/batch_card_acceptance.py",
+      "bytes": 19496,
+      "sha256": "ced3e86d273fb361ce8cbc4841c2334f6c6bb1f81c32e3374b8599c133f97652",
+      "git_blob_sha": "27ce3a65f4b4745ca0b2d738020dde1a0092fca3"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/card_acceptance.py",
+      "bytes": 15477,
+      "sha256": "afb8951bb56a04d2cd7d618f71881e716f7152c968064bd472f9d0bd97321084",
+      "git_blob_sha": "84fb37c6a73d4f080f8c00f723a409dc3cb80355"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/card_capacity_acceptance.py",
+      "bytes": 9766,
+      "sha256": "0189b259c6553fa6e02b79eb39d7573875953c7b9bfa43eccecba9b9684745fc",
+      "git_blob_sha": "b155e41f1f5705bd09369686236a805951b7578b"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/card_seed_acceptance.py",
+      "bytes": 10109,
+      "sha256": "24be1d7f272038de00c6a27901c0f208c17008eb5749c8d5bda956def14355d0",
+      "git_blob_sha": "72cec3425968623be162f9ed27f71a916f0493bf"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/eunbi_acceptance.py",
+      "bytes": 14024,
+      "sha256": "ea8f43d0b8414362b836783919b10ad9a3277dcf68875a0d227f60830b22505a",
+      "git_blob_sha": "fe6966fba13b14698f1ca0c83ffd8bbca57f3b77"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/flower-cost.test.json",
+      "bytes": 387,
+      "sha256": "b5a47bad88079a40674ec21c287f88758d07ae1ee3528a586772dcdac38ced00",
+      "git_blob_sha": "3ee53c7a64ab5a27eca25a1f2edf4fdba4384a17"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/gallery-input-paused.test.json",
+      "bytes": 505,
+      "sha256": "7ef49d0d1c8d31607fd515b7ce8c7cd55fe92c9948ddca6f04d8f9db0360e7a5",
+      "git_blob_sha": "7627ae34477cc274b2bd6b293148a6b5bb2123ad"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/idle-wallet.test.json",
+      "bytes": 219,
+      "sha256": "7024753617b740879453070fa61224ffdb6c260b7b620e767b299779ce0df964",
+      "git_blob_sha": "02ccbc882ef7bcb2e1df33982e59dfe05f5d6bd5"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/like-cost.test.json",
+      "bytes": 294,
+      "sha256": "9931ab0b83a996ff199ea3e35fc1b142516570c3b598e8b6b31d1e40408c514e",
+      "git_blob_sha": "7e63600cdb2a7e03d4c19df819c1a65a46d169c8"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/platform_acceptance.py",
+      "bytes": 7988,
+      "sha256": "d59df14e437cb2fedcccf1744882322301e446d156dcdc51f77e99a27a3796b6",
+      "git_blob_sha": "a27c75d284e5067ce20642dff1642725296e7cd7"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/preview-no-bet.test.json",
+      "bytes": 309,
+      "sha256": "ec9cc36492fe25e93d9cab441f2c754d034f675cf537d973e27b96f9e98b5f2a",
+      "git_blob_sha": "d2d777cde78bd6ab07f30613a27c6e47d71d90ba"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/remote_settlement_acceptance.py",
+      "bytes": 39409,
+      "sha256": "279b620399b9fea8d2cda4d820693b06b8c36bd1e2055aa3d3e1961fe499d1e8",
+      "git_blob_sha": "428ac226054549ef22cafdba34b8d04f3a3036eb"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/rocket-cost.test.json",
+      "bytes": 385,
+      "sha256": "cc961dd6eb298f60791eb4ae0ab08d253fd8812e53433df8878a22f7a1030f0d",
+      "git_blob_sha": "0a4c82873f6f040e283852100a6f14006f39bf1a"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/rooms_acceptance.py",
+      "bytes": 14356,
+      "sha256": "56e67edb37fecab2575e15af72b4888b8feced44767aa09c1c8dcad01bd5d593",
+      "git_blob_sha": "ac8e51c27d92f8affe6e971b2bcf2ecc0013dbcb"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/rtp_acceptance.py",
+      "bytes": 12455,
+      "sha256": "d98ec5f61766b7a29c4a943cb5dbf7912eec7b16bb43e1bd107276eca2d1fa31",
+      "git_blob_sha": "2d16e3fcfe2f8bc7c7e9656d2285f980fa0c5f2b"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/shared-ui.test.json",
+      "bytes": 210,
+      "sha256": "835e4a64a6fa65bf4d4b4d329bedb247a60d8360a4feb8357f9c76426be0d695",
+      "git_blob_sha": "c7a1d9414ca1115d30701888be609f4958b89119"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/skip_large_acceptance.py",
+      "bytes": 20209,
+      "sha256": "ac2e9322b56bd96b64721bdf82da69297683bf3a742c0d4ba8c5689d84c968d1",
+      "git_blob_sha": "5d66f25a18830eb73cff05e4519b211321747f25"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/trial_refill_acceptance.py",
+      "bytes": 5801,
+      "sha256": "fcf67afe20bc8057b2e78c661b0e074198a4a0220a941722c8d90a9edc2ba858",
+      "git_blob_sha": "620186e843378fe0c72d7654769fe44c8963e9bc"
+    },
+    {
+      "path": "experiments/hotchick/source/game/tests/yeseul_acceptance.py",
+      "bytes": 14455,
+      "sha256": "07e32537924ade1ce3bb2506054ec7ff08a6829a416c72496fd18ac5fb0ae211",
+      "git_blob_sha": "0faeb0f4805dfc91ca4b5a382e86dac5c5e8672f"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/build_benchmark_assets.py",
+      "bytes": 14057,
+      "sha256": "4e1b2bbf617cd55c7bd526a320e03858b69adf0bf13f18deedcd3ed022f6130d",
+      "git_blob_sha": "3ae6f60ebabf5f8ad190ff6d0698d9be70e90c58"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/build_sample_atlas.py",
+      "bytes": 15354,
+      "sha256": "b7b399e33d03d91e9ec31c902292023955949a1f4efd46f3f941b05dac8a626a",
+      "git_blob_sha": "f57b60c5ddaf17037bf4cfbb50c2e5026de3f376"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/build_small_symbol_sample.py",
+      "bytes": 18056,
+      "sha256": "f5000560295fdafe963fd0fc1d9bf7d58362f450dc4cfe159eeedb9422b758e0",
+      "git_blob_sha": "4541c4466604f0329c825120e0e403fdcec615be"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/card-tool/app.js",
+      "bytes": 17084,
+      "sha256": "d1ee6caca385000ed303521b40706520dc63bafe802d37b919dda5846b05e78a",
+      "git_blob_sha": "4ce595dfe2b9ec913dd0facdba48fd496b57e122"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/card-tool/card_tool.py",
+      "bytes": 25156,
+      "sha256": "0c0c62c1d3ba292fb28aac7842a0a6d48970c8038144d8456b3fabc2508adb31",
+      "git_blob_sha": "0c41661281033971346a6d19bf218ce5cd7a2a8e"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/card-tool/index.html",
+      "bytes": 4142,
+      "sha256": "593fdc578c38fc8da29658844000760ac117d6955df76acd797d93af9512c94e",
+      "git_blob_sha": "126bd013c729910a9feb53972b1f96c103f69ce9"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/card-tool/qa_browser.mjs",
+      "bytes": 7929,
+      "sha256": "9602b867a672d7f2df201dd6388bfcf48283bd889065c864e0d796efc7571df5",
+      "git_blob_sha": "9daffbf02a7a5f632d64dcba2c2973518eccecf7"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/card-tool/README.md",
+      "bytes": 2782,
+      "sha256": "8fc45f59f361f4957dc2c9c441f051618dd1a4b6dd419a895d17a4d1681bab8e",
+      "git_blob_sha": "09da327b7e84a98a5bb44eb95ae8deef7cd6dec9"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/card-tool/requirements.txt",
+      "bytes": 7,
+      "sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "git_blob_sha": "7e2fba5e6c5dd84148d04252f6a94733beb26845"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/card-tool/style.css",
+      "bytes": 8665,
+      "sha256": "58f8b2afa70388bc5eb70db5441e16c9a874ae78f870830549b35c60d5ad4901",
+      "git_blob_sha": "0ed45d1fa5137ac8f9315c9f4ae307819c3ad7b2"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/cdp-client.mjs",
+      "bytes": 2052,
+      "sha256": "4864325240d99b3b07c9d019b8d4a8d8ef6db629892002cc3db14e21c2b17707",
+      "git_blob_sha": "a1fb23b97bb70fd0aba7baad2997f963ed979622"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/extract_dt2_ui.py",
+      "bytes": 6245,
+      "sha256": "de78728617213ae7cb86fe343ffe0d40d91a2fbfe0b26389d9de06dc721b6100",
+      "git_blob_sha": "21b4bb8df63566f32a9e03a566b0bbb4d569f8c3"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/matte_video_sample.py",
+      "bytes": 8296,
+      "sha256": "d46a1f298b989e8a1070f98c0166c078f300f48c0780e195ddfed84c8780c28e",
+      "git_blob_sha": "1df1cff272133382d0ce7e86d7976747c0781283"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/media-tool/app.js",
+      "bytes": 35885,
+      "sha256": "e996d8a592d0db1452fa21dd2c434edee7f0dbba3b912d81938a2b931cc6013e",
+      "git_blob_sha": "ed5a9a30a07a2bd1c7ffbd1eb0e4b6ba07b5f482"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/media-tool/index.html",
+      "bytes": 9695,
+      "sha256": "5670970b41dfe0a0520425941bcff91f64c378b86655634251f0f3fd06ede79e",
+      "git_blob_sha": "8c13bd8e7c49400524b713ce8ae5819fe96ee276"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/media-tool/media_tool.py",
+      "bytes": 40845,
+      "sha256": "6eb0102b2dbd0d916c65aac38f974cff6e08427d1002f66a6ab2032477805d47",
+      "git_blob_sha": "5cb71b3ade4ae45f6c607bc889fb9fb1815b67f3"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/media-tool/README.md",
+      "bytes": 2990,
+      "sha256": "bd2e5762d9a8460303824d57c1d649c80ac982e196faf0e106981108e2f78efb",
+      "git_blob_sha": "e6d457ec672681137e9a910bf2495a75202dd1be"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/media-tool/requirements.txt",
+      "bytes": 7,
+      "sha256": "5ebc7ddfa10ff584cd21e117fb08802d88430a5e4732a13c47b6b1b18a43c3b6",
+      "git_blob_sha": "7e2fba5e6c5dd84148d04252f6a94733beb26845"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/media-tool/style.css",
+      "bytes": 15355,
+      "sha256": "4ace8affb29381b1427f304e8857a35a8b202731bd40f43c928a529eabcc7211",
+      "git_blob_sha": "9439056fa5c104b6e15167ec872e34941fde1484"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/package-goldsaucer.py",
+      "bytes": 9270,
+      "sha256": "10a4a6d5237b79d328b9436fa1c3c95ce906bd2138d6ec8a59a58dbe99a096d3",
+      "git_blob_sha": "44c272e353519b7f0f66973206f71120522f3606"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/package_small_symbol_sample.py",
+      "bytes": 3317,
+      "sha256": "b3a77c05a5b00c2b13596d510a7045bd432f617d914419d7b09339ffeced7a00",
+      "git_blob_sha": "7572afdb261c42a8589d8bb52916f02292fd4f57"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/package_symbol_benchmark.py",
+      "bytes": 4509,
+      "sha256": "9c82705910437ed1aba16772635b8a78ed4e25ab333532ac324a7c9f0c091086",
+      "git_blob_sha": "10ab33f56492c95a87150806c7e31792e2b308e7"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/package_video_sample.py",
+      "bytes": 5189,
+      "sha256": "77c16c68e4f9f85f84df9e844576b3d39fbdb5f874db518b8935528ed7290792",
+      "git_blob_sha": "ad6664f21175e5a23b30f4825d437d3d1054f178"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/prepare-goldsaucer-plugin-upload.py",
+      "bytes": 1650,
+      "sha256": "9716448943c57f59327395c4ddee714e3ed5bcbe2f42269cf344a4edd28b3395",
+      "git_blob_sha": "bb9235855ce84f251ff1b686a78a492981998348"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/prepare-jiayi.py",
+      "bytes": 12367,
+      "sha256": "4433d8bbaff3b1489a03525e7e701eff646d8e87924c7d700e80ef9fa7c8be36",
+      "git_blob_sha": "ca0a5e9ee423ea5b9ce67aa81529e4dd6e49678c"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/prepare-mugi.py",
+      "bytes": 12028,
+      "sha256": "bd2d36462f756523ec8230e6b394ac02156d7ba6f3fc0c3c74ffa0c9ca01671a",
+      "git_blob_sha": "2fa683593e5a0959ab2facc686dc7e4100b703d7"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/prepare-yeseul.py",
+      "bytes": 13808,
+      "sha256": "1b976ad54eb3e0826b8119c5df804904afd19dca8bef2aa4850ae4b306e6af34",
+      "git_blob_sha": "c678f397b9675771486dd8b36183ff4971827ab9"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/probe_symbol_browser.mjs",
+      "bytes": 2517,
+      "sha256": "3c1407e730302983f248055da1f65273bf97bb76b50f0cd9f325ad244ee301e2",
+      "git_blob_sha": "9d0f484f2185aff8b1abdd3dd3e904e871f30928"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-batch-cards.mjs",
+      "bytes": 10463,
+      "sha256": "3cd1fc2367f875f07df127f8f80a42c65ad43040e8be6a86459adbceff82fa9d",
+      "git_blob_sha": "ff90444a091bdf5896c9e3a8a8db160dcfebca15"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-card-pack-capacity.mjs",
+      "bytes": 9969,
+      "sha256": "c3ce9660d8fff6942a3b3e6455d6b2fef7a9a4f7a72400ec0b2152fa672df536",
+      "git_blob_sha": "a5c8105ae9b748674f40b6b341f7d5a991adf48d"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-card-tool.py",
+      "bytes": 8327,
+      "sha256": "c1dd88831d0849e833707534a6a4156f60fc9180bca2a16795f76ebdbdfb70e0",
+      "git_blob_sha": "79e0222d7f8081379d5a67f1bf4f46615c2b5da9"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-cards-integration.mjs",
+      "bytes": 9553,
+      "sha256": "a0e0deb47a5a509abac2785dd97eb063dbaf9e7122090963f1b83c33adb01289",
+      "git_blob_sha": "7f51484b948474b6378f867c2d17270e4854cb43"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-cards.mjs",
+      "bytes": 13373,
+      "sha256": "dfba966c6361ce3084eb32323ce4f42d4570e08002bed99e373fb4759e2a5036",
+      "git_blob_sha": "1329ac26d6a67b3a9a6cc144acebf24204f760f3"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-collection-polish.mjs",
+      "bytes": 21227,
+      "sha256": "dbc1ba4697dc33501c674778667c93b8b3eb485984f07d5a975b97ec1974cc74",
+      "git_blob_sha": "42277d7fd34b5041f914e66e8377dbbc137e7f85"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-dt2-controls.mjs",
+      "bytes": 11709,
+      "sha256": "0177efc213303569ff536df02e54599d065dc3d646a58cc639960cd111fcdbd0",
+      "git_blob_sha": "8eb7b6e21c07fdc24a0f66cd06cf52ea2ca1b391"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-eunbi.mjs",
+      "bytes": 14688,
+      "sha256": "13e8fe813cb9127393c090803650a0a42e05116795d671d5910204e7c338431f",
+      "git_blob_sha": "77186015744b25b7dd5f2d21154ee630e61fd8d2"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-fast-cadence.mjs",
+      "bytes": 8293,
+      "sha256": "a7f69ce62cc410d645d250d47f7e500d39e735ef9b50d835b9abd213bd80bdd6",
+      "git_blob_sha": "27e39b797b9d4e3beb88e6f490fbde1ffaea86df"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-game.mjs",
+      "bytes": 8321,
+      "sha256": "01a6388ae01587b66e493417e85ef9cf2052c9c937cfea6c2bc3d5b7ab9513d7",
+      "git_blob_sha": "2faf6eefb37be73150979b4fddd8acafb343788c"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-blocked-browser.mjs",
+      "bytes": 10244,
+      "sha256": "1e01b26b2f854444d532eac118c5125a5741852573da101969c97a77d284d513",
+      "git_blob_sha": "4ac3cde4ce6c603c07d7c3f9f6d79321a00ce7ba"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-bridge.mjs",
+      "bytes": 13018,
+      "sha256": "147b5e326f913f5ae65aa06d7a4423effdf1b701f997f661282c2eff295c65d4",
+      "git_blob_sha": "1d8f09762306ca3d1ebe05c1f93c74bf00a26d63"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-end-to-end.mjs",
+      "bytes": 10531,
+      "sha256": "501cadf5960563d783a6d2cb557e0d4adb614377ba897f6e37a868c000b5e1b5",
+      "git_blob_sha": "923a3a0afd24ef270dc62e626782b143cce8966f"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-live-trial.mjs",
+      "bytes": 5066,
+      "sha256": "cc386b75462a5a949058f2e92ffbe7e998eb013ab75f9ccb46824632d8619f75",
+      "git_blob_sha": "aaf5d8d3524c0d08d2a0cfb8ad1c4c9367093ccf"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-low-balance.mjs",
+      "bytes": 4316,
+      "sha256": "11eb1ce6b9ee78ab001afe89afb1224f6edae8f49f04059d246905dc6b733c95",
+      "git_blob_sha": "dd5cd851d0db7c144a22f66a0bc97ccb8d6535fa"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-notice-layout.mjs",
+      "bytes": 2378,
+      "sha256": "77302931ac9e1cd3d0b80826032f932ed24f85fa968465292ff7faa57fe82f55",
+      "git_blob_sha": "45d12eb55b9d674aa59ff679d75cea30d23d7779"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-pack-stock-browser.mjs",
+      "bytes": 8798,
+      "sha256": "b62de9b43b5c807843d43316b3bdfa5738864ed89f918a771a0beab8e565c38d",
+      "git_blob_sha": "691348a74f99c2bb9b77ba2da8c15c4b16ddc0cf"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-package.mjs",
+      "bytes": 5464,
+      "sha256": "34db16f8cfa6cefd7bee066b7f805bd0d80ba2fbda1e7c8fcf2d060823620aac",
+      "git_blob_sha": "a6bd255274f0325ff2c30794b40e5d52bb302be3"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-rooms-browser.mjs",
+      "bytes": 10582,
+      "sha256": "b1c23fea08e5b262389f02e50739b4e68174dcb0b635c75547bac639b70ea183",
+      "git_blob_sha": "2b5dd536340205c87488dd07d0e11872c95130e8"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-rooms.mjs",
+      "bytes": 19512,
+      "sha256": "3416c3f3f58035ee8c7ff88a9cf3cb0894d92cc84d21bc5656990bf7c7211715",
+      "git_blob_sha": "f6c630c10acfc68841589c39651d4c3b79d3b530"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-server.mjs",
+      "bytes": 36742,
+      "sha256": "805541e09e08a181533768dd6122d0befaeb89bdddaf612054147419dfcb8fd0",
+      "git_blob_sha": "bc04fb61f35e18676989a2e34f18f2c0d20d64ba"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-smooth-browser.mjs",
+      "bytes": 7844,
+      "sha256": "ca1b4fd8d86c4d295b2ff276b2845ac5a1fc510b86265c0d36900914cc8481f1",
+      "git_blob_sha": "9858d2bc714d16158b72c3f4e6fd03024424ec27"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-trial-browser.mjs",
+      "bytes": 6416,
+      "sha256": "6e8aa5c8723344fe1b54b84b1605714d2626efa0f84f51efff1b4a79fb2da7da",
+      "git_blob_sha": "ce51e53cb7b3d1618c3497d50095f27ea93b37c4"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-goldsaucer-trial.mjs",
+      "bytes": 10350,
+      "sha256": "88ddd53f50444e47c4f03d33ee35e38107fc4088ab24a713d0f697a5bd9e7465",
+      "git_blob_sha": "1475d44bf892e243f70f2bc7fcb7bae24b00134f"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-jiayi-gallery.mjs",
+      "bytes": 15944,
+      "sha256": "86834af922c8cef92862dba13736234defb53b99c900a89ec866b47356e94eba",
+      "git_blob_sha": "45304b3dff43ff121c0a68906e0ba2e2d2b7d432"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-landscape.mjs",
+      "bytes": 7984,
+      "sha256": "f761244e30c1cf71a6584a3c3395df6cef5bd9287c8d8f0aebd9ccc294b0d699",
+      "git_blob_sha": "513c20be15be71c5e899e1648250843c6e553db2"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-media-tool-ui.mjs",
+      "bytes": 9637,
+      "sha256": "4638ed69f31d35db7986af02fafa6c7be12b7b4649ff3bd29318aea9a70e8279",
+      "git_blob_sha": "94f5e8e8df84d165aa0ef45f46d4e264108fb3a0"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-media-tool.py",
+      "bytes": 22345,
+      "sha256": "8859d43a0db3d21f479cc9c19381b18974159b086289705a14555a505398ace0",
+      "git_blob_sha": "9a4b649b0a8953f65f64ebaf6bd114fc95783b8f"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-medium-concurrency.mjs",
+      "bytes": 8645,
+      "sha256": "0ab32912ee457e700ff3ce64e520c3a31e6978442cb27cdfd2f27496c0ecc8b9",
+      "git_blob_sha": "29986f6ededb9cc2fd13b4ff10c7481a025a76ea"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-mugi-gallery.mjs",
+      "bytes": 13024,
+      "sha256": "2fa9cb0df6bf685509a06875cf29e4c49954a5ac943bf34b1bab212b3f2530ab",
+      "git_blob_sha": "749d0369bdba81a0a40aaa62669ca5ec16841602"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-pack-sequence.mjs",
+      "bytes": 11228,
+      "sha256": "1716443cfb8e3d69dc6d0f5f00af4a353d099a9e6a18360a33b5ced0a696727c",
+      "git_blob_sha": "0e43cb7f20f0230109ad63ea07e8671a5ab656bb"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-platform-wager-notices.mjs",
+      "bytes": 7328,
+      "sha256": "55645990a2d478646ca446b0bb83eec65f180df89fe42d227eece6d7b7066686",
+      "git_blob_sha": "ed9325b167ad407a7cf047d38ecb00d865c6f671"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-rooms-fixture.mjs",
+      "bytes": 9909,
+      "sha256": "ec63872b03f1c62277b56818ee7af9c5bed6a7c2ba6b5a0874199513758854cd",
+      "git_blob_sha": "8f945235a41ebaab35a79263e973f54f2903fdcf"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-runtime-fixes.mjs",
+      "bytes": 16140,
+      "sha256": "6ae07e1b1f56c7bb8d38b6e1d3b8dd2be00a0c94b15bc6406b8f5100bdc6da3a",
+      "git_blob_sha": "553015fa3a6180925343c884eef5db148968f37a"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-skip-seen.mjs",
+      "bytes": 10447,
+      "sha256": "a3b157c9d90785c8f318b058b280d24291944b967dd68dd06636bcfe3b0eb885",
+      "git_blob_sha": "50da2cc550592c5d2cc0696a7d02183898dfa989"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-ui-polish.mjs",
+      "bytes": 11407,
+      "sha256": "2d627d3c579120fbcfa6b5451b288b4e24c8fbddcfb0e7caa944f86f4f75e96c",
+      "git_blob_sha": "9dc369c1481fa0f5457f85042cfa5f72799a2ce9"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-wager-notices.mjs",
+      "bytes": 6471,
+      "sha256": "ec546db3d39710e40b13e4d1cbf90313717c5b52139f720ef3c129dae35b532e",
+      "git_blob_sha": "ed10cf41657c932cce6faa015aeff7cc3f487326"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-win-credit.mjs",
+      "bytes": 8694,
+      "sha256": "8a520ae5f4fdfcd33fdd2f486036605b75bc404c42ac76776a70bde0639e9ff4",
+      "git_blob_sha": "36221b310a419fe94ec5f921140f68c533d6ddb1"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-win-effects.mjs",
+      "bytes": 8638,
+      "sha256": "2e732c6a29d9d488518b5ad5437a7aa2929308959d1d7b95a597d50392aba2fb",
+      "git_blob_sha": "391ede54091f1d838f28d3000f59a0813f09c42d"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/qa-yeseul.mjs",
+      "bytes": 13994,
+      "sha256": "25131995726f7eeee562cfc205f583026fbfc66465a4a6be71b9b42758fe277e",
+      "git_blob_sha": "addfb8e9e12fe5c666d7804950ec01e9d424dd1f"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/render_small_symbol_preview.py",
+      "bytes": 3353,
+      "sha256": "401302cb9d5e6b5da99a4f83f71abe6aa5bbfe6096b0a32d7661b18948a6b332",
+      "git_blob_sha": "3a62877b3ebfa42564970852e72e9d4eb8f083f1"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/run_symbol_benchmark.mjs",
+      "bytes": 6941,
+      "sha256": "a81510668e3f9b3b18e3516991a2070b2683b08a6aa0062f4e6f02a4e558a15f",
+      "git_blob_sha": "2c3c671917a54032015d134860d2f0d3e317a355"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/serve-game.py",
+      "bytes": 2334,
+      "sha256": "945e0f269bba65e98a6338518b1e2d282f72470039ce595504d77d247c7b9336",
+      "git_blob_sha": "fee9e3880626edfd4ccd8417c78970031b38071d"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/serve_symbol_benchmark.py",
+      "bytes": 1005,
+      "sha256": "7740edc26c904b7f6fb5af3b8acc064c6a47a942290b89c4f95504cce8e1d124",
+      "git_blob_sha": "6399727b0b018416f39538b5d58a033aa433dcbc"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/Start-BenchmarkBrowser.ps1",
+      "bytes": 1382,
+      "sha256": "bb25a90ab4781ad41c00678368d9d1707bc0d99ceb3a9820151a2191367511f8",
+      "git_blob_sha": "deb708c644f391dc18d11e9694768881c054cde9"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/Start-SymbolBenchmark.ps1",
+      "bytes": 614,
+      "sha256": "590343739ac08be1dd825e05a601fae6ff55cfb6a65e2171bebd2e3185e69c64",
+      "git_blob_sha": "9e0e7587e0949687b83d2efcd37f158b7c6b11a9"
+    },
+    {
+      "path": "experiments/hotchick/source/scripts/summarize_symbol_benchmark.py",
+      "bytes": 29350,
+      "sha256": "8009f63eb3d7c728953cc8a1cbaf445827296242e20ccf6207e8bc2267265b14",
+      "git_blob_sha": "6476cfb35276efaa9de5292eef374743427e2baa"
+    },
+    {
+      "path": "experiments/hotchick/source/server/goldsaucer/functions.js",
+      "bytes": 32040,
+      "sha256": "ad1bf0f96e48da30d0298b2df587daad4f03f72347b40b8f8292270d2f698a82",
+      "git_blob_sha": "10ef58fdb795f42c8264e62376b37d5b5d0adf45"
+    },
+    {
+      "path": "experiments/hotchick/source/server/goldsaucer/functions.test.mjs",
+      "bytes": 32185,
+      "sha256": "55386993244dba79a9647611f4657a062520f1a0e9e8714b0ba0a42dfa31f406",
+      "git_blob_sha": "21439d0e72226caceba64b10f0367d34a82b229f"
+    },
+    {
+      "path": "experiments/hotchick/source/server/goldsaucer/platform-runtime.test.mts",
+      "bytes": 6555,
+      "sha256": "a777ad4c1b37288e8592b9825300f1310d404149a677bfc0e297ffe592aa2321",
+      "git_blob_sha": "d8eba58d404535228d5601a6526f307412ca2910"
+    },
+    {
+      "path": "experiments/hotchick/source/server/goldsaucer/room.js",
+      "bytes": 5661,
+      "sha256": "929cbc1cad85b2f6a53a34d62a21b6ed565ca4ee4501fa655b90c4171fce57ae",
+      "git_blob_sha": "5d31ead84b93418eee41bcb169ded651998e404f"
+    },
+    {
+      "path": "experiments/hotchick/source/server/goldsaucer/rooms-runtime.test.mts",
+      "bytes": 5744,
+      "sha256": "5c1a8b9e6ce596d8dd0a30dcc5eb56f665a7449d9d29de706bb090b7a776d71b",
+      "git_blob_sha": "dec9d0de1bd51a663e13d561ce1ca33053aeb193"
+    },
+    {
+      "path": "experiments/hotchick/source/server/goldsaucer/rooms.test.mjs",
+      "bytes": 22236,
+      "sha256": "b02881628d086d2c673d8b20bbb6a045b9d5b8356e967d03a39198a22578063a",
+      "git_blob_sha": "8d749a449ad4f3547236dfbc4d217a7d54e4642b"
+    },
+    {
+      "path": "experiments/hotchick/source/Start-CardTool.ps1",
+      "bytes": 1023,
+      "sha256": "91e29b4d0e1b4d630755ae875bd7ac32231aa35142b8da71bf97c226e0941fb6",
+      "git_blob_sha": "99fe6331085e918a2b3e080e9690a9c9963b6cb9"
+    },
+    {
+      "path": "experiments/hotchick/source/Start-Game.ps1",
+      "bytes": 945,
+      "sha256": "11d62f6dea97c169088534ff52bed6a59eb8105b887fceeb69776da91ecf89d8",
+      "git_blob_sha": "6a0cef68f7bc90763274e8349440847cc3aaed15"
+    },
+    {
+      "path": "experiments/hotchick/source/Start-LanGame.ps1",
+      "bytes": 1457,
+      "sha256": "f7702f1eee490b8456e3d0caf5b2e3567a7f5d2c9b002bcd9c4ce5c211ffedcf",
+      "git_blob_sha": "542bbdd0cb46a92a4f623bcc4c23f0ae3d353941"
+    },
+    {
+      "path": "experiments/hotchick/source/Start-MediaTool.ps1",
+      "bytes": 1050,
+      "sha256": "dd1e005fd8c27e1881a5c16249f2dd3281cf899d4088ad6a98c8c8e85cf0b7ca",
+      "git_blob_sha": "956fcfd28cc1059e1b850c5d9d323e33915d7cd3"
+    },
+    {
+      "path": "experiments/hotchick/SOURCE-MANIFEST.json",
+      "bytes": 46609,
+      "sha256": "1450ae194de444ebf173ef5815305ca03131ee40a0fe80ad3055d1eade34de12",
+      "git_blob_sha": "df11e1292a1641395b802daf163b7f71d73c4781"
+    },
+    {
+      "path": "experiments/hotchick/validation/card-capacity-native-v36.json",
+      "bytes": 795,
+      "sha256": "78391dfead0309174f376b4505bcd005b2a50b09b14fa9dc044b9e5ecdddc205",
+      "git_blob_sha": "f21c421b18eef81f7933f0813a4e121d59021849"
+    },
+    {
+      "path": "experiments/hotchick/validation/platform-native-v36.json",
+      "bytes": 503,
+      "sha256": "68bd4134c81331a15ac551240a93ed90a90932d951c6b4462e147300c1e62088",
+      "git_blob_sha": "cdac5dee1daff458f98847fd70529eb135e60bee"
+    },
+    {
+      "path": "experiments/hotchick/validation/README.md",
+      "bytes": 1887,
+      "sha256": "58e2fa0a778c5e8b227a4c4b50b0da805b20fdaef880d70061920968ed0d1108",
+      "git_blob_sha": "8d40c3a668944d73baa6b4599804d248381bd7bf"
+    },
+    {
+      "path": "experiments/hotchick/validation/remote-native-v36.json",
+      "bytes": 2705,
+      "sha256": "8a69d0483400eb16c8eb7bacec62c017590ae66db737db4e24db13c07287f301",
+      "git_blob_sha": "1e73501c6b4c120d41f34af838295eb240b16ab0"
+    },
+    {
+      "path": "experiments/hotchick/validation/RESULTS.json",
+      "bytes": 11399,
+      "sha256": "c6f2b8789a94fda8275282f7755915e76e2dc98e206a6c4adf38c26fcfd2209d",
+      "git_blob_sha": "f35dd134bee9ebaeff1cf5a5e342f35dfd56d37c"
+    },
+    {
+      "path": "experiments/hotchick/validation/rooms-browser-summary.json",
+      "bytes": 651,
+      "sha256": "b2f600dccffc6ddc02242f815b14b51cc44793b4915dcbe5d28cc012a85866ba",
+      "git_blob_sha": "8ba65f34be923046fcec8fcca2187cc500c6a803"
+    },
+    {
+      "path": "experiments/hotchick/validation/rooms-native-v36.json",
+      "bytes": 974,
+      "sha256": "4e2400e30ffecd96d97933007f65557eebb58ee012b49f85c346719ef67c8f84",
+      "git_blob_sha": "322d3928fdda76f0e8bf7245568a543ab163a712"
+    },
+    {
+      "path": "experiments/hotchick/validation/rooms-runtime.json",
+      "bytes": 441,
+      "sha256": "c0d01a2baba88700cf9980b837ea0718edfaa4b4f38d2afea702e1562a95508b",
+      "git_blob_sha": "fe4b871417b798ccaee0c1971133f036d0bb916a"
+    },
+    {
+      "path": "experiments/hotchick/validation/rooms-web.json",
+      "bytes": 1446,
+      "sha256": "1b8f399f7c0a1f894e9c19bdca3b7e861d4e704bd4d368e83b22b29207df1db2",
+      "git_blob_sha": "a692a4458a775ef27f2837f15d33e0dc7741cff5"
+    },
+    {
+      "path": "experiments/hotchick/validation/smoke.py",
+      "bytes": 8006,
+      "sha256": "867cb17f2accad344ca8522e80b0f4a407887eea6eae53df76c0ddf9b2668571",
+      "git_blob_sha": "6681c974b3bcd4d79c565c68408fb13d5b0b7b09"
+    },
+    {
+      "path": "experiments/hotchick/validation/SOURCE-CHECKS.json",
+      "bytes": 1277,
+      "sha256": "a38cd15423ef13c8b28021f6e581735f552a64d7887c0ee672ab46fd6657f381",
+      "git_blob_sha": "7c79dec55c7db057530869252132f309de1f2d81"
+    },
+    {
+      "path": "experiments/hotchick/validation/trial-native-v36.json",
+      "bytes": 410,
+      "sha256": "c87d2133a172fcb3da8b0266e6756831333d4f59a373f6c87357d0065b5b3a6d",
+      "git_blob_sha": "33628fc3ad32d29dbaedfc55987ef6110cef2f2f"
+    },
+    {
+      "path": "experiments/hotchick/validation/WORKSPACE-RELEASE-036.json",
+      "bytes": 4447,
+      "sha256": "d98a5ee9d141724d848aff7971c71ea435e9f4653b686374106f80af9cb148cd",
+      "git_blob_sha": "efd745eca8c2aa8907464c313a6d9fdb6942c516"
+    }
+  ]
+}

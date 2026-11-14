@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "scope": "Actual GoldSaucer QuickJS room and function runtimes; synthetic users and chips only",
+  "calls": 8,
+  "maxResultBytes": 1628,
+  "maxSharedBytes": 1327,
+  "checks": [
+    "room joins, shot relay and leave",
+    "shared field is CAS-dependent",
+    "two players share one canonical field",
+    "one capture pays once",
+    "losing race refunds",
+    "cached receipt does not redraw or read changed field"
+  ]
+}

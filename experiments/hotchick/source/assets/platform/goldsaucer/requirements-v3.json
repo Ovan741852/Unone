@@ -1,0 +1,69 @@
+{
+  "schema": "hotchick.platform-requirements.v1",
+  "date": "2026-11-13",
+  "game": "heart-king",
+  "automaticEntryExchange": {
+    "confirmedByUser": true,
+    "policy": "all-available-red-diamonds-on-entry",
+    "perDiamond": 50,
+    "existingChips": "add converted chips to existing balance",
+    "status": "configured-in-release033-awaiting-review",
+    "currentConstraint": "Platform now supports manifest-controlled automatic whole-wallet entry conversion.",
+    "requiredBehavior": [
+      "The platform completes the entry exchange before loading the game iframe or allowing server.open to bootstrap the paid balance.",
+      "Determine the player's available red diamonds inside an atomic platform transaction, debit all available diamonds, credit diamonds times 50 chips and credit the game's house wallet.",
+      "Use a platform-generated entry identifier as the idempotency key. Retrying the same entry returns its original result.",
+      "Zero red diamonds is a successful no-op; preserve existing chips and allow normal game startup.",
+      "Author preview does not move red diamonds or paid chips.",
+      "Publish the resulting chips and red-diamond balances through the SDK's balance events."
+    ],
+    "acceptanceExamples": [
+      {
+        "redDiamondsBefore": 120,
+        "chipsBefore": 0,
+        "redDiamondsAfter": 0,
+        "chipsAfter": 6000
+      },
+      {
+        "redDiamondsBefore": 2,
+        "chipsBefore": 61,
+        "redDiamondsAfter": 0,
+        "chipsAfter": 161
+      },
+      {
+        "redDiamondsBefore": 0,
+        "chipsBefore": 61,
+        "redDiamondsAfter": 0,
+        "chipsAfter": 61
+      }
+    ],
+    "manifest": {
+      "autoBuyIn": true,
+      "autoCashOut": false
+    },
+    "cashOutPolicy": "manual",
+    "platformSupportVerifiedAt": "2026-11-13"
+  },
+  "platformGameNotices": {
+    "confirmedByUser": true,
+    "status": "integrated-in-release033",
+    "currentConstraint": "Platform SDK ui.alert is now supported; game uses it only for a new paid manual insufficient-funds attempt.",
+    "proposedPayload": {
+      "code": "insufficientFunds",
+      "severity": "warning",
+      "availableChips": 0,
+      "requiredChips": 1,
+      "dedupeKey": "per failed attempt or changed blocking condition"
+    },
+    "requiredBehavior": [
+      "Provide an officially supported SDK notice method; do not let games imitate trusted platform transaction confirmations.",
+      "Display insufficient funds, session replaced, disconnected and settlement pending as different conditions.",
+      "Deduplicate held fire or AUTO attempts and dismiss obsolete notices when the condition clears.",
+      "Keep financial changes in the platform ledger; notices do not exchange or award currency."
+    ],
+    "method": "GoldSaucer.ui.alert(message, {title, okText})",
+    "backgroundAndAuto": "HUD only; no modal",
+    "missingApiFallback": "local HUD",
+    "platformSupportVerifiedAt": "2026-11-13"
+  }
+}

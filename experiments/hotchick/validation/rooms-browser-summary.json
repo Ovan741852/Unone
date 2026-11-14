@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "scope": "Historical two-official-player test of release036 using production scripts with synthetic SDK and virtual preview profiles; source-only handoff does not include required game media/runtime",
+  "roomId": "qa-room-1",
+  "checks": [
+    "room directory/create/join",
+    "two authenticated roster members and distinct seats",
+    "identical canonical27 targets",
+    "natural shared shooting and settlement",
+    "one payout per captured generation and reconciled wallets",
+    "room switch preserves wallet/cards/session",
+    "old-room leave and rejoin"
+  ],
+  "errors": [],
+  "realCurrencyActions": 0
+}

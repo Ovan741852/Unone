@@ -1,0 +1,15 @@
+{
+  "schema": "hotchick.media.recipe.v1",
+  "output_directory": "assets/generated/example-media",
+  "preserve_originals": false,
+  "sources": [{"id": "abstract", "file": "assets/source/abstract.mp4"}],
+  "outputs": [
+    {"type": "atlas", "source_id": "abstract", "file": "abstract-atlas.webp", "fps": 6,
+     "start_seconds": 0, "end_seconds": 1, "tile_width": 64, "tile_height": 64,
+     "frame_count": 6, "columns": 4, "rows": 2, "fit": "contain"},
+    {"type": "video", "source_id": "abstract", "file": "abstract-video.mp4", "fps": 12,
+     "start_seconds": 0, "end_seconds": 1, "width": 192, "height": 128, "audio": "none"},
+    {"type": "poster", "source_id": "abstract", "file": "abstract-poster.webp",
+     "at_seconds": 0, "width": 96, "height": 64}
+  ]
+}

@@ -1,0 +1,466 @@
+{
+  "schema": "hotchick.handoff-smoke.v1",
+  "passed": true,
+  "scope": "Text syntax and synthetic asset-tool CLI only",
+  "checks": [
+    {
+      "name": "python-ast",
+      "detail": "game/tests/acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/auto_skip_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/batch_card_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/card_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/card_capacity_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/card_seed_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/eunbi_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/platform_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/remote_settlement_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/rooms_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/rtp_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/skip_large_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/trial_refill_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "game/tests/yeseul_acceptance.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/build_benchmark_assets.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/build_sample_atlas.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/build_small_symbol_sample.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/card-tool/card_tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/extract_dt2_ui.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/matte_video_sample.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/media-tool/media_tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/package-goldsaucer.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/package_small_symbol_sample.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/package_symbol_benchmark.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/package_video_sample.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/prepare-goldsaucer-plugin-upload.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/prepare-jiayi.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/prepare-mugi.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/prepare-yeseul.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/qa-card-tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/qa-media-tool.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/render_small_symbol_preview.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/serve-game.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/serve_symbol_benchmark.py"
+    },
+    {
+      "name": "python-ast",
+      "detail": "scripts/summarize_symbol_benchmark.py"
+    },
+    {
+      "name": "json-parse",
+      "detail": "assets/platform/goldsaucer/metadata-v1.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "assets/platform/goldsaucer/requirements-v3.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "benchmark-game/scenes/main.scene.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/player.presentation.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/project.unone.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/scenes/main.scene.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/flower-cost.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/gallery-input-paused.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/idle-wallet.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/like-cost.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/preview-no-bet.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/rocket-cost.test.json"
+    },
+    {
+      "name": "json-parse",
+      "detail": "game/tests/shared-ui.test.json"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "benchmark-game/presentation/bench-renderer.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/card-shader.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/cards.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/game-panels.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/game-renderer.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/goldsaucer-rooms.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/goldsaucer-server.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/goldsaucer.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "game/presentation/landscape.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/card-tool/app.js"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/card-tool/qa_browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/cdp-client.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/media-tool/app.js"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/probe_symbol_browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-batch-cards.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-card-pack-capacity.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-cards-integration.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-cards.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-collection-polish.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-dt2-controls.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-eunbi.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-fast-cadence.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-game.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-blocked-browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-bridge.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-end-to-end.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-live-trial.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-low-balance.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-notice-layout.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-pack-stock-browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-package.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-rooms-browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-rooms.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-server.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-smooth-browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-trial-browser.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-goldsaucer-trial.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-jiayi-gallery.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-landscape.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-media-tool-ui.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-medium-concurrency.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-mugi-gallery.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-pack-sequence.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-platform-wager-notices.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-rooms-fixture.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-runtime-fixes.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-skip-seen.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-ui-polish.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-wager-notices.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-win-credit.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-win-effects.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/qa-yeseul.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "scripts/run_symbol_benchmark.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "server/goldsaucer/functions.js"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "server/goldsaucer/functions.test.mjs"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "server/goldsaucer/room.js"
+    },
+    {
+      "name": "javascript-syntax",
+      "detail": "server/goldsaucer/rooms.test.mjs"
+    },
+    {
+      "name": "unchanged-tool-copies"
+    },
+    {
+      "name": "card-cli-validate"
+    },
+    {
+      "name": "card-cli-build"
+    },
+    {
+      "name": "media-cli-validate"
+    },
+    {
+      "name": "media-cli-build"
+    },
+    {
+      "name": "card-webp-600x900"
+    },
+    {
+      "name": "atlas-metadata-dimensions-and-unused-alpha"
+    },
+    {
+      "name": "video-h264-dimensions-and-full-decode"
+    },
+    {
+      "name": "poster-dimensions"
+    },
+    {
+      "name": "source-sha256-unchanged"
+    }
+  ],
+  "skips": [],
+  "generated_media_committed": false,
+  "not_executed": [
+    "Original asset-dependent QA suites",
+    "Full-game native acceptance",
+    "Browser rendering, video concurrency, GPU shader and frame-time tests"
+  ],
+  "passed_checks": 115,
+  "skipped_groups": 0
+}

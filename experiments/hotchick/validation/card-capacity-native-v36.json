@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "native_runs": 6,
+  "capacity": 9999,
+  "batch_limit": 10,
+  "checks": [
+    "threshold remainder persists; opening11 consumes10 then1 without losing the last pack",
+    "capacity9999 clamps settled-spend overflow; full spending pauses and new progress resumes after opening10",
+    "large overflow creates no hidden bank that could refill opened packs",
+    "capped batches consume exactly the same independent card RNG stream and duplicate counts as individual draws",
+    "empty closed and blocked opening guards preserve packs; a session reset clears counts and batch state",
+    "all14 cards remain reachable across100 real capped batches with unchanged rarity odds"
+  ],
+  "thousand_draw_rarities": {
+    "N": 714,
+    "R": 237,
+    "SR": 49
+  }
+}

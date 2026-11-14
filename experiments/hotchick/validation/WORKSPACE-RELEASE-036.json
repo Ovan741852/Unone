@@ -1,0 +1,94 @@
+{
+  "release": "release-036",
+  "versionId": "b1d8ce3be320654aa7b637df065ee41f",
+  "slug": "heart-king",
+  "status": "approved",
+  "isLive": true,
+  "scanVerdict": "clean",
+  "reviewMode": "none",
+  "playUrl": "https://goldsaucer.ovan929.chatgpt.site/g/heart-king",
+  "freeTrialUrl": "https://goldsaucer.ovan929.chatgpt.site/play-content/b1d8ce3be320654aa7b637df065ee41f/index.html?trial=1",
+  "package": "heart-king-v11.zip",
+  "uploadManifest": "heart-king-v11-upload.json",
+  "declaredFiles": 178,
+  "privateScripts": [
+    "server/functions.js",
+    "server/room.js"
+  ],
+  "multiplayer": {
+    "maxPlayers": 3,
+    "directoryCapacity": 16,
+    "directoryLeaseMs": 45000,
+    "heartbeatMs": 15000,
+    "sharedTargets": 27,
+    "canonicalSeatsX": [
+      -5.1,
+      0,
+      5.1
+    ],
+    "canonicalSeatY": -4.35,
+    "captureAuthority": "Atomic server-function state, shared target generations and one committed winner",
+    "allTargetsUnavailable": "Refund the entire escrow, with no accepted bet or card progress",
+    "someTargetsUnavailable": "Preserve original target order and divide the round cost only among eligible targets",
+    "switch": "Fresh native fire-gate ACK, drain accepted rounds and heart awards, commit only the board; retain account state and financial sequence",
+    "versionIsolation": "Exact build scope from the platform content version; physical room tickets remain platform-version bound",
+    "roomRpc": "Serialized with settlement, cards and progress; no wallet operations or repeated open",
+    "visualMessages": "At most5 aims plus2 field hints per second, in addition to actual shots",
+    "trial": "Guest and standalone trials remain local single-player and never join or call room functions"
+  },
+  "runtime": "Official Unone Web/Wasm; Luau gameplay and canonical field; custom presentation delegates official createThreeRenderer",
+  "functionNames": [
+    "open",
+    "settle",
+    "drawCards",
+    "saveProgress",
+    "roomDirectory",
+    "roomSnapshot"
+  ],
+  "rtp": {
+    "fraction": "49/50",
+    "scope": "Accepted effective wagers",
+    "prizeTableChanged": false
+  },
+  "validation": {
+    "officialGates": 4,
+    "officialCases": 7,
+    "nativeRoomRuns": 20,
+    "nativeRemoteRuns": 83,
+    "nativePauseRuns": 28,
+    "nativeCardCapacityRuns": 6,
+    "nativeTrialRuns": 9,
+    "backendUnitChecks": 42,
+    "newQuickJsFunctionCalls": 8,
+    "legacyQuickJsFunctionCalls": 12,
+    "brokerChecks": 35,
+    "roomWebChecks": 15,
+    "bridgeChecks": 13,
+    "trialBridgeChecks": 9,
+    "twoOfficialPlayers": "qa/rooms-browser.json",
+    "roomScreenshot": "qa/rooms-browser.png",
+    "guestAndStandaloneBrowser": "qa/trial-browser.json",
+    "deployedFreeTrial": "qa/trial-deployed.json",
+    "nativeRoomReport": "qa/rooms-native-v36.json",
+    "webRoomReport": "qa/rooms-web.json",
+    "runtimeReport": "qa/rooms-runtime.json",
+    "realCurrencyActions": 0,
+    "actualPaidEntryNotOpenedByAgent": true,
+    "historicalRtpMonteCarlo": "Previous payout-model evidence retained; no new Monte Carlo run was necessary for unchanged payout probabilities"
+  },
+  "sourceHashes": {
+    "luau": "5e7269061b1e1113753374bcf65c877d7e9f59b4112d62aec82599aebb300430",
+    "functions": "ad1bf0f96e48da30d0298b2df587daad4f03f72347b40b8f8292270d2f698a82",
+    "roomScript": "929cbc1cad85b2f6a53a34d62a21b6ed565ca4ee4501fa655b90c4171fce57ae",
+    "broker": "e9495c539458c666038b0ac9c22bce69bc063ad82b477f637eedf4b5c45aa95e",
+    "roomClient": "de53248d86b560ffa20141a423905e1c7e0fc6f80d4b114779adaed059e68ca4",
+    "bridge": "3dc0f9a57144431ce47be9ab36ce32cf67b8e47bf9c8414729ea64cccd871ec9",
+    "renderer": "71608e4c68316423eb2515af21b24b09110e19c8c0e4f5fd8fc573c673183f07"
+  },
+  "boundaries": [
+    "Luau still reports collision hits; the server validates canonical target identity and owns eligibility, RNG and settlement, but does not reconstruct shot geometry",
+    "The currently live version URL is paid play, not an isolated author preview; use the explicit free-trial URL for nonfinancial testing",
+    "The platform now automatically returns whole red diamonds on actual game departure; switching rooms stays in the same document and performs no exchange"
+  ],
+  "scope": "Historical validation of the complete original workspace release036, not a rerun against this source-only handoff or the latest engine main"
+}

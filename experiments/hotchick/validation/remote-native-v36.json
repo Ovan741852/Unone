@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "native_runs": 83,
+  "checks": [
+    "connecting and a zero-chip paid wallet cannot start wagers",
+    "a real hit produces a retained outbox without invoking local award RNG",
+    "a receipt commits once, preserves heart-delayed credits and ignores held duplicates",
+    "all five small captures pay and collect; Enzhi's sprite-only classic capture creates no replay unlock while unavailable styles remain rejected",
+    "eight-bit large multipliers accept100/240 and maximum180000 award while rejecting old60 and out-of-range241",
+    "invalid receipts acknowledge an error and retain escrow without money effects",
+    "a definitive server rejection releases escrow without minting card progress",
+    "ordered pipelined receipts survive an already-caught visual target",
+    "real settlement pressure pauses new shots at32 within a hard64 total budget and resumes AUTO without a burst",
+    "ordinary missed-projectile flight keeps local cadence beyond12 in flight; only the hard64 flight budget pauses pathological flights",
+    "sixty-four existing projectiles may hit together without overflowing the total escrow or settlement queue budget",
+    "held wallet connection blocks new wagers after bootstrap and releases AUTO without catch-up",
+    "financial receipts can acknowledge during platform pause while heart collection waits",
+    "idle wallet updates follow the platform and remote demo reset cannot grant chips",
+    "paid61 at base1 fires costs1/6/15; zero funds report one manual failure and AUTO never spams attempts",
+    "a low bankroll stops at actual available funds and miss refunds resume AUTO without minting or spending pending awards",
+    "a connected paid61 wallet is distinct from a held connection gate and can fire after release",
+    "uncollected winnings explain pending credit blockage and become available only after hearts arrive",
+    "fully missed remote rounds refund locally without a financial server call",
+    "without the SDK, existing local settlement remains active",
+    "server profiles restore cards, duplicate counts, packs, history, watched clips and settings on a new runtime",
+    "fourteen-bit pack profiles restore9999 with prior card ownership intact and reject10000",
+    "a9999-pack collection still rejects new opening in portrait and accepts a fresh request after landscape",
+    "server-owned opening of11 packs returns10 then1 while preserving existing cards and draw acknowledgements",
+    "remote card opening waits for server ownership and stale profiles cannot regress collections",
+    "newer local setting edits survive old profiles until the matching save acknowledgement"
+  ]
+}

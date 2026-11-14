@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "native_runs": 20,
+  "checks": [
+    "two clients with different process seeds and local ages share all27 canonical target identities positions and sprite phases",
+    "natural expiry advances in constant time; captured generations wait before respawn and old-epoch updates are inert",
+    "peer shots are deduplicated Luau visuals and cannot create local wagers cards or awards",
+    "switching retains AUTO intent and the actual seat origin without catch-up; held manual Fire requires release",
+    "room commit waits for escrow; canonical captures retain frozen wagers and all-dead refunds once before a board-only switch preserves wallet and collection",
+    "a paid reveal and all collecting hearts finish before board commit without discarding or duplicating the accepted award",
+    "partial authoritative eligibility preserves target order and allocates whole cost only across accepted targets; inactive awards are rejected"
+  ]
+}
