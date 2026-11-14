@@ -849,10 +849,11 @@ mod tests {
     }
 }
 
-/// Write the error policy this Web player runs into its presentation.json, so
-/// the exported player never guesses its own variant. A development player
-/// fails fast like every CLI run; a production player recovers by default.
-fn resolve_error_policy(presentation: &mut crate::hosts::PresentationSettings, files: &mut [(String, Vec<u8>)], development: bool) -> Result<unone_engine::ErrorPolicy> {
+/// Write the error policy a player runs into its presentation.json, so the
+/// exported player never guesses its own variant. A development player fails
+/// fast like every CLI run; a production Web or native player recovers by
+/// default.
+pub(crate) fn resolve_error_policy(presentation: &mut crate::hosts::PresentationSettings, files: &mut [(String, Vec<u8>)], development: bool) -> Result<unone_engine::ErrorPolicy> {
     let policy = if development { unone_engine::ErrorPolicy::strict() } else { presentation.error_policy.unwrap_or(unone_engine::ErrorPolicy::release()) };
     presentation.error_policy = Some(policy);
     let file = files.iter_mut().find(|(path, _)| path == "content/presentation.json").context("content/presentation.json missing")?;

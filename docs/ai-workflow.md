@@ -725,6 +725,12 @@ Report where a frame's time goes: total time, mean, and share for the `script`/`
 
 The `run --json` result includes the same `performance` report.
 
+Declare the game's targets in `project.unone.json` `performance` (see
+[profiling](profiling.md#performance-targets-when-to-optimise-and-where)) and
+`perf`, `run` and `verify` warn when one is missed (`PERF_*_OVER_TARGET`),
+naming the phase and the game spans to optimise first. Without targets they warn
+`PERF_TARGETS_UNDECLARED` instead of judging.
+
 Two properties are important:
 
 - **Measurement uses wall clock and does not enter the observation digest.** Measuring performance does not change the meaning of a run; the digest for the same seed and input is exactly the same as without measurement.

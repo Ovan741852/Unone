@@ -33,7 +33,8 @@ pub struct HostProject {
     /// Restored state is available in Game.start, never injected after startup.
     #[serde(default)]
     pub restored_save: Option<serde_json::Value>,
-    /// UI viewport aspect, supplied before Game.start; defaults to 16:9.
+    /// UI viewport aspect, supplied before Game.start; defaults to the
+    /// project's declared display shape, else 16:9.
     /// Ignored when viewport_size is present: the physical size then defines
     /// the aspect exactly, so hosts may send a rounded CSS aspect alongside it.
     #[serde(default)]

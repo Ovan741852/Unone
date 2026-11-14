@@ -23,12 +23,6 @@ use crate::ui::{UiBackgroundScope, UiNode, UiRect, UiTree};
 pub const DEFAULT_LAYOUT_COLS: usize = 96;
 pub const DEFAULT_LAYOUT_ROWS: usize = 48;
 
-/// Viewport shape assumed when measuring how full a text box is.
-///
-/// The design space is 0..100 on both axes, so the engine cannot know the real
-/// aspect; 16:9 is the shape every current host uses. This assumption is why
-/// text fullness is a number in the report and never a finding.
-const ASSUMED_ASPECT: f64 = 16.0 / 9.0;
 /// Character advance as a fraction of font height, for a typical UI face.
 const CHARACTER_ADVANCE: f64 = 0.5;
 
@@ -327,11 +321,15 @@ fn work_limit_finding(comparisons: usize, findings: usize, background_groups: us
 }
 
 /// Approximate width; styled font sizing is independent of the node height.
-fn needed_width(text: &str, rect: &UiRect, style: Option<&crate::UiStyle>) -> f64 {
+///
+/// Measured at the shape the tree was laid out for (the project's declared
+/// display, else 16:9); a device of another shape is still unknown here, which
+/// is why text fullness is a number in the report and never a finding.
+fn needed_width(text: &str, rect: &UiRect, style: Option<&crate::UiStyle>, aspect: f64) -> f64 {
     let characters = text.lines().map(|line| line.chars().count()).max().unwrap_or(0) as f64;
     let font_size = style.map_or(rect.height, |style| style.font_size.unwrap_or(2.0));
     let spacing = style.and_then(|style| style.letter_spacing).unwrap_or(0.0);
-    (characters * CHARACTER_ADVANCE * font_size + (characters - 1.0).max(0.0) * spacing).max(0.0) / ASSUMED_ASPECT
+    (characters * CHARACTER_ADVANCE * font_size + (characters - 1.0).max(0.0) * spacing).max(0.0) / aspect
 }
 
 /// Inspect one UI tree: draw it, and report what is structurally wrong.
@@ -357,8 +355,8 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
             0.0
         } else {
             let padding = node.style().and_then(|style| style.padding).unwrap_or_default();
-            let content_width = (rect.width - (padding.left + padding.right) / ASSUMED_ASPECT).max(f64::EPSILON);
-            (needed_width(text, rect, node.style()) / content_width * 100.0).round() / 100.0
+            let content_width = (rect.width - (padding.left + padding.right) / tree.viewport_aspect).max(f64::EPSILON);
+            (needed_width(text, rect, node.style(), tree.viewport_aspect) / content_width * 100.0).round() / 100.0
         };
         nodes.push(LayoutNode {
             id: id.to_string(),

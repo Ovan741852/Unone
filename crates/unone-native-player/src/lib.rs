@@ -13,6 +13,7 @@ mod gamepad;
 mod environment;
 mod projected;
 mod presentation_raster;
+mod recovery;
 mod sprites;
 mod sprite_resources;
 mod ui;
@@ -210,6 +211,12 @@ impl Package {
         Ok(runtime)
     }
 }
+/// Replay, headless, frame- or time-limited measurement and capture runs. They
+/// keep a fixed seed and the strict error policy, and never touch the save.
+fn tool_run(settings: &Settings) -> bool {
+    settings.input_sequence.is_some() || settings.headless || settings.frames > 0
+        || settings.measure_seconds > 0. || settings.capture_dir.is_some()
+}
 /// Interactive play draws a fresh seed per launch, like the official Web player,
 /// so shipped games do not repeat the same api.random rolls. Tool runs (replay,
 /// headless, frame- or time-limited measurement, capture) keep the fixed seed 42
@@ -218,9 +225,7 @@ fn resolve_seed(settings: &Settings) -> u64 {
     if let Some(seed) = settings.seed {
         return seed;
     }
-    let tool_run = settings.input_sequence.is_some() || settings.headless || settings.frames > 0
-        || settings.measure_seconds > 0. || settings.capture_dir.is_some();
-    if tool_run {
+    if tool_run(settings) {
         return 42;
     }
     use std::hash::{BuildHasher, Hasher};
@@ -272,6 +277,8 @@ struct Settings {
     freeze_simulation: bool,
     disable_lod: bool,
     measure_seconds: f64,
+    /// `--error-policy package|strict`; see `recovery::resolve` for the default.
+    error_policy: Option<String>,
     /// Explicit `--save` file; packaged Android settings cannot redirect saves.
     #[serde(skip)]
     save: Option<PathBuf>,
@@ -407,6 +414,9 @@ struct App {
     captures: Vec<(String, f64)>,
     presentation_warnings: std::collections::BTreeSet<String>,
     quit_request_presented: bool,
+    /// The policy this run sent to the runtime (None is strict) and why.
+    error_policy: (Option<unone_engine::ErrorPolicy>, &'static str),
+    recovery: recovery::RecoveryLog,
 }
 impl App {
     fn sync_sprite_resources(&mut self)->R<()> {
@@ -459,6 +469,9 @@ impl App {
             input.presentation_resources=renderer.sprite_feedback(&self.snapshot);
         }
         self.snapshot = self.runtime.tick_with_input(&input).map_err(|error| error.explanation)?;
+        for line in self.recovery.observe(self.snapshot.recovered_errors.as_ref(), Instant::now()) {
+            recovery::warn(&line);
+        }
         if let Some(replay) = &mut self.input_replay { replay.applied(); }
         self.save.persist(&self.runtime)
     }
@@ -518,9 +531,18 @@ impl App {
             Some(replay::InputSequence::load(path)?)
         } else { None };
         let mut project = package.host_project()?;
+        let error_policy = recovery::resolve(settings.error_policy.as_deref(), tool_run(&settings), &presentation)?;
+        project.error_policy = error_policy.0;
         let mut save = save::SaveFile::open(&settings, store, &project)?;
         project.restored_save = save.take_restored();
         let data = package.data_assets(&project)?;
+        // The first window size: the command line's, else the project's design size, else 1280 x 720.
+        if settings.width.is_none() && settings.height.is_none()
+            && let Some(display) = project.config.display
+        {
+            settings.width = Some(display.width.get());
+            settings.height = Some(display.height.get());
+        }
         let mut runtime = Package::start(project,seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]),data)?;
         match spatial_backend {
             "cpu" => {},
@@ -577,6 +599,8 @@ impl App {
             captures: Vec::new(),
             presentation_warnings: Default::default(),
             quit_request_presented: false,
+            error_policy,
+            recovery: Default::default(),
         })
     }
     fn capture_frame(&mut self) -> R<()> {
@@ -625,6 +649,7 @@ impl App {
         value["quit_request_presented"] = json!(self.quit_request_presented);
         value["spatial"] = self.runtime.spatial_report();
         value["save"] = self.save.report();
+        value["error_policy"] = recovery::report(self.error_policy.0.as_ref(), self.error_policy.1, self.snapshot.recovered_errors.as_ref());
         value["sprite_resources"] = r.map(|r|r.sprite_resource_report()).unwrap_or(Value::Null);
         if let Some(replay) = &self.input_replay {
             value["input_replay"] = replay.report();
@@ -712,6 +737,16 @@ impl ApplicationHandler for App {
                 event_loop.exit();
             }
             WindowEvent::Resized(s) => {
+                // A game that keeps its design shape holds the window to it; the
+                // corrected size arrives as another Resized.
+                if let Some(display) = self.runtime.display().filter(|display| display.aspect == unone_engine::AspectMode::Keep)
+                    && s.width > 0 && s.height > 0 && self.input_replay.is_none()
+                {
+                    let height = (f64::from(s.width) / display.aspect_ratio()).round().max(1.0) as u32;
+                    if height.abs_diff(s.height) > 1 && let Some(window) = &self.window {
+                        let _ = window.request_inner_size(winit::dpi::PhysicalSize::new(s.width, height));
+                    }
+                }
                 if let Err(e) = replay::update_runtime_viewport(&mut self.runtime,self.input_replay.is_some(),s.width,s.height) {
                     self.fail(e, event_loop);
                     return;
@@ -938,6 +973,7 @@ pub fn desktop() -> R<()> {
         ;
         descriptor["input_replay"] = replay::declaration();
         descriptor["save"] = save::declaration();
+        descriptor["error_policy"] = recovery::declaration();
         descriptor["sprite_resources"] = sprite_resources::declaration();
         descriptor["input_replay"]["ordered_physical"]=json!({"live":"unsupported","normalized_core_replay":true,"text_ime":false});
         descriptor["projected_geometry"]=json!({"format":unone_engine::PROJECTED_FORMAT,"vertex_stride":40,"depth":"0..W","uv":"official mesh,bottom-left","color_mode":["linear","encoded"],"filter":["nearest","linear"],"sampling_space":["linear","encoded"],"address_mode":["clamp","repeat"],"alpha_cutoff":"0..1(default0.05);strict less-than discards","material_defaults":{"color_mode":"linear","filter":"nearest","sampling_space":"linear","address_mode":"clamp","alpha_cutoff":0.05},"blend":"opaque/cutout only; no blendlist","projection":"clip-space passthrough;no camera,culling,lighting or fog","world3d_visibility":true,"viewport":"physical pixels with revision"});
@@ -974,12 +1010,13 @@ pub fn desktop() -> R<()> {
             "--fixed-tick" => settings.fixed_tick = true,
             "--seconds" | "--capture-dir" | "--root" | "--frames" | "--warmup" | "--seed"
             | "--report" | "--prewarm-ticks" | "--width" | "--height" | "--input-sequence" | "--spatial-backend"
-            | "--save" => {
+            | "--save" | "--error-policy" => {
                 let key = &args[i];
                 i += 1;
                 let v = args.get(i).ok_or("NATIVE_ARGUMENT_VALUE_REQUIRED")?;
                 match key.as_str() {
                     "--spatial-backend" => settings.spatial_backend = Some(v.clone()),
+                    "--error-policy" => settings.error_policy = Some(v.clone()),
                     "--root" => root = v.into(),
                     "--report" => report = Some(PathBuf::from(v)),
                     "--save" => settings.save = Some(PathBuf::from(v)),
@@ -1299,6 +1336,49 @@ mod telemetry_tests {
                 super::save::Store::Unavailable("replay never resolves storage".into())).err().unwrap();
             assert!(error.contains("NATIVE_INPUT_SEQUENCE_SPATIAL_BACKEND"),"{error}");
         }
+    }
+
+    #[test]
+    fn interactive_play_runs_the_package_error_policy_and_tool_runs_fail_fast() {
+        // Ticks 2..3 publish over the screen's budget; tick 4 raises.
+        let package=||super::Package {digest:"fixture".into(),files:std::collections::BTreeMap::from([
+            ("content/project.json".into(),serde_json::to_vec(&serde_json::json!({
+                "config":{"name":"native-error-policy","entry_script":"main.luau","systems":{"save":false,"physics2d":false,"physics3d":false}},
+                "script":r#"
+local frame=0
+local function screen(count)
+    local children={}
+    for i=1,count do children[i]={kind='panel',id='panel-'..i,rect={x=0,y=0,width=10,height=10}} end
+    return {kind='screen',id='screen',node='screen',budget={max_nodes=2},children=children}
+end
+return {start=function(api) api.ui.setRoot(screen(1)) end,update=function(api)
+    frame+=1
+    api.observation.set('published',api.ui.setRoot(screen((frame==2 or frame==3) and 3 or 1)))
+    if frame==4 then error('native boom') end
+end}"#})).unwrap()),
+            ("content/presentation.json".into(),serde_json::to_vec(&serde_json::json!({"error_policy":
+                {"ui_capacity":"keep_previous","script_errors":"continue","max_consecutive_script_errors":60}})).unwrap())])};
+        let boot=|settings:super::Settings|super::App::new(package(),settings,None,std::time::Instant::now(),
+            super::save::Store::Unavailable("save disabled".into())).unwrap();
+        let run=|app:&mut super::App,ticks:usize|(0..ticks).try_for_each(|_|app.advance_tick());
+        let mut play=boot(Default::default());
+        run(&mut play,6).unwrap();
+        assert_eq!(play.snapshot.frame,6,"interactive play kept running");
+        let report=super::recovery::report(play.error_policy.0.as_ref(),play.error_policy.1,play.snapshot.recovered_errors.as_ref());
+        assert_eq!(report["source"],"package");
+        assert_eq!(report["policy"]["ui_capacity"],"keep_previous");
+        assert_eq!((report["recovered_errors"]["ui_rejections"].clone(),report["recovered_errors"]["script_errors"].clone()),(serde_json::json!(2),serde_json::json!(1)));
+        assert_eq!(report["recovered_errors"]["last_ui_rejection"]["node"],"panel-3");
+        assert_eq!(play.snapshot.ui.as_ref().unwrap().children.len(),1,"the previous screen stayed published");
+        let mut tool=boot(super::Settings{headless:true,frames:6,..Default::default()});
+        assert_eq!(tool.error_policy,(None,"tool_run"));
+        let error=run(&mut tool,6).unwrap_err();
+        assert!(error.contains("UI_NODE_LIMIT"),"{error}");
+        let mut forced=boot(super::Settings{headless:true,frames:6,error_policy:Some("package".into()),..Default::default()});
+        run(&mut forced,6).unwrap();
+        assert_eq!(forced.snapshot.recovered_errors.as_ref().unwrap().script_errors,1);
+        let mut strict=boot(super::Settings{error_policy:Some("strict".into()),..Default::default()});
+        assert!(run(&mut strict,6).unwrap_err().contains("UI_NODE_LIMIT"));
     }
 
     #[test]

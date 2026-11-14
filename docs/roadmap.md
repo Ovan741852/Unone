@@ -32,7 +32,8 @@ Author tools: verify, systems list/search/set, API search/describe/typings.
 Diagnostics: semantic observations, UI preview, trace, replay record/diff.
 Performance: per-stage timings, bounded-window median/p95, frame counts and Luau heap measurements,
 startup phases, and game-defined spans/counters ([api.profile](profiling.md)) that never reach the digest;
-these are measurements, not deterministic gameplay facts or automatic verdicts.
+these are measurements, not deterministic gameplay facts. Verdicts come only from targets a
+project declares (`performance`): perf, run and verify warn when one is missed and say where to start.
 
 Core: fixed timestep, seeded random, deterministic replay/digest, 2D gravity,
 damping, ground friction/restitution and circle contacts; Camera2D with declared

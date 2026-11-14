@@ -824,7 +824,7 @@ pub(crate) fn llms_txt() -> String {
          - `game find \"<need>\"`: existing engine APIs, render passes, systems, official packages, local plugins and marketplace plugins, in the order to prefer them.\n\
          - `game api search \"<meaning>\"`, then `game api describe <name>`: the exact API, its errors and an example.\n\
          - `game systems list`: which engine systems this project runs.\n\
-         - `game verify`: types, assets, layouts and tests in one verdict.\n\n## Guides\n\n",
+         - `game verify`: types, assets, layouts, tests and declared performance targets in one verdict.\n\n## Guides\n\n",
     );
     let packages = unone_engine::runtime_package_files();
     let guides = authoring_files().into_iter().chain(packages).filter(|(path, _)| path.ends_with(".md"));
@@ -926,7 +926,9 @@ fn native_export_staged(
         &settings,
         crate::hosts::load_presentation(project)?.as_ref(),
     )?;
-    crate::export::append_presentation(project, &mut files)?;
+    let mut presentation = crate::export::append_presentation(project, &mut files)?;
+    // Native players are release players: the declared or release error policy.
+    let error_policy = crate::export::resolve_error_policy(&mut presentation, &mut files, false)?;
     let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     native_asset_gate(&assets, &metadata)?;
     // Native players are release builds and load the entry and modules as
@@ -938,7 +940,7 @@ fn native_export_staged(
             files.push((name.clone(), fs::read(safe(runtime, name)?)?));
         }
     }
-    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"error_policy":error_policy,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
     std::fs::create_dir_all(output)?;
     for (path, bytes) in &files {
         let p = output.join(path);
@@ -1064,7 +1066,17 @@ mod tests {
             let manifest: Value = serde_json::from_slice(&fs::read(output.join("export.json")).unwrap()).unwrap();
             let listed = |path: &str| manifest["files"].as_array().unwrap().iter().any(|file| file["path"] == path);
             assert!(listed("content/script.luaubc") && listed("content/script-modules.luaubc"));
+            // A native package is a release player: it carries the release error policy.
+            let release = json!({"ui_capacity":"keep_previous","script_errors":"continue","max_consecutive_script_errors":60});
+            assert_eq!(manifest["error_policy"], release);
+            let presentation: Value = serde_json::from_slice(&fs::read(output.join("content/presentation.json")).unwrap()).unwrap();
+            assert_eq!(presentation["error_policy"], release);
         }
+        fs::write(project.join("player.presentation.json"), json!({"error_policy":{"script_errors":"continue"}}).to_string()).unwrap();
+        let output = dir.path().join("export-declared");
+        native_export_staged(&project, &output, dir.path(), &dir.path().join("runtime-false"), host, false).unwrap();
+        let presentation: Value = serde_json::from_slice(&fs::read(output.join("content/presentation.json")).unwrap()).unwrap();
+        assert_eq!(presentation["error_policy"], json!({"ui_capacity":"fail","script_errors":"continue","max_consecutive_script_errors":60}));
     }
 
     #[test]

@@ -128,6 +128,7 @@ impl ProjectPaths {
             ))
         })?;
         crate::input_actions::validate_declared(&config)?;
+        crate::performance_targets::validate(config.performance.as_ref())?;
         let entry_script = resolve_project_path(&root, &config.entry_script)?;
         let main_scene = config
             .main_scene
@@ -449,6 +450,8 @@ fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
         "systems": systems,
         "input_actions": [],
         "script_time_limit_seconds": 60,
+        "performance": {"p95_frame_ms": 16.667},
+        "display": {"width": 1280, "height": 720},
         "test_files": [
             "tests/bootstrap-idle.test.json",
             "tests/bootstrap-input.test.json",

@@ -428,7 +428,7 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_perf",
             "Measure frame cost",
-            "Run the project and report where a frame's time goes: script, physics and observe phases with their share, mean/median/p95 frame time, the slowest frame, how many frames missed the fixed timestep budget, the Luau heap size, and what a frame contained. Timings are wall clock and never enter the observation digest, so measuring cannot change what a run means. It reports numbers and never a verdict: fast enough depends on a target the engine does not know.",
+            "Run the project and report where a frame's time goes: script, physics and observe phases with their share, mean/median/p95 frame time, the slowest frame, how many frames missed the fixed timestep budget, the Luau heap size, and what a frame contained. Timings are wall clock and never enter the observation digest, so measuring cannot change what a run means. The engine does not guess what fast enough is: with targets declared in project.unone.json `performance` it warns for each one missed (PERF_*_OVER_TARGET) and names the phase and game spans to start with; without them it warns that none are declared (PERF_TARGETS_UNDECLARED).",
             object_schema(json!({
                 "properties": {
                     "frames": {"type": "integer", "minimum": 1, "default": 600, "description": "Frames to measure; more frames make the percentiles meaningful."},
@@ -827,7 +827,13 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             };
             let run = runtime.run(frames, seed);
             match run.value {
-                Some(report) => tool_result(EngineResult::success(report.performance)),
+                Some(report) => {
+                    let review = runtime.performance_review(&report.performance, unone_engine::PerformanceReview::Measure);
+                    let mut result = EngineResult::success(report.performance);
+                    result.diagnostics = run.diagnostics;
+                    result.diagnostics.extend(review);
+                    tool_result(result)
+                }
                 None => {
                     let mut result = EngineResult::<serde_json::Value>::failure(Diagnostic::error(
                         "PERF_RUN_FAILED",
@@ -1091,12 +1097,14 @@ fn run_tool(project: &Path, arguments: &Value) -> Value {
         Err(diagnostic) => return tool_result(EngineResult::<Value>::failure(*diagnostic)),
     };
     if let Some(sequence) = input_sequence {
-        return tool_result(runtime.run_with_input_sequence(frames, seed, &sequence));
+        let result = runtime.run_with_input_sequence(frames, seed, &sequence);
+        return tool_result(runtime.reviewed(result));
     }
     if let Some(action) = action {
         runtime.set_input(action, true);
     }
-    tool_result(runtime.run(frames, seed))
+    let result = runtime.run(frames, seed);
+    tool_result(runtime.reviewed(result))
 }
 
 fn required_string(arguments: &Value, name: &str) -> Result<String, Box<Diagnostic>> {

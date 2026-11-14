@@ -797,7 +797,8 @@ impl EngineRuntime {
         let trace = Rc::new(RefCell::new(Vec::new()));
         let observations = Rc::new(RefCell::new(BTreeMap::new()));
         let ui = Rc::new(RefCell::new(None));
-        let viewport_aspect = Rc::new(RefCell::new(crate::ui::UI_REFERENCE_ASPECT));
+        // The declared design shape until a host says what it draws into.
+        let viewport_aspect = Rc::new(RefCell::new(config.display.map_or(crate::ui::UI_REFERENCE_ASPECT, |display| display.aspect_ratio())));
         // A restored save has to exist before Game.start runs: start is the only
         // place a game can rebuild its state before the first frame, and an
         // injection after start would both hide the payload and silently
@@ -984,7 +985,8 @@ impl EngineRuntime {
     /// Tell the engine the shape of the viewport the host is drawing into.
     ///
     /// Anchored UI nodes resolve against this, so a host that never calls it
-    /// gets the reference 16:9 layout, which is also what headless tests use.
+    /// gets the project's declared design shape (`display`), else the
+    /// reference 16:9 layout; headless runs and tests use the same.
     pub fn set_viewport_aspect(&mut self, aspect: f64) -> Result<(), Box<Diagnostic>> {
         if !aspect.is_finite() || aspect <= 0.0 {
             return Err(Box::new(Diagnostic::error(
@@ -1492,6 +1494,28 @@ impl EngineRuntime {
             instance_bytes: instances * 40,
         };
     }
+    /// The screen the project declares it is designed for, if it does.
+    pub fn display(&self) -> Option<crate::DisplayConfig> {
+        self.config.display
+    }
+
+    /// A measurement of this runtime compared with the project's performance targets.
+    #[cfg(feature = "dev-tools")]
+    pub fn performance_review(&self, report: &PerformanceReport, asked: crate::PerformanceReview) -> Vec<Diagnostic> {
+        crate::performance_targets::review(report, self.config.performance.as_ref(), asked)
+    }
+
+    /// A run's result with the project's performance targets compared, as the
+    /// `run` commands report it.
+    #[cfg(feature = "dev-tools")]
+    pub fn reviewed(&self, mut result: EngineResult<RunReport>) -> EngineResult<RunReport> {
+        if let Some(report) = result.value.as_ref() {
+            let found = self.performance_review(&report.performance, crate::PerformanceReview::Run);
+            result.diagnostics.extend(found);
+        }
+        result
+    }
+
     /// Cached counters: profiling must not clone/serialize the full scene.
     fn performance_report(&self) -> PerformanceReport {
         let mut report = self.performance.report(

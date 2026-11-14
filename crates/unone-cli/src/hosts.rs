@@ -564,10 +564,6 @@ pub fn native_wgpu_export_gate(
     if presentation.job_policy != JobPolicy::default() {
         keys.push("job_policy");
     }
-    // The native player keeps the strict policy; a declared one would be ignored.
-    if presentation.error_policy.is_some() {
-        keys.push("error_policy");
-    }
     ensure!(
         keys.is_empty(),
         "HOST_PRESENTATION_UNSUPPORTED: player.presentation.json fields {} are not supported by native wgpu. Export --target web or remove those keys.",
@@ -602,7 +598,7 @@ mod tests {
     }
 
     #[test]
-    fn error_policy_is_optional_validated_and_web_only(){
+    fn error_policy_is_optional_validated_and_shared_by_web_and_native(){
         assert!(serde_json::to_value(PresentationSettings::default()).unwrap().get("error_policy").is_none(), "undeclared keeps presentation.json bytes");
         let settings:PresentationSettings=serde_json::from_value(json!({"error_policy":{"ui_capacity":"keep_previous","script_errors":"fail"}})).unwrap();
         settings.validate_renderer().unwrap();
@@ -612,10 +608,9 @@ mod tests {
         for value in [json!({"ui_capacity":"truncate"}),json!({"retries":2}),json!("lenient")] {
             assert!(serde_json::from_value::<PresentationSettings>(json!({"error_policy":value})).is_err(),"{value}");
         }
+        // The native player reads the same declaration from its package.
         let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([("spine".into(),false),("effekseer".into(),false)])).unwrap();
-        let error=native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string();
-        assert!(error.contains("HOST_PRESENTATION_UNSUPPORTED")&&error.contains("error_policy"),"{error}");
-        native_wgpu_export_gate(&quiet,Some(&PresentationSettings::default())).unwrap();
+        native_wgpu_export_gate(&quiet,Some(&settings)).unwrap();
     }
 
     #[test]

@@ -76,10 +76,59 @@ pub struct ProjectConfig {
     /// keeps each host's built-in order.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub render_pipeline: Option<crate::RenderPipeline>,
+    /// What the game's measurements must stay under. The engine measures but
+    /// cannot know what fast enough is for a game; declared here, `perf`,
+    /// `run` and `verify` warn when a measurement misses a target and say
+    /// where the time goes. Undeclared, they say that none are declared.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub performance: Option<crate::PerformanceTargets>,
+    /// The screen the game is designed for: its design size, and what hosts do
+    /// on a device of another shape. Undeclared means 1280 x 720 (16:9),
+    /// expanding to the device's shape; new projects declare it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub display: Option<DisplayConfig>,
 }
 
 fn default_entry_script() -> String {
     "scripts/main.luau".to_string()
+}
+
+/// The screen a game is designed for.
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct DisplayConfig {
+    /// Design width in pixels.
+    pub width: std::num::NonZeroU32,
+    /// Design height in pixels. Width and height give the viewport shape every
+    /// headless run, test and layout check uses, and a native window's first
+    /// size.
+    pub height: std::num::NonZeroU32,
+    /// What a host does when the device's shape differs from the design;
+    /// undeclared means `expand`.
+    #[serde(default)]
+    pub aspect: AspectMode,
+}
+
+impl DisplayConfig {
+    /// Width over height.
+    pub fn aspect_ratio(&self) -> f64 {
+        f64::from(self.width.get()) / f64::from(self.height.get())
+    }
+}
+
+/// What a host does when the device's shape differs from the design.
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum AspectMode {
+    /// The viewport takes the device's shape: anchored UI and the camera's
+    /// visible width follow it.
+    #[default]
+    Expand,
+    /// The game is shown at exactly the design shape: the Web player
+    /// letterboxes it and the native player holds its window to it.
+    Keep,
 }
 
 #[derive(Debug, Clone)]
