@@ -205,6 +205,15 @@ correct WASM/MJS MIME types, no-store responses and optional gzip. It is a local
 test utility, not a production server.
 
 
+## Screen shape
+
+The official players read the project's `display` (see
+[the design shape](ui-responsive.md#the-design-shape-display)). With
+`aspect: "keep"` the Web player sizes the canvas and its UI layer to the largest
+centred rectangle of the design shape and refits on every resize; the native
+player opens at the design size and holds its window to that shape. With
+`expand` (or nothing declared) both fill the window and report its shape.
+
 ## Runtime errors
 
 Two kinds of error can reach a released game while it runs: a UI publish over a

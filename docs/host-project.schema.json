@@ -44,6 +44,21 @@
       ],
       "type": "object"
     },
+    "AspectMode": {
+      "description": "What a host does when the device's shape differs from the design.",
+      "oneOf": [
+        {
+          "const": "expand",
+          "description": "The viewport takes the device's shape: anchored UI and the camera's\nvisible width follow it.",
+          "type": "string"
+        },
+        {
+          "const": "keep",
+          "description": "The game is shown at exactly the design shape: the Web player\nletterboxes it and the native player holds its window to it.",
+          "type": "string"
+        }
+      ]
+    },
     "AssetCatalogEntry": {
       "additionalProperties": false,
       "properties": {
@@ -330,6 +345,34 @@
         "id",
         "source",
         "loader"
+      ],
+      "type": "object"
+    },
+    "DisplayConfig": {
+      "additionalProperties": false,
+      "description": "The screen a game is designed for.",
+      "properties": {
+        "aspect": {
+          "$ref": "#/$defs/AspectMode",
+          "default": "expand",
+          "description": "What a host does when the device's shape differs from the design;\nundeclared means `expand`."
+        },
+        "height": {
+          "description": "Design height in pixels. Width and height give the viewport shape every\nheadless run, test and layout check uses, and a native window's first\nsize.",
+          "format": "uint32",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "width": {
+          "description": "Design width in pixels.",
+          "format": "uint32",
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "width",
+        "height"
       ],
       "type": "object"
     },
@@ -1105,6 +1148,17 @@
             "string",
             "null"
           ]
+        },
+        "display": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DisplayConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The screen the game is designed for: its design size, and what hosts do\non a device of another shape. Undeclared means 1280 x 720 (16:9),\nexpanding to the device's shape; new projects declare it."
         },
         "entry_script": {
           "default": "scripts/main.luau",
@@ -2440,7 +2494,7 @@
     },
     "viewport_aspect": {
       "default": null,
-      "description": "UI viewport aspect, supplied before Game.start; defaults to 16:9.\nIgnored when viewport_size is present: the physical size then defines\nthe aspect exactly, so hosts may send a rounded CSS aspect alongside it.",
+      "description": "UI viewport aspect, supplied before Game.start; defaults to the\nproject's declared display shape, else 16:9.\nIgnored when viewport_size is present: the physical size then defines\nthe aspect exactly, so hosts may send a rounded CSS aspect alongside it.",
       "format": "double",
       "type": [
         "number",

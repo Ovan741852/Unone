@@ -536,6 +536,13 @@ impl App {
         let mut save = save::SaveFile::open(&settings, store, &project)?;
         project.restored_save = save.take_restored();
         let data = package.data_assets(&project)?;
+        // The first window size: the command line's, else the project's design size, else 1280 x 720.
+        if settings.width.is_none() && settings.height.is_none()
+            && let Some(display) = project.config.display
+        {
+            settings.width = Some(display.width.get());
+            settings.height = Some(display.height.get());
+        }
         let mut runtime = Package::start(project,seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]),data)?;
         match spatial_backend {
             "cpu" => {},
@@ -730,6 +737,16 @@ impl ApplicationHandler for App {
                 event_loop.exit();
             }
             WindowEvent::Resized(s) => {
+                // A game that keeps its design shape holds the window to it; the
+                // corrected size arrives as another Resized.
+                if let Some(display) = self.runtime.display().filter(|display| display.aspect == unone_engine::AspectMode::Keep)
+                    && s.width > 0 && s.height > 0 && self.input_replay.is_none()
+                {
+                    let height = (f64::from(s.width) / display.aspect_ratio()).round().max(1.0) as u32;
+                    if height.abs_diff(s.height) > 1 && let Some(window) = &self.window {
+                        let _ = window.request_inner_size(winit::dpi::PhysicalSize::new(s.width, height));
+                    }
+                }
                 if let Err(e) = replay::update_runtime_viewport(&mut self.runtime,self.input_replay.is_some(),s.width,s.height) {
                     self.fail(e, event_loop);
                     return;

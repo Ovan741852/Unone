@@ -110,6 +110,17 @@ function uiPassHidden(snapshot){return Boolean(snapshot.world?.render_pipeline?.
 function withCatalog(project,manifest){const catalog=textureCatalog(manifest);if(catalog.length)project.asset_catalog=catalog;return project;}
 // Declared data assets are fetched as bytes for the core's api.assets loaders.
 function dataAssets(project){return Promise.all(payloadDataSources(project).map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);return {id:asset.id,bytes:new Uint8Array(await r.arrayBuffer())};}));}
+// The project's display (project.unone.json): with aspect "keep" the stage is the largest
+// rectangle of the design shape that fits the window, centred, the page showing around it;
+// otherwise it fills the window and the game takes the device's shape.
+let stageDisplay=null;
+function fitStage(){const display=stageDisplay,keep=display?.aspect==='keep'&&display.width>0&&display.height>0;
+ const width=keep?Math.min(innerWidth,innerHeight*display.width/display.height):innerWidth,height=keep?width*display.height/display.width:innerHeight;
+ for(const element of [canvas,document.querySelector('#ui-layer')]){
+  if(!keep){for(const property of ['inset','left','top','width','height'])element.style.removeProperty(property);continue;}
+  Object.assign(element.style,{inset:'auto',left:`${(innerWidth-width)/2}px`,top:`${(innerHeight-height)/2}px`,width:`${width}px`,height:`${height}px`});
+ }
+}
 function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
 function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession)resourceHost?.reset();resourceHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 // Each load or restart starts a new session seed; ?seed= reproduces a reported one.
@@ -182,7 +193,7 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
@@ -212,7 +223,7 @@ async function finishStartup(presentation,kind){
  /* DEVELOPER_CONNECT */
  if(performanceFeed)publishPerformanceFeed();
  scheduler.start();
- window.addEventListener('resize',()=>{const [width,height]=physicalViewport();backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
+ window.addEventListener('resize',()=>{fitStage();const [width,height]=physicalViewport();backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
  };
  canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
  try{
@@ -286,6 +297,7 @@ async function start(){
  metrics.runtime_ready_ms=performance.now()-window.playerBoot;metrics.error_policy=errorPolicy??'strict';
  document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
  try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
+ stageDisplay=project.config.display??null;fitStage();
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
  project.viewport_size=physicalViewport();
  if(errorPolicy)project.error_policy=errorPolicy;

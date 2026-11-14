@@ -1,6 +1,21 @@
 {
   "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
   "$defs": {
+    "AspectMode": {
+      "description": "What a host does when the device's shape differs from the design.",
+      "oneOf": [
+        {
+          "const": "expand",
+          "description": "The viewport takes the device's shape: anchored UI and the camera's\nvisible width follow it.",
+          "type": "string"
+        },
+        {
+          "const": "keep",
+          "description": "The game is shown at exactly the design shape: the Web player\nletterboxes it and the native player holds its window to it.",
+          "type": "string"
+        }
+      ]
+    },
     "AudioCategory": {
       "additionalProperties": false,
       "description": "How a game groups its sounds, and what the engine does about the grouping.\n\nThe engine does not name `bgm` or `sfx`: the taxonomy is the game's. It owns\nonly the rules, because they decide which source survives a switch, and that\nis world state a test asserts.\n\nThe reserved fields exist so the declaration shape does not have to change\nwhen they are implemented. Declaring one is an **error**, never a silent\nno-op: a game believing it configured something it did not is the hardest\nkind of audio bug to find.",
@@ -47,6 +62,34 @@
           "type": "object"
         }
       },
+      "type": "object"
+    },
+    "DisplayConfig": {
+      "additionalProperties": false,
+      "description": "The screen a game is designed for.",
+      "properties": {
+        "aspect": {
+          "$ref": "#/$defs/AspectMode",
+          "default": "expand",
+          "description": "What a host does when the device's shape differs from the design;\nundeclared means `expand`."
+        },
+        "height": {
+          "description": "Design height in pixels. Width and height give the viewport shape every\nheadless run, test and layout check uses, and a native window's first\nsize.",
+          "format": "uint32",
+          "minimum": 1,
+          "type": "integer"
+        },
+        "width": {
+          "description": "Design width in pixels.",
+          "format": "uint32",
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ],
       "type": "object"
     },
     "HostTimeConfig": {
@@ -487,6 +530,17 @@
         "string",
         "null"
       ]
+    },
+    "display": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DisplayConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The screen the game is designed for: its design size, and what hosts do\non a device of another shape. Undeclared means 1280 x 720 (16:9),\nexpanding to the device's shape; new projects declare it."
     },
     "entry_script": {
       "default": "scripts/main.luau",

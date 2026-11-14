@@ -2662,7 +2662,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             "ui.getViewport",
             "ui",
             "Read the host-reported viewport aspect ratio; feed it to ui.components.createResponsiveLayout for shared authored responsive composition.",
-            "Advanced environment observation, or input to layout.resolve(api.ui.getViewport()). Start responsive authoring at ui.components.createResponsiveLayout and docs/ui-responsive.md instead of copying breakpoint conditionals. The host reports the actual stage aspect; headless callers may set it through the runtime viewport boundary.",
+            "Advanced environment observation, or input to layout.resolve(api.ui.getViewport()). Start responsive authoring at ui.components.createResponsiveLayout and docs/ui-responsive.md instead of copying breakpoint conditionals. The host reports the actual stage aspect; until it does, and in headless runs and tests, it is the project's declared display (project.unone.json display: width/height), else 16:9. display.aspect \"keep\" makes hosts present exactly that shape.",
             "This environment getter does not itself choose rectangles, reflow content or report device pixels. Project-authored responsive models own layout policy; do not use font raster metrics as simulation input.",
             vec![],
             "{aspect:number}; width divided by height.",

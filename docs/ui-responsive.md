@@ -27,6 +27,31 @@ instead of inventing a handwritten `any` wrapper. Use the exact package version
 bundled with the selected Core and SDK; a declaration cannot upgrade an older
 runtime.
 
+## The design shape: `display`
+
+A project says which screen it is designed for in `project.unone.json`:
+
+```json
+"display": {"width": 1080, "height": 1920, "aspect": "keep"}
+```
+
+`width` and `height` are the design size in pixels. Their ratio is the viewport
+shape headless runs, `game test`, `game ui preview` and layout checks use, and
+what `api.ui.getViewport()` returns until a host reports its own; the native
+player opens its window at that size unless `--width`/`--height` say
+otherwise. `aspect` says what hosts do on a device of another shape:
+
+- `expand` (default): the viewport takes the device's shape. Anchored UI and the
+  camera's visible width follow it, so choose variants here (below).
+- `keep`: the game is shown at exactly the design shape. The official Web player
+  letterboxes the stage (the page background shows around it); the native
+  player holds its window to the shape.
+
+Undeclared means 1280 x 720 (16:9), expanding; `game project init` declares
+`{"width": 1280, "height": 720}`. Zero sizes and unknown fields are refused
+(`PROJECT_CONFIG_INVALID`). UI coordinates stay the 0..100 design space either
+way; `display` only fixes the shape that space is laid out for.
+
 ## Create once, resolve in a pure View
 
 `createResponsiveLayout` snapshots its options. Retain the model and call

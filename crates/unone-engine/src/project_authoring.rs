@@ -451,6 +451,7 @@ fn init_artifacts(name: &str) -> Vec<InitFileSpec> {
         "input_actions": [],
         "script_time_limit_seconds": 60,
         "performance": {"p95_frame_ms": 16.667},
+        "display": {"width": 1280, "height": 720},
         "test_files": [
             "tests/bootstrap-idle.test.json",
             "tests/bootstrap-input.test.json",

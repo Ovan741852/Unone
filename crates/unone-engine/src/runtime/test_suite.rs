@@ -502,7 +502,7 @@ fn evaluate_observation(world: &WorldSnapshot, observation: &crate::project::Obs
 fn evaluate_assertion(world: &WorldSnapshot, assertion: &TestAssertion) -> Result<(), String> {
     if let Some(ui) = &assertion.ui {
         let actual = world.ui.as_deref().ok_or_else(|| "UI tree does not exist.".to_string())?;
-        let expected = UiTree::from_json_for_viewport_with_resources(ui.equals.clone(), crate::ui::UI_REFERENCE_ASPECT, &world.ui_image_batches)
+        let expected = UiTree::from_json_for_viewport_with_resources(ui.equals.clone(), actual.viewport_aspect, &world.ui_image_batches)
             .map_err(|error| format!("UI assertion is not a valid UI tree: {error}"))?;
         if actual != &expected {
             return Err(format!(
