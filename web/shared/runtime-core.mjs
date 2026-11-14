@@ -13,7 +13,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  const spatial=createSpatialHost(module,{backend:spatialBackend,createExecutor:createSpatialExecutor});
  const read=()=>readObservation(module),binary=createBinaryJobTransport(module);
  function send(name,value){const bytes=commandEncoder.encode(JSON.stringify(value)),p=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,p);if(module[name](p,bytes.length)!==0)throw Error(JSON.stringify(read()));}
- let loaded=false,closed=false,latest,pool,policy={workers:0,reason:'jobs_disabled'},pending=[],fault=null,instanceTransport=1,spritePlanRevision=null,imageGroupRevision=null;
+ let loaded=false,closed=false,latest,pool,policy={workers:0,reason:'jobs_disabled'},pending=[],fault=null,instanceTransport=1,spritePlanRevision=null,imageGroupRevision=null,markRevision=0,markSequence=0;
  function withSpriteResourcePlan(value){
   if(typeof module._unone_web_sprite_resources_request!=='function')return value;
   send('_unone_web_sprite_resources_request',{kind:'plan',after:spritePlanRevision});
@@ -42,6 +42,25 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
   if(Object.hasOwn(plan,'groups'))value.image_group_plan=plan;
   return value;
  }
+ // Milestones the game declared with api.profile.mark ride beside the world, never inside it.
+ // One integer is read per publication; the marks themselves only when it changed.
+ function withProfileMarks(value){
+  if(typeof module._unone_web_profile_marks_revision!=='function')return value;
+  const revision=module._unone_web_profile_marks_revision()>>>0;
+  if(revision===markRevision)return value;
+  send('_unone_web_profile_marks_request',{kind:'marks',after:markSequence});
+  const pointer=module._unone_web_observation_ptr(),length=module._unone_web_observation_len();
+  if(!Number.isSafeInteger(pointer)||pointer<0||!Number.isSafeInteger(length)||length<1||length>1024*1024||pointer+length>module.HEAPU8.byteLength)throw Error('PROFILE_MARKS_INVALID');
+  const update=JSON.parse(controlDecoder.decode(module.HEAPU8.subarray(pointer,pointer+length)));
+  if(!update||!Number.isSafeInteger(update.revision)||!Array.isArray(update.marks)||!Number.isSafeInteger(update.dropped)||Object.keys(update).some(key=>!['revision','marks','dropped'].includes(key)))throw Error('PROFILE_MARKS_INVALID');
+  for(const mark of update.marks){
+   if(!mark||typeof mark.name!=='string'||!Number.isSafeInteger(mark.frame)||mark.frame<0||!Number.isSafeInteger(mark.sequence)||mark.sequence<=markSequence)throw Error('PROFILE_MARKS_INVALID');
+   markSequence=mark.sequence;
+  }
+  markRevision=revision;
+  value.profile_marks={marks:update.marks,dropped:update.dropped};
+  return value;
+ }
  const hasPhysicalViewport=()=>typeof module._unone_web_set_viewport_size==='function';
  const validSize=(width,height)=>[width,height].every(n=>Number.isInteger(n)&&n>0&&n<=32768);
  function viewportReport(){return {mode:hasPhysicalViewport()?'physical':requirePhysicalViewport?'physical-unavailable':'aspect-only',required:requirePhysicalViewport,physical_api:hasPhysicalViewport(),aspect_api:typeof module._unone_web_set_viewport_aspect==='function'};}
@@ -63,7 +82,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
   if(command.kind!=='load'&&!loaded)throw Error('RUNTIME_NOT_LOADED');
   switch(command.kind){
    case 'load':{
-    loaded=false;spritePlanRevision=null;imageGroupRevision=null;
+    loaded=false;spritePlanRevision=null;imageGroupRevision=null;markRevision=0;markSequence=0;
     // Retire the previous executor epoch; captured promises cannot inject late replies.
     pool?.close();pool=null;pending=[];fault=null;
     latest=loadProject(module,loadPayload(command.payload),BigInt(command.seed??'42'),command.data);
@@ -77,9 +96,9 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
       policy=chooseJobWorkers(jobPolicy,{...device,workerAvailable:typeof globalThis.Worker==='function',heapBytes:module.HEAPU8.buffer.byteLength});
       if(policy.workers>0){jobRequest(module,{kind:'configure',workers:policy.workers});pool=createJobPool({url,workers:policy.workers,executeInline:work=>binary.execute(work)});}
     } else policy={workers:0,reason:'jobs_disabled'};
-    loaded=true;latest=withImageGroupPlan(withSpriteResourcePlan(latest));return latest;
+    loaded=true;latest=withProfileMarks(withImageGroupPlan(withSpriteResourcePlan(latest)));return latest;
    }
-   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);send('_unone_web_set_input_frame',command.input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');latest=withImageGroupPlan(withSpriteResourcePlan(latest));return latest;
+   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);send('_unone_web_set_input_frame',command.input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');latest=withProfileMarks(withImageGroupPlan(withSpriteResourcePlan(latest)));return latest;
    case 'hostTime':if(typeof module._unone_web_host_time_request!=='function')throw Error('HOST_TIME_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_host_time_request',command.request);return read();
    case 'ui':if(typeof module._unone_web_ui_request!=='function')throw Error('UI_SCROLL_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_ui_request',command.request);latest=read();return latest;
    case 'aspect':if(!Number.isFinite(command.value)||command.value<=0)throw Error('VIEWPORT_INVALID');if(module._unone_web_set_viewport_aspect(command.value)!==0)throw Error(JSON.stringify(read()));return latest;

@@ -938,6 +938,49 @@ pub unsafe extern "C" fn unone_web_image_groups_request(pointer: *const u8, leng
     }
 }
 
+/// Changes only when the game records an `api.profile.mark` (0 before any or
+/// without a runtime), so the host polls one integer per tick and reads the
+/// marks themselves only when it changed.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_profile_marks_revision() -> u32 {
+    RUNTIME.with(|runtime| runtime.borrow().as_ref()
+        .map_or(0, |runtime| u32::try_from(runtime.profile_marks_revision()).unwrap_or(u32::MAX)))
+}
+
+/// The game's `api.profile.mark` milestones after a sequence, outside World.
+/// Read-only: it never ticks and never touches a snapshot or digest.
+/// # Safety
+/// `pointer` must be the current allocation returned by unone_web_alloc.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn unone_web_profile_marks_request(pointer: *const u8, length: usize) -> i32 {
+    #[derive(serde::Deserialize)]
+    #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+    enum Request { Marks { after: u64 } }
+    let result = (|| -> Result<serde_json::Value, String> {
+        let request = INPUT_BUFFER.with(|input| {
+            let input = input.borrow();
+            if pointer.is_null() || pointer != input.as_ptr() || length != input.len() || length == 0 || length > 1024 {
+                return Err("PROFILE_MARKS_REQUEST_INVALID: use current owned allocation, 1..1024 bytes".to_string());
+            }
+            serde_json::from_slice::<Request>(&input).map_err(|e| format!("PROFILE_MARKS_REQUEST_INVALID: {e}"))
+        })?;
+        RUNTIME.with(|runtime| {
+            let runtime = runtime.borrow();
+            let runtime = runtime.as_ref().ok_or("RUNTIME_NOT_LOADED")?;
+            let Request::Marks { after } = request;
+            if after > 9_007_199_254_740_991 {
+                return Err("PROFILE_MARKS_REQUEST_INVALID: after must be a safe integer".into());
+            }
+            serde_json::to_value(runtime.profile_marks_since(after)).map_err(|e| e.to_string())
+        })
+    })();
+    match result {
+        Ok(value) => { OUTPUT.with(|output| { let mut output = output.borrow_mut(); output.clear();
+            serde_json::to_writer(&mut *output, &value).expect("plain profile marks"); }); 0 },
+        Err(error) => { write_error(error); -1 },
+    }
+}
+
 /// Detached host-time report/tape transport. It never samples or advances World.
 /// # Safety
 /// `pointer` must be the current allocation returned by unone_web_alloc.
@@ -1782,6 +1825,39 @@ fn image_group_abi_returns_the_held_groups_only_when_they_change() {
     let request=br#"{"kind":"plan","after":null}"#;
     assert_eq!(unsafe { unone_web_image_groups_request(request.as_ptr(),request.len()) },-1,"only the owned allocation is read");
     assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().current_frame()),1);
+    unone_web_unload_project();
+}
+
+#[cfg(test)]
+#[test]
+fn profile_mark_abi_reports_frames_beside_the_world_without_changing_it() {
+    assert_eq!(unone_web_profile_marks_revision(),0,"no runtime, no marks");
+    let script="return {start=function(api) api.profile.mark('boot') end,update=function(api) if api.input.isDown('Enter') then api.profile.mark('city.interactive') end api.observation.set('n',1) end}";
+    let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"marks","entry_script":"main.luau"},"script":script})).unwrap();
+    assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(),payload.len(),42) },0);
+    let marks=|after:u64|{
+        let request=serde_json::to_vec(&serde_json::json!({"kind":"marks","after":after})).unwrap();
+        let pointer=unone_web_alloc(request.len());
+        unsafe { std::ptr::copy_nonoverlapping(request.as_ptr(),pointer,request.len()); }
+        assert_eq!(unsafe { unone_web_profile_marks_request(pointer,request.len()) },0);
+        OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap())
+    };
+    assert_eq!(unone_web_profile_marks_revision(),1);
+    assert_eq!(marks(0),serde_json::json!({"revision":1,"marks":[{"name":"boot","frame":0,"sequence":1}],"dropped":0}));
+    assert_eq!(unone_web_tick(),0);
+    let quiet=OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap());
+    assert_eq!(unone_web_profile_marks_revision(),1,"a frame without a mark leaves the revision");
+    let frame=serde_json::to_vec(&serde_json::json!({"actions":{"Enter":true}})).unwrap();
+    assert_eq!(unsafe { unone_web_set_input_frame(frame.as_ptr(),frame.len()) },0);
+    assert_eq!(unone_web_tick(),0);
+    let marked=OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap());
+    assert!(marked.get("profile_marks").is_none()&&marked["world"].get("marks").is_none(),"marks never enter the publication");
+    assert_eq!(marked["world"]["observations"],quiet["world"]["observations"]);
+    assert_eq!(unone_web_profile_marks_revision(),2);
+    assert_eq!(marks(1),serde_json::json!({"revision":2,"marks":[{"name":"city.interactive","frame":2,"sequence":2}],"dropped":0}));
+    assert_eq!(marks(2)["marks"],serde_json::json!([]));
+    let request=br#"{"kind":"marks","after":0}"#;
+    assert_eq!(unsafe { unone_web_profile_marks_request(request.as_ptr(),request.len()) },-1,"only the owned allocation is read");
     unone_web_unload_project();
 }
 

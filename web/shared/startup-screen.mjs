@@ -23,7 +23,8 @@ const TOTAL_WEIGHT=STARTUP_STEPS.reduce((sum,step)=>sum+step.weight,0);
 const lower=text=>text[0].toLowerCase()+text.slice(1);
 
 export function createStartupScreen({root=null,body=null,boot=0,now=()=>performance.now(),hideDelayMs=300,schedule=(work,ms)=>setTimeout(work,ms)}={}){
- const steps=new Map(STARTUP_STEPS.map(step=>[step.id,{...step,state:'pending',fraction:0,done:null,total:null,ms:null}]));
+ // ms: when the step completed; started_ms: when it began. Both relative to boot (window.playerBoot).
+ const steps=new Map(STARTUP_STEPS.map(step=>[step.id,{...step,state:'pending',fraction:0,done:null,total:null,ms:null,started:null}]));
  const part=name=>root?.querySelector?.(`.unone-startup-${name}`)??null;
  const bar=part('bar'),fill=part('fill'),label=part('label'),error=part('error');
  let state='loading',failedStep=null,message=null;
@@ -44,7 +45,7 @@ export function createStartupScreen({root=null,body=null,boot=0,now=()=>performa
  }
  function report(){
   return {state,progress:Math.round(progress()*10000)/10000,step:state==='loading'?current()?.id??null:null,failed_step:failedStep,
-   steps:[...steps.values()].map(({id,state,done,total,ms})=>({id,state,...(total?{done,total}:{}),...(ms===null?{}:{ms})}))};
+   steps:[...steps.values()].map(({id,state,done,total,ms,started})=>({id,state,...(total?{done,total}:{}),...(started===null?{}:{started_ms:started}),...(ms===null?{}:{ms})}))};
  }
  function render(){
   const value=progress();
@@ -56,12 +57,13 @@ export function createStartupScreen({root=null,body=null,boot=0,now=()=>performa
   try{if(body)body.dataset.playerStartup=JSON.stringify(report());}catch{}
  }
  function finish(step){if(step.state==='done')return;step.state='done';step.fraction=1;step.ms=Math.round(now()-boot);}
+ function begin(step){step.state='active';step.started??=Math.round(now()-boot);}
  const api={
-  start(id){const step=stepOf(id);if(state!=='loading'||step.state!=='pending')return;step.state='active';render();},
+  start(id){const step=stepOf(id);if(state!=='loading'||step.state!=='pending')return;begin(step);render();},
   // Counted work inside a step: data files, image entries, font faces. Never moves backwards.
   progress(id,done,total){const step=stepOf(id);if(state!=='loading'||step.state==='done')return;
    if(!(Number.isFinite(done)&&Number.isFinite(total)&&total>0))return;
-   step.state='active';step.total=total;step.done=Math.min(Math.max(done,step.done??0),total);step.fraction=Math.max(step.fraction,step.done/total);render();},
+   begin(step);step.total=total;step.done=Math.min(Math.max(done,step.done??0),total);step.fraction=Math.max(step.fraction,step.done/total);render();},
   complete(id){const step=stepOf(id);if(state!=='loading')return;finish(step);render();},
   // The first frame is presented: the screen fades out and stops covering the game.
   ready(){if(state!=='loading')return;for(const step of steps.values())finish(step);state='ready';render();

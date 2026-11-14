@@ -136,6 +136,10 @@ the renderer's Three API usage. Development hosts retain the original modules.
 content and ResourceTiming bytes. `playerPerformance` reports sampled bridge/render
 durations, draw calls, triangles, textures, particle count and dropped fixed steps.
 These are raw measurements for AI investigation, not a bottleneck classifier.
+To measure an export's load the same way every time (cold and warm runs, a
+profiler pair, the game's own milestone, artifact hashes and conditions in one
+report), run `node scripts/measure-web-export.mjs --export <dir> --output <report.json>`;
+see [measuring a production Web export](profiling.md#measuring-a-production-web-export).
 Save restoration precedes Game.start; input/scheduler/UI/audio use shared host modules.
 
 The official presentation wire retains unchanged ordinary UI as an immutable
@@ -238,8 +242,11 @@ out when the first frame is presented, the moment the player logs
 
 The player publishes the screen's state as `document.body.dataset.playerStartup`:
 `state` (`loading`, `ready` or `failed`), `progress` from 0 to 1, the
-current `step`, `failed_step`, and each step's state, counts and completion
-time `ms` after the page started.
+current `step`, `failed_step`, and each step's state, counts, start time
+`started_ms` and completion time `ms`, both milliseconds after
+`window.playerBoot`. The module-graph step (`player`) has no start of its own:
+it runs from boot. `scripts/measure-web-export.mjs` reads these steps for its
+startup breakdown; see [measuring a production Web export](profiling.md#measuring-a-production-web-export).
 
 A startup failure keeps the screen up, turns the bar red where it stopped, names
 the step ("Startup failed while loading fonts") and shows the whole error as

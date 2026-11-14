@@ -1041,6 +1041,18 @@ impl EngineRuntime {
         self.image_groups.borrow().plan_since(after)
     }
 
+    /// Changes only when the game records an `api.profile.mark`, so a host can
+    /// poll it every frame and read the marks themselves only then.
+    pub fn profile_marks_revision(&self) -> u64 {
+        self.script_profile.borrow().marks_revision()
+    }
+
+    /// The game's `api.profile.mark` milestones after sequence `after` (0 for all),
+    /// with their world frames. Outside World: never part of a snapshot or digest.
+    pub fn profile_marks_since(&self, after: u64) -> crate::ProfileMarksUpdate {
+        self.script_profile.borrow().marks_since(after)
+    }
+
     /// Name this project reports itself as.
     pub fn project_name(&self) -> &str {
         &self.config.name
@@ -1313,6 +1325,7 @@ impl EngineRuntime {
             let mut world = self.world.borrow_mut();
             world.ticking = true;
             let frame = world.frame;
+            self.script_profile.borrow_mut().begin_update(frame + 1);
             #[cfg(feature = "audio")]
             if self.systems.is_enabled("audio") {
                 world.audio.begin_frame(frame);

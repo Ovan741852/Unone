@@ -177,7 +177,8 @@ pub use layout::{
     draw as draw_layout, inspect as inspect_layout, to_markdown as layout_markdown,
 };
 pub use performance::{
-    CounterTotal, FrameCounts, PerformanceReport, PhaseCost, SlowestFrame, SpanCost, StartupCost, to_markdown as performance_markdown,
+    CounterTotal, FrameCounts, MAX_PROFILE_MARKS, PerformanceReport, PhaseCost, ProfileMark, ProfileMarksUpdate, SlowestFrame, SpanCost, StartupCost,
+    to_markdown as performance_markdown,
 };
 pub use performance_targets::{
     DEFAULT_MEASURED_FRAMES, MIN_COMPARED_FRAMES, PerformanceTargets, Review as PerformanceReview, missed as performance_targets_missed,

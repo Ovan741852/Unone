@@ -9,6 +9,7 @@ observations, which would change the run and its digest.
 ```luau
 local path = api.profile.span("ai.pathfind", function() return findPath(a, b) end)
 api.profile.count("ai.nodes", visited)
+api.profile.mark("city.interactive") -- a milestone the game defines, see below
 ```
 
 `span` returns the function's results and records wall time and Luau heap
@@ -22,6 +23,96 @@ request. The same report has `performance.startup`: how long importing assets,
 reading the project, running the script's top level and `Game.start` took, and
 the Luau heap after start. At most 256 distinct names are kept; later ones are
 dropped and listed in the report's notes.
+
+### Milestones the game declares: `api.profile.mark`
+
+Only the game knows when it is usable: the city is interactive, a battle has
+loaded. Say so once, when it happens:
+
+```luau
+if cityReady and not cityMarked then
+    cityMarked = true
+    api.profile.mark("city.interactive")
+end
+```
+
+The engine records the name and the world frame (the loaded frame, 0, from the
+top level or `Game.start`; otherwise the frame that update produces) and never
+judges whether the state really was usable. `game perf` and `game run --json`
+list them as `performance.marks`. The official Web player adds its own clock:
+`window.unonePlayerPerformance.snapshot().milestones.rows` gives each mark's
+`accepted_at_ms` (the main host accepted the snapshot that carried it) and
+`presented_at_ms` (the first completed submission whose presented frame reached
+it), on the same `performance.now()` clock as the rest of that report. Marks
+never reach observations, digests or replays. At most 256 are kept per run, so
+mark milestones, not every frame. The player polls one integer per tick and
+reads the marks only when it changes; a runtime built before marks existed has
+no `milestones` and the measurement tool below reports the milestone as null.
+
+## Measuring a production Web export
+
+`scripts/measure-web-export.mjs` loads one production export in headless Edge
+or Chrome, the same way every time, and writes one JSON report: every raw sample
+beside its median and p95. Node 22+ and no dependencies.
+
+```powershell
+game --project <game> export web --output <new dir> --json
+node scripts/measure-web-export.mjs --export <new dir> --output load.json --milestone city.interactive
+```
+
+By default it makes 5 cold runs (each a new browser process and profile, so the
+HTTP and compiled-code caches are empty), 5 warm runs (one profile primed by a
+first load that is kept but not summarized; each run is a new document) and one
+profiler pair (the same warm load with `?unone_profile=1` and without it,
+alternating which goes first). Every load uses seed 42 (`?seed=`), a 1280×720
+viewport at DPR 1, emulated focus, cleared local storage, a muted browser that
+is closed at the end, and a loopback server that applies the export's own
+`cache_policy` from `export.json` (index.html revalidates, the release
+generation is immutable) with ETags. A run waits for the first presented frame,
+then for every `--milestone` to be presented, then `--settle-ms` (1000) before
+reading everything once.
+
+| Option | Use |
+|---|---|
+| `--cold N`, `--warm N`, `--profile-pairs N` | How many of each (0 skips a kind). |
+| `--milestone NAME` (repeatable) | Wait for the game's `api.profile.mark(NAME)` to be presented and report it. |
+| `--viewport 926x428 --dpr 3` | The device shape to emulate. |
+| `--network slow-4g` or `LATENCY_MS,DOWN_KBPS,UP_KBPS`, `--cpu-throttle 4` | Browser emulation, recorded as such; not a real phone or radio network. |
+| `--cache-control VALUE`, `--compress gzip` | Serve differently from the export's own policy. |
+| `--backend main\|worker`, `--seed N` | Override the presentation's backend or the seed. |
+| `--timeout-ms`, `--settle-ms`, `--frame-window-ms` | Per-load limit, the wait before sampling, the `unonePlayerPerformance` window. |
+| `--keep-storage`, `--allow-development`, `--browser PATH`, `--headed` | Keep saves between runs, measure a development export (marked in the report), choose the browser. |
+
+| Report section | Contents |
+|---|---|
+| `artifact`, `engine`, `execution` | SHA-256 of export.json, index.html and runtime.json; the WASM and JS hashes (checked against the files before measuring); release root, file count, bytes; the engine source commit and whether it was dirty; variant, build profile, bytecode optimization level and profile mode. A development export is refused unless `--allow-development`. |
+| `environment`, `conditions` | Browser product, user agent and flags; GPU as the browser reports it; OS and CPU; viewport, DPR, seed, server cache policy, emulation, `foreground_all_runs`. |
+| `clock` | Origin `window.playerBoot`: the export's index.html sets it before any module loads. |
+| `runs[]` | One per load. `metrics` holds the flat numbers the summary uses. Beside them: `startup_steps` (start, completion and duration of each startup-screen step: module graph, content, images, fonts, runtime, data, game, renderer, audio, first frame), `navigation`, `wasm` (fetch from Resource Timing, compile and instantiate from timing wrappers), `javascript`, `fonts`, `images` (queue, start, completion and decode per image from `unonePlayerAssets`), `milestones`, `frames` (one `unonePlayerPerformance` window), `memory` (JS heap, WASM linear capacity and image residency, never summed), `long_tasks`, `resources`, `server_requests`, `profile` (profiler-on runs), `foreground`, `console_errors`. |
+| `summary` | `cold` and `warm`: for each metric, n, nulls, median, p95, min and max over the successful runs of that kind. `profiler_pairs`: off, on and on minus off. |
+| `coverage` | Requested, completed and failed runs per kind, with each failure's error. The process exits 1 when a run failed. |
+
+How to read it:
+
+- Unknown is null, never zero. Sizes the browser hides (a cross-origin or
+  opaque-origin response without `Timing-Allow-Origin`) are null, and a zero
+  `transferSize` is not taken as a cache hit: `cache` comes from the browser's
+  own network log, and `server_requests` shows what actually reached the server.
+- Quantiles are per metric across runs of one kind. They are never added to one
+  another; a within-run value such as `images.decode_ms_max` or
+  `frames.successful_submission_p95_ms` is one number per run like any other.
+  p95 is nearest-rank, so over five runs it is the slowest run.
+- `player.first_successful_submission_ms` is the player's `first_presented_ms`:
+  the startup frame was submitted and confirmed complete. It is not the moment a
+  player can act; that is the game's milestone.
+- Compare profiler-off runs for acceptance; profiler-on runs locate costs.
+- The `split` WASM timing replaces `instantiateStreaming` with exactly the two
+  steps it is specified as (`compileStreaming`, then `instantiate`) to time each;
+  `--wasm-timing observe` times the original call instead. A worker backend loads
+  WASM in a Worker the page cannot see, so its WASM timings are null.
+- One machine, one browser, headless: not a phone, not GPU time, not physical
+  display. Memory peaks over scene round trips and long frame-time windows are
+  separate measurements.
 
 ## Performance targets: when to optimise and where
 

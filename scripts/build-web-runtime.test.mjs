@@ -19,6 +19,7 @@ test('extracts the existing official player ABI, conditional particle ABI and li
  const production=officialPlayerContract(ps),diagnostic=officialPlayerContract(ps,{diagnostic:true});
  assert(production.exports.includes('sprite_resources_request'));
  assert(production.exports.includes('image_groups_request'));
+ assert(production.exports.includes('profile_marks_revision')&&production.exports.includes('profile_marks_request'));
  assert(production.exports.includes('set_ui_transport'));
  assert(production.exports.includes('particle_sample'));
  assert(!production.exports.includes('developer_request'));

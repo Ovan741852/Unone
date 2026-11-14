@@ -50,3 +50,54 @@ fn invalid_names_and_amounts_are_rejected() {
         assert!(report.diagnostics.iter().any(|d| d.explanation.contains(code) || d.summary.contains(code)), "{code}: {:?}", report.diagnostics);
     }
 }
+
+#[test]
+fn marks_record_the_frame_the_game_declared_and_leave_the_run_unchanged() {
+    let marked = r#"
+local ticks = 0
+return {
+  start = function(api) api.profile.mark('boot') end,
+  update = function(api, dt)
+    ticks += 1
+    if ticks == 3 then api.profile.mark('city.interactive') end
+    api.observation.set('ticks', ticks)
+  end,
+}"#;
+    let plain = r#"
+local ticks = 0
+return {
+  start = function(api) end,
+  update = function(api, dt)
+    ticks += 1
+    api.observation.set('ticks', ticks)
+  end,
+}"#;
+    let mut runtime = EngineRuntime::load_source("marks", "main.luau", marked.to_string(), None).unwrap();
+    let run = runtime.run(5, 42).value.unwrap();
+    let marks: Vec<(&str, u64, u64)> = run.performance.marks.iter().map(|m| (m.name.as_str(), m.frame, m.sequence)).collect();
+    assert_eq!(marks, [("boot", 0, 1), ("city.interactive", 3, 2)], "Game.start marks the loaded frame; an update marks the frame it produces");
+    let mut unmarked = EngineRuntime::load_source("marks", "main.luau", plain.to_string(), None).unwrap();
+    let unmarked = unmarked.run(5, 42).value.unwrap();
+    assert_eq!(run.observation_digest, unmarked.observation_digest, "marks never change the run");
+    assert!(unmarked.performance.marks.is_empty());
+    assert!(!serde_json::to_value(&run).unwrap()["world"].to_string().contains("city.interactive"), "marks never reach the world");
+    assert_eq!(runtime.profile_marks_since(1).marks.len(), 1);
+}
+
+#[test]
+fn marks_are_bounded_and_say_how_many_were_dropped() {
+    let source = r#"
+return {
+  start = function(api) for i = 1, 300 do api.profile.mark('m') end end,
+  update = function(api, dt) end,
+}"#;
+    let mut runtime = EngineRuntime::load_source("marks", "main.luau", source.to_string(), None).unwrap();
+    let run = runtime.run(1, 42).value.unwrap();
+    assert_eq!(run.performance.marks.len(), unone_engine::MAX_PROFILE_MARKS);
+    assert!(run.performance.notes.iter().any(|note| note.contains("44 later marks were dropped")), "{:?}", run.performance.notes);
+    let update = runtime.profile_marks_since(0);
+    assert_eq!((update.dropped, update.revision), (44, unone_engine::MAX_PROFILE_MARKS as u64 + 1));
+    let mut invalid = EngineRuntime::load_source("marks", "main.luau", "return {start=function() end,update=function(api) api.profile.mark('') end}".to_string(), None).unwrap();
+    let report = invalid.run(1, 42);
+    assert!(!report.ok && report.diagnostics.iter().any(|d| d.explanation.contains("PROFILE_NAME_INVALID") || d.summary.contains("PROFILE_NAME_INVALID")), "{:?}", report.diagnostics);
+}

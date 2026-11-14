@@ -11,7 +11,7 @@ const frameOf=n=>Number.isSafeInteger(n)&&n>=0?n:null;
 const known=value=>value?.status==='completed'||value?.status==='skipped';
 const SOURCES=['manual','startup','scheduler_raf','unknown'];
 const OUTCOMES=['completed','skipped','unknown','error','no_submission'];
-const NOMINAL_BUDGET=1000/60,RAF_SOURCE=2;
+const NOMINAL_BUDGET=1000/60,RAF_SOURCE=2,MILESTONE_LIMIT=256;
 function ring(){return {values:new Float64Array(LIMIT),ends:new Float64Array(LIMIT),cursor:0,count:0};}
 function push(r,value,end){if(!finite(value)||value<0||!finite(end))return;r.values[r.cursor]=value;r.ends[r.cursor]=end;r.cursor=(r.cursor+1)%LIMIT;r.count=Math.min(r.count+1,LIMIT);}
 function distribution(r,at,windowMs){
@@ -29,14 +29,30 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
  let frame=null,time=null,published=null,lastFrame=null,lastCompleted=null,lastStatus='unknown',contract='unknown',lastOutcome=DRAW_UNKNOWN;
  let rowCursor=0,rowCount=0,rowTotal=0,lastRafRow=-1,lastRafSequence=0,lastRafTimestamp=null,highestFrame=null,lastRafFrame=null,lastSuccessfulRaf=null,lastFreshRaf=null;
  let rafAttempts=0,rafCompleted=0,rafRepeats=0,rafRegressions=0,rafAlreadyShown=0,rafInFlight=0,rafUnknownFrames=0,rafUnknownTimes=0,rafNonIncreasingTimes=0,callbacks=0,callbackInFlight=0,preparations=0,preparationCancelled=0,preparationSteps=0,preparationUnknownSteps=0,lastBudget=null;
- function reset(dropped=0){session++;accepted=attempts=completed=unique=unknown=errors=skipped=cursor=retained=0;skips.fill(0);droppedAtStart=Number.isSafeInteger(dropped)&&dropped>=0?dropped:0;
+ // Milestones the game declared (api.profile.mark): when the main host accepted the
+ // snapshot that carried each one and the first successful submission showing its frame.
+ const milestones=[];let milestoneNext=0,milestoneEngineDropped=0,milestoneHostDropped=0;
+ function acceptMarks(update,at){
+  if(!update||!Array.isArray(update.marks))return;
+  if(Number.isSafeInteger(update.dropped)&&update.dropped>milestoneEngineDropped)milestoneEngineDropped=update.dropped;
+  for(const mark of update.marks){
+   if(milestones.length>=MILESTONE_LIMIT){milestoneHostDropped++;continue;}
+   milestones.push({name:String(mark.name),frame:frameOf(mark.frame),sequence:frameOf(mark.sequence),accepted_at_ms:finite(at)?at:null,presented_at_ms:null,presented_frame:null});
+  }
+ }
+ function presentMarks(presentedFrame,at){
+  if(presentedFrame===null)return;
+  while(milestoneNext<milestones.length){const row=milestones[milestoneNext];if(row.frame!==null&&row.frame>presentedFrame)break;
+   row.presented_at_ms=finite(at)?at:null;row.presented_frame=presentedFrame;milestoneNext++;}
+ }
+ function reset(dropped=0){session++;milestones.length=0;milestoneNext=milestoneEngineDropped=milestoneHostDropped=0;accepted=attempts=completed=unique=unknown=errors=skipped=cursor=retained=0;skips.fill(0);droppedAtStart=Number.isSafeInteger(dropped)&&dropped>=0?dropped:0;
   frame=time=published=lastFrame=lastCompleted=null;lastStatus=contract='unknown';lastOutcome=DRAW_UNKNOWN;
   for(const r of allRings)r.cursor=r.count=0;sourceCounts.fill(0);outcomeCounts.fill(0);deadlineCounts.fill(0);rowCursor=rowCount=rowTotal=0;lastRafRow=-1;lastRafSequence=0;
   lastRafTimestamp=highestFrame=lastRafFrame=lastSuccessfulRaf=lastFreshRaf=null;
   rafAttempts=rafCompleted=rafRepeats=rafRegressions=rafAlreadyShown=rafInFlight=rafUnknownFrames=rafUnknownTimes=rafNonIncreasingTimes=callbacks=callbackInFlight=preparations=preparationCancelled=preparationSteps=preparationUnknownSteps=0;lastBudget=null;
  }
  function accept(snapshot,newSession=false,droppedSteps=0){if(newSession)reset(droppedSteps);const world=snapshot?.world;
-  frame=frameOf(world?.frame);time=finite(world?.time_seconds)?world.time_seconds:null;published=now();accepted++;}
+  frame=frameOf(world?.frame);time=finite(world?.time_seconds)?world.time_seconds:null;published=now();accepted++;acceptMarks(snapshot?.profile_marks,published);}
  function deadline(kind,rafTime,end,budgetMs){const offset=kind*3;if(!finite(rafTime)||!finite(end)||!finite(budgetMs)||budgetMs<=0){deadlineCounts[offset+2]++;return;}
   lastBudget=budgetMs;deadlineCounts[offset]++;if(end>rafTime+budgetMs)deadlineCounts[offset+1]++;
  }
@@ -70,7 +86,7 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
    contract='available';lastStatus='completed';completed++;const next=frameOf(presentedFrame);
    if(next!==lastFrame){unique++;lastFrame=next;}
    if(lastCompleted!==null&&finite(at)&&at>=lastCompleted){intervals[cursor]=at-lastCompleted;ends[cursor]=at;cursor=(cursor+1)%LIMIT;retained=Math.min(retained+1,LIMIT);}
-   lastCompleted=finite(at)?at:null;result=lastOutcome=DRAW_COMPLETED;outcome=0;
+   lastCompleted=finite(at)?at:null;result=lastOutcome=DRAW_COMPLETED;outcome=0;presentMarks(next,at);
   }
   submitted(source,outcome,rafTime,startAt,inFlight,at,presentedFrame,budgetMs);return result;
  }
@@ -113,6 +129,9 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
     callbacks,callbacks_in_flight:callbackInFlight,preparations,preparation_cancelled:preparationCancelled,preparation_steps:preparationSteps,preparation_unknown_steps:preparationUnknownSteps,
     wall_scope:'Submission/callback pacing wall statistics cover scheduler RAF only; startup/manual draws remain explicit source counters and optional rows.',preparation_wall_scope:'Active non-cancelled preparation spans only; cancelled spans retain step/count counters but have no active nominal deadline.',
     nominal_deadlines:Object.freeze(nominal),...(samples?{samples:Object.freeze(samples)}:{})}),
+   milestones:Object.freeze({capacity:MILESTONE_LIMIT,recorded:milestones.length,engine_dropped:milestoneEngineDropped,host_dropped:milestoneHostDropped,
+    rows:Object.freeze(milestones.map(row=>Object.freeze({...row}))),
+    scope:'Game-declared api.profile.mark milestones. accepted_at_ms: main-host acceptance of the snapshot that carried the mark; presented_at_ms: first completed submission whose presented world frame reached the mark frame. Same clock as publication_at_ms; the game owns what a milestone means.'}),
    semantics:'Completed synchronous world, UI and cursor submission; repeated snapshot redraws count separately. RAF intervals use browser callback timestamps; new-snapshot RAF intervals require a globally first shown valid advancing frame. Wall/preparation/nominal-deadline diagnostics are not GPU scanout or an FPS guarantee.'});
  }
  return Object.freeze({accept,reset,attempt(){attempts++;},finish,outcome:()=>lastOutcome,error,rafEnd,epoch:()=>session,preparationEnd,snapshot:report});

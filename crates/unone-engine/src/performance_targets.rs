@@ -355,6 +355,7 @@ mod tests {
             startup: Some(StartupCost { imports_ms: 10.0, project_ms: 20.0, script_ms: 30.0, start_ms: 400.0, luau_heap_after_start_bytes: 0 }),
             spans: vec![SpanCost { name: "ai".to_string(), calls: 600, total_ms: 900.0, mean_ms: 1.5, p95_ms: 2.5, max_ms: 4.0, heap_growth_bytes: 9000 }],
             counters: Vec::new(),
+            marks: Vec::new(),
         }
     }
 

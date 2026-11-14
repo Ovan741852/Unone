@@ -3270,6 +3270,18 @@ fn data_texture_descriptors() -> Vec<ApiDescriptor> {
             vec!["profile.span"],
         ),
         descriptor(
+            "profile.mark", "diagnostics",
+            "Declare a milestone the game defines (city interactive, 主城可操作, level loaded) so load and startup measurements can stop at it.",
+            "Call once when the game reaches a state it considers reached: the first screen a player can use, a scene that finished loading. The engine records the world frame; the official Web player adds when it accepted that frame and when it first presented it (unonePlayerPerformance.snapshot().milestones), and scripts/measure-web-export.mjs --milestone <name> waits for it. game perf and game run --json list marks with their frames (performance.marks).",
+            "Not a per-frame event log: at most 256 marks are kept per run and later ones are counted as dropped. Never returns anything to the game and never reaches observations, digests or replays. The game owns the meaning; the engine does not judge whether the state was really usable.",
+            vec![parameter("name", "string", "1-64 printable characters; the game's own milestone name")],
+            "nil", vec!["None"],
+            "Records the frame the current update produces (the loaded frame, 0, from the top level or Game.start). A host clock is added only by hosts that present frames.",
+            vec!["PROFILE_NAME_INVALID"],
+            "api.profile.mark('city.interactive')",
+            vec!["profile.span", "profile.count"],
+        ),
+        descriptor(
             "shader.setTexture", "shader",
             "Bind what a declared mesh material sampler reads.",
             "Point a sampler at a runtime data texture ({data=id}) or a texture2d asset ({asset=id}); nil unbinds it.",

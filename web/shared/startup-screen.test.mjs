@@ -34,8 +34,9 @@ test('progress follows real steps, never moves backwards and names the current s
  assert.equal(parts.label.textContent,'Loading data 1/4','a step still loading after the ones before it is named next');
  assert.equal(parts.bar.attributes['aria-valuenow'],String(Math.round(fill(parts)*100)));
  const report=JSON.parse(body.dataset.playerStartup);assert.equal(report.state,'loading');assert.equal(report.step,'data');
- assert.deepEqual(report.steps.find(step=>step.id==='data'),{id:'data',state:'active',done:1,total:4});
- assert.deepEqual(report.steps.find(step=>step.id==='content'),{id:'content',state:'done',ms:150});
+ assert.deepEqual(report.steps.find(step=>step.id==='data'),{id:'data',state:'active',done:1,total:4,started_ms:150});
+ assert.deepEqual(report.steps.find(step=>step.id==='content'),{id:'content',state:'done',started_ms:100,ms:150},'each step says when it began and when it completed');
+ assert.deepEqual(report.steps.find(step=>step.id==='player'),{id:'player',state:'done',ms:100},'the module graph has no start mark of its own: it ran from boot');
  assert.throws(()=>screen.start('typo'),/PLAYER_STARTUP_STEP_UNKNOWN/);
 });
 

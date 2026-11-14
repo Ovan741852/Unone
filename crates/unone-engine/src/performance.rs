@@ -108,6 +108,9 @@ pub struct PerformanceReport {
     /// Counters the game recorded with `api.profile.count`.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub counters: Vec<CounterTotal>,
+    /// Milestones the game declared with `api.profile.mark`, in the order they happened.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub marks: Vec<ProfileMark>,
 }
 
 /// Loading a project, phase by phase. `imports` and `project` are zero for a
@@ -163,6 +166,35 @@ pub struct CounterTotal {
     pub per_frame_max: f64,
 }
 
+/// A milestone the game declared with `api.profile.mark` ("city interactive").
+/// The game owns what it means; the engine records the world frame it happened
+/// in, and a host adds its own clock when it sees that frame (the official Web
+/// player: when it accepts the snapshot and when it first presents it).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ProfileMark {
+    pub name: String,
+    /// The world frame whose update declared it: the loaded frame (0) for the
+    /// top level and `Game.start`, otherwise the frame that update produced.
+    pub frame: u64,
+    /// 1-based order among this runtime's marks.
+    pub sequence: u64,
+}
+
+/// Marks since a host's last read, for hosts that poll them beside the world.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct ProfileMarksUpdate {
+    /// Changes whenever a mark is recorded (or the first one is dropped).
+    pub revision: u64,
+    pub marks: Vec<ProfileMark>,
+    /// Marks refused because `MAX_PROFILE_MARKS` were already kept.
+    pub dropped: u64,
+}
+
+/// At most this many marks are kept per runtime; later ones are counted as
+/// dropped, so a mark called every frame cannot grow memory. Marks are for
+/// milestones, not per-frame events.
+pub const MAX_PROFILE_MARKS: usize = 256;
+
 /// At most this many distinct span and counter names are kept; later names are
 /// dropped and reported, so a name built from data cannot grow memory.
 pub(crate) const MAX_PROFILE_NAMES: usize = 256;
@@ -192,6 +224,10 @@ pub(crate) struct ScriptProfile {
     counters: std::collections::BTreeMap<String, CounterStats>,
     frames: u64,
     dropped: std::collections::BTreeSet<String>,
+    marks: Vec<ProfileMark>,
+    dropped_marks: u64,
+    /// The world frame a mark made now belongs to; the runtime sets it before each update.
+    mark_frame: u64,
 }
 
 impl ScriptProfile {
@@ -220,6 +256,29 @@ impl ScriptProfile {
         let stats = self.counters.entry(name.to_string()).or_default();
         stats.total += amount;
         stats.frame += amount;
+    }
+
+    /// The update about to run produces world frame `frame`.
+    pub(crate) fn begin_update(&mut self, frame: u64) { self.mark_frame = frame; }
+
+    pub(crate) fn mark(&mut self, name: &str) {
+        if self.marks.len() >= MAX_PROFILE_MARKS {
+            self.dropped_marks = self.dropped_marks.saturating_add(1);
+            return;
+        }
+        let sequence = self.marks.len() as u64 + 1;
+        self.marks.push(ProfileMark { name: name.to_string(), frame: self.mark_frame, sequence });
+    }
+
+    /// Cheap to poll every frame: changes only when a mark is recorded or the first is dropped.
+    pub(crate) fn marks_revision(&self) -> u64 {
+        self.marks.len() as u64 + u64::from(self.dropped_marks > 0)
+    }
+
+    /// The marks after sequence `after` (0 for all).
+    pub(crate) fn marks_since(&self, after: u64) -> ProfileMarksUpdate {
+        let start = usize::try_from(after).unwrap_or(usize::MAX).min(self.marks.len());
+        ProfileMarksUpdate { revision: self.marks_revision(), marks: self.marks[start..].to_vec(), dropped: self.dropped_marks }
     }
 
     /// A frame finished: each counter's value for it is final.
@@ -252,6 +311,10 @@ impl ScriptProfile {
         if !self.dropped.is_empty() {
             report.notes.push(format!("api.profile keeps {MAX_PROFILE_NAMES} names; dropped: {}",
                 self.dropped.iter().cloned().collect::<Vec<_>>().join(", ")));
+        }
+        report.marks = self.marks.clone();
+        if self.dropped_marks > 0 {
+            report.notes.push(format!("api.profile.mark keeps {MAX_PROFILE_MARKS} marks; {} later marks were dropped (mark milestones, not every frame)", self.dropped_marks));
         }
     }
 }
@@ -378,6 +441,7 @@ impl PerformanceCollector {
                 startup: None,
                 spans: Vec::new(),
                 counters: Vec::new(),
+                marks: Vec::new(),
             };
         }
 
@@ -485,6 +549,7 @@ impl PerformanceCollector {
             startup: None,
             spans: Vec::new(),
             counters: Vec::new(),
+            marks: Vec::new(),
         }
     }
 }
@@ -557,6 +622,12 @@ pub fn to_markdown(report: &PerformanceReport) -> String {
         out.push_str("\n| counter | total | per frame mean | per frame max |\n|---|---|---|---|\n");
         for counter in &report.counters {
             out.push_str(&format!("| {} | {} | {:.3} | {} |\n", counter.name, counter.total, counter.per_frame_mean, counter.per_frame_max));
+        }
+    }
+    if !report.marks.is_empty() {
+        out.push_str("\n| mark | frame |\n|---|---|\n");
+        for mark in &report.marks {
+            out.push_str(&format!("| {} | {} |\n", mark.name, mark.frame));
         }
     }
     for note in &report.notes {

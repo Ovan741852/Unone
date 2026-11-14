@@ -809,6 +809,8 @@ export type ProfileApi = {
     span: <T...>(name: string, fn: () -> T...) -> T...,
     -- Add n (default 1) to a per-frame counter.
     count: (name: string, n: number?) -> (),
+    -- Declare a milestone the game defines (e.g. "city.interactive"); hosts record when it is presented.
+    mark: (name: string) -> (),
 }
 export type JobsApi = {
     schedule: (operation: string, options: {every_ticks: number, times: number?}, prepare: (api: any, occurrence: number) -> buffer, apply: (api: any, output: buffer, occurrence: number) -> ()) -> string,
