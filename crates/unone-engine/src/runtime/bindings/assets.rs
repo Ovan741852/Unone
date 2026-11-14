@@ -45,7 +45,39 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         }
         Ok(())
     })?)?;
+    api.set("imageGroups", image_groups(lua, state)?)?;
     Ok(api)
+}
+
+/// `api.assets.imageGroups`: ask the host to warm, hold or drop a declared
+/// image group. Requests and reports stay outside World (see image_groups.rs).
+fn image_groups(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
+    use crate::ImageGroupRequest;
+    let groups = lua.create_table()?;
+    for (key, request) in [("preload", ImageGroupRequest::Preload), ("load", ImageGroupRequest::Load), ("unload", ImageGroupRequest::Unload)] {
+        let registry = Rc::clone(&state.image_groups);
+        let view = Rc::clone(&state.pure_view);
+        let label = format!("assets.imageGroups.{key}");
+        groups.set(key, lua.create_function(move |_, name: String| {
+            super::ensure_not_view(&view, &label)?;
+            registry.borrow_mut().request(&name, request).map_err(mlua::Error::RuntimeError)
+        })?)?;
+    }
+    let registry = Rc::clone(&state.image_groups);
+    groups.set("status", lua.create_function(move |lua, name: String| {
+        let registry = registry.borrow();
+        let status = registry.status(&name).map_err(mlua::Error::RuntimeError)?;
+        let table = lua.create_table()?;
+        table.set("name", status.name)?;
+        table.set("state", status.state)?;
+        table.set("requested", status.requested.map(ImageGroupRequest::as_str))?;
+        table.set("total", status.total)?;
+        table.set("ready", status.ready)?;
+        table.set("bytes", status.bytes as f64)?;
+        table.set("error", status.error)?;
+        Ok(table)
+    })?)?;
+    Ok(groups)
 }
 
 fn decode(lua: &Lua, store: &Rc<RefCell<DataAssets>>, loaders: &Table, id: &str) -> Result<Value, String> {

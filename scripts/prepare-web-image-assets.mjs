@@ -202,6 +202,10 @@ export async function prepareWebImageAssets({project,inputExport,output,plan}){
  const projectIdentity=validateProject(projectRoot,payload,assets,logical,checks);
  const planFile=plan?guardExisting(path.resolve(plan),checks):safeFile(projectRoot,'player.image-assets.json',checks),rawPlan=boundedPlan(planFile,validator.IMAGE_PRELOAD_PLAN_MAX_BYTES);
  const canonicalPlan=validator.validateImagePreloadPlan(JSON.parse(utf8(rawPlan)),validator.createAssetCatalog(assets)),planBytes=Buffer.from(JSON.stringify(canonicalPlan),'utf8');
+ // Scripts may request only the groups the export recorded (api.assets.imageGroups);
+ // a published plan without one of them would fail those requests at run time.
+ requireThat(payload.image_groups===undefined||Array.isArray(payload.image_groups),'IMAGE_PRELOAD_EXPORT_INVALID','image_groups');
+ for(const name of payload.image_groups??[])requireThat(Object.hasOwn(canonicalPlan.groups,name),'IMAGE_PRELOAD_GROUPS_STALE',name);
  validateAuthoredDimensions(canonicalPlan,assets,logical,validator);
  requireThat(planBytes.length<=validator.IMAGE_PRELOAD_PLAN_MAX_BYTES,'IMAGE_PRELOAD_PLAN_LIMIT');
  const preflight=requiredBudgetPreflight(canonicalPlan,assets,logical);

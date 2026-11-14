@@ -110,6 +110,13 @@ export function assembleContent(project,base){
  const entry=config.entry_script??'scripts/main.luau',script=text(sourceFile(project,entry)),script_modules=readModules(project,entry),scene=config.main_scene?json(sourceFile(project,config.main_scene)):null,job_sources={};
  for(const [id,name]of Object.entries(config.job_scripts??{}))Object.defineProperty(job_sources,id,{value:text(sourceFile(project,name)),enumerable:true});
  const payload={config,job_sources,script,scene,...(Object.keys(script_modules).length?{script_modules}:{})};
+ // Like the CLI export: record the image plan's group names so every player
+ // checks api.assets.imageGroups names the same way.
+ if(fs.existsSync(path.join(project,'player.image-assets.json'))){
+  const plan=json(sourceFile(project,'player.image-assets.json'));
+  requireThat(plan&&plan.groups&&typeof plan.groups==='object'&&!Array.isArray(plan.groups),'WEB_REFRESH_IMAGE_PLAN_INVALID','groups');
+  const names=Object.keys(plan.groups).sort(order);if(names.length)payload.image_groups=names;
+ }
  const data=assets.assets.filter(a=>a.kind==='data').map(a=>({id:a.id,source:a.source,loader:a.encoding?.decoder??'bytes'}));if(data.length)payload.data_assets=data;
  const declared=new Map(assets.assets.map(a=>[a.id,a]));for(const entity of scene?.entities??[]){if(entity.sprite)requireThat(declared.get(entity.sprite.asset)?.kind==='texture2d','WEB_REFRESH_SPRITE_ASSET_UNDECLARED',entity.sprite.asset);if(entity.mesh3d)requireThat(['mesh://primitive/box','mesh://primitive/sphere'].includes(entity.mesh3d.asset)||declared.get(entity.mesh3d.asset)?.kind==='mesh3d','WEB_REFRESH_MESH_ASSET_UNDECLARED',entity.mesh3d.asset);}
  const presentation=presentationFor(project,files,oldPresentation?json(oldPresentation.source):{});

@@ -324,7 +324,7 @@ mod tests {
         let mut feedback = PresentationResourceInput { resources: vec![SpriteResourceReceipt {
             id: resource.id.clone(), state: SpriteResourceState::Ready, epoch: 1, bytes: 4, error: None }],
             appearances: vec![SpriteAppearanceReceipt { entity, revision,
-                state: SpriteSubmissionState::Submitted, epoch: 1, error: None }] };
+                state: SpriteSubmissionState::Submitted, epoch: 1, error: None }], image_groups: Vec::new() };
         registry.feedback(&feedback).unwrap();
         let checkpoint = registry.clone();
         feedback.resources.push(SpriteResourceReceipt { id: "unknown".into(), state: SpriteResourceState::Loading, epoch: 1, bytes: 0, error: None });

@@ -163,7 +163,7 @@ impl Resources {
             .map(|(_,r)|r).chain(errors.iter()).collect();
         let appearances=receipt_batch(&valid,&mut self.appearance_cursor);
         let resources=receipt_batch(&self.receipts.values().collect::<Vec<_>>(),&mut self.resource_cursor);
-        PresentationResourceInput {resources,appearances}
+        PresentationResourceInput {resources,appearances,..Default::default()}
     }
 }
 fn same_plan(a:&SpriteResourcePlan,b:&SpriteResourcePlan)->bool {

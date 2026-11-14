@@ -11,6 +11,7 @@ import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
 import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
 import {createSpriteResourceHost} from '../shared/sprite-resource-host.mjs';
+import {createImageGroupHost} from '../shared/image-group-host.mjs';
 import {payloadDataSources,playerSeed,textureCatalog} from '../shared/load-project.js';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
@@ -29,7 +30,7 @@ import {createStartupScreen} from '../shared/startup-screen.mjs';
 const canvas=document.querySelector('#game');
 // index.html's startup screen: the real startup steps up to the first presented frame, then any fatal error.
 const startupScreen=createStartupScreen({root:document.querySelector('#unone-startup'),body:document.body,boot:window.playerBoot});
-let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null;
+let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null,imageGroupHost=null;
 const removeAssetGroupsAccessor=installPlayerAssetGroups(window,()=>imageAssets);
 const gamepadInput=createGamepadPolling();
 // Game UI is drawn by the renderer's ui pass inside the WebGL frame; #ui-layer
@@ -90,7 +91,7 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
+function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
  textInputs.setExternalInput(Boolean(physicalProfile));
@@ -126,7 +127,7 @@ function fitStage(){const display=stageDisplay,keep=display?.aspect==='keep'&&di
  }
 }
 function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
-function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession)resourceHost?.reset();resourceHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
+function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession){resourceHost?.reset();imageGroupHost?.reset();}resourceHost?.acceptSnapshot(snapshot);imageGroupHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 // Each load or restart starts a new session seed; ?seed= reproduces a reported one.
 function sessionSeed(){const {seed,source}=playerSeed(location.search);metrics.seed=seed;metrics.seed_source=source;document.body.dataset.playerSeed=seed;return seed;}
 function persistSave(){const next=serializedSavePayload(snapshot);if(next!==saved){localStorage.setItem(key,next);saved=next;}}
@@ -175,10 +176,11 @@ async function advanceFrame(pu,presenting){
  if(browserInput&&hasWorldPointer)frame.pointer={...frame.pointer,position:projectScreenPointer(canvas,frame.pointer.screen_position,snapshot)};
  if(orderedQueue){if(!browserInput)throw Error('INPUT_PHYSICAL_MANUAL_UNSUPPORTED: ordered ingress owns the tick batch');frame.physical=orderedQueue.lease();}
  const resourceInput=resourceHost?.leaseInput(frame,{live:browserInput});if(resourceInput)frame=resourceInput.frame;
+ const groupInput=imageGroupHost?.leaseInput(frame,{live:browserInput});if(groupInput)frame=groupInput.frame;
  if(pu)profiler.mark(pu,'input_consume');
  /* PROFILE_INPUT */
  let nextSnapshot;
- try{nextSnapshot=await backend.request({kind:'tick',input:frame,presenting:presenting!==false},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);}
+ try{nextSnapshot=await backend.request({kind:'tick',input:frame,presenting:presenting!==false},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);imageGroupHost?.commitInput(groupInput?.token);}
  catch(error){if(orderedQueue)try{orderedQueue.terminate(String(error.message??error));}catch{}publishPhysical();throw error;}
  if(pu){profiler.mark(pu,'backend_request');profiler.set(pu,{command:profiler.sourceOf(nextSnapshot),snapshot_frame:nextSnapshot?.world?.frame??null});}
  /* PROFILE_TICK_END */
@@ -197,7 +199,7 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.start('present');
@@ -285,6 +287,8 @@ async function start(){
  if(startupAbort.signal.aborted)throw startupCancelled();
  imagePreloadPlan=preloadPlan;
  imageAssets=createImageAssetBroker(assetCatalog,{resolveAssetUrl:asset=>new URL('content/'+asset.source,document.baseURI).href,preloadPlan});
+ // Game requests (api.assets.imageGroups) need a published plan; without one Core reports unsupported.
+ if(preloadPlan)imageGroupHost=createImageGroupHost({getGroups:()=>imageAssets?.groups});
  // Scene declarations own future render dependencies, including hidden sprites.
  // Prepare an explicitly bounded plan before simulation and the READY barrier.
  const preparation=await imageAssets.prepareScene(project.scene,{onProgress:({done,total})=>startupScreen.progress('images',done,total)});
@@ -313,6 +317,7 @@ async function start(){
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
  project.viewport_size=physicalViewport();
  if(errorPolicy)project.error_policy=errorPolicy;
+ if(imageGroupHost)project.image_group_host=true;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  const data=await dataLoad;if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
  startupScreen.start('game');
@@ -343,6 +348,6 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
+window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

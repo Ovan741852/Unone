@@ -6,6 +6,7 @@ import * as images from './asset-encoding.js';
 import {startupCancelled} from './startup-presentation.mjs';
 import {playerErrorPolicy} from './player-errors.mjs';
 import {createStartupScreen} from './startup-screen.mjs';
+import {createImageGroupHost} from './image-group-host.mjs';
 
 const encoder=new TextEncoder(),MAX=1024*1024;
 const ID='texture://shared',URL_TEXT='https://player.invalid/releases/'+'a'.repeat(64)+'/content/image-assets.json';
@@ -30,7 +31,7 @@ function host({metas=[meta('content/image-assets.json')],reply=response([encoder
       querySelectorAll:selector=>selector.includes('unone-image-assets')?metas:selector.includes('unone-image-preload-version')?[meta('1')]:[],
       querySelector:()=>({content:'https://player.invalid/runtime.js'})},
     fetch:async(url,options)=>{fetches.push({url:String(url),options});return typeof reply==='function'?reply(context):reply.value;},
-    playerProfileOptions:()=>null,playerErrorPolicy,location:{search:''},profiler:null,projectPayload:null,uiAssetManifest:null,withCatalog:project=>project,imageAssets:null,imagePreloadPlan:null,
+    playerProfileOptions:()=>null,playerErrorPolicy,location:{search:''},profiler:null,projectPayload:null,uiAssetManifest:null,withCatalog:project=>project,imageAssets:null,imagePreloadPlan:null,imageGroupHost:null,createImageGroupHost,
     dataAssets:async()=>[],
     json:async url=>url==='content/project.json'?{config:{name:'preload-entry'},scene:{entities:[]}}:url==='content/assets.json'?{assets:[{id:ID,kind:'texture2d',source:'shared.png'}]}:{},
     createAssetCatalog:value=>{counts.catalogs++;return images.createAssetCatalog(value);},

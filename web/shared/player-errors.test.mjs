@@ -74,7 +74,7 @@ test('a restarted session counts from zero again and dispose removes the notice'
 const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
 test('actual player hands every accepted world to the reporter',()=>{
  const line=source.split('\n').find(text=>text.startsWith('function acceptSnapshot('));assert(line,'acceptSnapshot missing');
- const seen=[];const context={snapshot:undefined,recovery:{accept:world=>seen.push(world)},resourceHost:null,interpolator:null,scheduler:null,backend:{memory(){}},
+ const seen=[];const context={snapshot:undefined,recovery:{accept:world=>seen.push(world)},resourceHost:null,imageGroupHost:null,interpolator:null,scheduler:null,backend:{memory(){}},
   playerCompletion:{accept(){}}};
  vm.createContext(context);vm.runInContext(line+';globalThis.acceptSnapshot=acceptSnapshot;',context);
  const value={world:{frame:3,recovered_errors:{ui_rejections:1}}};context.acceptSnapshot(value);

@@ -89,6 +89,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/async-scheduler.mjs",
         "shared/runtime-core.mjs",
         "shared/sprite-resource-host.mjs",
+        "shared/image-group-host.mjs",
         "shared/spatial-host.mjs",
         "shared/spatial-metrics.mjs",
         "shared/spatial-gpu.mjs",
@@ -719,6 +720,23 @@ mod tests {
         assert!(seal_web_generation(&mut input.clone(),"<head><base href='x'></head>").is_err());
     }
     #[test]
+    fn exports_carry_the_image_plans_group_names_and_refuse_an_unknown_one() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        let script = "return {start=function(api) api.assets.imageGroups.preload('town') end,update=function(api) end}";
+        fs::write(root.join("main.luau"), script).unwrap();
+        fs::write(root.join("project.unone.json"), serde_json::to_vec(&json!({"name":"groups","entry_script":"main.luau"})).unwrap()).unwrap();
+        let error = content(root).err().unwrap().to_string();
+        assert!(error.contains("IMAGE_GROUP_UNKNOWN"), "{error}");
+        fs::write(root.join("player.image-assets.json"), serde_json::to_vec(&json!({"version":1,"groups":{"town":[],"map":[]},"startup":[]})).unwrap()).unwrap();
+        let (_, _, _, files) = content(root).unwrap();
+        let project = &files.iter().find(|(path, _)| path == "content/project.json").unwrap().1;
+        let payload: Value = serde_json::from_slice(project).unwrap();
+        assert_eq!(payload["image_groups"], json!(["map", "town"]));
+        assert!(payload.get("image_group_host").is_none(), "only a host that holds the images sets it");
+    }
+
+    #[test]
     fn web_exports_write_the_error_policy_their_variant_runs() {
         let dir=tempfile::tempdir().unwrap();
         let resolved=|declared:Option<Value>,development:bool| {
@@ -1115,6 +1133,10 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
     let script_modules = unone_engine::read_script_modules(&entry).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
     let mut payload = json!({"job_sources":job_sources,"config":config,"script":fs::read_to_string(&entry)?,"scene":scene});
     if !script_modules.is_empty() { payload["script_modules"] = json!(script_modules); }
+    // Every player validates api.assets.imageGroups names against the plan the
+    // project declares, whether or not its host holds the images.
+    let image_groups = unone_engine::image_group_names(project).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
+    if !image_groups.is_empty() { payload["image_groups"] = json!(image_groups); }
     // Data assets travel as content files; the payload only declares them.
     let mut asset_catalog = Vec::new();
     let data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {

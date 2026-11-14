@@ -13,7 +13,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  const spatial=createSpatialHost(module,{backend:spatialBackend,createExecutor:createSpatialExecutor});
  const read=()=>readObservation(module),binary=createBinaryJobTransport(module);
  function send(name,value){const bytes=commandEncoder.encode(JSON.stringify(value)),p=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,p);if(module[name](p,bytes.length)!==0)throw Error(JSON.stringify(read()));}
- let loaded=false,closed=false,latest,pool,policy={workers:0,reason:'jobs_disabled'},pending=[],fault=null,instanceTransport=1,spritePlanRevision=null;
+ let loaded=false,closed=false,latest,pool,policy={workers:0,reason:'jobs_disabled'},pending=[],fault=null,instanceTransport=1,spritePlanRevision=null,imageGroupRevision=null;
  function withSpriteResourcePlan(value){
   if(typeof module._unone_web_sprite_resources_request!=='function')return value;
   send('_unone_web_sprite_resources_request',{kind:'plan',after:spritePlanRevision});
@@ -27,6 +27,19 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
   // Preserve the decoder's private publication identities on this fresh host
   // envelope; cloning it would lose retained-save provenance in worker packing.
   if(Object.hasOwn(plan,'resources'))value.sprite_resource_plan=plan;
+  return value;
+ }
+ // The image groups the game wants held (api.assets.imageGroups) ride beside
+ // the world, never inside it, so they cannot change its digest.
+ function withImageGroupPlan(value){
+  if(typeof module._unone_web_image_groups_request!=='function')return value;
+  send('_unone_web_image_groups_request',{kind:'plan',after:imageGroupRevision});
+  const pointer=module._unone_web_observation_ptr(),length=module._unone_web_observation_len();
+  if(!Number.isSafeInteger(pointer)||pointer<0||!Number.isSafeInteger(length)||length<1||length>1024*1024||pointer+length>module.HEAPU8.byteLength)throw Error('IMAGE_GROUP_PLAN_INVALID');
+  const plan=JSON.parse(controlDecoder.decode(module.HEAPU8.subarray(pointer,pointer+length)));
+  if(!plan||!Number.isSafeInteger(plan.revision)||plan.revision<0||Object.keys(plan).some(key=>!['revision','groups'].includes(key))||Object.hasOwn(plan,'groups')&&(!plan.groups||typeof plan.groups!=='object'||Array.isArray(plan.groups)))throw Error('IMAGE_GROUP_PLAN_INVALID');
+  imageGroupRevision=plan.revision;
+  if(Object.hasOwn(plan,'groups'))value.image_group_plan=plan;
   return value;
  }
  const hasPhysicalViewport=()=>typeof module._unone_web_set_viewport_size==='function';
@@ -50,7 +63,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
   if(command.kind!=='load'&&!loaded)throw Error('RUNTIME_NOT_LOADED');
   switch(command.kind){
    case 'load':{
-    loaded=false;spritePlanRevision=null;
+    loaded=false;spritePlanRevision=null;imageGroupRevision=null;
     // Retire the previous executor epoch; captured promises cannot inject late replies.
     pool?.close();pool=null;pending=[];fault=null;
     latest=loadProject(module,loadPayload(command.payload),BigInt(command.seed??'42'),command.data);
@@ -64,9 +77,9 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
       policy=chooseJobWorkers(jobPolicy,{...device,workerAvailable:typeof globalThis.Worker==='function',heapBytes:module.HEAPU8.buffer.byteLength});
       if(policy.workers>0){jobRequest(module,{kind:'configure',workers:policy.workers});pool=createJobPool({url,workers:policy.workers,executeInline:work=>binary.execute(work)});}
     } else policy={workers:0,reason:'jobs_disabled'};
-    loaded=true;latest=withSpriteResourcePlan(latest);return latest;
+    loaded=true;latest=withImageGroupPlan(withSpriteResourcePlan(latest));return latest;
    }
-   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);send('_unone_web_set_input_frame',command.input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');latest=withSpriteResourcePlan(latest);return latest;
+   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);send('_unone_web_set_input_frame',command.input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');latest=withImageGroupPlan(withSpriteResourcePlan(latest));return latest;
    case 'hostTime':if(typeof module._unone_web_host_time_request!=='function')throw Error('HOST_TIME_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_host_time_request',command.request);return read();
    case 'ui':if(typeof module._unone_web_ui_request!=='function')throw Error('UI_SCROLL_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_ui_request',command.request);latest=read();return latest;
    case 'aspect':if(!Number.isFinite(command.value)||command.value<=0)throw Error('VIEWPORT_INVALID');if(module._unone_web_set_viewport_aspect(command.value)!==0)throw Error(JSON.stringify(read()));return latest;

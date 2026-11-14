@@ -97,7 +97,12 @@ Build with `-Project <directory>` to select the project's declared systems and
 exclude unused capabilities from WASM. See [optional systems](optional-systems.md).
 It validates the exact HostProject ingestion before writing, rejects path escapes
 and destination collisions, and creates an inventory with file hashes and sizes.
-Only declared content is copied. The output has one game, local JS/WASM/assets,
+Only declared content is copied. When the project has `player.image-assets.json`,
+the export records its group names in `content/project.json` (`image_groups`),
+so every player checks `api.assets.imageGroups` names the same way. Publishing
+the plan for the browser to hold the images is a separate step; see
+[publish after host integration](web-image-assets.md#publish-after-host-integration)
+and [game requests](web-image-assets.md#game-requests). The output has one game, local JS/WASM/assets,
 no project switcher, no debug panel, no authoring source directory dependency,
 and no CDN. It can be served from a subdirectory. Export currently requires this
 source checkout's presentation files; a standalone installed CLI distribution

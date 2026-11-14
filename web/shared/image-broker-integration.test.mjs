@@ -126,7 +126,7 @@ test('actual failure cleanup accepts the exported UI-disabled stub and retires t
   const trace=[],retire=name=>({dispose:()=>trace.push(name)}),error=Error('intentional failure');
   const context={profiler:null,performanceFeed:retire('feed'),startupAbort:new AbortController(),cursorHost:retire('cursor'),textInputs:retire('text'),
     uiScroll:retire('scroll'),uiRenderer:null,orderedQueue:null,orderedRouter:null,publishPhysical:()=>trace.push('physical'),
-    scheduler:{stop:()=>trace.push('scheduler')},resourceHost:{close:()=>trace.push('resources')},renderer:{},disposeRenderer:()=>trace.push('renderer'),
+    scheduler:{stop:()=>trace.push('scheduler')},resourceHost:{close:()=>trace.push('resources')},imageGroupHost:null,renderer:{},disposeRenderer:()=>trace.push('renderer'),
     imageAssets:retire('images'),audio:retire('audio'),backend:{close:()=>trace.push('backend')},
     startupScreen:createStartupScreen({schedule(){}}),document:{body:{dataset:{}}},console:{error(){}}};
   const producer=fs.readFileSync(new URL('../../crates/unone-cli/src/export.rs',import.meta.url),'utf8');

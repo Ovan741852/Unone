@@ -111,6 +111,11 @@ pub use ui_cursor::{UiCursor,CursorFilter};
 pub use ui::{UiImageBatchDefinition,UiImageBatchResource,UiImageTransform,UiPublishError,UiRejection};
 mod error_policy;
 pub use error_policy::{ErrorPolicy, RecoveredErrors, ScriptErrorPolicy, ScriptErrorRecord, UiCapacityPolicy};
+mod image_groups;
+pub use image_groups::{ImageGroupPlanUpdate, ImageGroupReceipt, ImageGroupRequest, ImageGroupState,
+    IMAGE_PLAN_FILE, MAX_IMAGE_GROUPS, MAX_IMAGE_GROUP_NAME_BYTES};
+#[cfg(feature = "dev-tools")]
+pub use image_groups::image_group_names;
 #[cfg(feature = "dev-tools")]
 mod verify;
 mod world;

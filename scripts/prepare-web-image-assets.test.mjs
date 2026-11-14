@@ -82,6 +82,12 @@ test('reapplying an owned sidecar is deterministic and creates no inner index',a
 test('stale script or asset project bytes fail before output',async t=>{
  for(const name of ['scripts/main.luau','assets/a.png']){const f=fixture(t);fs.appendFileSync(path.join(f.project,name),'changed');await rejectsBeforeOutput(f,/IMAGE_PRELOAD_PROJECT_STALE/);}
 });
+test('the plan must still hold every group the export recorded for scripts',async t=>{
+ const withGroups=names=>{const f=fixture(t);const payload=JSON.parse(f.logical.get('content/project.json'));payload.image_groups=names;f.logical.set('content/project.json',Buffer.from(JSON.stringify(payload)));f.seal();return f;};
+ await rejectsBeforeOutput(withGroups(['map','town']),/IMAGE_PRELOAD_GROUPS_STALE.*town/);
+ await rejectsBeforeOutput(withGroups('map'),/IMAGE_PRELOAD_EXPORT_INVALID.*image_groups/);
+ assert.equal((await prepareWebImageAssets(withGroups(['map','ui']).args())).image_assets.startup_preflight.required_entries,1);
+});
 test('scene values must match while object key order and tool-only save fixtures do not matter',async t=>{
  const stale=fixture(t);write(stale.project,'scenes/main.scene.json','{"entities":[{"id":"changed"}],"version":1}');await rejectsBeforeOutput(stale,/PROJECT_STALE.*main scene/);
  const f=fixture(t);write(f.project,'scenes/main.scene.json','{"entities":[],"version":1}');

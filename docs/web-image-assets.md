@@ -59,8 +59,10 @@ Broker unit tests cover synchronous sharing, hidden-scene dependency collection,
 
 ## Formal image preload plans
 
-Runtime group control is also available through the official Web host, using
-the same broker and the same validated plan. See [runtime image groups](#runtime-image-groups).
+Game code requests groups through `api.assets.imageGroups`; see
+[game requests](#game-requests). Page code and diagnostics use the official Web
+host's facade, with the same broker and the same validated plan. See
+[runtime image groups](#runtime-image-groups).
 
 The official player owns image decoding, shared decoded-image leases and GPU
 texture lifetime. A project may declare image groups for a required startup
@@ -170,7 +172,8 @@ does not delete or overwrite an existing export.
 
 `window.unonePlayerAssets` is installed in production and development official
 Web players. This is a reusable presentation resource primitive: the game
-chooses its groups, navigation and next-screen policy. It does not change World
+chooses its groups, navigation and next-screen policy, and asks for them from
+Luau through [api.assets.imageGroups](#game-requests). It does not change World
 state, instantiate entities, load audio, or replace the official renderer.
 
 ```js
@@ -211,6 +214,119 @@ cancelled, elapsed_ms and error. Snapshot adds the group budget and aggregate
 held counts, bounded loading totals and broker residency/reuse/eviction counts.
 Status and snapshot are detached frozen views. Querying never acquires images
 or advances the game. The production facade has no arbitrary URL or code route.
+
+## Game requests
+
+Game code chooses its groups from Luau. `api.assets.imageGroups` drives the
+same group manager, validated plan, budget, rollback and epoch rules as
+`window.unonePlayerAssets`; it adds no second decoder or cache.
+
+```luau
+local groups = api.assets.imageGroups
+if nearTown then groups.preload("town-3") end   -- approaching: decode in the background
+if inTown then groups.load("town-3") end        -- entered: hold as the current working set
+if farFromTown then groups.unload("town-3") end -- far away: release what nothing else uses
+local s = groups.status("town-3")
+local artReady = s.state == "ready" or s.state == "unsupported"
+```
+
+The types in [engine.d.luau](engine.d.luau):
+
+```luau
+export type ImageGroupState = "idle" | "loading" | "ready" | "error" | "unloaded" | "unsupported"
+export type ImageGroupRequest = "preload" | "load" | "unload"
+export type ImageGroupStatus = {
+    name: string, state: ImageGroupState, requested: ImageGroupRequest?,
+    total: number, ready: number, bytes: number, error: string?,
+}
+export type ImageGroupsApi = {
+    preload: (name: string) -> (),
+    load: (name: string) -> (),
+    unload: (name: string) -> (),
+    status: (name: string) -> ImageGroupStatus,
+}
+```
+
+### Requests
+
+`preload`, `load` and `unload` record the game's latest request for a group and
+return at once. They never wait for decoding or pause the simulation. Repeating
+a request changes nothing, so a game may call them every update.
+
+The host holds every group whose latest request is preload or load. A load after
+a preload promotes the same images without decoding again; a preload after a
+load does not demote the group. Requests within one tick collapse to the last,
+so an unload followed by a load in the same tick never reaches the host. A group
+in `error` (over budget, say) is tried again when its request changes: unload it
+or move it from preload to load. The requests are refused inside `renderItem`
+(`UI_PURE_VIEW`).
+
+### Names
+
+`game check`, `run`, `test` and previews read the group names from
+`player.image-assets.json`. Web and native exports copy them into
+`content/project.json` as `image_groups`. Every runtime accepts only those names:
+
+- A name that is not in the plan raises `IMAGE_GROUP_UNKNOWN` and lists up to
+  eight declared groups. This holds in tools, previews, the native player and
+  the Web players alike, so a typo fails `game test` before release.
+- In a project without a plan, every name raises `IMAGE_GROUP_UNKNOWN`.
+- An empty name, or one over 128 bytes, raises `IMAGE_GROUP_NAME_INVALID`.
+
+The publisher refuses a plan that lacks a group the export recorded
+(`IMAGE_PRELOAD_GROUPS_STALE`).
+
+### Status
+
+`status(name)` returns the state the host last reported for the group:
+
+| state | Meaning |
+|---|---|
+| `idle` | This host holds groups, but has not loaded this one or has not reported yet. |
+| `loading` | Admitted under the budget; the images are being decoded. |
+| `ready` | Every image in the group is decoded and held. |
+| `error` | The request failed; `error` says why (`IMAGE_ASSET_GROUP_BUDGET`, `IMAGE_ASSET_GROUP_MISSING`, a decode failure). |
+| `unloaded` | Released, or cancelled before it finished. |
+| `unsupported` | No host holds groups in this run, and no report arrived. Images still load on demand when drawn. |
+
+`requested` is the game's latest call for the group, or nil before any. `total`
+is the number of distinct images. `ready` is how many of them are decoded and
+held.
+
+`bytes` is the decoded estimate the group reserves under the plan budget:
+width × height × 4 per distinct image, taken from the authored `dimensions` or
+the PNG header at admission. A 3840×1920 ground counts 29,491,200 bytes. An image
+shared with another held group is reserved once against `budget.max_bytes`, but
+counts in each group's `bytes`. These are estimates of decoded pixels, not
+measured browser, driver or GPU memory.
+
+The host reports through recorded presentation input: `presentation_resources.image_groups`
+in the tick's input frame (see `game schema input`). A report admitted with a
+tick is visible from that tick's `Game.update` on. A request made in tick N
+reaches the host after tick N, and its first report arrives with tick N+1 at
+the earliest, so `state` lags a new request by at least one tick. A replay
+reproduces `status` from the recorded reports.
+
+### World and determinism
+
+Requests and reports live in the game VM beside World, never in it. They do not
+change entities, observations, the World snapshot or its digest. The host
+receives the groups to hold beside each snapshot (`image_group_plan`), not inside
+it. A failed tick rolls back the reports and requests it admitted. Status is
+presentation feedback: do not make game rules depend on it.
+
+### Where groups are held
+
+| Run | Requests | `status` |
+|---|---|---|
+| Official Web player (production or development) with a published plan (`content/image-assets.json`) | Applied to the broker | Host reports |
+| Official Web player without a published plan | Validated, then ignored | `unsupported` |
+| `game check`, `run`, `test`, previews and native players (desktop, Android) | Validated, then ignored | `unsupported`; recorded reports in replayed input still apply |
+
+The Web player tells Core it holds groups (`image_group_host: true` in the load
+payload) only when its plan is published. Holds that page code makes through
+`window.unonePlayerAssets` stay independent: the game's unload never drops one,
+and a restart releases only what the game asked for.
 
 ## Loading diagnostics
 
