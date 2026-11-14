@@ -120,13 +120,31 @@ function dataAssets(project,onProgress=null){const sources=payloadDataSources(pr
 // otherwise it fills the window and the game takes the device's shape.
 let stageDisplay=null;
 function fitStage(){const display=stageDisplay,keep=display?.aspect==='keep'&&display.width>0&&display.height>0;
- const width=keep?Math.min(innerWidth,innerHeight*display.width/display.height):innerWidth,height=keep?width*display.height/display.width:innerHeight;
+ // Whole CSS pixels: the drawing buffer is sized from the rounded clientWidth/clientHeight, and a
+ // fractional stage would scale it by a fraction of a pixel.
+ const width=keep?Math.max(1,Math.floor(Math.min(innerWidth,innerHeight*display.width/display.height))):innerWidth,height=keep?Math.max(1,Math.floor(width*display.height/display.width)):innerHeight;
  for(const element of [canvas,document.querySelector('#ui-layer')]){
   if(!keep){for(const property of ['inset','left','top','width','height'])element.style.removeProperty(property);continue;}
-  Object.assign(element.style,{inset:'auto',left:`${(innerWidth-width)/2}px`,top:`${(innerHeight-height)/2}px`,width:`${width}px`,height:`${height}px`});
+  Object.assign(element.style,{inset:'auto',left:`${Math.floor((innerWidth-width)/2)}px`,top:`${Math.floor((innerHeight-height)/2)}px`,width:`${width}px`,height:`${height}px`});
  }
 }
-function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
+// The player's pixel ratio for the drawing buffer: the device's, capped at 2.
+function playerPixelRatio(){return Math.min(window.devicePixelRatio||1,2);}
+// The renderer's actual ratio once it exists, so the runtime is told the drawing buffer's real size.
+function physicalViewport(){const ratio=renderer?.pixelRatio?.()??playerPixelRatio();return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
+// A device pixel ratio change (browser zoom, another monitor) moves the drawing buffer with it,
+// unless a presentation hook set its own ratio: that one is the game's choice and stays.
+let appliedPixelRatio=null;
+function followPixelRatio(){const ratio=playerPixelRatio();
+ if(appliedPixelRatio===null||ratio===appliedPixelRatio||typeof renderer?.setPixelRatio!=='function'||renderer.pixelRatio?.()!==appliedPixelRatio)return;
+ renderer.setPixelRatio(ratio);appliedPixelRatio=ratio;}
+// Resize events come in bursts while a window edge is dragged: the stage and pixel ratio follow
+// each one, the runtime hears once a frame and only about a size it has not been told.
+let sentViewport=null,viewportQueued=false;
+function sendViewport(){viewportQueued=false;const [width,height]=physicalViewport();
+ if(sentViewport?.[0]===width&&sentViewport?.[1]===height)return;sentViewport=[width,height];
+ backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);}
+function viewportChanged(){fitStage();followPixelRatio();if(!viewportQueued){viewportQueued=true;requestAnimationFrame(sendViewport);}}
 function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession){resourceHost?.reset();imageGroupHost?.reset();}resourceHost?.acceptSnapshot(snapshot);imageGroupHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 // Each load or restart starts a new session seed; ?seed= reproduces a reported one.
 function sessionSeed(){const {seed,source}=playerSeed(location.search);metrics.seed=seed;metrics.seed_source=source;document.body.dataset.playerSeed=seed;return seed;}
@@ -150,10 +168,11 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
  resourceHost?.collect();
   const uiOutcome=renderUi(snapshot);if(pd){profiler.set(pd,uiRenderer.assetDiagnostics());profiler.mark(pd,'ui_draw');}const submittedAt=performance.now();renderMs=submittedAt-began;
- const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);document.body.dataset.playerCursor=JSON.stringify(cursorHost.report());
+ const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);const cursorReport=JSON.stringify(cursorHost.report());if(document.body.dataset.playerCursor!==cursorReport)document.body.dataset.playerCursor=cursorReport;
  const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
- document.body.dataset.playerFrame=String(snapshot.world.frame);
+ // Diagnostics attributes are rewritten only when they change: a write is a DOM mutation.
+ const frameText=String(snapshot.world.frame);if(document.body.dataset.playerFrame!==frameText)document.body.dataset.playerFrame=frameText;
  publishPhysical();
  if(pd)profiler.mark(pd,'host_publish');
  /* PROFILE_FRAME */
@@ -199,7 +218,7 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.start('present');
@@ -230,7 +249,10 @@ async function finishStartup(presentation,kind){
  /* DEVELOPER_CONNECT */
  if(performanceFeed)publishPerformanceFeed();
  scheduler.start();
- window.addEventListener('resize',()=>{fitStage();const [width,height]=physicalViewport();backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);});
+ window.addEventListener('resize',()=>viewportChanged());
+ // A pixel ratio change with no new window size (another monitor) fires no resize event: watch the
+ // current resolution, and watch again for the next one after each change.
+ const watchRatio=()=>window.matchMedia?.(`(resolution: ${window.devicePixelRatio}dppx)`)?.addEventListener?.('change',()=>{viewportChanged();watchRatio();},{once:true});watchRatio();
  };
  canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
  try{
@@ -315,7 +337,7 @@ async function start(){
  try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
  stageDisplay=project.config.display??null;fitStage();
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
- project.viewport_size=physicalViewport();
+ project.viewport_size=physicalViewport();sentViewport=project.viewport_size;
  if(errorPolicy)project.error_policy=errorPolicy;
  if(imageGroupHost)project.image_group_host=true;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
@@ -325,6 +347,7 @@ async function start(){
  startupScreen.complete('game');startupScreen.start('renderer');
  const renderPasses=await renderExtensions(presentation.render_extensions);
  renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
+ appliedPixelRatio=renderer.pixelRatio?.()??null;
  resourceHost=createSpriteResourceHost(renderer);resourceHost.acceptSnapshot(snapshot);
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  startupScreen.complete('renderer');startupScreen.start('audio');

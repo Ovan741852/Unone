@@ -285,7 +285,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
         if(gpuTarget.width!==bw||gpuTarget.height!==bh||gpuTarget.scale!==scale){gpuTarget={width:bw,height:bh,scale};dirty=true;}}
       else{
         if(!canvas)return DRAW_SKIPPED.ui_target_unavailable;
-        const {width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=globalThis.devicePixelRatio??1}=options;
+        const {width=canvas.clientWidth??canvas.width,height=canvas.clientHeight??canvas.height,dpr=Math.min(globalThis.devicePixelRatio??1,2)}=options;// capped at 2 like the WebGL renderer's drawing buffer
         if(![width,height,dpr].every(v=>Number.isFinite(v)&&v>0))return DRAW_SKIPPED.ui_target_unavailable;
         bw=Math.min(8192,Math.max(1,Math.round(width*dpr)));bh=Math.min(8192,Math.max(1,Math.round(height*dpr)));scale=bw/width;
         if(canvas.width!==bw||canvas.height!==bh){canvas.width=bw;canvas.height=bh;dirty=true;}
