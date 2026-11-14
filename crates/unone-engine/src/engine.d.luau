@@ -1098,5 +1098,9 @@ export type Game = {
     update: (api: EngineApi, dt: number) -> (),
     -- Called on a successful hot reload with the candidate API; may update the world.
     onReload: ((api: EngineApi) -> ())?,
+    -- Rollback checkpoints (docs/rollback.md): both or neither. saveState returns
+    -- the Luau state update reads as plain data; loadState takes it back.
+    saveState: ((api: EngineApi) -> ObservationValue)?,
+    loadState: ((api: EngineApi, state: ObservationValue) -> ())?,
     replay: GameReplayAdapter?,
 }

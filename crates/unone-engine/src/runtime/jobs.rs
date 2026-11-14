@@ -523,6 +523,12 @@ impl Jobs {
     pub fn profile_stop(&mut self) {
         self.profile_active = false;
     }
+    /// Scheduled or submitted jobs deliver results on later ticks, so they
+    /// block rollback checkpoints.
+    pub(crate) fn rollback_blocked(&self) -> bool {
+        !self.schedules.is_empty() || !self.entries.is_empty()
+    }
+
     #[cfg(feature = "dev-tools")]
     pub fn reload_candidate(&self) -> Self {
         let mut candidate = Self::default();

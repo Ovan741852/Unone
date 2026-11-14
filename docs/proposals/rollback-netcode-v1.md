@@ -1,7 +1,9 @@
 # Proposal: rollback netcode v1
 
 - Date: 2026-11-14
-- Status: proposed, not implemented. Nothing here is a callable API yet.
+- Status: phase 1 implemented 2026-11-14 (checkpoints, state hooks and
+  `game test --rollback`; see [rollback.md](../rollback.md)). Phases 2 to 4
+  are proposed, not callable yet.
 - Scope: Engine runtime (state checkpoints), `api.netcode`, official Web
   player transport, replay and test hosts
 
@@ -34,8 +36,8 @@ not drift to smooth over. Server authority stays possible on top of
 3. **State checkpoints.** The engine checkpoints World state (entities,
    physics, particles, random generator, audio requests, render and lighting
    state) every tick in a ring of `max_rollback + 1`. Game Luau state is not
-   copied implicitly: the game provides `Game.saveState()` returning plain
-   data and `Game.loadState(state)`. Games written for `api.save` already
+   copied implicitly: the game provides `Game.saveState(api)` returning plain
+   data and `Game.loadState(api, state)`. Games written for `api.save` already
    have most of this. A checkpoint is World + that data.
 4. **Prediction and rollback.** A missing remote input is predicted as that
    player's last input. When the real input differs, the engine restores the
@@ -57,7 +59,11 @@ not drift to smooth over. Server authority stays possible on top of
    `Game.saveState`/`loadState`, and a test hook proving that "simulate N, roll
    back K, re-simulate" gives the same digest as straight simulation for
    physics, particles and random numbers. This is the hard part, and every
-   later phase depends on it.
+   later phase depends on it. **Done:** `EngineRuntime::checkpoint` and
+   `restore`, the paired hooks, and `game test --rollback K`, which rolls every
+   tick back K ticks on wrong input and compares digests with a straight run
+   (engine tests cover 2D and 3D physics, particles, random numbers and Luau
+   state). Spatial batches and jobs refuse checkpoints for now.
 2. **Two simulated peers in `game test`.** An in-memory transport with
    configurable latency and loss, so rollback correctness and cost (ticks
    re-simulated per frame) are measured headlessly.
@@ -81,5 +87,9 @@ not drift to smooth over. Server authority stays possible on top of
 
 - How large a World checkpoint is for the validation games, and whether
   copy-on-write per system is needed to keep ~8 checkpoints per tick cheap.
+  First data point (phase 1): `_Games/physics3d-lab` (a Rapier stack of 36
+  boxes, a joint, a sensor) runs `game test --rollback 8` in about 10 times
+  its plain time, which is the extra ticks; whole-World copies are a small
+  part there. Large games are not measured yet: none has the hooks.
 - Which presentation-only state (camera smoothing, UI animation) must be
   excluded from rollback so the screen does not jump.

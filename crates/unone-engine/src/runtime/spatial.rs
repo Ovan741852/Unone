@@ -170,6 +170,23 @@ impl SpatialJobs {
         }
     }
 
+    /// Spatial work finishes on later ticks, so a game that used it cannot be
+    /// checkpointed for rollback yet.
+    pub(crate) fn rollback_blocked(&self) -> bool {
+        self.used
+    }
+
+    /// The last frame begun, which a tick must exceed; a rollback restore puts
+    /// it back so the re-simulated ticks may begin those frames again.
+    pub(crate) fn frame_mark(&self) -> (u64, bool) {
+        (self.frame, self.begun)
+    }
+
+    pub(crate) fn restore_frame_mark(&mut self, (frame, begun): (u64, bool)) {
+        self.frame = frame;
+        self.begun = begun;
+    }
+
     /// Diagnostics are observer state: never part of a snapshot or replay digest.
     pub fn last_diagnostic(&self) -> Option<EngineDiagnostic> {
         self.last_diagnostic.borrow().clone()

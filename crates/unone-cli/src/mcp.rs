@@ -609,6 +609,12 @@ fn tool_definitions() -> Vec<Value> {
                         "type": "array",
                         "description": "Only tests whose name or project-relative path contains one of these texts; omitted runs every test.",
                         "items": {"type": "string"}
+                    },
+                    "rollback": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 64,
+                        "description": "Roll each test back this many ticks before every tick (checkpoint, predicted input, restore) and fail where it differs from the straight run; see docs/rollback.md."
                     }
                 }
             })),
@@ -991,10 +997,23 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
             Err(diagnostic) => argument_error(*diagnostic),
         },
         "unone_run" => run_tool(project, arguments),
-        "unone_test" => match optional_string_array(arguments, "filter") {
-            Ok(filters) => tool_result(EngineRuntime::run_tests_with(
+        "unone_test" => match optional_string_array(arguments, "filter").and_then(|filters| {
+            let rollback = match optional_u64(arguments, "rollback", 0)? {
+                0 => None,
+                ticks @ 1..=64 => Some(ticks as u32),
+                _ => {
+                    return Err(Box::new(Diagnostic::error(
+                        "MCP_ARGUMENT_INVALID",
+                        "Tool argument is out of range",
+                        "arguments.rollback must be between 1 and 64 ticks.",
+                    )));
+                }
+            };
+            Ok((filters, rollback))
+        }) {
+            Ok((filters, rollback)) => tool_result(EngineRuntime::run_tests_with(
                 project,
-                &unone_engine::TestSelection { filters, ..Default::default() },
+                &unone_engine::TestSelection { filters, rollback, ..Default::default() },
             )),
             Err(diagnostic) => argument_error(*diagnostic),
         },

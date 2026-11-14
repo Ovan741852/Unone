@@ -20,6 +20,8 @@ mod bindings;
 mod host_time;
 mod save_state;
 mod sprite_resources;
+mod rollback;
+pub use rollback::Checkpoint;
 #[cfg(all(test, feature = "ui"))]
 mod ui_snapshot_tests;
 use save_state::SaveState;
@@ -365,11 +367,13 @@ pub struct EngineRuntime {
     systems: SystemSettings,
     world: Rc<RefCell<World>>,
     input: Rc<RefCell<InputState>>,
-    #[cfg(feature = "dev-tools")]
+    /// The game's random generator; rollback checkpoints copy it.
     random: Rc<RefCell<DeterministicRng>>,
     lua: Lua,
     api: Table,
     update_fn: Function,
+    /// Game.saveState and Game.loadState, when the game defines them.
+    state_hooks: Option<(Function, Function)>,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
     ui: Rc<RefCell<Option<Arc<UiTree>>>>,
@@ -871,11 +875,11 @@ impl EngineRuntime {
             systems,
             world,
             input,
-            #[cfg(feature = "dev-tools")]
             random,
             lua,
             api,
             update_fn: placeholder,
+            state_hooks: None,
             trace,
             observations,
             ui,
@@ -1661,6 +1665,7 @@ impl EngineRuntime {
         };
         let update_fn = script_entrypoint(&table, "update", &self.paths)?;
         let start_fn = script_entrypoint(&table, "start", &self.paths)?;
+        self.state_hooks = state_hooks(&table)?;
         timed_startup(&mut self.startup, StartupPhase::Start, || start_fn.call::<()>(self.api.clone()))
             .map_err(|error| Box::new(script_diagnostic(&self.paths, error.to_string())))?;
         self.startup.luau_heap_after_start_bytes = self.lua.used_memory();
@@ -1707,6 +1712,7 @@ impl EngineRuntime {
             }
             let update_fn = script_entrypoint(&table, "update", &self.paths)?;
             let start_fn = script_entrypoint(&table, "start", &self.paths)?;
+            self.state_hooks = state_hooks(&table)?;
             timed_startup(&mut self.startup, StartupPhase::Start, || {
                 let _watch = script_watchdog::watch(&self.lua, "Game.start", limit);
                 start_fn.call::<()>(self.api.clone())
@@ -1738,6 +1744,7 @@ impl EngineRuntime {
         }
         let update_fn = script_entrypoint(&table, "update", &self.paths)?;
         let _start_fn = script_entrypoint(&table, "start", &self.paths)?;
+        let candidate_state_hooks = state_hooks(&table)?;
         let on_reload = table.get::<Function>("onReload").ok();
         let has_on_reload = on_reload.is_some();
         let rollback = self.capture_reload_state();
@@ -1821,6 +1828,7 @@ impl EngineRuntime {
         self.lua = candidate_lua;
         self.api = candidate_api;
         self.update_fn = update_fn;
+        self.state_hooks = candidate_state_hooks;
         self.loaded_script_digest = script_digest(&source, &modules);
         if let Some(source) = source_override {
             self.script_source = Some(source);
@@ -1965,11 +1973,35 @@ fn evaluate_chunk(
     }
 }
 
+/// Game.saveState and Game.loadState (rollback checkpoints, docs/rollback.md):
+/// both or neither, since a restore hands back what the save returned.
+fn state_hooks(table: &Table) -> Result<Option<(Function, Function)>, Box<Diagnostic>> {
+    let hook = |name: &str| match table.get::<Value>(name) {
+        Ok(Value::Function(function)) => Ok(Some(function)),
+        Ok(Value::Nil) | Err(_) => Ok(None),
+        Ok(other) => Err(Box::new(Diagnostic::error(
+            "GAME_STATE_HOOKS_INCOMPLETE",
+            "Game state hooks must be functions",
+            format!("Game.{name} is a {}; define it as a function, or leave both hooks out.", other.type_name()),
+        ))),
+    };
+    let (save, load) = (hook("saveState")?, hook("loadState")?);
+    match (save, load) {
+        (Some(save), Some(load)) => Ok(Some((save, load))),
+        (None, None) => Ok(None),
+        _ => Err(Box::new(Diagnostic::error(
+            "GAME_STATE_HOOKS_INCOMPLETE",
+            "Game.saveState and Game.loadState come as a pair",
+            "A rollback restore calls Game.loadState(api, state) with what Game.saveState(api) returned; define both or neither.",
+        ))),
+    }
+}
+
 /// Optional hooks are looked up by exact name, so `Game.onreload` or
 /// `Game.on_reload` would never run and never fail. Other helper keys on the
 /// Game table remain allowed.
 fn reject_misspelled_hooks(table: &Table) -> Result<(), Box<Diagnostic>> {
-    const HOOKS: [&str; 4] = ["start", "update", "onReload", "replay"];
+    const HOOKS: [&str; 6] = ["start", "update", "onReload", "replay", "saveState", "loadState"];
     for pair in table.pairs::<Value, Value>() {
         let Ok((Value::String(key), _)) = pair else { continue };
         let Ok(key) = key.to_str() else { continue };

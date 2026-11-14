@@ -841,7 +841,7 @@ pub(crate) fn llms_txt() -> String {
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 28] {
+fn authoring_files() -> [(&'static str, &'static str); 29] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/profiling.md", include_str!("../../../docs/profiling.md")),
@@ -863,6 +863,7 @@ fn authoring_files() -> [(&'static str, &'static str); 28] {
         ("docs/ui-text-input.md", include_str!("../../../docs/ui-text-input.md")),
         ("docs/ui-presentation-input.md", include_str!("../../../docs/ui-presentation-input.md")),
         ("docs/ordered-physical-input.md", include_str!("../../../docs/ordered-physical-input.md")),
+        ("docs/rollback.md", include_str!("../../../docs/rollback.md")),
         ("scripts/serve-player.py", include_str!("../../../scripts/serve-player.py")),
         ("scripts/verify-ui-example-browser.mjs", include_str!("../../../scripts/verify-ui-example-browser.mjs")),
         ("scripts/audit-ui-fonts.py", include_str!("../../../scripts/audit-ui-fonts.py")),

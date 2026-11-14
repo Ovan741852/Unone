@@ -48,4 +48,11 @@ function Game.update(api,dt)
         api.debug.set("physics.stats","frame "..frame.." · trigger enter "..sensorEnters.." · ray "..(ray and ray.id or "none"))
     end
 end
+-- Rollback checkpoints (docs/rollback.md): the Luau state update reads.
+function Game.saveState(api)
+    return {frame=frame,sensorEnters=sensorEnters,moving=moving}
+end
+function Game.loadState(api,state)
+    frame,sensorEnters,moving=state.frame,state.sensorEnters,state.moving
+end
 return Game

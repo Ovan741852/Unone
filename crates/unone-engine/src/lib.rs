@@ -177,7 +177,7 @@ pub use project::{
     UiPreviewSpec, ImportConfig, ImporterSpec, ImportRoot,
 };
 pub use runtime::{
-    CheckReport, EngineRuntime, MAX_SCRIPT_MODULES, RunReport, ScriptModuleSources, SourceProject, SpatialTask, TestCaseReport, TestSuiteReport,
+    CheckReport, Checkpoint, EngineRuntime, MAX_SCRIPT_MODULES, RunReport, ScriptModuleSources, SourceProject, SpatialTask, TestCaseReport, TestSuiteReport,
     TypeCheckReport, encode_observation, observation_digest,
 };
 #[cfg(feature = "dev-tools")]

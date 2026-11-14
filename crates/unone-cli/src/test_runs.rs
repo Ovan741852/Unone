@@ -77,13 +77,14 @@ pub fn run(project: &Path, sdk: Option<&Path>, selection: &TestSelection, jobs: 
     for _ in 0..jobs {
         let (queue, tests, slots, send) = (queue.clone(), tests.clone(), slots.clone(), send.clone());
         let (exe, project, sdk) = (exe.clone(), project.to_path_buf(), sdk.map(Path::to_path_buf));
+        let rollback = selection.rollback;
         thread::spawn(move || {
             loop {
                 let next = queue.lock().ok().and_then(|mut queue| queue.pop_front());
                 let Some(index) = next else { break };
                 let test = &tests[index];
                 let listed = slots.get(&test.path).map_or(1, Vec::len);
-                let result = run_worker(&exe, &project, sdk.as_deref(), test, listed);
+                let result = run_worker(&exe, &project, sdk.as_deref(), test, listed, rollback);
                 if send.send((test.path.clone(), result)).is_err() {
                     break;
                 }
@@ -111,7 +112,10 @@ pub fn run(project: &Path, sdk: Option<&Path>, selection: &TestSelection, jobs: 
         .zip(tests.iter())
         .map(|(case, test)| case.unwrap_or_else(|| failed(test, 0, "TEST_WORKER_FAILED: its worker thread stopped before reporting".to_string())))
         .collect();
-    write_times(project, &cases);
+    // Rolled-back runs take longer than the times --jobs orders by.
+    if selection.rollback.is_none() {
+        write_times(project, &cases);
+    }
     let passed = cases.iter().all(|case| case.passed);
     let mut result = EngineResult::success(TestSuiteReport { project: name, passed, cases });
     result.diagnostics = unone_engine::test_suite_diagnostics(warnings);
@@ -120,7 +124,7 @@ pub fn run(project: &Path, sdk: Option<&Path>, selection: &TestSelection, jobs: 
 
 /// One test file in its own process, listed `listed` times; whatever it ends in
 /// becomes its cases.
-fn run_worker(exe: &Path, project: &Path, sdk: Option<&Path>, test: &SelectedTest, listed: usize) -> (Vec<TestCaseReport>, Vec<Diagnostic>) {
+fn run_worker(exe: &Path, project: &Path, sdk: Option<&Path>, test: &SelectedTest, listed: usize, rollback: Option<u32>) -> (Vec<TestCaseReport>, Vec<Diagnostic>) {
     let started = Instant::now();
     let mut command = Command::new(exe);
     command.arg("--project").arg(project).arg("--json");
@@ -128,6 +132,9 @@ fn run_worker(exe: &Path, project: &Path, sdk: Option<&Path>, test: &SelectedTes
         command.arg("--sdk").arg(sdk);
     }
     command.args(["test", "--file", &test.path]);
+    if let Some(rollback) = rollback {
+        command.args(["--rollback", &rollback.to_string()]);
+    }
     let output = command.output();
     let elapsed = u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX);
     let every = |why: String| vec![failed(test, elapsed, why); listed];

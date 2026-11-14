@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 use super::{EngineRuntime, TestCaseReport, TestSuiteReport};
 use crate::{
     diagnostics::{ActionSuggestion, Diagnostic, EngineResult},
-    project::{ProjectConfig, ProjectPaths, TestAssertion, TestSpec},
+    project::{InputFrame, ProjectConfig, ProjectPaths, TestAssertion, TestSpec},
     ui::UiTree,
     world::WorldSnapshot,
 };
@@ -27,6 +27,9 @@ pub struct TestSelection {
     pub files: Vec<String>,
     /// `(k, n)`, k counted from 1: of the tests kept, every n-th from the k-th.
     pub shard: Option<(usize, usize)>,
+    /// Run each kept test rolled back this many ticks before every tick and
+    /// compare it with the straight run (docs/rollback.md).
+    pub rollback: Option<u32>,
 }
 
 impl TestSelection {
@@ -73,7 +76,13 @@ impl EngineRuntime {
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
         let mut diagnostics = Vec::new();
-        let cases: Vec<TestCaseReport> = cases.into_iter().map(|case| run_case(&root, case, &mut diagnostics)).collect();
+        let cases: Vec<TestCaseReport> = cases
+            .into_iter()
+            .map(|case| match selection.rollback {
+                Some(rollback) => run_rollback_case(&root, case, rollback, &mut diagnostics),
+                None => run_case(&root, case, &mut diagnostics),
+            })
+            .collect();
         let passed = cases.iter().all(|case| case.passed);
         let mut result = EngineResult::success(TestSuiteReport { project: config.name, passed, cases });
         result.diagnostics = test_suite_diagnostics(diagnostics);
@@ -262,6 +271,134 @@ fn run_case(root: &Path, case: Case, diagnostics: &mut Vec<Diagnostic>) -> TestC
     report.passed = report.failures.is_empty();
     report.elapsed_ms = u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX);
     report
+}
+
+/// One case run twice in step (docs/rollback.md): straight, and rolled back
+/// before every tick (checkpoint, up to `rollback` ticks on wrong input, restore,
+/// then the real tick). Both must observe the same world after every tick, and
+/// the rolled-back run must still pass the case's assertions.
+fn run_rollback_case(root: &Path, case: Case, rollback: u32, diagnostics: &mut Vec<Diagnostic>) -> TestCaseReport {
+    let started = Instant::now();
+    let Case { path, spec } = case;
+    let mut report = TestCaseReport {
+        name: spec.name.clone(),
+        path,
+        passed: false,
+        frames: 0,
+        observation_digest: None,
+        save_payload: None,
+        failures: Vec::new(),
+        elapsed_ms: 0,
+    };
+    if let Err(diagnostic) = roll_back_case(root, &spec, rollback, &mut report) {
+        report.failures.push(describe(&diagnostic));
+        diagnostics.push(*diagnostic);
+    }
+    report.passed = report.failures.is_empty();
+    report.elapsed_ms = u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX);
+    report
+}
+
+/// A divergence is the case's failure (the report says where); a runtime that
+/// cannot load, run or checkpoint is the error.
+fn roll_back_case(root: &Path, spec: &TestSpec, rollback: u32, report: &mut TestCaseReport) -> Result<(), Box<Diagnostic>> {
+    let mut straight = load_case(root, spec)?;
+    let mut rolled = load_case(root, spec)?;
+    let unhooked = !rolled.has_state_hooks();
+    let mut last = None;
+    for frame in 0..spec.frames {
+        let tick = frame + 1;
+        let expected = step(&mut straight, spec, frame)?;
+        let saved = rolled.observe();
+        let checkpoint = rolled.checkpoint()?;
+        let ahead = u64::from(rollback).min(spec.frames - frame);
+        for predicted in 0..ahead {
+            if let Err(diagnostic) = rolled.tick_with_input(&InputFrame::default()) {
+                report.failures.push(format!(
+                    "ROLLBACK_PREDICTED_TICK_FAILED: tick {} on predicted input (nothing held) failed: {}",
+                    tick + predicted,
+                    describe(&diagnostic)
+                ));
+                return Ok(());
+            }
+        }
+        rolled.restore(&checkpoint)?;
+        if let Some(difference) = digest_difference(&rolled.observe(), &saved)? {
+            report.failures.push(format!(
+                "ROLLBACK_RESTORE_INCOMPLETE: restoring the checkpoint taken before tick {tick} left a different world than it saved ({difference}). The checkpoint misses engine state; report it as an engine bug."
+            ));
+            return Ok(());
+        }
+        let actual = step(&mut rolled, spec, frame)?;
+        if let Some(difference) = digest_difference(&actual, &expected)? {
+            let plural = if ahead == 1 { "" } else { "s" };
+            let hint = if unhooked {
+                "The game defines no Game.saveState and Game.loadState, so its Luau variables kept what the predicted ticks left in them; return that state from Game.saveState(api) and take it back in Game.loadState(api, state)."
+            } else {
+                "Game.saveState missed Luau state the predicted ticks changed (module locals, caches, counters); everything update reads must come back through Game.loadState."
+            };
+            report.failures.push(format!(
+                "ROLLBACK_DIVERGED: tick {tick}, run again after rolling back {ahead} predicted tick{plural}, differs from the straight run ({difference}). {hint} See docs/rollback.md."
+            ));
+            return Ok(());
+        }
+        last = Some(actual);
+    }
+    if let Err(error) = rolled.host_time_replay_complete() {
+        report.failures.push(error);
+    }
+    let world = last.unwrap_or_else(|| rolled.observe());
+    for assertion in &spec.assertions {
+        if let Err(failure) = evaluate_assertion(&world, assertion) {
+            report.failures.push(failure);
+        }
+    }
+    report.frames = spec.frames;
+    report.observation_digest = Some(digest(&world)?);
+    report.save_payload = rolled.save_payload();
+    Ok(())
+}
+
+fn load_case(root: &Path, spec: &TestSpec) -> Result<EngineRuntime, Box<Diagnostic>> {
+    let host_time = spec.host_time.clone().map(|tape| crate::HostTimeConfig::Replay { tape });
+    let mut runtime = EngineRuntime::load_with_seed_save_and_host_time(root, spec.seed, spec.load_save.clone(), host_time)?;
+    for (action, is_down) in &spec.input {
+        runtime.set_input(action.clone(), *is_down);
+    }
+    Ok(runtime)
+}
+
+/// One tick of the case, with its input as `game test` gives it.
+fn step(runtime: &mut EngineRuntime, spec: &TestSpec, frame: u64) -> Result<WorldSnapshot, Box<Diagnostic>> {
+    if spec.input_sequence.is_empty() {
+        return runtime.tick();
+    }
+    match usize::try_from(frame).ok().and_then(|index| spec.input_sequence.get(index)) {
+        Some(input) => runtime.tick_with_input(input),
+        None => runtime.tick_with_input(&InputFrame::default()),
+    }
+}
+
+fn digest(world: &WorldSnapshot) -> Result<String, Box<Diagnostic>> {
+    super::observation_digest(world).map_err(|error| {
+        Box::new(Diagnostic::error(
+            "OBSERVATION_SERIALIZATION_FAILED",
+            "Unable to serialize observation snapshot",
+            format!("WorldSnapshot could not be serialized, so the observation digest cannot be computed: {error}"),
+        ))
+    })
+}
+
+/// Where two observations first differ, if their digests do.
+fn digest_difference(actual: &WorldSnapshot, expected: &WorldSnapshot) -> Result<Option<String>, Box<Diagnostic>> {
+    if digest(actual)? == digest(expected)? {
+        return Ok(None);
+    }
+    let value = |world: &WorldSnapshot| serde_json::to_value(world).unwrap_or(serde_json::Value::Null);
+    Ok(Some(
+        json_difference(&value(actual), &value(expected), false, &mut "world".to_string())
+            .unwrap_or_else(|| "the digests differ only in how numbers are written".to_string()),
+    ))
 }
 
 /// A diagnostic as one failure line: code, explanation and where.

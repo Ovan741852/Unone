@@ -188,6 +188,9 @@ enum Command {
         /// Exactly this project-relative test file; what a worker of --jobs runs.
         #[arg(long, hide = true)]
         file: Vec<String>,
+        /// Roll back this many ticks before every tick (checkpoint, predicted input, restore) and fail where the run differs from the straight one; see docs/rollback.md.
+        #[arg(long, value_parser = clap::value_parser!(u32).range(1..=64))]
+        rollback: Option<u32>,
     },
     Observe,
     Preview {
@@ -1106,10 +1109,10 @@ fn run() -> Result<ExitCode> {
                 print_result(runtime.run(frames, seed), cli.json)
             }
         }
-        Command::Test { filter, shard, jobs, list, file } => {
+        Command::Test { filter, shard, jobs, list, file, rollback } => {
             // A worker of --jobs (given --file) leaves the times to the run that started it.
             let worker = !file.is_empty();
-            let selection = unone_engine::TestSelection { filters: filter, files: file, shard };
+            let selection = unone_engine::TestSelection { filters: filter, files: file, shard, rollback };
             if list {
                 return print_result(EngineRuntime::list_tests(&cli.project, &selection), cli.json);
             }
@@ -1118,7 +1121,8 @@ fn run() -> Result<ExitCode> {
                 test_runs::run(&cli.project, cli.sdk.as_deref(), &selection, jobs)
             } else {
                 let result = EngineRuntime::run_tests_with(&cli.project, &selection);
-                if let Some(report) = result.value.as_ref().filter(|_| !worker) {
+                // Rolled-back runs take longer than the times --jobs orders by.
+                if let Some(report) = result.value.as_ref().filter(|_| !worker && rollback.is_none()) {
                     test_runs::write_times(&cli.project, &report.cases);
                 }
                 result
