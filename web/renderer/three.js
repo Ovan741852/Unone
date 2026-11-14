@@ -284,10 +284,22 @@ export async function createThreeRenderer(canvas, options = {}) {
     return { snapshot, dt, THREE, scene, renderer, backend, root, camera, camera3d, attachPresentation };
   }
 
+  // The drawing buffer last sized. setSize rewrites canvas.width/height, a backing-store
+  // write even at the same value, so it runs only when the CSS size, the pixel ratio (whoever
+  // set it) or the canvas's own buffer changed (Ovan741852/Unone#2). The viewport reset setSize
+  // also made stays every frame, for passes that move the viewport and rely on it.
+  let resizedTo = null;
   function resize(world) {
     const width = Math.max(1, canvas.clientWidth || canvas.width || 16);
     const height = Math.max(1, canvas.clientHeight || canvas.height || 9);
-    renderer.setSize(width, height, false);
+    const ratio = renderer.getPixelRatio();
+    if (resizedTo?.width !== width || resizedTo.height !== height || resizedTo.ratio !== ratio
+      || canvas.width !== Math.floor(width * ratio) || canvas.height !== Math.floor(height * ratio)) {
+      renderer.setSize(width, height, false);
+      resizedTo = { width, height, ratio };
+    } else {
+      renderer.setViewport(0, 0, width, height);
+    }
     const visible = visibleSize({ ...world, __aspect: width / height });
     camera.left = -visible.width / 2;
     camera.right = visible.width / 2;
