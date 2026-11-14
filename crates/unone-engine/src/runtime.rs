@@ -1492,6 +1492,23 @@ impl EngineRuntime {
             instance_bytes: instances * 40,
         };
     }
+    /// A measurement of this runtime compared with the project's performance targets.
+    #[cfg(feature = "dev-tools")]
+    pub fn performance_review(&self, report: &PerformanceReport, asked: crate::PerformanceReview) -> Vec<Diagnostic> {
+        crate::performance_targets::review(report, self.config.performance.as_ref(), asked)
+    }
+
+    /// A run's result with the project's performance targets compared, as the
+    /// `run` commands report it.
+    #[cfg(feature = "dev-tools")]
+    pub fn reviewed(&self, mut result: EngineResult<RunReport>) -> EngineResult<RunReport> {
+        if let Some(report) = result.value.as_ref() {
+            let found = self.performance_review(&report.performance, crate::PerformanceReview::Run);
+            result.diagnostics.extend(found);
+        }
+        result
+    }
+
     /// Cached counters: profiling must not clone/serialize the full scene.
     fn performance_report(&self) -> PerformanceReport {
         let mut report = self.performance.report(

@@ -929,6 +929,71 @@
       ],
       "type": "string"
     },
+    "PerformanceTargets": {
+      "additionalProperties": false,
+      "description": "What a project's measurements must stay under. Every target is optional;\nan undeclared one is not checked.",
+      "properties": {
+        "frames": {
+          "description": "Frames `verify` measures; undeclared means 600.",
+          "format": "uint64",
+          "minimum": 1,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "heap_growth_bytes_per_frame": {
+          "description": "Most bytes of positive Luau heap growth a frame may average: growth is\ngarbage the collector has to find later.",
+          "format": "uint64",
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "input_sequence": {
+          "description": "A JSON array of input frames, relative to the project root, that drives\nthe run `verify` measures, so it measures play instead of an idle\nopening screen.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "luau_heap_bytes": {
+          "description": "Most bytes of Luau heap a measured run may end with.",
+          "format": "uint64",
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "p95_frame_ms": {
+          "description": "Most milliseconds a frame's engine work (script, physics, observe) may\ntake at the 95th percentile. Host rendering is not part of it, so leave\nit room inside the 16.667 ms fixed step.",
+          "format": "double",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "span_p95_ms": {
+          "additionalProperties": {
+            "format": "double",
+            "type": "number"
+          },
+          "description": "Most milliseconds one call of a game span (`api.profile.span`) may take\nat the 95th percentile, by span name.",
+          "type": "object"
+        },
+        "startup_ms": {
+          "description": "Most milliseconds loading may take: imports, reading the project, the\nentry script's top level and `Game.start`.",
+          "format": "double",
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    },
     "Physics3DScene": {
       "additionalProperties": false,
       "properties": {
@@ -1093,6 +1158,17 @@
         },
         "name": {
           "type": "string"
+        },
+        "performance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PerformanceTargets"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "What the game's measurements must stay under. The engine measures but\ncannot know what fast enough is for a game; declared here, `perf`,\n`run` and `verify` warn when a measurement misses a target and say\nwhere the time goes. Undeclared, they say that none are declared."
         },
         "render_pipeline": {
           "anyOf": [

@@ -76,6 +76,12 @@ pub struct ProjectConfig {
     /// keeps each host's built-in order.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub render_pipeline: Option<crate::RenderPipeline>,
+    /// What the game's measurements must stay under. The engine measures but
+    /// cannot know what fast enough is for a game; declared here, `perf`,
+    /// `run` and `verify` warn when a measurement misses a target and say
+    /// where the time goes. Undeclared, they say that none are declared.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub performance: Option<crate::PerformanceTargets>,
 }
 
 fn default_entry_script() -> String {

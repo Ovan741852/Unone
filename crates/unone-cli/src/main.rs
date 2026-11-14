@@ -134,7 +134,7 @@ enum Command {
         #[command(subcommand)]
         command: ReplayCommand,
     },
-    /// Measure where a frame's time goes.
+    /// Measure where a frame's time goes, against the project's performance targets.
     Perf {
         #[arg(long, default_value_t = 600)]
         frames: u64,
@@ -816,15 +816,27 @@ fn run() -> Result<ExitCode> {
             let Some(report) = run.value.as_ref() else {
                 return print_result(run, cli.json);
             };
+            // The project's targets: a warning for each one missed, naming where the time goes.
+            let review = runtime.performance_review(&report.performance, unone_engine::PerformanceReview::Measure);
             if cli.json {
                 let mut result = EngineResult::success(report.performance.clone());
                 result.diagnostics = run.diagnostics;
+                result.diagnostics.extend(review);
                 return print_result(result, true);
             }
             println!(
                 "{}",
                 unone_engine::performance_markdown(&report.performance)
             );
+            if !review.is_empty() {
+                println!("## Targets\n");
+                for diagnostic in &review {
+                    println!("- {}: {}\n  {}", diagnostic.code, diagnostic.summary, diagnostic.explanation);
+                    for action in &diagnostic.suggested_actions {
+                        println!("  next: {}", action.description);
+                    }
+                }
+            }
             Ok(ExitCode::SUCCESS)
         }
         Command::Ui { command } => match command {
@@ -1098,15 +1110,14 @@ fn run() -> Result<ExitCode> {
                         );
                     }
                 };
-                print_result(
-                    runtime.run_with_input_sequence(frames, seed, &sequence),
-                    cli.json,
-                )
+                let result = runtime.run_with_input_sequence(frames, seed, &sequence);
+                print_result(runtime.reviewed(result), cli.json)
             } else {
                 if let Some(action) = action {
                     runtime.set_input(action, true);
                 }
-                print_result(runtime.run(frames, seed), cli.json)
+                let result = runtime.run(frames, seed);
+                print_result(runtime.reviewed(result), cli.json)
             }
         }
         Command::Test { filter, shard, jobs, list, file, rollback } => {

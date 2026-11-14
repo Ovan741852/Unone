@@ -23,6 +23,53 @@ reading the project, running the script's top level and `Game.start` took, and
 the Luau heap after start. At most 256 distinct names are kept; later ones are
 dropped and listed in the report's notes.
 
+## Performance targets: when to optimise and where
+
+The engine measures but cannot know what fast enough is for a game, so it never
+judges a measurement on its own. A project states its targets in
+`project.unone.json`; every one is optional:
+
+```json
+"performance": {
+  "p95_frame_ms": 8,
+  "startup_ms": 3000,
+  "luau_heap_bytes": 67108864,
+  "heap_growth_bytes_per_frame": 4096,
+  "span_p95_ms": {"ai.pathfind": 1.5},
+  "frames": 600,
+  "input_sequence": "tests/inputs/battle.json"
+}
+```
+
+`p95_frame_ms` covers the engine's own frame work (script, physics, observe);
+host rendering comes on top, so leave it room inside the 16.667 ms fixed step.
+`startup_ms` is the sum of the `performance.startup` phases, `span_p95_ms`
+holds per-call targets for `api.profile.span` names. `frames` and
+`input_sequence` choose the run `verify` measures, so it measures play rather
+than an idle opening screen. New projects start with `p95_frame_ms`
+16.667; zero, negative or non-finite targets are refused
+(`PERFORMANCE_TARGET_INVALID`).
+
+With targets declared, `game perf` (MCP `unone_perf`), `game run` (MCP
+`unone_run`) and the `performance` gate of `game verify` warn for each one
+missed: `PERF_FRAME_OVER_TARGET`, `PERF_STARTUP_OVER_TARGET`,
+`PERF_SPAN_OVER_TARGET`, `PERF_HEAP_OVER_TARGET`,
+`PERF_HEAP_GROWTH_OVER_TARGET`. Each names where to start: the frame phase
+with the largest share and the game's costliest spans, the slowest startup
+phase, or the spans that grew the heap most, with a suggested next step in
+`suggested_actions`. A span target the measured run never recorded is
+`PERF_SPAN_UNMEASURED` (a typo, or play that never reaches it). The verify gate
+fails when a target is missed; declare it advisory in `verify.steps` to report
+without failing.
+
+Timings mean nothing in a debug build or over fewer than 60 frames, so then
+only heap targets are compared, and `perf`/`verify` say why
+(`PERF_TARGETS_DEBUG_BUILD`, `PERF_TARGETS_TOO_FEW_FRAMES`). Without any
+targets, `perf`, and `run` over 60 frames or more, warn
+`PERF_TARGETS_UNDECLARED` with the measured numbers to choose from, and the
+verify gate is not applicable. `game test` never compares: its runs are short
+and share the machine.
+
 ## Official production-player completion counters
 
 The opt-in Web host trace separates `observation_view`, `observation_utf8` and

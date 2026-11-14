@@ -82,6 +82,7 @@ mod instances3d;
 #[cfg(feature = "dev-tools")]
 mod layout;
 mod performance;
+mod performance_targets;
 #[cfg(feature = "physics3d")]
 mod physics3d;
 mod platform;
@@ -170,6 +171,10 @@ pub use layout::{
 };
 pub use performance::{
     CounterTotal, FrameCounts, PerformanceReport, PhaseCost, SlowestFrame, SpanCost, StartupCost, to_markdown as performance_markdown,
+};
+pub use performance_targets::{
+    DEFAULT_MEASURED_FRAMES, MIN_COMPARED_FRAMES, PerformanceTargets, Review as PerformanceReview, missed as performance_targets_missed,
+    review as review_performance,
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{

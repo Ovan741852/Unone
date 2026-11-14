@@ -8,7 +8,7 @@
 //! This runs all of them, always, and returns one verdict plus what each step
 //! found. It adds no checks of its own; every step is an existing operation.
 
-use std::path::Path;
+use std::{fs, path::Path};
 
 use serde::Serialize;
 
@@ -16,8 +16,9 @@ use crate::{
     asset,
     diagnostics::{ActionSuggestion, Diagnostic, DiagnosticSeverity, EngineResult},
     layout,
-    project::ProjectPaths,
+    project::{InputFrame, ProjectPaths},
     runtime::EngineRuntime,
+    DEFAULT_MEASURED_FRAMES, PerformanceReview, PerformanceTargets,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -61,7 +62,7 @@ fn usize_is_zero(value: &usize) -> bool {
 
 /// The gates this build knows, in the order it runs them when a project says
 /// nothing.
-pub const DEFAULT_VERIFY_STEPS: [&str; 4] = ["types", "assets", "layout", "tests"];
+pub const DEFAULT_VERIFY_STEPS: [&str; 5] = ["types", "assets", "layout", "tests", "performance"];
 
 fn step(
     name: &str,
@@ -126,6 +127,11 @@ pub fn verify(project_root: impl AsRef<Path>) -> EngineResult<VerifyReport> {
                 not_run("tests", "game test", *required)
             } else {
                 tests_step(project_root, &paths, *required)
+            }),
+            "performance" => steps.push(if already_hung(&steps) {
+                not_run("performance", "game perf", *required)
+            } else {
+                performance_step(project_root, &paths, config.performance.as_ref(), *required)
             }),
             _ => unreachable!("resolve_plan rejects unknown ids"),
         }
@@ -302,6 +308,57 @@ fn tests_step(project_root: &Path, paths: &ProjectPaths, required: bool) -> Veri
         summary,
         diagnostics,
     )
+}
+
+/// The project's performance targets against a measured run (the run `game
+/// perf` makes, driven by `performance.input_sequence` when declared). Not
+/// applicable until the project declares targets: the engine does not guess
+/// what fast enough is.
+fn performance_step(project_root: &Path, paths: &ProjectPaths, targets: Option<&PerformanceTargets>, required: bool) -> VerifyStep {
+    let Some(targets) = targets else {
+        return step("performance", "game perf", StepStatus::NotApplicable,
+            "no performance targets declared; declare performance in project.unone.json to have them checked", Vec::new());
+    };
+    let frames = targets.frames.map_or(DEFAULT_MEASURED_FRAMES, |frames| frames.get());
+    let command = match &targets.input_sequence {
+        Some(path) => format!("game perf --frames {frames} --input-sequence {path}"),
+        None => format!("game perf --frames {frames}"),
+    };
+    let failed = |summary: &str, diagnostics: Vec<Diagnostic>| step("performance", &command, resolve_status(false, required), summary, diagnostics);
+    let mut runtime = match EngineRuntime::load_with_seed(project_root, 42) {
+        Ok(runtime) => runtime,
+        Err(diagnostic) => return failed("the project could not load to be measured", vec![*diagnostic]),
+    };
+    runtime.measure_serialization(true);
+    let run = match &targets.input_sequence {
+        Some(path) => {
+            let file = paths.root.join(path);
+            let sequence = fs::read_to_string(&file).map_err(|error| error.to_string()).and_then(|text| {
+                serde_json::from_str::<Vec<InputFrame>>(&text).map_err(|error| error.to_string())
+            });
+            match sequence {
+                Ok(sequence) => runtime.run_with_input_sequence(frames, 42, &sequence),
+                Err(error) => return failed("the measured input sequence could not be read", vec![Diagnostic::error(
+                    "INPUT_SEQUENCE_INVALID",
+                    "performance.input_sequence is not a readable JSON array of input frames",
+                    format!("{}: {error}", file.display()),
+                )]),
+            }
+        }
+        None => runtime.run(frames, 42),
+    };
+    let Some(report) = run.value.as_ref() else {
+        return failed("the measured run did not complete", run.diagnostics);
+    };
+    let review = runtime.performance_review(&report.performance, PerformanceReview::Measure);
+    let missed = crate::performance_targets_missed(&review);
+    let performance = &report.performance;
+    let summary = format!(
+        "{}: p95 {:.3} ms over {} frames, heap {} bytes ({} build)",
+        if missed { "a target was missed" } else { "within the declared targets" },
+        performance.p95_frame_ms, performance.frames, performance.luau_memory_bytes, performance.profile
+    );
+    step("performance", &command, resolve_status(!missed, required), summary, review)
 }
 
 fn finish(
@@ -595,9 +652,11 @@ return Game
         let result = verify(dir.path());
         let report = result.value.expect("verify always reports its steps");
 
-        // Four gates, always, so an author sees the whole picture at once.
+        // Every gate, always, so an author sees the whole picture at once.
         let names: Vec<&str> = report.steps.iter().map(|step| step.name.as_str()).collect();
-        assert_eq!(names, vec!["types", "assets", "layout", "tests"]);
+        assert_eq!(names, vec!["types", "assets", "layout", "tests", "performance"]);
+        // Without declared targets there is nothing to hold the game to.
+        assert_eq!(report.steps[4].status, StepStatus::NotApplicable);
         assert_eq!(report.step_source, "default");
         assert!(!result.ok, "a project without tests must not pass");
         assert_eq!(
@@ -725,6 +784,35 @@ return Game
                 types.diagnostics
             );
         }
+    }
+
+    /// Declared targets are a gate: a missed one fails it and says which, a met
+    /// one passes. (Heap targets, because a debug test build compares no timings.)
+    #[test]
+    fn declared_performance_targets_are_a_gate() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("scripts")).unwrap();
+        fs::write(dir.path().join("scripts/main.luau"), GOOD_SCRIPT).unwrap();
+        let gate = |performance: &str| {
+            fs::write(
+                dir.path().join("project.unone.json"),
+                format!(r#"{{"name": "PerfGate", "entry_script": "scripts/main.luau", "verify": {{"steps": ["performance"]}}, "performance": {performance}}}"#),
+            )
+            .unwrap();
+            let result = verify(dir.path());
+            let step = result.value.as_ref().expect("verify reports its steps").steps[0].clone();
+            (result.ok, step)
+        };
+
+        let (ok, step) = gate(r#"{"luau_heap_bytes": 1, "frames": 60}"#);
+        assert_eq!(step.status, StepStatus::Failed, "{:?}", step.diagnostics);
+        assert!(step.diagnostics.iter().any(|diagnostic| diagnostic.code == "PERF_HEAP_OVER_TARGET"), "{:?}", step.diagnostics);
+        assert_eq!(step.command, "game perf --frames 60");
+        assert!(!ok);
+
+        let (ok, step) = gate(r#"{"luau_heap_bytes": 1000000000, "frames": 60}"#);
+        assert_eq!(step.status, StepStatus::Passed, "{:?}", step.diagnostics);
+        assert!(ok);
     }
 
     #[test]

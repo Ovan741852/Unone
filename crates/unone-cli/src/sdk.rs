@@ -824,7 +824,7 @@ pub(crate) fn llms_txt() -> String {
          - `game find \"<need>\"`: existing engine APIs, render passes, systems, official packages, local plugins and marketplace plugins, in the order to prefer them.\n\
          - `game api search \"<meaning>\"`, then `game api describe <name>`: the exact API, its errors and an example.\n\
          - `game systems list`: which engine systems this project runs.\n\
-         - `game verify`: types, assets, layouts and tests in one verdict.\n\n## Guides\n\n",
+         - `game verify`: types, assets, layouts, tests and declared performance targets in one verdict.\n\n## Guides\n\n",
     );
     let packages = unone_engine::runtime_package_files();
     let guides = authoring_files().into_iter().chain(packages).filter(|(path, _)| path.ends_with(".md"));
