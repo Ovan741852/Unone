@@ -51,6 +51,16 @@ pub struct PluginManifest {
     pub permissions: Vec<String>,
     #[serde(default)]
     pub tools: Vec<PluginTool>,
+    /// Words people search with when they need what this plugin does
+    /// (`game find`), including other languages.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub keywords: Vec<String>,
+}
+
+/// Every valid plugin manifest the project can see, for `game find`.
+pub(crate) fn discover(project: &Path) -> (Vec<PluginManifest>, Vec<Diagnostic>) {
+    let (records, diagnostics) = discover_records(&search_roots(project));
+    (records.into_iter().map(|record| record.manifest).collect(), diagnostics)
 }
 
 #[derive(Debug, Clone)]

@@ -15,6 +15,7 @@ impl Particles {
         device: &wgpu::Device,
         format: wgpu::TextureFormat,
         camera: &wgpu::BindGroupLayout,
+        samples: u32,
     ) -> Self {
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("native-particles"),
@@ -69,7 +70,7 @@ impl Particles {
                     stencil: Default::default(),
                     bias: Default::default(),
                 }),
-                multisample: Default::default(),
+                multisample: wgpu::MultisampleState { count: samples, ..Default::default() },
                 multiview_mask: None,
                 cache: None,
             })

@@ -994,8 +994,8 @@ export type AssetsApi = {
     registerLoader: (name: string, loader: AssetLoader) -> (),
 }
 
--- Passes declared in project.unone.json render_pipeline (scene, ao, bloom,
--- tonemap, namespaced extensions, projected, ui). Order is fixed by the
+-- Passes declared in project.unone.json render_pipeline (scene, ao, fog, bloom,
+-- tonemap, grade, vignette, fxaa, namespaced extensions, projected, ui). Order is fixed by the
 -- declaration; switches and params change at runtime.
 export type RenderParam = number | boolean | string
 export type RenderPassState = { id: string, kind: string, enabled: boolean, params: {[string]: RenderParam} }
@@ -1003,6 +1003,20 @@ export type RenderApi = {
     -- Merge params into a declared pass and/or switch it; invalid changes leave it as it was.
     setPass: (id: string, change: { enabled: boolean?, params: {[string]: RenderParam}? }) -> (),
     getPass: (id: string) -> RenderPassState,
+}
+
+-- Scene lighting (docs/lighting.md): ambient, one sun with optional shadows,
+-- up to eight point lights. Colours are "#rrggbb"; intensity 1 is full light.
+export type AmbientLight = { color: string?, intensity: number? }
+export type Shadows = { size: number?, distance: number?, bias: number? }
+export type SunLight = { direction: Vec3, color: string?, intensity: number?, shadows: Shadows? }
+export type PointLight = { position: Vec3, color: string?, intensity: number?, range: number? }
+export type Lighting = { ambient: AmbientLight?, sun: SunLight?, points: {PointLight}? }
+export type LightingApi = {
+    -- Replace the scene lighting; nil turns lighting off (unlit 3D). Invalid lighting leaves it as it was.
+    set: (lighting: Lighting?) -> (),
+    -- A copy with every default filled in, or nil when the scene is unlit.
+    get: () -> Lighting?,
 }
 
 export type NetworkApi = {
@@ -1015,6 +1029,7 @@ export type EngineApi = {
     assets: AssetsApi,
     sprite: SpriteApi,
     render: RenderApi,
+    lighting: LightingApi,
     bytes: BytesApi,
     network: NetworkApi,
     hostTime: HostTimeApi,

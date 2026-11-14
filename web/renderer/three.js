@@ -7,7 +7,8 @@ import {createGeometry3DRenderer} from './geometry3d.js';
 import {createDataTextures} from './data-textures.js';
 import {createWorldCurvature} from './world-curvature.js';
 import {createMeshEntityRenderer} from './mesh-entities.js';
-import {createBloom,normalizePostProcessing} from './bloom.js';
+import {createBloom,normalizePostProcessing,BUILTIN_PASSES} from './bloom.js';
+import {createLighting} from './lighting.js';
 import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 import { syncSpriteCell } from "./sprite-cells.js";
@@ -141,14 +142,20 @@ export async function createThreeRenderer(canvas, options = {}) {
   function pipelineFrame(pipeline){
     const passes=pipeline.passes,find=kind=>passes.find(pass=>pass.kind===kind),on=pass=>Boolean(pass&&pass.enabled);
     const number=(pass,key,fallback)=>typeof pass?.params?.[key]==='number'?pass.params[key]:fallback;
+    const text=(pass,key,fallback)=>typeof pass?.params?.[key]==='string'?pass.params[key]:fallback;
     const ao=find('ao'),glow=find('bloom'),tone=find('tonemap'),projectedPass=find('projected');
+    const fog=find('fog'),grade=find('grade'),vignette=find('vignette');
     return {
       ids:passes.filter(pass=>pass.enabled).map(pass=>pass.id),
       scene:on(find('scene')),
       ao:{on:on(ao),strength:number(ao,'strength',1.7)},
+      fog:{on:on(fog),mode:text(fog,'mode','exp2'),color:text(fog,'color','#c8d0dc'),density:number(fog,'density',.02),start:number(fog,'start',0),end:number(fog,'end',100)},
       bloom:{on:on(glow),threshold:number(glow,'threshold',.55),strength:number(glow,'strength',.75)},
       tone:on(tone)?{mode:tone.params?.mode==='aces'?'aces':'none',exposure:number(tone,'exposure',1)}:null,
-      extensions:passes.filter(pass=>!['scene','ao','bloom','tonemap','projected','ui'].includes(pass.kind)&&pass.enabled)
+      grade:{on:on(grade),saturation:number(grade,'saturation',1),contrast:number(grade,'contrast',1),brightness:number(grade,'brightness',1),tint:text(grade,'tint','#ffffff')},
+      vignette:{on:on(vignette),strength:number(vignette,'strength',.5),radius:number(vignette,'radius',.6),softness:number(vignette,'softness',.6),color:text(vignette,'color','#000000')},
+      fxaa:on(find('fxaa')),
+      extensions:passes.filter(pass=>!BUILTIN_PASSES.has(pass.kind)&&pass.enabled)
         .map(pass=>({id:pass.id,params:pass.params??{},runner:extensionRunner(pass)})),
       projected:!projectedPass||projectedPass.enabled,
     };
@@ -164,8 +171,9 @@ export async function createThreeRenderer(canvas, options = {}) {
   scene.add(world3d);
   const camera3d = createPerspectiveCamera(THREE);
   const meshAssets = new Map();
-  const instances = createInstanceRenderer(THREE,world3d,meshAssetFor,options.instanceMemory);
-  const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor);
+  const lighting = createLighting(THREE,renderer,world3d);
+  const instances = createInstanceRenderer(THREE,world3d,meshAssetFor,options.instanceMemory,lighting);
+  const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor,lighting);
   const particles = createParticleRenderer(THREE,world3d);
   const projected = createProjectedRenderer(THREE,textureFor,{raster:rasterPolicy.requested});
   const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile});
@@ -238,7 +246,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,
     onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;
   if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
-  const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor);
+  const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor,lighting);
   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
   const dataTextures = createDataTextures(THREE,{memory:options.instanceMemory});
   const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature,dataTextures});
@@ -386,6 +394,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       if(texture.discarded||!texture.texture)return;
       record.geometry = meshGeometry(THREE, data);
       record.material = new THREE.MeshBasicMaterial({map:texture.texture, side:THREE.DoubleSide, alphaTest:0.05});
+      record.litMaterial = new THREE.MeshLambertMaterial({map:texture.texture, side:THREE.DoubleSide, alphaTest:0.05});
     }).catch(error => { if(!record.discarded&&meshAssets.get(id)===record)record.error = new Error(`${error.message} [/${asset.source}]`); });
     meshAssets.set(id, record);
     return record;
@@ -399,7 +408,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     retire(geometry);
     for(const record of records.values()){retire(record.material);retire(record.cellGeometry);}
     meshEntities.contextLost(retire);
-    for(const record of meshAssets.values()){retire(record.geometry);retire(record.material);}
+    for(const record of meshAssets.values()){retire(record.geometry);retire(record.material);retire(record.litMaterial);}
     for(const record of textureRecords.values())retire(record.texture);
     shaderMaterials.contextLost(retire);
     instances.contextLost(retire);
@@ -500,6 +509,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       camera3d.lookAt(c.target.x,c.target.y,c.target.z*z); camera3d.fov=c.fov_degrees;
       camera3d.aspect=aspectOf(canvas)*(c.rect?c.rect.width/c.rect.height:1); camera3d.updateProjectionMatrix(); activeCamera=camera3d;
     }
+    lighting.apply(world.camera3d?world.lighting:null,world.camera3d);
     if(meshEntities.draw(world,worldVisible,specs))assetRequestPending=true;
     profile?.mark('scene_sync');
     heightfields.draw(worldVisible?terrain:[],specs);
@@ -561,7 +571,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     heightfields.clear();
     geometry3d.clear();dataTextures.clear();
     meshEntities.clear();
-    for (const record of meshAssets.values()) { record.discarded=true;record.geometry?.dispose(); record.material?.dispose(); }
+    for (const record of meshAssets.values()) { record.discarded=true;record.geometry?.dispose(); record.material?.dispose(); record.litMaterial?.dispose(); }
     meshAssets.clear();
     textureCache.clear();
     for (const record of records.values()) {

@@ -69,10 +69,10 @@ export function heightfieldMeshData(d) {
 }
 
 /** Generic Three presentation cache. Texture loading remains host-owned. */
-export function createHeightfieldRenderer(THREE,scene,textureFor) {
+export function createHeightfieldRenderer(THREE,scene,textureFor,lighting=null) {
   const records=new Map();
   let rebuilds=0;
-  const dispose=record=>{scene.remove(record.mesh);record.mesh.geometry.dispose();record.material.dispose();};
+  const dispose=record=>{scene.remove(record.mesh);record.mesh.geometry.dispose();record.material.dispose();record.litMaterial.dispose();};
   function draw(entries,specs) {
     const alive=new Set();
     for(const [id,d] of entries) {
@@ -86,19 +86,23 @@ export function createHeightfieldRenderer(THREE,scene,textureFor) {
         const geometry=meshGeometry(THREE,heightfieldMeshData(d));
         if(record)dispose(record);
         const material=new THREE.MeshBasicMaterial({side:THREE.DoubleSide});
+        // Lit scenes (lighting.js) shade terrain with this Lambert twin.
+        const litMaterial=new THREE.MeshLambertMaterial({side:THREE.DoubleSide});
         const mesh=new THREE.Mesh(geometry,material);
         mesh.position.set(d.origin.x,d.origin.y,d.origin.z);
-        record={mesh,material,revision:String(d.revision),triangles:(d.width-1)*(d.depth-1)*2};
+        record={mesh,material,litMaterial,revision:String(d.revision),triangles:(d.width-1)*(d.depth-1)*2};
         records.set(id,record);scene.add(mesh);rebuilds++;
       }
       record.mesh.visible=texture.state==='ready';
       if(texture.state==='ready'&&record.material.map!==texture.texture) {
         record.material.map=texture.texture;record.material.needsUpdate=true;
+        record.litMaterial.map=texture.texture;record.litMaterial.needsUpdate=true;
       }
+      lighting?.dress(record.mesh,record.material,record.litMaterial);
       alive.add(id);
     }
     for(const [id,record] of records)if(!alive.has(id)){dispose(record);records.delete(id);}
   }
-  return {draw,contextLost(retire){for(const record of records.values()){retire(record.mesh.geometry);retire(record.material);}},clear(){for(const record of records.values())dispose(record);records.clear();},
+  return {draw,contextLost(retire){for(const record of records.values()){retire(record.mesh.geometry);retire(record.material);retire(record.litMaterial);}},clear(){for(const record of records.values())dispose(record);records.clear();},
     metrics(){return {heightfields:records.size,heightfield_triangles:[...records.values()].reduce((n,r)=>n+r.triangles,0),heightfield_rebuilds:rebuilds};}};
 }

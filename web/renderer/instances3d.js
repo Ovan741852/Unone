@@ -20,7 +20,7 @@ export function partitionInstances(view,count,cellSize=64){
   }
   return cells;
 }
-export function createInstanceRenderer(THREE,scene,assetFor,memory){
+export function createInstanceRenderer(THREE,scene,assetFor,memory,lighting=null){
   const records=new Map(),rendered=new Set(),object=new THREE.Object3D();let count=0;
   const dispose=r=>{for(const c of r.cells.values()){scene.remove(c.mesh);c.mesh.dispose();}};
   function draw(batches,specs){
@@ -32,6 +32,7 @@ export function createInstanceRenderer(THREE,scene,assetFor,memory){
       if(r&&r.asset!==batch.asset){dispose(r);records.delete(id);r=null;}
       if(!r){r={asset:batch.asset,cells:new Map(),data:null,count:0};records.set(id,r);}
       count+=batch.count;
+      if(lighting)for(const c of r.cells.values())lighting.dress(c.mesh,asset.material,asset.litMaterial??asset.material);
       const key=batch.presentation_revision!==undefined?'presentation:'+batch.presentation_revision:batch.memory?'memory:'+batch.memory.revision:'json:'+batch.data;
       if(r.data===key&&r.count===batch.count)continue;
       const view=instanceView(batch,memory),cells=partitionInstances(view,batch.count);
@@ -42,7 +43,7 @@ export function createInstanceRenderer(THREE,scene,assetFor,memory){
           const capacity=2**Math.ceil(Math.log2(Math.max(1,ids.length)));
           const mesh=new THREE.InstancedMesh(asset.geometry,asset.material,capacity);
           mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.frustumCulled=true;
-          mesh.onBeforeRender=()=>rendered.add(mesh);
+          mesh.onBeforeRender=()=>rendered.add(mesh);lighting?.dress(mesh,asset.material,asset.litMaterial??asset.material);
           scene.add(mesh);c={mesh,capacity};r.cells.set(cell,c);
         }
         c.mesh.count=ids.length;

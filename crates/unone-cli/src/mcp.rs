@@ -249,6 +249,7 @@ fn tool_names() -> Vec<&'static str> {
         "unone_systems_set",
         "unone_platform_capabilities",
         "unone_platform_snapshot",
+        "unone_find",
         "unone_api_search",
         "unone_api_describe",
         "unone_check",
@@ -523,6 +524,21 @@ fn tool_definitions() -> Vec<Value> {
             "Snapshot current AI capabilities",
             "Aggregate the current platform, runtime, renderer, and plugin capability states with explicit verified/partial/pending status, limitations, evidence, and minimal examples. This is read-only and does not start plugins or probe a renderer.",
             object_schema(json!({})),
+            true,
+            true,
+        ),
+        tool(
+            "unone_find",
+            "Find before you build",
+            "Before writing a new system, effect, tool or integration, search everything that may already do it: engine APIs, built-in render passes (fog, AO, bloom, grade, vignette, FXAA...), systems, official runtime packages, local plugins, and the Koncrate plugin marketplace through the user's signed-in Koncrate Viewer. Any language. Read-only: nothing is installed, enabled or bought. Candidates come in the order to prefer them, each with next.argv or a note; value.sources reports each source, including whether the marketplace was reached. Pass offline=true to keep the search text on this machine.",
+            object_schema(json!({
+                "properties": {
+                    "need": {"type": "string", "description": "What you need in plain words, such as distance fog, pinch zoom or 掃描線."},
+                    "offline": {"type": "boolean", "description": "Skip the marketplace; default false."},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 20, "description": "Candidates per source; default 5."}
+                },
+                "required": ["need"]
+            })),
             true,
             true,
         ),
@@ -935,6 +951,15 @@ fn call_tool(project: &Path, name: &str, arguments: &Value) -> Value {
         }
         "unone_platform_capabilities" => tool_result(platform_capabilities()),
         "unone_platform_snapshot" => tool_result(crate::capabilities::snapshot(project)),
+        "unone_find" => match (required_string(arguments, "need"), optional_bool(arguments, "offline", false), optional_u64(arguments, "limit", 5)) {
+            (Ok(need), Ok(offline), Ok(limit)) => tool_result(crate::find::find(
+                project,
+                &need,
+                Some(limit.min(20) as usize),
+                crate::find::Marketplace::from_env(offline),
+            )),
+            (Err(diagnostic), _, _) | (_, Err(diagnostic), _) | (_, _, Err(diagnostic)) => argument_error(*diagnostic),
+        },
         "unone_api_search" => match required_string(arguments, "meaning") {
             Ok(meaning) => tool_result(api_search_result(project, &meaning)),
             Err(diagnostic) => argument_error(*diagnostic),

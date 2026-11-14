@@ -58,7 +58,9 @@ mod asset_usage;
 mod audio;
 mod data_assets;
 mod render_pipeline;
-pub use render_pipeline::{BUILTIN_RENDER_PASSES, RenderParam, RenderPass, RenderPipeline};
+mod lighting;
+pub use lighting::{AmbientLight, Lighting, MAX_POINT_LIGHTS, PointLight, SHADOW_MAP_SIZES, Shadows, SunLight};
+pub use render_pipeline::{BUILTIN_RENDER_PASSES, RENDER_PASS_GUIDE, RenderParam, RenderPass, RenderPassGuide, RenderPipeline};
 pub use data_assets::{BUILTIN_DATA_LOADERS, DataAssetDecl};
 #[cfg(feature = "dev-tools")]
 pub use data_assets::decl_for as data_asset_decl;
@@ -85,7 +87,7 @@ mod project;
 mod rigid3d;
 mod runtime;
 mod runtime_packages;
-pub use runtime_packages::compiled_runtime_packages;
+pub use runtime_packages::{compiled_runtime_packages, runtime_package_manifests};
 #[cfg(feature = "dev-tools")]
 pub use runtime_packages::runtime_package_files;
 #[cfg(feature = "preview-tools")]

@@ -23,6 +23,16 @@ pub(crate) fn ui_components_info() -> serde_json::Value {
         .expect("bundled UI package manifest")
 }
 
+/// Every runtime package this binary bundles (name, version, kind, entry,
+/// api, license), whether or not a project enables its system.
+pub fn runtime_package_manifests() -> Vec<serde_json::Value> {
+    #[allow(unused_mut)] // UI is an optional build feature.
+    let mut manifests = vec![gestures_info()];
+    #[cfg(feature = "ui")]
+    manifests.push(ui_components_info());
+    manifests
+}
+
 /// Exact package versions implemented by this binary for the enabled systems.
 /// Runtime descriptors use the same registry as validation and API binding.
 pub fn compiled_runtime_packages(settings: &SystemSettings) -> BTreeMap<String, String> {

@@ -1,0 +1,22 @@
+{
+  "api": "unone.plugin.v1",
+  "id": "org.unone.render-effects",
+  "name": "Unone Render Effects",
+  "version": "0.1.0",
+  "description": "Stylized full-screen passes for the official Web player: CRT, pixelate, film grain, chromatic aberration, posterize and ink outlines, installed as render_extensions.",
+  "entry": {"command": "node", "args": ["plugin.mjs"]},
+  "capabilities": ["render.extension", "render.post_effect"],
+  "permissions": ["project.read", "project.write"],
+  "keywords": [
+    "post effect", "post processing", "screen effect", "stylized", "retro",
+    "crt", "scanlines", "pixelate", "pixel art", "mosaic", "film grain", "grain", "noise",
+    "chromatic aberration", "rgb split", "glitch", "posterize", "dither", "outline", "ink", "toon", "comic",
+    "後製", "畫面特效", "濾鏡", "復古", "掃描線", "像素化", "馬賽克", "顆粒", "色差", "色階", "描邊", "卡通"
+  ],
+  "tools": [
+    {"name": "plugin.test", "title": "Test the effect modules", "description": "Load every effect module, check its metadata and run one draw against a recording THREE stand-in.", "input_schema": {"type": "object"}},
+    {"name": "effects.list", "title": "List effects", "description": "Every effect with its pass kind, summary, params, ranges and defaults.", "input_schema": {"type": "object"}},
+    {"name": "effects.plan", "title": "Plan an install", "description": "Show the files and JSON changes effects.apply would make for the chosen effects, without writing anything.", "input_schema": {"type": "object", "properties": {"effects": {"type": "array", "items": {"type": "string"}, "description": "Pass kinds such as fx.crt, or short names such as crt."}}, "required": ["effects"]}},
+    {"name": "effects.apply", "title": "Install effects", "description": "Copy the chosen effect modules to render/fx/, declare them in player.presentation.json render_extensions, and add disabled-by-default passes to project.unone.json render_pipeline. Refuses to overwrite a changed module unless force is true.", "input_schema": {"type": "object", "properties": {"effects": {"type": "array", "items": {"type": "string"}}, "enabled": {"type": "boolean", "description": "Add the passes enabled; default false, so game code turns them on with api.render.setPass."}, "force": {"type": "boolean"}}, "required": ["effects"]}}
+  ]
+}

@@ -55,6 +55,43 @@ test('extension passes chain after the combine and the last one writes the scree
   assert.equal(f.passes.at(-1).target, null);
 });
 
+test('fog, grade and vignette set the combine uniforms and turn the chain on alone', () => {
+  const f = fixture();
+  f.bloom.draw({}, camera, null, frame({
+    fog: {on: true, mode: 'linear', color: '#ff0000', density: .02, start: 5, end: 50},
+    grade: {on: true, saturation: 1.5, contrast: 1.2, brightness: .8, tint: '#ffffff'},
+    vignette: {on: true, strength: .4, radius: .5, softness: .3, color: '#000000'},
+  }));
+  assert.equal(f.passes.length, 2, 'world and combine; no bloom passes');
+  const u = f.passes[1].material.uniforms;
+  assert.deepEqual([u.fogMode.value, u.fogStart.value, u.fogEnd.value], [2, 5, 50]);
+  assert.deepEqual([u.fogColor.value.r, u.fogColor.value.g, u.fogColor.value.b], [1, 0, 0]);
+  assert.deepEqual([u.gradeOn.value, u.saturation.value, u.contrast.value, u.brightness.value], [true, 1.5, 1.2, .8]);
+  assert.deepEqual([u.vignetteStrength.value, u.vignetteRadius.value, u.vignetteSoftness.value], [.4, .5, .3]);
+  assert.match(f.passes[1].material.fragmentShader, /<tonemapping_fragment>[\s\S]*gradeOn[\s\S]*vignetteStrength[\s\S]*<colorspace_fragment>/, 'grade and vignette follow the tone curve');
+  // Switched off the next frame: the uniforms neutralize.
+  f.bloom.draw({}, camera, null, frame({fog: {on: false}, grade: {on: false}, vignette: {on: false}, tone: {mode: 'none', exposure: 1}}));
+  const off = f.passes.at(-1).material.uniforms;
+  assert.deepEqual([off.fogMode.value, off.gradeOn.value, off.vignetteStrength.value], [0, false, 0]);
+});
+
+test('fxaa runs after the combine and before extensions', () => {
+  const f = fixture();
+  f.bloom.draw({}, camera, null, frame({fxaa: true}));
+  const [world, combine, aa] = f.passes;
+  assert.equal(world.material, 'world');
+  assert.ok(combine.target, 'the combine writes the chain when fxaa follows');
+  assert.equal(aa.material.uniforms.image.value, combine.target.texture);
+  assert.equal(aa.target, null, 'fxaa writes the screen when it is last');
+  assert.deepEqual([aa.material.uniforms.pixels.value.x, aa.material.uniforms.pixels.value.y], [1 / 8, 1 / 8]);
+  const seen = [];
+  f.bloom.draw({}, camera, null, frame({fxaa: true, extensions: [{id: 'e', params: {}, runner: {draw: ctx => { seen.push(ctx); ctx.fullscreen(new THREE.ShaderMaterial(), ctx.output); }}}]}));
+  const aa2 = f.passes.find((pass, index) => index > 2 && pass.material?.uniforms?.pixels && !pass.material.uniforms.aoStrength);
+  assert.ok(aa2.target, 'fxaa writes the chain when an extension follows');
+  assert.equal(seen[0].input, aa2.target.texture, 'the extension reads the antialiased image');
+  assert.equal(seen[0].output, null);
+});
+
 test('a disabled scene pass clears instead of drawing the world', () => {
   const f = fixture();
   f.bloom.draw({}, camera, () => assert.fail('no overlay without the scene'), frame({scene: false}));

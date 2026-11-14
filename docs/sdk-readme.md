@@ -50,7 +50,11 @@ $project = 'D:/Games/my-game'
 & $game --sdk $sdk api typings
 ```
 
-Use `api search '<meaning>'` before guessing an API, then `api describe <name>`
+Before writing a new system, effect or tool, run `find '<need>'`: it searches
+engine APIs, render passes, systems, official packages, local plugins and the
+Koncrate plugin marketplace, and names the next step for each candidate; see the
+bundled [find guide](docs/find.md). Use `api search '<meaning>'` before guessing
+an API, then `api describe <name>`
 for parameters, examples and frame semantics. `api search ''` lists the public
 index. Subcommand `--help` describes the flags accepted by this exact CLI.
 `sdk inspect` verifies the SDK inventory and reports installed runtimes; it does
@@ -76,7 +80,8 @@ For immutable binary data (loaded tables, maps, palettes, original game images),
 freeze an ordinary buffer with `api.bytes.freeze` and read it with `buffer.read*`;
 see the bundled [immutable bytes guide](docs/immutable-bytes.md). Declare level, table and
 binary files as `kind: "data"` assets and read them with `api.assets.load`; see the bundled
-[data assets guide](docs/data-assets.md). Declare post-processing as a `render_pipeline` in
+[data assets guide](docs/data-assets.md). Declare post-processing (AO, fog, bloom, tone mapping, colour grade,
+vignette, FXAA) as a `render_pipeline` in
 `project.unone.json` and tune it with `api.render.setPass`; see the bundled
 [render pipeline guide](docs/render-pipeline.md).
 

@@ -447,6 +447,10 @@ pub struct SceneFile {
     /// and is intentionally omitted by canonical serialization.
     #[cfg_attr(feature = "dev-tools", schemars(default))]
     pub camera3d: Option<Camera3DData>,
+    /// Ambient, sun and point lights for 3D content (docs/lighting.md).
+    /// Absent: 3D content stays unlit.
+    #[cfg_attr(feature = "dev-tools", schemars(default))]
+    pub lighting: Option<crate::Lighting>,
 }
 
 impl Serialize for SceneFile {
@@ -484,6 +488,9 @@ impl Serialize for SceneFile {
         object.insert("entities".into(), serde_json::to_value(&self.entities).map_err(S::Error::custom)?);
         object.insert("physics".into(), serde_json::to_value(&self.physics).map_err(S::Error::custom)?);
         object.insert("camera".into(), camera);
+        if let Some(lighting) = &self.lighting {
+            object.insert("lighting".into(), serde_json::to_value(lighting).map_err(S::Error::custom)?);
+        }
         serde_json::Value::Object(object).serialize(serializer)
     }
 }
@@ -551,6 +558,8 @@ struct SceneFileWire {
     camera: Option<serde_json::Value>,
     #[serde(default)]
     camera3d: Option<Camera3DData>,
+    #[serde(default)]
+    lighting: Option<crate::Lighting>,
 }
 
 impl<'de> Deserialize<'de> for SceneFile {
@@ -569,6 +578,7 @@ impl<'de> Deserialize<'de> for SceneFile {
             physics: wire.physics,
             camera,
             camera3d,
+            lighting: wire.lighting,
         })
     }
 }
@@ -1027,6 +1037,9 @@ pub struct WorldSnapshot {
     /// Present only when the project declares a render pipeline.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub render_pipeline: Option<crate::RenderPipeline>,
+    /// Present only when the scene declares lighting or api.lighting.set ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lighting: Option<crate::Lighting>,
 }
 
 #[derive(Debug, Clone)]
@@ -1139,6 +1152,8 @@ pub(crate) struct World {
     pub audio: AudioBus,
     /// The declared render pipeline as api.render.setPass last left it.
     pub render_pipeline: Option<crate::RenderPipeline>,
+    /// The scene's lighting as api.lighting.set last left it.
+    pub lighting: Option<crate::Lighting>,
 }
 
 impl World {
@@ -1172,6 +1187,7 @@ impl World {
         self.particles.definitions = scene.particle_effects;
         self.shader_materials = scene.shader_materials;
         self.physics = scene.physics;
+        self.lighting = scene.lighting;
         self.camera_state = match scene.camera3d {
             Some(camera) => CameraState::from_perspective(camera),
             None => CameraState::from_orthographic(scene.camera),
@@ -1473,6 +1489,7 @@ impl World {
         });
         WorldSnapshot {
             render_pipeline: self.render_pipeline.clone(),
+            lighting: self.lighting.clone(),
             physical_input_receipt:None,
             projected_geometry:self.projected_geometry.clone(),
             projected_frame:self.projected_frame.clone(),
@@ -2371,6 +2388,7 @@ mod tests {
             audio: AudioBus::default(),
             particles: crate::particle::ParticleWorld::default(),
             render_pipeline: None,
+            lighting: None,
         }
     }
 

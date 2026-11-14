@@ -9,6 +9,19 @@ branches unless the user explicitly asks for one.
 This applies to all coding agents working in this repo, including
 Claude Code and Codex.
 
+## Find before you build
+
+Before writing a new system, effect, tool or integration, in the engine or in
+a game, run `game find "<need>"` (MCP `unone_find`) in plain words and any
+language. It searches engine APIs, built-in render passes, systems, official
+runtime packages, local plugins and the Koncrate plugin marketplace (through
+the user's signed-in Koncrate Viewer), and lists candidates in the order to
+prefer them, each marked strong or weak. Reuse a strong candidate. Write new
+code only when none fits, and say what you searched and why you rejected the
+candidates. `--offline` keeps the search text on this machine; a marketplace
+that was not reached is reported, not treated as empty. See
+[the find contract](docs/find.md).
+
 ## Plugin distribution
 
 For publishing a completed plugin to Koncrate, read

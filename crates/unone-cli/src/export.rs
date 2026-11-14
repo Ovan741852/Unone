@@ -46,6 +46,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/instances3d.js",
         "renderer/bloom.js",
         "renderer/bloom-timer.js",
+        "renderer/lighting.js",
         "renderer/effekseer.js",
         "renderer/particles.js",
         "renderer/vfx.js",

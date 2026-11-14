@@ -6,7 +6,8 @@
 const PRIMITIVES = new Set(['mesh://primitive/box', 'mesh://primitive/sphere']);
 const IDLE_DRAWS = 120;
 
-export function createMeshEntityRenderer(THREE, scene, meshAssetFor) {
+// lighting (lighting.js) switches lit scenes to each source's litMaterial.
+export function createMeshEntityRenderer(THREE, scene, meshAssetFor, lighting = null) {
   const groups = new Map(), counts = new Map(), primitives = new Map();
   const object = new THREE.Object3D();
   let instances = 0, batches = 0;
@@ -14,7 +15,9 @@ export function createMeshEntityRenderer(THREE, scene, meshAssetFor) {
   function primitive(asset) {
     let shared = primitives.get(asset);
     if (!shared) {
-      shared = {geometry: asset.endsWith('/sphere') ? new THREE.SphereGeometry(0.5, 16, 12) : new THREE.BoxGeometry(1, 1, 1), material: new THREE.MeshNormalMaterial()};
+      // Lit primitives use native's flat primitive colour (230, 236, 245).
+      shared = {geometry: asset.endsWith('/sphere') ? new THREE.SphereGeometry(0.5, 16, 12) : new THREE.BoxGeometry(1, 1, 1), material: new THREE.MeshNormalMaterial(),
+        litMaterial: new THREE.MeshLambertMaterial({color: 0xe6ecf5})};
       primitives.set(asset, shared);
     }
     return shared;
@@ -27,13 +30,13 @@ export function createMeshEntityRenderer(THREE, scene, meshAssetFor) {
     if (source.error) throw source.error;
     if (!source.geometry) return null;
     let group = groups.get(asset);
-    if (group && group.capacity >= needed && group.mesh.geometry === source.geometry && group.mesh.material === source.material) return group;
+    if (group && group.capacity >= needed && group.mesh.geometry === source.geometry && group.source === source && group.material === source.material) return group;
     if (group) retireGroup(asset, group);
     const capacity = 2 ** Math.ceil(Math.log2(Math.max(16, needed)));
     const mesh = new THREE.InstancedMesh(source.geometry, source.material, capacity);
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.frustumCulled = false;mesh.count = 0;
     scene.add(mesh);
-    group = {mesh, capacity, count: 0, idle: 0};groups.set(asset, group);
+    group = {mesh, source, material: source.material, capacity, count: 0, idle: 0};groups.set(asset, group);
     return group;
   }
   // Returns true while a mesh asset is still loading.
@@ -63,6 +66,7 @@ export function createMeshEntityRenderer(THREE, scene, meshAssetFor) {
     instances = 0;batches = 0;
     for (const [asset, group] of groups) {
       group.mesh.count = group.count;group.mesh.visible = group.count > 0;
+      lighting?.dress(group.mesh, group.source.material, group.source.litMaterial ?? group.source.material);
       if (group.count) {
         group.idle = 0;instances += group.count;batches++;
         const matrix = group.mesh.instanceMatrix;matrix.clearUpdateRanges();matrix.addUpdateRange(0, group.count * 16);matrix.needsUpdate = true;
@@ -72,12 +76,12 @@ export function createMeshEntityRenderer(THREE, scene, meshAssetFor) {
   }
   function clear() {
     for (const [asset, group] of groups) retireGroup(asset, group);
-    for (const shared of primitives.values()) {shared.geometry.dispose();shared.material.dispose();}
+    for (const shared of primitives.values()) {shared.geometry.dispose();shared.material.dispose();shared.litMaterial.dispose();}
     primitives.clear();instances = batches = 0;
   }
   return {
     draw, clear,
-    contextLost(retire) {for (const group of groups.values()) retire(group.mesh);for (const shared of primitives.values()) {retire(shared.geometry);retire(shared.material);}},
+    contextLost(retire) {for (const group of groups.values()) retire(group.mesh);for (const shared of primitives.values()) {retire(shared.geometry);retire(shared.material);retire(shared.litMaterial);}},
     get count() {return instances;},
     get batches() {return batches;},
   };

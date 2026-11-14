@@ -27,10 +27,12 @@ mod assets;
 mod capabilities;
 mod diagnostics_replay;
 mod export;
+mod find;
 mod font_subset;
 mod truetype_subset;
 mod web_dependencies;
 mod hosts;
+mod marketplace;
 mod sdk;
 mod mcp;
 mod native_capture;
@@ -206,6 +208,17 @@ enum Command {
     Plugin {
         #[command(subcommand)]
         command: PluginCommand,
+    },
+    /// Before writing new code, find an engine API, render pass, system, official package, local plugin or marketplace plugin that already does it.
+    Find {
+        #[arg(help = "What you need, in plain words and any language, such as \"distance fog\" or \"雙指縮放\"")]
+        need: String,
+        /// Skip the plugin marketplace; search only this engine and local plugins.
+        #[arg(long)]
+        offline: bool,
+        /// Candidates per source, 1 to 20 (default 5).
+        #[arg(long)]
+        limit: Option<usize>,
     },
     /// Serve the existing Developer Protocol over MCP stdio.
     Mcp,
@@ -1152,6 +1165,9 @@ fn run() -> Result<ExitCode> {
                     print_result(manager.install_selected(id.as_deref(), all), cli.json)
                 }
             }
+        }
+        Command::Find { need, offline, limit } => {
+            print_result(find::find(&cli.project, &need, limit, find::Marketplace::from_env(offline)), cli.json)
         }
         Command::Plugin { command } => match command {
             PluginCommand::List => print_result(plugins::list(&cli.project), cli.json),

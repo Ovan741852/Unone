@@ -153,6 +153,12 @@ fn validate_scene(scene: &SceneFile, source: SceneSource<'_>) -> Result<(), Box<
         ));
     }
 
+    if let Some(lighting) = &scene.lighting
+        && let Err(explanation) = lighting.validate()
+    {
+        return Err(scene_error(source, "SCENE_LIGHTING_INVALID", "Scene lighting is invalid", &explanation));
+    }
+
     if let Some(camera3d) = &scene.camera3d {
         if let Err(diagnostic) = validate_vec3(camera3d.position, "Camera3D position") {
             return Err(with_scene_context(diagnostic, source, None, None, None));

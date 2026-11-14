@@ -205,9 +205,10 @@ test utility, not a production server.
 Official Web presentation accepts optional `"antialias": false|true`. Omission
 retains the existing true request. This is a renderer/context construction
 option: re-export and relaunch with a new page/canvas to change it. A game
-runtime restart does not rebuild the context. Native currently uses one sample:
-omission and false retain that path, while true fails preflight/export with
-`HOST_ANTIALIAS_UNSUPPORTED`. Explicit antialias on a custom renderer is rejected
+runtime restart does not rebuild the context. Native draws the world and
+sprites with 4x MSAA when antialias is true (an adapter without 4x support
+keeps one sample), and with one sample when it is omitted or false; it also
+needs a relaunch to change. Explicit antialias on a custom renderer is rejected
 with `ANTIALIAS_OFFICIAL_ONLY`; omit it for that extension contract. Null and
 non-booleans are invalid.
 

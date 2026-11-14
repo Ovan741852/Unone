@@ -826,7 +826,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
         descriptor(
             "render.setPass", "render",
-            "Switch or tune a render pass the project declared (bloom strength, tone mapping, AO, an extension's params; 渲染管線、後製).",
+            "Switch or tune a render pass the project declared (bloom, tone mapping, AO, fog, colour grade, vignette, FXAA, an extension's params; 渲染管線、後製、霧、調色、暗角、抗鋸齒).",
             "When presentation should change during play: dim bloom in a menu, raise exposure at night, turn a vignette on when hurt.",
             "Passes and their order come from render_pipeline in project.unone.json; this changes only enabled and params. Projects without a declared pipeline use presentation bloom instead.",
             vec![
@@ -835,7 +835,7 @@ fn descriptors() -> Vec<ApiDescriptor> {
             ],
             "(): no additional data on success.",
             vec!["Change the render pipeline published in the next observation"],
-            "Engine state, so replays and every host draw the same passes. Built-in params: bloom threshold [0,16] and strength [0,4], ao strength [0,4], tonemap mode \"aces\"|\"none\" and exposure (0,8]. Extension kinds accept up to 16 scalar params.",
+            "Engine state, so replays and every host draw the same passes. Built-in params: ao strength [0,4]; fog mode \"exp2\"|\"linear\", color \"#rrggbb\", density [0,10], start [0,1e6], end > start; bloom threshold [0,16] and strength [0,4]; tonemap mode \"aces\"|\"none\" and exposure (0,8]; grade saturation, contrast and brightness [0,4] and tint \"#rrggbb\"; vignette strength [0,1], radius [0,2], softness (0,2] and color \"#rrggbb\"; fxaa none. Extension kinds accept up to 16 scalar params.",
             vec![
                 "RENDER_PIPELINE_UNDECLARED without render_pipeline in project.unone.json",
                 "RENDER_PASS_UNKNOWN for an id the pipeline does not declare",
@@ -845,6 +845,39 @@ fn descriptors() -> Vec<ApiDescriptor> {
             ],
             "api.render.setPass(\"glow\", {params = {strength = 1.4}})",
             vec!["render.getPass"],
+        ),
+        descriptor(
+            "lighting.set", "lighting",
+            "Light 3D content: ambient light, one sun (directional light) with optional shadows, and up to eight point lights (光照、燈光、陰影、太陽光、點光源).",
+            "When 3D meshes, instances or heightfields should be shaded and cast shadows: daylight, a day/night cycle, torches, a lamp in a room.",
+            "2D sprites, particles and UI are never lit. The scene's lighting field declares the starting lighting; this replaces all of it. Whole-screen looks such as AO, fog or bloom are render passes (render.setPass).",
+            vec![parameter(
+                "lighting",
+                "Lighting?",
+                "{ambient = {color, intensity}?, sun = {direction, color?, intensity?, shadows = {size?, distance?, bias?}?}?, points = {{position, color?, intensity?, range?}}?}; nil turns lighting off",
+            )],
+            "(): no additional data on success.",
+            vec!["Change the lighting published in the next observation"],
+            "Engine state, so replays and every host light the same scene. Lambert diffuse with intensity 1 as full light. Colours \"#rrggbb\"; ambient intensity [0,16] (0.3), sun intensity [0,16] (1), sun.direction is the way the light travels; shadows.size 512|1024|2048|4096 (2048), distance (0,10000] (20) around the camera target, bias [0,0.05] (0.001); points intensity [0,100] (1), range (0,1e6] (10) with falloff (1 - (d/range)^4)^2.",
+            vec![
+                "LIGHTING_INVALID for an unknown field, a zero sun direction, an out-of-range value or more than 8 points; the lighting keeps its previous value",
+                "UI_PURE_VIEW inside renderItem",
+            ],
+            "local light = api.lighting.get() or {}\nlight.sun = {direction = {x = -0.4, y = -1, z = -0.3}, shadows = {distance = 30}}\napi.lighting.set(light)",
+            vec!["lighting.get"],
+        ),
+        descriptor(
+            "lighting.get", "lighting",
+            "Read the current scene lighting with every default filled in.",
+            "When game code changes part of the lighting (move the sun, dim a torch) and writes it back with lighting.set.",
+            "Returns a copy; change lighting with lighting.set.",
+            vec![],
+            "Lighting?: the lighting, or nil when the scene is unlit.",
+            vec!["Read-only"],
+            "Reflects every earlier lighting.set in this tick.",
+            vec![],
+            "local light = api.lighting.get()",
+            vec!["lighting.set"],
         ),
         descriptor(
             "render.getPass", "render",

@@ -6,8 +6,44 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 /// Pass kinds the engine defines. Any other kind is a host extension and must
-/// be namespaced with a dot, such as "studio.vignette".
-pub const BUILTIN_RENDER_PASSES: &[&str] = &["scene", "ao", "bloom", "tonemap", "projected", "ui"];
+/// be namespaced with a dot, such as "studio.crt".
+pub const BUILTIN_RENDER_PASSES: &[&str] =
+    &["scene", "ao", "fog", "bloom", "tonemap", "grade", "vignette", "fxaa", "projected", "ui"];
+/// What each built-in pass is for, in the words people and AI search with
+/// (`game find`). Keep one entry per BUILTIN_RENDER_PASSES kind.
+#[derive(Debug, Clone, Copy, Serialize)]
+pub struct RenderPassGuide {
+    pub kind: &'static str,
+    pub summary: &'static str,
+    pub params: &'static str,
+    pub keywords: &'static [&'static str],
+}
+
+pub const RENDER_PASS_GUIDE: &[RenderPassGuide] = &[
+    RenderPassGuide { kind: "scene", summary: "The world: sprites, meshes, instances, heightfields and particles. Required and first.", params: "none",
+        keywords: &["scene", "world", "場景"] },
+    RenderPassGuide { kind: "ao", summary: "Depth-based ambient occlusion: darkens creases and contact points in 3D scenes.", params: "strength [0,4] (1.7)",
+        keywords: &["ao", "ssao", "ambient occlusion", "occlusion", "contact shadow", "環境光遮蔽", "遮蔽"] },
+    RenderPassGuide { kind: "fog", summary: "Distance fog by view depth, exp2 or linear; the background stays clear.", params: "mode exp2|linear, color #rrggbb, density [0,10] (0.02), start (0), end (100)",
+        keywords: &["fog", "haze", "mist", "atmosphere", "distance fade", "depth fade", "霧", "霧氣", "雾", "大氣"] },
+    RenderPassGuide { kind: "bloom", summary: "Quarter-resolution bloom: bright areas glow.", params: "threshold [0,16] (0.55), strength [0,4] (0.75)",
+        keywords: &["bloom", "glow", "glare", "光暈", "泛光", "發光", "辉光"] },
+    RenderPassGuide { kind: "tonemap", summary: "Exposure and the ACES tone curve before sRGB output.", params: "mode aces|none (none), exposure (0,8] (1)",
+        keywords: &["tonemap", "tone mapping", "tone map", "exposure", "hdr", "aces", "曝光", "色調映射"] },
+    RenderPassGuide { kind: "grade", summary: "Colour grade after the tone curve: saturation, contrast, brightness and tint.", params: "saturation, contrast, brightness [0,4] (1), tint #rrggbb (#ffffff)",
+        keywords: &["grade", "grading", "color grading", "colour grading", "color correction", "saturation", "contrast", "brightness", "tint", "desaturate", "調色", "飽和度", "對比", "亮度", "色調"] },
+    RenderPassGuide { kind: "vignette", summary: "Darkens or tints the screen edges.", params: "strength [0,1] (0.5), radius [0,2] (0.6), softness (0,2] (0.6), color #rrggbb (#000000)",
+        keywords: &["vignette", "edge darkening", "dark corners", "暗角", "暈影", "晕影"] },
+    RenderPassGuide { kind: "fxaa", summary: "Fast approximate anti-aliasing over the final image, before extensions.", params: "none",
+        keywords: &["fxaa", "anti-aliasing", "antialiasing", "anti alias", "antialias", "jaggies", "jagged edges", "smooth edges", "抗鋸齒", "鋸齒", "抗锯齿"] },
+    RenderPassGuide { kind: "projected", summary: "Projected geometry drawn after the post passes.", params: "none",
+        keywords: &["projected geometry"] },
+    RenderPassGuide { kind: "ui", summary: "The UI, drawn last; disabling it hides the UI while input still routes.", params: "none",
+        keywords: &["hide ui", "hud pass"] },
+];
+
+/// The order passes must be declared in, as people read it in errors.
+const ORDER: &str = "scene, then ao, fog, bloom, tonemap, grade, vignette, fxaa, then extensions, then projected, then ui";
 const MAX_PASSES: usize = 32;
 const MAX_EXTENSION_PARAMS: usize = 16;
 
@@ -53,11 +89,32 @@ fn stage(kind: &str) -> u8 {
     match kind {
         "scene" => 0,
         "ao" => 1,
-        "bloom" => 2,
-        "tonemap" => 3,
-        "projected" => 5,
-        "ui" => 6,
-        _ => 4,
+        "fog" => 2,
+        "bloom" => 3,
+        "tonemap" => 4,
+        "grade" => 5,
+        "vignette" => 6,
+        "fxaa" => 7,
+        "projected" => 9,
+        "ui" => 10,
+        _ => 8,
+    }
+}
+
+/// A colour param is "#rrggbb" text.
+fn color(pass: &RenderPass, key: &str) -> Result<(), String> {
+    match pass.params.get(key) {
+        None => Ok(()),
+        Some(RenderParam::Text(text))
+            if text.len() == 7 && text.starts_with('#') && text[1..].bytes().all(|b| b.is_ascii_hexdigit()) => Ok(()),
+        Some(other) => Err(format!("pass '{}' {key} must be a \"#rrggbb\" colour, got {other:?}", pass.id)),
+    }
+}
+
+fn number_or(pass: &RenderPass, key: &str, fallback: f64) -> f64 {
+    match pass.params.get(key) {
+        Some(RenderParam::Number(value)) => *value,
+        _ => fallback,
     }
 }
 
@@ -101,7 +158,7 @@ impl RenderPipeline {
             let builtin = BUILTIN_RENDER_PASSES.contains(&pass.kind.as_str());
             if !builtin && !(valid_name(&pass.kind) && pass.kind.contains('.')) {
                 return Err(format!(
-                    "pass '{}' kind '{}' is neither built in ({}) nor a namespaced extension such as 'studio.vignette'",
+                    "pass '{}' kind '{}' is neither built in ({}) nor a namespaced extension such as 'studio.crt'",
                     pass.id, pass.kind, BUILTIN_RENDER_PASSES.join(", ")
                 ));
             }
@@ -110,7 +167,7 @@ impl RenderPipeline {
             let repeated = builtin && self.passes[..index].iter().any(|earlier| earlier.kind == pass.kind);
             if repeated || stage < last_stage || (index > 0 && stage == 0) {
                 return Err(format!(
-                    "pass '{}' ({}) is out of order: scene, then ao, bloom, tonemap, then extensions, then projected, then ui; built-in kinds appear at most once",
+                    "pass '{}' ({}) is out of order: {ORDER}; built-in kinds appear at most once",
                     pass.id, pass.kind
                 ));
             }
@@ -123,9 +180,12 @@ impl RenderPipeline {
     fn validate_params(&self, pass: &RenderPass, builtin: bool) -> Result<(), String> {
         let allowed: &[&str] = match pass.kind.as_str() {
             "ao" => &["strength"],
+            "fog" => &["mode", "color", "density", "start", "end"],
             "bloom" => &["threshold", "strength"],
             "tonemap" => &["mode", "exposure"],
-            "scene" | "projected" | "ui" => &[],
+            "grade" => &["saturation", "contrast", "brightness", "tint"],
+            "vignette" => &["strength", "radius", "softness", "color"],
+            "scene" | "fxaa" | "projected" | "ui" => &[],
             _ => {
                 if pass.params.len() > MAX_EXTENSION_PARAMS {
                     return Err(format!("pass '{}' has more than {MAX_EXTENSION_PARAMS} params", pass.id));
@@ -161,6 +221,34 @@ impl RenderPipeline {
                     return Err(format!("pass '{}' mode must be \"aces\" or \"none\"", pass.id));
                 }
                 number(pass, "exposure", 0.0, 8.0, true)
+            }
+            "fog" => {
+                if let Some(mode) = pass.params.get("mode")
+                    && !matches!(mode, RenderParam::Text(text) if text == "exp2" || text == "linear")
+                {
+                    return Err(format!("pass '{}' mode must be \"exp2\" or \"linear\"", pass.id));
+                }
+                color(pass, "color")?;
+                number(pass, "density", 0.0, 10.0, false)?;
+                number(pass, "start", 0.0, 1e6, false)?;
+                number(pass, "end", 0.0, 1e6, true)?;
+                let (start, end) = (number_or(pass, "start", 0.0), number_or(pass, "end", 100.0));
+                if end <= start {
+                    return Err(format!("pass '{}' end ({end}) must be greater than start ({start})", pass.id));
+                }
+                Ok(())
+            }
+            "grade" => {
+                for key in ["saturation", "contrast", "brightness"] {
+                    number(pass, key, 0.0, 4.0, false)?;
+                }
+                color(pass, "tint")
+            }
+            "vignette" => {
+                number(pass, "strength", 0.0, 1.0, false)?;
+                number(pass, "radius", 0.0, 2.0, false)?;
+                number(pass, "softness", 0.0, 2.0, true)?;
+                color(pass, "color")
             }
             _ => Ok(()),
         }
@@ -204,9 +292,13 @@ mod tests {
         assert!(pipeline(serde_json::json!([
             {"id": "world", "kind": "scene"},
             {"id": "ao", "kind": "ao", "params": {"strength": 1.2}},
+            {"id": "haze", "kind": "fog", "params": {"mode": "linear", "color": "#9AB0c8", "start": 10, "end": 80}},
             {"id": "glow", "kind": "bloom", "params": {"threshold": 0.8, "strength": 1.0}},
             {"id": "tone", "kind": "tonemap", "params": {"mode": "aces", "exposure": 1.1}},
-            {"id": "vignette", "kind": "studio.vignette", "params": {"radius": 0.7, "on": true}},
+            {"id": "look", "kind": "grade", "params": {"saturation": 1.2, "contrast": 1.1, "brightness": 0.9, "tint": "#fff4e0"}},
+            {"id": "edge", "kind": "vignette", "params": {"strength": 0.4, "radius": 0.7, "softness": 0.5, "color": "#000000"}},
+            {"id": "aa", "kind": "fxaa"},
+            {"id": "tint", "kind": "studio.tint", "params": {"radius": 0.7, "on": true}},
             {"id": "projected", "kind": "projected"},
             {"id": "ui", "kind": "ui"}
         ])).is_ok());
@@ -215,17 +307,31 @@ mod tests {
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "t", "kind": "tonemap"}, {"id": "b", "kind": "bloom"}]), "out of order"),
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "u", "kind": "ui"}, {"id": "p", "kind": "projected"}]), "out of order"),
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "b", "kind": "bloom"}, {"id": "b2", "kind": "bloom"}]), "out of order"),
-            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "v", "kind": "vignette"}]), "namespaced extension"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "v", "kind": "sepia"}]), "namespaced extension"),
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "b", "kind": "bloom", "params": {"radius": 1}}]), "has no param 'radius'"),
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "b", "kind": "bloom", "params": {"strength": 9}}]), "strength must be a number"),
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "t", "kind": "tonemap", "params": {"exposure": 0}}]), "exposure must be a number"),
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "t", "kind": "tonemap", "params": {"mode": "filmic"}}]), "mode must be"),
             (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "w", "kind": "ui"}]), "declared twice"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "a", "kind": "fxaa"}, {"id": "v", "kind": "vignette"}]), "out of order"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "e", "kind": "studio.tint"}, {"id": "a", "kind": "fxaa"}]), "out of order"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "f", "kind": "fog", "params": {"color": "blue"}}]), "colour"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "f", "kind": "fog", "params": {"mode": "exp"}}]), "mode must be"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "f", "kind": "fog", "params": {"start": 200}}]), "greater than start"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "g", "kind": "grade", "params": {"saturation": 5}}]), "saturation must be"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "v", "kind": "vignette", "params": {"softness": 0}}]), "softness must be"),
+            (serde_json::json!([{"id": "w", "kind": "scene"}, {"id": "a", "kind": "fxaa", "params": {"quality": 1}}]), "has no param 'quality'"),
         ];
         for (passes, expected) in cases {
             let error = pipeline(passes.clone()).unwrap_err();
             assert!(error.contains(expected), "{passes}: expected '{expected}' in {error}");
         }
+    }
+
+    #[test]
+    fn every_builtin_pass_has_one_guide_entry() {
+        let kinds: Vec<_> = RENDER_PASS_GUIDE.iter().map(|guide| guide.kind).collect();
+        assert_eq!(kinds, BUILTIN_RENDER_PASSES, "guide entries follow the declaration order");
     }
 
     #[test]

@@ -535,8 +535,8 @@ pub fn native_wgpu_export_gate(
     projected_frame::native_gate(presentation.projected_material_profile)?;
     physical_input::native_gate(presentation.physical_input)?;
     projected_raster::native_gate(presentation.projected_raster)?;
-    ensure!(presentation.antialias != Some(true),
-        "HOST_ANTIALIAS_UNSUPPORTED: native wgpu is fixed single-sample; omit antialias or use false, or export official Web for an antialias request");
+    // antialias true selects 4x MSAA in the native player (single sample when
+    // omitted or false), fixed until relaunch like the Web context option.
     let mut keys = Vec::new();
     if presentation.texture_cache.is_some() {
         keys.push("texture_cache");
@@ -643,9 +643,8 @@ mod tests {
         for value in [false,true] {
             let settings:PresentationSettings=serde_json::from_value(json!({"antialias":value})).unwrap();
             assert_eq!(settings.antialias,Some(value));settings.validate_renderer().unwrap();
-            let native=native_wgpu_export_gate(&quiet,Some(&settings));
-            if value {assert!(native.unwrap_err().to_string().contains("HOST_ANTIALIAS_UNSUPPORTED"));}
-            else {native.unwrap();}
+            // Native draws antialias true with 4x MSAA.
+            native_wgpu_export_gate(&quiet,Some(&settings)).unwrap();
         }
         for value in [json!(null),json!(0),json!("false"),json!({})] {
             assert!(serde_json::from_value::<PresentationSettings>(json!({"antialias":value})).is_err());

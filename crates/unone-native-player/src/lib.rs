@@ -8,6 +8,7 @@ mod save;
 mod audio;
 mod particles;
 mod render;
+mod lighting;
 mod projected;
 mod presentation_raster;
 mod sprites;
@@ -46,13 +47,14 @@ pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
     if snapshot.projected_geometry.values().any(|batch|batch.blend==unone_engine::ProjectedBlend::SourceOver) {
         return Err("PROJECTED_BLEND_UNSUPPORTED: source_over requires the official WebGL projected renderer; native sRGB hardware blending does not implement the encoded-color contract".into());
     }
-    // Native executes scene, bloom, tonemap, projected and ui (ADR 0048).
+    // Native executes every built-in pass kind (ADR 0048); host extensions
+    // are Web JavaScript modules.
     if let Some(pipeline) = &snapshot.render_pipeline {
         let unsupported: Vec<_> = pipeline.passes.iter()
-            .filter(|pass| !["scene", "bloom", "tonemap", "projected", "ui"].contains(&pass.kind.as_str()))
+            .filter(|pass| !unone_engine::BUILTIN_RENDER_PASSES.contains(&pass.kind.as_str()))
             .map(|pass| format!("{} ({})", pass.id, pass.kind)).collect();
         if !unsupported.is_empty() {
-            return Err(format!("NATIVE_RENDER_PASS_UNSUPPORTED: native wgpu executes scene, bloom, tonemap, projected and ui passes; remove or export Web for {}", unsupported.join(", ")));
+            return Err(format!("NATIVE_RENDER_PASS_UNSUPPORTED: native wgpu executes the built-in passes ({}) but not host extensions, which are Web modules; remove or export Web for {}", unone_engine::BUILTIN_RENDER_PASSES.join(", "), unsupported.join(", ")));
         }
     }
     // Declared or prepared unsupported materials are resource errors, rather
@@ -933,7 +935,7 @@ pub fn desktop() -> R<()> {
         descriptor["projected_geometry"]["material_defaults"]["alpha_compare"]=json!("greater_equal");
         descriptor["projected_geometry"]["material_defaults"]["blend"]=json!("opaque");
         descriptor["projected_geometry"]["source_over"]=json!({"supported":false,"error":"PROJECTED_BLEND_UNSUPPORTED","phase":"before_GPU_prepare","reason":"native sRGB hardware blending does not implement encoded-color source-over parity"});
-        descriptor["raster"]=json!({"sample_count":1,"antialias":{"omitted":"fixed_single_sample","false":"accepted_single_sample","true":"unsupported_preflight"},"static_until_relaunch":true});
+        descriptor["raster"]=json!({"sample_count":{"omitted":1,"false":1,"true":4},"antialias":{"omitted":"single_sample","false":"single_sample","true":"msaa_4x_world_and_sprites"},"unsupported_adapter":"single_sample","static_until_relaunch":true});
         descriptor["raster"]["projected_raster"]=json!({"omitted":"native_host_raster","explicit":"unsupported_package_admission","before_runtime_or_gpu":true});
         descriptor["raster"]["projected_material_profile"]=json!({"omitted":"legacy_unchanged","explicit":"unsupported_package_admission","snapshot":"unsupported_before_GPU_prepare"});
         descriptor["spatial"] = json!({"api_version":1,"backends":["cpu","wgpu"],"default":"cpu","configured_by":"player.presentation.json:spatial_backend or --spatial-backend cpu|gpu|auto"});
@@ -1175,7 +1177,7 @@ mod telemetry_tests {
     }
 
     #[test]
-    fn native_runtime_executes_core_passes_and_rejects_ao_and_extensions() {
+    fn native_runtime_executes_builtin_passes_and_rejects_extensions() {
         let package = |passes: serde_json::Value| super::Package {
             files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&serde_json::json!({
                 "config":{"name":"native-pipeline-gate","entry_script":"main.luau",
@@ -1184,8 +1186,9 @@ mod telemetry_tests {
             })).unwrap())]),
             digest: "fixture".into(),
         };
-        assert!(package(serde_json::json!([{"id":"world","kind":"scene"},{"id":"glow","kind":"bloom"},{"id":"tone","kind":"tonemap"},{"id":"p","kind":"projected"},{"id":"hud","kind":"ui"}])).runtime(42).is_ok());
-        for (kind, id) in [("ao","occlusion"),("studio.tint","tint")] {
+        assert!(package(serde_json::json!([{"id":"world","kind":"scene"},{"id":"occlusion","kind":"ao"},{"id":"haze","kind":"fog"},{"id":"glow","kind":"bloom"},{"id":"tone","kind":"tonemap"},
+            {"id":"look","kind":"grade"},{"id":"edge","kind":"vignette"},{"id":"aa","kind":"fxaa"},{"id":"p","kind":"projected"},{"id":"hud","kind":"ui"}])).runtime(42).is_ok());
+        for (kind, id) in [("studio.tint","tint"),("studio.crt","crt")] {
             let error = package(serde_json::json!([{"id":"world","kind":"scene"},{"id":id,"kind":kind}])).runtime(42).err().expect("native pass gate");
             assert!(error.contains("NATIVE_RENDER_PASS_UNSUPPORTED") && error.contains(id), "{error}");
         }

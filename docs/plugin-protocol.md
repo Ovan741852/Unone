@@ -138,6 +138,15 @@ action applies. Diagnostic severity is `ERROR`, `WARNING`, or `INFO`. Use
 tool invocation does not by itself prove that a generated component can run
 on every host.
 
+## Being found
+
+`game find "<need>"` ([find](find.md)) matches a plugin's id, name,
+description, capabilities and tool descriptions, plus an optional manifest
+`keywords` list: the words people search with when they need what the plugin
+does, including other languages, such as `["crt", "scanlines", "掃描線"]`.
+A Koncrate catalogue entry for a Unone plugin should declare the `unone`
+framework, which is what `game find` asks the catalogue for.
+
 ## Design rules
 
 - Plugin absence is a structured `PLUGIN_NOT_FOUND` result, not a silent skip.

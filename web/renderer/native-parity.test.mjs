@@ -28,7 +28,10 @@ function batchFor(t,q,s,revision) {
 }
 
 test('native WGSL quaternion and Three packed-instance transforms preserve handedness',()=>{
-  assert.ok(native('render.wgsl').includes('local+2.*cross(q.xyz,cross(q.xyz,local)+q.w*local)+translation'));
+  // The same rotation also turns lit normals (ADR 0054).
+  const wgsl=native('render.wgsl');
+  assert.ok(wgsl.includes('fn rotate(q:vec4f,v:vec3f)->vec3f{return v+2.*cross(q.xyz,cross(q.xyz,v)+q.w*v);}'));
+  assert.ok(wgsl.includes('let world=rotate(q,p*scale)+translation;'));
   const geometry=new THREE.BoxGeometry(2,3,4),material=new THREE.MeshBasicMaterial();
   const scene=new THREE.Scene(),renderer=createInstanceRenderer(THREE,scene,()=>({geometry,material}));
   let revision=0;

@@ -1,6 +1,23 @@
 {
   "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
   "$defs": {
+    "AmbientLight": {
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "default": "#ffffff",
+          "description": "\"#rrggbb\" (sRGB), default \"#ffffff\".",
+          "type": "string"
+        },
+        "intensity": {
+          "default": 0.3,
+          "description": "[0,16], default 0.3.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
     "AnimationData": {
       "additionalProperties": false,
       "description": "Skeletal animation state an entity publishes for a host to play.\n\nThe engine stores which clip is selected and since which frame; it does not\nevaluate bones, meshes or blending. The only declared asset kind for this\ntoday is Spine, and the host owns that runtime.",
@@ -500,6 +517,38 @@
       ],
       "type": "object"
     },
+    "Lighting": {
+      "additionalProperties": false,
+      "properties": {
+        "ambient": {
+          "$ref": "#/$defs/AmbientLight",
+          "default": {
+            "color": "#ffffff",
+            "intensity": 0.3
+          },
+          "description": "Light reaching every surface equally."
+        },
+        "points": {
+          "description": "Up to eight point lights; they cast no shadows.",
+          "items": {
+            "$ref": "#/$defs/PointLight"
+          },
+          "type": "array"
+        },
+        "sun": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SunLight"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "One directional light, such as the sun or the moon."
+        }
+      },
+      "type": "object"
+    },
     "Mesh3DData": {
       "additionalProperties": false,
       "properties": {
@@ -795,6 +844,35 @@
           "type": "number"
         }
       },
+      "type": "object"
+    },
+    "PointLight": {
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "default": "#ffffff",
+          "description": "\"#rrggbb\" (sRGB), default \"#ffffff\".",
+          "type": "string"
+        },
+        "intensity": {
+          "default": 1.0,
+          "description": "[0,100], default 1.",
+          "format": "double",
+          "type": "number"
+        },
+        "position": {
+          "$ref": "#/$defs/Vec3"
+        },
+        "range": {
+          "default": 10.0,
+          "description": "Distance where the light reaches zero: (0, 1e6], default 10. The\nfalloff is (1 - (d / range)^4)^2, full near the light.",
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "position"
+      ],
       "type": "object"
     },
     "ProjectConfig": {
@@ -1262,6 +1340,18 @@
           },
           "type": "array"
         },
+        "lighting": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Lighting"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ambient, sun and point lights for 3D content (docs/lighting.md).\nAbsent: 3D content stays unlit."
+        },
         "particle_effects": {
           "additionalProperties": {
             "$ref": "#/$defs/ParticleDefinition"
@@ -1570,6 +1660,31 @@
       ],
       "type": "object"
     },
+    "Shadows": {
+      "additionalProperties": false,
+      "properties": {
+        "bias": {
+          "default": 0.001,
+          "description": "Depth offset against shadow acne, in shadow-map depth: [0, 0.05], default 0.001.",
+          "format": "double",
+          "type": "number"
+        },
+        "distance": {
+          "default": 20.0,
+          "description": "Half the width of the square area around the camera target that casts\nand receives shadows, in world units: (0, 10000], default 20.",
+          "format": "double",
+          "type": "number"
+        },
+        "size": {
+          "default": 2048,
+          "description": "Shadow map resolution: 512, 1024, 2048 or 4096 (default 2048).",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
     "Shape3D": {
       "oneOf": [
         {
@@ -1779,6 +1894,41 @@
       "required": [
         "columns",
         "rows"
+      ],
+      "type": "object"
+    },
+    "SunLight": {
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "default": "#ffffff",
+          "description": "\"#rrggbb\" (sRGB), default \"#ffffff\".",
+          "type": "string"
+        },
+        "direction": {
+          "$ref": "#/$defs/Vec3",
+          "description": "The direction the light travels, from the sun towards the scene, such\nas {x = -0.4, y = -1, z = -0.3}. Any non-zero length."
+        },
+        "intensity": {
+          "default": 1.0,
+          "description": "[0,16], default 1: a white surface facing the sun is fully lit.",
+          "format": "double",
+          "type": "number"
+        },
+        "shadows": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Shadows"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Present to cast shadows from 3D meshes, instances and heightfields."
+        }
+      },
+      "required": [
+        "direction"
       ],
       "type": "object"
     },

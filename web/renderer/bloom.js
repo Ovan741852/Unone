@@ -1,4 +1,7 @@
 import {createBloomTimer} from './bloom-timer.js';
+// Engine-defined pass kinds (render_pipeline.rs BUILTIN_RENDER_PASSES); any
+// other declared kind is a host extension.
+export const BUILTIN_PASSES=new Set(['scene','ao','fog','bloom','tonemap','grade','vignette','fxaa','projected','ui']);
 // Opt-in shared output settings. Legacy hosts keep their existing rendering path.
 export function normalizePostProcessing(value) {
   if(value===undefined)return null;
@@ -32,9 +35,20 @@ export function createBloom(THREE,renderer,settings) {
   const blur=material('uniform sampler2D image;uniform vec2 direction;varying vec2 vUv;void main(){vec3 c=texture2D(image,vUv).rgb*.227027;c+=texture2D(image,vUv+direction*1.384615).rgb*.316216;c+=texture2D(image,vUv-direction*1.384615).rgb*.316216;c+=texture2D(image,vUv+direction*3.230769).rgb*.070270;c+=texture2D(image,vUv-direction*3.230769).rgb*.070270;gl_FragColor=vec4(c,1.);}',{image:{value:null},direction:{value:new THREE.Vector2()}});
   // Depth-based SSAO: reconstruct view-space surface positions and normals.
   // This is a reusable presentation effect; no game entities/rules enter it.
+  // Fog, grade and vignette share this pass (ADR 0048 order): AO and fog
+  // before bloom in linear scene light, grade and vignette after the tone curve.
   const combine=material(`uniform sampler2D image,bloom,depthImage;uniform float strength,aoStrength;uniform vec2 pixels;uniform mat4 inverseProjection;varying vec2 vUv;
+  uniform int fogMode;uniform vec3 fogColor;uniform float fogDensity,fogStart,fogEnd;
+  uniform bool gradeOn;uniform float saturation,contrast,brightness;uniform vec3 tint;
+  uniform float vignetteStrength,vignetteRadius,vignetteSoftness;uniform vec3 vignetteColor;
   vec2 depthUV(vec2 uv){return clamp(uv,pixels*.5,vec2(1.)-pixels*.5);}
   vec3 positionAt(vec2 uv){float d=texture2D(depthImage,uv).x;vec4 p=inverseProjection*vec4(uv*2.-1.,d*2.-1.,1.);float w=(p.w<0.?-1.:1.)*max(abs(p.w),1.e-6);return p.xyz/w;}
+  float fogAmount(){
+   if(fogMode==0||texture2D(depthImage,vUv).x>=.99999)return 0.;
+   float distance=max(-positionAt(vUv).z,0.);
+   if(fogMode==2)return clamp((distance-fogStart)/(fogEnd-fogStart),0.,1.);
+   float x=fogDensity*max(distance-fogStart,0.);return 1.-exp(-x*x);
+  }
   void main(){float occ=0.;
    if(aoStrength>0.){
     vec2 center=depthUV(vUv);float depth=texture2D(depthImage,center).x;
@@ -53,11 +67,42 @@ export function createBloom(THREE,renderer,settings) {
     }
    }
    vec3 c=texture2D(image,vUv).rgb*(1.-clamp(occ/12.*aoStrength,0.,.65));
+   c=mix(c,fogColor,fogAmount());
    if(strength>0.)c+=texture2D(bloom,vUv).rgb*strength;
    gl_FragColor=vec4(c,1.);
    #include <tonemapping_fragment>
+   if(gradeOn){
+    vec3 g=gl_FragColor.rgb*tint*brightness;
+    g=mix(vec3(dot(g,vec3(.2126,.7152,.0722))),g,saturation);
+    gl_FragColor.rgb=max((g-.18)*contrast+.18,0.);
+   }
+   if(vignetteStrength>0.){
+    float edge=smoothstep(vignetteRadius,vignetteRadius+vignetteSoftness,length(vUv-.5)*1.41421356);
+    gl_FragColor.rgb=mix(gl_FragColor.rgb,vignetteColor,edge*vignetteStrength);
+   }
    #include <colorspace_fragment>
-  }`,{image:{value:base.texture},bloom:{value:a.texture},depthImage:{value:base.depthTexture},strength:{value:.75},aoStrength:{value:0},pixels:{value:new THREE.Vector2()},inverseProjection:{value:null}});
+  }`,{image:{value:base.texture},bloom:{value:a.texture},depthImage:{value:base.depthTexture},strength:{value:.75},aoStrength:{value:0},pixels:{value:new THREE.Vector2()},inverseProjection:{value:null},
+    fogMode:{value:0},fogColor:{value:new THREE.Color()},fogDensity:{value:.02},fogStart:{value:0},fogEnd:{value:100},
+    gradeOn:{value:false},saturation:{value:1},contrast:{value:1},brightness:{value:1},tint:{value:new THREE.Color(1,1,1)},
+    vignetteStrength:{value:0},vignetteRadius:{value:.6},vignetteSoftness:{value:.6},vignetteColor:{value:new THREE.Color(0,0,0)}});
+  // FXAA over the graded image. Luma uses an approximate gamma so edges are
+  // found as people see them; the input itself stays linear.
+  const fxaa=material(`uniform sampler2D image;uniform vec2 pixels;varying vec2 vUv;
+  float luma(vec3 c){return dot(sqrt(max(c,vec3(0.))),vec3(.299,.587,.114));}
+  void main(){
+   vec3 m=texture2D(image,vUv).rgb;
+   float lm=luma(m),nw=luma(texture2D(image,vUv+vec2(-1.,-1.)*pixels).rgb),ne=luma(texture2D(image,vUv+vec2(1.,-1.)*pixels).rgb);
+   float sw=luma(texture2D(image,vUv+vec2(-1.,1.)*pixels).rgb),se=luma(texture2D(image,vUv+vec2(1.,1.)*pixels).rgb);
+   float lo=min(lm,min(min(nw,ne),min(sw,se))),hi=max(lm,max(max(nw,ne),max(sw,se)));
+   vec2 dir=vec2(-((nw+ne)-(sw+se)),(nw+sw)-(ne+se));
+   float reduce=max((nw+ne+sw+se)*(.25/8.),1./128.);
+   dir=clamp(dir/(min(abs(dir.x),abs(dir.y))+reduce),vec2(-8.),vec2(8.))*pixels;
+   vec3 near=.5*(texture2D(image,vUv+dir*(1./3.-.5)).rgb+texture2D(image,vUv+dir*(2./3.-.5)).rgb);
+   vec3 wide=near*.5+.25*(texture2D(image,vUv-dir*.5).rgb+texture2D(image,vUv+dir*.5).rgb);
+   float lw=luma(wide);
+   gl_FragColor=vec4(lw<lo||lw>hi?near:wide,1.);
+   #include <colorspace_fragment>
+  }`,{image:{value:null},pixels:{value:new THREE.Vector2()}});
   combine.toneMapped=postprocessing!==null;
   const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),bright);scene.add(quad);
   const pass=(mat,destination)=>{quad.material=mat;renderer.setRenderTarget(destination);renderer.render(scene,camera);};
@@ -79,9 +124,24 @@ export function createBloom(THREE,renderer,settings) {
   }
   // Extension passes read the previous result and write the next target; the
   // last one writes the screen. They get a full-screen helper and their params.
-  function extensions(list) {
+  function active(pipeline){
+    const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled,tone=pipeline?pipeline.tone:configuredTone;
+    return Boolean(bloomOn||aoOn||tone||pipeline?.fog?.on||pipeline?.grade?.on||pipeline?.vignette?.on||pipeline?.fxaa||(pipeline?.extensions??[]).length);
+  }
+  // Fog, grade and vignette uniforms for this frame; off without a pipeline.
+  function setLook(pipeline){
+    const u=combine.uniforms,fog=pipeline?.fog,grade=pipeline?.grade,vignette=pipeline?.vignette;
+    u.fogMode.value=fog?.on?(fog.mode==='linear'?2:1):0;
+    if(fog?.on){u.fogColor.value.set(fog.color);u.fogDensity.value=fog.density;u.fogStart.value=fog.start;u.fogEnd.value=fog.end;}
+    u.gradeOn.value=Boolean(grade?.on);
+    if(grade?.on){u.saturation.value=grade.saturation;u.contrast.value=grade.contrast;u.brightness.value=grade.brightness;u.tint.value.set(grade.tint);}
+    u.vignetteStrength.value=vignette?.on?vignette.strength:0;
+    if(vignette?.on){u.vignetteRadius.value=vignette.radius;u.vignetteSoftness.value=vignette.softness;u.vignetteColor.value.set(vignette.color);}
+  }
+  // first: the chain target holding the image the first extension reads.
+  function extensions(list,first) {
     for(let index=0;index<list.length;index++){
-      const input=chain[index%2],output=index===list.length-1?null:chain[(index+1)%2];
+      const input=chain[(first+index)%2],output=index===list.length-1?null:chain[(first+index+1)%2];
       list[index].runner.draw({THREE,renderer,input:input.texture,output,width,height,params:list[index].params,fullscreen:(material,destination)=>pass(material,destination)});
     }
   }
@@ -99,7 +159,7 @@ export function createBloom(THREE,renderer,settings) {
         renderer.setRenderTarget(base);callback();
       }finally{renderer.setRenderTarget(previous,face,mip);}
     },
-    contextLost(retire){retire(base);retire(a);retire(b);retire(chain[0]);retire(chain[1]);retire(bright);retire(blur);retire(combine);retire(quad.geometry);},
+    contextLost(retire){retire(base);retire(a);retire(b);retire(chain[0]);retire(chain[1]);retire(bright);retire(blur);retire(combine);retire(fxaa);retire(quad.geometry);},
     resetMeasurements(){timer.reset();},
     setEnabled(value){enabled=Boolean(value);},
     setAO(value){aoEnabled=Boolean(value);},
@@ -107,10 +167,7 @@ export function createBloom(THREE,renderer,settings) {
     // pipeline: per-frame settings from a declared render pipeline (ADR 0048).
     // Without it the creation settings and setEnabled/setAO apply as before.
     // Whether a draw would run any post-processing pass at all.
-    active(pipeline){
-      const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled,tone=pipeline?pipeline.tone:configuredTone;
-      return Boolean(bloomOn||aoOn||tone||(pipeline?.extensions??[]).length);
-    },
+    active(pipeline){return active(pipeline);},
     draw(worldScene,worldCamera,overlay,pipeline) {
       if(disposed)throw Error('POSTPROCESSING_DISPOSED');
       const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled;
@@ -119,7 +176,7 @@ export function createBloom(THREE,renderer,settings) {
       lastPipeline=pipeline?pipeline.ids:null;
       const query=timer.begin(bloomMeasurementMode(bloomOn,aoOn));
       try{
-      if(bloomOn||aoOn||tone||post.length) {
+      if(active(pipeline)) {
         const size=renderer.getDrawingBufferSize(new THREE.Vector2());
         size.x=Math.max(1,size.x);size.y=Math.max(1,size.y);
         if(width!==size.x||height!==size.y){width=size.x;height=size.y;base.setSize(width,height);a.setSize(Math.max(1,Math.ceil(width/4)),Math.max(1,Math.ceil(height/4)));b.setSize(a.width,a.height);chain[0].setSize(width,height);chain[1].setSize(width,height);}
@@ -129,13 +186,19 @@ export function createBloom(THREE,renderer,settings) {
         combine.uniforms.aoStrength.value=aoOn?(pipeline?.ao.strength??postprocessing?.aoStrength??1.7):0;
         combine.uniforms.strength.value=bloomOn?(pipeline?.bloom.strength??postprocessing?.bloomStrength??.75):0;
         bright.uniforms.threshold.value=pipeline?.bloom.threshold??postprocessing?.bloomThreshold??.55;
+        setLook(pipeline);
         if(bloomOn){
           pass(bright,a);
           blur.uniforms.image.value=a.texture;blur.uniforms.direction.value.set(1/a.width,0);pass(blur,b);
           blur.uniforms.image.value=b.texture;blur.uniforms.direction.value.set(0,1/a.height);pass(blur,a);
         }
-        output(tone,post.length?chain[0]:null);
-        if(post.length)extensions(post);
+        const antialias=Boolean(pipeline?.fxaa);
+        output(tone,antialias||post.length?chain[0]:null);
+        if(antialias){
+          fxaa.uniforms.image.value=chain[0].texture;fxaa.uniforms.pixels.value.set(1/width,1/height);
+          pass(fxaa,post.length?chain[1]:null);
+        }
+        if(post.length)extensions(post,antialias?1:0);
       } else {renderer.setRenderTarget(null);world();}
       }finally{timer.end(query);}
     },
@@ -147,7 +210,7 @@ export function createBloom(THREE,renderer,settings) {
       if(disposed)return;disposed=true;
       timer.dispose();
       base.depthTexture.dispose();base.dispose();a.dispose();b.dispose();chain[0].dispose();chain[1].dispose();
-      bright.dispose();blur.dispose();combine.dispose();quad.geometry.dispose();scene.remove(quad);
+      bright.dispose();blur.dispose();combine.dispose();fxaa.dispose();quad.geometry.dispose();scene.remove(quad);
     },
   };
 }
