@@ -143,7 +143,7 @@ test('actual Three draw joins asynchronous host texture loading with heightfield
   const module=`export * from ${JSON.stringify(core)};import {Texture} from ${JSON.stringify(core)};
     export class TextureLoader {load(_url,resolve){resolve(new Texture())}}
     export class WebGPURenderer {constructor(){this.info={reset(){},render:{calls:0,triangles:0},memory:{textures:0}}}
-      async init(){}setPixelRatio(){}setClearColor(){}setSize(){}render(){this.info.render.calls++}dispose(){}}`;
+      async init(){}setPixelRatio(){}setClearColor(){}setSize(){}getPixelRatio(){return 1}setViewport(){}render(){this.info.render.calls++}dispose(){}}`;
   let context;
   const renderer=await createThreeRenderer({clientWidth:640,clientHeight:360,addEventListener(){},removeEventListener(){}},{kind:'three-webgpu',
     threeModuleUrl:'data:text/javascript;base64,'+Buffer.from(module).toString('base64'),
