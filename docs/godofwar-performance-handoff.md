@@ -9,6 +9,8 @@
 - 載入與效能數字主要來自前一版 `5fa4a1ae9348ed694f6cfdfc9d9d50af` 的相同遊戲與 production WASM。最新版本只補手把拒絕保護，驗證過功能連續性，未重新宣稱完成效能 benchmark。
 - [彙整 JSON](evidence/godofwar-performance-2026-11-15.json) 保留每筆來源、版本範圍、視窗覆蓋與單位。原始完整檔位於遊戲工作區 `game/evidence/loading-*`，本報告不包含玩家狀態或簽名 URL。
 
+交接期間遠端已合入 `ef5eb55ec974e950928253a5cca2b38fd1e62d69`，處理 issue #2 的重複 canvas resize。這是引擎來源修正，尚未整合到本遊戲的釘選正式 host；不把它當成已量測的遊戲端改善。請沿原議題完成目標裝置與消費端驗收。
+
 ## 現況
 
 | 項目 | 數字／能力 | 解讀界線 |

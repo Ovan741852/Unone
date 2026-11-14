@@ -5,7 +5,7 @@
   "published_version_id": "5fff5ee46f39c2cffee5de2785c666d9",
   "archive_sha256": "b4a60e54e0f4265ff21b396b7eb13e08f76e89bc1073506a6555c6442420c260",
   "official_web_host_source_commit": "a1b86ddc4a3618d9deb8c0550f32405f4aeedd2c",
-  "engine_main_at_review": "c36be22dcac861e526e8db6514947ccb56860915",
+  "engine_main_at_review": "de5fbb90a73eec9a79f3e46da513825305cbfe48",
   "production_wasm_sha256": "913deda0e726b1ca9d46c6ebc40f8cdc2714b5abb6b81aa03d0edb764f4d5fa2",
   "provenance": {
     "performance_samples_version": "5fa4a1ae9348ed694f6cfdfc9d9d50af",
@@ -796,5 +796,11 @@
     "group_elapsed_ms": "Group wall time; parallel group waits overlap.",
     "frame_intervals": "Submission cadence, not physical display scanout or GPU duration.",
     "memory_units": "Bytes; MiB is 1048576 bytes. Width*height*4 estimates are payload, not allocator usage."
+  },
+  "renderer_resize_fix": {
+    "commit": "ef5eb55ec974e950928253a5cca2b38fd1e62d69",
+    "source_fix_merged_to_main": true,
+    "integrated_into_game": false,
+    "game_performance_gain_measured": false
   }
 }
