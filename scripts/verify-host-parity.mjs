@@ -80,7 +80,12 @@ if(config.audio){
 const missingAudio=structuredClone(payload);delete missingAudio.config.audio;
 const initial=specs[0];
 detectsAudioOmission=false;
-try{detectsAudioOmission=replay(missingAudio,initial).observation_digest!==cases[0].observation_digest;}catch(error){if(!String(error).includes('HOST_PROJECT_REJECTED'))throw error;detectsAudioOmission=true;}
+try{detectsAudioOmission=replay(missingAudio,initial).observation_digest!==cases[0].observation_digest;}catch(error){
+ // A game may first use an audio category on a later user action. Missing
+ // declarations can therefore reject the tick, rather than the initial load.
+ if(String(error).includes('AUDIO_CATEGORY_UNKNOWN'))detectsAudioOmission=true;
+ else{if(!String(error).includes('HOST_PROJECT_REJECTED'))throw error;detectsAudioOmission=true;}
+}
 if(!detectsAudioOmission)throw new Error('PARITY_FIXTURE_INEFFECTIVE: omitting audio did not change the observation');
 }
 console.log(JSON.stringify({ok:true,mode:exported?'exported-player':'assembled-host',export:exported,cli,wasm:js,compared_frames:compared,audio_omission_detected:detectsAudioOmission}));

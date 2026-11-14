@@ -18,5 +18,31 @@
   "existing_audio_runtime_wasm_sha256": "32c3472bf1e3d35b7321c642c6842c1c916d6b4ae24eab3659db829399d75b40",
   "test_log": "artifacts/group-tests-final.log",
   "test_command": "node --test web/shared/image-*.test.mjs web/shared/ui-cursor-image-handoff.test.mjs web/renderer/ui-gpu-ownership.test.mjs web/renderer/ui-gpu-image-cache.test.mjs web/renderer/texture-cache-lifecycle.test.mjs web/shared/player-profile-main.test.mjs scripts/prepare-web-image-assets.test.mjs",
-  "coverage": ["group coalescing and promotion", "overlapping unique-byte admission", "bounded aggregate budget", "safe unload with active renderer owner", "pending cancellation and new generation", "authored dimensions and actual decoder mismatch", "header-free startup with verified dimensions", "pre-readiness facade", "nullable load/decode/network timing", "prototype-sensitive group and asset IDs", "sealed publisher dimension verification", "existing image retirement", "GPU UI ownership", "cursor handoff", "actual player profiler and worker completion"]
+  "coverage": [
+    "group coalescing and promotion",
+    "overlapping unique-byte admission",
+    "bounded aggregate budget",
+    "safe unload with active renderer owner",
+    "pending cancellation and new generation",
+    "authored dimensions and actual decoder mismatch",
+    "header-free startup with verified dimensions",
+    "pre-readiness facade",
+    "nullable load/decode/network timing",
+    "prototype-sensitive group and asset IDs",
+    "sealed publisher dimension verification",
+    "existing image retirement",
+    "GPU UI ownership",
+    "cursor handoff",
+    "actual player profiler and worker completion"
+  ],
+  "merged_upstream_commit": "5edc0d59d96308b47bd258d5c73220c6b4f3df88",
+  "merged_feature_commit": "ede13266d89b45c3017aff8fdd502e9383bb7a5a",
+  "merged_related_node_tests": 184,
+  "merged_related_node_passed": 184,
+  "merged_related_node_failed": 0,
+  "new_production_audio_wasm_sha256": "913deda0e726b1ca9d46c6ebc40f8cdc2714b5abb6b81aa03d0edb764f4d5fa2",
+  "new_production_audio_wasm_bytes": 4301700,
+  "production_error_policy_wasm_verified": true,
+  "production_game_parity_checkpoints": 4,
+  "production_audio_omission_canary_detected": true
 }

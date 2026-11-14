@@ -32,7 +32,9 @@ return {start=function(api) api.ui.setRoot(screen(2)) end,update=function(api)
     if frame==7 or frame>=10 then error('verify boom at frame '..frame) end
     api.observation.set('completed',frame)
 end}`;
-const payload=policy=>({config:{name:'error-policy-wasm',entry_script:'main.luau',systems:{ui:true,physics2d:false,physics3d:false,spine:false,effekseer:false,jobs:false,audio:false,particle:false}},
+// Only UI is required; explicitly disable the remaining defaults so this also
+// verifies project-specific lean production runtimes without camera3d.
+const payload=policy=>({config:{name:'error-policy-wasm',entry_script:'main.luau',systems:{ui:true,physics2d:false,physics3d:false,camera2d:false,camera3d:false,random:false,save:false,spine:false,effekseer:false,jobs:false,audio:false,particle:false}},
  script,scene:null,viewport_size:[1280,720],viewport_aspect:16/9,...(policy?{error_policy:policy}:{})});
 async function runtime(){
  const diagnostics={stderr:[],stderr_overflow:0,aborts:[]};
