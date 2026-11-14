@@ -6,6 +6,10 @@ editor/authoring `dev-tools` dependency. Production has no developer C ABI expor
 no `web/developer` files, no panel or browser agent API. The game's authored Luau
 is preserved; guard auxiliary registrations with `api.debug.enabled` (false in
 production). Calling registration unguarded fails with `DEVELOPMENT_ONLY`.
+A development player always runs the strict error policy: a UI publish over
+capacity or an error escaping `Game.update` stops it, whatever
+`error_policy` the project declares for production
+([runtime errors](player-export.md#runtime-errors)).
 
 ```powershell
 cargo build -p unone-cli

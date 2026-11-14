@@ -53,7 +53,11 @@ export function createRecoveryReporter({target,log=globalThis.console,now=()=>pe
    if(!record){seen={ui:0,script:0};return false;}
    if(record.ui_rejections<seen.ui||record.script_errors<seen.script)seen={ui:0,script:0};
    const ui=record.ui_rejections-seen.ui,script=record.script_errors-seen.script;
-   if(ui<=0&&script<=0)return false;
+   if(ui<=0&&script<=0){
+    // A returning update resets the consecutive run; keep the QA copy current.
+    if(latest&&record.consecutive_script_errors!==latest.consecutive_script_errors){latest=record;if(target?.dataset)target.dataset.playerRecoveredErrors=JSON.stringify(record);}
+    return false;
+   }
    const at=now();seen={ui:record.ui_rejections,script:record.script_errors};latest=record;
    if(ui>0)warn('ui',ui,record.last_ui_rejection,at);
    if(script>0)warn('script',script,record.last_script_error,at);

@@ -52,6 +52,14 @@ test('warnings are rate limited per kind and summarize what they skipped',()=>{
  assert.equal(h.children[0].hidden,false);
 });
 
+test('the QA copy follows the consecutive count back to zero without a new warning',()=>{
+ const h=harness(),last={frame:30,code:'LUAU_RUNTIME_ERROR',message:'boom'};
+ h.reporter.accept(world(0,2,{consecutive_script_errors:2,last_script_error:last}));
+ assert.equal(JSON.parse(h.dataset.playerRecoveredErrors).consecutive_script_errors,2);
+ assert.equal(h.reporter.accept(world(0,2,{consecutive_script_errors:0,last_script_error:last})),false);
+ assert.equal(JSON.parse(h.dataset.playerRecoveredErrors).consecutive_script_errors,0);assert.equal(h.warnings.length,1);
+});
+
 test('a restarted session counts from zero again and dispose removes the notice',()=>{
  const h=harness();
  h.reporter.accept(world(3,0));h.advance(6000);

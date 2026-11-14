@@ -268,6 +268,12 @@ A game that wants its own fallback reads the `setRoot` result or
 observation so tests see it. Under the strict policy a game may still `pcall`
 `setRoot`; `last_rejection` records that rejection too.
 
+Tests: `cargo test -p unone-engine --test error_policy`, the Web bridge's
+`c_abi_error_policy_keeps_the_previous_screen_or_fails_strictly`,
+`node --test web/shared/player-errors.test.mjs`, and, against a built runtime,
+`node scripts/verify-error-policy-wasm.mjs --runtime <player-runtime-dir>`, which
+drives the emitted WASM through the player's own runtime core.
+
 
 ## Raster construction request
 
