@@ -272,22 +272,25 @@ pub struct PresentationSettings {
     /// the project's own build before export.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub render_extensions: Vec<RenderExtension>,
-    /// The Web player's startup screen. Web exports write it into index.html,
-    /// so players never read it and the packaged presentation omits it.
-    #[serde(skip_serializing)]
+    /// What the players show while they start. Web exports also write it into
+    /// index.html, so it shows before any script loads; the native player
+    /// reads it from the packaged presentation.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub startup: Option<StartupScreen>,
 }
 
-/// What the official Web player shows while it starts: a logo over a
+/// What the official players show while they start: a logo over a
 /// background, with the progress bar and any startup error below it.
-/// Undeclared fields keep the Unone logo and the player's dark background.
-#[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize)]
+/// Undeclared fields keep the Unone logo and the players' dark background.
+#[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct StartupScreen {
     /// Project-relative PNG, JPEG, WebP or SVG shown instead of the Unone logo.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub logo: Option<String>,
-    /// Background colour as `#rrggbb`; the text and bar track pick the
-    /// lighter or darker foreground that contrasts more with it.
+    /// Background colour as `#rrggbb`; `unone_engine::StartupTheme` picks the
+    /// text, bar and error colours that contrast with it.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub background: Option<String>,
 }
 
@@ -303,8 +306,7 @@ impl StartupScreen {
                 "STARTUP_LOGO_FORMAT_UNSUPPORTED: startup.logo must be a .png, .jpg, .jpeg, .webp or .svg file: {logo}");
         }
         if let Some(color) = &self.background {
-            ensure!(color.len() == 7 && color.starts_with('#') && color[1..].bytes().all(|b| b.is_ascii_hexdigit()),
-                "STARTUP_BACKGROUND_INVALID: startup.background must be a #rrggbb colour: {color}");
+            unone_engine::StartupTheme::for_background(Some(color)).map_err(anyhow::Error::msg)?;
         }
         Ok(())
     }
@@ -624,9 +626,6 @@ pub fn native_wgpu_export_gate(
     if presentation.job_policy != JobPolicy::default() {
         keys.push("job_policy");
     }
-    if presentation.startup.is_some() {
-        keys.push("startup");
-    }
     ensure!(
         keys.is_empty(),
         "HOST_PRESENTATION_UNSUPPORTED: player.presentation.json fields {} are not supported by native wgpu. Export --target web or remove those keys.",
@@ -877,9 +876,8 @@ mod tests {
             "ui": {"font_source": "fonts/ui.ttf", "font_family": "Fixture"}
         })).unwrap();
         native_wgpu_export_gate(&quiet, Some(&shared_ui)).unwrap();
-        let startup: PresentationSettings = serde_json::from_value(json!({"startup": {"background": "#000000"}})).unwrap();
-        assert!(native_wgpu_export_gate(&quiet, Some(&startup)).unwrap_err().to_string().contains("startup"),
-            "the startup screen is a Web player page; native fails closed on it");
+        let startup: PresentationSettings = serde_json::from_value(json!({"startup": {"logo": "brand/logo.png", "background": "#000000"}})).unwrap();
+        native_wgpu_export_gate(&quiet, Some(&startup)).unwrap();
         let worker = PresentationSettings {
             runtime_backend: RuntimeBackend::Worker,
             ..PresentationSettings::default()

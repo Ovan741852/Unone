@@ -88,8 +88,9 @@ function presentationFor(project,files,base){
  requireThat(['cpu','gpu','auto'].includes(result.spatial_backend)&&['main','worker'].includes(result.runtime_backend),'WEB_REFRESH_PRESENTATION_INVALID');
  closed(result.job_policy,['mode','max_workers','memory_budget_mb'],'WEB_REFRESH_JOB_POLICY_INVALID');result.job_policy={mode:'auto',max_workers:2,memory_budget_mb:128,...result.job_policy};requireThat(['auto','inline','workers'].includes(result.job_policy.mode)&&Number.isInteger(result.job_policy.max_workers)&&result.job_policy.max_workers>=0&&result.job_policy.max_workers<=4&&Number.isInteger(result.job_policy.memory_budget_mb)&&result.job_policy.memory_budget_mb>=0&&result.job_policy.memory_budget_mb<=1024,'WEB_REFRESH_JOB_POLICY_INVALID');
  result.error_policy=resolveErrorPolicy(raw.error_policy);
- // Players read the startup screen from index.html; like game export web, presentation.json omits it.
- delete result.startup;Object.defineProperty(result,'startup',{value:raw.startup==null?null:startupFor(project,files,raw.startup),enumerable:false});
+ // The Web player reads the startup screen from index.html (web-export-host.mjs); like game export web,
+ // presentation.json also keeps it, where the native player reads it.
+ if(raw.startup==null)delete result.startup;else result.startup=startupFor(project,files,raw.startup);
  // Font subsetting is a game export/prepare step; this refresh ships faces whole and reports it.
  closed(result.ui,['font_source','font_family','fonts','font_subset'],'WEB_REFRESH_FONT_INVALID');result.ui={font_source:null,font_family:null,fonts:[],...result.ui};delete result.ui.font_subset;const seen=new Set();
  Object.defineProperty(result,'fontSubsetSkipped',{value:Array.isArray(result.ui.fonts)&&result.ui.fonts.some(face=>face?.subset===true),enumerable:false});requireThat(Array.isArray(result.ui.fonts)&&result.ui.fonts.length+Number(result.ui.font_source!=null)<=32,'UI_FONT_LIMIT');result.ui.fonts=result.ui.fonts.map(face=>validateFont(project,files,face,seen));

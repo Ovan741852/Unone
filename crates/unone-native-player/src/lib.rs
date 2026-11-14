@@ -16,6 +16,7 @@ mod presentation_raster;
 mod recovery;
 mod sprites;
 mod sprite_resources;
+mod startup;
 mod ui;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -143,11 +144,24 @@ pub struct Package {
     files: BTreeMap<String, Vec<u8>>,
     digest: String,
 }
-impl Package {
-    fn load(mut read: impl FnMut(&str) -> R<Vec<u8>>) -> R<Self> {
+/// Reads and verifies a package's content files against its manifest, a few
+/// at a time, so the startup screen can show how far it has got.
+pub(crate) struct PackageLoader<F> {
+    read: F,
+    digest: String,
+    /// Content entries in manifest order: path, declared bytes, declared sha256.
+    entries: Vec<(String, Value, Value)>,
+    next: usize,
+    files: BTreeMap<String, Vec<u8>>,
+    loaded_bytes: u64,
+    total_bytes: u64,
+}
+impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
+    pub(crate) fn open(mut read: F) -> R<Self> {
         let manifest = read("export.json")?;
         let value: Value = serde_json::from_slice(&manifest).map_err(|e| e.to_string())?;
-        let mut files = BTreeMap::new();
+        let mut entries = Vec::new();
+        let mut seen = std::collections::BTreeSet::new();
         for file in value["files"].as_array().ok_or("NATIVE_PACKAGE_INVALID")? {
             let path = file["path"].as_str().ok_or("NATIVE_PATH_MISSING")?;
             if !safe(path) {
@@ -156,19 +170,58 @@ impl Package {
             if !path.starts_with("content/") {
                 continue;
             }
-            let bytes = read(path)?;
-            if file["sha256"] != hash(&bytes) || file["bytes"] != bytes.len() as u64 {
-                return Err(format!("NATIVE_HASH_MISMATCH: {path}"));
-            }
-            if files.insert(path.into(), bytes).is_some() {
+            if !seen.insert(path.to_owned()) {
                 return Err("NATIVE_DUPLICATE_PATH".into());
             }
+            entries.push((path.to_owned(), file["bytes"].clone(), file["sha256"].clone()));
         }
-        presentation_raster::validate(files.get("content/presentation.json").map(Vec::as_slice))?;
-        Ok(Self {
-            files,
-            digest: hash(&manifest),
-        })
+        let total_bytes = entries.iter().map(|entry| entry.1.as_u64().unwrap_or(0)).sum();
+        Ok(Self { read, digest: hash(&manifest), entries, next: 0, files: BTreeMap::new(), loaded_bytes: 0, total_bytes })
+    }
+    fn load_entry(&mut self, index: usize) -> R<()> {
+        let (path, bytes_declared, sha_declared) = &self.entries[index];
+        if self.files.contains_key(path) {
+            return Ok(());
+        }
+        let bytes = (self.read)(path)?;
+        if *sha_declared != hash(&bytes) || *bytes_declared != bytes.len() as u64 {
+            return Err(format!("NATIVE_HASH_MISMATCH: {path}"));
+        }
+        self.loaded_bytes += bytes.len() as u64;
+        self.files.insert(path.clone(), bytes);
+        Ok(())
+    }
+    /// One verified file ahead of the rest; None when the manifest lacks it.
+    pub(crate) fn file(&mut self, path: &str) -> R<Option<Vec<u8>>> {
+        let Some(index) = self.entries.iter().position(|entry| entry.0 == path) else { return Ok(None) };
+        self.load_entry(index)?;
+        Ok(self.files.get(path).cloned())
+    }
+    /// Loads files until `budget` has passed (at least one); true when all are in.
+    pub(crate) fn advance(&mut self, budget: Duration) -> R<bool> {
+        let started = Instant::now();
+        while self.next < self.entries.len() {
+            self.load_entry(self.next)?;
+            self.next += 1;
+            if started.elapsed() >= budget {
+                break;
+            }
+        }
+        Ok(self.next == self.entries.len())
+    }
+    /// Loaded and declared bytes, then loaded and declared files.
+    pub(crate) fn progress(&self) -> (u64, u64, usize, usize) {
+        (self.loaded_bytes, self.total_bytes, self.files.len(), self.entries.len())
+    }
+    pub(crate) fn finish(mut self) -> R<Package> {
+        while !self.advance(Duration::MAX)? {}
+        presentation_raster::validate(self.files.get("content/presentation.json").map(Vec::as_slice))?;
+        Ok(Package { files: self.files, digest: self.digest })
+    }
+}
+impl Package {
+    fn load(read: impl FnMut(&str) -> R<Vec<u8>>) -> R<Self> {
+        PackageLoader::open(read)?.finish()
     }
     fn get(&self, path: &str) -> R<&[u8]> {
         self.files
@@ -417,6 +470,9 @@ struct App {
     /// The policy this run sent to the runtime (None is strict) and why.
     error_policy: (Option<unone_engine::ErrorPolicy>, &'static str),
     recovery: recovery::RecoveryLog,
+    /// Interactive play that failed after its first frame shows the error
+    /// until the window closes (startup::Stopped).
+    stopped: Option<startup::Stopped>,
 }
 impl App {
     fn sync_sprite_resources(&mut self)->R<()> {
@@ -601,7 +657,27 @@ impl App {
             quit_request_presented: false,
             error_policy,
             recovery: Default::default(),
+            stopped: None,
         })
+    }
+    /// Takes over the window and renderer that a startup screen or `resumed` opened.
+    fn adopt(&mut self, window: Arc<Window>, mut renderer: render::Renderer) -> R<()> {
+        renderer.lod_enabled = !self.settings.disable_lod;
+        let size = window.inner_size();
+        replay::update_runtime_viewport(&mut self.runtime, self.input_replay.is_some(), size.width, size.height)?;
+        self.snapshot = self.runtime.observe();
+        self.window = Some(window);
+        self.renderer = Some(renderer);
+        self.audio.resume();
+        self.boot_ms = self.boot.elapsed().as_secs_f64() * 1000.;
+        Ok(())
+    }
+    fn draw_stopped(&mut self) {
+        if let (Some(stopped), Some(renderer), Some(window)) = (&mut self.stopped, &self.renderer, &self.window)
+            && let Err(error) = stopped.draw(renderer, window.scale_factor())
+        {
+            eprintln!("{error}");
+        }
     }
     fn capture_frame(&mut self) -> R<()> {
         let Some(dir) = &self.settings.capture_dir else {
@@ -665,6 +741,15 @@ impl App {
         emit(&value);
     }
     fn fail(&mut self, e: String, event_loop: &ActiveEventLoop) {
+        // Interactive play keeps the window open on the error, like the Web
+        // player; tool runs exit at once with it.
+        if !tool_run(&self.settings) && self.renderer.is_some() && self.stopped.is_none() {
+            self.stopped = Some(startup::Stopped::new(&self.package, &e));
+            self.error = Some(e);
+            self.finish();
+            self.draw_stopped();
+            return;
+        }
         self.error = Some(e);
         self.finish();
         event_loop.exit();
@@ -696,26 +781,12 @@ impl ApplicationHandler for App {
                     .create_window(attributes)
                     .map_err(|e| e.to_string())?,
             );
-            let mut renderer =
+            let renderer =
                 pollster::block_on(render::Renderer::new(window.clone(), &self.package))?;
-            renderer.lod_enabled = !self.settings.disable_lod;
             Ok((window, renderer))
         })();
-        match result {
-            Ok((w, r)) => {
-                let size = w.inner_size();
-                if let Err(e) = replay::update_runtime_viewport(&mut self.runtime,self.input_replay.is_some(),size.width,size.height)
-                {
-                    self.fail(e, event_loop);
-                    return;
-                }
-                self.snapshot = self.runtime.observe();
-                self.window = Some(w);
-                self.renderer = Some(r);
-                self.audio.resume();
-                self.boot_ms = self.boot.elapsed().as_secs_f64() * 1000.;
-            }
-            Err(e) => self.fail(e, event_loop),
+        if let Err(e) = result.and_then(|(window, renderer)| self.adopt(window, renderer)) {
+            self.fail(e, event_loop);
         }
     }
     fn suspended(&mut self, _: &ActiveEventLoop) {
@@ -729,6 +800,18 @@ impl ApplicationHandler for App {
     }
     fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
         if self.window.as_ref().is_none_or(|w| w.id() != id) {
+            return;
+        }
+        if self.stopped.is_some() {
+            match event {
+                WindowEvent::CloseRequested => event_loop.exit(),
+                WindowEvent::Resized(size) => {
+                    if let Some(renderer) = &mut self.renderer { renderer.resize(size.width, size.height); }
+                    self.draw_stopped();
+                }
+                WindowEvent::RedrawRequested => self.draw_stopped(),
+                _ => {}
+            }
             return;
         }
         match event {
@@ -966,7 +1049,7 @@ impl ApplicationHandler for App {
         }
     }
     fn about_to_wait(&mut self, _: &ActiveEventLoop) {
-        if !self.paused {
+        if !self.paused && self.stopped.is_none() {
             if let Some(w) = &self.window {
                 w.request_redraw();
             }
@@ -1058,13 +1141,24 @@ pub fn desktop() -> R<()> {
         return Err("CAPTURE_REQUIRES_LIMIT: set --frames or --seconds".into());
     }
     let base = root.canonicalize().map_err(|e| e.to_string())?;
-    let package = Package::load(|p| {
+    let read = move |p: &str| -> R<Vec<u8>> {
         let path = base.join(p).canonicalize().map_err(|e| e.to_string())?;
         if !path.starts_with(&base) {
             return Err("NATIVE_PATH_ESCAPE".into());
         }
         std::fs::read(path).map_err(|e| e.to_string())
-    })?;
+    };
+    // Interactive play opens its window first and shows the startup screen
+    // while it loads; tool runs start directly and exit with any error.
+    if !tool_run(&settings) {
+        #[cfg(target_os = "windows")]
+        check_gui_executable_path()?;
+        let mut launcher = startup::Launcher::new(Box::new(read), settings, report, boot, save::Store::desktop());
+        let event_loop = EventLoop::new().map_err(|e| e.to_string())?;
+        event_loop.run_app(&mut launcher).map_err(|e| e.to_string())?;
+        return launcher.error().map_or(Ok(()), Err);
+    }
+    let package = Package::load(read)?;
     let mut app = App::new(package, settings, report, boot, save::Store::desktop())?;
     if app.settings.headless {
         app.boot_ms = boot.elapsed().as_secs_f64() * 1000.;
@@ -1095,7 +1189,7 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
     let boot = Instant::now();
     let result = (|| -> R<()> {
         let assets = android.asset_manager();
-        let mut read = |p: &str| {
+        let mut read = move |p: &str| -> R<Vec<u8>> {
             let path = std::ffi::CString::new(format!("player/{p}")).map_err(|e| e.to_string())?;
             let mut asset = assets
                 .open(&path)
@@ -1106,7 +1200,6 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
         };
         let settings: Settings =
             serde_json::from_slice(&read("native-player.json")?).map_err(|e| e.to_string())?;
-        let package = Package::load(&mut read)?;
         let report_dir = android
             .external_data_path()
             .or_else(|| android.internal_data_path())
@@ -1118,11 +1211,17 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
             Some(dir) => save::Store::App(dir),
             None => save::Store::Unavailable("the activity has no internal data path".into()),
         };
-        let mut app = App::new(package, settings, report, boot, store)?;
         let event_loop = EventLoop::builder()
             .with_android_app(android)
             .build()
             .map_err(|e| e.to_string())?;
+        if !tool_run(&settings) {
+            let mut launcher = startup::Launcher::new(Box::new(read), settings, report, boot, store);
+            event_loop.run_app(&mut launcher).map_err(|e| e.to_string())?;
+            return launcher.error().map_or(Ok(()), Err);
+        }
+        let package = Package::load(&mut read)?;
+        let mut app = App::new(package, settings, report, boot, store)?;
         event_loop.run_app(&mut app).map_err(|e| e.to_string())?;
         Ok(())
     })();

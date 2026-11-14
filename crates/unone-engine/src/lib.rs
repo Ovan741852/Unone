@@ -111,6 +111,8 @@ pub use ui_cursor::{UiCursor,CursorFilter};
 pub use ui::{UiImageBatchDefinition,UiImageBatchResource,UiImageTransform,UiPublishError,UiRejection};
 mod error_policy;
 pub use error_policy::{ErrorPolicy, RecoveredErrors, ScriptErrorPolicy, ScriptErrorRecord, UiCapacityPolicy};
+mod startup_theme;
+pub use startup_theme::{STARTUP_DARK, StartupTheme, hex_color, parse_hex_color};
 mod image_groups;
 pub use image_groups::{ImageGroupPlanUpdate, ImageGroupReceipt, ImageGroupRequest, ImageGroupState,
     IMAGE_PLAN_FILE, MAX_IMAGE_GROUPS, MAX_IMAGE_GROUP_NAME_BYTES};

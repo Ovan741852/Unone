@@ -684,6 +684,84 @@ impl Msaa {
     }
 }
 
+/// The window's GPU context: created first, so the startup screen can draw
+/// while the package loads, then handed to the renderer.
+pub struct Gpu {
+    surface: wgpu::Surface<'static>,
+    adapter: wgpu::Adapter,
+    device: wgpu::Device,
+    queue: wgpu::Queue,
+    config: wgpu::SurfaceConfiguration,
+    format: wgpu::TextureFormat,
+    name: String,
+}
+impl Gpu {
+    pub async fn new(window: Arc<Window>) -> R<Self> {
+        let instance = wgpu::Instance::default();
+        let surface = instance
+            .create_surface(window.clone())
+            .map_err(|e| e.to_string())?;
+        let adapter = instance
+            .request_adapter(&wgpu::RequestAdapterOptions {
+                power_preference: wgpu::PowerPreference::HighPerformance,
+                compatible_surface: Some(&surface),
+                force_fallback_adapter: false,
+                apply_limit_buckets: false,
+            })
+            .await
+            .map_err(|e| e.to_string())?;
+        let name = format!("{:?}", adapter.get_info());
+        let (device, queue) = adapter
+            .request_device(&wgpu::DeviceDescriptor {
+                label: Some("Unone native player"),
+                required_features: wgpu::Features::empty(),
+                required_limits: wgpu::Limits::downlevel_defaults()
+                    .using_resolution(adapter.limits()),
+                experimental_features: wgpu::ExperimentalFeatures::disabled(),
+                memory_hints: wgpu::MemoryHints::Performance,
+                trace: wgpu::Trace::Off,
+            })
+            .await
+            .map_err(|e| e.to_string())?;
+        let size = window.inner_size();
+        let caps = surface.get_capabilities(&adapter);
+        let format = caps
+            .formats
+            .iter()
+            .copied()
+            .find(wgpu::TextureFormat::is_srgb)
+            .unwrap_or(caps.formats[0]);
+        let config = wgpu::SurfaceConfiguration {
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            format,
+            color_space: wgpu::SurfaceColorSpace::Auto,
+            width: size.width.max(1),
+            height: size.height.max(1),
+            present_mode: wgpu::PresentMode::AutoVsync,
+            alpha_mode: caps.alpha_modes[0],
+            view_formats: vec![],
+            desired_maximum_frame_latency: 2,
+        };
+        surface.configure(&device, &config);
+        Ok(Self { surface, adapter, device, queue, config, format, name })
+    }
+    pub fn target(&self) -> Target<'_> {
+        Target { device: &self.device, queue: &self.queue, surface: &self.surface, config: &self.config }
+    }
+    pub fn resize(&mut self, width: u32, height: u32) {
+        if width == 0 || height == 0 { return; }
+        self.config.width = width;
+        self.config.height = height;
+        self.surface.configure(&self.device, &self.config);
+    }
+}
+/// What the startup screen draws through.
+pub struct Target<'a> {
+    pub device: &'a wgpu::Device,
+    pub queue: &'a wgpu::Queue,
+    pub surface: &'a wgpu::Surface<'static>,
+    pub config: &'a wgpu::SurfaceConfiguration,
+}
 pub struct Renderer {
     projected:crate::projected::Projected,
     world_visible:bool,
@@ -1275,53 +1353,18 @@ impl Renderer {
     pub fn resolution(&self) -> [u32; 2] {
         [self.config.width, self.config.height]
     }
+    /// The window surface and device, for the startup screen's last frame and
+    /// for the error screen of a game that stopped.
+    pub fn target(&self) -> Target<'_> {
+        Target { device: &self.device, queue: &self.queue, surface: &self.surface, config: &self.config }
+    }
     pub async fn new(window: Arc<Window>, package: &Package) -> R<Self> {
-        let instance = wgpu::Instance::default();
-        let surface = instance
-            .create_surface(window.clone())
-            .map_err(|e| e.to_string())?;
-        let adapter = instance
-            .request_adapter(&wgpu::RequestAdapterOptions {
-                power_preference: wgpu::PowerPreference::HighPerformance,
-                compatible_surface: Some(&surface),
-                force_fallback_adapter: false,
-                apply_limit_buckets: false,
-            })
-            .await
-            .map_err(|e| e.to_string())?;
-        let name = format!("{:?}", adapter.get_info());
-        let (device, queue) = adapter
-            .request_device(&wgpu::DeviceDescriptor {
-                label: Some("Unone native player"),
-                required_features: wgpu::Features::empty(),
-                required_limits: wgpu::Limits::downlevel_defaults()
-                    .using_resolution(adapter.limits()),
-                experimental_features: wgpu::ExperimentalFeatures::disabled(),
-                memory_hints: wgpu::MemoryHints::Performance,
-                trace: wgpu::Trace::Off,
-            })
-            .await
-            .map_err(|e| e.to_string())?;
-        let size = window.inner_size();
-        let caps = surface.get_capabilities(&adapter);
-        let format = caps
-            .formats
-            .iter()
-            .copied()
-            .find(wgpu::TextureFormat::is_srgb)
-            .unwrap_or(caps.formats[0]);
-        let config = wgpu::SurfaceConfiguration {
-            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
-            format,
-            color_space: wgpu::SurfaceColorSpace::Auto,
-            width: size.width.max(1),
-            height: size.height.max(1),
-            present_mode: wgpu::PresentMode::AutoVsync,
-            alpha_mode: caps.alpha_modes[0],
-            view_formats: vec![],
-            desired_maximum_frame_latency: 2,
-        };
-        surface.configure(&device, &config);
+        Self::with_gpu(Gpu::new(window).await?, package)
+    }
+    /// Builds the pipelines and package resources on a GPU context that may
+    /// already have drawn the startup screen.
+    pub fn with_gpu(gpu: Gpu, package: &Package) -> R<Self> {
+        let Gpu { surface, adapter, device, queue, config, format, name } = gpu;
         // Explicit "antialias": true selects 4x MSAA for the world and sprite
         // passes, fixed until relaunch like the Web context option. An adapter
         // without 4x support for these formats keeps single sampling.

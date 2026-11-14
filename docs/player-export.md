@@ -55,7 +55,7 @@ players, native tool runs and every CLI run fail fast. See
 [runtime errors](#runtime-errors).
 
 `player.presentation.json` includes the **web-wasm** overlay (bloom, worker backend,
-interpolation, [startup screen](#startup-screen)) and shared UI/font settings. Native wgpu packages the UI/font
+interpolation) and shared UI/font settings, including the [startup screen](#startup-screen). Native wgpu packages the UI/font
 settings and fails closed on web-only keys. Host identities and capability tables live in `game sdk inspect --json`;
 see [portable SDK](portable-sdk.md).
 For shared UI fonts, declare named/weighted TTF or OTF faces in `ui.fonts` and
@@ -221,8 +221,11 @@ player opens at the design size and holds its window to that shape. With
 
 ## Startup screen
 
-While it starts, the official Web player shows a logo, a progress bar and the
-step it is on. `index.html` draws the screen before any script runs; while the
+While they start, the official players show a logo, a progress bar and the step
+they are on. The rest of this section describes the Web player; see
+[the native player](#the-native-startup-screen) for its steps.
+
+The Web player's `index.html` draws the screen before any script runs; while the
 browser fetches the player's modules the bar is indeterminate ("Loading
 player…"). From then on the bar moves only when a real startup step progresses:
 game content, image preparation (counted entries), fonts (counted faces), the
@@ -249,7 +252,25 @@ that is also the centre of the letterboxed stage, so the logo sits where the
 game will appear, and a logo or an error never has to fit a narrow stage band
 (a landscape game on a portrait phone).
 
-By default it shows the Unone logo on the player's dark background. A project
+### The native startup screen
+
+Interactive native play opens its window at the design size and draws the same
+screen from the first frame, before the heavy work: it reads only the manifest,
+the presentation, the project's design size and the logo, then loads and
+verifies the package's content files (the bar counts bytes, the label counts
+files), runs `Game.start`, builds the renderer's resources and hands the
+window to the game at its first frame. The label and errors use the system's
+fonts, loaded on their own thread; the Unone logo is drawn with paths and needs
+none. A startup failure stays on screen with the step it stopped in until the
+window is closed, and the player then exits with the error (status 2), as
+before. A fatal error after the first frame shows the screen again ("The game
+stopped") instead of closing the window. Tool runs (`--input-sequence`,
+`--headless`, `--frames`, `--seconds`, `--capture-dir`) skip the screen and
+start and exit as they always have.
+
+### A project's logo and background
+
+By default both players show the Unone logo on their dark background. A project
 declares its own in `player.presentation.json`:
 
 ```json
@@ -267,15 +288,17 @@ declares its own in `player.presentation.json`:
   then copies it into `content/`.
 - `background`: a `#rrggbb` colour. The text and bar track turn dark when dark
   text contrasts more with it (WCAG relative luminance), with a darker bar and
-  error colour to match.
+  error colour to match. Both players take these colours from
+  `unone_engine::StartupTheme`.
 
-Exports write both into `index.html`, so they show before any script or content
-loads; the packaged `content/presentation.json` omits `startup`. `game export
-web`, `game project prepare --target web` and `scripts/refresh-official-web.mjs`
-apply the same rules, and unknown fields fail. The startup screen is part of the
-Web player page, so native wgpu exports fail closed on `startup` with
-`HOST_PRESENTATION_UNSUPPORTED`, as on other web-only keys. Failures report
-`STARTUP_LOGO_PATH_INVALID`, `STARTUP_LOGO_FORMAT_UNSUPPORTED`,
+Web exports also write both into `index.html`, so they show before any script or
+content loads; the packaged `content/presentation.json` keeps `startup` for the
+native player, which reads it there. `game export web`, `game project prepare
+--target web`, native exports and `scripts/refresh-official-web.mjs` apply the
+same rules, and unknown fields fail. The native player draws an SVG logo with the
+static-SVG rules of UI images (no `<style>`, `<script>`, `<image>` or outside
+references) and reports `STARTUP_LOGO_INVALID` on its screen otherwise.
+Exports report `STARTUP_LOGO_PATH_INVALID`, `STARTUP_LOGO_FORMAT_UNSUPPORTED`,
 `STARTUP_LOGO_SIZE_INVALID`, `STARTUP_LOGO_MISSING` or
 `STARTUP_BACKGROUND_INVALID`.
 

@@ -782,7 +782,7 @@ mod tests {
         let mut files=vec![];let presentation=append_presentation(dir.path(),&mut files).unwrap();
         assert!(files.iter().any(|(path,bytes)|path=="content/brand/logo.png"&&*bytes==png),"the export copies the declared logo");
         let written:Value=serde_json::from_slice(&files.iter().find(|(path,_)|path=="content/presentation.json").unwrap().1).unwrap();
-        assert!(written.get("startup").is_none(),"players read the startup screen from index.html, not presentation.json");
+        assert_eq!(written["startup"],json!({"logo":"brand/logo.png","background":"#F5F0E6"}),"the native player reads the startup screen from presentation.json");
         let template=fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../web/player/index.html")).unwrap();
         let page=apply_startup_screen(template.clone(),presentation.startup.as_ref(),"Tea & \"Cakes\"").unwrap();
         assert!(page.contains(r#"<img class="unone-startup-logo" src="content/brand/logo.png" alt="Tea &amp; &quot;Cakes&quot;">"#));
@@ -957,11 +957,6 @@ pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)
 const STARTUP_LOGO_BEGIN: &str = "<!--UNONE_STARTUP_LOGO-->";
 const STARTUP_LOGO_END: &str = "<!--/UNONE_STARTUP_LOGO-->";
 const STARTUP_THEME: &str = "/*UNONE_STARTUP_THEME*/";
-const STARTUP_DARK_TEXT: &str = "#111827";
-const STARTUP_LIGHT_TEXT: &str = "#f3f4f6";
-/// The page's bar and error colours suit its dark default; dark text on a
-/// light background gets darker ones that still contrast.
-const STARTUP_LIGHT_THEME_COLORS: &str = ";--startup-accent:#0369a1;--startup-error:#b91c1c";
 
 /// Writes the project's startup screen into the player page, so the logo and
 /// background show before any script loads. scripts/web-export-host.mjs
@@ -976,11 +971,16 @@ pub(crate) fn apply_startup_screen(mut index: String, startup: Option<&crate::ho
         index.replace_range(begin..end, &format!("<img class=\"unone-startup-logo\" src=\"content/{}\" alt=\"{}\">", html_attribute(logo), html_attribute(name)));
     }
     if let Some(background) = &startup.background {
-        let background = background.to_ascii_lowercase();
-        let foreground = startup_foreground(&background);
-        let extra = if foreground == STARTUP_DARK_TEXT { STARTUP_LIGHT_THEME_COLORS } else { "" };
-        let theme = format!("#unone-startup{{--startup-bg:{background};--startup-fg:{foreground}{extra}}}");
-        index = replace_required(index, STARTUP_THEME, &theme)?;
+        // The page's own colours suit its dark default; a light background also
+        // gets the theme's darker bar and error colours (unone_engine::StartupTheme).
+        let theme = unone_engine::StartupTheme::for_background(Some(background)).map_err(anyhow::Error::msg)?;
+        let color = unone_engine::hex_color;
+        let mut css = format!("#unone-startup{{--startup-bg:{};--startup-fg:{}", color(theme.background), color(theme.foreground));
+        if theme.is_light() {
+            css += &format!(";--startup-accent:{};--startup-error:{}", color(theme.accent), color(theme.error));
+        }
+        css.push('}');
+        index = replace_required(index, STARTUP_THEME, &css)?;
     }
     Ok(index)
 }
@@ -989,20 +989,6 @@ fn html_attribute(value: &str) -> String {
     value.replace('&', "&amp;").replace('"', "&quot;").replace('\'', "&#39;").replace('<', "&lt;").replace('>', "&gt;")
 }
 
-/// WCAG relative luminance of a validated #rrggbb colour.
-fn relative_luminance(color: &str) -> f64 {
-    let channel = |at: usize| {
-        let value = f64::from(u8::from_str_radix(&color[at..at + 2], 16).unwrap_or(0)) / 255.0;
-        if value <= 0.04045 { value / 12.92 } else { ((value + 0.055) / 1.055).powf(2.4) }
-    };
-    0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5)
-}
-
-/// The dark or light text colour with the higher contrast ratio on the background.
-fn startup_foreground(background: &str) -> &'static str {
-    let (back, dark, light) = (relative_luminance(background), relative_luminance(STARTUP_DARK_TEXT), relative_luminance(STARTUP_LIGHT_TEXT));
-    if (back + 0.05) / (dark + 0.05) > (light + 0.05) / (back + 0.05) { STARTUP_DARK_TEXT } else { STARTUP_LIGHT_TEXT }
-}
 
 fn append_font(project: &Path, path: &str, files: &mut Vec<(String, Vec<u8>)>) -> Result<()> {
     ensure!(!path.is_empty() && !path.contains(['\\', ':', '%', '?', '#']) && !path.chars().any(char::is_control)

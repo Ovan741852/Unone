@@ -211,7 +211,7 @@ impl PointerRouter {
         self.edges.pop_front()
     }
 }
-fn escape(s: &str) -> String {
+pub(crate) fn escape(s: &str) -> String {
     s.replace('&', "&amp;")
         .replace('<', "&lt;")
         .replace('>', "&gt;")
@@ -284,7 +284,7 @@ fn text_tag(text: &str, family: &str, size: f64, weight: u16, spacing: f64) -> S
 
 /// Use the same shaped text that resvg will rasterize, including fallback faces
 /// and spacing, rather than estimating line width from character count.
-fn measure_text(
+pub(crate) fn measure_text(
     options: &resvg::usvg::Options<'_>,
     text: &str,
     family: &str,
@@ -325,7 +325,7 @@ fn fit_prefix<F: FnMut(&str) -> R<f64>>(text: &str, width: f64, measure: &mut F)
     Ok(if low == 0 { 0 } else { ends[low - 1] })
 }
 
-fn wrap_lines<F: FnMut(&str) -> R<f64>>(
+pub(crate) fn wrap_lines<F: FnMut(&str) -> R<f64>>(
     text: &str,
     width: f64,
     wrap: bool,
@@ -376,7 +376,7 @@ fn wrap_lines<F: FnMut(&str) -> R<f64>>(
 }
 // Deliberately static, self-contained SVG. Reject features that would otherwise
 // disappear silently or resolve outside the hash-verified content package.
-fn validate_svg(bytes: &[u8], options: &resvg::usvg::Options<'_>) -> R<()> {
+pub(crate) fn validate_svg(bytes: &[u8], options: &resvg::usvg::Options<'_>) -> R<()> {
     if bytes.len() > 8 * 1024 * 1024 {
         return Err("UI_SVG_LIMIT: maximum 8 MiB".into());
     }

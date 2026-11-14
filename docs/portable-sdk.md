@@ -112,7 +112,7 @@ shape (`family`, `exportable`, `renderer`, `presentation`, `decoders`).
 | `android-webview` | webview-wraps-web | **not** this command | `scripts/build-android-player.ps1` after a web export. System WebView, not wgpu. |
 | `ios` | native-wgpu | not implemented | ABI only. |
 
-Native export rejects enabled `spine`/`effekseer` and non-default web-only overlay keys in `player.presentation.json` (`runtime_backend=worker`, interpolation, show_performance, non-default `job_policy`, `startup`). `bloom` is a shared native/WGPU presentation primitive and is accepted; changing it still takes effect on the next launch. Native audio is a rodio/cpal host adapter and reports device/asset failures instead of failing silently. `sdk inspect --json` splits those as `export_blocked_systems` vs `runtime_blocked_systems`. Android packaging requires a platform runtime plus SDK/Java/signing tools.
+Native export rejects enabled `spine`/`effekseer` and non-default web-only overlay keys in `player.presentation.json` (`runtime_backend=worker`, interpolation, show_performance, non-default `job_policy`). `bloom` is a shared native/WGPU presentation primitive and is accepted; changing it still takes effect on the next launch. Native audio is a rodio/cpal host adapter and reports device/asset failures instead of failing silently. `sdk inspect --json` splits those as `export_blocked_systems` vs `runtime_blocked_systems`. Android packaging requires a platform runtime plus SDK/Java/signing tools.
 
 The current native host supports non-DOM UI. UI images support PNG and a
 self-contained static SVG subset when the **selected runtime** advertises
