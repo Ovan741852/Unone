@@ -1,5 +1,15 @@
 # GodOfWar／九州兵謀：效能、記憶體與載入交接
 
+## 同日實作回交
+
+詳見 [第二輪驗證](evidence/godofwar-performance-followup-2026-11-15.json)。遊戲已在真正平台 asm.js QuickJS 中執行 108 次交錯的 100 路徑批次：共同目標中位數 176.25→83.49 ms、各自目標 191.14→85.24 ms、狹路 333.45→133.45 ms；每批 100 條路徑全數成功、結果一致。這是私人遊戲伺服器的加權 A*／靜態地形連接資料共用，沒有新增 engine gameplay kernel；群體避讓／100 隊渲染仍未量測。
+
+遊戲版本 `2667ca6e3c1bd39f61e39eb72a25f072` 已通過平台 clean 掃描並正式上線；authenticated sync schema 2／18 科技正常，公開 host／metrics／WASM 與 ZIP 雜湊一致，私人腳本與 QA 路徑均 HTTP 404。正式函式維持 sync／act／inventory／open，沒有發布量測入口，編隊上限仍為 10 隊。
+
+遊戲的小介面持有策略修正後，20 輪科技／背包／主城往返維持 16 次圖片載入，decoded estimate 固定 95.993 MiB；相同預算內增加保留以避免重解碼，並非總記憶體下降。主城 fresh-document 前景五筆樣本中位數 1.437 秒，僅為本機官方 SDK fixture。
+
+另查重新增 [issue #4](https://github.com/Ovan741852/Unone/issues/4)，修正非同步啟動期間漏掉 resize。來源提交 `b15ebd1`，已和後續 DPR／burst viewport 更新整合到 `main@8fa3f96`。原版 57、合併後 65 項相關測試通過；遊戲釘選 b15 host 與相容的 e8 Rust runtime，實際驗證寬 iframe、手機比例、科技捲動、戰場拖曳及回城。前一輪的其餘 P1／P2 仍按下面範圍追蹤，沒有宣稱 OS／GPU 記憶體或正式 4G／多人驗收完成。
+
 2026-11-15。這是遊戲消費端提供的量測與需求，請由 Unone 決定共用能力的優化方案。尚未證明的瓶頸列為待驗假設，不把遊戲設定、瀏覽器限制或平台耗時直接歸咎引擎。
 
 ## 版本與證據

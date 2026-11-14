@@ -1,0 +1,316 @@
+{
+  "date": "2026-11-15",
+  "candidate_version_id": "2667ca6e3c1bd39f61e39eb72a25f072",
+  "engine_tests_before_merge": 57,
+  "engine_tests_after_merge": 65,
+  "pure_luau_suites": 23,
+  "pure_luau_pass_lines": 25,
+  "full_build_node_tests": 95,
+  "final_node_tests": 96,
+  "strict_screen_previews": 124,
+  "verify_gates_total": 128,
+  "verify_gates_passed": 127,
+  "verify_gates_failed": 0,
+  "verify_gates_not_applicable": 1,
+  "native_wasm_checkpoints": 4,
+  "audio_omission_detected": true,
+  "server_parity": {
+    "ok": true,
+    "maps": 6,
+    "path_cases": 900,
+    "unreachable_cases": 0,
+    "battle_checkpoints": 600,
+    "units_per_battle": 20,
+    "visibility_checkpoints": 120,
+    "deterministic_result_sha256": "45ced86197e85190ec7fd4e76fa8721c2e6fa94684e2aa752a36fe97091928b3"
+  },
+  "server_sandbox": {
+    "ok": true,
+    "names": [
+      "sync",
+      "act",
+      "inventory",
+      "open"
+    ],
+    "server_clock": true,
+    "catchup_seconds": 19,
+    "units": 20,
+    "clustered_combat": true,
+    "notification_output_verified": true,
+    "private_script_bytes": 80782,
+    "private_script_sha256": "3bf4f584086df0c0b22ed537ed93e09b200ce4bc463f4310580176d0fc85f1a0"
+  },
+  "platform_limits": {
+    "memory_limit_bytes": 16777216,
+    "max_interrupt_checks": 2000,
+    "max_script_bytes": 262144,
+    "max_state_bytes": 65536,
+    "max_shared_state_bytes": 65536,
+    "max_input_bytes": 8192,
+    "max_result_bytes": 16384
+  },
+  "pathfinding_100": {
+    "scope": "100 independent path requests per fresh platform QuickJS VM. Test-only hook; production unit limits unchanged. Not 100-unit combat, collision avoidance, network latency or rendered FPS.",
+    "units": 100,
+    "calls": 108,
+    "all_ok": true,
+    "all_routes_found": true,
+    "reference_cases": 18,
+    "untimed_vm_warmups": 2,
+    "scenarios": {
+      "same_goal": {
+        "before": {
+          "calls": 18,
+          "median_ms": 176.25,
+          "p95_ms": 281.25,
+          "max_checks": 91,
+          "max_budget": 2000
+        },
+        "after": {
+          "calls": 18,
+          "median_ms": 83.49,
+          "p95_ms": 117.59,
+          "max_checks": 53,
+          "max_budget": 2000
+        },
+        "median_reduction_percent": 52.63
+      },
+      "independent_goals": {
+        "before": {
+          "calls": 18,
+          "median_ms": 191.14,
+          "p95_ms": 310.17,
+          "max_checks": 110,
+          "max_budget": 2000
+        },
+        "after": {
+          "calls": 18,
+          "median_ms": 85.24,
+          "p95_ms": 125.19,
+          "max_checks": 62,
+          "max_budget": 2000
+        },
+        "median_reduction_percent": 55.4
+      },
+      "bottleneck": {
+        "before": {
+          "calls": 18,
+          "median_ms": 333.45,
+          "p95_ms": 353.21,
+          "max_checks": 142,
+          "max_budget": 2000
+        },
+        "after": {
+          "calls": 18,
+          "median_ms": 133.45,
+          "p95_ms": 149.16,
+          "max_checks": 81,
+          "max_budget": 2000
+        },
+        "median_reduction_percent": 59.98
+      }
+    }
+  },
+  "server_api": {
+    "before": {
+      "one_squad_move": {
+        "calls": 18,
+        "median_ms": 47.27,
+        "p95_ms": 107.97,
+        "max_checks": 24,
+        "max_result_bytes": 8116
+      },
+      "ten_squad_move": {
+        "calls": 18,
+        "median_ms": 83.58,
+        "p95_ms": 137.25,
+        "max_checks": 50,
+        "max_result_bytes": 10574
+      },
+      "twenty_units_19s_catchup": {
+        "calls": 18,
+        "median_ms": 96.01,
+        "p95_ms": 148.8,
+        "max_checks": 58,
+        "max_result_bytes": 12169
+      }
+    },
+    "after": {
+      "one_squad_move": {
+        "calls": 18,
+        "median_ms": 46.86,
+        "p95_ms": 158.54,
+        "max_checks": 21,
+        "max_result_bytes": 8116
+      },
+      "ten_squad_move": {
+        "calls": 18,
+        "median_ms": 56.24,
+        "p95_ms": 106.92,
+        "max_checks": 35,
+        "max_result_bytes": 10574
+      },
+      "twenty_units_19s_catchup": {
+        "calls": 18,
+        "median_ms": 87.45,
+        "p95_ms": 125.28,
+        "max_checks": 53,
+        "max_result_bytes": 12175
+      }
+    }
+  },
+  "startup": {
+    "scope": "Five local fresh-document loads, no-store HTTP responses, opt-in milestone collection. Excludes one unfocused sample; not mobile 4G, cold Wasm compilation or physical scanout.",
+    "foreground_samples": 5,
+    "excluded_samples": 1,
+    "median_city_presented_ms": 1436.7000000178816,
+    "p95_city_presented_ms": 1604,
+    "min_ms": 1319.9000000059605,
+    "max_ms": 1604,
+    "samples_ms": [
+      1319.9000000059605,
+      1604,
+      1526.7999999821186,
+      1400.800000011921,
+      1436.7000000178816
+    ]
+  },
+  "browser_buffer_comparison": {
+    "scope": "Desktop Chrome local SDK opaque iframe, warmed research, 30 second windows, profiler and game metrics disabled; submission cadence, not physical scanout. One paired run only. Gaps outside per-window row coverage are excluded, not counted as jank.",
+    "before": {
+      "duration_ms": 30270.59999999404,
+      "foreground": true,
+      "viewport": {
+        "dpr": 1.100000023841858,
+        "height": 782,
+        "width": 440
+      },
+      "stable_viewport": true,
+      "metrics_enabled": false,
+      "buffer_width": 792,
+      "buffer_height": 1408,
+      "buffer_pixels": 1115136,
+      "interval_samples": 1668,
+      "observed_interval_ms": 30259.199999999997,
+      "coverage_ratio": 0.9996233969596228,
+      "p50_ms": 18.0,
+      "p95_ms": 18.799999999995634,
+      "p99_ms": 19.0,
+      "over_50ms": 0,
+      "over_100ms": 0,
+      "dropped_steps_delta": 0,
+      "error_draws_delta": 0
+    },
+    "after": {
+      "duration_ms": 30301.39999999106,
+      "foreground": true,
+      "viewport": {
+        "dpr": 1.100000023841858,
+        "height": 782,
+        "width": 440
+      },
+      "stable_viewport": true,
+      "metrics_enabled": false,
+      "buffer_width": 484,
+      "buffer_height": 860,
+      "buffer_pixels": 416240,
+      "interval_samples": 1667,
+      "observed_interval_ms": 30284.499999999996,
+      "coverage_ratio": 0.9994422699944204,
+      "p50_ms": 18.0,
+      "p95_ms": 19.0,
+      "p99_ms": 19.099999999998545,
+      "over_50ms": 0,
+      "over_100ms": 0,
+      "dropped_steps_delta": 0,
+      "error_draws_delta": 0
+    },
+    "drawing_buffer_pixel_reduction_percent": 62.673611111111114,
+    "before_export": "gamepad-fix-v1-goldsaucer",
+    "after_export": "perf2-ready-goldsaucer",
+    "final_release_note": "This stage-sizing comparison precedes the final visited-menu retention policy. Final package has separate 20-cycle functional/resource validation, not a claimed repeat of this FPS run."
+  },
+  "memory": {
+    "cycles": 20,
+    "samples": 21,
+    "loads_values": [
+      16
+    ],
+    "resident_estimate_bytes_values": [
+      100656280
+    ],
+    "group_budget_bytes": 100663296,
+    "whole_process_memory_measured": false,
+    "gpu_memory_measured": false
+  },
+  "browser_checks": {
+    "wide_iframe_layout": true,
+    "resize_during_startup": true,
+    "phone_layout_and_research_drag": true,
+    "battle_unit_drag_and_return": true,
+    "seven_skill_icons_visible": true,
+    "city_owners_retired_during_battle": true,
+    "console_errors": 0,
+    "console_warnings": 0,
+    "physical_ios_tested": false,
+    "real_mobile_4g_tested": false,
+    "two_account_live_match_tested": false,
+    "hundred_unit_rendering_tested": false
+  },
+  "engine_pins": {
+    "host_commit": "b15ebd191b959bf57109e015cf462f466536b757",
+    "engine_main_commit": "8fa3f96d892dc6680c5d995f8c06d07e64e1ef88",
+    "publisher_source_commit": "e8f405904fe635f018fc0d049b506ae2f165348e",
+    "publisher_sha256": "e48200c4c417c4a7bf599239ea1249234b4efb844582197f2da274a3943530ca",
+    "runtime_source_commit": "e8f405904fe635f018fc0d049b506ae2f165348e",
+    "wasm_sha256": "e5f835127b1876ff0cf9c4ded9d153068d1f35aeb178c399458af1a83dbde906",
+    "wasm_bytes": 4313415,
+    "runtime_root": ".engine/artifacts/godofwar-player-runtime-audio-perf2",
+    "host_root": ".engine/artifacts/perf2-host-source-b15",
+    "official_renderer": true,
+    "dev_tools": false,
+    "systems": [
+      "audio",
+      "camera2d",
+      "input",
+      "observation",
+      "particle",
+      "random",
+      "save",
+      "ui",
+      "world"
+    ]
+  },
+  "issues": {
+    "performance": "https://github.com/Ovan741852/Unone/issues/3",
+    "startup_resize": "https://github.com/Ovan741852/Unone/issues/4"
+  },
+  "reference": "https://www.gdcvault.com/play/1014514/AI-Navigation-It-s-Not",
+  "live": {
+    "version_id": "2667ca6e3c1bd39f61e39eb72a25f072",
+    "status": "approved",
+    "scan_verdict": "clean",
+    "is_live": true,
+    "platform_file_count": 170,
+    "platform_total_bytes": 34810798,
+    "function_names": [
+      "sync",
+      "act",
+      "inventory",
+      "open"
+    ],
+    "authenticated_sync": {
+      "version_id": "2667ca6e3c1bd39f61e39eb72a25f072",
+      "authenticated": true,
+      "function": "sync",
+      "schema": 2,
+      "research_nodes": 18,
+      "profile_received": true,
+      "inventory_received": true,
+      "paid_actions": false,
+      "device_permissions_changed": false
+    },
+    "public_file_hashes_match_archive": true,
+    "private_function_and_qa_http_status": 404
+  }
+}
