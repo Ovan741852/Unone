@@ -76,6 +76,14 @@ pub struct LayoutBackgroundEvidence {
 }
 
 #[derive(Debug, Clone, Serialize)]
+pub struct LayoutOverlayEvidence {
+    pub overlay: String,
+    pub overlay_node_index: usize,
+    pub pair_count: usize,
+    pub examples: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
 pub struct LayoutReport {
     pub usage: crate::ui::UiUsage,
     pub screen: String,
@@ -87,6 +95,8 @@ pub struct LayoutReport {
     pub findings: Vec<LayoutFinding>,
     /// One bounded summary per actual authored background and scope owner.
     pub declared_backgrounds: Vec<LayoutBackgroundEvidence>,
+    /// Explicit image-only transient overlays. Does not change paint or input order.
+    pub declared_overlays: Vec<LayoutOverlayEvidence>,
     /// Explicit external exact-pair policy evidence only.
     pub allowed_overlaps: Vec<LayoutFinding>,
     pub readable: bool,
@@ -123,7 +133,7 @@ pub fn apply_overlap_policy(
         return Ok(());
     };
     let evidence_limit = crate::ui::ui_contract().max_layout_findings;
-    let existing_evidence = report.declared_backgrounds.len() + report.allowed_overlaps.len();
+    let existing_evidence = report.declared_backgrounds.len() + report.declared_overlays.len() + report.allowed_overlaps.len();
     if existing_evidence > evidence_limit {
         return Err(format!(
             "UI_LAYOUT_WORK_LIMIT: background groups and allowed-overlap evidence already exceed max_layout_findings={evidence_limit}; the report was not changed"
@@ -331,6 +341,8 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
     let mut findings = Vec::new();
     let allowed_overlaps = Vec::new();
     let mut declared_backgrounds: Vec<LayoutBackgroundEvidence> = Vec::new();
+    let mut declared_overlays: Vec<LayoutOverlayEvidence> = Vec::new();
+    let mut overlay_groups = std::collections::BTreeMap::new();
     let mut background_groups = std::collections::BTreeMap::new();
     let mut leaves = Vec::new();
     inspection_leaves(&tree.children, &mut Vec::new(), &mut leaves);
@@ -364,7 +376,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
     let mut comparisons = 0usize;
     'pairs: for (index, left) in leaves.iter().enumerate() {
         let (_, left_id, left_rect, _, _, _) = node_parts(left.node);
-        for right in leaves.iter().skip(index + 1) {
+        for (right_index, right) in leaves.iter().enumerate().skip(index + 1) {
             comparisons += 1;
             if comparisons > crate::ui::ui_contract().max_layout_comparisons
                 || findings.len() >= crate::ui::ui_contract().max_layout_findings
@@ -375,6 +387,23 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
             let (_, right_id, right_rect, _, _, _) = node_parts(right.node);
             let Some((left_bounds,right_bounds))=collision_bounds(left.node,right.node,tree.viewport_aspect) else {continue;};
             if let Some((x, y)) = overlap(&left_bounds, &right_bounds) {
+                // The author explicitly permits transient image-only artwork to
+                // cross ordinary UI and a later transition curtain. It never
+                // exempts interactive/text pairs, reorders paint or captures input.
+                let overlay = if right.node.decorative_overlay() {Some((right_index,right.node,left_id))}
+                    else if left.node.decorative_overlay() {Some((index,left.node,right_id))} else {None};
+                if let Some((ordinal,node,other)) = overlay {
+                    let group = if let Some(group) = overlay_groups.get(&ordinal) {*group} else {
+                        if declared_backgrounds.len()+declared_overlays.len()+allowed_overlaps.len() >= crate::ui::ui_contract().max_layout_findings {
+                            findings.push(work_limit_finding(comparisons, findings.len(), declared_backgrounds.len()+declared_overlays.len(), allowed_overlaps.len()));break 'pairs;
+                        }
+                        let group=declared_overlays.len();overlay_groups.insert(ordinal,group);
+                        declared_overlays.push(LayoutOverlayEvidence {overlay:node.id().to_string(),overlay_node_index:ordinal,pair_count:0,examples:Vec::new()});group
+                    };
+                    let evidence=&mut declared_overlays[group];evidence.pair_count+=1;
+                    if evidence.examples.len()<2 {evidence.examples.push(other.to_string());}
+                    continue;
+                }
                 // Classify explicit ownership before accumulating collision
                 // findings. Art beneath a whole component is declared once.
                 if let Some((scope, owner)) = declared_background_scope(left, right) {
@@ -385,7 +414,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
                     let group_index = if let Some(&group_index) = background_groups.get(&key) {
                         group_index
                     } else {
-                        if declared_backgrounds.len() + allowed_overlaps.len() >= crate::ui::ui_contract().max_layout_findings {
+                        if declared_backgrounds.len() + declared_overlays.len() + allowed_overlaps.len() >= crate::ui::ui_contract().max_layout_findings {
                             findings.push(work_limit_finding(comparisons, findings.len(), declared_backgrounds.len(), allowed_overlaps.len()));
                             break 'pairs;
                         }
@@ -443,6 +472,7 @@ pub fn inspect(tree: &UiTree, cols: usize, rows: usize) -> LayoutReport {
     LayoutReport {
         usage:tree.usage(),
         declared_backgrounds,
+        declared_overlays,
         allowed_overlaps,
         screen: tree.id.clone(),
         cols,
@@ -576,6 +606,12 @@ pub fn to_markdown(report: &LayoutReport) -> String {
                 UiBackgroundScope::Component { component } => format!("component '{component}'"),
             };
             out.push_str(&format!("- **UI_DECLARED_BACKGROUND** '{}' (node {}) uses background_for {scope}: {} later contained overlaps; example leaf IDs: {}.\n", group.background, group.background_node_index, group.pair_count, group.examples.join(", ")));
+        }
+    }
+    if !report.declared_overlays.is_empty() {
+        out.push_str(&format!("\n### {} declared decorative overlays\n\n", report.declared_overlays.len()));
+        for group in &report.declared_overlays {
+            out.push_str(&format!("- **UI_DECLARED_OVERLAY** '{}' (node {}): {} explicit transient image overlaps; paint/input order unchanged.\n",group.overlay,group.overlay_node_index,group.pair_count));
         }
     }
     if !report.allowed_overlaps.is_empty() {

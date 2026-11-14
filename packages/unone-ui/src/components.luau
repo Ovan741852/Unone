@@ -30,7 +30,7 @@ local leafFields: {[string]: Fields} = {
     combobox={id=true,text=true,action=true,expanded=true,style=true},
     panel={id=true,style=true,background_for=true},
     image={id=true,asset=true,fit=true,slice=true,alt=true,style=true,background_for=true},
-    image_batch={id=true,quads=true,content=true,transform=true,pixel_snap=true,background_for=true},
+    image_batch={id=true,quads=true,content=true,transform=true,pixel_snap=true,background_for=true,decorative_overlay=true},
 }
 local componentFields: Fields = {id=true,component=true,children=true,surface=true}
 local screenFields: Fields = {id=true,node=true,children=true,budget=true}
@@ -52,7 +52,7 @@ end
 for key in pairs(placement) do componentFields[key] = true end
 -- Quad coordinates are absolute stage coordinates, so batch bounds must be
 -- authored in the same space instead of moving independently with an anchor.
-leafFields.image_batch = {id=true,rect=true,quads=true,content=true,transform=true,pixel_snap=true,background_for=true}
+leafFields.image_batch = {id=true,rect=true,quads=true,content=true,transform=true,pixel_snap=true,background_for=true,decorative_overlay=true}
 
 local function available()
     assert(declared, "UI_PACKAGE_NOT_DECLARED: declare runtime_packages={['"..metadata.name.."']='"..metadata.version.."'} in project.unone.json (JSON: \"runtime_packages\":{\""..metadata.name.."\":\""..metadata.version.."\"})")

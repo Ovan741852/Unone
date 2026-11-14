@@ -22,6 +22,18 @@ fn load_script(source: &str, declared: bool) -> Result<EngineRuntime, Box<Diagno
 }
 
 #[test]
+fn image_batch_constructor_preserves_explicit_decorative_overlay() {
+    let runtime=load(r#"
+local k=api.ui.components.create()
+local fx=k.imageBatch({id='fx',rect={x=0,y=0,width=100,height=100},decorative_overlay=true,
+ quads={{asset='texture://spark',rect={x=10,y=10,width=4,height=4}}}})
+assert(fx.decorative_overlay==true and table.isfrozen(fx))
+api.ui.setRoot(k.screen({id='screen',node='screen',children={fx}}))
+"#,true);
+    assert!(runtime.is_ok(),"{:?}",runtime.err());
+}
+
+#[test]
 fn nested_virtual_helpers_keep_live_identity_and_materialize_without_a_tick() {
     let source = r#"
 local Game={}

@@ -15,6 +15,41 @@ fn screen(node: Value) -> Value {
 }
 
 #[test]
+fn decorative_overlay_is_explicit_image_only_metadata_and_preserves_draw_order() {
+    let mut art=batch();art["decorative_overlay"]=json!(true);
+    let text=json!({"kind":"text","id":"title","rect":{"x":0,"y":0,"width":100,"height":100},"text":"Title"});
+    let mut tree=screen(art.clone());tree["children"]=json!([text,art]);
+    let parsed=UiTree::from_json(tree.clone()).unwrap();
+    let output=serde_json::to_value(&parsed).unwrap();
+    assert_eq!(output["children"][0]["id"],"title");
+    assert_eq!(output["children"][1]["decorative_overlay"],true);
+    for bad in [Value::Null,json!("true"),json!(1),json!({})] {
+        let mut invalid=tree.clone();invalid["children"][1]["decorative_overlay"]=bad;
+        assert!(UiTree::from_json(invalid).is_err());
+    }
+    let mut invalid=tree.clone();invalid["children"][0]["decorative_overlay"]=json!(true);
+    assert!(UiTree::from_json(invalid).unwrap_err().contains("UI_OVERLAY_KIND"));
+    let mut invalid=tree;invalid["children"][1]["background_for"]=json!({"screen":true});
+    assert!(UiTree::from_json(invalid).unwrap_err().contains("UI_OVERLAY_CONFLICT"));
+}
+
+#[cfg(feature="dev-tools")]
+#[test]
+fn decorative_overlay_reports_intent_without_exempting_foreground_collisions() {
+    let mut art=batch();art["decorative_overlay"]=json!(true);
+    let button=|id:&str|json!({"kind":"button","id":id,"action":id,"text":id,"rect":{"x":10,"y":10,"width":20,"height":20}});
+    let mut value=screen(art.clone());value["children"]=json!([button("one"),art.clone()]);
+    let report=crate::inspect_layout(&UiTree::from_json(value.clone()).unwrap(),96,48);
+    assert!(report.readable);assert_eq!(report.declared_overlays.len(),1);assert_eq!(report.declared_overlays[0].pair_count,1);
+    value["children"]=json!([button("one"),art,button("two")]);
+    let report=crate::inspect_layout(&UiTree::from_json(value).unwrap(),96,48);
+    assert_eq!(report.findings.len(),1);assert_eq!(report.findings[0].nodes,vec!["one","two"]);
+    assert_eq!(report.declared_overlays[0].pair_count,2);
+    let schema=crate::contract_schema("ui").unwrap();
+    assert_eq!(schema["$defs"]["RawUiNode"]["properties"]["decorative_overlay"]["type"],"boolean");
+}
+
+#[test]
 fn pixel_snap_is_an_optional_nonnullable_boolean_on_image_batch_instances_only() {
     let original=screen(batch());
     let mut value=original.clone();

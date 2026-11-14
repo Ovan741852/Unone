@@ -10,6 +10,14 @@ const rect={x:0,y:0,width:100,height:100};
 const resource=(extra={})=>({revision:1,bounds:{x:-10,y:-5,width:30,height:20},quads:[{asset:'asset://a',rect:{x:-10,y:-5,width:20,height:10},source:{x:1,y:2,width:3,height:4},opacity:.5}],...extra});
 const node=(content='art',extra={})=>({kind:'image_batch',id:'map',rect,content,...extra});
 
+test('decorative overlays preserve image placement and reject malformed or conflicting declarations',()=>{
+ const resolver=createImageBatchResolver(),resources={art:retainImageResource(resource())};
+ const ordinary=resolver.resolve(node(),resources),overlay=resolver.resolve(node('art',{decorative_overlay:true}),resources);
+ assert.equal(ordinary.definition,overlay.definition);assert.deepEqual(ordinary.transform,overlay.transform);assert.deepEqual(ordinary.clip,overlay.clip);
+ for(const bad of [null,1,'true',{}])assert.throws(()=>resolver.resolve(node('art',{decorative_overlay:bad}),resources),/UI_OVERLAY_KIND/);
+ assert.throws(()=>resolver.resolve(node('art',{decorative_overlay:true,background_for:{screen:true}}),resources),/UI_OVERLAY_CONFLICT/);
+});
+
 test('pixel snapping is explicit final-framebuffer placement, preserves shared edges and rejects unsupported transforms',()=>{
  const resolver=createImageBatchResolver(),resources={art:retainImageResource(resource())},n=node('art',{pixel_snap:true,transform:{a:1.25,b:0,c:0,d:.75,tx:20.25,ty:30.5}}),instance=resolver.resolve(n,resources);
  assert.equal(instance.pixelSnap,true);assert.equal(resolver.resolve(node(),resources).pixelSnap,false);

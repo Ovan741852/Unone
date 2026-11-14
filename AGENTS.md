@@ -206,6 +206,14 @@ leaves. Do not infer new AABB metadata or a hidden runtime layout policy from th
 can describe a proposed bound or validation question; it does not decide responsive
 placement by itself.
 
+For explicitly requested transient artwork above ordinary UI, use image-only
+`kit.imageBatch({...,decorative_overlay=true})`. Keep ordinary content, effect
+and transition curtains in authored order; the declaration never reorders paint
+or captures input. It permits only the declared image batch's intentional
+overlaps, leaving normal control collisions strict. Read
+[the overlay contract](docs/ui-decorative-overlays.md) and verify the official
+player and pointer pass-through.
+
 Mechanical layout is opt-in through `createResponsiveLayout`. The user-requested
 shared responsive helper is an authorized reusable package capability; using its
 authored definitions requires no extra permission flow. Understand intent,

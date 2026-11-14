@@ -60,7 +60,9 @@ export function createImageBatchResolver(){
   const result=Object.freeze({...candidate,token:Object.freeze({})});raw.set(id,{key,result});return result;
  }
  function resolve(node,resources){
-  fields(node,['kind','id','rect','quads','content','transform','pixel_snap','background_for'],'UI_IMAGE_BATCH_FIELDS',node.id);
+  fields(node,['kind','id','rect','quads','content','transform','pixel_snap','background_for','decorative_overlay'],'UI_IMAGE_BATCH_FIELDS',node.id);
+  if(node.decorative_overlay!==undefined&&typeof node.decorative_overlay!=='boolean')fail('UI_OVERLAY_KIND',node.id);
+  if(node.decorative_overlay===true&&node.background_for!==undefined)fail('UI_OVERLAY_CONFLICT',node.id);
   if(node.pixel_snap!==undefined&&typeof node.pixel_snap!=='boolean')fail('UI_IMAGE_BATCH_PIXEL_SNAP',node.id);
   const clip=rect(node.rect,'UI_IMAGE_BATCH_BOUNDS',node.id,true),retained=node.content!==undefined;
   let data;

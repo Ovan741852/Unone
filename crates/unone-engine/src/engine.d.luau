@@ -506,12 +506,12 @@ export type UiImageBatchApi = {
 }
 export type UiInlineImageBatchNode = {
     read kind: "image_batch", read id: string, read rect: UiRect, read quads: UiReadArray<UiImageQuad>,
-    read background_for: UiBackgroundScope?, read pixel_snap:boolean?,
+    read background_for: UiBackgroundScope?, read pixel_snap:boolean?, read decorative_overlay:boolean?,
 }
 export type UiRetainedImageBatchNode = {
     -- rect is the stage clip/layout bound; it never translates the resource.
     read kind:"image_batch", read id:string, read rect:UiRect, read content:string,
-    read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read pixel_snap:boolean?,
+    read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read pixel_snap:boolean?, read decorative_overlay:boolean?,
 }
 export type UiImageBatchNode = UiInlineImageBatchNode | UiRetainedImageBatchNode
 export type UiPanelNode = UiPlacement & {
@@ -576,12 +576,16 @@ export type UiInlineImageBatchProps = {
     read background_for:UiBackgroundScope?, read content:never?, read transform:never?,
     -- Optional physical-pixel edge rounding, ties away from zero; clip/UV unchanged.
     read pixel_snap:boolean?,
+    -- Explicit image-only transient overlay; authored paint order is unchanged.
+    read decorative_overlay:boolean?,
 }
 export type UiRetainedImageBatchProps = {
     read id:string, read rect:UiRect, read content:string,
     read transform:UiImageTransform?, read background_for:UiBackgroundScope?, read quads:never?,
     -- true requires b=c=0; negative/zero a/d are allowed, collapsed quads skip.
     read pixel_snap:boolean?,
+    -- Explicit image-only transient overlay; authored paint order is unchanged.
+    read decorative_overlay:boolean?,
 }
 export type UiComponentImageBatchProps = UiInlineImageBatchProps | UiRetainedImageBatchProps
 export type UiComponentSurface = {

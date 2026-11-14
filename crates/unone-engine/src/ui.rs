@@ -632,6 +632,9 @@ pub enum UiNode {
         /// Presentation-only edge rounding in physical framebuffer pixels.
         #[serde(skip_serializing_if = "is_false")]
         pixel_snap: bool,
+        /// Explicit non-interactive transient artwork; preserves authored draw order.
+        #[serde(skip_serializing_if = "is_false")]
+        decorative_overlay: bool,
         #[serde(skip)]
         resource_quad_count: usize,
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -764,6 +767,10 @@ impl UiNode {
             | Self::Slider { style, .. } | Self::ComboBox { style, .. } | Self::Panel { style, .. } => style.as_ref(),
             Self::InputRegion { .. } | Self::ImageBatch { .. } | Self::Component { .. } | Self::ScrollView { .. } => None,
         }
+    }
+
+    pub fn decorative_overlay(&self) -> bool {
+        matches!(self, Self::ImageBatch { decorative_overlay: true, .. })
     }
 
     pub fn background_for(&self) -> Option<&UiBackgroundScope> {
@@ -914,6 +921,9 @@ struct RawUiNode {
     style: Option<UiStyle>,
     #[serde(default)]
     background_for: Option<UiBackgroundScope>,
+    #[serde(default, deserialize_with = "present_bool")]
+    #[cfg_attr(feature="dev-tools", schemars(with="bool"))]
+    decorative_overlay: Option<bool>,
 }
 
 /// Anchored offsets and sizes are in vertical units: percent of the viewport
@@ -1277,6 +1287,12 @@ fn parse_node(
             raw_node.id
         ));
     }
+    if raw_node.decorative_overlay.is_some() && raw_node.kind != "image_batch" {
+        return Err(format!("UI_OVERLAY_KIND: node '{}' only supports decorative_overlay on non-interactive image_batch", raw_node.id));
+    }
+    if raw_node.decorative_overlay == Some(true) && raw_node.background_for.is_some() {
+        return Err(format!("UI_OVERLAY_CONFLICT: node '{}' cannot declare both decorative_overlay and background_for", raw_node.id));
+    }
     if raw_node.background_for.is_some() && !matches!(raw_node.kind.as_str(), "image" | "image_batch" | "panel") {
         return Err(format!(
             "UI_BACKGROUND_KIND: node '{}' only supports background_for on image, image_batch or panel",
@@ -1572,7 +1588,7 @@ fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool, resources:&BTree
             return Err("UI_IMAGE_BATCH_SNAP_TRANSFORM: pixel_snap requires an axis-aligned transform (b=c=0)".into());
         }
         return Ok(UiNode::ImageBatch {id:raw.id,rect,quads:Vec::new(),content:Some(content),transform:raw.transform,
-            pixel_snap:raw.pixel_snap.unwrap_or(false),resource_quad_count:resource.quads().len(),background_for:raw.background_for});
+            pixel_snap:raw.pixel_snap.unwrap_or(false),decorative_overlay:raw.decorative_overlay.unwrap_or(false),resource_quad_count:resource.quads().len(),background_for:raw.background_for});
     }
     if raw.transform.is_some() { return Err("UI_IMAGE_BATCH_TRANSFORM: transform requires retained content; inline quads keep absolute stage coordinates".into()); }
     let quads = raw.quads.ok_or_else(|| format!("UI_IMAGE_BATCH_QUADS: '{}' requires quads or retained content", raw.id))?;
@@ -1582,7 +1598,7 @@ fn parse_image_batch(raw: RawUiNode, rect: UiRect, local: bool, resources:&BTree
     for (index, quad) in quads.iter().enumerate() {
         quad.validate(rect).map_err(|e| format!("{e}; batch={}; quad={index}", raw.id))?;
     }
-    Ok(UiNode::ImageBatch { id: raw.id, rect, quads, content:None, transform:None, pixel_snap:raw.pixel_snap.unwrap_or(false),resource_quad_count:0, background_for: raw.background_for })
+    Ok(UiNode::ImageBatch { id: raw.id, rect, quads, content:None, transform:None, pixel_snap:raw.pixel_snap.unwrap_or(false),decorative_overlay:raw.decorative_overlay.unwrap_or(false),resource_quad_count:0, background_for: raw.background_for })
 }
 
 fn validate_background_scopes<'a>(
