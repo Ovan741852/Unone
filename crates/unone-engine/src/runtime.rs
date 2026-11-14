@@ -105,6 +105,8 @@ pub struct SourceProject {
     pub data_assets: Vec<crate::DataAssetDecl>,
     pub data: BTreeMap<String, Vec<u8>>,
     pub asset_catalog: Vec<crate::AssetCatalogEntry>,
+    /// Strict unless a presenting host opts in; in force from `Game.start` on.
+    pub error_policy: crate::ErrorPolicy,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -287,6 +289,8 @@ struct ApiState {
     /// Depth of host-driven UI view callbacks (virtual renderItem). Simulation
     /// mutators refuse to run while it is nonzero.
     pure_view: Rc<std::cell::Cell<usize>>,
+    /// Error policy and recoveries, shared with the runtime.
+    errors: Rc<RefCell<crate::error_policy::ErrorState>>,
 }
 
 #[derive(Debug, Clone)]
@@ -399,6 +403,8 @@ pub struct EngineRuntime {
     /// Whether to time the observation a host would receive. Off by default:
     /// only a profiling run should pay for a cost it is measuring.
     measure_serialization: bool,
+    /// The host-chosen error policy and what it recovered from.
+    errors: Rc<RefCell<crate::error_policy::ErrorState>>,
     #[cfg(feature = "dev-tools")]
     loaded_script_digest: String,
 }
@@ -602,7 +608,7 @@ impl EngineRuntime {
             let catalog = crate::sprite_resources::read_catalog(&paths)?;
             Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog))
         })?;
-        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog)?;
+        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict())?;
         (runtime.startup.imports_ms, runtime.startup.project_ms) = (startup.imports_ms, startup.project_ms);
         Ok(runtime)
     }
@@ -710,6 +716,7 @@ impl EngineRuntime {
             data_assets,
             data,
             asset_catalog,
+            error_policy,
         } = project;
         let module_count = script_modules.len().max(script_module_bytecode.len());
         if module_count > MAX_SCRIPT_MODULES {
@@ -759,6 +766,7 @@ impl EngineRuntime {
             Some(job_sources),
             data_assets,
             asset_catalog,
+            error_policy,
         )
     }
 
@@ -776,7 +784,9 @@ impl EngineRuntime {
         job_sources: Option<BTreeMap<String, String>>,
         data_assets: crate::data_assets::DataAssets,
         asset_catalog: Vec<crate::AssetCatalogEntry>,
+        error_policy: crate::ErrorPolicy,
     ) -> Result<Self, Box<Diagnostic>> {
+        let errors = Rc::new(RefCell::new(crate::error_policy::ErrorState::new(error_policy)));
         let data_assets = Rc::new(RefCell::new(data_assets));
         let sprite_resources = Rc::new(RefCell::new(sprite_resources::Registry::new(asset_catalog)
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
@@ -816,6 +826,7 @@ impl EngineRuntime {
             data_assets: Rc::clone(&data_assets),
             script_profile: Rc::clone(&script_profile),
             pure_view: Rc::new(std::cell::Cell::new(0)),
+            errors: Rc::clone(&errors),
         };
         let systems = SystemSettings::from_config(&config)?;
         systems.validate_compiled()?;
@@ -899,6 +910,7 @@ impl EngineRuntime {
             script_profile,
             startup: crate::performance::StartupCost::default(),
             measure_serialization: false,
+            errors,
             #[cfg(feature = "dev-tools")]
             loaded_script_digest: String::new(),
         };
@@ -983,6 +995,26 @@ impl EngineRuntime {
         }
         *self.viewport_aspect.borrow_mut() = aspect;
         Ok(())
+    }
+
+    /// The policy in force; strict unless the host's load payload chose one.
+    pub fn error_policy(&self) -> crate::ErrorPolicy {
+        self.errors.borrow().policy
+    }
+
+    /// Change how later ticks and publishes answer recoverable errors.
+    /// Counts already recovered stay, but the consecutive run starts over.
+    pub fn set_error_policy(&mut self, policy: crate::ErrorPolicy) -> Result<(), Box<Diagnostic>> {
+        policy.validate().map_err(|e| Box::new(Diagnostic::error("ERROR_POLICY_INVALID", "Invalid error policy", e)))?;
+        let mut errors = self.errors.borrow_mut();
+        errors.policy = policy;
+        errors.recovered.consecutive_script_errors = 0;
+        Ok(())
+    }
+
+    /// What a lenient policy has recovered from; None until the first recovery.
+    pub fn recovered_errors(&self) -> Option<crate::RecoveredErrors> {
+        self.errors.borrow().report()
     }
 
     /// Name this project reports itself as.
@@ -1271,7 +1303,9 @@ impl EngineRuntime {
         } else {
             None
         };
-        let (script, script_time) = timed(|| {
+        // The outer error is a host failure (job schedules); the inner one is
+        // what escaped Game.update itself.
+        let (script, script_time) = timed(|| -> Result<mlua::Result<()>, Box<Diagnostic>> {
             // Dropped before vm_probe finishes, which restores the same slot.
             #[cfg(feature = "dev-tools")]
             let _watch = script_watchdog::watch(&self.lua, "Game.update", script_watchdog::limit(&self.config));
@@ -1280,22 +1314,38 @@ impl EngineRuntime {
                 jobs::pump_schedules(&self.lua, &self.jobs, &self.api)
                     .map_err(|e| Box::new(script_diagnostic(&self.paths, e.to_string())))?;
             }
-            self.update_fn
-                .call::<()>((self.api.clone(), FIXED_DT))
-                .map_err(|err| Box::new(script_diagnostic(&self.paths, err.to_string())))
+            Ok(self.update_fn.call::<()>((self.api.clone(), FIXED_DT)))
         });
+        #[cfg(feature = "preview-tools")]
+        let update_returned = matches!(script, Ok(Ok(())));
         #[cfg(feature = "phase-profile")]
         if let Some(scope)=&phase_tick { scope.record(phase_profile::Phase::Script,script_time); }
         #[cfg(all(feature = "preview-tools", not(feature = "phase-profile")))]
         if let Some(probe) = vm_probe {
-            let frame = probe.finish(self.world.borrow().frame + 1, script.is_ok());
+            let frame = probe.finish(self.world.borrow().frame + 1, update_returned);
             profiling::state(&self.lua).borrow_mut().record_vm(frame);
         }
         #[cfg(feature = "preview-tools")]
-        if script.is_err() {
+        if !update_returned {
             self.lua.remove_interrupt();
             profiling::state(&self.lua).borrow_mut().active = false;
         }
+        // Strict policy: any update error fails the tick. Under
+        // script_errors=continue the rest of that update is skipped and the
+        // frame completes as if it had returned, until too many fail in a row.
+        let script = match script {
+            Err(host) => Err(host),
+            Ok(Ok(())) => {
+                self.errors.borrow_mut().recovered.consecutive_script_errors = 0;
+                Ok(())
+            }
+            Ok(Err(error)) => {
+                let diagnostic = Box::new(script_diagnostic(&self.paths, error.to_string()));
+                let recoverable = recoverable_update_error(&error, &diagnostic);
+                let frame = self.world.borrow().frame + 1;
+                self.errors.borrow_mut().recover_script_error(frame, diagnostic, recoverable)
+            }
+        };
         #[cfg(feature = "jobs")]
         if let Err(error) = &script {
             self.jobs.borrow_mut().fail(error.explanation.clone());
@@ -1462,6 +1512,7 @@ impl EngineRuntime {
         let host_state=|| {
             snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
             snapshot.spatial = self.spatial.borrow().snapshot();
+            snapshot.recovered_errors = self.errors.borrow().report();
             #[cfg(feature = "jobs")]
             if self.systems.is_enabled("jobs") {
                 snapshot.jobs = Some(self.jobs.borrow().snapshot());
@@ -1779,6 +1830,7 @@ impl EngineRuntime {
             data_assets: Rc::clone(&self.data_assets),
             script_profile: Rc::clone(&self.script_profile),
             pure_view: Rc::new(std::cell::Cell::new(0)),
+            errors: Rc::clone(&self.errors),
         };
         let candidate_api = match build_api(&candidate_lua, &candidate_api_state, &self.systems) {
             Ok(api) => api,
@@ -2297,6 +2349,19 @@ fn project_scripts(paths: &ProjectPaths, entry_source: &str) -> Vec<(PathBuf, St
         }
     }
     scripts
+}
+
+/// Whether a lenient policy may skip the rest of a failed update and run the
+/// next one. Running out of memory and the developer time limit never are.
+fn recoverable_update_error(error: &mlua::Error, diagnostic: &Diagnostic) -> bool {
+    fn out_of_memory(error: &mlua::Error) -> bool {
+        match error {
+            mlua::Error::MemoryError(_) => true,
+            mlua::Error::CallbackError { cause, .. } => out_of_memory(cause),
+            _ => false,
+        }
+    }
+    diagnostic.code == "LUAU_RUNTIME_ERROR" && !out_of_memory(error)
 }
 
 fn script_diagnostic(paths: &ProjectPaths, message: String) -> Diagnostic {
@@ -3178,6 +3243,21 @@ return Game
             .unwrap();
         let x = report.world.entities.get("player").unwrap().transform.x;
         assert!((x - 2.0).abs() < 0.000_001);
+    }
+
+    #[test]
+    fn only_an_ordinary_luau_error_is_recoverable() {
+        let paths = crate::ProjectPaths { root: "<memory>".into(), config: "<memory>/project.unone.json".into(),
+            entry_script: "main.luau".into(), main_scene: None, test_files: Vec::new(), bundle_manifest: None, asset_manifest: None };
+        let ordinary = mlua::Error::RuntimeError("main.luau:3: attempt to index nil".into());
+        assert!(super::recoverable_update_error(&ordinary, &super::script_diagnostic(&paths, ordinary.to_string())));
+        let memory = mlua::Error::MemoryError("not enough memory".into());
+        assert!(!super::recoverable_update_error(&memory, &super::script_diagnostic(&paths, memory.to_string())));
+        let wrapped = mlua::Error::CallbackError { traceback: String::new(), cause: std::sync::Arc::new(memory) };
+        assert!(!super::recoverable_update_error(&wrapped, &super::script_diagnostic(&paths, wrapped.to_string())));
+        let mut limit = super::script_diagnostic(&paths, ordinary.to_string());
+        limit.code = "SCRIPT_TIME_LIMIT_EXCEEDED".into();
+        assert!(!super::recoverable_update_error(&ordinary, &limit));
     }
 
     #[test]

@@ -30,6 +30,55 @@ pub fn ui_contract() -> &'static UiContract {
     })
 }
 
+/// A publish refused because the tree is over a capacity limit (node budget,
+/// nesting depth, string bytes, virtual keys). The same authored code crosses
+/// such a limit as its data grows, unlike a malformed tree, so a released
+/// player may keep the previous screen instead of stopping the game.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct UiRejection {
+    pub code: &'static str,
+    /// Simulation frame of the refused publish; filled in by the publisher.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub frame: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub node: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub used: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<usize>,
+    pub message: String,
+}
+
+impl UiRejection {
+    /// Codes a released player may answer by keeping the previous screen.
+    pub const CODES: [&'static str; 4] = ["UI_NODE_LIMIT", "UI_DEPTH_LIMIT", "UI_STRING_LIMIT", "UI_VIRTUAL_ITEM_LIMIT"];
+}
+
+/// Why `ui.setRoot` refused a tree.
+#[derive(Debug, Clone, PartialEq)]
+pub enum UiPublishError {
+    /// Over a capacity limit; see [`UiRejection`].
+    Rejected(UiRejection),
+    /// Malformed or contradictory: the authored code must change.
+    Invalid(String),
+}
+
+impl From<UiRejection> for UiPublishError {
+    fn from(rejection: UiRejection) -> Self { Self::Rejected(rejection) }
+}
+
+impl From<String> for UiPublishError {
+    fn from(message: String) -> Self { Self::Invalid(message) }
+}
+
+impl From<UiPublishError> for String {
+    fn from(error: UiPublishError) -> Self {
+        match error { UiPublishError::Rejected(rejection) => rejection.message, UiPublishError::Invalid(message) => message }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
@@ -1114,12 +1163,23 @@ impl UiTree {
         viewport_aspect: f64,
         resources: &BTreeMap<String,UiImageBatchResource>,
     ) -> Result<Self, String> {
+        Self::try_from_json_for_viewport_with_resources(value, viewport_aspect, resources).map_err(String::from)
+    }
+
+    /// Like `from_json_for_viewport_with_resources`, but keeps a capacity
+    /// rejection apart from a malformed tree so a publisher can decide whether
+    /// to keep its previous screen.
+    pub fn try_from_json_for_viewport_with_resources(
+        value: serde_json::Value,
+        viewport_aspect: f64,
+        resources: &BTreeMap<String,UiImageBatchResource>,
+    ) -> Result<Self, UiPublishError> {
         let aspect = if viewport_aspect.is_finite() && viewport_aspect > 0.0 {
             viewport_aspect
         } else {
             return Err(format!(
                 "viewport aspect must be a positive finite ratio, got {viewport_aspect}"
-            ));
+            ).into());
         };
         // Guard before recursive typed deserialization. Report the first exact
         // offending path, including its containing component, without truncation.
@@ -1135,7 +1195,7 @@ impl UiTree {
             return Err(format!(
                 "UI_BUDGET_INVALID: requested={limit}, host_max_nodes={}; set budget.max_nodes within 1..host_max_nodes",
                 ui_contract().host_max_nodes
-            ));
+            ).into());
         }
         let mut stack = vec![(&value, 0usize, 0usize)];
         let mut indices = Vec::new();
@@ -1156,19 +1216,29 @@ impl UiTree {
                 }
             }
             if count > limit {
-                return Err(format!(
-                    "UI_NODE_LIMIT: path={path}, node={}, used={count}, limit={limit}, host_max_nodes={}; raise screen.budget.max_nodes within the host limit or use one image with slice for each nine-slice panel",
-                    n["id"], ui_contract().host_max_nodes,
-                    path = validation_path(&indices),
-                ));
+                let path = validation_path(&indices);
+                return Err(UiRejection {
+                    message: format!(
+                        "UI_NODE_LIMIT: path={path}, node={}, used={count}, limit={limit}, host_max_nodes={}; raise screen.budget.max_nodes within the host limit or use one image with slice for each nine-slice panel",
+                        n["id"], ui_contract().host_max_nodes,
+                    ),
+                    code: "UI_NODE_LIMIT", frame: None, path: Some(path), node: n["id"].as_str().map(str::to_owned),
+                    used: Some(count), limit: Some(limit),
+                }.into());
             }
             if depth > ui_contract().max_component_depth + 1
                 || (n["kind"] == "component" && depth > ui_contract().max_component_depth)
             {
-                return Err(format!(
-                    "UI_DEPTH_LIMIT: {path} exceeds the maximum component nesting depth of {}",
-                    ui_contract().max_component_depth, path = validation_path(&indices),
-                ));
+                let path = validation_path(&indices);
+                return Err(UiRejection {
+                    message: format!(
+                        "UI_DEPTH_LIMIT: {path} exceeds the maximum component nesting depth of {}",
+                        ui_contract().max_component_depth,
+                    ),
+                    // A leaf may sit one level below the deepest component.
+                    code: "UI_DEPTH_LIMIT", frame: None, path: Some(path), node: n["id"].as_str().map(str::to_owned),
+                    used: Some(depth), limit: Some(ui_contract().max_component_depth + usize::from(n["kind"] != "component")),
+                }.into());
             }
             if let Some(obj) = n.as_object() {
                 for v in obj.values() {
@@ -1183,15 +1253,27 @@ impl UiTree {
                     bytes += component.len();
                 }
                 if let Some(keys) = n["scroll"]["virtual_items"]["keys"].as_array() {
-                    if keys.len() > 100_000 { return Err(format!("UI_VIRTUAL_ITEM_LIMIT: {path}; maximum 100000 keys", path = validation_path(&indices))); }
+                    if keys.len() > 100_000 {
+                        let path = validation_path(&indices);
+                        return Err(UiRejection {
+                            message: format!("UI_VIRTUAL_ITEM_LIMIT: {path}; maximum 100000 keys"),
+                            code: "UI_VIRTUAL_ITEM_LIMIT", frame: None, path: Some(path), node: n["id"].as_str().map(str::to_owned),
+                            used: Some(keys.len()), limit: Some(100_000),
+                        }.into());
+                    }
                     bytes += keys.iter().filter_map(|k| k.as_str()).map(str::len).sum::<usize>();
                 }
             }
             if bytes > ui_contract().max_string_bytes {
-                return Err(format!(
-                    "UI_STRING_LIMIT: {path}, used={bytes}, limit={}; reduce UI text/identifiers",
-                    ui_contract().max_string_bytes, path = validation_path(&indices),
-                ));
+                let path = validation_path(&indices);
+                return Err(UiRejection {
+                    message: format!(
+                        "UI_STRING_LIMIT: {path}, used={bytes}, limit={}; reduce UI text/identifiers",
+                        ui_contract().max_string_bytes,
+                    ),
+                    code: "UI_STRING_LIMIT", frame: None, path: Some(path), node: n["id"].as_str().map(str::to_owned),
+                    used: Some(bytes), limit: Some(ui_contract().max_string_bytes),
+                }.into());
             }
             if let Some(children) = n["children"].as_array() {
                 for (i, c) in children.iter().enumerate().rev() {
@@ -1205,7 +1287,7 @@ impl UiTree {
             return Err(format!(
                 "ui.setRoot root kind must be 'screen', got '{}'",
                 raw.kind
-            ));
+            ).into());
         }
         ensure_non_empty("root id", &raw.id)?;
         ensure_non_empty("root node", &raw.node)?;

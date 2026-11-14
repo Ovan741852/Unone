@@ -1562,6 +1562,57 @@ return Game
         );
     }
 
+    /// The official player's load payload carries error_policy. Released
+    /// players keep the previous screen and keep ticking; strict ones fail.
+    #[test]
+    fn c_abi_error_policy_keeps_the_previous_screen_or_fails_strictly() {
+        const GROWING: &str = r#"
+local function screen(count)
+    local children={}
+    for i=1,count do children[i]={kind='panel',id='panel-'..i,rect={x=0,y=0,width=10,height=10}} end
+    return {kind='screen',id='screen',node='screen',budget={max_nodes=3},children=children}
+end
+return {start=function(api) api.ui.setRoot(screen(2)) end,update=function(api)
+    api.observation.set('published',api.ui.setRoot(screen(api.input.isDown('Grow') and 4 or 2)))
+    if api.input.isDown('Boom') then error('boom') end
+end}"#;
+        let load = |policy: Option<serde_json::Value>| {
+            let mut payload = json!({"config":{"name":"web-error-policy","entry_script":"main.luau"},"script":GROWING});
+            if let Some(policy) = policy { payload["error_policy"] = policy; }
+            let payload = serde_json::to_vec(&payload).unwrap();
+            assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) }, 0);
+        };
+        let tick_with = |actions: serde_json::Value| {
+            let frame = serde_json::to_vec(&json!({"actions": actions})).unwrap();
+            assert_eq!(unsafe { unone_web_set_input_frame(frame.as_ptr(), frame.len()) }, 0);
+            unone_web_tick()
+        };
+        let panels = |world: &serde_json::Value| world["ui"]["children"].as_array().unwrap().len();
+
+        load(Some(json!({"ui_capacity":"keep_previous","script_errors":"continue","max_consecutive_script_errors":2})));
+        assert_eq!(tick_with(json!({"Grow": true})), 0);
+        let world = output()["world"].clone();
+        assert_eq!((world["frame"].clone(), panels(&world)), (json!(1), 2));
+        assert_eq!(world["observations"]["published"], json!(false));
+        assert_eq!(world["recovered_errors"]["ui_rejections"], json!(1));
+        assert_eq!(world["recovered_errors"]["last_ui_rejection"]["node"], json!("panel-4"));
+        assert_eq!(tick_with(json!({"Boom": true})), 0, "one failing update is skipped");
+        let world = output()["world"].clone();
+        assert_eq!(world["frame"], json!(2));
+        assert_eq!(world["recovered_errors"]["script_errors"], json!(1));
+        assert_eq!(tick_with(json!({"Boom": true})), -1, "the second in a row reaches the limit");
+        let failure = output();
+        assert_eq!((failure["kind"].clone(), failure["diagnostic"]["code"].clone()), (json!("web_error"), json!("SCRIPT_ERROR_LIMIT")));
+
+        load(None);
+        assert_eq!(tick_with(json!({})), 0);
+        assert!(output()["world"].get("recovered_errors").is_none(), "strict snapshots are unchanged");
+        assert_eq!(tick_with(json!({"Grow": true})), -1);
+        let failure = output();
+        assert_eq!(failure["diagnostic"]["code"], json!("LUAU_RUNTIME_ERROR"));
+        assert!(failure["diagnostic"]["explanation"].as_str().unwrap().contains("UI_NODE_LIMIT"));
+    }
+
     #[test]
     fn c_abi_save_payload_reaches_luau_and_snapshot() {
         let payload = save_project_payload();

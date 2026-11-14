@@ -49,6 +49,10 @@ explicit file and enables persistence for headless and bounded test runs; it is
 rejected with `NATIVE_SAVE_REPLAY_CONFLICT` under `--input-sequence`. Projects that
 disable the `save` system persist nothing on either player.
 
+A production Web player keeps a game running through an over-budget UI frame or
+an occasional `Game.update` error; development players and every CLI run fail
+fast. See [runtime errors](#runtime-errors).
+
 `player.presentation.json` includes the **web-wasm** overlay (bloom, worker backend,
 interpolation) and shared UI/font settings. Native wgpu packages the UI/font
 settings and fails closed on web-only keys. Host identities and capability tables live in `game sdk inspect --json`;
@@ -198,6 +202,71 @@ See the [probe report](../_Games/dragon-tycoon3/README.md) for actual measured
 download/startup results and their limits. The local measurement server sends
 correct WASM/MJS MIME types, no-store responses and optional gzip. It is a local
 test utility, not a production server.
+
+
+## Runtime errors
+
+Two kinds of error can reach a released game while it runs: a UI publish over a
+capacity limit (`UI_NODE_LIMIT`, `UI_DEPTH_LIMIT`, `UI_STRING_LIMIT`,
+`UI_VIRTUAL_ITEM_LIMIT`), and an error escaping `Game.update`. The engine decides
+what happens from an **error policy** the host sends in its load payload. The
+policy is strict unless a host sends another one:
+
+| Run | Policy |
+| --- | --- |
+| `game check`, `run`, `test`, previews, replays, `--rollback`, development Web players (`export web --development`), native players | strict: the error stops the run with its diagnostic |
+| production Web player (`export web`, `project prepare --target web`, `refresh-official-web.mjs`) | `player.presentation.json` `error_policy`, or the release default below when it declares none |
+| production Web player opened with `?unone_errors=strict` | strict, for QA runs that must fail loudly |
+
+```json
+"error_policy": {
+  "ui_capacity": "keep_previous",
+  "script_errors": "continue",
+  "max_consecutive_script_errors": 60
+}
+```
+
+That is the release default. Each field a declaration leaves out takes its
+strict value (`"fail"`; 60), so `{"script_errors":"continue"}` alone keeps
+`ui_capacity` strict. `max_consecutive_script_errors` is 1..3600.
+
+- `ui_capacity: "keep_previous"`: `api.ui.setRoot` returns `false` instead of
+  raising, the previous valid screen stays published (nothing is truncated or
+  dropped) and the rest of the update runs. `api.ui.inspect().last_rejection`
+  says why: `{code, frame, path, node, used, limit, message}`. See
+  [the UI budget contract](ui-slice-and-budget.md). A virtual list window that
+  would overflow keeps its published window. Malformed trees still raise.
+- `script_errors: "continue"`: an error escaping `Game.update` skips the rest of
+  that update; physics, jobs and the frame still complete, input is consumed,
+  and the next tick runs `Game.update` again. When `max_consecutive_script_errors`
+  ticks fail in a row the player stops with `SCRIPT_ERROR_LIMIT`, whose
+  `facts.last_error` carries the last error. A tick whose update returns starts
+  the count over. State the failed update had already changed stays changed.
+  Errors in top-level code and `Game.start`, running out of memory, and host
+  failures (jobs, spatial, physical input, physics) stay fatal.
+
+The export writes the policy each player runs into `content/presentation.json`
+and the export report's `error_policy`: production exports write the declared
+or release policy, development exports always write the strict one. A native
+export rejects a declared `error_policy` with `HOST_PRESENTATION_UNSUPPORTED`,
+because the native player is still strict.
+
+What a lenient player recovered from is published, never silent:
+
+- the snapshot's `world.recovered_errors`: `ui_rejections`,
+  `last_ui_rejection`, `script_errors`, `consecutive_script_errors` and
+  `last_script_error` (`{frame, code, message}`). Strict snapshots never carry
+  it, so their digests are unchanged;
+- `document.body.dataset.playerRecoveredErrors`, the same JSON, for QA tools;
+- a `UNONE_PLAYER_RECOVERED ...` console warning, at most one per kind every
+  5 s, counting what it skipped;
+- a small non-interactive notice at the bottom left while recoveries continue;
+- `UNONE_PLAYER_READY` metrics `error_policy` (`"strict"` or the policy sent).
+
+A game that wants its own fallback reads the `setRoot` result or
+`api.ui.inspect().last_rejection`, and can copy the rejection into an
+observation so tests see it. Under the strict policy a game may still `pcall`
+`setRoot`; `last_rejection` records that rejection too.
 
 
 ## Raster construction request

@@ -22,6 +22,7 @@ import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from 
 import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '../shared/player-completion.mjs';
 import {createPlayerPerformanceFeed} from '../shared/player-performance-feed.mjs';
 import {serializedSavePayload} from '../shared/save-publication.mjs';
+import {playerErrorPolicy,createRecoveryReporter} from '../shared/player-errors.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
@@ -49,6 +50,9 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null,networkHost=null;
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
+// What the engine may recover from (presentation error_policy); null is strict.
+let errorPolicy=null;
+const recovery=createRecoveryReporter({target:document.body});
 const playerCompletion=createPlayerCompletionMetrics();
 function readPlayerPerformance(options={}){
  if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples'].includes(key)))throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
@@ -106,7 +110,7 @@ function withCatalog(project,manifest){const catalog=textureCatalog(manifest);if
 // Declared data assets are fetched as bytes for the core's api.assets loaders.
 function dataAssets(project){return Promise.all(payloadDataSources(project).map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);return {id:asset.id,bytes:new Uint8Array(await r.arrayBuffer())};}));}
 function physicalViewport(){const ratio=Math.min(window.devicePixelRatio||1,2);return [Math.max(1,Math.floor(canvas.clientWidth*ratio)),Math.max(1,Math.floor(canvas.clientHeight*ratio))];}
-function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;if(newSession)resourceHost?.reset();resourceHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
+function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession)resourceHost?.reset();resourceHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 // Each load or restart starts a new session seed; ?seed= reproduces a reported one.
 function sessionSeed(){const {seed,source}=playerSeed(location.search);metrics.seed=seed;metrics.seed_source=source;document.body.dataset.playerSeed=seed;return seed;}
 function persistSave(){const next=serializedSavePayload(snapshot);if(next!==saved){localStorage.setItem(key,next);saved=next;}}
@@ -177,7 +181,7 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
@@ -266,6 +270,7 @@ async function start(){
  const preparation=await imageAssets.prepareScene(project.scene);
  if(startupAbort.signal.aborted)throw startupCancelled();
  assertRequiredImagePreparation(preloadPlan,preparation);
+ errorPolicy=playerErrorPolicy(presentation,location.search);
  physicalProfile=presentation.physical_input;
  if(physicalProfile!==undefined&&(physicalProfile!=='ordered_physical_v1'||(presentation.renderer_mode??'official')!=='official'))throw Error('INPUT_PHYSICAL_PROFILE_UNSUPPORTED: official Web ordered_physical_v1 only');
  configurePhysical();
@@ -277,11 +282,12 @@ async function start(){
  const requirePhysicalViewport=presentation.physical_input!==undefined||presentation.projected_raster==='upper_left_checked'||presentation.projected_material_profile!==undefined;
  backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,...(profiler?{profiler}:{})});
  if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
- metrics.runtime_ready_ms=performance.now()-window.playerBoot;
+ metrics.runtime_ready_ms=performance.now()-window.playerBoot;metrics.error_policy=errorPolicy??'strict';
  document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
  try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
  project.viewport_size=physicalViewport();
+ if(errorPolicy)project.error_policy=errorPolicy;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  const data=await dataLoad;if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:sessionSeed(),data}),{reset:true,newSession:true});
@@ -308,6 +314,6 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removePerformanceAccessor();disposePerformanceFeed();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
+window.addEventListener('pagehide',()=>{removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

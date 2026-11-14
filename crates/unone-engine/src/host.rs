@@ -48,6 +48,10 @@ pub struct HostProject {
     /// Declared presentation assets; bytes and decoded/GPU objects stay in the host.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub asset_catalog: Vec<crate::AssetCatalogEntry>,
+    /// How this runtime answers recoverable errors. Omitted means strict:
+    /// only a player presenting a released game sends a lenient policy.
+    #[serde(default)]
+    pub error_policy: Option<crate::ErrorPolicy>,
 }
 
 impl HostProject {
@@ -113,6 +117,8 @@ impl HostProject {
                 return Err(invalid("SCRIPT_BYTECODE_UNDECLARED: staged module bytecode needs a script_module_bytecode declaration".into())),
             None => BTreeMap::new(),
         };
+        let error_policy = self.error_policy.unwrap_or_default();
+        error_policy.validate().map_err(invalid)?;
         let scene = self
             .scene
             .as_deref()
@@ -133,6 +139,7 @@ impl HostProject {
             data_assets: self.data_assets,
             asset_catalog: self.asset_catalog,
             data,
+            error_policy,
         })
     }
 }

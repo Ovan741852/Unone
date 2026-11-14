@@ -106,6 +106,10 @@
             "null"
           ]
         },
+        "decorative_overlay": {
+          "default": false,
+          "type": "boolean"
+        },
         "drag": {
           "anyOf": [
             {

@@ -139,6 +139,7 @@ mod tests {
             audio_events: Vec::new(),
             audio_loops: Vec::new(),
             audio_mix: None,
+            recovered_errors: None,
         };
         assert_eq!(
             NativeAudio::phase_gain(&snapshot, AudioPhase::FadingIn, 0, 10),

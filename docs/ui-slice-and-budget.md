@@ -1,6 +1,6 @@
 # 九宮格與 UI 容量契約 v2
 
-更新：2026-09-20。這是可複用的引擎／呈現 primitive，不是遊戲規則。
+更新：2026-11-14（超限發布在正式版 player 不再中止遊戲）。這是可複用的引擎／呈現 primitive，不是遊戲規則。
 Core 擁有 typed tree、邊距／裁切驗證與容量契約；Web/native host 負責繪製。
 皮膚、按鈕、動作、MVVM、畫面組裝仍在 Luau 或插件，不進 Rust。
 
@@ -61,7 +61,7 @@ skins. See [the current scope contract](ui-styling.md#explicit-background-scopes
 | 計數 | 包含 component wrappers 與其所有子節點，不含 screen root |
 | Wrapper 深度 | 16 |
 | 字串總量 | 8 MiB UTF-8 |
-| 超限 | 拒絕該次發布，保留上一個有效畫面；不截斷、不刪內容 |
+| 超限 | 拒絕該次發布，保留上一個有效畫面；不截斷、不刪內容。嚴格模式拋錯，正式版 Web player 回傳 false 繼續執行（見下） |
 
 `api.ui.inspect()` 回傳真正執行中的 `contract`，以及最新成功發布的 `usage`：
 `logical_nodes`、`leaf_nodes`、`render_regions_upper_bound`、`max_nodes`、
@@ -70,6 +70,36 @@ skins. See [the current scope contract](ui-styling.md#explicit-background-scopes
 `UI_NODE_LIMIT` 回報第一個超限節點的 path、id、used、limit 與 host_max_nodes。
 先消除九節點組裝與檢查實際成本，再決定是否提高預算；不要為滿足任意門檻刪掉功能。
 非法預算是 `UI_BUDGET_INVALID`，深度是 `UI_DEPTH_LIMIT`，字串超量是 `UI_STRING_LIMIT`。
+
+### 超限時遊戲會怎樣
+
+容量拒絕是 `UI_NODE_LIMIT`、`UI_DEPTH_LIMIT`、`UI_STRING_LIMIT`、`UI_VIRTUAL_ITEM_LIMIT`
+四種：同一段程式碼會因資料變多而越線，跟寫錯的樹（未知欄位、缺 rect、非法預算）
+不同。被拒絕的樹一律不會取代、截斷或部分套用到已發布的畫面。差別只在呼叫端：
+
+| 執行情境 | `api.ui.setRoot` 遇到容量拒絕 |
+| --- | --- |
+| `game check`、`run`、`test`、預覽、replay、開發版 Web player（嚴格，預設） | 照舊拋出 `UI_NODE_LIMIT: path=..., node=..., used=..., limit=...`，跑測試或檢查不會悄悄通過超限畫面 |
+| 正式版 Web player（`error_policy.ui_capacity="keep_previous"`，正式匯出預設） | 回傳 `false`，保留上一個有效畫面，這次 update 其餘部分照常執行 |
+
+成功發布一律回傳 `true`。任何模式下，每次容量拒絕都記在 `api.ui.inspect()`：
+
+```lua
+if not api.ui.setRoot(view) then
+    local r = api.ui.inspect().last_rejection
+    -- r.code, r.frame, r.path, r.node, r.used, r.limit, r.message
+    api.observation.set("ui_rejection", r)
+end
+```
+
+`inspect().rejections` 是累計次數。正式版 player 另外把它放進快照的
+`world.recovered_errors`、`document.body.dataset.playerRecoveredErrors`，並以限流的
+console 警告和左下角小提示回報；嚴格模式的快照不含這個欄位。虛擬清單的視窗請求
+若會超限，也會保留原本已發布的視窗。設定、預設值與 `?unone_errors=strict`
+見 [player 的執行期錯誤政策](player-export.md#runtime-errors)。
+
+`api.ui.imageBatch.define` 讓已發布的樹超限時仍然拋錯：那是資源變更，不是發布，
+回傳 false 會讓遊戲以為資源已更新。
 
 排版工具另有工作量保護：最多 1,000,000 次配對比較／1024 個 findings，超限附
 `UI_LAYOUT_WORK_LIMIT`，結果不會標成 readable。保留完整節點表，可以逐個子樹檢查。

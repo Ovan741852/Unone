@@ -375,7 +375,11 @@ export type UiApi = {
     -- Stateful immutable artwork definitions; call outside pure View/renderItem.
     imageBatch: UiImageBatchApi,
     components: UiComponentsApi,
-    setRoot: (root: UiScreen) -> (),
+    -- True when published. A tree over a capacity limit (UI_NODE_LIMIT,
+    -- UI_DEPTH_LIMIT, UI_STRING_LIMIT, UI_VIRTUAL_ITEM_LIMIT) raises under the
+    -- strict default and returns false in a production Web player, which keeps
+    -- the previous screen; inspect().last_rejection says why.
+    setRoot: (root: UiScreen) -> boolean,
     -- Current host width/height ratio, also used by anchored placement.
     -- Read-only environment data; pass to components.createResponsiveLayout().resolve.
     getViewport: () -> {aspect: number},
@@ -384,7 +388,9 @@ export type UiApi = {
     scrollView: (options: UiScrollOptions) -> UiScrollNode,
     virtualList: <T>(options: UiVirtualOptions<T>) -> UiScrollNode,
     virtualGrid: <T>(options: UiVirtualGridOptions<T>) -> UiScrollNode,
-    -- Actual host ceilings and the last valid tree's node/subtree usage.
+    -- Actual host ceilings and the last valid tree's node/subtree usage, plus
+    -- rejections (count) and last_rejection {code, frame, path?, node?, used?,
+    -- limit?, message} for the latest publish refused for capacity.
     inspect: () -> ObservationValue,
 }
 -- Borrowed mutable authored tables are accepted; constructor results expose readonly views.

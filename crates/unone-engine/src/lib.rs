@@ -107,7 +107,9 @@ mod systems;
 mod ui;
 mod ui_cursor;
 pub use ui_cursor::{UiCursor,CursorFilter};
-pub use ui::{UiImageBatchDefinition,UiImageBatchResource,UiImageTransform};
+pub use ui::{UiImageBatchDefinition,UiImageBatchResource,UiImageTransform,UiPublishError,UiRejection};
+mod error_policy;
+pub use error_policy::{ErrorPolicy, RecoveredErrors, ScriptErrorPolicy, ScriptErrorRecord, UiCapacityPolicy};
 #[cfg(feature = "dev-tools")]
 mod verify;
 mod world;

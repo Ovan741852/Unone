@@ -69,6 +69,7 @@ const WEB_PRESENTATION_KEYS: &[&str] = &[
     "spatial_backend",
     "interpolation",
     "interpolate_instances",
+    "error_policy",
 ];
 const ANDROID_NATIVE_REQUIRES: &[&str] = &["Android SDK", "JDK", "local test signing"];
 
@@ -259,6 +260,12 @@ pub struct PresentationSettings {
     pub job_policy: JobPolicy,
     pub interpolation: bool,
     pub interpolate_instances: Vec<String>,
+    /// How the production Web player answers recoverable errors (a UI publish
+    /// over capacity, an error escaping Game.update). Undeclared, production
+    /// exports write ErrorPolicy::release(); development exports always write
+    /// the strict policy, like every CLI run.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error_policy: Option<unone_engine::ErrorPolicy>,
     /// Render pass kinds the official Web renderer loads for render_pipeline
     /// (ADR 0048). Each module exports createPass; TypeScript is compiled by
     /// the project's own build before export.
@@ -304,6 +311,7 @@ impl PresentationSettings {
             policy.validate()?;
         }
         physical_input::validate(self.physical_input,self.renderer_mode==RendererMode::Official)?;
+        if let Some(policy)=self.error_policy { policy.validate().map_err(anyhow::Error::msg)?; }
         projected_frame::validate(self.projected_material_profile,self.projected_raster,self.antialias,self.bloom,self.renderer_mode==RendererMode::Official)?;
         projected_raster::validate(self.projected_raster,self.antialias,self.bloom,self.renderer_mode==RendererMode::Official)?;
         match self.renderer_mode {
@@ -556,6 +564,10 @@ pub fn native_wgpu_export_gate(
     if presentation.job_policy != JobPolicy::default() {
         keys.push("job_policy");
     }
+    // The native player keeps the strict policy; a declared one would be ignored.
+    if presentation.error_policy.is_some() {
+        keys.push("error_policy");
+    }
     ensure!(
         keys.is_empty(),
         "HOST_PRESENTATION_UNSUPPORTED: player.presentation.json fields {} are not supported by native wgpu. Export --target web or remove those keys.",
@@ -587,6 +599,23 @@ mod tests {
         assert!(serde_json::from_value::<PresentationSettings>(json!({"render_extensions":[{"kind":"a.b","module":"t.js","entry":"x"}]})).is_err());
         let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([("spine".into(),false),("effekseer".into(),false)])).unwrap();
         assert!(native_wgpu_export_gate(&quiet,Some(&tint)).unwrap_err().to_string().contains("HOST_RENDER_EXTENSIONS_UNSUPPORTED"));
+    }
+
+    #[test]
+    fn error_policy_is_optional_validated_and_web_only(){
+        assert!(serde_json::to_value(PresentationSettings::default()).unwrap().get("error_policy").is_none(), "undeclared keeps presentation.json bytes");
+        let settings:PresentationSettings=serde_json::from_value(json!({"error_policy":{"ui_capacity":"keep_previous","script_errors":"fail"}})).unwrap();
+        settings.validate_renderer().unwrap();
+        assert_eq!(serde_json::to_value(&settings).unwrap()["error_policy"],json!({"ui_capacity":"keep_previous","script_errors":"fail","max_consecutive_script_errors":60}));
+        let zero:PresentationSettings=serde_json::from_value(json!({"error_policy":{"max_consecutive_script_errors":0}})).unwrap();
+        assert!(zero.validate_renderer().unwrap_err().to_string().contains("ERROR_POLICY_INVALID"));
+        for value in [json!({"ui_capacity":"truncate"}),json!({"retries":2}),json!("lenient")] {
+            assert!(serde_json::from_value::<PresentationSettings>(json!({"error_policy":value})).is_err(),"{value}");
+        }
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        let error=native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string();
+        assert!(error.contains("HOST_PRESENTATION_UNSUPPORTED")&&error.contains("error_policy"),"{error}");
+        native_wgpu_export_gate(&quiet,Some(&PresentationSettings::default())).unwrap();
     }
 
     #[test]

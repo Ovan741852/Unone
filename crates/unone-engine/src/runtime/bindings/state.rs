@@ -1,7 +1,7 @@
 use super::super::TraceEvent;
 use super::value::{json_to_lua, lua_value_to_json, observation_value_to_json, observation_array, portable_value_to_json};
 use super::{ApiState, Lua, Table, Value};
-use crate::ui::UiTree;
+use crate::ui::{UiPublishError, UiTree};
 use std::{rc::Rc, sync::Arc};
 #[cfg(feature = "phase-profile")]
 use super::super::phase_profile::{self, Phase};
@@ -94,17 +94,25 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     })?)?;
     let ui_state = Rc::clone(&ui);
     let inspect_state = Rc::clone(&ui);
+    let inspect_errors = Rc::clone(&state.errors);
     ui_api.set("inspect", lua.create_function(move |lua, ()| {
-        json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_deref().map(UiTree::usage)}))
+        let errors = inspect_errors.borrow();
+        json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_deref().map(UiTree::usage),
+            "rejections": errors.ui_rejections, "last_rejection": errors.last_ui_rejection}))
     })?)?;
     let ui_aspect = Rc::clone(&viewport_aspect);
     let resource_world=Rc::clone(&state.world);
+    let publish_errors = Rc::clone(&state.errors);
     // The last immutable root and the publication stamp of the tree built from it.
     let published: std::cell::RefCell<Option<(Table, u64)>> = std::cell::RefCell::new(None);
     let stamps = std::cell::Cell::new(0_u64);
     ui_api.set(
         "setRoot",
-        lua.create_function(move |_lua, (value, immutable): (Value, Option<bool>)| {
+        // True when the tree is published. A capacity rejection (UI_NODE_LIMIT
+        // and the other UiRejection::CODES) is recorded for api.ui.inspect();
+        // it raises under the strict default, and returns false with the
+        // previous screen still published under ui_capacity=keep_previous.
+        lua.create_function(move |_lua, (value, immutable): (Value, Option<bool>)| -> mlua::Result<bool> {
             // An immutable root (deeply frozen by the UI package, no live
             // virtual handle) that already built the committed tree for this
             // viewport is that tree: converting and validating it again would
@@ -114,7 +122,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             if let (Some(root), Some((last, stamp))) = (&root, published.borrow().as_ref()) {
                 if root.to_pointer() == last.to_pointer() && ui_state.borrow().as_ref()
                     .is_some_and(|tree| tree.publication == *stamp && tree.viewport_aspect == *ui_aspect.borrow()) {
-                    return Ok(());
+                    return Ok(true);
                 }
             }
             #[cfg(feature = "phase-profile")]
@@ -127,17 +135,24 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             // Name the vocabulary this build accepts. A host binary that is
             // older than the CLI fails here, and without this the message sends
             // the author to debug their game instead of their toolchain.
-            let parse=|| UiTree::from_json_for_viewport_with_resources(value, *ui_aspect.borrow(),&resource_world.borrow().ui_image_batches).map_err(
-                |error| {
-                    mlua::Error::RuntimeError(format!(
-                        "{error} — this engine build accepts node placement as                          rect{{x,y,width,height}} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up"
-                    ))
-                },
-            );
+            let parse=|| UiTree::try_from_json_for_viewport_with_resources(value, *ui_aspect.borrow(),&resource_world.borrow().ui_image_batches);
             #[cfg(feature = "phase-profile")]
-            let mut tree=phase_profile::measure(_lua,Phase::UiValidate,parse)?;
+            let parsed=phase_profile::measure(_lua,Phase::UiValidate,parse);
             #[cfg(not(feature = "phase-profile"))]
-            let mut tree=parse()?;
+            let parsed=parse();
+            let mut tree = match parsed {
+                Ok(tree) => tree,
+                Err(UiPublishError::Rejected(mut rejection)) => {
+                    // The frame whose snapshot would have carried this tree.
+                    rejection.frame = Some({ let world = resource_world.borrow(); world.frame + u64::from(world.ticking) });
+                    let message = rejection.message.clone();
+                    if publish_errors.borrow_mut().reject_ui(rejection) { return Ok(false); }
+                    return Err(mlua::Error::RuntimeError(message));
+                }
+                Err(UiPublishError::Invalid(error)) => return Err(mlua::Error::RuntimeError(format!(
+                    "{error} — this engine build accepts node placement as                          rect{{x,y,width,height}} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up"
+                ))),
+            };
             stamps.set(stamps.get() + 1);
             tree.publication = stamps.get();
             *published.borrow_mut() = root.map(|root| (root, stamps.get()));
@@ -146,7 +161,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             phase_profile::measure(_lua,Phase::UiCommitDrop,commit);
             #[cfg(not(feature = "phase-profile"))]
             commit();
-            Ok(())
+            Ok(true)
         })?,
     )?;
     let pure=lua.create_function(move |_,(callback,args):(mlua::Function,mlua::Variadic<Value>)| {

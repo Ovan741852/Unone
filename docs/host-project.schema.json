@@ -363,6 +363,28 @@
       ],
       "type": "object"
     },
+    "ErrorPolicy": {
+      "additionalProperties": false,
+      "description": "Declared in `player.presentation.json` as `error_policy` and passed to the\nruntime in the host load payload. Missing fields take the strict values.",
+      "properties": {
+        "max_consecutive_script_errors": {
+          "default": 60,
+          "description": "Under `continue`, the run stops with `SCRIPT_ERROR_LIMIT` once this many\nconsecutive ticks have failed. One second at the fixed 60 Hz step.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "script_errors": {
+          "$ref": "#/$defs/ScriptErrorPolicy",
+          "default": "fail"
+        },
+        "ui_capacity": {
+          "$ref": "#/$defs/UiCapacityPolicy",
+          "default": "fail"
+        }
+      },
+      "type": "object"
+    },
     "HemisphereLight": {
       "additionalProperties": false,
       "properties": {
@@ -1540,6 +1562,20 @@
       ],
       "type": "object"
     },
+    "ScriptErrorPolicy": {
+      "oneOf": [
+        {
+          "const": "fail",
+          "description": "An error escaping `Game.update` fails the tick (strict default).",
+          "type": "string"
+        },
+        {
+          "const": "continue",
+          "description": "The rest of that update is skipped, the frame completes and the next\ntick runs `Game.update` again, until too many frames fail in a row.",
+          "type": "string"
+        }
+      ]
+    },
     "ScriptModuleBytecodeDecl": {
       "additionalProperties": false,
       "description": "Declares precompiled modules in a host payload in place of `script_modules`.\nOne file holds every module's chunk, back to back in key order.",
@@ -2086,6 +2122,20 @@
       },
       "type": "object"
     },
+    "UiCapacityPolicy": {
+      "oneOf": [
+        {
+          "const": "fail",
+          "description": "`ui.setRoot` raises the capacity error (strict default).",
+          "type": "string"
+        },
+        {
+          "const": "keep_previous",
+          "description": "`ui.setRoot` returns false and the previous valid screen stays published.",
+          "type": "string"
+        }
+      ]
+    },
     "UiPreviewSpec": {
       "additionalProperties": false,
       "description": "One reachable screen the layout gate should inspect.",
@@ -2243,6 +2293,18 @@
         "$ref": "#/$defs/DataAssetDecl"
       },
       "type": "array"
+    },
+    "error_policy": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorPolicy"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "How this runtime answers recoverable errors. Omitted means strict:\nonly a player presenting a released game sends a lenient policy."
     },
     "job_sources": {
       "additionalProperties": {

@@ -49,14 +49,25 @@ function validateFont(project,files,face,seen){
  const key=JSON.stringify([face.family,weight]);requireThat(!seen.has(key),'UI_FONT_DUPLICATE');seen.add(key);put(files,fileRecord(sourceFile(project,face.source),'content/'+face.source));
  return{family:face.family,source:face.source,weight};
 }
+// The refreshed player is a production player: like `game export web`, write the
+// policy it runs. Undeclared means recover; declared fields default to strict.
+export function resolveErrorPolicy(declared){
+ if(declared===undefined)return {ui_capacity:'keep_previous',script_errors:'continue',max_consecutive_script_errors:60};
+ requireThat(declared!==null&&typeof declared==='object'&&!Array.isArray(declared),'ERROR_POLICY_INVALID');
+ closed(declared,['ui_capacity','script_errors','max_consecutive_script_errors'],'ERROR_POLICY_INVALID');
+ const policy={ui_capacity:'fail',script_errors:'fail',max_consecutive_script_errors:60,...declared};
+ requireThat(['fail','keep_previous'].includes(policy.ui_capacity)&&['fail','continue'].includes(policy.script_errors)&&Number.isInteger(policy.max_consecutive_script_errors)&&policy.max_consecutive_script_errors>=1&&policy.max_consecutive_script_errors<=3600,'ERROR_POLICY_INVALID');
+ return policy;
+}
 function presentationFor(project,files,base){
  const file=path.join(project,'player.presentation.json');const raw=fs.existsSync(file)?json(sourceFile(project,'player.presentation.json')):{};
- const allowed=['texture_cache','spatial_backend','renderer_mode','renderer_module','renderer_files','ui','bloom','antialias','projected_raster','projected_material_profile','physical_input','show_performance','runtime_backend','job_policy','interpolation','interpolate_instances','render_extensions'];closed(raw,allowed,'WEB_REFRESH_PRESENTATION_INVALID');
+ const allowed=['texture_cache','spatial_backend','renderer_mode','renderer_module','renderer_files','ui','bloom','antialias','projected_raster','projected_material_profile','physical_input','show_performance','runtime_backend','job_policy','interpolation','interpolate_instances','render_extensions','error_policy'];closed(raw,allowed,'WEB_REFRESH_PRESENTATION_INVALID');
  requireThat((raw.renderer_mode??'official')==='official'&&raw.renderer_module==null&&(raw.renderer_files??[]).length===0,'WEB_REFRESH_OFFICIAL_ONLY');
  const result={spatial_backend:'cpu',renderer_mode:'official',renderer_module:null,renderer_files:[],ui:{font_source:null,font_family:null,fonts:[]},bloom:false,show_performance:false,runtime_backend:'main',job_policy:{mode:'auto',max_workers:2,memory_budget_mb:128},interpolation:false,interpolate_instances:[],...raw};
  for(const key of ['bloom','show_performance','interpolation'])requireThat(typeof result[key]==='boolean','WEB_REFRESH_PRESENTATION_INVALID',key);
  requireThat(['cpu','gpu','auto'].includes(result.spatial_backend)&&['main','worker'].includes(result.runtime_backend),'WEB_REFRESH_PRESENTATION_INVALID');
  closed(result.job_policy,['mode','max_workers','memory_budget_mb'],'WEB_REFRESH_JOB_POLICY_INVALID');result.job_policy={mode:'auto',max_workers:2,memory_budget_mb:128,...result.job_policy};requireThat(['auto','inline','workers'].includes(result.job_policy.mode)&&Number.isInteger(result.job_policy.max_workers)&&result.job_policy.max_workers>=0&&result.job_policy.max_workers<=4&&Number.isInteger(result.job_policy.memory_budget_mb)&&result.job_policy.memory_budget_mb>=0&&result.job_policy.memory_budget_mb<=1024,'WEB_REFRESH_JOB_POLICY_INVALID');
+ result.error_policy=resolveErrorPolicy(raw.error_policy);
  // Font subsetting is a game export/prepare step; this refresh ships faces whole and reports it.
  closed(result.ui,['font_source','font_family','fonts','font_subset'],'WEB_REFRESH_FONT_INVALID');result.ui={font_source:null,font_family:null,fonts:[],...result.ui};delete result.ui.font_subset;const seen=new Set();
  Object.defineProperty(result,'fontSubsetSkipped',{value:Array.isArray(result.ui.fonts)&&result.ui.fonts.some(face=>face?.subset===true),enumerable:false});requireThat(Array.isArray(result.ui.fonts)&&result.ui.fonts.length+Number(result.ui.font_source!=null)<=32,'UI_FONT_LIMIT');result.ui.fonts=result.ui.fonts.map(face=>validateFont(project,files,face,seen));

@@ -38,6 +38,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/retained-image-generation.mjs",
         "shared/save-publication.mjs",
         "shared/player-seed.mjs",
+        "shared/player-errors.mjs",
         "shared/ui-tree-publication.mjs",
         "shared/world-field-publication.mjs",
         "renderer/presentation3d.js",
@@ -243,7 +244,8 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             project.display()
         );
     }
-    let presentation = append_presentation(project, &mut files)?;
+    let mut presentation = append_presentation(project, &mut files)?;
+    let error_policy = resolve_error_policy(&mut presentation, &mut files, development)?;
     let font_subset = match game_text {
         Some(text) => crate::font_subset::apply(project, &presentation.ui, text, &mut files, development)?,
         None => None,
@@ -411,6 +413,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         );
     }
     let mut report = json!({"version":1,"project":config.name,"release_root":release_root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    report["error_policy"] = serde_json::to_value(error_policy)?;
     if let Some(font_subset) = font_subset { report["font_subset"] = font_subset; }
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
@@ -714,6 +717,29 @@ mod tests {
         assert!(seal_web_generation(&mut input.clone(),"<head><base href='x'></head>").is_err());
     }
     #[test]
+    fn web_exports_write_the_error_policy_their_variant_runs() {
+        let dir=tempfile::tempdir().unwrap();
+        let resolved=|declared:Option<Value>,development:bool| {
+            match &declared {
+                Some(policy)=>fs::write(dir.path().join("player.presentation.json"),serde_json::to_vec(&json!({"error_policy":policy})).unwrap()).unwrap(),
+                None=>{let _=fs::remove_file(dir.path().join("player.presentation.json"));}
+            }
+            let mut files=vec![];
+            let mut presentation=append_presentation(dir.path(),&mut files).unwrap();
+            let policy=resolve_error_policy(&mut presentation,&mut files,development).unwrap();
+            let written:Value=serde_json::from_slice(&files.iter().find(|(p,_)|p=="content/presentation.json").unwrap().1).unwrap();
+            assert_eq!(written["error_policy"],serde_json::to_value(policy).unwrap());
+            written["error_policy"].clone()
+        };
+        let release=json!({"ui_capacity":"keep_previous","script_errors":"continue","max_consecutive_script_errors":60});
+        let strict=json!({"ui_capacity":"fail","script_errors":"fail","max_consecutive_script_errors":60});
+        assert_eq!(resolved(None,false),release,"a production player recovers unless the project says otherwise");
+        assert_eq!(resolved(None,true),strict,"a development player fails fast like every CLI run");
+        assert_eq!(resolved(Some(json!({"script_errors":"continue","max_consecutive_script_errors":5})),false),
+            json!({"ui_capacity":"fail","script_errors":"continue","max_consecutive_script_errors":5}));
+        assert_eq!(resolved(Some(json!({"ui_capacity":"keep_previous"})),true),strict,"a declaration never relaxes a development player");
+    }
+    #[test]
     fn both_hosts_package_default_presentation_and_explicit_font() {
         let dir=tempfile::tempdir().unwrap();let mut files=vec![];
         append_presentation(dir.path(),&mut files).unwrap();
@@ -821,6 +847,17 @@ mod tests {
                 .contains("already exists")
         );
     }
+}
+
+/// Write the error policy this Web player runs into its presentation.json, so
+/// the exported player never guesses its own variant. A development player
+/// fails fast like every CLI run; a production player recovers by default.
+fn resolve_error_policy(presentation: &mut crate::hosts::PresentationSettings, files: &mut [(String, Vec<u8>)], development: bool) -> Result<unone_engine::ErrorPolicy> {
+    let policy = if development { unone_engine::ErrorPolicy::strict() } else { presentation.error_policy.unwrap_or(unone_engine::ErrorPolicy::release()) };
+    presentation.error_policy = Some(policy);
+    let file = files.iter_mut().find(|(path, _)| path == "content/presentation.json").context("content/presentation.json missing")?;
+    file.1 = serde_json::to_vec(&*presentation)?;
+    Ok(policy)
 }
 
 /// Shared validated host payload and asset bytes for all player exporters.

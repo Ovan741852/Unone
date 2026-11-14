@@ -157,6 +157,14 @@ running. New starters declare 60; a project that declares nothing gets 600, so d
 limit to find a hang sooner. Fix the loop. If the work is real, spread it over frames or a job
 before raising the limit. Players and Web builds do not enforce it.
 
+`api.ui.setRoot` returns true when it publishes. A screen over its node, depth or string budget
+(`UI_NODE_LIMIT` and friends) raises in `check`, `run`, `test`, previews and development players,
+so do not wrap `setRoot` in `pcall` to get past it: shrink the screen or raise
+`budget.max_nodes` on purpose. A production Web player instead keeps the previous screen,
+returns false and reports it (`api.ui.inspect().last_rejection`), and skips a failing
+`Game.update` until `max_consecutive_script_errors` frames fail in a row. That is the
+`error_policy` in `player.presentation.json`; see [runtime errors](docs/player-export.md#runtime-errors).
+
 Use `kit.createSlider({id=...,value=...,min=...,max=...,step=...})` for numeric
 sliders. Create and retain each control once in `Game.start`; publish
 `control.view({rect=...,trackRect=...})`, and call `control.update(api.input)`

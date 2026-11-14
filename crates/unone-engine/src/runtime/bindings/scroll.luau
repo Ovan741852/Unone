@@ -109,11 +109,13 @@ local function virtual(s,grid)
  return node
 end
 local function setRoot(nextRoot)
- publish(nextRoot,immutable~=nil and immutable(nextRoot))
+ -- False: a capacity rejection kept the previous screen (released players).
+ -- The previous root stays the one virtual windows materialize into.
+ if publish(nextRoot,immutable~=nil and immutable(nextRoot))==false then return false end
  root=nextRoot
  -- No virtual registry means no handles to retire. Ordinary UI trees do not
  -- need a second Lua traversal after Core has validated their publication.
- if next(registry)==nil then return end
+ if next(registry)==nil then return true end
  local live={}
  local function visit(n)
   if n.kind=="scroll_view" and n.scroll.virtual_items then live[n.id]=true end
@@ -122,6 +124,7 @@ local function setRoot(nextRoot)
  end
  visit(root)
  for id in pairs(registry) do if not live[id] then registry[id]=nil end end
+ return true
 end
 local function request(r)
  for k in pairs(r) do assert(k=="id" or k=="revision" or k=="first" or k=="last","UI_VIRTUAL_REQUEST: unknown field") end
@@ -135,8 +138,11 @@ local function request(r)
  local children=materialize(entry,r.first,r.last)
  local oldChildren,oldFirst,oldLast=entry.node.children,v.first,v.last
  entry.node.children=children;v.first=r.first;v.last=r.last
- local ok,err=pcall(publish,root,false)
- if not ok then entry.node.children=oldChildren;v.first=oldFirst;v.last=oldLast;error(err) end
+ local ok,result=pcall(publish,root,false)
+ if not ok or result==false then entry.node.children=oldChildren;v.first=oldFirst;v.last=oldLast end
+ if not ok then error(result) end
+ -- A capacity rejection keeps the published window: nothing changed.
+ if result==false then return false end
  entry.first=r.first;entry.last=r.last
  return true
 end

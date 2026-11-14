@@ -1,6 +1,6 @@
 //! Immutable logical artwork resources. GPU batching and object lifetime belong
 //! to the host; gameplay never receives a GPU buffer or material handle.
-use super::{UiImageQuad, UiNode, UiRect, UiTree, ui_contract};
+use super::{UiImageQuad, UiNode, UiPublishError, UiRect, UiRejection, UiTree, ui_contract};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, sync::{Arc, OnceLock}};
 
@@ -152,7 +152,7 @@ impl UiTree {
         visit(&self.children,id)
     }
 
-    pub(crate) fn validate_image_batch_resources(&self,resources:&Resources)->Result<(),String> {
+    pub(crate) fn validate_image_batch_resources(&self,resources:&Resources)->Result<(),UiPublishError> {
         fn visit(nodes:&[UiNode],resources:&Resources,count:&mut usize,bytes:&mut usize)->Result<(),String> {
             for node in nodes {
                 *count+=1;
@@ -171,8 +171,11 @@ impl UiTree {
         let (mut count,mut bytes)=(0,self.string_bytes);
         visit(&self.children,resources,&mut count,&mut bytes)?;
         let limit=self.budget.map_or(ui_contract().default_max_nodes,|b|b.max_nodes);
-        if count>limit { return Err(format!("UI_NODE_LIMIT: used={count}, limit={limit}; retained image quads count for every instance")); }
-        if bytes>ui_contract().max_string_bytes { return Err("UI_STRING_LIMIT: retained image instances exceed string budget".into()); }
+        let rejection=|code,used,limit,message|UiRejection{code,frame:None,path:None,node:None,used:Some(used),limit:Some(limit),message};
+        if count>limit { return Err(rejection("UI_NODE_LIMIT",count,limit,format!("UI_NODE_LIMIT: used={count}, limit={limit}; retained image quads count for every instance")).into()); }
+        if bytes>ui_contract().max_string_bytes {
+            return Err(rejection("UI_STRING_LIMIT",bytes,ui_contract().max_string_bytes,"UI_STRING_LIMIT: retained image instances exceed string budget".into()).into());
+        }
         Ok(())
     }
 

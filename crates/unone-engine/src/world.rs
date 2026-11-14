@@ -1055,6 +1055,10 @@ pub struct WorldSnapshot {
     /// Surface materials, present once the scene or api.material.set adds one.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub materials: BTreeMap<String, crate::Material>,
+    /// Errors a lenient host policy recovered from; absent under the strict
+    /// default, so tool snapshots and their digests are unchanged.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recovered_errors: Option<crate::RecoveredErrors>,
 }
 
 #[derive(Debug, Clone)]
@@ -1528,6 +1532,7 @@ impl World {
             shader_materials: self.shader_materials.clone(),
             jobs: None,
             spatial: None,
+            recovered_errors: None,
             instances3d: self.instances3d.clone(),
             #[cfg(feature = "physics3d")]
             physics3d: self.physics3d.as_ref().map(|p| p.snapshot()),

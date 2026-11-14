@@ -7,7 +7,7 @@ use unone_engine::{EngineRuntime, ProjectConfig, SourceProject};
 fn embedded_components() -> String {
     let mut source=String::from("local failPublication=false\nlocal helpers=(function(...)\n");
     source.push_str(include_str!("../src/runtime/bindings/scroll.luau"));
-    source.push_str("\nend)(function(value)if failPublication then error('controlled publication failure')end;api.ui.setRoot(value)end,function(callback,...)return callback(...)end)\nlocal components=(function(...)\n");
+    source.push_str("\nend)(function(value)if failPublication then error('controlled publication failure')end;return api.ui.setRoot(value)end,function(callback,...)return callback(...)end)\nlocal components=(function(...)\n");
     source.push_str(include_str!("../../../packages/unone-ui/src/components.luau"));
     source.push_str("\nend)({name='@unone/ui',version='0.6.0'},true,helpers.isManagedNode,helpers)\n");
     source
