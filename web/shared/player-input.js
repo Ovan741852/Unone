@@ -25,6 +25,41 @@ export function readGamepads(pads) {
   return states.sort((a,b)=>a.slot-b.slot);
 }
 
+// An optional browser device must not stop keyboard/pointer/network ticks.
+// Policy denial is stable for this document; cache it instead of throwing or
+// repeatedly probing a forbidden API (notably third-party WebKit frames).
+export function createGamepadPolling({navigator=globalThis.navigator,document=globalThis.document}={}) {
+  let disabled=false,policyChecked=false,state='unpolled',reason=null,calls=0;
+  function stop(next,why){disabled=true;state=next;reason=why;return [];}
+  return Object.freeze({
+    poll(){
+      if(disabled)return [];
+      if(!policyChecked){
+        policyChecked=true;
+        try{
+          const policy=document?.permissionsPolicy??document?.featurePolicy;
+          const known=typeof policy?.features==='function'?Array.from(policy.features()):null;
+          if(typeof policy?.allowsFeature==='function'&&(!known||known.includes('gamepad'))&&policy.allowsFeature('gamepad')===false)return stop('blocked','permissions_policy');
+        }catch{/* Policy introspection is optional; the actual read is guarded. */}
+      }
+      let pads;
+      try{
+        const read=navigator?.getGamepads;
+        if(typeof read!=='function')return stop('unavailable','api_missing');
+        calls++;pads=read.call(navigator);
+      }catch(error){
+        const name=String(error?.name??'Error').slice(0,64);
+        return stop(['SecurityError','NotAllowedError'].includes(name)?'blocked':'error',name);
+      }
+      state='ready';reason=null;
+      // Keep mapping/engine errors visible; only the optional browser API is
+      // fault-isolated. An empty result also clears formerly held pad buttons.
+      return readGamepads(pads);
+    },
+    report:()=>Object.freeze({state,reason,browser_calls:calls,scope:'Optional browser gamepad input; denial cached until document reload.'}),
+  });
+}
+
 export function physicalKeyAction(code) {
   if(/^Key[A-Z]$/.test(code))return code.slice(3);
   if(/^Digit[0-9]$/.test(code))return code.slice(5);

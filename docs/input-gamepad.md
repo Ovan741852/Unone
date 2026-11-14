@@ -56,6 +56,14 @@ to 1; omitted values are 0. Anything else fails with `INPUT_GAMEPAD_INVALID`.
 ## Hosts
 
 - **Official Web player:** polls `navigator.getGamepads()` once per tick;
+
+  Gamepads are optional. The host checks a recognised Permissions Policy first
+  and catches browser API access failures, including WebKit's third-party-frame
+  `SecurityError`. A denied or missing API yields no pads and clears held pad
+  buttons; pointer, keyboard, network delivery and simulation keep running.
+  Denial is cached until the document reloads, so it is not probed every frame.
+  `unonePlayerPerformance.snapshot().gamepad_input` reports `state`, `reason`
+  and actual `browser_calls`, without enabling permission or collecting device IDs.
   pad index N is slot N + 1, using the standard mapping (stick y is flipped
   to point up). Browsers report a pad only after a button is pressed on it.
   The generic development runner (`web/runner`) does not read gamepads.

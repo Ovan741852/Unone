@@ -11,6 +11,7 @@ import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from './
 import {createAsyncScheduler} from './async-scheduler.mjs';
 import {serializedSavePayload} from './save-publication.mjs';
 import {createRecoveryReporter} from './player-errors.mjs';
+import {createGamepadPolling} from './player-input.js';
 const source=fs.readFileSync(process.env.UNONE_PROFILE_MAIN_SOURCE??new URL('../player/main.js',import.meta.url),'utf8');
 const slice=source.slice(source.indexOf('function acceptSnapshot('),source.indexOf('async function setPaused('));
 class Remote{
@@ -29,7 +30,7 @@ async function fixture(profiler,{throwDraw=false,drawOutcome,uiOutcome={status:'
   metrics:()=>({}),};
  const context={recovery:createRecoveryReporter({target:body,log:null,doc:null}),resourceHost:null,profiler,profileFlight:null,profileLastSource:null,backend,renderer,imageAssets:null,serializedSavePayload,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
   bridgeMs:0,renderMs:0,renderCount:0,frozen:false,manualInput:null,lastStats:null,hasWorldPointer:false,saved:'null',key:'k',orderedQueue:null,orderedRouter:null,networkHost:null,scheduler:null,audio:null,
-  input:{consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({}),assetDiagnostics:()=>null},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
+  gamepadInput:createGamepadPolling({navigator:null,document:null}),input:{setGamepads(){},consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({}),assetDiagnostics:()=>null},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
   document:{body},localStorage:{setItem:(k,v)=>{storage.set(k,v);log.push(['save']);}},publishPhysical(){},performance,JSON,Error,String};
  vm.createContext(context);vm.runInContext(slice,context);context.acceptSnapshot(context.snapshot,{reset:true});
  return {context,backend,log,storage,body,remote:()=>remote};
@@ -66,6 +67,17 @@ test('failed updates and draws keep identity and status, then rethrow unchanged'
  assert.throws(()=>f.context.draw(),/RENDER_FAILED/);
  const draw=p.report().events.filter(e=>e.kind==='draw').at(-1);assert.deepEqual([draw.id,draw.status,draw.attrs.error_code],['draw:1','error','RENDER_FAILED']);
  assert.equal(draw.spans.at(-1).name,'renderer_draw','partial spans up to the failing phase');
+});
+
+test('actual player keeps accepting and drawing worker updates when optional gamepad API is forbidden',async()=>{
+ const f=await fixture(null,{drawOutcome:{status:'completed'}}),pads=[];let calls=0;
+ f.context.gamepadInput=createGamepadPolling({document:null,navigator:{getGamepads(){calls++;throw Object.assign(Error('Third-party gamepad denied'),{name:'SecurityError'});}}});
+ f.context.input.setGamepads=states=>pads.push(states);
+ for(let i=0;i<3;i++){await f.context.tickOnce();f.context.draw();}
+ assert.equal(calls,1);assert.equal(pads.length,3);assert(pads.every(p=>p.length===0));assert.equal(f.context.snapshot.world.frame,3);assert.equal(f.context.playerCompletion.snapshot().completed_draws,3);assert.deepEqual(f.remote().posts,['init','tick','tick','tick']);assert.equal(f.context.gamepadInput.report().state,'blocked');f.backend.close();
+});
+test('actual player manual replay frames do not poll browser controllers',async()=>{
+ const f=await fixture(null);f.context.gamepadInput={poll(){throw Error('manual input must not poll hardware');}};f.context.manualInput={actions:[]};await f.context.tickOnce();assert.equal(f.context.snapshot.world.frame,1);f.backend.close();
 });
 test('an in-flight update evicted by a command backlog still completes the real tick unchanged',async()=>{
  async function backlog(profiler){
@@ -140,7 +152,7 @@ test('actual tick persistence skips unchanged saves and commits the marker only 
 });
 
 test('actual public accessor forwards opt-in paired RAF samples and rejects unknown or malformed options without backend work',()=>{
- const context={window:{},playerCompletion:createPlayerCompletionMetrics({now:()=>10}),installPlayerPerformanceAccessor,scheduler:null,frozen:false,backend:{kind:'worker'}};
+ const context={window:{},gamepadInput:createGamepadPolling({navigator:null,document:null}),playerCompletion:createPlayerCompletionMetrics({now:()=>10}),installPlayerPerformanceAccessor,scheduler:null,frozen:false,backend:{kind:'worker'}};
  const begin=source.indexOf('function readPlayerPerformance('),end=source.indexOf('let performanceFeed=',begin);
  assert(begin>=0&&end>begin,'execute the actual shared read function and accessor installation');
  vm.createContext(context);vm.runInContext(source.slice(begin,end),context);

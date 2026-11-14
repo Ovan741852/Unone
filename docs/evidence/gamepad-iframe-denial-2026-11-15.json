@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-15",
+  "base_commit": "d7ec736259258cb73f6df5fd42dad2fbfb016516",
+  "scope": "Optional Web gamepad polling; no Rust/WASM ABI or game rules changed",
+  "root_cause": "unguarded navigator.getGamepads() rejected the host advanceFrame before the backend tick",
+  "related_node_tests": 51,
+  "passed": 51,
+  "failed": 0,
+  "test_log": "artifacts/gamepad-denied-tests.log",
+  "cli_build": "cargo build -p unone-cli succeeded",
+  "coverage": ["explicit feature-policy denial without probing", "WebKit-style SecurityError without policy introspection", "denied API getter", "missing API", "working controllers with unsupported policy inspection", "held-button retirement and keyboard preservation", "mapping errors remain observable", "actual player worker publications and completed draws continue", "manual replay frames do not poll hardware"],
+  "before_browser_reproduction": "GoldSaucer official SDK sandbox plus allow=gamepad none reproduces SecurityError and a stalled main-city connection",
+  "physical_ios_tested": false,
+  "wasm_sha256_unchanged": "913deda0e726b1ca9d46c6ebc40f8cdc2714b5abb6b81aa03d0edb764f4d5fa2"
+}

@@ -5,7 +5,7 @@ import {createUiTextInputHost} from '../shared/ui-text-input.mjs';
 import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';
 import {createUiScrollHost} from '../shared/ui-scroll.mjs';
 import {createHostInput} from '../shared/host-input.js';
-import {createLegacyPointerRouting,routeBrowserKey,routeBrowserPointer,readGamepads} from '../shared/player-input.js';
+import {createLegacyPointerRouting,routeBrowserKey,routeBrowserPointer,createGamepadPolling} from '../shared/player-input.js';
 import {createOrderedPhysicalQueue} from '../shared/ordered-physical-queue.mjs';
 import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
@@ -28,6 +28,7 @@ import {playerErrorPolicy,createRecoveryReporter} from '../shared/player-errors.
 const canvas=document.querySelector('#game'),status=document.querySelector('#status');
 let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null;
 const removeAssetGroupsAccessor=installPlayerAssetGroups(window,()=>imageAssets);
+const gamepadInput=createGamepadPolling();
 // Game UI is drawn by the renderer's ui pass inside the WebGL frame; #ui-layer
 // only hosts the cursor overlay and the text-input/scroll DOM hosts.
 document.querySelector('#ui-layer').replaceChildren();
@@ -57,7 +58,7 @@ const recovery=createRecoveryReporter({target:document.body});
 const playerCompletion=createPlayerCompletionMetrics();
 function readPlayerPerformance(options={}){
  if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples'].includes(key)))throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
- return Object.freeze({...playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false}),image_assets:window.unonePlayerAssets?.snapshot()??null});
+ return Object.freeze({...playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false}),image_assets:window.unonePlayerAssets?.snapshot()??null,gamepad_input:gamepadInput.report()});
 }
 const removePerformanceAccessor=installPlayerPerformanceAccessor(window,readPlayerPerformance);
 let performanceFeed=createPlayerPerformanceFeed({search:location.search,target:document.body,
@@ -152,7 +153,7 @@ async function advance(presenting){
 async function advanceFrame(pu,presenting){
  const began=performance.now(),browserInput=manualInput==null;
  // Gamepads are polled once per tick (docs/input-gamepad.md).
- if(browserInput&&typeof navigator!=='undefined'&&navigator.getGamepads)input.setGamepads(readGamepads(navigator.getGamepads()));
+ if(browserInput)input.setGamepads(gamepadInput.poll());
  let frame=manualInput??input.consumeFrame();manualInput=null;
  // The camera may follow a moving entity while the physical mouse stays still.
  // Reproject the consumed screen sample, preserving queued down/up edges and
