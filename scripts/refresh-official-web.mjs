@@ -6,7 +6,7 @@ import {pathToFileURL,fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import {Worker} from 'node:worker_threads';
 import {checkedRoot,sourceFile,fileRecord,dataRecord,sha,json,put,requireThat,inside,verifiedExport,writePublication} from './web-export-files.mjs';
-import {inspectHostSnapshot,resolveSystems,assembleHost,validateDependencies} from './web-export-host.mjs';
+import {inspectHostSnapshot,resolveSystems,assembleHost,validateDependencies,applyStartupScreen} from './web-export-host.mjs';
 import {assembleContent} from './web-export-content.mjs';
 export {inspectHostSnapshot} from './web-export-host.mjs';
 
@@ -54,7 +54,7 @@ export async function refreshOfficialWeb({project,inputExport,hostRoot,hostSha25
  const base=verifiedExport(baseRoot),content=assembleContent(projectRoot,base),enabled=resolveSystems(host,content.payload.config.systems??{});
  for(const id of enabled)requireThat(selected.metadata.compiled_systems.includes(id),'SYSTEM_NOT_COMPILED',id);
  for(const [id,version]of Object.entries(content.payload.config.runtime_packages??{}))requireThat(selected.metadata.runtime_packages[id]===version,'RUNTIME_PACKAGE_UNAVAILABLE',id+'@'+version);
- const encoding=await validatePresentation(host,content.presentation,content.assets),built=assembleHost(host,inspection,enabled,selected.metadata,content.assets),preload=addPreload(projectRoot,content,encoding,built.html);
+ const encoding=await validatePresentation(host,content.presentation,content.assets),built=assembleHost(host,inspection,enabled,selected.metadata,content.assets),preload=addPreload(projectRoot,content,encoding,applyStartupScreen(built.html,content.presentation.startup,content.payload.config.name));
  const files=new Map([...built.files,...content.files,...selected.files]),dependencies=validateDependencies(files);
  requireThat(Number.isInteger(validationTimeoutMs)&&validationTimeoutMs>=100&&validationTimeoutMs<=120000,'WEB_REFRESH_TIMEOUT_INVALID');
  const validation=await validateCore({runtime:selected,hostRoot:host,content,timeout:validationTimeoutMs});

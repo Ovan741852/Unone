@@ -9,6 +9,7 @@ import {createRasterCapability} from '../renderer/projected-raster-capability.js
 import {createPlayerCompletionMetrics,DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 import {createCanvasUi} from './canvas-ui.mjs';
 import {serializedSavePayload,createSavePublication,attachSavePublication} from './save-publication.mjs';
+import {createStartupScreen} from './startup-screen.mjs';
 const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
 function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED,cursorOutcome=()=>DRAW_COMPLETED,cursorReady=async()=>{},restoredSave='{}',savePayload={},storageError=null}={}){
  let lost=false,id=0,draws=0,validations=0,starts=0,made=0,disposed=0;
@@ -26,7 +27,7 @@ function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED
   draw(at=null,start=null,inFlight=false,source='manual',budget=1000/60){draws++;context.renderCount++;const world=available()?worldOutcome:DRAW_SKIPPED.raster_unavailable;if(available()){cap.ensure(view);state.drawn();}playerCompletion.attempt();return playerCompletion.finish(world,ui.draw(context.snapshot,{width:100,height:100,dpr:1}),cursorOutcome(),0,0,source,at,start,inFlight,budget);},
   requestAnimationFrame:raf,completeStartupPresentation:opts=>completeStartupPresentation({...opts,nextFrame:raf,cancelFrame:n=>frames.delete(n)}),
   performance:{now:()=>0,getEntriesByType:()=>[]},window:{playerBoot:0,addEventListener(){}},URL,
-  document:{body:{dataset:{}}},console:{info:s=>logs.push(s)},status:{textContent:'loading'},snapshot:{world:{frame:0,...(uiSnapshot?{ui:uiSnapshot}:{})},save_payload:savePayload},
+  document:{body:{dataset:{}}},console:{info:s=>logs.push(s)},startupScreen:createStartupScreen({schedule(){}}),snapshot:{world:{frame:0,...(uiSnapshot?{ui:uiSnapshot}:{})},save_payload:savePayload},
   saved:restoredSave,key:'startup-save',localStorage:{setItem(key,text){if(storageError)throw storageError;writes.push({key,text,ready:logs.some(s=>s.startsWith('UNONE_PLAYER_READY'))});}},
   createAsyncScheduler(){made++;return {start:()=>starts++};},frozen:false,tickOnce:async()=>{},fail(){},
   uiScroll:{cancel(){}},uiRenderer:ui,cursorHost:{ready:cursorReady},input:{releaseAll(){}},audio:null,physicalViewport:()=>[1280,720],backend:{request:async()=>{}}};
@@ -46,7 +47,7 @@ test('actual production startup entry waits raw-loss event gap, redraws, then pu
  h.restore();await flush();await h.frame();await h.frame();await h.promise;assert.equal(h.result.error,null);
  assert.deepEqual(h.counts(),{draws:4,validations:2,starts:1,made:1,disposed:0});
  assert.equal(h.metrics.raster.projected.completed_game_draw.context_epoch,2);assert.equal(h.metrics.startup_presentation.phase,'ready');
- assert.equal(h.logs.filter(x=>x.startsWith('UNONE_PLAYER_READY')).length,1);
+ assert.equal(h.logs.filter(x=>x.startsWith('UNONE_PLAYER_READY')).length,1);assert.equal(h.context.startupScreen.report().state,'ready','READY hides the startup screen');
  assert.equal(h.context.playerCompletion.snapshot().raf_diagnostics.source_counts.startup,4);assert.equal(h.context.playerCompletion.snapshot().successful_submission_raf_intervals.retained,0,'startup barriers never masquerade as scheduler RAF samples');
 });
 test('actual production startup entry pagehide cancellation prevents late READY and scheduler creation',async()=>{
@@ -116,7 +117,7 @@ test('a startup storage failure preserves the persisted marker and prevents READ
   const error=Error('storage quota denied'),h=fixture({checked,restoredSave:'{"coins":1}',savePayload:{coins:2},storageError:error});
   await flush();await h.frame();await h.promise;
   assert.equal(h.result.error,error);assert.equal(h.context.saved,'{"coins":1}');assert.equal(h.writes.length,0);
-  assert.equal(h.logs.length,0);assert.equal(h.counts().made,0);assert.equal(h.counts().starts,0);assert.equal(h.context.status.textContent,'loading');
+  assert.equal(h.logs.length,0);assert.equal(h.counts().made,0);assert.equal(h.counts().starts,0);assert.equal(h.context.startupScreen.report().state,'loading');
  }
 });
 

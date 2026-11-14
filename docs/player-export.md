@@ -55,7 +55,7 @@ players, native tool runs and every CLI run fail fast. See
 [runtime errors](#runtime-errors).
 
 `player.presentation.json` includes the **web-wasm** overlay (bloom, worker backend,
-interpolation) and shared UI/font settings. Native wgpu packages the UI/font
+interpolation, [startup screen](#startup-screen)) and shared UI/font settings. Native wgpu packages the UI/font
 settings and fails closed on web-only keys. Host identities and capability tables live in `game sdk inspect --json`;
 see [portable SDK](portable-sdk.md).
 For shared UI fonts, declare named/weighted TTF or OTF faces in `ui.fonts` and
@@ -213,6 +213,66 @@ The official players read the project's `display` (see
 centred rectangle of the design shape and refits on every resize; the native
 player opens at the design size and holds its window to that shape. With
 `expand` (or nothing declared) both fill the window and report its shape.
+
+## Startup screen
+
+While it starts, the official Web player shows a logo, a progress bar and the
+step it is on. `index.html` draws the screen before any script runs; while the
+browser fetches the player's modules the bar is indeterminate ("Loading
+player…"). From then on the bar moves only when a real startup step progresses:
+game content, image preparation (counted entries), fonts (counted faces), the
+runtime (WASM) start, data assets (counted files, fetched alongside), `Game.start`,
+the renderer, audio, and the first presented frame. Each step owns a fixed share
+of the bar. The shares are not time estimates, so a step with a large download,
+such as fonts or the runtime, holds the bar still while it loads. The screen fades
+out when the first frame is presented, the moment the player logs
+`UNONE_PLAYER_READY`.
+
+The player publishes the screen's state as `document.body.dataset.playerStartup`:
+`state` (`loading`, `ready` or `failed`), `progress` from 0 to 1, the
+current `step`, `failed_step`, and each step's state, counts and completion
+time `ms` after the page started.
+
+A startup failure keeps the screen up, turns the bar red where it stopped, names
+the step ("Startup failed while loading fonts") and shows the whole error as
+selectable text. `document.body.dataset.playerError` carries the same message.
+A fatal error after the first frame brings the screen back over the stopped game
+("The game stopped"). Errors the `error_policy` recovers from do not.
+
+The screen covers the window and centres on it. With `display.aspect: "keep"`
+that is also the centre of the letterboxed stage, so the logo sits where the
+game will appear, and a logo or an error never has to fit a narrow stage band
+(a landscape game on a portrait phone).
+
+By default it shows the Unone logo on the player's dark background. A project
+declares its own in `player.presentation.json`:
+
+```json
+{
+  "startup": {
+    "logo": "brand/logo.png",
+    "background": "#f4efe4"
+  }
+}
+```
+
+- `logo`: a project-relative PNG, JPEG, WebP or SVG of at most 1 MiB, shown
+  instead of the Unone logo with the project name as its alternative text. The
+  export checks the path and that the file holds the format its extension names,
+  then copies it into `content/`.
+- `background`: a `#rrggbb` colour. The text and bar track turn dark when dark
+  text contrasts more with it (WCAG relative luminance), with a darker bar and
+  error colour to match.
+
+Exports write both into `index.html`, so they show before any script or content
+loads; the packaged `content/presentation.json` omits `startup`. `game export
+web`, `game project prepare --target web` and `scripts/refresh-official-web.mjs`
+apply the same rules, and unknown fields fail. The startup screen is part of the
+Web player page, so native wgpu exports fail closed on `startup` with
+`HOST_PRESENTATION_UNSUPPORTED`, as on other web-only keys. Failures report
+`STARTUP_LOGO_PATH_INVALID`, `STARTUP_LOGO_FORMAT_UNSUPPORTED`,
+`STARTUP_LOGO_SIZE_INVALID`, `STARTUP_LOGO_MISSING` or
+`STARTUP_BACKGROUND_INVALID`.
 
 ## Runtime errors
 

@@ -70,6 +70,7 @@ const WEB_PRESENTATION_KEYS: &[&str] = &[
     "interpolation",
     "interpolate_instances",
     "error_policy",
+    "startup",
 ];
 const ANDROID_NATIVE_REQUIRES: &[&str] = &["Android SDK", "JDK", "local test signing"];
 
@@ -271,6 +272,62 @@ pub struct PresentationSettings {
     /// the project's own build before export.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub render_extensions: Vec<RenderExtension>,
+    /// The Web player's startup screen. Web exports write it into index.html,
+    /// so players never read it and the packaged presentation omits it.
+    #[serde(skip_serializing)]
+    pub startup: Option<StartupScreen>,
+}
+
+/// What the official Web player shows while it starts: a logo over a
+/// background, with the progress bar and any startup error below it.
+/// Undeclared fields keep the Unone logo and the player's dark background.
+#[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct StartupScreen {
+    /// Project-relative PNG, JPEG, WebP or SVG shown instead of the Unone logo.
+    pub logo: Option<String>,
+    /// Background colour as `#rrggbb`; the text and bar track pick the
+    /// lighter or darker foreground that contrasts more with it.
+    pub background: Option<String>,
+}
+
+/// A startup logo arrives before the game's own content; keep it small.
+pub const STARTUP_LOGO_MAX_BYTES: usize = 1024 * 1024;
+
+impl StartupScreen {
+    pub fn validate(&self) -> Result<()> {
+        if let Some(logo) = &self.logo {
+            ensure!(safe_relative_path(logo),
+                "STARTUP_LOGO_PATH_INVALID: startup.logo must be a safe project-relative forward-slash path: {logo}");
+            ensure!(startup_logo_format(logo).is_some(),
+                "STARTUP_LOGO_FORMAT_UNSUPPORTED: startup.logo must be a .png, .jpg, .jpeg, .webp or .svg file: {logo}");
+        }
+        if let Some(color) = &self.background {
+            ensure!(color.len() == 7 && color.starts_with('#') && color[1..].bytes().all(|b| b.is_ascii_hexdigit()),
+                "STARTUP_BACKGROUND_INVALID: startup.background must be a #rrggbb colour: {color}");
+        }
+        Ok(())
+    }
+}
+
+fn startup_logo_format(path: &str) -> Option<&'static str> {
+    let extension = path.rsplit_once('.')?.1.to_ascii_lowercase();
+    match extension.as_str() { "png" => Some("png"), "jpg" | "jpeg" => Some("jpeg"), "webp" => Some("webp"), "svg" => Some("svg"), _ => None }
+}
+
+/// The packaged logo must be the format its name says, so a browser can show it.
+pub fn validate_startup_logo(path: &str, bytes: &[u8]) -> Result<()> {
+    ensure!(!bytes.is_empty() && bytes.len() <= STARTUP_LOGO_MAX_BYTES,
+        "STARTUP_LOGO_SIZE_INVALID: startup.logo must hold 1..{STARTUP_LOGO_MAX_BYTES} bytes, {path} has {}", bytes.len());
+    let matches = match startup_logo_format(path) {
+        Some("png") => bytes.starts_with(b"\x89PNG\r\n\x1a\n"),
+        Some("jpeg") => bytes.starts_with(&[0xFF, 0xD8, 0xFF]),
+        Some("webp") => bytes.len() >= 12 && &bytes[..4] == b"RIFF" && &bytes[8..12] == b"WEBP",
+        Some("svg") => std::str::from_utf8(bytes).is_ok_and(|text| text.contains("<svg")),
+        _ => false,
+    };
+    ensure!(matches, "STARTUP_LOGO_FORMAT_UNSUPPORTED: {path} does not hold the image its extension names");
+    Ok(())
 }
 
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize, PartialEq, Eq)]
@@ -515,6 +572,9 @@ pub fn load_presentation(project: &Path) -> Result<Option<PresentationSettings>>
     let presentation: PresentationSettings = serde_json::from_slice(&std::fs::read(&path)?)?;
     presentation.validate_renderer()?;
     presentation.ui.validate_fonts()?;
+    if let Some(startup) = &presentation.startup {
+        startup.validate()?;
+    }
     Ok(Some(presentation))
 }
 
@@ -563,6 +623,9 @@ pub fn native_wgpu_export_gate(
     }
     if presentation.job_policy != JobPolicy::default() {
         keys.push("job_policy");
+    }
+    if presentation.startup.is_some() {
+        keys.push("startup");
     }
     ensure!(
         keys.is_empty(),
@@ -814,6 +877,9 @@ mod tests {
             "ui": {"font_source": "fonts/ui.ttf", "font_family": "Fixture"}
         })).unwrap();
         native_wgpu_export_gate(&quiet, Some(&shared_ui)).unwrap();
+        let startup: PresentationSettings = serde_json::from_value(json!({"startup": {"background": "#000000"}})).unwrap();
+        assert!(native_wgpu_export_gate(&quiet, Some(&startup)).unwrap_err().to_string().contains("startup"),
+            "the startup screen is a Web player page; native fails closed on it");
         let worker = PresentationSettings {
             runtime_backend: RuntimeBackend::Worker,
             ..PresentationSettings::default()

@@ -7,6 +7,7 @@ import {createCanvasUi} from './canvas-ui.mjs';
 import {createUiCursorHost} from './ui-cursor.mjs';
 import {completeStartupPresentation,startupCancelled} from './startup-presentation.mjs';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
+import {createStartupScreen} from './startup-screen.mjs';
 
 const ID='texture://shared';
 const flush=async()=>{for(let i=0;i<24;i++)await Promise.resolve();};
@@ -103,7 +104,7 @@ test('Canvas asset invalidation reacquires an admitted scene image synchronously
 
 test('actual player start cannot create a late image broker after pagehide while manifests are pending',async()=>{
   const pending=new Map(),counts={catalogs:0,brokers:0,preparations:0};
-  const context={startupAbort:new AbortController(),startupCancelled,location:{search:''},
+  const context={startupAbort:new AbortController(),startupCancelled,location:{search:''},startupScreen:createStartupScreen({schedule(){}}),
     playerProfileOptions:()=>null,projectPayload:null,uiAssetManifest:null,imageAssets:null,
     json:url=>new Promise(resolve=>pending.set(url,resolve)),
     createAssetCatalog(){counts.catalogs++;return {};},
@@ -127,7 +128,7 @@ test('actual failure cleanup accepts the exported UI-disabled stub and retires t
     uiScroll:retire('scroll'),uiRenderer:null,orderedQueue:null,orderedRouter:null,publishPhysical:()=>trace.push('physical'),
     scheduler:{stop:()=>trace.push('scheduler')},resourceHost:{close:()=>trace.push('resources')},renderer:{},disposeRenderer:()=>trace.push('renderer'),
     imageAssets:retire('images'),audio:retire('audio'),backend:{close:()=>trace.push('backend')},
-    status:{textContent:''},document:{body:{dataset:{}}},console:{error(){}}};
+    startupScreen:createStartupScreen({schedule(){}}),document:{body:{dataset:{}}},console:{error(){}}};
   const producer=fs.readFileSync(new URL('../../crates/unone-cli/src/export.rs',import.meta.url),'utf8');
   const line=producer.split(/\r?\n/).find(value=>value.includes('const disabledUiCompleted =')&&value.includes('const createCanvasUi ='));
   assert(line,'use the real exporter stub, not an invented disabled-host contract');
@@ -138,6 +139,7 @@ test('actual failure cleanup accepts the exported UI-disabled stub and retires t
   const begin=source.indexOf('function fail('),end=source.indexOf('\nfunction publishPhysical(',begin);
   assert(begin>=0&&end>begin);vm.createContext(context);vm.runInContext(disabled+';uiRenderer=createCanvasUi();'+source.slice(feedBegin,feedEnd)+source.slice(begin,end),context);
   assert.doesNotThrow(()=>context.fail(error));assert.equal(context.startupAbort.signal.aborted,true);
+  assert.equal(context.document.body.dataset.playerError,'intentional failure');assert.equal(context.startupScreen.report().state,'failed','the startup screen shows the failure');
   assert.deepEqual(trace,['feed','cursor','text','scroll','physical','scheduler','resources','renderer','images','audio','backend']);
   assert.equal(context.performanceFeed,null);context.disposePerformanceFeed();assert.equal(trace.filter(name=>name==='feed').length,1);
   assert.match(context.document.body.dataset.playerError,/intentional failure/);

@@ -317,7 +317,9 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     });
   }
   function freezePreparation(value) { for (const key of ['unsupported','budget_skipped','errors']) { value[key].forEach(Object.freeze); Object.freeze(value[key]); } return Object.freeze(value); }
-  async function prepareScene(scene) {
+  // onProgress({done,total}) counts the work entries: half an entry for its inspection, half for its
+  // decode, a whole one when inspection rejects it. A startup screen reads it; it never fails preparation.
+  async function prepareScene(scene, { onProgress = null } = {}) {
     if (disposed) throw imageError('IMAGE_ASSET_BROKER_DISPOSED');
     planController?.abort(); const controller = new AbortController(); planController = controller; const epoch = ++planEpoch;
     const entities = scene?.entities ?? [], sceneIds = (Array.isArray(entities) ? entities : Object.values(entities)).flatMap(entity => typeof entity?.sprite?.asset === 'string' ? [entity.sprite.asset] : []);
@@ -325,7 +327,8 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     const previous = sceneLeases, next = new Map(); sceneLeases = next;
     for (const [id, lease] of previous) { if (ids.includes(id)) next.set(id, lease); else lease.release(); }
     const result = { declared_entries: ids.length, scene_declared_entries: new Set(sceneIds).size, startup_entries: requiredIds.size, required_entries: requiredIds.size, required_ready_entries: 0, startup_groups: plan?.startup ?? Object.freeze([]), duplicate_references: startupIds.length + sceneIds.length - ids.length, admitted_entries: 0, ready_entries: 0, reserved_bytes: 0, partial: false, unsupported: [], budget_skipped: [], errors: [], cancelled: false };
-    const candidates = ids.slice(0, sceneMaxEntries), inspected = new Array(candidates.length); let position = 0;
+    const candidates = ids.slice(0, sceneMaxEntries), inspected = new Array(candidates.length); let position = 0, inspectedCount = 0, settledCount = 0, rejectedCount = 0;
+    const progress = () => { if (onProgress && candidates.length) try { onProgress({ done: (inspectedCount + settledCount + rejectedCount) / 2, total: candidates.length }); } catch {} };
     for (const id of ids.slice(sceneMaxEntries)) result.budget_skipped.push({ id, reason: 'scene_entry_budget' });
     const worker = async work => { while (!controller.signal.aborted && position < candidates.length) { const index = position++; await work(candidates[index], index); } };
     const inspect = async (id, index) => {
@@ -333,6 +336,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
         if (!metadata || metadata.format !== 'png') { inspected[index] = { id, unsupported: true }; return; }
         const dimensions = imageDimensions(metadata); inspected[index] = { id, ...dimensions, format: 'png' };
       } catch (error) { inspected[index] = { id, error }; }
+      inspectedCount++; progress();
     };
     await Promise.all([worker(inspect), worker(inspect)]);
     if (controller.signal.aborted || epoch !== planEpoch || disposed) { result.cancelled = result.partial = true; return freezePreparation(result); }
@@ -344,7 +348,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
       selected.push(item); result.reserved_bytes += item.bytes;
     }
     const selectedIds = new Set(selected.map(item => item.id)); for (const [id, lease] of next) if (!selectedIds.has(id)) { next.delete(id); lease.release(); }
-    result.admitted_entries = selected.length; position = 0;
+    result.admitted_entries = selected.length; position = 0; rejectedCount = candidates.length - selected.length; progress();
     const decode = async () => { while (!controller.signal.aborted && position < selected.length) { const item = selected[position++]; let lease;
       try { lease = next.get(item.id); if (!lease) { lease = leaseFor(item.id, 'scene', item); next.set(item.id, lease); } await lease.promise; if (lease.state === 'ready') { result.ready_entries++; if (requiredIds.has(item.id)) result.required_ready_entries++; } else throw lease.error;
       } catch (error) {
@@ -353,6 +357,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
         // superseded plan must also never release a lease transferred to its successor.
         if (lease && epoch === planEpoch && sceneLeases === next && next.get(item.id) === lease) { next.delete(item.id); lease.release(); }
       }
+      settledCount++; progress();
     } };
     await Promise.all([decode(), decode()]);
     result.cancelled = controller.signal.aborted || epoch !== planEpoch || disposed;

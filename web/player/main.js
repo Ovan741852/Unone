@@ -23,9 +23,12 @@ import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '..
 import {createPlayerPerformanceFeed} from '../shared/player-performance-feed.mjs';
 import {serializedSavePayload} from '../shared/save-publication.mjs';
 import {playerErrorPolicy,createRecoveryReporter} from '../shared/player-errors.mjs';
+import {createStartupScreen} from '../shared/startup-screen.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
-const canvas=document.querySelector('#game'),status=document.querySelector('#status');
+const canvas=document.querySelector('#game');
+// index.html's startup screen: the real startup steps up to the first presented frame, then any fatal error.
+const startupScreen=createStartupScreen({root:document.querySelector('#unone-startup'),body:document.body,boot:window.playerBoot});
 let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null;
 const removeAssetGroupsAccessor=installPlayerAssetGroups(window,()=>imageAssets);
 const gamepadInput=createGamepadPolling();
@@ -87,7 +90,7 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */status.textContent=String(error?.message??error);document.body.dataset.playerError=status.textContent;console.error(error);}
+function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
  textInputs.setExternalInput(Boolean(physicalProfile));
@@ -110,7 +113,7 @@ function uiPassHidden(snapshot){return Boolean(snapshot.world?.render_pipeline?.
 // Core checks sprite resources against the manifest this player loads anyway.
 function withCatalog(project,manifest){const catalog=textureCatalog(manifest);if(catalog.length)project.asset_catalog=catalog;return project;}
 // Declared data assets are fetched as bytes for the core's api.assets loaders.
-function dataAssets(project){return Promise.all(payloadDataSources(project).map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);return {id:asset.id,bytes:new Uint8Array(await r.arrayBuffer())};}));}
+function dataAssets(project,onProgress=null){const sources=payloadDataSources(project);let loaded=0;return Promise.all(sources.map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);const bytes=new Uint8Array(await r.arrayBuffer());onProgress?.(++loaded,sources.length);return {id:asset.id,bytes};}));}
 // The project's display (project.unone.json): with aspect "keep" the stage is the largest
 // rectangle of the design shape that fits the window, centred, the page showing around it;
 // otherwise it fills the window and the game takes the device's shape.
@@ -197,6 +200,7 @@ async function setTransport(mode){const value=await backend.request({kind:'trans
 async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
+ startupScreen.start('present');
  const checked=(presentation.renderer_mode??'official')==='official'&&presentation.projected_raster==='upper_left_checked';
  const gate=checked?renderer.startupPresentation:null;
  if(checked&&!gate)throw Error('PLAYER_STARTUP_PRESENTATION_CONTRACT_MISSING');
@@ -215,7 +219,7 @@ async function finishStartup(presentation,kind){
  metrics.raster=renderer.metrics().raster;
  if(startupAbort.signal.aborted)throw startupCancelled();
  if(sample().state!=='presented')return false;
- assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));status.textContent='';
+ assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));startupScreen.ready();
  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:presenting=>frozen?undefined:tickOnce(presenting),render:draw,onError:fail,
   onWakeDiagnostic:profiler?recordSchedulerWake:null,
   onRafEnd:(at,start,end,flight,budget)=>{playerCompletion.rafEnd(at,start,end,flight,budget);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
@@ -263,14 +267,17 @@ async function readImagePreloadPlan(catalog){
  return validateImagePreloadPlan(plan,catalog);
 }
 async function start(){
+ startupScreen.start('content');
  const profileOptions=playerProfileOptions(location.search);
  if(profileOptions){profiler=createPlayerProfiler({limit:profileOptions.limit,publishTarget:document.body});document.body.dataset.playerProfileEnabled='1';
   uiRenderer.setAssetObserver(attrs=>profiler.record('ui_asset','ok',attrs));
   window.unonePlayerProfile=Object.freeze({report:()=>profiler.report(),clear:()=>profiler.clear(),publish:()=>profiler.publish()});}
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);
  if(startupAbort.signal.aborted)throw startupCancelled();
- withCatalog(project,assets);projectPayload=project;uiAssetManifest=assets;
- const dataLoad=dataAssets(project);dataLoad.catch(()=>{});
+ startupScreen.complete('content');withCatalog(project,assets);projectPayload=project;uiAssetManifest=assets;
+ // Data assets load beside image preparation, fonts and the runtime; Game.start waits for them.
+ startupScreen.start('images');startupScreen.start('data');
+ const dataLoad=dataAssets(project,(loaded,total)=>startupScreen.progress('data',loaded,total));dataLoad.then(()=>startupScreen.complete('data'),()=>{});
  // One immutable presentation index per fetched manifest. The player owns this JSON and adopts it,
  // so the renderer never rebuilds the asset index per draw and in-place edits fail instead of drifting.
  const assetCatalog=createAssetCatalog(assets,{adopt:true});
@@ -280,21 +287,25 @@ async function start(){
  imageAssets=createImageAssetBroker(assetCatalog,{resolveAssetUrl:asset=>new URL('content/'+asset.source,document.baseURI).href,preloadPlan});
  // Scene declarations own future render dependencies, including hidden sprites.
  // Prepare an explicitly bounded plan before simulation and the READY barrier.
- const preparation=await imageAssets.prepareScene(project.scene);
+ const preparation=await imageAssets.prepareScene(project.scene,{onProgress:({done,total})=>startupScreen.progress('images',done,total)});
  if(startupAbort.signal.aborted)throw startupCancelled();
- assertRequiredImagePreparation(preloadPlan,preparation);
+ assertRequiredImagePreparation(preloadPlan,preparation);startupScreen.complete('images');
  errorPolicy=playerErrorPolicy(presentation,location.search);
  physicalProfile=presentation.physical_input;
  if(physicalProfile!==undefined&&(physicalProfile!=='ordered_physical_v1'||(presentation.renderer_mode??'official')!=='official'))throw Error('INPUT_PHYSICAL_PROFILE_UNSUPPORTED: official Web ordered_physical_v1 only');
  configurePhysical();
- await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI));
+ startupScreen.start('fonts');
+ await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI),(loaded,total)=>startupScreen.progress('fonts',loaded,total));
  if(startupAbort.signal.aborted)throw startupCancelled();
+ startupScreen.complete('fonts');
  if(presentation.ui?.font_family??presentation.ui?.fonts?.[0]?.family)uiRenderer.setFont(presentation.ui.font_family??presentation.ui.fonts[0].family);
  const runtimeURL=new URL(document.querySelector('meta[name="unone-runtime"]').content,document.baseURI).href;
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  const requirePhysicalViewport=presentation.physical_input!==undefined||presentation.projected_raster==='upper_left_checked'||presentation.projected_material_profile!==undefined;
+ startupScreen.start('runtime');
  backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,...(profiler?{profiler}:{})});
  if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
+ startupScreen.complete('runtime');
  metrics.runtime_ready_ms=performance.now()-window.playerBoot;metrics.error_policy=errorPolicy??'strict';
  document.title=project.config.name;key=`unone-player:${location.pathname}:${project.config.name}`;
  try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
@@ -304,13 +315,17 @@ async function start(){
  if(errorPolicy)project.error_policy=errorPolicy;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
  const data=await dataLoad;if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
+ startupScreen.start('game');
  acceptSnapshot(await backend.request({kind:'load',payload:project,seed:sessionSeed(),data}),{reset:true,newSession:true});
+ startupScreen.complete('game');startupScreen.start('renderer');
  const renderPasses=await renderExtensions(presentation.render_extensions);
  renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  resourceHost=createSpriteResourceHost(renderer);resourceHost.acceptSnapshot(snapshot);
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
+ startupScreen.complete('renderer');startupScreen.start('audio');
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
  if(startupAbort.signal.aborted){const retiringAudio=audio;audio=null;retiringAudio?.dispose();throw startupCancelled();}
+ startupScreen.complete('audio');
  await finishStartup(presentation,kind);
 }
 function pointer(event,down,kind){const sample=pointerSample(event,down);if(!sample)return;input.updatePointer(sample,kind);hasWorldPointer=true;}

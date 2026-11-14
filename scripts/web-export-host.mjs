@@ -52,6 +52,21 @@ export function assembleHost(root,inspection,enabled,runtime,assets){
  return{files,html};
 }
 
+// Writes the project's startup screen into the player page, exactly as crates/unone-cli/src/export.rs
+// apply_startup_screen does: the logo replaces the Unone logo region, the background themes the screen.
+const STARTUP_DARK_TEXT='#111827',STARTUP_LIGHT_TEXT='#f3f4f6',STARTUP_LIGHT_THEME_COLORS=';--startup-accent:#0369a1;--startup-error:#b91c1c';
+const htmlAttribute=value=>value.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll("'",'&#39;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+function relativeLuminance(color){const channel=at=>{const value=parseInt(color.slice(at,at+2),16)/255;return value<=0.04045?value/12.92:((value+0.055)/1.055)**2.4;};return 0.2126*channel(1)+0.7152*channel(3)+0.0722*channel(5);}
+export function startupForeground(background){const back=relativeLuminance(background),dark=relativeLuminance(STARTUP_DARK_TEXT),light=relativeLuminance(STARTUP_LIGHT_TEXT);return (back+0.05)/(dark+0.05)>(light+0.05)/(back+0.05)?STARTUP_DARK_TEXT:STARTUP_LIGHT_TEXT;}
+export function applyStartupScreen(html,startup,name){
+ if(!startup)return html;
+ if(startup.logo!=null){const begin='<!--UNONE_STARTUP_LOGO-->',end='<!--/UNONE_STARTUP_LOGO-->',from=html.indexOf(begin),to=html.indexOf(end);
+  requireThat(html.split(begin).length===2&&html.split(end).length===2&&from<to,'PLAYER_TEMPLATE_CONTRACT_CHANGED','expected one startup logo region');
+  html=html.slice(0,from)+`<img class="unone-startup-logo" src="content/${htmlAttribute(startup.logo)}" alt="${htmlAttribute(name)}">`+html.slice(to+end.length);}
+ if(startup.background!=null){const background=startup.background.toLowerCase();const foreground=startupForeground(background);html=replace(html,'/*UNONE_STARTUP_THEME*/',`#unone-startup{--startup-bg:${background};--startup-fg:${foreground}${foreground===STARTUP_DARK_TEXT?STARTUP_LIGHT_THEME_COLORS:''}}`);}
+ return html;
+}
+
 // Same bounded literal-specifier scope as the Rust exporter: not JS execution.
 function tokens(source){const out=[];let i=0;while(i<source.length){const c=source[i];if(/\s/.test(c)){i++;continue;}if(source.startsWith('//',i)){i=source.indexOf('\n',i);if(i<0)break;continue;}if(source.startsWith('/*',i)){const end=source.indexOf('*/',i+2);i=end<0?source.length:end+2;continue;}if(c==='"'||c==="'"||c==='`'){let value='',quote=c;i++;while(i<source.length){const next=source[i++];if(next===quote)break;if(next==='\\'&&i<source.length)value+=source[i++];else value+=next;}if(quote!=='`')out.push({text:value});continue;}if(/[A-Za-z_$]/.test(c)){const start=i++;while(i<source.length&&/[A-Za-z0-9_$]/.test(source[i]))i++;out.push({name:source.slice(start,i)});continue;}if(c==='/'){const last=out.at(-1);if(!last||last.punct&&'(=:[,!;?{'.includes(last.punct)||['return','case','throw'].includes(last.name)){i++;let cls=false;while(i<source.length){const n=source[i++];if(n==='\\')i++;else if(n==='[')cls=true;else if(n===']')cls=false;else if(n==='/'&&!cls)break;}while(/[a-z]/i.test(source[i]??'')&&i<source.length)i++;out.push({punct:'/'});continue;}}out.push({punct:c});i++;}return out;}
 export function validateDependencies(files){let edges=0;for(const [name,file]of files){if(!/\.m?js$/.test(name))continue;const source=file.data??fs.readFileSync(file.source),t=tokens(new TextDecoder('utf-8',{fatal:true}).decode(source)),specs=[];for(let i=0;i<t.length;i++){const v=t[i];if(v.name==='import'&&t[i-1]?.punct!=='.'||v.name==='export'&&['{','*'].includes(t[i+1]?.punct)){if(t[i+1]?.text)specs.push(t[i+1].text);else if(t[i+1]?.punct==='('&&t[i+2]?.text)specs.push(t[i+2].text);else if(t[i+1]?.punct!=='.')for(let j=i+1;j<t.length&&t[j].punct!==';';j++)if(t[j].name==='from'){if(t[j+1]?.text)specs.push(t[j+1].text);break;}}if(v.name==='new'&&t[i+1]?.name==='URL'&&t[i+2]?.punct==='('&&t[i+3]?.text&&t[i+4]?.punct===','&&t[i+5]?.name==='import'&&t[i+6]?.punct==='.'&&t[i+7]?.name==='meta'&&t[i+8]?.punct==='.'&&t[i+9]?.name==='url')specs.push(t[i+3].text);}

@@ -33,6 +33,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/projected-raster-profile-expected.js",
         "renderer/renderer-clear-lifecycle.js",
         "shared/startup-presentation.mjs",
+        "shared/startup-screen.mjs",
         "shared/player-completion.mjs",
         "shared/player-performance-feed.mjs",
         "shared/retained-image-generation.mjs",
@@ -400,6 +401,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     }
     let index = fs::read_to_string(repo.join("web/player/index.html"))?
         .replace("__RUNTIME_JS__", manifest["javascript"].as_str().unwrap());
+    let index = apply_startup_screen(index, presentation.startup.as_ref(), &config.name)?;
     let module_dependencies=crate::web_dependencies::validate(&files)?;
     let (release_root,index)=seal_web_generation(&mut files,&index)?;
     files.push(("index.html".into(), index.into_bytes()));
@@ -752,6 +754,48 @@ mod tests {
         assert!(append_presentation(dir.path(),&mut vec![]).err().unwrap().to_string().contains("UI_FONT_FAMILY_REQUIRED"));
     }
     #[test]
+    fn startup_screen_packages_a_checked_logo_and_writes_it_into_the_player_page() {
+        let dir=tempfile::tempdir().unwrap();
+        fs::create_dir(dir.path().join("brand")).unwrap();
+        let png=b"\x89PNG\r\n\x1a\nrest-of-a-logo".to_vec();
+        fs::write(dir.path().join("brand/logo.png"),&png).unwrap();
+        let declare=|startup:Value|fs::write(dir.path().join("player.presentation.json"),serde_json::to_vec(&json!({"startup":startup})).unwrap()).unwrap();
+        declare(json!({"logo":"brand/logo.png","background":"#F5F0E6"}));
+        let mut files=vec![];let presentation=append_presentation(dir.path(),&mut files).unwrap();
+        assert!(files.iter().any(|(path,bytes)|path=="content/brand/logo.png"&&*bytes==png),"the export copies the declared logo");
+        let written:Value=serde_json::from_slice(&files.iter().find(|(path,_)|path=="content/presentation.json").unwrap().1).unwrap();
+        assert!(written.get("startup").is_none(),"players read the startup screen from index.html, not presentation.json");
+        let template=fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../web/player/index.html")).unwrap();
+        let page=apply_startup_screen(template.clone(),presentation.startup.as_ref(),"Tea & \"Cakes\"").unwrap();
+        assert!(page.contains(r#"<img class="unone-startup-logo" src="content/brand/logo.png" alt="Tea &amp; &quot;Cakes&quot;">"#));
+        assert!(!page.contains("UNONE_STARTUP_LOGO")&&!page.contains("aria-label=\"Unone\""),"the project logo replaces the Unone logo");
+        assert!(page.contains("#unone-startup{--startup-bg:#f5f0e6;--startup-fg:#111827;--startup-accent:#0369a1;--startup-error:#b91c1c}"),"a light background gets dark text and darker bar/error colours");
+        assert_eq!(apply_startup_screen(template.clone(),None,"x").unwrap(),template,"undeclared keeps the Unone startup screen");
+        let dark=crate::hosts::StartupScreen{background:Some("#0a0a20".into()),..Default::default()};
+        let page=apply_startup_screen(template.clone(),Some(&dark),"x").unwrap();
+        assert!(page.contains("#unone-startup{--startup-bg:#0a0a20;--startup-fg:#f3f4f6}")&&page.contains("aria-label=\"Unone\""),"a dark background keeps light text, the default colours and the Unone logo");
+        for (startup,file,code) in [
+            (json!({"logo":"../logo.png"}),None,"STARTUP_LOGO_PATH_INVALID"),
+            (json!({"logo":"brand/logo.gif"}),None,"STARTUP_LOGO_FORMAT_UNSUPPORTED"),
+            (json!({"logo":"brand/fake.png"}),Some(b"GIF89a".to_vec()),"STARTUP_LOGO_FORMAT_UNSUPPORTED"),
+            (json!({"logo":"brand/empty.svg"}),Some(Vec::new()),"STARTUP_LOGO_SIZE_INVALID"),
+            (json!({"logo":"brand/huge.svg"}),Some([b"<svg>".as_slice(),&vec![b' ';crate::hosts::STARTUP_LOGO_MAX_BYTES][..]].concat()),"STARTUP_LOGO_SIZE_INVALID"),
+            (json!({"logo":"brand/absent.png"}),None,"STARTUP_LOGO_MISSING"),
+            (json!({"background":"teal"}),None,"STARTUP_BACKGROUND_INVALID"),
+            (json!({"background":"#12345"}),None,"STARTUP_BACKGROUND_INVALID"),
+        ] {
+            if let Some(bytes)=file{fs::write(dir.path().join(startup["logo"].as_str().unwrap()),bytes).unwrap();}
+            declare(startup.clone());
+            let error=format!("{:#}",append_presentation(dir.path(),&mut vec![]).err().unwrap());
+            assert!(error.contains(code),"{startup}: {error}");
+        }
+        declare(json!({"logo":"brand/logo.png","title":"x"}));
+        assert!(append_presentation(dir.path(),&mut vec![]).is_err(),"unknown startup fields fail");
+        fs::write(dir.path().join("brand/mark.svg"),br#"<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"/>"#).unwrap();
+        declare(json!({"logo":"brand/mark.svg"}));
+        append_presentation(dir.path(),&mut vec![]).unwrap();
+    }
+    #[test]
     fn shared_font_catalog_packages_faces_rejects_invalid_entries_and_hashes_bytes() {
         let dir = tempfile::tempdir().unwrap();
         fs::create_dir(dir.path().join("fonts")).unwrap();
@@ -883,8 +927,63 @@ pub(crate) fn append_presentation(project:&Path, files:&mut Vec<(String,Vec<u8>)
     for face in &presentation.ui.fonts {
         append_font(project, &face.source, files)?;
     }
+    if let Some(logo) = presentation.startup.as_ref().and_then(|startup| startup.logo.as_ref()) {
+        let bytes = fs::read(inside(project, logo).with_context(|| format!("STARTUP_LOGO_MISSING: {logo}"))?)?;
+        crate::hosts::validate_startup_logo(logo, &bytes)?;
+        push_unique_content_file(files, format!("content/{logo}"), bytes)?;
+    }
     push_unique_content_file(files, "content/presentation.json".into(), serde_json::to_vec(&presentation)?)?;
     Ok(presentation)
+}
+
+const STARTUP_LOGO_BEGIN: &str = "<!--UNONE_STARTUP_LOGO-->";
+const STARTUP_LOGO_END: &str = "<!--/UNONE_STARTUP_LOGO-->";
+const STARTUP_THEME: &str = "/*UNONE_STARTUP_THEME*/";
+const STARTUP_DARK_TEXT: &str = "#111827";
+const STARTUP_LIGHT_TEXT: &str = "#f3f4f6";
+/// The page's bar and error colours suit its dark default; dark text on a
+/// light background gets darker ones that still contrast.
+const STARTUP_LIGHT_THEME_COLORS: &str = ";--startup-accent:#0369a1;--startup-error:#b91c1c";
+
+/// Writes the project's startup screen into the player page, so the logo and
+/// background show before any script loads. scripts/web-export-host.mjs
+/// applies the same rules for source refreshes.
+pub(crate) fn apply_startup_screen(mut index: String, startup: Option<&crate::hosts::StartupScreen>, name: &str) -> Result<String> {
+    let Some(startup) = startup else { return Ok(index) };
+    if let Some(logo) = &startup.logo {
+        ensure!(index.matches(STARTUP_LOGO_BEGIN).count() == 1 && index.matches(STARTUP_LOGO_END).count() == 1,
+            "PLAYER_TEMPLATE_CONTRACT_CHANGED: expected one startup logo region");
+        let (begin, end) = (index.find(STARTUP_LOGO_BEGIN).unwrap(), index.find(STARTUP_LOGO_END).unwrap() + STARTUP_LOGO_END.len());
+        ensure!(begin < end, "PLAYER_TEMPLATE_CONTRACT_CHANGED: startup logo region is out of order");
+        index.replace_range(begin..end, &format!("<img class=\"unone-startup-logo\" src=\"content/{}\" alt=\"{}\">", html_attribute(logo), html_attribute(name)));
+    }
+    if let Some(background) = &startup.background {
+        let background = background.to_ascii_lowercase();
+        let foreground = startup_foreground(&background);
+        let extra = if foreground == STARTUP_DARK_TEXT { STARTUP_LIGHT_THEME_COLORS } else { "" };
+        let theme = format!("#unone-startup{{--startup-bg:{background};--startup-fg:{foreground}{extra}}}");
+        index = replace_required(index, STARTUP_THEME, &theme)?;
+    }
+    Ok(index)
+}
+
+fn html_attribute(value: &str) -> String {
+    value.replace('&', "&amp;").replace('"', "&quot;").replace('\'', "&#39;").replace('<', "&lt;").replace('>', "&gt;")
+}
+
+/// WCAG relative luminance of a validated #rrggbb colour.
+fn relative_luminance(color: &str) -> f64 {
+    let channel = |at: usize| {
+        let value = f64::from(u8::from_str_radix(&color[at..at + 2], 16).unwrap_or(0)) / 255.0;
+        if value <= 0.04045 { value / 12.92 } else { ((value + 0.055) / 1.055).powf(2.4) }
+    };
+    0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5)
+}
+
+/// The dark or light text colour with the higher contrast ratio on the background.
+fn startup_foreground(background: &str) -> &'static str {
+    let (back, dark, light) = (relative_luminance(background), relative_luminance(STARTUP_DARK_TEXT), relative_luminance(STARTUP_LIGHT_TEXT));
+    if (back + 0.05) / (dark + 0.05) > (light + 0.05) / (back + 0.05) { STARTUP_DARK_TEXT } else { STARTUP_LIGHT_TEXT }
 }
 
 fn append_font(project: &Path, path: &str, files: &mut Vec<(String, Vec<u8>)>) -> Result<()> {

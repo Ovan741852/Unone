@@ -59,15 +59,37 @@ export function resolveErrorPolicy(declared){
  requireThat(['fail','keep_previous'].includes(policy.ui_capacity)&&['fail','continue'].includes(policy.script_errors)&&Number.isInteger(policy.max_consecutive_script_errors)&&policy.max_consecutive_script_errors>=1&&policy.max_consecutive_script_errors<=3600,'ERROR_POLICY_INVALID');
  return policy;
 }
+// Same contract as crates/unone-cli/src/hosts.rs StartupScreen: a checked logo the export copies,
+// and a #rrggbb background. The host writes both into index.html (web-export-host.mjs).
+const STARTUP_LOGO_MAX_BYTES=1024*1024;
+const STARTUP_LOGO_FORMATS={png:'png',jpg:'jpeg',jpeg:'jpeg',webp:'webp',svg:'svg'};
+export function startupFor(project,files,startup){
+ closed(startup,['logo','background'],'WEB_REFRESH_STARTUP_INVALID');const result={};
+ if(startup.logo!=null){
+  const logo=startup.logo;
+  requireThat(typeof logo==='string'&&logo.length>0&&!/[\\:%?#\x00-\x1f\x7f]/.test(logo)&&!logo.startsWith('/')&&logo.split('/').every(part=>part&&part!=='.'&&part!=='..'),'STARTUP_LOGO_PATH_INVALID',String(logo));
+  const format=STARTUP_LOGO_FORMATS[logo.includes('.')?logo.slice(logo.lastIndexOf('.')+1).toLowerCase():''];requireThat(format,'STARTUP_LOGO_FORMAT_UNSUPPORTED',logo);
+  requireThat(fs.existsSync(path.join(project,...logo.split('/'))),'STARTUP_LOGO_MISSING',logo);
+  const record=fileRecord(sourceFile(project,logo),'content/'+logo);requireThat(record.bytes>0&&record.bytes<=STARTUP_LOGO_MAX_BYTES,'STARTUP_LOGO_SIZE_INVALID',logo);
+  const bytes=fs.readFileSync(record.source);
+  const matches=format==='png'?bytes.subarray(0,8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])):format==='jpeg'?bytes.subarray(0,3).equals(Buffer.from([0xff,0xd8,0xff])):
+   format==='webp'?bytes.length>=12&&bytes.toString('latin1',0,4)==='RIFF'&&bytes.toString('latin1',8,12)==='WEBP':(()=>{try{return new TextDecoder('utf-8',{fatal:true}).decode(bytes).includes('<svg');}catch{return false;}})();
+  requireThat(matches,'STARTUP_LOGO_FORMAT_UNSUPPORTED',logo);put(files,record);result.logo=logo;
+ }
+ if(startup.background!=null){requireThat(typeof startup.background==='string'&&/^#[0-9a-fA-F]{6}$/.test(startup.background),'STARTUP_BACKGROUND_INVALID',String(startup.background));result.background=startup.background;}
+ return result;
+}
 function presentationFor(project,files,base){
  const file=path.join(project,'player.presentation.json');const raw=fs.existsSync(file)?json(sourceFile(project,'player.presentation.json')):{};
- const allowed=['texture_cache','spatial_backend','renderer_mode','renderer_module','renderer_files','ui','bloom','antialias','projected_raster','projected_material_profile','physical_input','show_performance','runtime_backend','job_policy','interpolation','interpolate_instances','render_extensions','error_policy'];closed(raw,allowed,'WEB_REFRESH_PRESENTATION_INVALID');
+ const allowed=['texture_cache','spatial_backend','renderer_mode','renderer_module','renderer_files','ui','bloom','antialias','projected_raster','projected_material_profile','physical_input','show_performance','runtime_backend','job_policy','interpolation','interpolate_instances','render_extensions','error_policy','startup'];closed(raw,allowed,'WEB_REFRESH_PRESENTATION_INVALID');
  requireThat((raw.renderer_mode??'official')==='official'&&raw.renderer_module==null&&(raw.renderer_files??[]).length===0,'WEB_REFRESH_OFFICIAL_ONLY');
  const result={spatial_backend:'cpu',renderer_mode:'official',renderer_module:null,renderer_files:[],ui:{font_source:null,font_family:null,fonts:[]},bloom:false,show_performance:false,runtime_backend:'main',job_policy:{mode:'auto',max_workers:2,memory_budget_mb:128},interpolation:false,interpolate_instances:[],...raw};
  for(const key of ['bloom','show_performance','interpolation'])requireThat(typeof result[key]==='boolean','WEB_REFRESH_PRESENTATION_INVALID',key);
  requireThat(['cpu','gpu','auto'].includes(result.spatial_backend)&&['main','worker'].includes(result.runtime_backend),'WEB_REFRESH_PRESENTATION_INVALID');
  closed(result.job_policy,['mode','max_workers','memory_budget_mb'],'WEB_REFRESH_JOB_POLICY_INVALID');result.job_policy={mode:'auto',max_workers:2,memory_budget_mb:128,...result.job_policy};requireThat(['auto','inline','workers'].includes(result.job_policy.mode)&&Number.isInteger(result.job_policy.max_workers)&&result.job_policy.max_workers>=0&&result.job_policy.max_workers<=4&&Number.isInteger(result.job_policy.memory_budget_mb)&&result.job_policy.memory_budget_mb>=0&&result.job_policy.memory_budget_mb<=1024,'WEB_REFRESH_JOB_POLICY_INVALID');
  result.error_policy=resolveErrorPolicy(raw.error_policy);
+ // Players read the startup screen from index.html; like game export web, presentation.json omits it.
+ delete result.startup;Object.defineProperty(result,'startup',{value:raw.startup==null?null:startupFor(project,files,raw.startup),enumerable:false});
  // Font subsetting is a game export/prepare step; this refresh ships faces whole and reports it.
  closed(result.ui,['font_source','font_family','fonts','font_subset'],'WEB_REFRESH_FONT_INVALID');result.ui={font_source:null,font_family:null,fonts:[],...result.ui};delete result.ui.font_subset;const seen=new Set();
  Object.defineProperty(result,'fontSubsetSkipped',{value:Array.isArray(result.ui.fonts)&&result.ui.fonts.some(face=>face?.subset===true),enumerable:false});requireThat(Array.isArray(result.ui.fonts)&&result.ui.fonts.length+Number(result.ui.font_source!=null)<=32,'UI_FONT_LIMIT');result.ui.fonts=result.ui.fonts.map(face=>validateFont(project,files,face,seen));

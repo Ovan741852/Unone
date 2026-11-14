@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import * as images from './asset-encoding.js';
 import {startupCancelled} from './startup-presentation.mjs';
 import {playerErrorPolicy} from './player-errors.mjs';
+import {createStartupScreen} from './startup-screen.mjs';
 
 const encoder=new TextEncoder(),MAX=1024*1024;
 const ID='texture://shared',URL_TEXT='https://player.invalid/releases/'+'a'.repeat(64)+'/content/image-assets.json';
@@ -24,7 +25,7 @@ function response(chunks,{status=200,failRead=null,onRead=()=>{}}={}){
 }
 function host({metas=[meta('content/image-assets.json')],reply=response([encoder.encode(JSON.stringify(plan()))]),preparation}={}){
   const fetches=[],counts={catalogs:0,brokers:0,preparations:0,backends:0,ready:0};
-  const context={...images,JSON,URL,URLSearchParams,TextDecoder,Uint8Array,AbortController,startupCancelled,startupAbort:new AbortController(),
+  const context={...images,JSON,URL,URLSearchParams,TextDecoder,Uint8Array,AbortController,startupCancelled,startupAbort:new AbortController(),startupScreen:createStartupScreen({schedule(){}}),
     document:{baseURI:'https://player.invalid/releases/'+'a'.repeat(64)+'/',
       querySelectorAll:selector=>selector.includes('unone-image-assets')?metas:selector.includes('unone-image-preload-version')?[meta('1')]:[],
       querySelector:()=>({content:'https://player.invalid/runtime.js'})},

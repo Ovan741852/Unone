@@ -90,9 +90,10 @@ export async function loadCanvasFont(family,url,weight=400){
   try{const font=new FontFace(family,`url(${JSON.stringify(String(url))})`,{weight:String(weight)});await font.load();document.fonts.add(font);return font;}
   catch(error){throw Error(`UI_FONT_LOAD_FAILED: ${family} ${weight}: ${String(error?.message??error)}`);}
 }
-export async function loadPresentationFonts(ui={},resolveSource=source=>source){
-  const loaded=[];
-  try{for(const face of presentationFontFaces(ui))loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));return loaded;}
+// onProgress(loaded,total) after each face, for the player's startup screen.
+export async function loadPresentationFonts(ui={},resolveSource=source=>source,onProgress=null){
+  const loaded=[],faces=presentationFontFaces(ui);
+  try{for(const face of faces){loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));onProgress?.(loaded.length,faces.length);}return loaded;}
   catch(error){for(const font of loaded)document.fonts.delete(font);throw error;}
 }
 // Pass a 2D canvas to paint with Canvas2D (tools, previews), or null with
