@@ -133,7 +133,11 @@ after this step; publish the complete new generation before exposing its root
 
 The helper verifies the complete input file inventory and all SHA-256 hashes,
 the selected generation's alias pairs, official renderer selection, matching
-project config/script/assets, and the host's image-plan capability. The host's
+project config/script/assets, and the host's image-plan capability. A production
+export ships bytecode instead of the entry script and modules, so the helper
+compares the project's files with the SHA-256 of each compiled source that the
+CLI records in `export.json` as `script_sources`; export again with a current
+CLI when an older production export has none. The host's
 asset module must match the publisher's trusted SDK template, and the entry
 must implement the versioned plan loader. The helper never imports code from
 the input export. Installed SDK use verifies the tool and validator against

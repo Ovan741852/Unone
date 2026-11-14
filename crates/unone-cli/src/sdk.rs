@@ -937,14 +937,14 @@ fn native_export_staged(
     native_asset_gate(&assets, &metadata)?;
     // Native players are release builds and load the entry and modules as
     // bytecode compiled for their own codegen setting.
-    crate::export::precompile_scripts(&mut files, metadata["native_codegen_compiled"] == true)?;
+    let script_sources = crate::export::precompile_scripts(&mut files, metadata["native_codegen_compiled"] == true)?;
     let runtime_files = runtime_files(&metadata)?;
     if host.id == "windows" {
         for (name, _) in &runtime_files {
             files.push((name.clone(), fs::read(safe(runtime, name)?)?));
         }
     }
-    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"error_policy":error_policy,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"error_policy":error_policy,"script_sources":script_sources,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
     std::fs::create_dir_all(output)?;
     for (path, bytes) in &files {
         let p = output.join(path);

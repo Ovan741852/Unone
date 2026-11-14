@@ -130,7 +130,7 @@ async function trustedValidator(checks){
  requireThat(module.IMAGE_PRELOAD_PLAN_VERSION===1&&module.IMAGE_PRELOAD_PLAN_MAX_BYTES===1048576&&typeof module.validateImagePreloadPlan==='function'&&typeof module.createAssetCatalog==='function','IMAGE_PRELOAD_HOST_UNSUPPORTED','SDK validator is missing');
  return{...module,sourceFile:entry.sourceFile,sha256:entry.sha256,dependencies,mode};
 }
-function validateProject(project,payload,assets,logical,checks){
+function validateProject(project,payload,assets,logical,checks,manifest){
  requireThat(payload&&payload.config&&typeof payload.config==='object'&&Array.isArray(assets?.assets),'IMAGE_PRELOAD_EXPORT_INVALID','project/catalog shape');
  const configFile=safeFile(project,'project.unone.json',checks),raw=jsonFile(configFile);
  // Mirror only ProjectConfig's explicit serde omissions, not arbitrary unknown
@@ -139,7 +139,16 @@ function validateProject(project,payload,assets,logical,checks){
  if(Array.isArray(raw.ui_previews))raw.ui_previews=raw.ui_previews.map(preview=>{const copy={...preview};delete copy.save_fixture;return copy;});
  assertConfigured(raw,payload.config,'config');
  const compareSource=(relative,text,label)=>{requireThat(typeof relative==='string'&&typeof text==='string','IMAGE_PRELOAD_PROJECT_STALE',label);const file=safeFile(project,relative,checks);requireThat(sha(fs.readFileSync(file))===sha(Buffer.from(text,'utf8')),'IMAGE_PRELOAD_PROJECT_STALE',label);};
- compareSource(payload.config.entry_script??'scripts/main.luau',payload.script,'entry script');
+ const entry=payload.config.entry_script??'scripts/main.luau';
+ if(payload.script!==undefined||!payload.script_bytecode)compareSource(entry,payload.script,'entry script');
+ else{
+  // A production export ships bytecode; the CLI recorded the hash of each
+  // source it compiled in export.json, so check the project against those.
+  const sources=manifest.script_sources,compareHash=(relative,expected,label)=>{requireThat(typeof expected==='string','IMAGE_PRELOAD_PROJECT_STALE',label+': the export records no source hash; export again with a current CLI');requireThat(sha(fs.readFileSync(safeFile(project,relative,checks)))===expected,'IMAGE_PRELOAD_PROJECT_STALE',label);};
+  compareHash(entry,sources?.entry_sha256,'entry script');
+  const root=path.posix.dirname(entry);
+  for(const name of Object.keys(payload.script_module_bytecode?.modules??{}))compareHash(root==='.'?name:root+'/'+name,sources?.modules?.[name],'module '+name);
+ }
  for(const [id,relative]of Object.entries(payload.config.job_scripts??{}))compareSource(relative,payload.job_sources?.[id],'job '+id);
  const scene=payload.config.main_scene?jsonFile(safeFile(project,payload.config.main_scene,checks)):null;
  requireThat(isDeepStrictEqual(scene,payload.scene),'IMAGE_PRELOAD_PROJECT_STALE','main scene');
@@ -147,7 +156,7 @@ function validateProject(project,payload,assets,logical,checks){
  const ids=new Set();for(const asset of assets.assets){requireThat(asset&&typeof asset.id==='string'&&asset.id.length>0&&!ids.has(asset.id)&&typeof asset.source==='string'&&(asset.files===undefined||(Array.isArray(asset.files)&&asset.files.every(file=>typeof file==='string'))),'IMAGE_PRELOAD_ASSET_CATALOG_INVALID','duplicate/missing id or source');ids.add(asset.id);
   for(const relative of [asset.source,...(asset.files??[])]){portablePath(relative);const exported=logical.get('content/'+relative);requireThat(exported,'IMAGE_PRELOAD_ASSET_UNLISTED',relative);const actual=fileDigest(safeFile(project,relative,checks));requireThat(actual.bytes===exported.bytes&&actual.sha256===exported.sha256,'IMAGE_PRELOAD_PROJECT_STALE','asset '+relative);}
  }
- return{config_sha256:sha(fs.readFileSync(configFile)),script_sha256:sha(Buffer.from(payload.script,'utf8'))};
+ return{config_sha256:sha(fs.readFileSync(configFile)),script_sha256:typeof payload.script==='string'?sha(Buffer.from(payload.script,'utf8')):manifest.script_sources.entry_sha256};
 }
 function requiredBudgetPreflight(plan,assets,logical){
  const byId=new Map(assets.assets.map(asset=>[asset.id,asset])),required=new Set(plan.startup.flatMap(group=>plan.groups[group]));
@@ -199,7 +208,7 @@ export async function prepareWebImageAssets({project,inputExport,output,plan}){
  requireThat(version.length===1&&version[0].content==='1'&&version[0].at>headStart&&version[0].at<headEnd&&utf8(fs.readFileSync(hostMain.source),true).includes('readImagePreloadPlan'),'IMAGE_PRELOAD_HOST_UNSUPPORTED','image-plan loader/version marker missing');
  const assetFile=logical.get('content/assets.json'),projectFile=logical.get('content/project.json'),presentationFile=logical.get('content/presentation.json');requireThat(assetFile&&projectFile&&presentationFile,'IMAGE_PRELOAD_EXPORT_INVALID','missing content');
  const assets=jsonFile(assetFile.source),payload=jsonFile(projectFile.source),presentation=jsonFile(presentationFile.source);requireThat((presentation.renderer_mode??'official')==='official'&&!presentation.renderer_module,'IMAGE_PRELOAD_OFFICIAL_ONLY');
- const projectIdentity=validateProject(projectRoot,payload,assets,logical,checks);
+ const projectIdentity=validateProject(projectRoot,payload,assets,logical,checks,manifest);
  const planFile=plan?guardExisting(path.resolve(plan),checks):safeFile(projectRoot,'player.image-assets.json',checks),rawPlan=boundedPlan(planFile,validator.IMAGE_PRELOAD_PLAN_MAX_BYTES);
  const canonicalPlan=validator.validateImagePreloadPlan(JSON.parse(utf8(rawPlan)),validator.createAssetCatalog(assets)),planBytes=Buffer.from(JSON.stringify(canonicalPlan),'utf8');
  // Scripts may request only the groups the export recorded (api.assets.imageGroups);
