@@ -444,7 +444,7 @@ W.instantiate=function(source,imports){
 if(o.compileStreaming)W.compileStreaming=function(source){return settle(row('compileStreaming'),o.compileStreaming.call(W,source));};
 W.compile=function(source){return settle(row('compile',size(source)),o.compile.call(W,source));};
 if(window.FontFace){const load=FontFace.prototype.load;FontFace.prototype.load=function(){const r={family:this.family,weight:this.weight,status:'pending',start_ms:now(),end_ms:null};if(probe.fonts.length<128)probe.fonts.push(r);return settle(r,load.call(this));};}
-try{new PerformanceObserver(list=>{for(const e of list.getEntries())if(probe.long_tasks.length<512)probe.long_tasks.push({start_ms:e.startTime,duration_ms:e.duration});}).observe({type:'longtask',buffered:true});}catch{}
+try{new PerformanceObserver(list=>{for(const e of list.getEntries())if(probe.long_tasks.length<4096)probe.long_tasks.push({start_ms:e.startTime,duration_ms:e.duration});}).observe({type:'longtask',buffered:true});}catch{}
 document.addEventListener('visibilitychange',()=>{if(probe.visibility.length<64)probe.visibility.push({state:document.visibilityState,at_ms:now()});});
 addEventListener('focus',()=>{if(probe.focus.length<64)probe.focus.push({focused:true,at_ms:now()});});
 addEventListener('blur',()=>{if(probe.focus.length<64)probe.focus.push({focused:false,at_ms:now()});});
@@ -672,7 +672,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
 }
 
 // A few owners' movement across each phase of the first completed scenario run, for the console.
-const FRAME_CONSOLE=['submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','completed_submissions'];
+const FRAME_CONSOLE=['submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','input_delivery.p50_ms','long_tasks.count','long_tasks.max_ms','completed_submissions'];
 const CONSOLE_METRICS=['images.decoded.resident.entries','images.decoded.resident.bytes','gpu.textures.entries','gpu.geometries.entries','luau.heap.bytes','js_heap.used_bytes','os.largest_renderer.private_bytes','os.gpu_process.gpu_dedicated_bytes'];
 export function scenarioConsole(scenario){
  const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length};

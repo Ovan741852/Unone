@@ -198,12 +198,13 @@ test('window values are nearest-rank percentiles with counts of gaps over 50 and
 test('a frame window uses completed scheduler draws inside it and counts missing rows and outcomes',()=>{
  const row=(sequence,end,{outcome='completed',source='scheduler_raf',fresh=true,start=end-4,callback=end+1}={})=>({sequence,source,raf:end-5,start,end,callback,frame:sequence,outcome,fresh});
  const rows=[row(1,90),row(2,100),row(3,117),row(5,150,{fresh:false}),row(6,267),row(7,284,{outcome:'skipped'}),row(8,300,{source:'manual'}),row(9,500)];
- const m=frameWindowMetrics({rows,inputs:[{at:95,presented:117},{at:140,presented:150},{at:10,presented:20}],start:100,end:400,droppedStart:3,droppedEnd:5});
+ const m=frameWindowMetrics({rows,inputs:[{at:95,presented:117,delivered:99},{at:140,presented:150},{at:10,presented:20}],start:100,end:400,droppedStart:3,droppedEnd:5});
  assert.deepEqual([m.completed_submissions,m.rows,m.rows_missing,m.dropped_steps],[4,6,1,2]);
  assert.deepEqual(m.outcomes,{completed:5,skipped:1});
  assert.deepEqual(m.submission_interval,{n:3,p50_ms:33,p95_ms:117,p99_ms:117,max_ms:117,over_50ms:1,over_100ms:1});
  assert.equal(m.new_snapshot_interval.n,2,'only draws that showed a new snapshot (150 did not)');
  assert.deepEqual([m.draw_sync.p50_ms,m.input_latency.n,m.input_latency.max_ms],[5,2,22]);
+ assert.deepEqual([m.input_delivery.n,m.input_delivery.max_ms],[1,4],'only rows that say when the page got the event');
  assert.equal(m.coverage,round3((267-100)/300));
  assert.deepEqual(flattenFrames(m)['submission_interval.over_50ms'],1);
  assert.equal(flattenFrames(m)['outcomes.skipped'],1);

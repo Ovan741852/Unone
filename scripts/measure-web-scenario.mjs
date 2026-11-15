@@ -287,7 +287,9 @@ export function frameWindowMetrics({rows,inputs=[],start,end,droppedStart=null,d
   new_snapshot_interval:distributionOf(diffs(completed.filter(r=>r.fresh),'raf'),{gaps:true}),
   draw_sync:distributionOf(completed.map(r=>finite(r.callback)&&finite(r.start)?r.callback-r.start:null)),
   dropped_steps:finite(droppedEnd)&&finite(droppedStart)?droppedEnd-droppedStart:null,
-  input_latency:distributionOf(shown.map(x=>x.presented-x.at))};
+  input_latency:distributionOf(shown.map(x=>x.presented-x.at)),
+  // From the event's own timestamp to the page receiving it: time the browser held the event.
+  input_delivery:distributionOf(shown.map(x=>finite(x.delivered)?x.delivered-x.at:null))};
 }
 
 /** Frame metrics as flat names (submission_interval.p95_ms, outcomes.skipped, ...) for summaries. */
@@ -318,7 +320,7 @@ const r=s.raf_diagnostics,i=s.input_latency;let profile=null;
 ${profiling?`try{const p=window.unonePlayerProfile;if(p){const rep=p.report();p.clear();profile={events:rep.events.map(e=>[e.id,e.kind,e.status,e.start_ms,e.wall_ms,e.spans.map(x=>[x.name,x.parent,x.ms])]),overwritten:rep.counts.overwritten??0,abandoned:rep.counts.abandoned??0};}}catch(e){profile={error:String(e.message??e)};}`:''}
 return {error:d.playerError??null,now:performance.now(),visibility:document.visibilityState,focused:document.hasFocus(),dropped_steps_total:s.dropped_steps_total,recorded_total:r.recorded_total,
 rows:(r.samples??[]).map(x=>[x.sequence??null,x.source,x.raf_time_ms,x.start_ms,x.end_ms,x.callback_end_ms,x.snapshot_frame,x.outcome,x.new_snapshot?1:0]),
-inputs:i?.samples?i.samples.map(x=>[x.sequence,x.input_at_ms,x.tick_frame,x.presented_at_ms]):null,input_admitted:i?.admitted??null,profile};})())`;
+inputs:i?.samples?i.samples.map(x=>[x.sequence,x.input_at_ms,x.tick_frame,x.presented_at_ms,x.delivered_at_ms??null]):null,input_admitted:i?.admitted??null,profile};})())`;
 
 // ---------------------------------------------------------------- blank-page control
 
@@ -442,7 +444,7 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
    if(state.error)throw Error(`MEASURE_PLAYER_ERROR: ${state.error}`);
    if(state.missing)throw Error('MEASURE_SCENARIO_NO_FRAMES: this player has no unonePlayerPerformance accessor');
    for(const r of state.rows)rows.set(r[0]??`${r[2]}|${r[3]}|${r[4]}|${r[7]}`,{sequence:r[0],source:r[1],raf:r[2],start:r[3],end:r[4],callback:r[5],frame:r[6],outcome:r[7],fresh:r[8]===1});
-   if(state.inputs===null)inputsReported=false;else for(const x of state.inputs)inputs.set(x[0],{sequence:x[0],at:x[1],frame:x[2],presented:x[3]});
+   if(state.inputs===null)inputsReported=false;else for(const x of state.inputs)inputs.set(x[0],{sequence:x[0],at:x[1],frame:x[2],presented:x[3],delivered:x[4]});
    if(state.profile?.error)profileError??=state.profile.error;
    else if(state.profile){profileFirst??=state.profile;profileLast=state.profile;for(const e of state.profile.events)events.set(e[0],{id:e[0],kind:e[1],status:e[2],start:e[3],wall:e[4],spans:e[5]});}
    foreground.polls++;if(state.visibility!=='visible')foreground.hidden++;if(state.focused!==true)foreground.unfocused++;
@@ -457,11 +459,15 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
   }catch(failure){error=String(failure.message??failure);}
   stopLoop=true;await looping;samplerPaused=false;
   error??=loopError;
+  let longTasks=null;
+  if(first&&last)try{longTasks=JSON.parse(await page.evaluate(`JSON.stringify(window.__unoneMeasure?(window.__unoneMeasure.long_tasks??[]).filter(t=>t.start_ms+t.duration_ms>=${first.now}&&t.start_ms<=${last.now}):null)`,10000));if(!Array.isArray(longTasks))longTasks=null;}catch{}
   const window={name:phase.name,kind:'frames',warmup_ms:phase.warmup_ms,window_ms:phase.window_ms,loop_iterations:iterations,foreground,error};
   if(first&&last){
    window.window={start_ms:first.now,end_ms:last.now};
    window.metrics=frameWindowMetrics({rows:[...rows.values()],inputs:[...inputs.values()],start:first.now,end:last.now,droppedStart:first.dropped_steps_total,droppedEnd:last.dropped_steps_total});
-   if(!inputsReported)window.metrics.input_latency=null;
+   if(!inputsReported){window.metrics.input_latency=null;window.metrics.input_delivery=null;}
+   window.metrics.long_tasks=longTasks?{count:longTasks.length,total_ms:round(longTasks.reduce((sum,t)=>sum+t.duration_ms,0)),max_ms:round(longTasks.reduce((max,t)=>Math.max(max,t.duration_ms),0))}:null;
+   if(longTasks?.length)window.long_tasks=longTasks.slice(0,100).map(t=>({start_ms:round(t.start_ms),duration_ms:round(t.duration_ms)}));
    if(profiling)window.profile=profileError?{error:profileError}:{events:events.size,overwritten:(profileLast?.overwritten??0)-(profileFirst?.overwritten??0),abandoned:(profileLast?.abandoned??0)-(profileFirst?.abandoned??0),spans:profileWindowSummary([...events.values()],last.now-first.now)};
   }
   if(!error){const {row,os}=await checkpoint();window.end=row.metrics;window.os=os;}

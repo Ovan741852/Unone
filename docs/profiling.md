@@ -239,6 +239,8 @@ Per window, `metrics` holds:
 | `raf_interval`, `new_snapshot_interval` | The same over those draws' RAF timestamps, and only over draws that showed a newer world frame. |
 | `draw_sync` | Synchronous drawing time of each completed draw (callback end minus start). |
 | `input_latency` | The player's own input-to-presentation rows inside the window (below). Null on a host that does not report them. |
+| `input_delivery` | Of that, the time from the event's own timestamp to the page receiving it: how long the browser held the event before dispatching it. |
+| `long_tasks` | Main-thread long tasks (over 50 ms, from a `longtask` observer) that overlap the window: count, total and largest, with up to 100 listed in `long_tasks` beside `metrics`. Null when the browser has no observer. A gap with no long task did not block the page's main thread. |
 | `dropped_steps` | Fixed steps the scheduler dropped during the window. |
 | `completed_submissions`, `outcomes`, `rows`, `rows_missing`, `coverage` | Counts, skipped/unknown/error draws, draw rows inside the window, rows lost between reads (0 when stitching was complete), and how much of the window the completed draws span. |
 
@@ -501,7 +503,8 @@ time over the window. The player notes the earliest keyboard, pointer, wheel or
 touch event not yet consumed (passive capture listeners that never change
 routing); the tick that consumes it records its world frame; the first completed
 submission whose presented frame reaches that tick ends the measurement. With
-`includeRafSamples:true` it adds `samples`: `input_at_ms`, `tick_frame`,
+`includeRafSamples:true` it adds `samples`: `input_at_ms`, `delivered_at_ms` (when the page
+received the event; the browser can hold an event after stamping it), `tick_frame`,
 `presented_at_ms`, `latency_ms` and `sequence`. It is not scanout or GPU time.
 
 `includeMemory:true` (also a boolean) adds `memory`: the player's memory owners
