@@ -179,3 +179,14 @@ test('page instrumentation parses, returns what WebAssembly returns and records 
  assert.equal(result.instance,instance);assert.equal(result.module,module);assert.deepEqual(calls,['compileStreaming','instantiate(module)'],'split does exactly compileStreaming then instantiate');
  const row=sandbox.__unoneMeasure.wasm[0];assert.equal(row.api,'instantiateStreaming');assert.equal(row.status,'ok');assert(row.compiled_ms>row.start_ms&&row.end_ms>row.compiled_ms);
 });
+
+test('the server serves the blank control page beside the export, uncached, without touching the export',async()=>{
+ const root=await mkdtemp(path.join(os.tmpdir(),'unone-blank-'));
+ const server=await startServer(root,{});
+ try{
+  const response=await fetch(new URL('/__unone_measure/blank.html',server.url));
+  assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');
+  assert.match(await response.text(),/requestAnimationFrame/);
+  assert.deepEqual(server.take().map(row=>[row.path,row.status]),[['/__unone_measure/blank.html',200]]);
+ }finally{await server.close();await rm(root,{recursive:true,force:true});}
+});

@@ -43,7 +43,7 @@ test('RAF timestamps, newly shown snapshots and submission wall time remain sepa
  assert.equal(r.successful_submission_raf_intervals.p95_ms,16);assert.equal(r.successful_submission_raf_intervals.max_ms,16);assert.equal(r.new_snapshot_raf_intervals.retained,2);assert.equal(r.new_snapshot_raf_intervals.p95_ms,32);
  assert.equal(r.completed_intervals.p95_ms,22,'v1 completion-clock intervals still include startup and repeats');assert.notEqual(r.submit_sync_wall.max_ms,r.callback_sync_wall.max_ms);
  assert.deepEqual(r.raf_diagnostics.source_counts,{manual:0,startup:1,scheduler_raf:5,unknown:0});assert.equal(r.raf_diagnostics.scheduler_raf.repeats,2);
- const rows=r.raf_diagnostics.samples;assert.equal(rows.length,6);assert.deepEqual(rows[2],{source:'scheduler_raf',raf_time_ms:26,start_ms:27,end_ms:40,callback_end_ms:42,snapshot_frame:1,outcome:'completed',new_snapshot:false,regression:false,in_flight:false});
+ const rows=r.raf_diagnostics.samples;assert.equal(rows.length,6);assert.deepEqual(rows[2],{source:'scheduler_raf',raf_time_ms:26,start_ms:27,end_ms:40,callback_end_ms:42,snapshot_frame:1,outcome:'completed',new_snapshot:false,regression:false,in_flight:false,sequence:3});
  assert.equal(rows[0].source,'startup');assert.equal(rows[0].raf_time_ms,null);assert.equal(rows[0].callback_end_ms,null);assert(Object.isFrozen(rows));assert(Object.isFrozen(rows[2]));
  assert.throws(()=>{rows[2].end_ms=999;},TypeError);assert.notEqual(m.snapshot({includeRafSamples:true}).raf_diagnostics.samples[2],rows[2]);assert.equal('samples'in m.snapshot().raf_diagnostics,false);
 });

@@ -11,7 +11,7 @@ const frameOf=n=>Number.isSafeInteger(n)&&n>=0?n:null;
 const known=value=>value?.status==='completed'||value?.status==='skipped';
 const SOURCES=['manual','startup','scheduler_raf','unknown'];
 const OUTCOMES=['completed','skipped','unknown','error','no_submission'];
-const NOMINAL_BUDGET=1000/60,RAF_SOURCE=2,MILESTONE_LIMIT=256;
+const NOMINAL_BUDGET=1000/60,RAF_SOURCE=2,MILESTONE_LIMIT=256,INPUT_PENDING_LIMIT=256;
 function ring(){return {values:new Float64Array(LIMIT),ends:new Float64Array(LIMIT),cursor:0,count:0};}
 function push(r,value,end){if(!finite(value)||value<0||!finite(end))return;r.values[r.cursor]=value;r.ends[r.cursor]=end;r.cursor=(r.cursor+1)%LIMIT;r.count=Math.min(r.count+1,LIMIT);}
 function distribution(r,at,windowMs){
@@ -22,7 +22,27 @@ function distribution(r,at,windowMs){
 }
 export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOrigin=globalThis.performance?.timeOrigin??null}={}){
  const intervals=new Float64Array(LIMIT),ends=new Float64Array(LIMIT),skips=new Float64Array(REASONS.length);
- const successfulRaf=ring(),freshRaf=ring(),submitWall=ring(),callbackWall=ring(),preparationWall=ring(),allRings=[successfulRaf,freshRaf,submitWall,callbackWall,preparationWall];
+ const successfulRaf=ring(),freshRaf=ring(),submitWall=ring(),callbackWall=ring(),preparationWall=ring(),inputLatency=ring(),allRings=[successfulRaf,freshRaf,submitWall,callbackWall,preparationWall,inputLatency];
+ // Input to presentation: the earliest browser input a tick consumed, until the first completed
+ // submission whose presented world frame reached that tick. One row per tick that consumed input.
+ const pendingInputs=[],inputAt=new Float64Array(LIMIT),inputFrame=new Float64Array(LIMIT),inputShown=new Float64Array(LIMIT),inputSequence=new Float64Array(LIMIT);
+ let inputCursor=0,inputCount=0,inputTotal=0,inputsAdmitted=0,inputsDropped=0,unconsumedInputAt=null;
+ // The host notes each browser input event; the next tick takes the earliest one not yet consumed.
+ function noteInput(at){if(unconsumedInputAt===null&&finite(at))unconsumedInputAt=at;}
+ function takeInput(){const at=unconsumedInputAt;unconsumedInputAt=null;return at;}
+ function acceptInput(at,tickFrame){
+  const f=frameOf(tickFrame);if(!finite(at)||f===null)return false;
+  if(pendingInputs.length>=INPUT_PENDING_LIMIT){inputsDropped++;return false;}
+  pendingInputs.push({at,frame:f});inputsAdmitted++;return true;
+ }
+ function presentInputs(presentedFrame,at){
+  if(presentedFrame===null||!finite(at))return;
+  while(pendingInputs.length&&pendingInputs[0].frame<=presentedFrame){
+   const row=pendingInputs.shift(),i=inputCursor;push(inputLatency,at-row.at,at);
+   inputCursor=(inputCursor+1)%LIMIT;inputCount=Math.min(inputCount+1,LIMIT);inputTotal++;
+   inputAt[i]=row.at;inputFrame[i]=row.frame;inputShown[i]=at;inputSequence[i]=inputTotal;
+  }
+ }
  const rowSource=new Uint8Array(LIMIT),rowOutcome=new Uint8Array(LIMIT),rowFlags=new Uint8Array(LIMIT),rowRaf=new Float64Array(LIMIT),rowStart=new Float64Array(LIMIT),rowEnd=new Float64Array(LIMIT),rowCallback=new Float64Array(LIMIT),rowFrame=new Float64Array(LIMIT),rowAt=new Float64Array(LIMIT),rowSequence=new Float64Array(LIMIT);
  const sourceCounts=new Float64Array(SOURCES.length),outcomeCounts=new Float64Array(OUTCOMES.length),deadlineCounts=new Float64Array(9);
  let session=0,accepted=0,attempts=0,completed=0,unique=0,unknown=0,errors=0,skipped=0,cursor=0,retained=0,droppedAtStart=0;
@@ -45,7 +65,7 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   while(milestoneNext<milestones.length){const row=milestones[milestoneNext];if(row.frame!==null&&row.frame>presentedFrame)break;
    row.presented_at_ms=finite(at)?at:null;row.presented_frame=presentedFrame;milestoneNext++;}
  }
- function reset(dropped=0){session++;milestones.length=0;milestoneNext=milestoneEngineDropped=milestoneHostDropped=0;accepted=attempts=completed=unique=unknown=errors=skipped=cursor=retained=0;skips.fill(0);droppedAtStart=Number.isSafeInteger(dropped)&&dropped>=0?dropped:0;
+ function reset(dropped=0){session++;milestones.length=0;pendingInputs.length=0;inputCursor=inputCount=inputTotal=inputsAdmitted=inputsDropped=0;milestoneNext=milestoneEngineDropped=milestoneHostDropped=0;accepted=attempts=completed=unique=unknown=errors=skipped=cursor=retained=0;skips.fill(0);droppedAtStart=Number.isSafeInteger(dropped)&&dropped>=0?dropped:0;
   frame=time=published=lastFrame=lastCompleted=null;lastStatus=contract='unknown';lastOutcome=DRAW_UNKNOWN;
   for(const r of allRings)r.cursor=r.count=0;sourceCounts.fill(0);outcomeCounts.fill(0);deadlineCounts.fill(0);rowCursor=rowCount=rowTotal=0;lastRafRow=-1;lastRafSequence=0;
   lastRafTimestamp=highestFrame=lastRafFrame=lastSuccessfulRaf=lastFreshRaf=null;
@@ -86,7 +106,7 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
    contract='available';lastStatus='completed';completed++;const next=frameOf(presentedFrame);
    if(next!==lastFrame){unique++;lastFrame=next;}
    if(lastCompleted!==null&&finite(at)&&at>=lastCompleted){intervals[cursor]=at-lastCompleted;ends[cursor]=at;cursor=(cursor+1)%LIMIT;retained=Math.min(retained+1,LIMIT);}
-   lastCompleted=finite(at)?at:null;result=lastOutcome=DRAW_COMPLETED;outcome=0;presentMarks(next,at);
+   lastCompleted=finite(at)?at:null;result=lastOutcome=DRAW_COMPLETED;outcome=0;presentMarks(next,at);presentInputs(next,at);
   }
   submitted(source,outcome,rafTime,startAt,inFlight,at,presentedFrame,budgetMs);return result;
  }
@@ -100,6 +120,15 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   if(tag!==session)return false;preparations++;if(cancelled===true)preparationCancelled++;if(Number.isSafeInteger(steps)&&steps>=0)preparationSteps+=steps;else preparationUnknownSteps++;
   if(cancelled!==true){if(finite(start)&&finite(end)&&end>=start)push(preparationWall,end-start,end);deadline(2,rafTime,end,budgetMs);}return true;
  }
+ function inputReport(at,windowMs,includeSamples){
+  let rows=null;
+  if(includeSamples){rows=[];const first=(inputCursor-inputCount+LIMIT)%LIMIT;
+   for(let j=0;j<inputCount;j++){const i=(first+j)%LIMIT;if(inputShown[i]<at-windowMs)continue;
+    rows.push(Object.freeze({input_at_ms:inputAt[i],tick_frame:inputFrame[i],presented_at_ms:inputShown[i],latency_ms:inputShown[i]-inputAt[i],sequence:inputSequence[i]}));}}
+  return Object.freeze({admitted:inputsAdmitted,presented:inputTotal,pending:pendingInputs.length,dropped:inputsDropped,capacity:LIMIT,
+   distribution:distribution(inputLatency,at,windowMs),...(rows?{samples:Object.freeze(rows)}:{}),
+   scope:'Earliest browser input event (keyboard, pointer, wheel, touch) each tick consumed, to the first completed submission whose presented world frame reached that tick. Host-only effects such as UI scroll are timed to the same submission. Not display scanout or GPU completion.'});
+ }
  function report(options={}){
   const {droppedSteps=null,paused=false,backend=null,windowMs=5000}=options,includeRafSamples=Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false;
   if(!finite(windowMs)||windowMs<=0||windowMs>60000)throw Error('PLAYER_PERFORMANCE_WINDOW_INVALID');
@@ -111,7 +140,7 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   const sources={},outcomes={};for(let i=0;i<SOURCES.length;i++)sources[SOURCES[i]]=sourceCounts[i];for(let i=0;i<OUTCOMES.length;i++)outcomes[OUTCOMES[i]]=outcomeCounts[i];
   let windowRows=0;const samples=includeRafSamples?[]:null,first=(rowCursor-rowCount+LIMIT)%LIMIT;
   for(let j=0;j<rowCount;j++){const i=(first+j)%LIMIT;if(rowAt[i]<at-windowMs)continue;windowRows++;if(!samples)continue;
-   samples.push(Object.freeze({source:SOURCES[rowSource[i]],raf_time_ms:finite(rowRaf[i])?rowRaf[i]:null,start_ms:finite(rowStart[i])?rowStart[i]:null,end_ms:finite(rowEnd[i])?rowEnd[i]:null,callback_end_ms:finite(rowCallback[i])?rowCallback[i]:null,snapshot_frame:finite(rowFrame[i])?rowFrame[i]:null,outcome:OUTCOMES[rowOutcome[i]],new_snapshot:Boolean(rowFlags[i]&1),regression:Boolean(rowFlags[i]&2),in_flight:Boolean(rowFlags[i]&4)}));
+   samples.push(Object.freeze({source:SOURCES[rowSource[i]],raf_time_ms:finite(rowRaf[i])?rowRaf[i]:null,start_ms:finite(rowStart[i])?rowStart[i]:null,end_ms:finite(rowEnd[i])?rowEnd[i]:null,callback_end_ms:finite(rowCallback[i])?rowCallback[i]:null,snapshot_frame:finite(rowFrame[i])?rowFrame[i]:null,outcome:OUTCOMES[rowOutcome[i]],new_snapshot:Boolean(rowFlags[i]&1),regression:Boolean(rowFlags[i]&2),in_flight:Boolean(rowFlags[i]&4),sequence:rowSequence[i]}));
   }
   const nominal={scope:'Nominal RAF timestamp plus supplied budget; wall-time diagnostics, not GPU, OS compositor or presentation deadlines.',budget_ms_last:lastBudget};
   for(const [i,name]of ['submission','callback','preparation'].entries())nominal[name]=Object.freeze({eligible:deadlineCounts[i*3],missed:deadlineCounts[i*3+1],unknown:deadlineCounts[i*3+2]});
@@ -129,12 +158,13 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
     callbacks,callbacks_in_flight:callbackInFlight,preparations,preparation_cancelled:preparationCancelled,preparation_steps:preparationSteps,preparation_unknown_steps:preparationUnknownSteps,
     wall_scope:'Submission/callback pacing wall statistics cover scheduler RAF only; startup/manual draws remain explicit source counters and optional rows.',preparation_wall_scope:'Active non-cancelled preparation spans only; cancelled spans retain step/count counters but have no active nominal deadline.',
     nominal_deadlines:Object.freeze(nominal),...(samples?{samples:Object.freeze(samples)}:{})}),
+   input_latency:inputReport(at,windowMs,includeRafSamples),
    milestones:Object.freeze({capacity:MILESTONE_LIMIT,recorded:milestones.length,engine_dropped:milestoneEngineDropped,host_dropped:milestoneHostDropped,
     rows:Object.freeze(milestones.map(row=>Object.freeze({...row}))),
     scope:'Game-declared api.profile.mark milestones. accepted_at_ms: main-host acceptance of the snapshot that carried the mark; presented_at_ms: first completed submission whose presented world frame reached the mark frame. Same clock as publication_at_ms; the game owns what a milestone means.'}),
    semantics:'Completed synchronous world, UI and cursor submission; repeated snapshot redraws count separately. RAF intervals use browser callback timestamps; new-snapshot RAF intervals require a globally first shown valid advancing frame. Wall/preparation/nominal-deadline diagnostics are not GPU scanout or an FPS guarantee.'});
  }
- return Object.freeze({accept,reset,attempt(){attempts++;},finish,outcome:()=>lastOutcome,error,rafEnd,epoch:()=>session,preparationEnd,snapshot:report});
+ return Object.freeze({accept,noteInput,takeInput,acceptInput,reset,attempt(){attempts++;},finish,outcome:()=>lastOutcome,error,rafEnd,epoch:()=>session,preparationEnd,snapshot:report});
 }
 // A configurable owned property permits page teardown/reinitialization. Never
 // replace another script's existing public name; removal checks identity.

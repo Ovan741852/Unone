@@ -2,7 +2,7 @@
 // OS process memory parsing and the round/trend bookkeeping, driven against a fake page.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {SCENARIO_SCHEMA,parseScenario,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario} from './measure-web-scenario.mjs';
+import {SCENARIO_SCHEMA,parseScenario,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario,distributionOf,frameWindowMetrics,flattenFrames,profileWindowSummary,measureBlank,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 import {parseArgs,scenarioSummary,scenarioConsole} from './measure-web-export.mjs';
 
 const roundTrip={schema:SCENARIO_SCHEMA,name:'city-tech-bag',start_mark:'city.interactive',
@@ -165,4 +165,104 @@ test('--scenario makes startup runs opt-in and checks its run count',()=>{
  assert.equal(parseArgs(base).scenarioRuns,0,'no scenario, no scenario runs');
  assert.throws(()=>parseArgs([...base,'--scenario','s.json','--scenario-runs','0']),/--scenario-runs must be an integer 1\.\.100/);
  assert.throws(()=>parseArgs([...base,'--cold','0','--warm','0','--profile-pairs','0']),/nothing to measure/);
+});
+
+// ---------------------------------------------------------------- frame windows
+
+const frameScenario={schema:SCENARIO_SCHEMA,name:'frames',start_mark:'city.interactive',phases:[
+ {name:'map-drag',setup:[{key:'KeyM'},{wait_mark:'map.interactive'}],loop:[{drag:{from:[100,100],to:[300,100],ms:64}},{wheel:{at:[50,50],dy:120,count:2,interval_ms:0}}],warmup_ms:0,window_ms:1000}]};
+
+test('a frame window phase runs setup once and repeats a loop that cannot wait for milestones',()=>{
+ const s=parseScenario(JSON.stringify(frameScenario)),phase=s.phases[0];
+ assert.deepEqual([phase.kind,phase.warmup_ms,phase.window_ms,phase.setup.length],['frames',0,1000,2]);
+ assert.deepEqual(phase.loop[0],{kind:'drag',from:[100,100],to:[300,100],ms:64,moves:4});
+ assert.deepEqual(phase.loop[1],{kind:'wheel',at:[50,50],dx:0,dy:120,count:2,interval_ms:0});
+ assert.equal(parseScenario(JSON.stringify({...frameScenario,phases:[{name:'idle',loop:[{wait_ms:100}],window_ms:30000}]})).phases[0].warmup_ms,3000);
+ const bad=(phase,pattern)=>assert.throws(()=>parseScenario(JSON.stringify({...frameScenario,phases:[phase]})),pattern);
+ bad({name:'x',loop:[{wait_mark:'a'}],window_ms:1000},/loop\[0\]: a frame window loop repeats an unknown number of times/);
+ bad({name:'x',loop:[{wait_ms:1}],window_ms:500},/window_ms: whole number 1000\.\.600000/);
+ bad({name:'x',loop:[{wait_ms:1}],window_ms:1000,rounds:2},/rounds: unknown field for a frame window phase/);
+ bad({name:'x',steps:[{wait_ms:1}],rounds:1,loop:[]},/loop: unknown field for a round phase/);
+ bad({name:'x',loop:[{drag:{from:[1,1]}}],window_ms:1000},/from and to are \[x, y\]/);
+ bad({name:'x',loop:[{wheel:{at:[1,1],dy:20000}}],window_ms:1000},/dy: a pixel delta within ±10000/);
+ bad({name:'x',loop:[{wheel:{at:[1,1],speed:2}}],window_ms:1000},/wheel\.speed: unknown field/);
+});
+
+test('window values are nearest-rank percentiles with counts of gaps over 50 and 100 ms',()=>{
+ assert.deepEqual(distributionOf([16,17,16,120,60,16,null]),{n:6,p50_ms:16,p95_ms:120,p99_ms:120,max_ms:120});
+ assert.deepEqual(distributionOf([16,17,16,120,60,16],{gaps:true}).over_50ms,2);
+ assert.deepEqual(distributionOf([16,17,16,120,60,16],{gaps:true}).over_100ms,1);
+ assert.deepEqual(distributionOf([]),{n:0,p50_ms:null,p95_ms:null,p99_ms:null,max_ms:null});
+});
+
+test('a frame window uses completed scheduler draws inside it and counts missing rows and outcomes',()=>{
+ const row=(sequence,end,{outcome='completed',source='scheduler_raf',fresh=true,start=end-4,callback=end+1}={})=>({sequence,source,raf:end-5,start,end,callback,frame:sequence,outcome,fresh});
+ const rows=[row(1,90),row(2,100),row(3,117),row(5,150,{fresh:false}),row(6,267),row(7,284,{outcome:'skipped'}),row(8,300,{source:'manual'}),row(9,500)];
+ const m=frameWindowMetrics({rows,inputs:[{at:95,presented:117},{at:140,presented:150},{at:10,presented:20}],start:100,end:400,droppedStart:3,droppedEnd:5});
+ assert.deepEqual([m.completed_submissions,m.rows,m.rows_missing,m.dropped_steps],[4,6,1,2]);
+ assert.deepEqual(m.outcomes,{completed:5,skipped:1});
+ assert.deepEqual(m.submission_interval,{n:3,p50_ms:33,p95_ms:117,p99_ms:117,max_ms:117,over_50ms:1,over_100ms:1});
+ assert.equal(m.new_snapshot_interval.n,2,'only draws that showed a new snapshot (150 did not)');
+ assert.deepEqual([m.draw_sync.p50_ms,m.input_latency.n,m.input_latency.max_ms],[5,2,22]);
+ assert.equal(m.coverage,round3((267-100)/300));
+ assert.deepEqual(flattenFrames(m)['submission_interval.over_50ms'],1);
+ assert.equal(flattenFrames(m)['outcomes.skipped'],1);
+ assert.equal(flattenFrames(m).completed_submissions,4);
+});
+const round3=n=>Math.round(n*1000)/1000;
+
+test('profiler events become per-span totals with their parents, largest first',()=>{
+ const events=[{kind:'update',wall:10,spans:[['backend_request',null,7],['execute','backend_request',6]]},{kind:'update',wall:12,spans:[['backend_request',null,9]]},{kind:'draw',wall:3,spans:[['ui_draw',null,2]]}];
+ const spans=profileWindowSummary(events,100);
+ assert.deepEqual(spans.map(s=>s.key),['update','update > backend_request','update > backend_request > execute','draw','draw > ui_draw']);
+ assert.deepEqual(spans[1],{key:'update > backend_request',count:2,total_ms:16,share_of_window:0.16,p50_ms:7,p95_ms:9,max_ms:9});
+});
+
+test('the blank control records the empty page\'s RAF cadence after its warmup',async()=>{
+ const calls=[];const stamps=[0,16,33,50,170,186];let nows=0;
+ const page={send:async(method,params)=>{calls.push([method,params?.url]);return {};},
+  evaluate:async expression=>{if(expression.startsWith('Boolean'))return true;if(expression.includes('now()'))return nows++===0?0:200;
+   if(expression.includes('take('))return JSON.stringify(stamps);return JSON.stringify({visibility:'visible',focused:true});}};
+ const blank=await measureBlank(page,'http://127.0.0.1:1/__unone_measure/blank.html',{warmupMs:0,windowMs:1});
+ assert.deepEqual(calls[0],['Page.navigate','http://127.0.0.1:1/__unone_measure/blank.html']);
+ assert.deepEqual([blank.frames,blank.window_ms,blank.raf_interval.max_ms,blank.raf_interval.over_100ms,blank.foreground.visibility],[6,200,120,1,'visible']);
+ assert.equal(BLANK_PATH,'/__unone_measure/blank.html');assert.match(BLANK_HTML,/requestAnimationFrame/);
+});
+
+test('a frame window pauses memory sampling, drives the loop and reads draw and input rows by sequence',async()=>{
+ const scenario=parseScenario(JSON.stringify({...frameScenario,sample_ms:50,settle_ms:0}));
+ const {page,state}=fakePage({marksFor:{KeyM:'map.interactive'}});
+ const sent=[];const rows=[];let sequence=0,frameReads=0;const frameTimes=[],sampleTimes=[];
+ const original=page.evaluate,originalSend=page.send;
+ page.send=async(method,params)=>{if(method==='Input.dispatchMouseEvent')sent.push(params.type);return originalSend(method,params);};
+ page.evaluate=async expression=>{
+  if(expression.includes('includeRafSamples:true')){
+   frameReads++;const now=performance.now();frameTimes.push(now);
+   while(rows.length===0||rows[rows.length-1][4]<now-16.7){const end=rows.length?rows[rows.length-1][4]+16.7:now-2000;rows.push([++sequence,'scheduler_raf',end-5,end-4,end,end+1,sequence,'completed',1]);}
+   return JSON.stringify({error:null,now,visibility:'visible',focused:true,dropped_steps_total:frameReads,recorded_total:sequence,rows:rows.filter(r=>r[4]>=now-4000),inputs:[[frameReads,now-30,frameReads,now-10]],input_admitted:frameReads,profile:null});
+  }
+  if(expression.includes('includeMemory:true'))sampleTimes.push(performance.now());
+  return original(expression);
+ };
+ const result=await runScenario(page,scenario,{pollMs:1,framePollMs:250});
+ assert.equal(result.ok,true,result.error);
+ const window=result.phases[0];
+ assert.equal(window.kind,'frames');
+ assert.ok(window.loop_iterations>=1,'the loop ran');
+ assert.ok(sent.includes('mousePressed')&&sent.includes('mouseReleased')&&sent.includes('mouseWheel'));
+ assert.ok(window.metrics.completed_submissions>=50,'rows stitched across polls');
+ assert.equal(window.metrics.rows_missing,0);
+ assert.ok(window.metrics.submission_interval.p95_ms<17&&window.metrics.submission_interval.over_50ms===0);
+ assert.ok(window.metrics.input_latency.n>=3);
+ assert.ok(window.metrics.dropped_steps>=3,'dropped steps are the window delta');
+ assert.deepEqual([window.foreground.hidden,window.foreground.unfocused],[0,0]);
+ assert.ok(window.end['images.decoded.resident.entries']>=1,'a memory checkpoint after the window');
+ assert.equal(sampleTimes.filter(t=>t>frameTimes[0]&&t<frameTimes[frameTimes.length-1]).length,0,'no memory read between the first and last frame read of the window');
+ assert.equal(result.phases[0].trend,undefined);
+});
+
+test('--scenario-profile adds a diagnostic run and --no-blank-control skips the control',()=>{
+ const base=['--export','e','--output','o.json','--scenario','s.json'];
+ assert.deepEqual([parseArgs(base).scenarioProfile,parseArgs(base).blankControl],[false,true]);
+ const o=parseArgs([...base,'--scenario-profile','--no-blank-control']);assert.deepEqual([o.scenarioProfile,o.blankControl],[true,false]);
 });

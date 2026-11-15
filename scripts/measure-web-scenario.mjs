@@ -8,6 +8,11 @@
 // checkpoints a sampler reads the player and the heap every sample_ms, so a round's peak is the
 // largest sampled value, not a continuous high-water mark (the OS peak working set is one).
 // Nothing forces a garbage collection and nothing is added across owners or processes.
+//
+// A frame window phase runs its setup once, then repeats a loop (keys, taps, drags, wheel) through a
+// warmup and a measured window while it reads the player's own draw and input rows and stitches them
+// by sequence: submission and RAF intervals, gaps over 50/100 ms, dropped steps, input-to-presentation.
+// A blank page measured first in the same browser gives the browser's own cadence.
 import {spawn} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 
@@ -39,11 +44,17 @@ export function keyFields(code){
 // ---------------------------------------------------------------- scenario file
 
 const TOP_KEYS=['schema','name','description','start_mark','phases','settle_ms','sample_ms','step_timeout_ms'];
-const PHASE_KEYS=['name','warmup_rounds','rounds','steps'];
-const STEP_KINDS=['key','tap','wait_mark','wait_ms'];
-const STEP_KEYS={key:['key','hold_ms'],tap:['tap','hold_ms'],wait_mark:['wait_mark','timeout_ms'],wait_ms:['wait_ms']};
+const ROUND_KEYS=['name','warmup_rounds','rounds','steps'];
+const FRAME_KEYS=['name','setup','loop','warmup_ms','window_ms'];
+const STEP_KINDS=['key','tap','drag','wheel','wait_mark','wait_ms'];
+const STEP_KEYS={key:['key','hold_ms'],tap:['tap','hold_ms'],drag:['drag'],wheel:['wheel'],wait_mark:['wait_mark','timeout_ms'],wait_ms:['wait_ms']};
+const point=value=>Array.isArray(value)&&value.length===2&&value.every(n=>finite(n)&&n>=0&&n<=100000);
 
-/** Parse and check a scenario file's text; every problem is MEASURE_SCENARIO_INVALID with where it is. */
+/**
+ * Parse and check a scenario file's text; every problem is MEASURE_SCENARIO_INVALID with where it is.
+ * A phase either repeats `steps` for warmup_rounds + rounds (memory rounds), or runs `setup` once and
+ * then repeats `loop` through warmup_ms and a measured window_ms (a frame window).
+ */
 export function parseScenario(text){
  const fail=(where,why)=>{throw Error(`MEASURE_SCENARIO_INVALID: ${where}: ${why}`);};
  let s;try{s=JSON.parse(text);}catch(error){fail('file',`not JSON (${error.message})`);}
@@ -57,28 +68,53 @@ export function parseScenario(text){
  const settleMs=whole(s.settle_ms,'settle_ms',0,600000,10000),sampleMs=whole(s.sample_ms,'sample_ms',50,60000,250),stepTimeoutMs=whole(s.step_timeout_ms,'step_timeout_ms',100,600000,15000);
  if(!Array.isArray(s.phases)||s.phases.length<1||s.phases.length>16)fail('phases','1-16 phases');
  const names=new Set();let markWaits=0;
+ const parseStep=(step,where,{marks,repeats})=>{
+  if(!step||typeof step!=='object'||Array.isArray(step))fail(where,'must be an object');
+  const kinds=STEP_KINDS.filter(kind=>Object.hasOwn(step,kind));
+  if(kinds.length!==1)fail(where,`exactly one of ${STEP_KINDS.join(', ')}`);
+  const kind=kinds[0];
+  for(const key of Object.keys(step))if(!STEP_KEYS[kind].includes(key))fail(`${where}.${key}`,`not allowed on a ${kind} step (allowed: ${STEP_KEYS[kind].join(', ')})`);
+  if(kind==='key'){if(!keyFields(step.key))fail(`${where}.key`,'a KeyboardEvent.code such as KeyT, Digit1, Escape, Enter, Space, ArrowLeft or F1');return Object.freeze({kind,key:step.key,hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
+  if(kind==='tap'){if(!point(step.tap))fail(`${where}.tap`,'[x, y] in CSS pixels from the top-left of the viewport');return Object.freeze({kind,tap:Object.freeze([...step.tap]),hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
+  if(kind==='drag'){
+   const d=step.drag;
+   if(!d||typeof d!=='object'||Array.isArray(d))fail(`${where}.drag`,'{from:[x,y], to:[x,y], ms?, moves?}');
+   for(const key of Object.keys(d))if(!['from','to','ms','moves'].includes(key))fail(`${where}.drag.${key}`,'unknown field (allowed: from, to, ms, moves)');
+   if(!point(d.from)||!point(d.to))fail(`${where}.drag`,'from and to are [x, y] in CSS pixels');
+   const ms=whole(d.ms,`${where}.drag.ms`,1,60000,500);
+   return Object.freeze({kind,from:Object.freeze([...d.from]),to:Object.freeze([...d.to]),ms,moves:whole(d.moves,`${where}.drag.moves`,1,10000,Math.max(2,Math.round(ms/16)))});
+  }
+  if(kind==='wheel'){
+   const w=step.wheel;
+   if(!w||typeof w!=='object'||Array.isArray(w))fail(`${where}.wheel`,'{at:[x,y], dy?, dx?, count?, interval_ms?}');
+   for(const key of Object.keys(w))if(!['at','dx','dy','count','interval_ms'].includes(key))fail(`${where}.wheel.${key}`,'unknown field (allowed: at, dx, dy, count, interval_ms)');
+   if(!point(w.at))fail(`${where}.wheel.at`,'[x, y] in CSS pixels');
+   for(const axis of ['dx','dy'])if(w[axis]!==undefined&&(!finite(w[axis])||Math.abs(w[axis])>10000))fail(`${where}.wheel.${axis}`,'a pixel delta within ±10000');
+   return Object.freeze({kind,at:Object.freeze([...w.at]),dx:w.dx??0,dy:w.dy??0,count:whole(w.count,`${where}.wheel.count`,1,1000,1),interval_ms:whole(w.interval_ms,`${where}.wheel.interval_ms`,0,10000,16)});
+  }
+  if(kind==='wait_mark'){
+   if(!marks)fail(where,'a frame window loop repeats an unknown number of times, so it cannot wait for milestones; wait in setup');
+   if(!printable(step.wait_mark))fail(`${where}.wait_mark`,'the name the game passes to api.profile.mark');
+   markWaits+=repeats;return Object.freeze({kind,wait_mark:step.wait_mark,timeout_ms:whole(step.timeout_ms,`${where}.timeout_ms`,100,600000,stepTimeoutMs)});
+  }
+  return Object.freeze({kind,wait_ms:whole(step.wait_ms,`${where}.wait_ms`,0,600000,undefined)});
+ };
+ const steps=(list,where,limits,min=1)=>{if(!Array.isArray(list)||list.length<min||list.length>64)fail(where,`${min}-64 steps`);return Object.freeze(list.map((step,i)=>parseStep(step,`${where}[${i}]`,limits)));};
  const phases=s.phases.map((phase,p)=>{
   const at=`phases[${p}]`;
   if(!phase||typeof phase!=='object'||Array.isArray(phase))fail(at,'must be an object');
-  for(const key of Object.keys(phase))if(!PHASE_KEYS.includes(key))fail(`${at}.${key}`,`unknown field (allowed: ${PHASE_KEYS.join(', ')})`);
+  const frames=Object.hasOwn(phase,'window_ms'),allowed=frames?FRAME_KEYS:ROUND_KEYS;
+  for(const key of Object.keys(phase))if(!allowed.includes(key))fail(`${at}.${key}`,`unknown field for a ${frames?'frame window':'round'} phase (allowed: ${allowed.join(', ')})`);
   if(!printable(phase.name)||phase.name==='settle')fail(`${at}.name`,'1-64 printable characters, not "settle"');
   if(names.has(phase.name))fail(`${at}.name`,`"${phase.name}" is used twice`);names.add(phase.name);
+  if(frames){
+   const windowMs=whole(phase.window_ms,`${at}.window_ms`,1000,600000,undefined);
+   return Object.freeze({name:phase.name,kind:'frames',setup:phase.setup===undefined?Object.freeze([]):steps(phase.setup,`${at}.setup`,{marks:true,repeats:1},0),
+    loop:steps(phase.loop,`${at}.loop`,{marks:false}),warmup_ms:whole(phase.warmup_ms,`${at}.warmup_ms`,0,600000,3000),window_ms:windowMs});
+  }
   const warmup=whole(phase.warmup_rounds,`${at}.warmup_rounds`,0,100,0),rounds=whole(phase.rounds,`${at}.rounds`,1,1000,undefined);
   if(rounds===undefined)fail(`${at}.rounds`,'required');
-  if(!Array.isArray(phase.steps)||phase.steps.length<1||phase.steps.length>64)fail(`${at}.steps`,'1-64 steps');
-  const steps=phase.steps.map((step,i)=>{
-   const where=`${at}.steps[${i}]`;
-   if(!step||typeof step!=='object'||Array.isArray(step))fail(where,'must be an object');
-   const kinds=STEP_KINDS.filter(kind=>Object.hasOwn(step,kind));
-   if(kinds.length!==1)fail(where,`exactly one of ${STEP_KINDS.join(', ')}`);
-   const kind=kinds[0];
-   for(const key of Object.keys(step))if(!STEP_KEYS[kind].includes(key))fail(`${where}.${key}`,`not allowed on a ${kind} step (allowed: ${STEP_KEYS[kind].join(', ')})`);
-   if(kind==='key'){if(!keyFields(step.key))fail(`${where}.key`,'a KeyboardEvent.code such as KeyT, Digit1, Escape, Enter, Space, ArrowLeft or F1');return Object.freeze({kind,key:step.key,hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
-   if(kind==='tap'){const t=step.tap;if(!Array.isArray(t)||t.length!==2||!t.every(n=>finite(n)&&n>=0&&n<=100000))fail(`${where}.tap`,'[x, y] in CSS pixels from the top-left of the viewport');return Object.freeze({kind,tap:Object.freeze([...t]),hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
-   if(kind==='wait_mark'){if(!printable(step.wait_mark))fail(`${where}.wait_mark`,'the name the game passes to api.profile.mark');markWaits+=warmup+rounds;return Object.freeze({kind,wait_mark:step.wait_mark,timeout_ms:whole(step.timeout_ms,`${where}.timeout_ms`,100,600000,stepTimeoutMs)});}
-   return Object.freeze({kind,wait_ms:whole(step.wait_ms,`${where}.wait_ms`,0,600000,undefined)});
-  });
-  return Object.freeze({name:phase.name,warmup_rounds:warmup,rounds,steps:Object.freeze(steps)});
+  return Object.freeze({name:phase.name,kind:'rounds',warmup_rounds:warmup,rounds,steps:steps(phase.steps,`${at}.steps`,{marks:true,repeats:warmup+rounds})});
  });
  // The engine keeps a run's first 256 marks and the player's milestone table holds 256 rows.
  if(markWaits+(s.start_mark?1:0)>256)fail('phases',`waits for ${markWaits} milestones across all rounds; a run records at most 256 api.profile.mark calls, so use fewer rounds or fewer waits`);
@@ -218,6 +254,96 @@ export function phaseTrends(rounds){
  return {rounds:measured.length,end,peak};
 }
 
+// ---------------------------------------------------------------- frame windows
+
+const quantile=(sorted,p)=>sorted.length?sorted[Math.ceil(sorted.length*p)-1]:null;
+
+/** Nearest-rank p50/p95/p99 and max over one window's values; with gaps, how many exceed 50 and 100 ms. */
+export function distributionOf(values,{gaps=false}={}){
+ const xs=values.filter(finite).sort((a,b)=>a-b);
+ return {n:xs.length,p50_ms:round(quantile(xs,.5)),p95_ms:round(quantile(xs,.95)),p99_ms:round(quantile(xs,.99)),max_ms:round(xs.length?xs[xs.length-1]:null),
+  ...(gaps?{over_50ms:xs.filter(x=>x>50).length,over_100ms:xs.filter(x=>x>100).length}:{})};
+}
+
+/**
+ * One frame window from the player's own draw and input rows (stitched across polls by sequence),
+ * on the page clock between `start` and `end`. Submission intervals are completed scheduler draws'
+ * end times; RAF and new-snapshot intervals use those draws' RAF timestamps, as the player does.
+ */
+export function frameWindowMetrics({rows,inputs=[],start,end,droppedStart=null,droppedEnd=null}){
+ const at=r=>finite(r.end)?r.end:r.callback;
+ const inWindow=rows.filter(r=>finite(at(r))&&at(r)>=start&&at(r)<=end);
+ const completed=inWindow.filter(r=>r.source==='scheduler_raf'&&r.outcome==='completed').sort((a,b)=>a.end-b.end);
+ const diffs=(list,key)=>{const out=[];for(let i=1;i<list.length;i++){const a=list[i-1][key],b=list[i][key];if(finite(a)&&finite(b)&&b>=a)out.push(b-a);}return out;};
+ const outcomes={};for(const r of inWindow)outcomes[r.outcome]=(outcomes[r.outcome]??0)+1;
+ const sequences=inWindow.map(r=>r.sequence).filter(Number.isSafeInteger);
+ const missing=sequences.length?Math.max(...sequences)-Math.min(...sequences)+1-new Set(sequences).size:null;
+ const shown=inputs.filter(x=>finite(x.presented)&&x.presented>=start&&x.presented<=end);
+ return {window_ms:round(end-start),completed_submissions:completed.length,
+  coverage:completed.length>=2?round((completed[completed.length-1].end-completed[0].end)/(end-start)):0,
+  rows:inWindow.length,rows_missing:missing,outcomes,
+  submission_interval:distributionOf(diffs(completed,'end'),{gaps:true}),
+  raf_interval:distributionOf(diffs(completed,'raf'),{gaps:true}),
+  new_snapshot_interval:distributionOf(diffs(completed.filter(r=>r.fresh),'raf'),{gaps:true}),
+  draw_sync:distributionOf(completed.map(r=>finite(r.callback)&&finite(r.start)?r.callback-r.start:null)),
+  dropped_steps:finite(droppedEnd)&&finite(droppedStart)?droppedEnd-droppedStart:null,
+  input_latency:distributionOf(shown.map(x=>x.presented-x.at))};
+}
+
+/** Frame metrics as flat names (submission_interval.p95_ms, outcomes.skipped, ...) for summaries. */
+export function flattenFrames(metrics){
+ const out={};
+ for(const [name,value] of Object.entries(metrics??{})){
+  if(finite(value))out[name]=value;
+  else if(value&&typeof value==='object')for(const [field,inner] of Object.entries(value))if(finite(inner))out[`${name}.${field}`]=inner;
+ }
+ return out;
+}
+
+/** Profiler events of one window, per event kind and per span (with its parent), largest total first. */
+export function profileWindowSummary(events,windowMs){
+ const groups=new Map(),add=(key,ms)=>{if(!finite(ms))return;let list=groups.get(key);if(!list)groups.set(key,list=[]);list.push(ms);};
+ for(const e of events){add(e.kind,e.wall);for(const [name,parent,ms] of e.spans??[])add(`${e.kind} > ${parent?`${parent} > `:''}${name}`,ms);}
+ return [...groups].map(([key,values])=>{const xs=values.sort((a,b)=>a-b),total=xs.reduce((a,b)=>a+b,0);
+  return {key,count:xs.length,total_ms:round(total),share_of_window:round(total/windowMs),p50_ms:round(quantile(xs,.5)),p95_ms:round(quantile(xs,.95)),max_ms:round(xs[xs.length-1])};})
+  .sort((a,b)=>b.total_ms-a.total_ms);
+}
+
+// The player's draw and input rows over the last windowMs, plus the profiler's events when asked.
+// Reading the profiler clears it, so consecutive reads never repeat an event.
+const frameSource=(windowMs,profiling)=>`JSON.stringify((()=>{const d=document.body?.dataset??{};let s=null;
+try{s=window.unonePlayerPerformance?.snapshot({windowMs:${Number(windowMs)},includeRafSamples:true})??null;}catch(e){return {error:String(e.message??e)};}
+if(!s)return {error:d.playerError??null,missing:true,now:performance.now()};
+const r=s.raf_diagnostics,i=s.input_latency;let profile=null;
+${profiling?`try{const p=window.unonePlayerProfile;if(p){const rep=p.report();p.clear();profile={events:rep.events.map(e=>[e.id,e.kind,e.status,e.start_ms,e.wall_ms,e.spans.map(x=>[x.name,x.parent,x.ms])]),overwritten:rep.counts.overwritten??0,abandoned:rep.counts.abandoned??0};}}catch(e){profile={error:String(e.message??e)};}`:''}
+return {error:d.playerError??null,now:performance.now(),visibility:document.visibilityState,focused:document.hasFocus(),dropped_steps_total:s.dropped_steps_total,recorded_total:r.recorded_total,
+rows:(r.samples??[]).map(x=>[x.sequence??null,x.source,x.raf_time_ms,x.start_ms,x.end_ms,x.callback_end_ms,x.snapshot_frame,x.outcome,x.new_snapshot?1:0]),
+inputs:i?.samples?i.samples.map(x=>[x.sequence,x.input_at_ms,x.tick_frame,x.presented_at_ms]):null,input_admitted:i?.admitted??null,profile};})())`;
+
+// ---------------------------------------------------------------- blank-page control
+
+export const BLANK_PATH='/__unone_measure/blank.html';
+// An empty page that only records requestAnimationFrame timestamps: the browser's own cadence.
+export const BLANK_HTML=`<!doctype html><html><head><meta charset="utf-8"><title>blank</title><style>html,body{margin:0;height:100%;background:#000}</style></head><body><script>
+(()=>{const t=[];window.__unoneBlank={now:()=>performance.now(),take:(a,b)=>t.filter(x=>x>=a&&x<=b)};
+const f=ts=>{t.push(ts);if(t.length>400000)t.splice(0,200000);requestAnimationFrame(f);};requestAnimationFrame(f);})();
+</script></body></html>`;
+
+/** RAF intervals of the blank page in the same browser and viewport, after warmupMs, over windowMs. */
+export async function measureBlank(page,url,{warmupMs=3000,windowMs}){
+ await page.send('Page.navigate',{url});
+ let ready=false;for(let i=0;i<200&&!ready;i++){try{ready=await page.evaluate('Boolean(window.__unoneBlank)',2000);}catch{}if(!ready)await sleep(50);}
+ if(!ready)throw Error('MEASURE_BLANK_NOT_READY: the blank control page did not load');
+ await sleep(warmupMs);
+ const start=await page.evaluate('window.__unoneBlank.now()');
+ await sleep(windowMs);
+ const end=await page.evaluate('window.__unoneBlank.now()');
+ const stamps=JSON.parse(await page.evaluate(`JSON.stringify(window.__unoneBlank.take(${start},${end}))`,15000));
+ const state=JSON.parse(await page.evaluate('JSON.stringify({visibility:document.visibilityState,focused:document.hasFocus()})'));
+ const intervals=[];for(let i=1;i<stamps.length;i++)intervals.push(stamps[i]-stamps[i-1]);
+ return {path:BLANK_PATH,warmup_ms:warmupMs,window_ms:round(end-start),frames:stamps.length,raf_interval:distributionOf(intervals,{gaps:true}),foreground:state};
+}
+
 // ---------------------------------------------------------------- running a scenario
 
 // One read of the player's memory owners and milestone rows; kept small, it runs every sample_ms.
@@ -242,9 +368,10 @@ const maxMetrics=samples=>{const out={};for(const s of samples)for(const [name,v
  * readOs(): OS process memory or null. Returns the run's rounds, checkpoints, trends and raw samples;
  * a step that fails ends the run with ok:false and keeps what was measured.
  */
-export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()=>performance.now(),pollMs=50}={}){
+export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()=>performance.now(),pollMs=50,framePollMs=2000,profiling=false}={}){
  const t0=clock(),at=()=>round(clock()-t0),samples=[];
- let where={phase:null,round:null},seen=0,stop=false,samplerError=null;
+ // The memory sampler pauses during frame windows: its player reads would land in the frames measured.
+ let where={phase:null,round:null},seen=0,stop=false,samplerError=null,samplerPaused=false;
  const markState=state=>{if(state?.error)throw Error(`MEASURE_PLAYER_ERROR: ${state.error}`);return state?.milestones??null;};
  async function sample(checkpoint=false){
   const t=at(),tag=where;
@@ -254,7 +381,7 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
   const row={t_ms:t,phase:tag.phase,round:tag.round,checkpoint,metrics};samples.push(row);return row;
  }
  async function checkpoint(){const row=await sample(true);const os=readOs?await readOs():null;Object.assign(row.metrics,flattenProcesses(os));return {row,os};}
- const sampler=(async()=>{while(!stop){const began=clock();try{await sample();}catch(error){samplerError??=String(error.message??error);}
+ const sampler=(async()=>{while(!stop){const began=clock();if(!samplerPaused)try{await sample();}catch(error){samplerError??=String(error.message??error);}
   const rest=scenario.sample_ms-(clock()-began);for(let waited=0;!stop&&waited<rest;waited+=50)await sleep(Math.min(50,rest-waited));}})();
  const highestSequence=milestones=>Math.max(0,...(milestones?.rows??[]).map(r=>r[1]??0));
  // The next presented row with this name after sequence `after` (default: the last one a step saw).
@@ -271,28 +398,85 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
   }
  }
  async function pageNow(){return JSON.parse(await page.evaluate(MARK_SOURCE,5000)).now;}
- async function step(s){
+ // timed: read the page clock before a key or tap, for presented_after_input_ms; frame loops skip it.
+ async function step(s,{timed=true}={}){
   const began=clock();
-  if(s.kind==='key'){const fields=keyFields(s.key),input_at_ms=await pageNow();
+  if(s.kind==='key'){const fields=keyFields(s.key),input_at_ms=timed?await pageNow():undefined;
    await page.send('Input.dispatchKeyEvent',{type:'keyDown',...fields});await sleep(s.hold_ms);
    const {text,...up}=fields;await page.send('Input.dispatchKeyEvent',{type:'keyUp',...up});
    return {kind:'key',key:s.key,input_at_ms,ms:round(clock()-began)};}
-  if(s.kind==='tap'){const [x,y]=s.tap,input_at_ms=await pageNow();
+  if(s.kind==='tap'){const [x,y]=s.tap,input_at_ms=timed?await pageNow():undefined;
    await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x,y,button:'none',buttons:0});
    await page.send('Input.dispatchMouseEvent',{type:'mousePressed',x,y,button:'left',buttons:1,clickCount:1});await sleep(s.hold_ms);
    await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',x,y,button:'left',buttons:0,clickCount:1});
    return {kind:'tap',tap:s.tap,input_at_ms,ms:round(clock()-began)};}
+  if(s.kind==='drag'){
+   const [x0,y0]=s.from,[x1,y1]=s.to;
+   await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:x0,y:y0,button:'none',buttons:0});
+   await page.send('Input.dispatchMouseEvent',{type:'mousePressed',x:x0,y:y0,button:'left',buttons:1,clickCount:1});
+   const pressed=clock();
+   for(let i=1;i<=s.moves;i++){const t=i/s.moves;
+    await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:x0+(x1-x0)*t,y:y0+(y1-y0)*t,button:'left',buttons:1});
+    const wait=pressed+s.ms*t-clock();if(wait>0)await sleep(wait);}
+   await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',x:x1,y:y1,button:'left',buttons:0,clickCount:1});
+   return {kind:'drag',ms:round(clock()-began)};}
+  if(s.kind==='wheel'){
+   const [x,y]=s.at;
+   for(let i=0;i<s.count;i++){await page.send('Input.dispatchMouseEvent',{type:'mouseWheel',x,y,deltaX:s.dx,deltaY:s.dy});if(s.interval_ms>0)await sleep(s.interval_ms);}
+   return {kind:'wheel',ms:round(clock()-began)};}
   if(s.kind==='wait_mark'){const mark=await waitMark(s.wait_mark,s.timeout_ms);return {kind:'wait_mark',mark:s.wait_mark,...mark,ms:round(clock()-began)};}
   await sleep(s.wait_ms);return {kind:'wait_ms',ms:round(clock()-began)};
  }
- const result={ok:true,error:null,started_after_mark:scenario.start_mark,phases:[],settled:null,os_supported:null};
+ // A frame window: setup once, then the loop repeats through warmup and the measured window while the
+ // player's draw and input rows are read every framePollMs and stitched by sequence. Then a checkpoint.
+ async function framePhase(phase){
+  where={phase:phase.name,round:null};
+  for(const s of phase.setup)await step(s);
+  samplerPaused=true;
+  let stopLoop=false,iterations=0,loopError=null;
+  const looping=(async()=>{try{while(!stopLoop){for(const s of phase.loop){if(stopLoop)break;await step(s,{timed:false});}iterations++;}}catch(failure){loopError=String(failure.message??failure);}})();
+  const rows=new Map(),inputs=new Map(),events=new Map(),foreground={polls:0,hidden:0,unfocused:0};
+  let profileFirst=null,profileLast=null,profileError=null,inputsReported=true;
+  const poll=async()=>{
+   const state=JSON.parse(await page.evaluate(frameSource(framePollMs*2,profiling),15000));
+   if(state.error)throw Error(`MEASURE_PLAYER_ERROR: ${state.error}`);
+   if(state.missing)throw Error('MEASURE_SCENARIO_NO_FRAMES: this player has no unonePlayerPerformance accessor');
+   for(const r of state.rows)rows.set(r[0]??`${r[2]}|${r[3]}|${r[4]}|${r[7]}`,{sequence:r[0],source:r[1],raf:r[2],start:r[3],end:r[4],callback:r[5],frame:r[6],outcome:r[7],fresh:r[8]===1});
+   if(state.inputs===null)inputsReported=false;else for(const x of state.inputs)inputs.set(x[0],{sequence:x[0],at:x[1],frame:x[2],presented:x[3]});
+   if(state.profile?.error)profileError??=state.profile.error;
+   else if(state.profile){profileFirst??=state.profile;profileLast=state.profile;for(const e of state.profile.events)events.set(e[0],{id:e[0],kind:e[1],status:e[2],start:e[3],wall:e[4],spans:e[5]});}
+   foreground.polls++;if(state.visibility!=='visible')foreground.hidden++;if(state.focused!==true)foreground.unfocused++;
+   return state;
+  };
+  let first=null,last=null,error=null;
+  try{
+   await sleep(phase.warmup_ms);
+   first=await poll();events.clear();
+   const until=clock()+phase.window_ms;
+   while(clock()<until&&!loopError){await sleep(Math.min(framePollMs,Math.max(0,until-clock())));last=await poll();}
+  }catch(failure){error=String(failure.message??failure);}
+  stopLoop=true;await looping;samplerPaused=false;
+  error??=loopError;
+  const window={name:phase.name,kind:'frames',warmup_ms:phase.warmup_ms,window_ms:phase.window_ms,loop_iterations:iterations,foreground,error};
+  if(first&&last){
+   window.window={start_ms:first.now,end_ms:last.now};
+   window.metrics=frameWindowMetrics({rows:[...rows.values()],inputs:[...inputs.values()],start:first.now,end:last.now,droppedStart:first.dropped_steps_total,droppedEnd:last.dropped_steps_total});
+   if(!inputsReported)window.metrics.input_latency=null;
+   if(profiling)window.profile=profileError?{error:profileError}:{events:events.size,overwritten:(profileLast?.overwritten??0)-(profileFirst?.overwritten??0),abandoned:(profileLast?.abandoned??0)-(profileFirst?.abandoned??0),spans:profileWindowSummary([...events.values()],last.now-first.now)};
+  }
+  if(!error){const {row,os}=await checkpoint();window.end=row.metrics;window.os=os;}
+  log(error?`${phase.name}: ${error}`:`${phase.name}: ${window.metrics.completed_submissions} submissions, p95 ${window.metrics.submission_interval.p95_ms} ms, over 50 ms ${window.metrics.submission_interval.over_50ms}`);
+  return window;
+ }
+ const result={ok:true,error:null,started_after_mark:scenario.start_mark,profiling,phases:[],settled:null,os_supported:null};
  try{
   if(readOs){const warm=await readOs();result.os_supported=warm?.supported??false;}
   if(scenario.start_mark)await waitMark(scenario.start_mark,scenario.step_timeout_ms,0);
   seen=highestSequence(markState(JSON.parse(await page.evaluate(MARK_SOURCE,5000))));
   const baseline=await checkpoint();result.baseline={at_ms:baseline.row.t_ms,metrics:baseline.row.metrics,os:baseline.os};
   for(const phase of scenario.phases){
-   const rounds=[];result.phases.push({name:phase.name,rounds});
+   if(phase.kind==='frames'){const window=await framePhase(phase);result.phases.push(window);if(window.error)throw Error(window.error);continue;}
+   const rounds=[];result.phases.push({name:phase.name,kind:'rounds',rounds});
    for(let r=1;r<=phase.warmup_rounds+phase.rounds;r++){
     const warmup=r<=phase.warmup_rounds,index=warmup?r:r-phase.warmup_rounds;
     where={phase:warmup?`${phase.name}:warmup`:phase.name,round:index};
@@ -314,7 +498,7 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
   result.settled={after_ms:scenario.settle_ms,metrics:row.metrics,peak:maxMetrics(samples.slice(settleFrom).filter(s=>s.phase==='settle')),os};
  }catch(error){result.ok=false;result.error=String(error.message??error);}
  finally{stop=true;await sampler;}
- for(const phase of result.phases)phase.trend=phaseTrends(phase.rounds);
+ for(const phase of result.phases)if(phase.kind==='rounds')phase.trend=phaseTrends(phase.rounds);
  result.sampler_error=samplerError;
  result.samples=columns(samples);
  return result;

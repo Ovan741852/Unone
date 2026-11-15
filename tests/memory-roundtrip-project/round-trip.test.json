@@ -8,6 +8,6 @@
   ],
   "assertions": [
     {"observation": {"key": "screen", "equals": "city"}},
-    {"observation": {"key": "units", "equals": 0}}
+    {"observation": {"key": "entities", "equals": 0}}
   ]
 }

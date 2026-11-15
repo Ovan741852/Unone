@@ -37,7 +37,8 @@ project declares (`performance`): perf, run and verify warn when one is missed a
 `scripts/measure-web-export.mjs` measures a production Web export's load in a headless browser
 (cold, warm and profiler-pair runs, artifact hashes, conditions and the game's milestone in one report);
 its `--scenario` drives the game through scripted round trips and samples the player's memory owners,
-the JS heap and the browser processes per round.
+the JS heap and the browser processes per round, and measures frame windows under load
+(submission/RAF intervals, gaps, dropped steps, the player's input-to-presentation time) beside a blank-page control.
 
 Core: fixed timestep, seeded random, deterministic replay/digest, 2D gravity,
 damping, ground friction/restitution and circle contacts; Camera2D with declared

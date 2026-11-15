@@ -1,0 +1,15 @@
+{
+  "name": "map-drag",
+  "frames": 5,
+  "seed": 42,
+  "input_sequence": [
+    {}, {"actions": {"M": true}}, {},
+    {"pointer": {"position": {"x": 0, "y": 0}, "screen_position": {"x": 60, "y": 50}, "down": true}},
+    {"pointer": {"position": {"x": 0, "y": 0}, "screen_position": {"x": 50, "y": 50}, "down": true}}
+  ],
+  "assertions": [
+    {"observation": {"key": "screen", "equals": "map"}},
+    {"observation": {"key": "entities", "equals": 1}},
+    {"observation": {"key": "camera_x", "equals": 1.6}}
+  ]
+}

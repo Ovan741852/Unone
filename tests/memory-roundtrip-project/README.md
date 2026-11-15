@@ -1,4 +1,4 @@
-# Memory round-trip fixture
+# Memory and frame-time fixture
 
 Four screens, each owning an image group from `player.image-assets.json`, switched
 by keys so `scripts/measure-web-export.mjs --scenario` can drive real screen changes
@@ -34,3 +34,9 @@ it holds no image groups, so the marks fire on the first update of each screen.
 
 A three-run measurement of this fixture is in
 `docs/evidence/2026-11-15-web-export-memory-roundtrip.json`.
+
+More screens drive frame windows (`frame-tail.scenario.json`): `E` opens a screen
+that draws only its title (the minimal-player control), `M` a world map dragged
+with the pointer, `L` a scroll view of 40 image rows, and battle moves its 40
+units every tick. Add `--scenario tests/memory-roundtrip-project/frame-tail.scenario.json`
+(and `--scenario-runs 3 --scenario-profile`) to the measure command.

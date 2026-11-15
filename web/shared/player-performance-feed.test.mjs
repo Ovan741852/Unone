@@ -38,7 +38,7 @@ test('actual completion rows preserve exact RAF/submission/callback joins and al
  const report=f.report(),after=m.snapshot({windowMs:1500,includeRafSamples:true});assert.equal(report.version,1);assert.equal(report.interval_ms,500);assert.equal(report.window_ms,1500);assert.equal(report.completion.backend,'worker');
  assert.deepEqual(report.completion.raf_diagnostics.samples,before.raf_diagnostics.samples);assert.deepEqual(after,before);
  assert.deepEqual(report.completion.raf_diagnostics.samples.map(row=>row.outcome),['completed','completed','completed','completed','skipped','error','no_submission']);
- assert.deepEqual(report.completion.raf_diagnostics.samples[0],{source:'scheduler_raf',raf_time_ms:16,start_ms:17,end_ms:18,callback_end_ms:19,snapshot_frame:1,outcome:'completed',new_snapshot:true,regression:false,in_flight:false});
+ assert.deepEqual(report.completion.raf_diagnostics.samples[0],{source:'scheduler_raf',raf_time_ms:16,start_ms:17,end_ms:18,callback_end_ms:19,snapshot_frame:1,outcome:'completed',new_snapshot:true,regression:false,in_flight:false,sequence:1});
  assert.equal(report.completion.raf_diagnostics.samples.at(-1).end_ms,null);assert.equal(report.completion.raf_diagnostics.samples.at(-1).callback_end_ms,115);f.feed.dispose();
 });
 

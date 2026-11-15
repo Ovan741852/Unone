@@ -1,0 +1,10 @@
+{
+  "name": "list-and-empty",
+  "frames": 6,
+  "seed": 42,
+  "input_sequence": [{}, {"actions": {"L": true}}, {}, {"actions": {"Escape": true}}, {}, {"actions": {"E": true}}],
+  "assertions": [
+    {"observation": {"key": "screen", "equals": "empty"}},
+    {"observation": {"key": "entities", "equals": 0}}
+  ]
+}

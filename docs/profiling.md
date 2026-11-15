@@ -82,7 +82,7 @@ reading everything once.
 | `--backend main\|worker`, `--seed N` | Override the presentation's backend or the seed. |
 | `--timeout-ms`, `--settle-ms`, `--frame-window-ms` | Per-load limit, the wait before sampling, the `unonePlayerPerformance` window. |
 | `--keep-storage`, `--allow-development`, `--browser PATH`, `--headed` | Keep saves between runs, measure a development export (marked in the report), choose the browser. |
-| `--scenario FILE`, `--scenario-runs N` | Drive the game through a scripted scenario and sample memory per round; see [memory over round trips](#memory-over-round-trips---scenario). |
+| `--scenario FILE`, `--scenario-runs N`, `--scenario-profile`, `--no-blank-control` | Drive the game through a scripted scenario: memory per round ([memory over round trips](#memory-over-round-trips---scenario)) and frame windows under load ([frame windows](#frame-time-under-load-frame-windows)); add a profiler-on diagnostic run; skip the blank-page control. |
 
 | Report section | Contents |
 |---|---|
@@ -147,7 +147,9 @@ node scripts/measure-web-export.mjs --export <export> --output memory.json --sce
 |---|---|
 | `{"key": "KeyT"}` | Key down, `hold_ms` (50), key up, as DevTools input events with the browser's `code`, `key` and virtual key code. Codes: `KeyA`–`KeyZ`, `Digit0`–`Digit9`, `F1`–`F12`, `Escape`, `Enter`, `Space`, `Tab`, arrows and modifiers. |
 | `{"tap": [x, y]}` | Mouse move, press, `hold_ms`, release at CSS pixels from the viewport's top-left. Fix the viewport (`--viewport`) when a scenario taps. |
-| `{"wait_mark": "name"}` | Wait for the next presentation of that mark after the last one a step saw, up to `timeout_ms` (`step_timeout_ms`, 15000). |
+| `{"drag": {"from": [x, y], "to": [x, y], "ms": 500, "moves": 31}}` | Mouse press at `from`, `moves` evenly timed moves over `ms`, release at `to`. |
+| `{"wheel": {"at": [x, y], "dy": 100, "dx": 0, "count": 1, "interval_ms": 16}}` | `count` mouse wheel events at one point, `interval_ms` apart. |
+| `{"wait_mark": "name"}` | Wait for the next presentation of that mark after the last one a step saw, up to `timeout_ms` (`step_timeout_ms`, 15000). Not allowed in a frame window's `loop`. |
 | `{"wait_ms": 300}` | Stay on the screen. |
 
 Each scenario run is a fresh browser: it loads cold, waits for `start_mark`,
@@ -212,8 +214,66 @@ How to read it:
 - `presented_after_input_ms` includes DevTools input delivery and is measured
   on the page clock; it is a screen-change cost, not a frame-time measurement.
 
-`tests/memory-roundtrip-project` is a four-screen fixture with image groups and
-its scenario; its README shows the export and measure commands.
+### Frame time under load: frame windows
+
+A phase with `window_ms` instead of `rounds` measures frame time while the game
+does something. `setup` runs once (it may wait for marks), then `loop` repeats
+for `warmup_ms` (3000) and the measured `window_ms` (1000–600000):
+
+```json
+{"name": "map-drag",
+ "setup": [{"key": "KeyM"}, {"wait_mark": "map.interactive"}],
+ "loop": [{"drag": {"from": [300, 360], "to": [980, 360], "ms": 800}},
+          {"drag": {"from": [980, 360], "to": [300, 360], "ms": 800}}],
+ "window_ms": 30000}
+```
+
+During a window the memory sampler pauses and the tool reads the player's own
+draw and input rows (`unonePlayerPerformance.snapshot({includeRafSamples:true})`)
+every 2 s, stitching them by sequence. A memory checkpoint follows the window.
+Per window, `metrics` holds:
+
+| Metric | What it is |
+|---|---|
+| `submission_interval` | Time between the end of consecutive completed scheduler draws: p50, p95, p99, max (nearest rank) and how many exceed 50 and 100 ms. |
+| `raf_interval`, `new_snapshot_interval` | The same over those draws' RAF timestamps, and only over draws that showed a newer world frame. |
+| `draw_sync` | Synchronous drawing time of each completed draw (callback end minus start). |
+| `input_latency` | The player's own input-to-presentation rows inside the window (below). Null on a host that does not report them. |
+| `dropped_steps` | Fixed steps the scheduler dropped during the window. |
+| `completed_submissions`, `outcomes`, `rows`, `rows_missing`, `coverage` | Counts, skipped/unknown/error draws, draw rows inside the window, rows lost between reads (0 when stitching was complete), and how much of the window the completed draws span. |
+
+Two controls separate the browser and the player from the game:
+
+- **Blank page**: before loading the game, each run measures an empty page's
+  `requestAnimationFrame` intervals for the longest window, in the same browser
+  and viewport (`blank_control`). `--no-blank-control` skips it.
+- **Minimal player**: put a phase on a screen that draws almost nothing (the
+  fixture's `empty` screen), so the same export and runtime give a baseline.
+
+`--scenario-profile` adds one more run with the player profiler on
+(`?unone_profile=1&unone_profile_limit=2048`). Each window's `profile` adds up
+the profiler's events per event kind and per span with its parent (`update >
+backend_request > execute`, `draw > ui_draw`, ...): count, total, share of the
+window, p50, p95 and max. It locates where frame time goes; its frame numbers
+include the profiler's own cost and are never used for acceptance.
+
+The summary takes each window value across runs (`<phase>.frames.submission_interval.p95_ms`
+and so on); percentiles from different windows or runs are never pooled.
+
+How to read it:
+
+- These are host submission and RAF intervals in a headless browser. None of
+  them is GPU completion or physical display scanout, and a phone is not
+  measured.
+- Compare a workload with both controls at the same viewport before blaming the
+  game: a gap the blank page also shows comes from the browser or the machine.
+- `input_latency` runs from the earliest browser input event a tick consumed to
+  the first completed submission presenting that tick. Host-only effects (UI
+  scroll, hover) are timed to the same submission.
+
+`tests/memory-roundtrip-project` is a fixture with image groups and both
+scenarios (`round-trip.scenario.json` for memory, `frame-tail.scenario.json` for
+frame windows); its README shows the export and measure commands.
 
 ## Performance targets: when to optimise and where
 
@@ -431,6 +491,19 @@ continuation, not the elapsed await. Cancelled preparation has no successful
 submission/cadence sample. Startup/manual draws retain null RAF fields.
 `includeRafSamples`
 must be a boolean; unknown public query options fail explicitly.
+Each row also carries `sequence`, the draw's running number, so a reader that
+queries overlapping windows can stitch rows without duplicates or gaps.
+
+`input_latency` is always present: `admitted` ticks that consumed browser input,
+`presented` ones whose frame a completed submission then showed, `pending`,
+`dropped` (over 256 pending), and a `distribution` of input-to-presentation
+time over the window. The player notes the earliest keyboard, pointer, wheel or
+touch event not yet consumed (passive capture listeners that never change
+routing); the tick that consumes it records its world frame; the first completed
+submission whose presented frame reaches that tick ends the measurement. With
+`includeRafSamples:true` it adds `samples`: `input_at_ms`, `tick_frame`,
+`presented_at_ms`, `latency_ms` and `sequence`. It is not scanout or GPU time.
+
 `includeMemory:true` (also a boolean) adds `memory`: the player's memory owners
 with how they overlap, described under
 [memory over round trips](#memory-over-round-trips---scenario). Recording uses

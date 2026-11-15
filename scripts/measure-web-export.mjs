@@ -29,7 +29,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gzipSync} from 'node:zlib';
-import {parseScenario,runScenario,readProcessMemory} from './measure-web-scenario.mjs';
+import {parseScenario,runScenario,readProcessMemory,measureBlank,flattenFrames,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 
 export const SCHEMA='unone.web-export-measurement.v1';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -42,7 +42,7 @@ const minus=(a,b)=>finite(a)&&finite(b)?round(a-b):null;
 
 const DEFAULTS=Object.freeze({cold:5,warm:5,profilePairs:1,milestones:[],settleMs:1000,frameWindowMs:1000,timeoutMs:60000,
  viewport:{width:1280,height:720},dpr:1,seed:'42',backend:null,cacheControl:null,compress:'none',network:null,cpuThrottle:1,
- browser:null,headed:false,keepStorage:false,allowDevelopment:false,wasmTiming:'split',includeProfileEvents:false,pollMs:100,scenario:null,scenarioRuns:1});
+ browser:null,headed:false,keepStorage:false,allowDevelopment:false,wasmTiming:'split',includeProfileEvents:false,pollMs:100,scenario:null,scenarioRuns:1,scenarioProfile:false,blankControl:true});
 const NETWORK_PRESETS=Object.freeze({
  // Chrome DevTools' own throttling presets; emulated in the browser, not a real radio network.
  'fast-4g':{latency_ms:60,download_kbps:9000,upload_kbps:1500},
@@ -55,7 +55,7 @@ export const USAGE=`Usage: node scripts/measure-web-export.mjs --export <product
   [--backend main|worker] [--cache-control VALUE] [--compress none|gzip]
   [--network fast-4g|slow-4g|fast-3g|LATENCY_MS,DOWN_KBPS,UP_KBPS] [--cpu-throttle RATE]
   [--browser PATH] [--headed] [--keep-storage] [--allow-development] [--wasm-timing split|observe]
-  [--include-profile-events] [--scenario FILE] [--scenario-runs N=1]
+  [--include-profile-events] [--scenario FILE] [--scenario-runs N=1] [--scenario-profile] [--no-blank-control]
   With --scenario, cold, warm and profiler pairs default to 0 unless given.`;
 
 export function parseArgs(argv){
@@ -72,6 +72,8 @@ export function parseArgs(argv){
    case '--profile-pairs':options.profilePairs=count(take(i,arg),arg);given.add(arg);i++;break;
    case '--scenario':options.scenario=take(i,arg);i++;break;
    case '--scenario-runs':options.scenarioRuns=count(take(i,arg),arg,1);i++;break;
+   case '--scenario-profile':options.scenarioProfile=true;break;
+   case '--no-blank-control':options.blankControl=false;break;
    case '--milestone':{const name=take(i,arg);if(name.length<1||name.length>64||/[\u0000-\u001f\u007f]/.test(name))throw Error('MEASURE_ARG_INVALID: --milestone must be 1-64 printable characters, the name the game passes to api.profile.mark');options.milestones.push(name);i++;break;}
    case '--settle-ms':options.settleMs=ms(take(i,arg),arg);i++;break;
    case '--frame-window-ms':{const n=ms(take(i,arg),arg);if(n<1||n>60000)throw Error('MEASURE_ARG_INVALID: --frame-window-ms must be 1..60000 (the player accessor limit)');options.frameWindowMs=n;i++;break;}
@@ -333,6 +335,7 @@ export async function startServer(root,{cachePolicy=null,cacheControl=null,compr
   const entry={path:null,status:0,bytes:0,conditional:Boolean(request.headers['if-none-match']),encoding:'identity'};
   try{
    const url=new URL(request.url,'http://localhost');let relative=decodeURIComponent(url.pathname).replace(/^\/+/,'');
+   if(url.pathname===BLANK_PATH){const body=Buffer.from(BLANK_HTML);entry.path=BLANK_PATH;entry.status=200;entry.bytes=body.length;response.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store','content-length':body.length});response.end(request.method==='HEAD'?undefined:body);return;}
    if(relative===''||relative.endsWith('/'))relative+='index.html';
    const file=path.resolve(base,relative);entry.path='/'+relative;
    if(file!==base&&!file.toLowerCase().startsWith((base+path.sep).toLowerCase()))throw Object.assign(Error('outside export'),{status:403});
@@ -527,12 +530,12 @@ async function openPage(browser,options){
 
 // ---------------------------------------------------------------- orchestration
 
-function measuredUrl(serverUrl,{seed,backend},profiling){
- const url=new URL(serverUrl);url.searchParams.set('seed',seed);if(backend)url.searchParams.set('backend',backend);if(profiling)url.searchParams.set('unone_profile','1');return url.href;
+function measuredUrl(serverUrl,{seed,backend},profiling,profileLimit=null){
+ const url=new URL(serverUrl);url.searchParams.set('seed',seed);if(backend)url.searchParams.set('backend',backend);if(profiling)url.searchParams.set('unone_profile','1');if(profiling&&profileLimit)url.searchParams.set('unone_profile_limit',String(profileLimit));return url.href;
 }
 
-async function measureOnce(page,server,options,{kind,index,profiling,milestones=options.milestones}){
- const url=measuredUrl(server.url,options,profiling);server.take();
+async function measureOnce(page,server,options,{kind,index,profiling,milestones=options.milestones,profileLimit=null}){
+ const url=measuredUrl(server.url,options,profiling,profileLimit);server.take();
  const {raw,network,error}=await page.load(url,{origin:new URL(server.url).origin,keepStorage:options.keepStorage,milestones,timeoutMs:options.timeoutMs,settleMs:options.settleMs,pollMs:options.pollMs,frameWindowMs:options.frameWindowMs});
  const sample=normalizeLoad(raw,{network,server:server.take(),options,kind,index,profiling,url});
  if(error){sample.ok=false;sample.error=error;}
@@ -570,21 +573,28 @@ export async function measure(options,log=message=>process.stderr.write(message+
   }
   // Each scenario run is a fresh browser: it starts cold, waits for the scenario's start mark,
   // then drives the game and samples memory until the settle checkpoint.
-  for(let i=0;i<options.scenarioRuns;i++){
+  const windows=scenario?scenario.definition.phases.filter(phase=>phase.kind==='frames'):[];
+  const blankMs=windows.length&&options.blankControl?Math.max(...windows.map(phase=>phase.window_ms)):0;
+  const scenarioTotal=options.scenarioRuns+(options.scenarioRuns&&options.scenarioProfile?1:0);
+  for(let i=0;i<scenarioTotal;i++){
+   const profiling=i===options.scenarioRuns;
    const milestones=[...new Set([...options.milestones,...(scenario.definition.start_mark?[scenario.definition.start_mark]:[])])];
    const browser=await launchBrowser(executable,options);browserInfo??=conditionsOf(browser);
    try{
     const page=await openPage(browser,options);
-    const startup=await measureOnce(page,server,options,{kind:'scenario',index:i+1,profiling:false,milestones});runs.push(startup);
+    // The browser's own cadence on an empty page, same browser and viewport, before the game loads.
+    let blank=null;
+    if(blankMs&&!profiling){try{blank=await measureBlank(page,new URL(BLANK_PATH,server.url).href,{windowMs:blankMs});log(`scenario ${i+1}: blank control p95 ${blank.raf_interval.p95_ms} ms over ${blank.frames} frames`);}catch(error){blank={error:String(error.message??error)};}}
+    const startup=await measureOnce(page,server,options,{kind:'scenario',index:i+1,profiling,milestones,profileLimit:profiling?2048:null});runs.push(startup);
     let result;
     if(!startup.ok)result={ok:false,error:`MEASURE_SCENARIO_NOT_STARTED: ${startup.error}`,phases:[],settled:null,samples:null};
     else{
      log(`scenario ${i+1}/${options.scenarioRuns}: ${scenario.definition.name} started`);
      const readOs=async()=>{let info;try{info=(await browser.cdp.send('SystemInfo.getProcessInfo')).processInfo;}catch(error){return {supported:false,error:String(error.message??error),processes:[]};}return readProcessMemory(info);};
-     result=await runScenario(page,scenario.definition,{readOs,log:message=>log(`scenario ${i+1}: ${message}`)});
+     result=await runScenario(page,scenario.definition,{readOs,profiling,log:message=>log(`scenario ${i+1}${profiling?' (profiler on)':''}: ${message}`)});
     }
-    scenarioRuns.push({index:i+1,startup_run:runs.length-1,...result});
-    log(`scenario ${i+1}/${options.scenarioRuns}: ${result.ok?'ok':result.error}`);
+    scenarioRuns.push({index:i+1,profiling,startup_run:runs.length-1,...(blank?{blank_control:blank}:{}),...result});
+    log(`scenario ${i+1}/${scenarioTotal}${profiling?' (profiler on, diagnostic)':''}: ${result.ok?'ok':result.error}`);
    }finally{await browser.close();}
   }
  }finally{await server.close();}
@@ -598,14 +608,20 @@ const SCENARIO_NOTES=Object.freeze([
  'scenario: no garbage collection is forced; a JS or Luau heap can rise across rounds and fall later without leaking. trend.second_half_not_higher compares two halves of this window only and does not prove that nothing leaks.',
  'scenario: closed_images and released bytes in the player are logical releases, not memory the browser or OS has taken back.',
  'scenario: presented_after_input_ms is the milestone presentation minus the page clock just before the input was dispatched; it includes DevTools input delivery.',
+ 'scenario frames: submission_interval is between the end times of consecutive completed scheduler draws inside the window; raf_interval and new_snapshot_interval use those draws\' RAF timestamps. Percentiles are per window (nearest rank) and are never pooled across runs; the summary takes each window value across runs.',
+ 'scenario frames: input_latency is the player\'s own measurement: the earliest browser input a tick consumed, to the first completed submission presenting that tick. It is not display scanout, and host-only effects such as UI scroll are timed to the same submission.',
+ 'scenario frames: blank_control is an empty page\'s requestAnimationFrame cadence in the same browser and viewport before the game loads. A headless browser has no physical display: no interval here is scanout or GPU completion.',
+ 'scenario frames: a profiler-on run (--scenario-profile) locates where frame time goes; its frame numbers include the profiler\'s own cost and are never for acceptance.',
 ]);
 
 /** Per scenario run, the values a comparison needs, summarized across runs like any other metric. */
 export function scenarioSummary(scenarioRuns){
- return summarize(scenarioRuns.filter(run=>run.ok).map(run=>{
+ return summarize(scenarioRuns.filter(run=>run.ok&&!run.profiling).map(run=>{
   const metrics={},put=(prefix,values)=>{for(const [name,value] of Object.entries(values??{}))if(finite(value))metrics[`${prefix}.${name}`]=value;};
   put('baseline',run.baseline?.metrics);
+  if(run.blank_control?.raf_interval)put('blank_control',flattenFrames({raf_interval:run.blank_control.raf_interval}));
   for(const phase of run.phases??[]){
+   if(phase.kind==='frames'){put(`${phase.name}.frames`,flattenFrames(phase.metrics));continue;}
    put(`${phase.name}.last_round_end`,phase.rounds.filter(r=>!r.warmup).at(-1)?.end);
    put(`${phase.name}.peak`,Object.fromEntries(Object.entries(phase.trend?.peak??{}).map(([name,t])=>[name,t.max])));
   }
@@ -620,7 +636,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
  const coverage={};
  for(const kind of ['cold','warm']){const all=runs.filter(run=>run.kind===kind);coverage[kind]={requested:kind==='cold'?options.cold:options.warm,completed:all.length,ok:all.filter(run=>run.ok).length,failed:all.filter(run=>!run.ok).map(run=>({index:run.index,error:run.error}))};}
  coverage.profiler_pairs={requested:options.profilePairs,ok:okPairs.length,failed:pairs.filter(pair=>!(pair.off?.ok&&pair.on?.ok)).map(pair=>({index:pair.index,error:pair.off?.error??pair.on?.error}))};
- if(scenario)coverage.scenario={requested:options.scenarioRuns,ok:scenarioRuns.filter(run=>run.ok).length,failed:scenarioRuns.filter(run=>!run.ok).map(run=>({index:run.index,error:run.error}))};
+ if(scenario)coverage.scenario={requested:options.scenarioRuns,ok:scenarioRuns.filter(run=>run.ok&&!run.profiling).length,profile_run:options.scenarioProfile?scenarioRuns.some(run=>run.profiling&&run.ok):null,failed:scenarioRuns.filter(run=>!run.ok).map(run=>({index:run.index,profiling:run.profiling,error:run.error}))};
  const foreground=runs.filter(run=>run.ok).every(run=>run.foreground.visibility_at_start==='visible'&&!run.foreground.hidden_during_run&&run.foreground.focused_at_sample===true);
  const notes=[
   'Times are milliseconds relative to window.playerBoot unless a field says otherwise; navigation.* fields are relative to navigation start, and boot_ms is playerBoot itself.',
@@ -646,7 +662,8 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   instrumentation:['Timing wrappers on WebAssembly.instantiateStreaming/instantiate/compileStreaming/compile and FontFace.prototype.load (results unchanged)','longtask PerformanceObserver','DevTools protocol Page/Runtime/Network domains; Performance.getMetrics once per run','one player-accessor poll every '+options.pollMs+' ms between the first submission and the last awaited milestone'],
   coverage,
   summary:{cold:summarize(ok('cold')),warm:summarize(ok('warm')),profiler_pairs:pairDeltas(okPairs)},
-  ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:'a new browser process and profile per run',profiler:false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
+  ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
+   frame_windows:{poll_ms:2000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true}) draw and input rows, stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
    os_memory:process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
    summary:scenarioSummary(scenarioRuns),runs:scenarioRuns}}:{}),
   runs,
@@ -655,10 +672,15 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
 }
 
 // A few owners' movement across each phase of the first completed scenario run, for the console.
+const FRAME_CONSOLE=['submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','completed_submissions'];
 const CONSOLE_METRICS=['images.decoded.resident.entries','images.decoded.resident.bytes','gpu.textures.entries','gpu.geometries.entries','luau.heap.bytes','js_heap.used_bytes','os.largest_renderer.private_bytes','os.gpu_process.gpu_dedicated_bytes'];
 export function scenarioConsole(scenario){
- const run=scenario.runs.find(r=>r.ok);if(!run)return {ok:0,runs:scenario.runs.length};
- return {ok:scenario.runs.filter(r=>r.ok).length,runs:scenario.runs.length,phases:Object.fromEntries(run.phases.map(phase=>[phase.name,{rounds:phase.trend.rounds,
+ const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length};
+ const median=name=>scenario.summary?.[name]?.median??null;
+ const frames=prefix=>Object.fromEntries(FRAME_CONSOLE.map(name=>[name,median(`${prefix}.${name}`)]).filter(([,v])=>v!==null));
+ return {ok:scenario.runs.filter(r=>r.ok&&!r.profiling).length,runs:scenario.runs.length,
+  ...(run.blank_control?{blank_control_median:frames('blank_control')}:{}),
+  phases:Object.fromEntries(run.phases.map(phase=>phase.kind==='frames'?[phase.name,{median_across_runs:frames(`${phase.name}.frames`)}]:[phase.name,{rounds:phase.trend.rounds,
   round_end:Object.fromEntries(CONSOLE_METRICS.filter(name=>phase.trend.end[name]?.n).map(name=>{const t=phase.trend.end[name];return [name,{first:t.first,last:t.last,max:t.max,second_half_not_higher:t.second_half_not_higher}];}))}])),
   settled:Object.fromEntries(CONSOLE_METRICS.filter(name=>finite(run.settled?.metrics?.[name])).map(name=>[name,run.settled.metrics[name]]))};
 }

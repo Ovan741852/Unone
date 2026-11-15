@@ -61,6 +61,10 @@ let saved,key,projectPayload;
 let errorPolicy=null;
 const recovery=createRecoveryReporter({target:document.body});
 const playerCompletion=createPlayerCompletionMetrics();
+// Input-to-presentation timing (unonePlayerPerformance input_latency): only the time of the
+// earliest input not yet consumed by a tick. Passive capture listeners never change routing.
+for(const type of ['keydown','keyup','pointerdown','pointermove','pointerup','pointercancel','wheel','touchstart','touchmove','touchend'])
+ window.addEventListener(type,event=>playerCompletion.noteInput(event.timeStamp),{capture:true,passive:true});
 function readPlayerPerformance(options={}){
  if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples','includeMemory'].includes(key))||Object.hasOwn(options,'includeMemory')&&typeof options.includeMemory!=='boolean')throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
  // Memory owners are read on request only: renderer and UI reports walk their resources.
@@ -193,6 +197,8 @@ async function advanceFrame(pu,presenting){
  // Gamepads are polled once per tick (docs/input-gamepad.md).
  if(browserInput)input.setGamepads(gamepadInput.poll());
  let frame=manualInput??input.consumeFrame();manualInput=null;
+ // The earliest browser input this tick consumes; later events wait for the next tick.
+ const consumedInputAt=browserInput?playerCompletion.takeInput?.()??null:null;
  // The camera may follow a moving entity while the physical mouse stays still.
  // Reproject the consumed screen sample, preserving queued down/up edges and
  // leaving developer-supplied world coordinates untouched.
@@ -208,6 +214,7 @@ async function advanceFrame(pu,presenting){
  if(pu){profiler.mark(pu,'backend_request');profiler.set(pu,{command:profiler.sourceOf(nextSnapshot),snapshot_frame:nextSnapshot?.world?.frame??null});}
  /* PROFILE_TICK_END */
  acceptSnapshot(nextSnapshot);const decodeEnd=performance.now();bridgeMs=decodeEnd-began;
+ if(consumedInputAt!==null)playerCompletion.acceptInput?.(consumedInputAt,nextSnapshot?.world?.frame);
  if(pu)profiler.mark(pu,'accept_snapshot');
  /* PROFILE_TICK */
  audio?.sync(snapshot.world);

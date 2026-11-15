@@ -6,5 +6,5 @@
   "systems": {"ui": true, "camera2d": true, "camera3d": false, "physics2d": false, "physics3d": false, "random": false, "save": false, "audio": false, "spine": false, "particle": false, "effekseer": false, "jobs": false},
   "input_actions": [],
   "script_time_limit_seconds": 60,
-  "test_files": ["round-trip.test.json", "battle.test.json"]
+  "test_files": ["round-trip.test.json", "battle.test.json", "map-drag.test.json", "list-and-empty.test.json"]
 }

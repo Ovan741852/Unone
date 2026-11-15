@@ -85,3 +85,41 @@ test('host milestone storage is bounded',()=>{
  m.accept({world:{frame:0},profile_marks:{marks:Array.from({length:300},(_,i)=>({name:'m'+i,frame:0,sequence:i+1})),dropped:0}},true);
  const report=m.snapshot().milestones;assert.equal(report.recorded,256);assert.equal(report.host_dropped,44);
 });
+
+test('input latency runs from the earliest input a tick consumed to the first completed submission showing that tick',()=>{
+ let clock=100;const m=createPlayerCompletionMetrics({now:()=>clock});const done={status:'completed'};
+ m.accept({world:{frame:1}},true);
+ assert.equal(m.acceptInput(90,2),true,'tick 2 consumed an input from t=90');
+ m.accept({world:{frame:2}});
+ clock=110;m.finish(done,done,done,1,clock,'scheduler_raf',clock);
+ assert.equal(m.snapshot().input_latency.pending,1,'a submission still showing frame 1 does not count');
+ clock=125;m.finish({status:'skipped',reason:'world_assets_pending'},done,done,2,clock,'scheduler_raf',clock);
+ assert.equal(m.snapshot().input_latency.presented,0,'a skipped draw does not present the input');
+ clock=130;m.finish(done,done,done,2,clock,'scheduler_raf',clock);
+ m.acceptInput(140,3);m.acceptInput(150,4);
+ clock=170;m.finish(done,done,done,4,clock,'scheduler_raf',clock);
+ const r=m.snapshot({windowMs:1000,includeRafSamples:true}).input_latency;
+ assert.deepEqual([r.admitted,r.presented,r.pending,r.dropped],[3,3,0,0]);
+ assert.deepEqual(r.samples.map(s=>[s.input_at_ms,s.tick_frame,s.presented_at_ms,s.latency_ms,s.sequence]),[[90,2,130,40,1],[140,3,170,30,2],[150,4,170,20,3]]);
+ assert.deepEqual([r.distribution.retained,r.distribution.max_ms,r.distribution.p50_ms],[3,40,30]);
+ assert.equal(m.snapshot().input_latency.samples,undefined,'rows only on request');
+ assert.equal(m.acceptInput(Number.NaN,5),false);assert.equal(m.acceptInput(5,-1),false);
+ const rows=m.snapshot({windowMs:1000,includeRafSamples:true}).raf_diagnostics.samples;
+ assert.deepEqual(rows.map(row=>row.sequence),[1,2,3,4],'draw rows carry their sequence so a reader can stitch windows');
+});
+
+test('pending inputs are bounded and a new session forgets them',()=>{
+ let clock=0;const m=createPlayerCompletionMetrics({now:()=>clock});m.accept({world:{frame:0}},true);
+ for(let i=0;i<300;i++)m.acceptInput(i,i+1);
+ let r=m.snapshot().input_latency;assert.deepEqual([r.admitted,r.pending,r.dropped],[256,256,44]);
+ m.accept({world:{frame:0}},true);r=m.snapshot().input_latency;
+ assert.deepEqual([r.admitted,r.presented,r.pending,r.dropped],[0,0,0,0]);
+});
+
+test('the host notes the earliest unconsumed input and the next tick takes it once',()=>{
+ const m=createPlayerCompletionMetrics({now:()=>0});
+ assert.equal(m.takeInput(),null,'no input, nothing to time');
+ m.noteInput(10);m.noteInput(12);m.noteInput(Number.NaN);
+ assert.equal(m.takeInput(),10,'the earliest event since the last tick');
+ assert.equal(m.takeInput(),null,'taken once');
+});

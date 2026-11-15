@@ -5,6 +5,6 @@
   "input_sequence": [{}, {"actions": {"F": true}}, {}],
   "assertions": [
     {"observation": {"key": "screen", "equals": "battle"}},
-    {"observation": {"key": "units", "equals": 41}}
+    {"observation": {"key": "entities", "equals": 41}}
   ]
 }

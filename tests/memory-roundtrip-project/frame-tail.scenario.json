@@ -1,0 +1,45 @@
+{
+  "schema": "unone.web-scenario.v1",
+  "name": "frame-tail",
+  "description": "Five 30 s frame windows after 3 s warmups: the empty screen (minimal-player control), city idle, dragging the map, wheel-scrolling the research list, and the battle with 40 moving units.",
+  "start_mark": "city.interactive",
+  "phases": [
+    {
+      "name": "empty",
+      "setup": [{"key": "KeyE"}, {"wait_mark": "empty.interactive"}],
+      "loop": [{"wait_ms": 1000}],
+      "window_ms": 30000
+    },
+    {
+      "name": "city-idle",
+      "setup": [{"key": "Escape"}, {"wait_mark": "city.interactive"}],
+      "loop": [{"wait_ms": 1000}],
+      "window_ms": 30000
+    },
+    {
+      "name": "map-drag",
+      "setup": [{"key": "KeyM"}, {"wait_mark": "map.interactive"}],
+      "loop": [
+        {"drag": {"from": [300, 360], "to": [980, 360], "ms": 800}},
+        {"drag": {"from": [980, 360], "to": [300, 360], "ms": 800}}
+      ],
+      "window_ms": 30000
+    },
+    {
+      "name": "list-scroll",
+      "setup": [{"key": "Escape"}, {"wait_mark": "city.interactive"}, {"key": "KeyL"}, {"wait_mark": "list.interactive"}],
+      "loop": [
+        {"wheel": {"at": [380, 360], "dy": 100, "count": 15, "interval_ms": 16}},
+        {"wheel": {"at": [380, 360], "dy": -100, "count": 15, "interval_ms": 16}}
+      ],
+      "window_ms": 30000
+    },
+    {
+      "name": "battle",
+      "setup": [{"key": "Escape"}, {"wait_mark": "city.interactive"}, {"key": "KeyF"}, {"wait_mark": "battle.interactive"}],
+      "loop": [{"wait_ms": 1000}],
+      "window_ms": 30000
+    }
+  ],
+  "settle_ms": 0
+}
