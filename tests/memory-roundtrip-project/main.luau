@@ -5,7 +5,8 @@
 -- City keeps its group loaded; every other screen loads its group on entry and unloads it on
 -- exit. Battle spawns world sprites that move every tick and despawns them on exit; map pans the
 -- camera over a world sprite while the pointer is dragged; list is a scroll view of image rows;
--- empty draws only its title (the minimal-player control: ui.setRoot refuses a screen with no children). Each entry marks "<screen>.interactive" once
+-- empty draws only its title, the minimal-player control (a screen always has nodes: ui.setRoot
+-- rejects an empty children table on purpose). Each entry marks "<screen>.interactive" once
 -- its group is ready, the milestone the scenarios wait for.
 local Game = {}
 
