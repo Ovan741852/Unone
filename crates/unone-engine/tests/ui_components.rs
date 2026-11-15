@@ -34,6 +34,21 @@ api.ui.setRoot(k.screen({id='screen',node='screen',children={fx}}))
 }
 
 #[test]
+fn screens_without_children_name_the_rule_instead_of_a_serde_error() {
+    // A screen is itself a node that holds the page, so an empty one is
+    // refused on purpose: through a plain table and the constructor alike.
+    for body in [
+        "api.ui.setRoot({kind='screen',id='blank',node='blank',children={}})",
+        "api.ui.setRoot(api.ui.components.screen({id='blank',node='blank',children={}}))",
+    ] {
+        let error = load(body, true).err().expect("an empty screen must be refused");
+        assert!(error.explanation.contains("UI_SCREEN_EMPTY"), "{body}: {}", error.explanation);
+        assert!(!error.explanation.contains("invalid type") && !error.explanation.contains("anchor"),
+            "{body}: {}", error.explanation);
+    }
+}
+
+#[test]
 fn nested_virtual_helpers_keep_live_identity_and_materialize_without_a_tick() {
     let source = r#"
 local Game={}

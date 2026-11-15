@@ -195,7 +195,7 @@ factories that return canonical nodes directly remain valid.
 | `ui.panel(props)` | `UiPanelNode`; canonical decorative panel fields, placement, optional box style and `background_for`. |
 | `ui.image(props)` | `UiImageNode`; canonical image fields including `asset`, placement, optional `fit`/`slice`/`alt`, box style and `background_for`. |
 | `ui.component(props)` | `UiComponentNode`; `id`, `component`, placement, optional `children` and `surface`. |
-| `ui.screen(props)` | `UiScreen`; `id`, `node`, `children` and optional `budget`. A root has no placement or style; call `api.ui.setRoot(root)` explicitly. |
+| `ui.screen(props)` | `UiScreen`; `id`, `node`, `children` and optional `budget`. A root has no placement or style; call `api.ui.setRoot(root)` explicitly. A screen is itself a node that holds the page, so `children` needs at least one node: `setRoot` refuses an empty screen with `UI_SCREEN_EMPTY`. |
 | `ui.scrollView(options)` | `UiScrollNode`; delegates to the existing finite-content helper with unchanged `UiScrollOptions`. |
 | `ui.virtualList(options)` | `UiScrollNode`; delegates to the existing registered virtual-list helper with `UiVirtualOptions<T>`. |
 | `ui.virtualGrid(options)` | `UiScrollNode`; delegates to the existing registered virtual-grid helper with `UiVirtualGridOptions<T>`. |

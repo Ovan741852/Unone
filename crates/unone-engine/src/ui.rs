@@ -1181,6 +1181,17 @@ impl UiTree {
                 "viewport aspect must be a positive finite ratio, got {viewport_aspect}"
             ).into());
         };
+        // A screen is itself a node that holds the page; one without children
+        // is refused on purpose, not a blank page to support. Name the rule
+        // before serde reports an empty Luau table as "invalid type: map".
+        if value.get("children").is_some_and(|children| {
+            children.as_array().is_some_and(Vec::is_empty) || children.as_object().is_some_and(serde_json::Map::is_empty)
+        }) {
+            return Err(format!(
+                "UI_SCREEN_EMPTY: screen '{}' has no children; a screen is itself a node that holds the page, so give it at least one child node (for example a title text or a background panel)",
+                value["id"].as_str().unwrap_or("?"),
+            ).into());
+        }
         // Guard before recursive typed deserialization. Report the first exact
         // offending path, including its containing component, without truncation.
         let requested = value
@@ -1915,9 +1926,18 @@ mod tests {
             let error = UiTree::from_json(background_screen(vec![node])).unwrap_err();
             assert!(error.contains("UI_BACKGROUND_KIND"), "{kind}: {error}");
         }
-        let mut root = background_screen(vec![]);
+        let mut root = background_screen(vec![background_panel(serde_json::json!({"screen":true}))]);
         root["background_for"] = serde_json::json!({"screen":true});
         assert!(UiTree::from_json(root).unwrap_err().contains("unknown field `background_for`"));
+    }
+
+    #[test]
+    fn a_screen_without_children_is_refused_by_name() {
+        // `{}` is what an empty Luau table converts to.
+        for children in [serde_json::json!([]), serde_json::json!({})] {
+            let error = UiTree::from_json(serde_json::json!({"kind":"screen","id":"blank","node":"blank","children":children})).unwrap_err();
+            assert!(error.starts_with("UI_SCREEN_EMPTY") && error.contains("'blank'"), "{error}");
+        }
     }
 
     #[test]

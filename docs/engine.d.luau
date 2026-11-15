@@ -538,6 +538,8 @@ export type UiScrollNode = UiPlacement & {
 }
 export type UiNode = UiInputRegionNode | UiTextInputNode | UiTextNode | UiButtonNode | UiSliderNode | UiComboBoxNode
     | UiImageNode | UiImageBatchNode | UiPanelNode | UiComponentNode | UiScrollNode
+-- A screen is itself a node that holds the page: children needs at least one
+-- node. ui.setRoot refuses an empty screen with UI_SCREEN_EMPTY.
 export type UiScreen = {read kind: "screen", read id: string, read node: string, read children: UiReadArray<UiNode>, read budget: UiBudget?}
 -- @unone/ui: pure constructors and explicitly selected declarative layout.
 -- create snapshots these defaults; leaf overrides win, padding merges per edge.

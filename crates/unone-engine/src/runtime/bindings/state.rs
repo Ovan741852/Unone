@@ -149,6 +149,9 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                     if publish_errors.borrow_mut().reject_ui(rejection) { return Ok(false); }
                     return Err(mlua::Error::RuntimeError(message));
                 }
+                // The placement hint below would only mislead here.
+                Err(UiPublishError::Invalid(error)) if error.starts_with("UI_SCREEN_EMPTY") =>
+                    return Err(mlua::Error::RuntimeError(error)),
                 Err(UiPublishError::Invalid(error)) => return Err(mlua::Error::RuntimeError(format!(
                     "{error} — this engine build accepts node placement as                          rect{{x,y,width,height}} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up"
                 ))),
