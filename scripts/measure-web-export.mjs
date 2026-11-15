@@ -595,7 +595,7 @@ const SCENARIO_NOTES=Object.freeze([
  'scenario: memory owners come from unonePlayerPerformance.snapshot({includeMemory:true}); within/overlaps say which owners hold the same bytes, so never add owner rows, heaps or processes together.',
  'scenario: a round peak is the largest value sampled every sample_ms during the round (plus its checkpoint), not a continuous high-water mark; os.*.peak_working_set_bytes is the OS high-water mark since the process started.',
  'scenario: os.* values are read at round checkpoints only, by the OS, per process; GPU dedicated/shared bytes are the driver counters for that process. The page renderer is reported as the largest renderer process.',
- 'scenario: no garbage collection is forced; a JS or Luau heap can rise across rounds and fall later without leaking. trend.second_half_not_higher compares two halves of this window only and proves no absence of leaks.',
+ 'scenario: no garbage collection is forced; a JS or Luau heap can rise across rounds and fall later without leaking. trend.second_half_not_higher compares two halves of this window only and does not prove that nothing leaks.',
  'scenario: closed_images and released bytes in the player are logical releases, not memory the browser or OS has taken back.',
  'scenario: presented_after_input_ms is the milestone presentation minus the page clock just before the input was dispatched; it includes DevTools input delivery.',
 ]);
