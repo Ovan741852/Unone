@@ -46,6 +46,11 @@ const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
 // Raster pixels depend on the painters' inputs and local crop geometry. Absolute
 // placement stays in the quad; retain the complete style conservatively.
 const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placeholder,node.text_edit,node.style,node.align,node.fontSize,node.lineHeight]);
+// Percent-to-pixel round trips can differ by ~1e-12 even when a label has
+// translated by an exact physical pixel. Normalize only the cache identity;
+// painting and clipping retain their original coordinates. A 1e-7-pixel
+// quantum is much smaller than a visible antialiasing phase change.
+const rasterPhaseKey=value=>Math.round(value*1e7)/1e7;
 
 export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize}={}){
  const requestedAtlasSize=parseUiTextAtlasSize(uiTextAtlasSize);
@@ -246,7 +251,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    if(x1<=x0||y1<=y0)return;
    const n=(ids.get(node.id)??0)+1;ids.set(node.id,n);
    const request={key:n>1?`${node.id}\u0000${n}`:node.id,x0,y0,w:x1-x0,h:y1-y0,
-    content:`${identity}${textRasterContent(node)}${x-x0},${y-y0},${w},${h},${x1-x0},${y1-y0},${W},${H},${scale}`,
+    content:`${identity}${textRasterContent(node)}${rasterPhaseKey(x-x0)},${rasterPhaseKey(y-y0)},${w},${h},${x1-x0},${y1-y0},${W},${H},${scale}`,
     paint:target=>paintText(target,node,{x,y,width:w,height:h,viewportHeight:H},scale)};
    requests.push(request);
    rect(x0,y0,x1-x0,y1-y0,{mode:node.style?.text_shadow?FREE:IMAGE,text:request,box:[x,y,w,h],radius,opacity,clip});

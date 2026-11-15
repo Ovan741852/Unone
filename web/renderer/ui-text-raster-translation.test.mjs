@@ -44,6 +44,33 @@ for(const dedicated of [false,true])test(`${dedicated?'dedicated':'atlas'} integ
  }finally{f.dispose();}
 });
 
+for(const [W,H] of [[3840,2160],[1920,1080],[1366,768]])test(`pixel-snapped ${W}x${H} positions tolerate only floating-point round-trip noise`,()=>{
+ const f=fixture();try{
+  f.resize(W,H);const a=f.base(),positions=Array.from({length:100},(_,i)=>51+i*5);
+  const positioned=(px,py)=>({...a,rect:{...a.rect,x:px*100/W,y:100-a.rect.height-py*100/H}});
+  const first=f.draw(positioned(positions[0]+.25,400.25));
+  for(let i=1;i<positions.length;i++){
+   const after=f.draw(positioned(positions[i]+.25,400.25+i));
+   assert.equal(after.text_rasters,first.text_rasters,'equal local phase and crop reuse glyph raster');
+   assert.equal(after.atlas_uploads,first.atlas_uploads);
+  }
+  const changed=f.draw(positioned(positions.at(-1)+.375,406.25));
+  assert.equal(changed.text_rasters,first.text_rasters+1,'real fractional movement must still repaint');
+ }finally{f.dispose();}
+});
+
+test('phase quantization boundaries and crop boundaries remain separate',()=>{
+ const f=fixture();try{
+  const a=f.base(),at=px=>({...a,rect:{...a.rect,x:px/2}});
+  const first=f.draw(at(20.250000049));
+  const across=f.draw(at(20.250000051));
+  assert.equal(across.text_rasters,first.text_rasters+1,'crossing the tiny key quantum repaints');
+  const beforeCrop=f.draw(at(20.99999999));
+  const afterCrop=f.draw(at(21.00000001));
+  assert.equal(afterCrop.text_rasters,beforeCrop.text_rasters+1,'opposite sides of an integer crop cannot share');
+ }finally{f.dispose();}
+});
+
 for(const [name,prepare]of [
  ['clipped',n=>({...n,clip:{x:12,y:27,width:30,height:16}})],
  ['rounded shadow',n=>({...n,clip:{x:9,y:24,width:42,height:23},style:{...n.style,border_radius:2,text_shadow:{offset_x:1,offset_y:-1,color:[0,0,0,1]}}})],
