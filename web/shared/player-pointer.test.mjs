@@ -7,13 +7,14 @@ import * as inputRouting from './player-input.js';
 import {createUiPointerRouter} from './canvas-ui.mjs';
 import {projectScreenPointer,worldFromPointer} from './webgpu-snapshot.js';
 import {serializedSavePayload} from './save-publication.mjs';
+import {createPlayerCompletionMetrics} from './player-completion.mjs';
 
 const source=readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
 // Exercise the actual official-player tick boundary with a transport stub.
 // Importing the browser entry itself would also boot DOM, audio and WASM.
-const advanceSource=source.slice(source.indexOf('async function advance(){'),source.indexOf('function tickOnce(){'));
+const advanceSource=source.slice(source.indexOf('async function advance('),source.indexOf('function tickOnce('));
 const pointerSource=source.slice(source.indexOf('function pointer(event,down,kind){'),source.indexOf('function routeUi('));
-assert.ok(advanceSource.startsWith('async function advance(){'));
+assert.ok(advanceSource.startsWith('async function advance(')&&advanceSource.includes('async function advanceFrame('));
 assert.ok(pointerSource.startsWith('function pointer(event,down,kind){'));
 
 const snapshot=(x=0,y=0,zoom=1)=>({world:{camera:{position:{x,y},view_height:900,zoom}},save_payload:null});
@@ -28,7 +29,8 @@ function harness({world=snapshot(),hasWorldPointer=true}={}){
   performance:{now:()=>0},projectScreenPointer,worldFromPointer,
   backend:{request:async request=>{frames.push(plain(request.input));return context.snapshot;}},
   acceptSnapshot:value=>{context.snapshot=value;},audio:null,saved:'null',key:'pointer-test',
-  localStorage:{setItem:()=>{}},bridgeMs:0,
+  localStorage:{setItem:()=>{}},bridgeMs:0,imageGroupHost:null,orderedRouter:null,networkHost:null,
+  gamepadInput:inputRouting.createGamepadPolling({navigator:null,document:null}),playerCompletion:createPlayerCompletionMetrics({now:()=>0}),
  });
  vm.runInContext(source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+advanceSource+'\n'+pointerSource,context);
  return {context,frames,tick:()=>context.advance()};

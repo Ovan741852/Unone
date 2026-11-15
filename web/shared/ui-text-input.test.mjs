@@ -18,8 +18,11 @@ class Target{
   remove(){this.parent.children=this.parent.children.filter(c=>c!==this);}
   setAttribute(key,value){this[key]=value;}
 }
+// The ordered router claims touch-action through the CSSStyleDeclaration API.
+function cssStyle(){const props=new Map();return {getPropertyValue:k=>props.get(k)?.value??'',getPropertyPriority:k=>props.get(k)?.priority??'',
+  setProperty:(k,value,priority='')=>props.set(k,{value,priority}),removeProperty:k=>props.delete(k)};}
 function setup(){
-  const win=new Target(),doc=new Target(),body=new Target(),canvas=new Target(),input=createHostInput();
+  const win=new Target(),doc=new Target(),body=new Target(),canvas=new Target(),input=createHostInput();canvas.style=cssStyle();
   Object.assign(doc,{body,defaultView:win,activeElement:canvas,hidden:false});
   let bounds={left:10,top:146.5,width:1591,height:894.9375},redraws=0,focuses=0;
   canvas.ownerDocument=doc;canvas.getBoundingClientRect=()=>bounds;

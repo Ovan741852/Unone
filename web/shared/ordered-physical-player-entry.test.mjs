@@ -1,10 +1,13 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
 import {createOrderedPhysicalQueue} from './ordered-physical-queue.mjs';
 import {serializedSavePayload} from './save-publication.mjs';
+import {createGamepadPolling} from './player-input.js';
+import {createPlayerCompletionMetrics} from './player-completion.mjs';
 const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
 function entry(backend){
  const q=createOrderedPhysicalQueue({epoch:1});q.append({kind:'reset',route:'control',origin:'fixture',received_us:1,scope:'all',reason:'load'});
- const context={resourceHost:null,serializedSavePayload,orderedRouter:null,profiler:null,profileFlight:null,performance:{now:()=>0},manualInput:null,input:{consumeFrame:()=>({actions:{}})},hasWorldPointer:false,orderedQueue:q,
+ const context={resourceHost:null,serializedSavePayload,orderedRouter:null,profiler:null,profileFlight:null,performance:{now:()=>0},manualInput:null,input:{setGamepads(){},consumeFrame:()=>({actions:{}})},hasWorldPointer:false,orderedQueue:q,
+  gamepadInput:createGamepadPolling({navigator:null,document:null}),playerCompletion:createPlayerCompletionMetrics({now:()=>0}),imageGroupHost:null,networkHost:null,bridgeMs:0,
   backend,acceptSnapshot:value=>context.snapshot=value,audio:null,snapshot:{save_payload:{}},saved:'{}',publishPhysical(){},localStorage:{setItem(){}},key:'fixture'};
  const start=source.indexOf('async function advance('),end=source.indexOf('function tickOnce(');
  assert(start>=0&&end>start,'actual player advance implementation must be present');
