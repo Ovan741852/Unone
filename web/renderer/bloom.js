@@ -22,7 +22,7 @@ export function normalizePostProcessing(value) {
 export function createBloom(THREE,renderer,settings) {
   const postprocessing=normalizePostProcessing(settings);
   const gl=renderer.getContext(),timer=createBloomTimer(gl,renderer.domElement??gl.canvas);
-  let enabled=true, aoEnabled=false,width=0,height=0,disposed=false,lastPipeline=null;
+  let enabled=true, aoEnabled=false,width=0,height=0,disposed=false,lastPipeline=null,targetReleases=0;
   const hdr=Boolean(gl.getExtension('EXT_color_buffer_float'));
   const target=()=>new THREE.WebGLRenderTarget(1,1,{type:hdr?THREE.HalfFloatType:THREE.UnsignedByteType,depthBuffer:false});
   const base=target(),a=target(),b=target(),chain=[target(),target()];base.depthBuffer=true;
@@ -128,6 +128,18 @@ export function createBloom(THREE,renderer,settings) {
     const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled,tone=pipeline?pipeline.tone:configuredTone;
     return Boolean(bloomOn||aoOn||tone||pipeline?.fog?.on||pipeline?.grade?.on||pipeline?.vignette?.on||pipeline?.fxaa||(pipeline?.extensions??[]).length);
   }
+  // Presentation can disable every post-processing pass for a scene (for
+  // example a UI-only town) and enable it again later. Reset to 1x1 rather
+  // than only disposing: sprite preparation also uses `base`, and must not
+  // accidentally reallocate the last full-size target while effects are off.
+  function releaseInactiveTargets(){
+    if(width===0&&height===0)return;
+    for(const value of [base,a,b,...chain]){
+      value.dispose();
+      value.setSize(1,1);
+    }
+    width=height=0;targetReleases++;
+  }
   // Fog, grade and vignette uniforms for this frame; off without a pipeline.
   function setLook(pipeline){
     const u=combine.uniforms,fog=pipeline?.fog,grade=pipeline?.grade,vignette=pipeline?.vignette;
@@ -199,12 +211,12 @@ export function createBloom(THREE,renderer,settings) {
           pass(fxaa,post.length?chain[1]:null);
         }
         if(post.length)extensions(post,antialias?1:0);
-      } else {renderer.setRenderTarget(null);world();}
+      } else {releaseInactiveTargets();renderer.setRenderTarget(null);world();}
       }finally{timer.end(query);}
     },
     metrics(){
       const timing=timer.metrics(),gpu=timing.samples;
-      return {render_pipeline:lastPipeline,bloom:enabled,ao:aoEnabled,ao_method:'depth-ssao-12',postprocessing:postprocessing?{...postprocessing}:null,output_pipeline:postprocessing?'linear-tone-srgb':'legacy',bloom_resolution:[a.width,a.height],hdr,gpu_timer_available:timing.available,gpu_timer_context:timing.context,gpu_on:gpu.bloom_on_ao_off,gpu_off:gpu.bloom_off_ao_off,gpu_ao_only:gpu.bloom_off_ao_on,gpu_bloom_with_ao:gpu.bloom_on_ao_on,gpu_samples_by_mode:gpu,gpu_comparison:{gpu_on_off_same_ao_only:true,active_mode:bloomMeasurementMode(enabled,aoEnabled)}};
+      return {render_pipeline:lastPipeline,bloom:enabled,ao:aoEnabled,ao_method:'depth-ssao-12',postprocessing:postprocessing?{...postprocessing}:null,output_pipeline:postprocessing?'linear-tone-srgb':'legacy',bloom_resolution:[a.width,a.height],postprocess_target_size:[width,height],postprocess_target_releases:targetReleases,hdr,gpu_timer_available:timing.available,gpu_timer_context:timing.context,gpu_on:gpu.bloom_on_ao_off,gpu_off:gpu.bloom_off_ao_off,gpu_ao_only:gpu.bloom_off_ao_on,gpu_bloom_with_ao:gpu.bloom_on_ao_on,gpu_samples_by_mode:gpu,gpu_comparison:{gpu_on_off_same_ao_only:true,active_mode:bloomMeasurementMode(enabled,aoEnabled)}};
     },
     dispose(){
       if(disposed)return;disposed=true;

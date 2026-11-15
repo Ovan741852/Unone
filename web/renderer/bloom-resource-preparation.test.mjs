@@ -36,3 +36,37 @@ test('offscreen link failure restores prior target and retires staged sprite own
   assert.equal(f.pool.metrics().live_textures,0);assert.equal(f.pool.metrics().image_leases,0);assert.equal(f.pool.metrics().gpu_reserved_bytes_estimate,0);
  }finally{f.dispose();}
 });
+
+test('inactive declared pipeline releases targets and preparation stays small before reuse',()=>{
+ const f=fixture();try{
+  const world=new THREE.Scene(),camera=new THREE.PerspectiveCamera();
+  const pipeline=on=>({ids:['world','bloom','ui'],scene:true,bloom:{on},ao:{on:false},tone:null,extensions:[]});
+  f.bloom.draw(world,camera,null,pipeline(true));
+  const base=f.rendered.find(row=>row.scene===world).target;
+  const quarter=f.rendered.filter(row=>row.scene!==world&&row.target).map(row=>row.target);
+  assert.equal(base.width,2);assert.equal(base.height,2);assert.equal(quarter.length,3);
+  let releases=0;base.addEventListener('dispose',()=>releases++);
+  f.bloom.draw(world,camera,null,pipeline(false));
+  assert.equal(base.width,1);assert.equal(base.height,1);assert(releases>=1);
+  assert.deepEqual(f.bloom.metrics().postprocess_target_size,[0,0]);assert.equal(f.bloom.metrics().postprocess_target_releases,1);
+  const afterRelease=releases;
+  f.bloom.draw(world,camera,null,pipeline(false));assert.equal(releases,afterRelease,'idle frames do not repeatedly release targets');
+  f.bloom.withWorldPreparationTargets(()=>{});
+  assert.equal(base.width,1,'preparation cannot reallocate the old full-size base');
+  f.bloom.draw(world,camera,null,pipeline(true));
+  assert.equal(base.width,2);assert.equal(base.height,2);
+  assert.deepEqual(f.bloom.metrics().postprocess_target_size,[2,2]);
+  assert.equal(f.rendered.filter(row=>row.scene===world).at(-1).target,base,'reenabling draws to the reused base');
+ }finally{f.dispose();}
+});
+
+test('other active passes retain the target even when bloom is off',()=>{
+ const f=fixture();try{
+  const world=new THREE.Scene(),camera=new THREE.PerspectiveCamera();
+  f.bloom.draw(world,camera,null,{scene:true,bloom:{on:false},ao:{on:true,strength:1},tone:null,extensions:[]});
+  const base=f.rendered.find(row=>row.scene===world).target;
+  assert.equal(base.width,2);assert.equal(f.bloom.metrics().postprocess_target_releases,0);
+  f.bloom.setEnabled(false);f.bloom.draw(world,camera);
+  assert.equal(base.width,1);assert.equal(f.bloom.metrics().postprocess_target_releases,1);
+ }finally{f.dispose();}
+});
