@@ -314,7 +314,11 @@ test('the device record keeps build properties and emulator markers, never seria
  assert.deepEqual(device.emulator_markers.map(m=>m.key).sort(),['ro.boot.qemu','ro.bst.instance.id','ro.bst.version','ro.hardware']);
  assert.equal(device.emulator_markers.find(m=>m.key==='ro.bst.instance.id').value,'(identifier not recorded)');
  assert(!JSON.stringify(device).includes('R5CT0000000'),'no serial number');assert(!JSON.stringify(device).includes('Taipei'));
- assert.equal(deviceInfo(parseGetprop('[ro.product.model]: [Pixel 9]\n[ro.hardware]: [tensor]')).emulator,null,'no marker is unknown, not "a phone"');
+ assert.equal(deviceInfo(parseGetprop('[ro.product.model]: [Pixel 9]\n[ro.hardware]: [tensor]\n[init.svc.tombstoned]: [running]')).emulator,null,'no marker is unknown, not "a phone"');
+ // What BlueStacks 16 actually reports: a Samsung model and qcom hardware, with its services and EGL giving it away.
+ const bluestacks=deviceInfo(parseGetprop(['[ro.product.manufacturer]: [samsung]','[ro.product.model]: [SM-S942B]','[ro.hardware]: [qcom]','[ro.product.cpu.abi]: [x86_64]',
+  '[init.svc.bstsvcmgrtest]: [running]','[init.svc.vendor.RTVboxGuestService]: [running]','[ro.hardware.egl]: [emulation]','[init.svc.tombstoned]: [running]'].join('\n')));
+ assert.equal(bluestacks.emulator,true);assert.deepEqual(bluestacks.emulator_markers.map(m=>m.key).sort(),['init.svc.bstsvcmgrtest','init.svc.vendor.RTVboxGuestService','ro.hardware.egl']);
  assert.deepEqual(parseWebViewProvider('Current WebView package (name, version): (com.google.android.webview, 141.0.7390.122)\nPreferred'),{package:'com.google.android.webview',version:'141.0.7390.122'});
  assert.equal(parseWebViewProvider('nothing here'),null);
 });

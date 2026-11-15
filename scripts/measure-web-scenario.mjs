@@ -18,11 +18,28 @@
 // A blank page measured first in the same browser gives the browser's own cadence.
 import {spawn} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
+import os from 'node:os';
 
 export const SCENARIO_SCHEMA='unone.web-scenario.v1';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const round=n=>finite(n)?Math.round(n*1000)/1000:null;
+
+/** This machine's CPU time so far, summed over its logical CPUs (os.cpus(), milliseconds). */
+export function cpuTimes(cpus=os.cpus()){
+ let idle=0,total=0;for(const {times:t} of cpus){idle+=t.idle;total+=t.user+t.nice+t.sys+t.idle+t.irq;}
+ return {idle,total,logical_cpus:cpus.length};
+}
+
+/**
+ * The busy share of this machine's CPU time between two cpuTimes readings, 0..1 over all logical CPUs
+ * and every process (the browser included); null when no time passed. An emulator's CPU is this
+ * machine's, and so is a headless browser's: another job here slows what is measured.
+ */
+export function hostCpuBusy(before,after){
+ if(!before||!after)return null;const total=after.total-before.total,idle=after.idle-before.idle;
+ return total>0?round(Math.min(1,Math.max(0,(total-idle)/total))):null;
+}
 const printable=(value,max=64)=>typeof value==='string'&&value.length>=1&&value.length<=max&&!/[\u0000-\u001f\u007f]/.test(value);
 
 // ---------------------------------------------------------------- keys
@@ -357,13 +374,32 @@ export async function measureBlank(page,url,{warmupMs=3000,windowMs}){
  let ready=false;for(let i=0;i<200&&!ready;i++){try{ready=await page.evaluate('Boolean(window.__unoneBlank)',2000);}catch{}if(!ready)await sleep(50);}
  if(!ready)throw Error('MEASURE_BLANK_NOT_READY: the blank control page did not load');
  await sleep(warmupMs);
- const start=await page.evaluate('window.__unoneBlank.now()');
+ const start=await page.evaluate('window.__unoneBlank.now()'),cpu=cpuTimes();
  await sleep(windowMs);
- const end=await page.evaluate('window.__unoneBlank.now()');
+ const end=await page.evaluate('window.__unoneBlank.now()'),hostCpu=hostCpuBusy(cpu,cpuTimes());
  const stamps=JSON.parse(await page.evaluate(`JSON.stringify(window.__unoneBlank.take(${start},${end}))`,15000));
  const state=JSON.parse(await page.evaluate('JSON.stringify({visibility:document.visibilityState,focused:document.hasFocus()})'));
  const intervals=[];for(let i=1;i<stamps.length;i++)intervals.push(stamps[i]-stamps[i-1]);
- return {path:BLANK_PATH,warmup_ms:warmupMs,window_ms:round(end-start),frames:stamps.length,raf_interval:distributionOf(intervals,{gaps:true}),foreground:state};
+ return {path:BLANK_PATH,warmup_ms:warmupMs,window_ms:round(end-start),frames:stamps.length,raf_interval:distributionOf(intervals,{gaps:true}),host_cpu_busy:hostCpu,foreground:state};
+}
+
+/**
+ * One DevTools finger tap on the blank page: does it reach the page as a pointer event? A browser can
+ * acknowledge touch commands and still deliver nothing (Chrome 150 on Android, to every new page for
+ * about 10 minutes after a two-finger sequence); a scenario would then fail later on a milestone that
+ * never comes. Returns {delivered, events, ack_ms}.
+ */
+export async function probeTouch(page,url,{timeoutMs=2000}={}){
+ await page.send('Page.navigate',{url});
+ let ready=false;for(let i=0;i<200&&!ready;i++){try{ready=await page.evaluate('Boolean(window.__unoneBlank)',2000);}catch{}if(!ready)await sleep(50);}
+ if(!ready)throw Error('MEASURE_BLANK_NOT_READY: the blank control page did not load');
+ await page.evaluate("document.documentElement.style.touchAction='none';window.__unoneTouchProbe=[];for(const t of ['pointerdown','pointerup','touchstart','touchend'])addEventListener(t,e=>window.__unoneTouchProbe.push(t),{capture:true});true");
+ const began=performance.now();
+ await page.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:10,y:10,id:0}]});
+ await page.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ const ack=round(performance.now()-began);
+ let events=[];for(const until=performance.now()+timeoutMs;performance.now()<until;){events=JSON.parse(await page.evaluate('JSON.stringify(window.__unoneTouchProbe)'));if(events.includes('pointerup'))break;await sleep(50);}
+ return {delivered:events.includes('pointerdown'),events,ack_ms:ack};
 }
 
 // ---------------------------------------------------------------- running a scenario
@@ -489,13 +525,14 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
    foreground.polls++;if(state.visibility!=='visible')foreground.hidden++;if(state.focused!==true)foreground.unfocused++;
    return state;
   };
-  let first=null,last=null,error=null;
+  let first=null,last=null,error=null,cpu=null;
   try{
    await sleep(phase.warmup_ms);
-   first=await poll();events.clear();
+   first=await poll();events.clear();cpu=cpuTimes();
    const until=clock()+phase.window_ms;
    while(clock()<until&&!loopError){await sleep(Math.min(framePollMs,Math.max(0,until-clock())));last=await poll();}
   }catch(failure){error=String(failure.message??failure);}
+  const hostCpu=hostCpuBusy(cpu,cpuTimes());
   stopLoop=true;await looping;samplerPaused=false;
   error??=loopError;
   let longTasks=null;
@@ -505,12 +542,13 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
    window.window={start_ms:first.now,end_ms:last.now};
    window.metrics=frameWindowMetrics({rows:[...rows.values()],inputs:[...inputs.values()],start:first.now,end:last.now,droppedStart:first.dropped_steps_total,droppedEnd:last.dropped_steps_total});
    if(!inputsReported){window.metrics.input_latency=null;window.metrics.input_delivery=null;}
+   window.metrics.host_cpu_busy=hostCpu;
    window.metrics.long_tasks=longTasks?{count:longTasks.length,total_ms:round(longTasks.reduce((sum,t)=>sum+t.duration_ms,0)),max_ms:round(longTasks.reduce((max,t)=>Math.max(max,t.duration_ms),0))}:null;
    if(longTasks?.length)window.long_tasks=longTasks.slice(0,100).map(t=>({start_ms:round(t.start_ms),duration_ms:round(t.duration_ms)}));
    if(profiling)window.profile=profileError?{error:profileError}:{events:events.size,overwritten:(profileLast?.overwritten??0)-(profileFirst?.overwritten??0),abandoned:(profileLast?.abandoned??0)-(profileFirst?.abandoned??0),spans:profileWindowSummary([...events.values()],last.now-first.now)};
   }
   if(!error){const {row,os}=await checkpoint();window.end=row.metrics;window.os=os;}
-  log(error?`${phase.name}: ${error}`:`${phase.name}: ${window.metrics.completed_submissions} submissions, p95 ${window.metrics.submission_interval.p95_ms} ms, over 50 ms ${window.metrics.submission_interval.over_50ms}`);
+  log(error?`${phase.name}: ${error}`:`${phase.name}: ${window.metrics.completed_submissions} submissions, p95 ${window.metrics.submission_interval.p95_ms} ms, over 50 ms ${window.metrics.submission_interval.over_50ms}, host CPU busy ${window.metrics.host_cpu_busy}`);
   return window;
  }
  const result={ok:true,error:null,started_after_mark:scenario.start_mark,profiling,phases:[],settled:null,os_supported:null};

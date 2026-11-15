@@ -2,7 +2,7 @@
 // OS process memory parsing and the round/trend bookkeeping, driven against a fake page.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {SCENARIO_SCHEMA,parseScenario,usesTouch,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario,distributionOf,frameWindowMetrics,flattenFrames,profileWindowSummary,measureBlank,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
+import {SCENARIO_SCHEMA,parseScenario,usesTouch,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario,distributionOf,frameWindowMetrics,flattenFrames,profileWindowSummary,measureBlank,probeTouch,cpuTimes,hostCpuBusy,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 import {parseArgs,scenarioSummary,scenarioConsole} from './measure-web-export.mjs';
 
 const roundTrip={schema:SCENARIO_SCHEMA,name:'city-tech-bag',start_mark:'city.interactive',
@@ -227,7 +227,28 @@ test('the blank control records the empty page\'s RAF cadence after its warmup',
  const blank=await measureBlank(page,'http://127.0.0.1:1/__unone_measure/blank.html',{warmupMs:0,windowMs:1});
  assert.deepEqual(calls[0],['Page.navigate','http://127.0.0.1:1/__unone_measure/blank.html']);
  assert.deepEqual([blank.frames,blank.window_ms,blank.raf_interval.max_ms,blank.raf_interval.over_100ms,blank.foreground.visibility],[6,200,120,1,'visible']);
+ assert(blank.host_cpu_busy===null||blank.host_cpu_busy>=0&&blank.host_cpu_busy<=1,'the host CPU share over the window, or null');
  assert.equal(BLANK_PATH,'/__unone_measure/blank.html');assert.match(BLANK_HTML,/requestAnimationFrame/);
+});
+
+test('the touch probe taps the blank page once and says whether a pointer event arrived',async()=>{
+ const fake=deliver=>{const sent=[],events=[];return {sent,page:{send:async(method,params)=>{sent.push([method,params?.type??params?.url]);if(deliver&&method==='Input.dispatchTouchEvent')events.push(params.type==='touchStart'?'pointerdown':'pointerup');return {};},
+  evaluate:async expression=>expression.startsWith('Boolean')?true:expression.includes('JSON.stringify(window.__unoneTouchProbe)')?JSON.stringify(events):true}};};
+ const ok=fake(true),result=await probeTouch(ok.page,'http://127.0.0.1:1/__unone_measure/blank.html');
+ assert.equal(result.delivered,true);assert.deepEqual(result.events,['pointerdown','pointerup']);
+ assert.deepEqual(ok.sent,[['Page.navigate','http://127.0.0.1:1/__unone_measure/blank.html'],['Input.dispatchTouchEvent','touchStart'],['Input.dispatchTouchEvent','touchEnd']]);
+ const lost=await probeTouch(fake(false).page,'http://127.0.0.1:1/__unone_measure/blank.html',{timeoutMs:100});
+ assert.equal(lost.delivered,false,'acknowledged commands with no pointer event are not delivered');assert.deepEqual(lost.events,[]);
+});
+
+test('host CPU busy is the busy share of all logical CPUs between two readings, never a guess',()=>{
+ const cpu=(user,idle)=>({times:{user,nice:0,sys:0,idle,irq:0}});
+ const before=cpuTimes([cpu(100,900),cpu(300,700)]),after=cpuTimes([cpu(400,1000),cpu(500,1100)]);
+ assert.deepEqual(before,{idle:1600,total:2000,logical_cpus:2});
+ assert.equal(hostCpuBusy(before,after),0.5,'500 busy of 1000 ms across both CPUs');
+ assert.equal(hostCpuBusy(before,before),null,'no time passed');assert.equal(hostCpuBusy(null,after),null);
+ assert.equal(hostCpuBusy({idle:0,total:0},{idle:0,total:10}),1);
+ const now=cpuTimes();assert(now.logical_cpus>0&&now.total>=now.idle);
 });
 
 test('a frame window pauses memory sampling, drives the loop and reads draw and input rows by sequence',async()=>{
@@ -256,6 +277,7 @@ test('a frame window pauses memory sampling, drives the loop and reads draw and 
  assert.ok(window.metrics.submission_interval.p95_ms<17&&window.metrics.submission_interval.over_50ms===0);
  assert.ok(window.metrics.input_latency.n>=3);
  assert.ok(window.metrics.dropped_steps>=3,'dropped steps are the window delta');
+ assert.ok(window.metrics.host_cpu_busy===null||window.metrics.host_cpu_busy>=0&&window.metrics.host_cpu_busy<=1,'the window records how busy this machine was');
  assert.deepEqual([window.foreground.hidden,window.foreground.unfocused],[0,0]);
  assert.ok(window.end['images.decoded.resident.entries']>=1,'a memory checkpoint after the window');
  assert.equal(sampleTimes.filter(t=>t>frameTimes[0]&&t<frameTimes[frameTimes.length-1]).length,0,'no memory read between the first and last frame read of the window');

@@ -1,7 +1,7 @@
 {
   "schema": "unone.web-scenario.v1",
   "name": "frame-tail-touch",
-  "description": "frame-tail with fingers: the empty screen and city idle as before, the map dragged and pinched by touch (map.panned proves a touch drag landed), the research list dragged by touch instead of the wheel, and the battle. Five 30 s windows after 3 s warmups.",
+  "description": "frame-tail with fingers: the empty screen and city idle as before, the map dragged and pinched by touch (map.panned proves a touch drag landed), the research list dragged by touch instead of the wheel, and the battle. Five 30 s windows after 3 s warmups. Coordinates fit a 1280x620 CSS viewport (a 1920x1080 screen at DPR 1.5 under browser chrome) as well as 1280x720.",
   "start_mark": "city.interactive",
   "phases": [
     {
@@ -19,7 +19,7 @@
     {
       "name": "map-touch",
       "setup": [
-        {"key": "Escape"}, {"wait_mark": "city.interactive"}, {"key": "KeyM"}, {"wait_mark": "map.interactive"},
+        {"key": "KeyM"}, {"wait_mark": "map.interactive"},
         {"drag": {"from": [300, 360], "to": [700, 360], "ms": 400}, "pointer": "touch"}, {"wait_mark": "map.panned"}
       ],
       "loop": [
@@ -34,8 +34,8 @@
       "name": "list-touch",
       "setup": [{"key": "Escape"}, {"wait_mark": "city.interactive"}, {"key": "KeyL"}, {"wait_mark": "list.interactive"}],
       "loop": [
-        {"drag": {"from": [380, 560], "to": [380, 160], "ms": 500}, "pointer": "touch"},
-        {"drag": {"from": [380, 160], "to": [380, 560], "ms": 500}, "pointer": "touch"}
+        {"drag": {"from": [380, 480], "to": [380, 160], "ms": 500}, "pointer": "touch"},
+        {"drag": {"from": [380, 160], "to": [380, 480], "ms": 500}, "pointer": "touch"}
       ],
       "window_ms": 30000
     },

@@ -45,3 +45,14 @@ units every tick. Add `--scenario tests/memory-roundtrip-project/frame-tail.scen
 Frame-window measurements of this fixture are in
 `docs/evidence/2026-11-15-web-export-frame-tail.json` (and a first batch with one
 unexplained stall in `docs/evidence/2026-11-15-web-export-frame-tail-first-batch.json`).
+
+`frame-tail-touch.scenario.json` is the same five windows with fingers: the map
+dragged and pinched by touch (it waits for `map.panned` to prove a touch drag
+landed) and the list dragged by touch instead of the wheel. Its coordinates fit a
+1280x620 CSS viewport as well as 1280x720. Measured in Android Chrome inside
+BlueStacks on the development PC through `--adb-socket` (an emulator, not a
+WebView, not a phone): `docs/evidence/2026-11-15-web-export-android-chrome-bluestacks.json`.
+The same map drag as DevTools touch and as `adb shell input touchscreen swipe`
+(one 24 s window each, the second scenario only waiting while adb swiped):
+`docs/evidence/2026-11-15-web-export-android-chrome-touch-cdp.json` and
+`docs/evidence/2026-11-15-web-export-android-chrome-touch-os.json`.

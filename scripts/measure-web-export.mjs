@@ -39,7 +39,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gzipSync} from 'node:zlib';
-import {parseScenario,runScenario,readProcessMemory,measureBlank,flattenFrames,usesTouch,runProcess,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
+import {parseScenario,runScenario,readProcessMemory,measureBlank,probeTouch,flattenFrames,usesTouch,runProcess,cpuTimes,hostCpuBusy,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 
 export const SCHEMA='unone.web-export-measurement.v1';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -417,7 +417,9 @@ export async function startServer(root,{cachePolicy=null,cacheControl=null,compr
   finally{log.push(entry);}
  });
  await new Promise((resolve,reject)=>{server.once('error',error=>reject(error.code==='EADDRINUSE'?Error(`MEASURE_SERVE_PORT_BUSY: 127.0.0.1:${port} is in use; pick another --serve-port`):error));server.listen(port,'127.0.0.1',resolve);});
- return {url:`http://127.0.0.1:${server.address().port}/`,log,take(){return log.splice(0,log.length);},close:()=>new Promise(resolve=>server.close(()=>resolve()))};
+ // A browser on another device (adb reverse) can keep a connection open after its page went blank.
+ const close=()=>new Promise(resolve=>{server.close(()=>resolve());server.closeIdleConnections();setTimeout(()=>server.closeAllConnections(),2000).unref();});
+ return {url:`http://127.0.0.1:${server.address().port}/`,log,take(){return log.splice(0,log.length);},close};
 }
 
 // ---------------------------------------------------------------- browser and DevTools protocol
@@ -607,8 +609,11 @@ const DEVICE_PROPS=Object.freeze({manufacturer:'ro.product.manufacturer',brand:'
  */
 export function deviceInfo(props){
  const out={};for(const [name,key] of Object.entries(DEVICE_PROPS))out[name]=props[key]||null;
- const markers=Object.entries(props).filter(([key,value])=>/(^|[._])(qemu|bst|bluestacks|vbox|genymotion|nox|ldplayer|memu)([._]|$)/i.test(key)&&value!==''&&value!=='0'
-  ||(key==='ro.hardware'||key==='ro.boot.hardware'||key==='ro.product.board')&&/^(ranchu|goldfish|vbox86|cutf_cvm)$/i.test(value))
+ // BlueStacks 16 reports samsung SM-S942B with ro.hardware qcom, but runs init.svc.bstsvcmgrtest,
+ // init.svc.vendor.RTVboxGuestService and ro.hardware.egl=emulation.
+ const markers=Object.entries(props).filter(([key,value])=>/qemu|bluestacks|vbox|genymotion|ldplayer|(^|[._])(bst|nox|memu)/i.test(key)&&value!==''&&value!=='0'
+  ||(key==='ro.hardware'||key==='ro.boot.hardware'||key==='ro.product.board')&&/^(ranchu|goldfish|vbox86|cutf_cvm)$/i.test(value)
+  ||key==='ro.hardware.egl'&&value==='emulation')
   .map(([key,value])=>({key,value:/(^|[._])(id|serial|imei|mac|guid|uuid)([._]|$)/i.test(key)?'(identifier not recorded)':value.slice(0,64)}));
  return {...out,emulator:markers.length?true:null,emulator_markers:markers.slice(0,32)};
 }
@@ -881,7 +886,7 @@ async function openPage(browser,options){
    ??(waiting.length?`MEASURE_MILESTONE_TIMEOUT: ${waiting.join(', ')} not presented within ${timeoutMs} ms${outcome.milestones?'':' (this player publishes no milestones: rebuild the runtime and export with an engine that has api.profile.mark)'}`:null);
   return {raw,network:[...network.values()],error,storageError};
  }
- return {load,send:sendTo,evaluate,evaluateTop,playerFrame,touch:{emulated:touchEmulated,max_touch_points:touchPoints},
+ return {load,send:sendTo,sendTop:send,evaluate,evaluateTop,playerFrame,touch:{emulated:touchEmulated,max_touch_points:touchPoints},
   close:browser.attached?async()=>{}:()=>cdp.send('Target.closeTarget',{targetId}).catch(()=>{})};
 }
 
@@ -903,11 +908,14 @@ export function profileMissing(raw,{profiling,embedded}){
 
 async function measureOnce(page,server,options,{kind,index,profiling,milestones=options.milestones,profileLimit=null}){
  const base=options.url??server.url,url=measuredUrl(base,options,profiling,profileLimit);server.take();
+ const cpu=cpuTimes();
  const {raw,network,error,storageError}=await page.load(url,{origin:new URL(base).origin,keepStorage:options.keepStorage,milestones,timeoutMs:options.timeoutMs,settleMs:options.settleMs,pollMs:options.pollMs,frameWindowMs:options.frameWindowMs});
+ const hostCpu=hostCpuBusy(cpu,cpuTimes());
  // With --url the page's own server sent the player; this tool's server only has the blank control.
  const served=server.take();
  const sample=normalizeLoad(raw,{network,server:options.url?null:served,options,kind,index,profiling,url:options.url?pageWithoutQuery(url):url});
  if(storageError)sample.page.storage_clear_error=storageError;
+ sample.metrics['host.cpu_busy']=hostCpu;
  if(options.url)sample.player_frame=await page.playerFrame();
  const failed=error??profileMissing(raw,{profiling,embedded:Boolean(options.url)});
  if(failed){sample.ok=false;sample.error=failed;}
@@ -922,6 +930,7 @@ export async function measure(options,log=message=>process.stderr.write(message+
  const executable=attaching?null:findBrowser(options.browser);
  const server=await startServer(exported.root,{cachePolicy:exported.exported.cache_policy,cacheControl:options.cacheControl,compress:options.compress,port:options.servePort});
  const runs=[],pairs=[],scenarioRuns=[];let browserInfo=null,adb=null;
+ const touch=scenario?usesTouch(scenario.definition):false;
  const conditionsOf=browser=>({browser:{product:browser.version.product,user_agent:browser.version.userAgent,js_version:browser.version.jsVersion,protocol:browser.version.protocolVersion,
   executable,headless:attaching?null:!options.headed,args:browser.args?.filter(arg=>!arg.startsWith('--user-data-dir='))??null,...(browser.attached?{attached:browser.attached}:{})},gpu:browser.gpu,
   ...(attaching?{device:{label:options.deviceLabel,...(adb?{reported:adb.device}:{reported:null,note:'Attached with --attach: this tool did not ask the device what it is; see --device-label.'})}}:{})});
@@ -929,16 +938,23 @@ export async function measure(options,log=message=>process.stderr.write(message+
   // The device reaches this tool's server on its own 127.0.0.1 through adb reverse.
   if(options.adbSocket){adb=await adbConnect(options,{serverPort:Number(new URL(server.url).port)});log(`adb: ${adb.via.forward}; ${adb.via.reverse}`);}
   const endpoint=adb?.endpoint??options.attach;
-  const openBrowser=()=>attaching?attachBrowser(endpoint,options,adb?.via??null):launchBrowser(executable,options);
+  // A launched browser per cold run, warm block and scenario run; an attached browser lends the same
+  // page each time through a new DevTools session.
+  const session=async pageOptions=>{
+   const browser=attaching?await attachBrowser(endpoint,options,adb?.via??null):await launchBrowser(executable,options);browserInfo??=conditionsOf(browser);
+   // A browser this tool did not start can change its GPU setup mid-measurement (Chrome turns Vulkan
+   // off after its GPU process crashes): read it again on leaving.
+   const close=async()=>{if(attaching)browserInfo.gpu_at_end=await readGpu(browser.cdp);await browser.close();};
+   try{return {browser,page:await openPage(browser,pageOptions),close};}catch(error){await browser.close();throw error;}
+  };
   for(let i=0;i<options.cold;i++){
-   const browser=await launchBrowser(executable,options);browserInfo??=conditionsOf(browser);
-   try{const page=await openPage(browser,options);const sample=await measureOnce(page,server,options,{kind:'cold',index:i+1,profiling:false});runs.push(sample);log(`cold ${i+1}/${options.cold}: ${sample.ok?`first submission ${sample.metrics['player.first_successful_submission_ms']} ms`:sample.error}`);}
-   finally{await browser.close();}
+   const {page,close}=await session(options);
+   try{const sample=await measureOnce(page,server,options,{kind:'cold',index:i+1,profiling:false});runs.push(sample);log(`cold ${i+1}/${options.cold}: ${sample.ok?`first submission ${sample.metrics['player.first_successful_submission_ms']} ms`:sample.error}`);}
+   finally{await close();}
   }
   if(options.warm+options.profilePairs>0){
-   const browser=await openBrowser();browserInfo??=conditionsOf(browser);
+   const {page,close}=await session(options);
    try{
-    const page=await openPage(browser,options);
     const prime=await measureOnce(page,server,options,{kind:'prime',index:0,profiling:false});
     log(`prime (not reported in the summary): ${prime.ok?'ok':prime.error}`);
     runs.push(prime);
@@ -948,34 +964,39 @@ export async function measure(options,log=message=>process.stderr.write(message+
      for(const side of order){const sample=await measureOnce(page,server,options,{kind:'profiler_pair',index:i+1,profiling:side==='on'});runs.push(sample);pair[side]=sample;}
      pairs.push(pair);log(`profiler pair ${i+1}/${options.profilePairs} (${pair.order}): ${pair.off.ok&&pair.on.ok?'ok':pair.off.error??pair.on.error}`);
     }
-   }finally{await browser.close();}
+   }finally{await close();}
   }
-  // Each scenario run is a fresh browser: it starts cold, waits for the scenario's start mark,
-  // then drives the game and samples memory until the settle checkpoint.
+  // Each scenario run is a fresh launched browser (an attached one: the same page, reloaded): it
+  // waits for the scenario's start mark, then drives the game and samples memory until the settle checkpoint.
   const windows=scenario?scenario.definition.phases.filter(phase=>phase.kind==='frames'):[];
   const blankMs=windows.length&&options.blankControl?Math.max(...windows.map(phase=>phase.window_ms)):0;
-  const scenarioTotal=options.scenarioRuns+(options.scenarioRuns&&options.scenarioProfile?1:0),touch=scenario?usesTouch(scenario.definition):false;
+  const scenarioTotal=options.scenarioRuns+(options.scenarioRuns&&options.scenarioProfile?1:0);
   for(let i=0;i<scenarioTotal;i++){
    const profiling=i===options.scenarioRuns;
    const milestones=[...new Set([...options.milestones,...(scenario.definition.start_mark?[scenario.definition.start_mark]:[])])];
-   const browser=await openBrowser();browserInfo??=conditionsOf(browser);
+   const {browser,page,close}=await session({...options,touch});
    try{
-    const page=await openPage(browser,{...options,touch});
     // The browser's own cadence on an empty page, same browser and viewport, before the game loads.
     let blank=null;
-    if(blankMs&&!profiling){try{blank=await measureBlank({send:page.send,evaluate:page.evaluateTop},new URL(BLANK_PATH,server.url).href,{windowMs:blankMs});log(`scenario ${i+1}: blank control p95 ${blank.raf_interval.p95_ms} ms over ${blank.frames} frames`);}catch(error){blank={error:String(error.message??error)};}}
-    const startup=await measureOnce(page,server,options,{kind:'scenario',index:i+1,profiling,milestones,profileLimit:profiling?2048:null});runs.push(startup);
-    let result;
-    if(!startup.ok)result={ok:false,error:`MEASURE_SCENARIO_NOT_STARTED: ${startup.error}`,phases:[],settled:null,samples:null};
+    if(blankMs&&!profiling){try{blank=await measureBlank({send:page.send,evaluate:page.evaluateTop},new URL(BLANK_PATH,server.url).href,{windowMs:blankMs});log(`scenario ${i+1}: blank control p95 ${blank.raf_interval.p95_ms} ms over ${blank.frames} frames, host CPU busy ${blank.host_cpu_busy}`);}catch(error){blank={error:String(error.message??error)};}}
+    // A browser this tool did not start can take DevTools touch commands and deliver nothing.
+    let probe=null;
+    if(attaching&&touch){try{probe=await probeTouch({send:page.sendTop,evaluate:page.evaluateTop},new URL(BLANK_PATH,server.url).href);}catch(error){probe={delivered:false,events:[],error:String(error.message??error)};}}
+    let startup=null,result=null;
+    if(probe&&!probe.delivered)result={ok:false,error:`MEASURE_TOUCH_NOT_DELIVERED: a DevTools finger tap on the blank page reached no pointer event (events: ${probe.events.join(', ')||'none'}${probe.error?`; ${probe.error}`:''}). Chrome 150 on Android delivered none to any new page for about 10 minutes after a two-finger touch sequence (a pinch in an earlier run); wait and measure again, or put one pinch scenario run in each measurement`,phases:[],settled:null,samples:null};
     else{
+     startup=await measureOnce(page,server,options,{kind:'scenario',index:i+1,profiling,milestones,profileLimit:profiling?2048:null});runs.push(startup);
+     if(!startup.ok)result={ok:false,error:`MEASURE_SCENARIO_NOT_STARTED: ${startup.error}`,phases:[],settled:null,samples:null};
+    }
+    if(!result){
      log(`scenario ${i+1}/${options.scenarioRuns}: ${scenario.definition.name} started`);
      // An attached browser's process ids are its own machine's: reading them here would name unrelated processes.
      const readOs=attaching?async()=>attachedOsMemory():async()=>{let info;try{info=(await browser.cdp.send('SystemInfo.getProcessInfo')).processInfo;}catch(error){return {supported:false,error:String(error.message??error),processes:[]};}return readProcessMemory(info);};
      result=await runScenario(page,scenario.definition,{readOs,profiling,log:message=>log(`scenario ${i+1}${profiling?' (profiler on)':''}: ${message}`)});
     }
-    scenarioRuns.push({index:i+1,profiling,startup_run:runs.length-1,...(touch?{touch:page.touch}:{}),...(blank?{blank_control:blank}:{}),...result});
+    scenarioRuns.push({index:i+1,profiling,startup_run:startup?runs.length-1:null,...(touch?{touch:{...page.touch,...(probe?{probe}:{})}}:{}),...(blank?{blank_control:blank}:{}),...result});
     log(`scenario ${i+1}/${scenarioTotal}${profiling?' (profiler on, diagnostic)':''}: ${result.ok?'ok':result.error}`);
-   }finally{await browser.close();}
+   }finally{await close();}
   }
  }finally{await adb?.close();await server.close();}
  return buildReport({options,exported,runs,pairs,browserInfo,scenario,scenarioRuns});
@@ -1013,7 +1034,7 @@ export function scenarioSummary(scenarioRuns){
  return summarize(scenarioRuns.filter(run=>run.ok&&!run.profiling).map(run=>{
   const metrics={},put=(prefix,values)=>{for(const [name,value] of Object.entries(values??{}))if(finite(value))metrics[`${prefix}.${name}`]=value;};
   put('baseline',run.baseline?.metrics);
-  if(run.blank_control?.raf_interval)put('blank_control',flattenFrames({raf_interval:run.blank_control.raf_interval}));
+  if(run.blank_control?.raf_interval)put('blank_control',flattenFrames({raf_interval:run.blank_control.raf_interval,host_cpu_busy:run.blank_control.host_cpu_busy}));
   for(const phase of run.phases??[]){
    if(phase.kind==='frames'){put(`${phase.name}.frames`,flattenFrames(phase.metrics));continue;}
    put(`${phase.name}.last_round_end`,phase.rounds.filter(r=>!r.warmup).at(-1)?.end);
@@ -1039,6 +1060,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   'null means the browser or this player did not expose the value; it is never zero by assumption. transfer_bytes is null when the browser hides sizes (cross-origin without Timing-Allow-Origin, opaque origins); cache comes from the browser network log, not from transferSize.',
   'Profiler-on runs are diagnostics for locating costs; compare profiler-off runs for acceptance.',
   'Emulated network and CPU throttling are not a real device or radio network.',
+  'host.cpu_busy (per load) and host_cpu_busy (per frame window and blank control) are the busy share of this machine\'s CPU time over all logical CPUs and every process, the measured browser included (os.cpus()). A headless browser\'s or an emulator\'s CPU is this machine\'s: compare runs taken at similar values, and distrust a run taken while another job held the machine.',
  ];
  const attached=Boolean(options.attach||options.adbSocket);
  if(exported.development)notes.push('This export is a development build (--allow-development): its timings are not production timings.');
@@ -1063,7 +1085,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   instrumentation:['Timing wrappers on WebAssembly.instantiateStreaming/instantiate/compileStreaming/compile and FontFace.prototype.load (results unchanged)','longtask PerformanceObserver','DevTools protocol Page/Runtime/Network domains; Performance.getMetrics once per run','one player-accessor poll every '+options.pollMs+' ms between the first submission and the last awaited milestone'],
   coverage,
   summary:{cold:summarize(ok('cold')),warm:summarize(ok('warm')),profiler_pairs:pairDeltas(okPairs)},
-  ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:attached?'the attached browser and page (--attach/--adb-socket) for every run: nothing restarts between runs':'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
+  ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:attached?'the attached browser and page (--attach/--adb-socket) for every run: nothing restarts between runs, and a touch scenario first checks that a DevTools tap reaches the blank page (scenario.runs[].touch.probe)':'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
    touch_emulation:usesTouch(scenario.definition)?touchCondition(scenarioRuns,attached):false,
    frame_windows:{poll_ms:2000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true}) draw and input rows, stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
    os_memory:attached?'not read: the attached browser\'s processes are its device\'s, not this machine\'s':process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
@@ -1074,7 +1096,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
 }
 
 // A few owners' movement across each phase of the first completed scenario run, for the console.
-const FRAME_CONSOLE=['submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','input_delivery.p50_ms','long_tasks.count','long_tasks.max_ms','completed_submissions'];
+const FRAME_CONSOLE=['host_cpu_busy','submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','input_delivery.p50_ms','long_tasks.count','long_tasks.max_ms','completed_submissions'];
 const CONSOLE_METRICS=['images.decoded.resident.entries','images.decoded.resident.bytes','gpu.textures.entries','gpu.geometries.entries','luau.heap.bytes','js_heap.used_bytes','os.largest_renderer.private_bytes','os.gpu_process.gpu_dedicated_bytes'];
 export function scenarioConsole(scenario){
  const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length};

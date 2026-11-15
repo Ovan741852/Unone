@@ -188,6 +188,23 @@ node scripts/measure-web-export.mjs --export <export> --output webview.json --at
   of its own is not emulated; `scenario.conditions.touch_emulation` and
   `scenario.runs[].touch` say which happened. These are events dispatched into
   the browser, not a finger on the screen.
+- Before a touch scenario run the tool taps the blank page once and checks a
+  pointer event arrived (`scenario.runs[].touch.probe`); if none did, the run
+  fails with `MEASURE_TOUCH_NOT_DELIVERED` instead of timing out on a milestone
+  later. After a two-finger sequence (a `pinch`), Chrome 150 on Android
+  acknowledged DevTools touch commands and delivered none of them to any new
+  page for about 10 minutes (9.5 measured); touches in the same page kept
+  working. A scenario with a pinch therefore gives one run per measurement
+  there: use `--scenario-runs 1`, or wait between measurements.
+- DevTools touch is not touch latency on Android. The same map drag in Android
+  Chrome on BlueStacks, as DevTools touch events and as
+  `adb shell input touchscreen swipe` (Android's own input dispatch), gave
+  `input_latency` p50 48.9 ms against 4–6 ms. The difference is all
+  `input_delivery` (48.1 ms against 3–5 ms, from the event's own timestamp to
+  the page): Chrome holds a DevTools touch about three frames. The engine's
+  share (latency minus delivery) was about 0.7 ms either way. Neither path
+  includes a touch screen's digitizer or the display. Each move of a DevTools
+  touch drag also waits for that delivery, so an 800 ms drag took about 2.5 s.
 - OS process memory is not read. DevTools reports the device's process ids,
   and reading those on this machine would name unrelated processes, so scenario
   checkpoints carry `os.supported: false` with `MEASURE_OS_MEMORY_UNAVAILABLE`.
@@ -203,7 +220,7 @@ node scripts/measure-web-export.mjs --export <export> --output webview.json --at
 
 ```powershell
 node scripts/measure-web-export.mjs --export <export> --output webview.json `
-  --adb-socket package:<app package> --adb-serial 127.0.0.1:5555 `
+  --adb-socket package:<app package> --adb-serial 127.0.0.1:6610 `
   --scenario tests/memory-roundtrip-project/frame-tail-touch.scenario.json `
   --device-label "BlueStacks emulator on this PC (not a phone, not 4G)"
 ```
@@ -220,14 +237,38 @@ node scripts/measure-web-export.mjs --export <export> --output webview.json `
   emulator property; no serials or identifiers) and the WebView provider from
   `dumpsys webviewupdate`, and removes both forwards when it is done.
 - adb comes from `--adb`, `UNONE_ADB_PATH`, an Android SDK's platform-tools, or
-  PATH. BlueStacks ships one as `HD-Adb.exe` in its install folder; turn on its
-  Android Debug Bridge in BlueStacks settings and the device is `127.0.0.1:5555`.
+  PATH. BlueStacks ships one as `HD-Adb.exe` in its install folder.
+- BlueStacks 16: turn on Android Debug Bridge (settings, or
+  `enable_adb_access="1"` in its instance `.conf` while it is closed) and start
+  it with `HD-Player.exe --guest --present=embed --chrome=windows`
+  (`--instance <name>` opened an empty desktop window that never booted the
+  guest). The player forwards a localhost port it probes, not always 5555, to
+  the guest's adb: its log in `%LOCALAPPDATA%\BlueStacks_polar\logs` says
+  `adb port resolved: 6610`, and `HD-Adb connect 127.0.0.1:6610` makes that the
+  serial. Its guest has Chrome and the system WebView but no app whose WebView
+  allows debugging; Chrome opens `chrome_devtools_remote` only after its
+  first-run screen (which accepts Google's terms) is done.
+- Chrome 150's GPU process crashed (SIGSEGV in `CompositorGpuTh`) on the
+  first three WebGL loads after each Chrome start, with BlueStacks set to its
+  Vulkan renderer (`graphics_renderer="vlcn"`). The player reported the dead
+  context as `SHADER_COMPILE_FAILED: engine-program` (empty logs: the
+  context-lost event had not arrived yet), and for tens of seconds Chrome
+  refused new WebGL contexts (`Error creating WebGL context.`). After the third
+  crash Chrome turned Vulkan off (`environment.gpu.feature_status.vulkan`
+  `enabled_on` → `disabled_off`; an attached report reads the GPU again at the
+  end as `environment.gpu_at_end`) and later loads ran, still on the emulated
+  GPU through ANGLE. `adb logcat` shows `GPU process exited unexpectedly`.
 - `environment.device.reported.emulator` is true only when an emulator
   property is present, and null otherwise: an emulator can report a phone's
   maker and model (BlueStacks does), so a missing marker does not mean a phone.
 - An emulator's CPU and GPU are this PC's and the network path is adb reverse,
   not a radio network: label the report with `--device-label` and do not read
-  it as a phone or 4G measurement.
+  it as a phone or 4G measurement. Keep the PC otherwise idle: a test suite
+  on all cores once took the fixture's first submission in BlueStacks from
+  about 135 ms to 4–8 s and an empty page's frame p95 to 50–83 ms. Every
+  report records how busy this machine was, for any browser: `host.cpu_busy`
+  per load and `host_cpu_busy` per frame window and blank control (the busy
+  share of all logical CPUs, every process included).
 
 ### Memory over round trips: `--scenario`
 
