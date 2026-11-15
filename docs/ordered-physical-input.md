@@ -15,6 +15,10 @@ For reusable touch recognition use the official
 cancellation over these same rows. The opt-in Web router sets canvas
 `touch-action: none` for its lifetime, restoring its previous inline style on
 disposal; this prevents browser page gestures from cancelling game pointers.
+The official player page also sets `touch-action: none` on the canvas and the
+UI layer, and `overscroll-behavior: none` on the page, with or without this
+router, so a touch drag is never cut short by `pointercancel` and a swipe never
+navigates the tab back.
 
 The batch contains `profile`, a positive safe-integer `epoch`, `after_sequence`,
 `through_sequence`, and dense `events`. Rows retain admitted source order across
