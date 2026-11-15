@@ -62,6 +62,7 @@ const WEB_PRESENTATION_KEYS: &[&str] = &[
     "bloom",
     "show_performance",
     "antialias",
+    "webgl_desynchronized",
     "projected_raster",
     "projected_material_profile",
     "physical_input",
@@ -253,6 +254,8 @@ pub struct PresentationSettings {
     pub bloom: bool,
     #[serde(default, skip_serializing_if="Option::is_none", deserialize_with="declared_antialias")]
     pub antialias: Option<bool>,
+    #[serde(default, skip_serializing_if="Option::is_none", deserialize_with="declared_antialias")]
+    pub webgl_desynchronized: Option<bool>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_raster::declared")]
     pub projected_raster: Option<projected_raster::ProjectedRasterPolicy>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_frame::declared")]
@@ -392,6 +395,7 @@ impl PresentationSettings {
             RendererMode::Custom => {
                 ensure!(self.render_extensions.is_empty(), "RENDER_EXTENSIONS_OFFICIAL_ONLY: render_extensions add passes to the official renderer; a custom renderer owns its own passes");
                 ensure!(self.antialias.is_none(), "ANTIALIAS_OFFICIAL_ONLY: antialias is an official renderer construction option; omit it for a custom renderer");
+                ensure!(self.webgl_desynchronized.is_none(), "WEBGL_DESYNCHRONIZED_OFFICIAL_ONLY: omit this WebGL option for a custom renderer");
                 let module = self.renderer_module.as_deref().filter(|v| !v.trim().is_empty())
                     .context("RENDERER_MODULE_REQUIRED: renderer_mode custom requires a project-relative .js/.mjs renderer_module")?;
                 ensure!(module.ends_with(".js") || module.ends_with(".mjs"),
@@ -619,6 +623,9 @@ pub fn native_wgpu_export_gate(
     // antialias true selects 4x MSAA in the native player (single sample when
     // omitted or false), fixed until relaunch like the Web context option.
     let mut keys = Vec::new();
+    if presentation.webgl_desynchronized.is_some() {
+        keys.push("webgl_desynchronized");
+    }
     if presentation.ui_text_atlas_size.is_some() {
         keys.push("ui_text_atlas_size");
     }
@@ -771,6 +778,28 @@ mod tests {
         let custom:PresentationSettings=serde_json::from_value(json!({"antialias":false,"renderer_mode":"custom",
             "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
         assert!(custom.validate_renderer().unwrap_err().to_string().contains("ANTIALIAS_OFFICIAL_ONLY"));
+    }
+
+    #[test]
+    fn webgl_desynchronized_is_opt_in_strict_and_official_web_only() {
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([
+            ("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        let omitted=PresentationSettings::default();
+        assert!(omitted.webgl_desynchronized.is_none());
+        assert!(serde_json::to_value(&omitted).unwrap().get("webgl_desynchronized").is_none());
+        native_wgpu_export_gate(&quiet,Some(&omitted)).unwrap();
+        for value in [false,true] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"webgl_desynchronized":value})).unwrap();
+            assert_eq!(settings.webgl_desynchronized,Some(value));
+            settings.validate_renderer().unwrap();
+            assert!(native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string().contains("webgl_desynchronized"));
+        }
+        for value in [json!(null),json!(0),json!("false"),json!({})] {
+            assert!(serde_json::from_value::<PresentationSettings>(json!({"webgl_desynchronized":value})).is_err());
+        }
+        let custom:PresentationSettings=serde_json::from_value(json!({"webgl_desynchronized":true,"renderer_mode":"custom",
+            "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
+        assert!(custom.validate_renderer().unwrap_err().to_string().contains("WEBGL_DESYNCHRONIZED_OFFICIAL_ONLY"));
     }
 
     #[test]

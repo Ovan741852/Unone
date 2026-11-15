@@ -10,6 +10,11 @@ export function normalizeAntialias(value) {
   if (typeof value !== 'boolean') throw Error('ANTIALIAS_INVALID: expected an optional boolean');
   return value;
 }
+export function normalizeWebglDesynchronized(value) {
+  if(value===undefined)return false;
+  if(typeof value!=='boolean')throw Error('WEBGL_DESYNCHRONIZED_INVALID: expected an optional boolean');
+  return value;
+}
 export async function createPlayerRenderer(canvas, options, presentation = {}, {
   createOfficial,
   loadModule = url => import(url),
@@ -30,9 +35,12 @@ export async function createPlayerRenderer(canvas, options, presentation = {}, {
     parseTextureCache(textureCache);
     const uiTextAtlasSize=presentation.ui_text_atlas_size===undefined?options.uiTextAtlasSize:presentation.ui_text_atlas_size;
     parseUiTextAtlasSize(uiTextAtlasSize);
-    return createOfficial(canvas, {...options, antialias,...(uiTextAtlasSize===undefined?{}:{uiTextAtlasSize}),...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
+    const webglDesynchronized=presentation.webgl_desynchronized===undefined?options.webglDesynchronized:presentation.webgl_desynchronized;
+    normalizeWebglDesynchronized(webglDesynchronized);
+    return createOfficial(canvas, {...options, antialias,...(webglDesynchronized===undefined?{}:{webglDesynchronized}),...(uiTextAtlasSize===undefined?{}:{uiTextAtlasSize}),...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
   }
   if (mode !== 'custom') throw Error(`RENDERER_MODE_INVALID: ${mode}`);
+  if(presentation.webgl_desynchronized!==undefined||options.webglDesynchronized!==undefined)throw Error('WEBGL_DESYNCHRONIZED_OFFICIAL_ONLY');
   if(presentation.ui_text_atlas_size!==undefined||options.uiTextAtlasSize!==undefined)throw Error('UI_TEXT_ATLAS_OFFICIAL_ONLY');
   if(presentation.texture_cache!==undefined||options.textureCache!==undefined)throw Error('TEXTURE_CACHE_OFFICIAL_ONLY');
   if(presentation.projected_material_profile!==undefined||options.projectedMaterialProfile!==undefined)throw Error('PROJECTED_FRAME_OFFICIAL_WEBGL_ONLY');

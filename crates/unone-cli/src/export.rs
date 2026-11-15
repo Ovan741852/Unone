@@ -1,6 +1,7 @@
 pub(crate) const WEB_FILES: &[&str] = &[
         "player/main.js",
         "renderer/three.js",
+        "renderer/webgl-desynchronized.js",
         "renderer/mesh.js",
         "renderer/projected.js",
         "renderer/ui-image-batch-prefix.js",

@@ -21,7 +21,8 @@ import {createProjectedRenderer,assertProjectedBackend} from './projected.js';
 import {createUiImageBatchPrefix} from './ui-image-batch-prefix.js';
 import {createGpuUi} from './ui-gpu.js';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
-import {normalizeAntialias} from '../shared/renderer-selection.mjs';
+import {normalizeAntialias,normalizeWebglDesynchronized} from '../shared/renderer-selection.mjs';
+import {prepareDesynchronizedWebGL,webglDesynchronizedMetrics} from './webgl-desynchronized.js';
 import {parseProjectedRaster,assertRasterBackend,assertRasterProfile,assertRasterSnapshot} from './projected-raster-policy.js';
 import {createRasterCapability} from './projected-raster-capability.js';
 import {createProjectedRasterPass} from './projected-raster.js';
@@ -81,6 +82,8 @@ export async function createThreeRenderer(canvas, options = {}) {
   let spriteResources=null,spritePresentation=null;
   if(options.getImageAssets!==undefined&&typeof options.getImageAssets!=='function')throw Error('IMAGE_ASSET_PROVIDER_INVALID: getImageAssets must be a function');
   const antialias=normalizeAntialias(options.antialias);
+  const desynchronized=normalizeWebglDesynchronized(options.webglDesynchronized);
+  let desynchronizedPreparation={requested:desynchronized,attempted:false,precreated:false};
   const rasterPolicy=parseProjectedRaster(options.projectedRaster),checkedRaster=rasterPolicy.requested==='upper_left_checked';
   const frameProfile=parseFrameProfile(options.projectedMaterialProfile);let framePublication=null,framePublicationIdentity=null;
   const postprocessing=normalizePostProcessing(options.postprocessing);
@@ -106,6 +109,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
   }
   if (!renderer) {
+    desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized);
     renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false });
   }
 
@@ -651,7 +655,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     // at 2) when the device pixel ratio changes; one a presentation hook set is left alone.
     pixelRatio: () => renderer.getPixelRatio(),
     setPixelRatio: ratio => renderer.setPixelRatio(ratio),
-      metrics: () => ({sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

@@ -421,6 +421,19 @@ needs a relaunch to change. Explicit antialias on a custom renderer is rejected
 with `ANTIALIAS_OFFICIAL_ONLY`; omit it for that extension contract. Null and
 non-booleans are invalid.
 
+The official Web renderer also accepts `"webgl_desynchronized": true` as an
+optional WebGL2 context creation hint. Omission retains the standard context.
+The hint is requested before Three constructs its renderer; the normal context
+attributes, including depth and compositing alpha, are unchanged. If the
+request is rejected the normal context path is retried; browsers may also
+ignore the hint. The `webgl_desynchronized` renderer metrics report whether
+the request was attempted and the actual context attribute when available.
+WebGPU does not use this WebGL hint. This option is fixed to the canvas
+lifetime and needs a relaunch; it is rejected for custom renderers and native
+export. Low-latency presentation may permit tearing, and memory gains depend on
+the browser, graphics driver and compositor. Validate motion on the target
+display before using it. Null and non-booleans are invalid.
+
 The existing visible `UNONE_PLAYER_READY` console info includes `raster` with
 `antialias_requested` and `context_antialias` (null when unavailable). This is
 default framebuffer/context evidence, not a claim that every pass has MSAA;
