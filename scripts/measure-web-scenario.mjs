@@ -301,7 +301,9 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
     // Milestone presentation relative to the input that preceded it, both on the page clock.
     let lastInput=null;for(const s of steps){if(s.input_at_ms!==undefined)lastInput=s.input_at_ms;else if(s.kind==='wait_mark'&&finite(lastInput)&&finite(s.presented_at_ms))s.presented_after_input_ms=round(s.presented_at_ms-lastInput);}
     const ended=at(),{row,os}=await checkpoint();
-    rounds.push({index,warmup,started_ms:started,duration_ms:round(ended-started),steps,end:row.metrics,peak:maxMetrics(samples.slice(from)),os});
+    // Only this round's samples: a background read that began in the previous round keeps its tag.
+    const own=samples.slice(from).filter(s=>s.phase===where.phase&&s.round===where.round);
+    rounds.push({index,warmup,started_ms:started,duration_ms:round(ended-started),steps,end:row.metrics,peak:maxMetrics(own),samples:own.length,os});
     if(!warmup&&(index===1||index%5===0||index===phase.rounds))log(`${phase.name} round ${index}/${phase.rounds}: ${round(ended-started)} ms`);
    }
   }
@@ -309,7 +311,7 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
   const settleFrom=samples.length;
   await sleep(scenario.settle_ms);
   const {row,os}=await checkpoint();
-  result.settled={after_ms:scenario.settle_ms,metrics:row.metrics,peak:maxMetrics(samples.slice(settleFrom)),os};
+  result.settled={after_ms:scenario.settle_ms,metrics:row.metrics,peak:maxMetrics(samples.slice(settleFrom).filter(s=>s.phase==='settle')),os};
  }catch(error){result.ok=false;result.error=String(error.message??error);}
  finally{stop=true;await sampler;}
  for(const phase of result.phases)phase.trend=phaseTrends(phase.rounds);
