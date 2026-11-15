@@ -20,6 +20,9 @@
 // --scenario runs a scripted scenario (measure-web-scenario.mjs) in a fresh browser per run: the game's
 // screens driven by real key and tap input, with memory owners, heap and browser processes sampled per
 // round; see docs/profiling.md.
+//
+// --url measures a page the caller serves instead (a platform harness with the player in an iframe,
+// also a sandboxed one in its own process): reads go to the frame that runs the export index.html.
 import {spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {createServer} from 'node:http';
@@ -42,7 +45,7 @@ const minus=(a,b)=>finite(a)&&finite(b)?round(a-b):null;
 
 const DEFAULTS=Object.freeze({cold:5,warm:5,profilePairs:1,milestones:[],settleMs:1000,frameWindowMs:1000,timeoutMs:60000,
  viewport:{width:1280,height:720},dpr:1,seed:'42',backend:null,cacheControl:null,compress:'none',network:null,cpuThrottle:1,
- browser:null,headed:false,keepStorage:false,allowDevelopment:false,wasmTiming:'split',includeProfileEvents:false,pollMs:100,scenario:null,scenarioRuns:1,scenarioProfile:false,blankControl:true});
+ browser:null,headed:false,keepStorage:false,allowDevelopment:false,wasmTiming:'split',includeProfileEvents:false,pollMs:100,scenario:null,scenarioRuns:1,scenarioProfile:false,blankControl:true,url:null});
 const NETWORK_PRESETS=Object.freeze({
  // Chrome DevTools' own throttling presets; emulated in the browser, not a real radio network.
  'fast-4g':{latency_ms:60,download_kbps:9000,upload_kbps:1500},
@@ -56,7 +59,11 @@ export const USAGE=`Usage: node scripts/measure-web-export.mjs --export <product
   [--network fast-4g|slow-4g|fast-3g|LATENCY_MS,DOWN_KBPS,UP_KBPS] [--cpu-throttle RATE]
   [--browser PATH] [--headed] [--keep-storage] [--allow-development] [--wasm-timing split|observe]
   [--include-profile-events] [--scenario FILE] [--scenario-runs N=1] [--scenario-profile] [--no-blank-control]
-  With --scenario, cold, warm and profiler pairs default to 0 unless given.`;
+  [--url PAGE]
+  With --scenario, cold, warm and profiler pairs default to 0 unless given.
+  --url opens a page you serve instead of serving --export: the player may sit in an iframe of it, also a
+  sandboxed (opaque-origin) one. --export still names the export that page serves, for the report's hashes.
+  The page must pass ?unone_profile and ?unone_profile_limit on to the player frame for profiler runs.`;
 
 export function parseArgs(argv){
  const options={...DEFAULTS,milestones:[]},given=new Set(),take=(i,name)=>{const value=argv[i+1];if(value===undefined||value.startsWith('--'))throw Error(`MEASURE_ARG_INVALID: ${name} needs a value`);return value;};
@@ -66,6 +73,9 @@ export function parseArgs(argv){
   const arg=argv[i];
   switch(arg){
    case '--export':options.export=take(i,arg);i++;break;
+   case '--url':{const value=take(i,arg);let url;try{url=new URL(value);}catch{url=null;}
+    if(!url||!['http:','https:'].includes(url.protocol))throw Error('MEASURE_ARG_INVALID: --url is the http(s) page that serves the export, e.g. your platform harness with the player in an iframe');
+    options.url=url.href;i++;break;}
    case '--output':options.output=take(i,arg);i++;break;
    case '--cold':options.cold=count(take(i,arg),arg);given.add(arg);i++;break;
    case '--warm':options.warm=count(take(i,arg),arg);given.add(arg);i++;break;
@@ -98,6 +108,8 @@ export function parseArgs(argv){
  }
  if(options.help)return options;
  if(!options.export||!options.output)throw Error('MEASURE_ARG_INVALID: --export and --output are required');
+ // The page behind --url is served by its own server; this tool cannot change how.
+ if(options.url&&(options.cacheControl!==null||options.compress!=='none'))throw Error("MEASURE_ARG_INVALID: --cache-control and --compress change this tool's own server; with --url the page's server decides");
  // A scenario is minutes of memory sampling; startup runs come along only when asked for.
  if(options.scenario){if(!given.has('--cold'))options.cold=0;if(!given.has('--warm'))options.warm=0;if(!given.has('--profile-pairs'))options.profilePairs=0;}
  else options.scenarioRuns=0;
@@ -424,8 +436,10 @@ async function launchBrowser(executable,options){
 // Instrumentation added to every document before its own scripts. Timing only: every wrapper
 // returns what the original returns, and a 'split' instantiateStreaming does exactly the two steps
 // instantiateStreaming is specified as (compileStreaming, then instantiate).
-export function probeSource({wasmTiming='split'}={}){
- return `(()=>{if(window.top!==window||window.__unoneMeasure)return;
+export function probeSource({wasmTiming='split',embedded=false}={}){
+ // A page that embeds the player (--url) is instrumented in every frame: which one runs the player
+ // is only known once its document has parsed.
+ return `(()=>{if((!${embedded===true}&&window.top!==window)||window.__unoneMeasure)return;
 const now=()=>performance.now(),split=${JSON.stringify(wasmTiming==='split')};
 const probe={version:1,wasm:[],fonts:[],long_tasks:[],visibility:[{state:document.visibilityState,at_ms:now()}],focus:[],focused_at_start:document.hasFocus()};
 Object.defineProperty(window,'__unoneMeasure',{value:probe});
@@ -467,13 +481,56 @@ perf,assets,profile,probe:window.__unoneMeasure??null};})())`;
 const POLL_SOURCE=`(()=>{const d=document.body?.dataset??{};let presented=[];try{presented=(window.unonePlayerPerformance?.snapshot({windowMs:1000})?.milestones?.rows??[]).filter(r=>r.presented_at_ms!==null).map(r=>r.name);}catch{}
 return JSON.stringify({error:d.playerError??null,ready:Boolean(d.playerMetrics&&JSON.parse(d.playerMetrics).first_presented_ms!==undefined),presented,milestones:Boolean(window.unonePlayerPerformance?.snapshot({windowMs:1000})?.milestones)});})()`;
 
+// The player frame of a page that embeds it (--url): a document whose head is the export's
+// index.html (it sets window.playerBoot before any module and names the runtime in a meta tag).
+const PLAYER_TEST='typeof window.playerBoot==="number"||Boolean(document.querySelector(\'meta[name="unone-runtime"]\'))';
+
+/**
+ * Scenario input is authored in CSS pixels of the player's own viewport; a player in an iframe gets
+ * pointer coordinates moved by that iframe's content-box origin in the page. Keys go to the focused
+ * frame, so they need no move.
+ */
+export function shiftInput(method,params,offset){
+ if(!offset||(offset.x===0&&offset.y===0))return params;
+ if(method==='Input.dispatchMouseEvent')return {...params,x:params.x+offset.x,y:params.y+offset.y};
+ if(method==='Input.dispatchTouchEvent')return {...params,touchPoints:(params.touchPoints??[]).map(point=>({...point,x:point.x+offset.x,y:point.y+offset.y}))};
+ return params;
+}
+
 async function openPage(browser,options){
  const {cdp}=browser,{targetId}=await cdp.send('Target.createTarget',{url:'about:blank'});
  const {sessionId}=await cdp.send('Target.attachToTarget',{targetId,flatten:true});
  const send=(method,params={},timeoutMs)=>cdp.send(method,params,sessionId,timeoutMs);
+ const embedded=Boolean(options.url),probe=probeSource({...options,embedded});
+ // The page's session plus, when it embeds the player, each out-of-process frame it attaches (a
+ // sandboxed iframe usually is one). contexts: default execution contexts by id, with their frame.
+ const sessions=new Map([[sessionId,{parent:null,root:targetId,contexts:new Map()}]]);
+ const frameParents=new Map();
+ let player=null,geometry=null,playerOrigin=null;
  const network=new Map(),consoleErrors=[];let collecting=false,readyResolve=null;
+ async function attach(parent,info,child){
+  const run=()=>cdp.send('Runtime.runIfWaitingForDebugger',{},child).catch(()=>{});
+  if(info.type!=='iframe'){await run();return;}
+  sessions.set(child,{parent,root:info.targetId,contexts:new Map()});
+  const to=(method,params={})=>cdp.send(method,params,child);
+  try{
+   await to('Page.enable');await to('Runtime.enable');await to('Network.enable');
+   await to('Page.addScriptToEvaluateOnNewDocument',{source:probe});
+   await to('Emulation.setFocusEmulationEnabled',{enabled:true}).catch(()=>{});
+   await to('Target.setAutoAttach',{autoAttach:true,waitForDebuggerOnStart:true,flatten:true});
+  }catch{}
+  await run();
+ }
  cdp.on(message=>{
-  if(message.sessionId!==sessionId)return;const p=message.params??{};
+  const session=sessions.get(message.sessionId);if(!session)return;const p=message.params??{};
+  switch(message.method){
+   case 'Target.attachedToTarget':attach(message.sessionId,p.targetInfo??{},p.sessionId);return;
+   case 'Target.detachedFromTarget':sessions.delete(p.sessionId);if(player?.sessionId===p.sessionId)player=geometry=null;return;
+   case 'Runtime.executionContextCreated':{const c=p.context??{};if(c.auxData?.isDefault)session.contexts.set(c.id,{frameId:c.auxData.frameId});return;}
+   case 'Runtime.executionContextDestroyed':session.contexts.delete(p.executionContextId);if(player?.sessionId===message.sessionId&&player.contextId===p.executionContextId)player=geometry=null;return;
+   case 'Runtime.executionContextsCleared':session.contexts.clear();if(player?.sessionId===message.sessionId)player=geometry=null;return;
+   case 'Page.frameAttached':frameParents.set(p.frameId,p.parentFrameId);return;
+  }
   if(message.method==='Runtime.consoleAPICalled'){
    const text=(p.args??[]).map(arg=>arg.value??arg.description??'').join(' ');
    if(text.startsWith('UNONE_PLAYER_READY '))readyResolve?.('ready');
@@ -483,62 +540,139 @@ async function openPage(browser,options){
   }
   if(message.method==='Runtime.exceptionThrown'){if(consoleErrors.length<32)consoleErrors.push(String(p.exceptionDetails?.exception?.description??p.exceptionDetails?.text??'exception').slice(0,2000));readyResolve?.('error');return;}
   if(!collecting)return;
-  if(message.method==='Network.requestWillBeSent'){if(network.size<4096)network.set(p.requestId,{url:p.request?.url,type:p.type??null,status:null,fromDiskCache:false,servedFromCache:false,fromServiceWorker:false,fromPrefetchCache:false,encodedDataLength:null,protocol:null,mimeType:null,failed:false});}
-  else if(message.method==='Network.requestServedFromCache'){const row=network.get(p.requestId);if(row)row.servedFromCache=true;}
-  else if(message.method==='Network.responseReceived'){const row=network.get(p.requestId);if(row){const r=p.response??{};Object.assign(row,{status:r.status??null,fromDiskCache:r.fromDiskCache===true,fromServiceWorker:r.fromServiceWorker===true,fromPrefetchCache:r.fromPrefetchCache===true,protocol:r.protocol??null,mimeType:r.mimeType??null});}}
-  else if(message.method==='Network.loadingFinished'){const row=network.get(p.requestId);if(row)row.encodedDataLength=p.encodedDataLength??null;}
-  else if(message.method==='Network.loadingFailed'){const row=network.get(p.requestId);if(row){row.failed=true;row.error=p.errorText??null;}}
+  // Request ids are per session: an out-of-process frame numbers its own.
+  const key=`${message.sessionId}|${p.requestId}`;
+  if(message.method==='Network.requestWillBeSent'){if(network.size<4096)network.set(key,{url:p.request?.url,type:p.type??null,status:null,fromDiskCache:false,servedFromCache:false,fromServiceWorker:false,fromPrefetchCache:false,encodedDataLength:null,protocol:null,mimeType:null,failed:false});}
+  else if(message.method==='Network.requestServedFromCache'){const row=network.get(key);if(row)row.servedFromCache=true;}
+  else if(message.method==='Network.responseReceived'){const row=network.get(key);if(row){const r=p.response??{};Object.assign(row,{status:r.status??null,fromDiskCache:r.fromDiskCache===true,fromServiceWorker:r.fromServiceWorker===true,fromPrefetchCache:r.fromPrefetchCache===true,protocol:r.protocol??null,mimeType:r.mimeType??null});}}
+  else if(message.method==='Network.loadingFinished'){const row=network.get(key);if(row)row.encodedDataLength=p.encodedDataLength??null;}
+  else if(message.method==='Network.loadingFailed'){const row=network.get(key);if(row){row.failed=true;row.error=p.errorText??null;}}
  });
  await send('Page.enable');await send('Runtime.enable');await send('Network.enable');
  await send('Emulation.setDeviceMetricsOverride',{width:options.viewport.width,height:options.viewport.height,deviceScaleFactor:options.dpr,mobile:false});
  await send('Emulation.setFocusEmulationEnabled',{enabled:true});
  if(options.cpuThrottle!==1)await send('Emulation.setCPUThrottlingRate',{rate:options.cpuThrottle});
  if(options.network)await send('Network.emulateNetworkConditions',{offline:false,latency:options.network.latency_ms,downloadThroughput:options.network.download_kbps*1000/8,uploadThroughput:options.network.upload_kbps*1000/8});
- await send('Page.addScriptToEvaluateOnNewDocument',{source:probeSource(options)});
- async function evaluate(expression,timeoutMs=15000){const result=await send('Runtime.evaluate',{expression,returnByValue:true},timeoutMs);if(result.exceptionDetails)throw Error(`MEASURE_EVALUATE_FAILED: ${result.exceptionDetails.exception?.description??result.exceptionDetails.text}`);return result.result?.value;}
+ await send('Page.addScriptToEvaluateOnNewDocument',{source:probe});
+ // Out-of-process frames pause at start until they carry the same probe.
+ if(embedded)await send('Target.setAutoAttach',{autoAttach:true,waitForDebuggerOnStart:true,flatten:true});
+ async function evaluateIn(target,expression,timeoutMs){
+  const result=await cdp.send('Runtime.evaluate',{expression,returnByValue:true,...(target?{contextId:target.contextId}:{})},target?.sessionId??sessionId,timeoutMs);
+  if(result.exceptionDetails)throw Error(`MEASURE_EVALUATE_FAILED: ${result.exceptionDetails.exception?.description??result.exceptionDetails.text}`);return result.result?.value;
+ }
+ async function findPlayer(){
+  if(player||!embedded)return player;
+  const found=[];
+  for(const [sid,session] of sessions)for(const [contextId,context] of session.contexts){
+   try{if(await evaluateIn({sessionId:sid,contextId},PLAYER_TEST,3000)===true)found.push({sessionId:sid,contextId,frameId:context.frameId,out_of_process:session.parent!==null});}catch{}
+  }
+  if(found.length>1)throw Error(`MEASURE_PLAYER_AMBIGUOUS: ${found.length} frames of the page run a Unone player; measure a page with one`);
+  player=found[0]??null;geometry=null;return player;
+ }
+ const notFound=()=>Error('MEASURE_PLAYER_NOT_FOUND: no frame of the page runs a Unone player (the export index.html) yet');
+ // The player: the page itself, or for --url the one frame that runs it.
+ async function evaluate(expression,timeoutMs=15000){
+  if(!embedded)return evaluateIn(null,expression,timeoutMs);
+  const target=await findPlayer();if(!target)throw notFound();
+  return evaluateIn(target,expression,timeoutMs);
+ }
+ const evaluateTop=(expression,timeoutMs=15000)=>evaluateIn(null,expression,timeoutMs);
+ // Where the player frame sits in the page, and the iframe element that owns it.
+ async function playerGeometry(){
+  const target=await findPlayer();if(!target)throw notFound();
+  if(geometry&&Date.now()-geometry.at<1000)return geometry;
+  if(target.sessionId===sessionId&&target.frameId===targetId){geometry={at:Date.now(),x:0,y:0,owner:null};return geometry;}
+  // An out-of-process frame's iframe element lives in its parent's session, an in-process one's in the page's.
+  const session=sessions.get(target.sessionId),ownerSession=session.parent!==null&&target.frameId===session.root?session.parent:target.sessionId;
+  const parentFrame=frameParents.get(target.frameId);
+  if(ownerSession!==sessionId||(parentFrame!==undefined&&parentFrame!==targetId))throw Error('MEASURE_PLAYER_NESTED: the player frame is not a direct iframe of the page; only a player in the page or in one of its iframes is supported');
+  await cdp.send('DOM.getDocument',{depth:0},ownerSession);
+  const {backendNodeId}=await cdp.send('DOM.getFrameOwner',{frameId:target.frameId},ownerSession);
+  const {model}=await cdp.send('DOM.getBoxModel',{backendNodeId},ownerSession);
+  geometry={at:Date.now(),x:model.content[0],y:model.content[1],width:model.width,height:model.height,owner:{sessionId:ownerSession,backendNodeId}};
+  return geometry;
+ }
+ // Focus moves into the player frame the way a click would; keys then reach it.
+ async function focusPlayer(){const g=await playerGeometry();if(g.owner)await cdp.send('DOM.focus',{backendNodeId:g.owner.backendNodeId},g.owner.sessionId);}
+ async function sendTo(method,params={},timeoutMs){
+  if(!embedded)return send(method,params,timeoutMs);
+  if(method==='Input.dispatchMouseEvent'||method==='Input.dispatchTouchEvent')return send(method,shiftInput(method,params,await playerGeometry()),timeoutMs);
+  if(method==='Input.dispatchKeyEvent'){if(params.type==='keyDown'||params.type==='rawKeyDown')await focusPlayer().catch(()=>{});return send(method,params,timeoutMs);}
+  // The player's heap is its own renderer's when it runs out of process.
+  if(method==='Runtime.getHeapUsage'||method==='Memory.getDOMCounters'||method.startsWith('Performance.')){const target=await findPlayer();return cdp.send(method,params,target?.sessionId??sessionId,timeoutMs);}
+  return send(method,params,timeoutMs);
+ }
+ async function playerFrame(){
+  if(!embedded)return null;
+  const target=await findPlayer().catch(()=>null);if(!target)return {found:false};
+  let where=null;try{where=JSON.parse(await evaluateIn(target,'JSON.stringify({url:location.origin+location.pathname,document_origin:self.origin})',5000));}catch{}
+  let g=null;try{g=await playerGeometry();}catch(error){g={error:String(error.message??error)};}
+  return {found:true,out_of_process:target.out_of_process,url:where?.url??null,document_origin:where?.document_origin??null,
+   offset:g&&!g.error?{x:g.x,y:g.y,width:g.width??null,height:g.height??null}:null,...(g?.error?{geometry_error:g.error}:{})};
+ }
  async function load(url,{origin,keepStorage,milestones,timeoutMs,settleMs,pollMs,frameWindowMs}){
-  await send('Page.navigate',{url:'about:blank'});await sleep(100);
-  if(!keepStorage)await send('Storage.clearDataForOrigin',{origin,storageTypes:'local_storage,indexeddb,service_workers,cache_storage'});
+  await send('Page.navigate',{url:'about:blank'});await sleep(100);player=geometry=null;
+  if(!keepStorage)for(const o of new Set([origin,playerOrigin].filter(o=>o&&o!=='null')))await send('Storage.clearDataForOrigin',{origin:o,storageTypes:'local_storage,indexeddb,service_workers,cache_storage'});
   network.clear();consoleErrors.length=0;collecting=true;
   const readyOrError=new Promise(resolve=>{readyResolve=resolve;});
   const started=Date.now();
   await send('Page.navigate',{url});
   const first=await Promise.race([readyOrError,sleep(timeoutMs).then(()=>'timeout')]);readyResolve=null;
-  let outcome={ready:first==='ready',error:null,presented:[],milestones:false,timedOut:first==='timeout'};
+  let outcome={ready:first==='ready',error:null,presented:[],milestones:false,timedOut:first==='timeout'},focused=false;
   // A console error is not necessarily fatal; the player's own error attribute is.
   for(;;){
-   try{outcome={...outcome,...JSON.parse(await evaluate(POLL_SOURCE,5000))};}catch(error){outcome.error??=String(error.message??error);break;}
+   let poll=null;
+   try{poll=JSON.parse(await evaluate(POLL_SOURCE,5000));}
+   catch(error){const message=String(error.message??error);if(!(embedded&&message.startsWith('MEASURE_PLAYER_NOT_FOUND'))){outcome.error??=message;break;}}
+   if(poll)outcome={...outcome,...poll};
    if(outcome.error)break;
+   // A player in an iframe runs focused, like one a person clicked into.
+   if(embedded&&poll&&!focused){focused=true;await focusPlayer().catch(()=>{});}
    const waiting=milestones.filter(name=>!outcome.presented.includes(name));
-   if(outcome.ready&&waiting.length===0)break;
+   if(poll&&outcome.ready&&waiting.length===0)break;
    if(Date.now()-started>timeoutMs){outcome.timedOut=true;break;}
    await sleep(pollMs);
   }
   if(!outcome.error&&outcome.ready&&settleMs>0)await sleep(settleMs);
   let raw=null,collectError=null;
   try{raw=JSON.parse(await evaluate(collectSource({frameWindowMs}),20000));}catch(error){collectError=String(error.message??error);}
-  if(raw){try{await send('Performance.enable');const {metrics}=await send('Performance.getMetrics');raw.cdp_metrics=Object.fromEntries(metrics.map(m=>[m.name,m.value]));await send('Performance.disable');}catch{}}
+  if(raw){try{await sendTo('Performance.enable');const {metrics}=await sendTo('Performance.getMetrics');raw.cdp_metrics=Object.fromEntries(metrics.map(m=>[m.name,m.value]));await sendTo('Performance.disable');}catch{}}
+  if(embedded&&player)try{const o=await evaluateIn(player,'self.origin',3000);playerOrigin=o!==origin?o:null;}catch{}
   collecting=false;
   if(raw)raw.console_errors=[...consoleErrors];
   const waiting=milestones.filter(name=>!outcome.presented.includes(name));
-  const error=raw?.error??outcome.error??collectError??(outcome.ready?null:outcome.timedOut?`MEASURE_TIMEOUT: no first presented frame within ${timeoutMs} ms`:'MEASURE_NOT_READY')
+  const error=raw?.error??outcome.error??collectError??(outcome.ready?null:outcome.timedOut?`MEASURE_TIMEOUT: no first presented frame within ${timeoutMs} ms${embedded&&!player?' (no frame of the page runs a Unone player)':''}`:'MEASURE_NOT_READY')
    ??(waiting.length?`MEASURE_MILESTONE_TIMEOUT: ${waiting.join(', ')} not presented within ${timeoutMs} ms${outcome.milestones?'':' (this player publishes no milestones: rebuild the runtime and export with an engine that has api.profile.mark)'}`:null);
   return {raw,network:[...network.values()],error};
  }
- return {load,send,evaluate,close:()=>cdp.send('Target.closeTarget',{targetId}).catch(()=>{})};
+ return {load,send:sendTo,evaluate,evaluateTop,playerFrame,close:()=>cdp.send('Target.closeTarget',{targetId}).catch(()=>{})};
 }
 
 // ---------------------------------------------------------------- orchestration
 
-function measuredUrl(serverUrl,{seed,backend},profiling,profileLimit=null){
+// The report names the measured page without its query, which may carry a session or a token.
+export function pageWithoutQuery(url){const u=new URL(url);u.search='';u.hash='';return u.href;}
+
+export function measuredUrl(serverUrl,{seed,backend},profiling,profileLimit=null){
  const url=new URL(serverUrl);url.searchParams.set('seed',seed);if(backend)url.searchParams.set('backend',backend);if(profiling)url.searchParams.set('unone_profile','1');if(profiling&&profileLimit)url.searchParams.set('unone_profile_limit',String(profileLimit));return url.href;
 }
 
+// A profiler run whose player reports no profiler was not profiled: a page embedding the player
+// (--url) has to pass ?unone_profile on to the player frame.
+export function profileMissing(raw,{profiling,embedded}){
+ if(!profiling||!raw||raw.profile!=null)return null;
+ return `MEASURE_PROFILE_NOT_ENABLED: the player reports no profiler${embedded?'; the page must pass ?unone_profile and ?unone_profile_limit on to the player frame':''}`;
+}
+
 async function measureOnce(page,server,options,{kind,index,profiling,milestones=options.milestones,profileLimit=null}){
- const url=measuredUrl(server.url,options,profiling,profileLimit);server.take();
- const {raw,network,error}=await page.load(url,{origin:new URL(server.url).origin,keepStorage:options.keepStorage,milestones,timeoutMs:options.timeoutMs,settleMs:options.settleMs,pollMs:options.pollMs,frameWindowMs:options.frameWindowMs});
- const sample=normalizeLoad(raw,{network,server:server.take(),options,kind,index,profiling,url});
- if(error){sample.ok=false;sample.error=error;}
+ const base=options.url??server.url,url=measuredUrl(base,options,profiling,profileLimit);server.take();
+ const {raw,network,error}=await page.load(url,{origin:new URL(base).origin,keepStorage:options.keepStorage,milestones,timeoutMs:options.timeoutMs,settleMs:options.settleMs,pollMs:options.pollMs,frameWindowMs:options.frameWindowMs});
+ // With --url the page's own server sent the player; this tool's server only has the blank control.
+ const served=server.take();
+ const sample=normalizeLoad(raw,{network,server:options.url?null:served,options,kind,index,profiling,url:options.url?pageWithoutQuery(url):url});
+ if(options.url)sample.player_frame=await page.playerFrame();
+ const failed=error??profileMissing(raw,{profiling,embedded:Boolean(options.url)});
+ if(failed){sample.ok=false;sample.error=failed;}
  return sample;
 }
 
@@ -584,7 +718,7 @@ export async function measure(options,log=message=>process.stderr.write(message+
     const page=await openPage(browser,options);
     // The browser's own cadence on an empty page, same browser and viewport, before the game loads.
     let blank=null;
-    if(blankMs&&!profiling){try{blank=await measureBlank(page,new URL(BLANK_PATH,server.url).href,{windowMs:blankMs});log(`scenario ${i+1}: blank control p95 ${blank.raf_interval.p95_ms} ms over ${blank.frames} frames`);}catch(error){blank={error:String(error.message??error)};}}
+    if(blankMs&&!profiling){try{blank=await measureBlank({send:page.send,evaluate:page.evaluateTop},new URL(BLANK_PATH,server.url).href,{windowMs:blankMs});log(`scenario ${i+1}: blank control p95 ${blank.raf_interval.p95_ms} ms over ${blank.frames} frames`);}catch(error){blank={error:String(error.message??error)};}}
     const startup=await measureOnce(page,server,options,{kind:'scenario',index:i+1,profiling,milestones,profileLimit:profiling?2048:null});runs.push(startup);
     let result;
     if(!startup.ok)result={ok:false,error:`MEASURE_SCENARIO_NOT_STARTED: ${startup.error}`,phases:[],settled:null,samples:null};
@@ -654,7 +788,9 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   environment:{...browserInfo,os:{platform:process.platform,release:os.release(),arch:process.arch,cpu:os.cpus()[0]?.model?.trim()??null,logical_cpus:os.cpus().length,memory_bytes:os.totalmem()}},
   conditions:{viewport:options.viewport,device_pixel_ratio:options.dpr,seed:options.seed,backend_override:options.backend,focus_emulated:true,foreground_all_runs:foreground,
    network:options.network?{emulated:true,...options.network}:{emulated:false,note:'Loopback server: no network latency or bandwidth limit.'},cpu_throttle:options.cpuThrottle,
-   server:{kind:'loopback static server',cache_control:options.cacheControl??'export cache_policy',cache_policy:options.cacheControl?null:exported.artifact.cache_policy,etag:true,compression:options.compress,timing_allow_origin:'*'},
+   server:options.url?{kind:'page served by the caller (--url)',page:pageWithoutQuery(options.url),player:'the frame of the page that runs the export index.html; runs[].player_frame says which',
+     note:'This tool served no player file: sizes and cache come from the browser network log, and the page decides caching, compression and whether the export it serves is --export.'}
+    :{kind:'loopback static server',cache_control:options.cacheControl??'export cache_policy',cache_policy:options.cacheControl?null:exported.artifact.cache_policy,etag:true,compression:options.compress,timing_allow_origin:'*'},
    storage_cleared_between_runs:!options.keepStorage,cold:'new browser process and profile per run (empty HTTP and code caches)',warm:'one browser profile primed by an unreported first load; each run is a new document',
    wasm_timing:options.wasmTiming,poll_ms_after_first_submission:options.pollMs,settle_ms:options.settleMs,frame_window_ms:options.frameWindowMs,timeout_ms:options.timeoutMs,milestones:options.milestones},
   clock:{origin:'window.playerBoot',origin_definition:'performance.now() when the export index.html head runs, before any module loads; performance.now() itself counts from navigation start (performance.timeOrigin).',

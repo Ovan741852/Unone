@@ -83,6 +83,7 @@ reading everything once.
 | `--timeout-ms`, `--settle-ms`, `--frame-window-ms` | Per-load limit, the wait before sampling, the `unonePlayerPerformance` window. |
 | `--keep-storage`, `--allow-development`, `--browser PATH`, `--headed` | Keep saves between runs, measure a development export (marked in the report), choose the browser. |
 | `--scenario FILE`, `--scenario-runs N`, `--scenario-profile`, `--no-blank-control` | Drive the game through a scripted scenario: memory per round ([memory over round trips](#memory-over-round-trips---scenario)) and frame windows under load ([frame windows](#frame-time-under-load-frame-windows)); add a profiler-on diagnostic run; skip the blank-page control. |
+| `--url PAGE` | Open a page you serve instead of serving `--export`; the player may sit in an iframe of it ([a player inside your page](#a-player-inside-your-page---url)). |
 
 | Report section | Contents |
 |---|---|
@@ -114,6 +115,43 @@ How to read it:
 - One machine, one browser, headless: not a phone, not GPU time, not physical
   display. Memory over scene round trips is the scenario mode below; long
   frame-time windows are a separate measurement.
+
+### A player inside your page: `--url`
+
+A game that needs its platform around it (a sandboxed iframe, a local stand-in
+for the platform's server functions, a sign-in) is measured on the page that
+provides it. Serve that page yourself and pass it with `--url`; keep `--export`
+for the export the page serves, which the report hashes:
+
+```powershell
+node scripts/measure-web-export.mjs --export <export dir> --url http://127.0.0.1:8080/harness.html `
+  --output load.json --milestone city.interactive --viewport 1360x820
+```
+
+- The player is the one frame whose document is the export's `index.html`: the
+  page itself or an iframe of it, also a sandboxed (opaque-origin) one running in
+  its own process. Two players in one page, or a player in an iframe of an
+  iframe, fail with `MEASURE_PLAYER_AMBIGUOUS` or `MEASURE_PLAYER_NESTED`.
+- Every frame gets the timing wrappers; every read, the heap and the
+  `Performance` metrics come from the player frame, so times stay relative to
+  its `window.playerBoot`.
+- Scenario coordinates are CSS pixels of the player's own viewport, as in a
+  plain export; the tool moves pointer input by the iframe's position in the
+  page and focuses the iframe before keys, the way a click into it would. Size
+  `--viewport` so the iframe has the size the scenario was written for.
+- The tool adds `seed`, `backend`, `unone_profile` and `unone_profile_limit` to
+  the page's query. The page has to pass them on to the player frame; a profiler
+  run whose player has no profiler fails with `MEASURE_PROFILE_NOT_ENABLED`
+  instead of being reported as profiled.
+- The page's server decides caching and compression, so `--cache-control` and
+  `--compress` do not apply, and `server_requests` is null. Storage is cleared
+  for the page's origin and a non-opaque player origin; an opaque-origin player
+  keeps no storage anyway.
+- `runs[].player_frame` says where the player was: its URL, its document origin
+  (`"null"` when sandboxed), whether it ran in its own process, and its offset
+  and size in the page. The report names the page without its query.
+- With the player in its own process, `os.largest_renderer` is usually that
+  process, but this is the largest renderer, not necessarily the player's.
 
 ### Memory over round trips: `--scenario`
 

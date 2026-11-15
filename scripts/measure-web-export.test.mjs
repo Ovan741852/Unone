@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,rm,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import {parseArgs,quantiles,summarize,pairDeltas,resourceRow,joinNetwork,startupSteps,normalizeLoad,readExport,startServer,cacheControlFor,browserArgs,probeSource,collectSource,buildReport,SCHEMA} from './measure-web-export.mjs';
+import {parseArgs,quantiles,summarize,pairDeltas,resourceRow,joinNetwork,startupSteps,normalizeLoad,readExport,startServer,cacheControlFor,browserArgs,probeSource,collectSource,buildReport,shiftInput,profileMissing,pageWithoutQuery,measuredUrl,SCHEMA} from './measure-web-export.mjs';
 
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 
@@ -189,4 +189,46 @@ test('the server serves the blank control page beside the export, uncached, with
   assert.match(await response.text(),/requestAnimationFrame/);
   assert.deepEqual(server.take().map(row=>[row.path,row.status]),[['/__unone_measure/blank.html',200]]);
  }finally{await server.close();await rm(root,{recursive:true,force:true});}
+});
+
+test('--url measures a page the caller serves; --export still names the export it serves',()=>{
+ const options=parseArgs(['--export','e','--output','r.json','--url','http://127.0.0.1:8080/harness.html?room=1']);
+ assert.equal(options.url,'http://127.0.0.1:8080/harness.html?room=1');
+ assert.equal(parseArgs(['--export','e','--output','r.json']).url,null);
+ assert.throws(()=>parseArgs(['--export','e','--output','r.json','--url','file:///c:/x/index.html']),/MEASURE_ARG_INVALID: --url/);
+ assert.throws(()=>parseArgs(['--export','e','--output','r.json','--url','not a url']),/MEASURE_ARG_INVALID: --url/);
+ assert.throws(()=>parseArgs(['--output','r.json','--url','http://127.0.0.1/']),/--export and --output are required/);
+ assert.throws(()=>parseArgs(['--export','e','--output','r.json','--url','http://127.0.0.1/','--compress','gzip']),/with --url the page/);
+ assert.throws(()=>parseArgs(['--export','e','--output','r.json','--url','http://127.0.0.1/','--cache-control','no-store']),/with --url the page/);
+ // The tool's own query rides on the page's; the report drops the page's query.
+ const url=new URL(measuredUrl(options.url,{seed:'7',backend:null},true,2048));
+ assert.equal(url.searchParams.get('room'),'1');assert.equal(url.searchParams.get('seed'),'7');
+ assert.equal(url.searchParams.get('unone_profile'),'1');assert.equal(url.searchParams.get('unone_profile_limit'),'2048');
+ assert.equal(pageWithoutQuery('http://127.0.0.1:8080/harness.html?token=secret#x'),'http://127.0.0.1:8080/harness.html');
+});
+
+test('an embedding page is instrumented in every frame; an export page only in its top frame',()=>{
+ const install=embedded=>{
+  const sandbox={performance:{now:()=>1},document:{visibilityState:'visible',hasFocus:()=>true,addEventListener(){}},addEventListener(){},WebAssembly:{},ArrayBuffer};
+  sandbox.window=sandbox;sandbox.window.top={};
+  new Function('window','performance','document','addEventListener','WebAssembly','ArrayBuffer','with(window){'+probeSource({embedded})+'}')(sandbox,sandbox.performance,sandbox.document,sandbox.addEventListener,sandbox.WebAssembly,ArrayBuffer);
+  return Boolean(sandbox.__unoneMeasure);
+ };
+ assert.equal(install(false),false);assert.equal(install(true),true);
+});
+
+test('pointer input moves by the player iframe origin; keys and a page-level player do not move',()=>{
+ const offset={x:40,y:25};
+ assert.deepEqual(shiftInput('Input.dispatchMouseEvent',{type:'mouseMoved',x:10,y:20,button:'none'},offset),{type:'mouseMoved',x:50,y:45,button:'none'});
+ assert.deepEqual(shiftInput('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:1,y:2,id:0}]},offset),{type:'touchStart',touchPoints:[{x:41,y:27,id:0}]});
+ const key={type:'keyDown',key:'a'};assert.equal(shiftInput('Input.dispatchKeyEvent',key,offset),key);
+ const move={type:'mouseMoved',x:3,y:4};assert.equal(shiftInput('Input.dispatchMouseEvent',move,{x:0,y:0}),move);assert.equal(shiftInput('Input.dispatchMouseEvent',move,null),move);
+});
+
+test('a profiler run whose player reports no profiler fails, naming the page when it embeds the player',()=>{
+ assert.equal(profileMissing({profile:{events:[]}},{profiling:true,embedded:true}),null);
+ assert.equal(profileMissing({profile:null},{profiling:false,embedded:true}),null);
+ assert.equal(profileMissing(null,{profiling:true,embedded:true}),null,'a failed load reports its own error');
+ assert.match(profileMissing({profile:null},{profiling:true,embedded:true}),/MEASURE_PROFILE_NOT_ENABLED: .*pass \?unone_profile/);
+ assert.doesNotMatch(profileMissing({profile:null},{profiling:true,embedded:false}),/page must/);
 });

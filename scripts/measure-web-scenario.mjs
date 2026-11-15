@@ -75,7 +75,7 @@ export function parseScenario(text){
   const kind=kinds[0];
   for(const key of Object.keys(step))if(!STEP_KEYS[kind].includes(key))fail(`${where}.${key}`,`not allowed on a ${kind} step (allowed: ${STEP_KEYS[kind].join(', ')})`);
   if(kind==='key'){if(!keyFields(step.key))fail(`${where}.key`,'a KeyboardEvent.code such as KeyT, Digit1, Escape, Enter, Space, ArrowLeft or F1');return Object.freeze({kind,key:step.key,hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
-  if(kind==='tap'){if(!point(step.tap))fail(`${where}.tap`,'[x, y] in CSS pixels from the top-left of the viewport');return Object.freeze({kind,tap:Object.freeze([...step.tap]),hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
+  if(kind==='tap'){if(!point(step.tap))fail(`${where}.tap`,'[x, y] in CSS pixels from the top-left of the player (its iframe, with --url)');return Object.freeze({kind,tap:Object.freeze([...step.tap]),hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
   if(kind==='drag'){
    const d=step.drag;
    if(!d||typeof d!=='object'||Array.isArray(d))fail(`${where}.drag`,'{from:[x,y], to:[x,y], ms?, moves?}');
