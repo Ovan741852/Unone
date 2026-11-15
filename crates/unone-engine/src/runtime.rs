@@ -1053,6 +1053,12 @@ impl EngineRuntime {
         self.script_profile.borrow().marks_since(after)
     }
 
+    /// Bytes the main Luau VM holds right now, garbage not yet collected
+    /// included. Reading it never collects, so a host may read it every frame.
+    pub fn luau_heap_bytes(&self) -> usize {
+        self.lua.used_memory()
+    }
+
     /// Name this project reports itself as.
     pub fn project_name(&self) -> &str {
         &self.config.name

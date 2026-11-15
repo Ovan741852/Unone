@@ -35,7 +35,9 @@ startup phases, and game-defined spans/counters/milestones ([api.profile](profil
 these are measurements, not deterministic gameplay facts. Verdicts come only from targets a
 project declares (`performance`): perf, run and verify warn when one is missed and say where to start.
 `scripts/measure-web-export.mjs` measures a production Web export's load in a headless browser
-(cold, warm and profiler-pair runs, artifact hashes, conditions and the game's milestone in one report).
+(cold, warm and profiler-pair runs, artifact hashes, conditions and the game's milestone in one report);
+its `--scenario` drives the game through scripted round trips and samples the player's memory owners,
+the JS heap and the browser processes per round.
 
 Core: fixed timestep, seeded random, deterministic replay/digest, 2D gravity,
 damping, ground friction/restitution and circle contacts; Camera2D with declared

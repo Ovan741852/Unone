@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "groups": {
+    "city": ["texture://city-map", "texture://city-hud"],
+    "tech": ["texture://tech-tree", "texture://tech-panel"],
+    "bag": ["texture://bag-grid", "texture://bag-items"],
+    "battle": ["texture://battle-field", "texture://battle-unit-a", "texture://battle-unit-b"]
+  },
+  "startup": ["city"],
+  "budget": {"max_bytes": 67108864, "max_entries": 128},
+  "dimensions": {
+    "texture://city-map": {"format": "png", "width": 1024, "height": 1024},
+    "texture://city-hud": {"format": "png", "width": 1024, "height": 256},
+    "texture://tech-tree": {"format": "png", "width": 1024, "height": 1024},
+    "texture://tech-panel": {"format": "png", "width": 512, "height": 512},
+    "texture://bag-grid": {"format": "png", "width": 1024, "height": 512},
+    "texture://bag-items": {"format": "png", "width": 512, "height": 512},
+    "texture://battle-field": {"format": "png", "width": 1024, "height": 1024},
+    "texture://battle-unit-a": {"format": "png", "width": 256, "height": 256},
+    "texture://battle-unit-b": {"format": "png", "width": 256, "height": 256}
+  }
+}

@@ -283,6 +283,7 @@ export async function createAudioPlayback({
   state.report = () => ({
     available: true,
     assets: state.buffers.size,
+    decoded_bytes_estimate: decodedBytes(state.buffers.values()),
     declared_assets: state.declared.length,
     failures: [...state.failures, ...state.runtimeFailures],
     missing: [...state.missing].sort(),
@@ -293,6 +294,17 @@ export async function createAudioPlayback({
     })),
   });
   return state;
+}
+
+// Decoded PCM held as 32-bit float per channel; WebAudio internals are extra.
+// null when a buffer does not say its length, never a partial sum.
+function decodedBytes(buffers) {
+  let sum = 0;
+  for (const buffer of buffers) {
+    if (!Number.isSafeInteger(buffer?.length) || !Number.isSafeInteger(buffer?.numberOfChannels)) return null;
+    sum += buffer.length * buffer.numberOfChannels * 4;
+  }
+  return sum;
 }
 
 export function audioBusGain(world = {}, category, declaredLevels = {}) {

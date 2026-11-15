@@ -74,7 +74,9 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  async function barrier(){await spatial.barrier();if(closed)throw Error('RUNTIME_CLOSED');const results=await Promise.all(pending);if(closed)throw Error('RUNTIME_CLOSED');pending=[];for(const r of results){if(closed)throw Error('RUNTIME_CLOSED');if(r.error){fault=r.error;throw fault;}binary.complete(r.value);}}
  function dispatchJobs(){if(!pool)return;const tasks=binary.drain();pending=tasks.map(work=>pool.submit(work).then(value=>({value}),error=>({error})));}
 
- return {module,trace:()=>lastTrace,close(){if(closed)return;closed=true;loaded=false;latest=undefined;pending=[];pool?.close();pool=null;spatial.close();releaseObservationResources(module);module._unone_web_unload_project?.();},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),fault:fault?String(fault):null};},async execute(command){
+ return {module,trace:()=>lastTrace,close(){if(closed)return;closed=true;loaded=false;latest=undefined;pending=[];pool?.close();pool=null;spatial.close();releaseObservationResources(module);module._unone_web_unload_project?.();},// Memory beside the world: linear capacity (only grows) and the Luau VM in use, garbage included.
+ // Reading either never collects; a runtime without the export reports null, never a guess.
+ memory(){const heap=typeof module._unone_web_luau_heap_bytes==='function'?module._unone_web_luau_heap_bytes():-1;return {wasm_linear_bytes:module.HEAPU8.buffer.byteLength,luau_heap_bytes:Number.isFinite(heap)&&heap>=0?heap:null};},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),fault:fault?String(fault):null};},async execute(command){
   if(closed)throw Error('RUNTIME_CLOSED');
   if(profile)lastTrace={kind:String(command?.kind),start_ms:performance.now(),marks:[]};
   const allowed={load:['payload','seed','data'],tick:['input','presenting'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};

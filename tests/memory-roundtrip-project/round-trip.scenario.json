@@ -1,0 +1,32 @@
+{
+  "schema": "unone.web-scenario.v1",
+  "name": "city-tech-bag-battle",
+  "description": "Twenty city-tech-bag-city round trips after two warmups, then five city-battle-city trips after one, then ten idle seconds.",
+  "start_mark": "city.interactive",
+  "phases": [
+    {
+      "name": "menus",
+      "warmup_rounds": 2,
+      "rounds": 20,
+      "steps": [
+        {"key": "KeyT"}, {"wait_mark": "tech.interactive"},
+        {"key": "KeyB"}, {"wait_mark": "bag.interactive"},
+        {"key": "Escape"}, {"wait_mark": "city.interactive"},
+        {"wait_ms": 300}
+      ]
+    },
+    {
+      "name": "battle",
+      "warmup_rounds": 1,
+      "rounds": 5,
+      "steps": [
+        {"key": "KeyF"}, {"wait_mark": "battle.interactive"},
+        {"wait_ms": 1000},
+        {"key": "Escape"}, {"wait_mark": "city.interactive"},
+        {"wait_ms": 300}
+      ]
+    }
+  ],
+  "settle_ms": 10000,
+  "sample_ms": 250
+}

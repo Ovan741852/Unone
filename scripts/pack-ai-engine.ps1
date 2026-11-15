@@ -103,7 +103,7 @@ foreach ($directory in @('web/shared','web/renderer','web/vendor/three','tests/h
     }
 }
 Copy-PackageFile (Join-Path $engineRoot 'scripts/verify-host-parity.mjs') 'scripts/verify-host-parity.mjs'
-foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs')) {
+foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs')) {
     Copy-PackageFile (Join-Path $engineRoot "scripts/$tool") "scripts/$tool"
 }
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtime\unone_web_live_smoke.js"
@@ -138,7 +138,7 @@ before writing game code.
 Native command: bin/game.exe
 Profiling: scripts/profile-player.mjs and scripts/compare-player.mjs
 (Node.js 22+; supply an exported development game with --export or --before/--after)
-Load measurement: scripts/measure-web-export.mjs --export <production export> --output <report.json>
+Load measurement: scripts/measure-web-export.mjs --export <production export> --output <report.json> [--scenario <scenario.json>]
 (Node.js 22+ and Edge or Chrome; see docs/profiling.md)
 Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
 Optional AI plugins: docs/plugin-protocol.md and plugins/

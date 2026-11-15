@@ -1,0 +1,10 @@
+{
+  "name": "Memory Round Trip",
+  "entry_script": "main.luau",
+  "asset_manifest": "assets.json",
+  "display": {"width": 1280, "height": 720},
+  "systems": {"ui": true, "camera2d": true, "camera3d": false, "physics2d": false, "physics3d": false, "random": false, "save": false, "audio": false, "spine": false, "particle": false, "effekseer": false, "jobs": false},
+  "input_actions": [],
+  "script_time_limit_seconds": 60,
+  "test_files": ["round-trip.test.json", "battle.test.json"]
+}

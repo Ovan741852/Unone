@@ -69,6 +69,7 @@ $requiredFiles = @(
     "scripts\profile-player.mjs",
     "scripts\compare-player.mjs",
     "scripts\measure-web-export.mjs",
+    "scripts\measure-web-scenario.mjs",
     "web\runner\index.html",
     "web\runner\main.js",
     "web\runner\save-store.js",
@@ -122,7 +123,7 @@ foreach ($helper in @(
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     throw "Node.js is required for behavioral parity. Install Node.js 22+ and rerun this verifier."
 }
-foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs')) {
+foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs')) {
     & node --check (Join-Path $packageRoot "scripts/$tool")
     if ($LASTEXITCODE -ne 0) { throw "Invalid packaged profiling tool: $tool" }
 }

@@ -1,0 +1,13 @@
+{
+  "name": "round-trip",
+  "frames": 10,
+  "seed": 42,
+  "input_sequence": [
+    {}, {"actions": {"T": true}}, {}, {"actions": {"B": true}}, {}, {"actions": {"Escape": true}}, {},
+    {"actions": {"F": true}}, {}, {"actions": {"Escape": true}}
+  ],
+  "assertions": [
+    {"observation": {"key": "screen", "equals": "city"}},
+    {"observation": {"key": "units", "equals": 0}}
+  ]
+}

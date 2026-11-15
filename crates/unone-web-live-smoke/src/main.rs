@@ -947,6 +947,13 @@ pub extern "C" fn unone_web_profile_marks_revision() -> u32 {
         .map_or(0, |runtime| u32::try_from(runtime.profile_marks_revision()).unwrap_or(u32::MAX)))
 }
 
+/// Bytes the main Luau VM holds, uncollected garbage included; -1 without a
+/// runtime. A read never collects or ticks, so the host reads it every tick.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_luau_heap_bytes() -> f64 {
+    RUNTIME.with(|runtime| runtime.borrow().as_ref().map_or(-1.0, |runtime| runtime.luau_heap_bytes() as f64))
+}
+
 /// The game's `api.profile.mark` milestones after a sequence, outside World.
 /// Read-only: it never ticks and never touches a snapshot or digest.
 /// # Safety
@@ -1859,6 +1866,25 @@ fn profile_mark_abi_reports_frames_beside_the_world_without_changing_it() {
     let request=br#"{"kind":"marks","after":0}"#;
     assert_eq!(unsafe { unone_web_profile_marks_request(request.as_ptr(),request.len()) },-1,"only the owned allocation is read");
     unone_web_unload_project();
+}
+
+#[cfg(test)]
+#[test]
+fn luau_heap_abi_reads_the_vm_without_collecting_or_ticking() {
+    assert_eq!(unone_web_luau_heap_bytes(),-1.0,"no runtime, no heap");
+    let script="local kept={} return {start=function()end,update=function(api) if api.input.isDown('Enter') then for i=1,20000 do kept[i]={i} end end api.observation.set('n',#kept) end}";
+    let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"heap","entry_script":"main.luau"},"script":script})).unwrap();
+    assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(),payload.len(),42) },0);
+    let loaded=unone_web_luau_heap_bytes();
+    assert!(loaded>0.0);
+    assert_eq!(unone_web_luau_heap_bytes(),loaded,"a read changes nothing");
+    assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().current_frame()),0,"a read never ticks");
+    let frame=serde_json::to_vec(&serde_json::json!({"actions":{"Enter":true}})).unwrap();
+    assert_eq!(unsafe { unone_web_set_input_frame(frame.as_ptr(),frame.len()) },0);
+    assert_eq!(unone_web_tick(),0);
+    assert!(unone_web_luau_heap_bytes()>loaded+20000.0*16.0,"tables the game keeps show up");
+    unone_web_unload_project();
+    assert_eq!(unone_web_luau_heap_bytes(),-1.0);
 }
 
 #[cfg(test)]

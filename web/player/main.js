@@ -22,6 +22,7 @@ import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileO
 import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from '../shared/startup-presentation.mjs';
 import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '../shared/player-completion.mjs';
 import {createPlayerPerformanceFeed} from '../shared/player-performance-feed.mjs';
+import {playerMemorySnapshot} from '../shared/player-memory.mjs';
 import {serializedSavePayload} from '../shared/save-publication.mjs';
 import {playerErrorPolicy,createRecoveryReporter} from '../shared/player-errors.mjs';
 import {createStartupScreen} from '../shared/startup-screen.mjs';
@@ -61,8 +62,10 @@ let errorPolicy=null;
 const recovery=createRecoveryReporter({target:document.body});
 const playerCompletion=createPlayerCompletionMetrics();
 function readPlayerPerformance(options={}){
- if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples'].includes(key)))throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
- return Object.freeze({...playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false}),image_assets:window.unonePlayerAssets?.snapshot()??null,gamepad_input:gamepadInput.report()});
+ if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples','includeMemory'].includes(key))||Object.hasOwn(options,'includeMemory')&&typeof options.includeMemory!=='boolean')throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
+ // Memory owners are read on request only: renderer and UI reports walk their resources.
+ const memory=options.includeMemory?{memory:playerMemorySnapshot({backend:backend?.report()??null,images:imageAssets?.report()??null,renderer:renderer?.metrics()??null,ui:uiRenderer.report(),audio:audio?.report()??null,drawingBuffer:[canvas.width,canvas.height]})}:{};
+ return Object.freeze({...playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false}),image_assets:window.unonePlayerAssets?.snapshot()??null,gamepad_input:gamepadInput.report(),...memory});
 }
 const removePerformanceAccessor=installPlayerPerformanceAccessor(window,readPlayerPerformance);
 let performanceFeed=createPlayerPerformanceFeed({search:location.search,target:document.body,

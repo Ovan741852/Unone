@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "assets": [
+    {"id": "texture://city-map", "kind": "texture2d", "source": "assets/city-map.png"},
+    {"id": "texture://city-hud", "kind": "texture2d", "source": "assets/city-hud.png"},
+    {"id": "texture://tech-tree", "kind": "texture2d", "source": "assets/tech-tree.png"},
+    {"id": "texture://tech-panel", "kind": "texture2d", "source": "assets/tech-panel.png"},
+    {"id": "texture://bag-grid", "kind": "texture2d", "source": "assets/bag-grid.png"},
+    {"id": "texture://bag-items", "kind": "texture2d", "source": "assets/bag-items.png"},
+    {"id": "texture://battle-field", "kind": "texture2d", "source": "assets/battle-field.png"},
+    {"id": "texture://battle-unit-a", "kind": "texture2d", "source": "assets/battle-unit-a.png"},
+    {"id": "texture://battle-unit-b", "kind": "texture2d", "source": "assets/battle-unit-b.png"}
+  ]
+}

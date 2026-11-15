@@ -82,6 +82,7 @@ reading everything once.
 | `--backend main\|worker`, `--seed N` | Override the presentation's backend or the seed. |
 | `--timeout-ms`, `--settle-ms`, `--frame-window-ms` | Per-load limit, the wait before sampling, the `unonePlayerPerformance` window. |
 | `--keep-storage`, `--allow-development`, `--browser PATH`, `--headed` | Keep saves between runs, measure a development export (marked in the report), choose the browser. |
+| `--scenario FILE`, `--scenario-runs N` | Drive the game through a scripted scenario and sample memory per round; see [memory over round trips](#memory-over-round-trips---scenario). |
 
 | Report section | Contents |
 |---|---|
@@ -111,8 +112,108 @@ How to read it:
   `--wasm-timing observe` times the original call instead. A worker backend loads
   WASM in a Worker the page cannot see, so its WASM timings are null.
 - One machine, one browser, headless: not a phone, not GPU time, not physical
-  display. Memory peaks over scene round trips and long frame-time windows are
-  separate measurements.
+  display. Memory over scene round trips is the scenario mode below; long
+  frame-time windows are a separate measurement.
+
+### Memory over round trips: `--scenario`
+
+A scenario drives the exported game with real browser input and samples memory
+as it goes. The game marks each screen as usable with `api.profile.mark`; the
+scenario presses keys or taps, waits for those marks, and repeats.
+
+```powershell
+node scripts/measure-web-export.mjs --export <export> --output memory.json --scenario round-trip.scenario.json
+```
+
+```json
+{
+  "schema": "unone.web-scenario.v1",
+  "name": "city-tech-bag",
+  "start_mark": "city.interactive",
+  "phases": [
+    {"name": "menus", "warmup_rounds": 2, "rounds": 20, "steps": [
+      {"key": "KeyT"}, {"wait_mark": "tech.interactive"},
+      {"key": "KeyB"}, {"wait_mark": "bag.interactive"},
+      {"key": "Escape"}, {"wait_mark": "city.interactive"},
+      {"wait_ms": 300}
+    ]}
+  ],
+  "settle_ms": 10000,
+  "sample_ms": 250
+}
+```
+
+| Step | Does |
+|---|---|
+| `{"key": "KeyT"}` | Key down, `hold_ms` (50), key up, as DevTools input events with the browser's `code`, `key` and virtual key code. Codes: `KeyA`–`KeyZ`, `Digit0`–`Digit9`, `F1`–`F12`, `Escape`, `Enter`, `Space`, `Tab`, arrows and modifiers. |
+| `{"tap": [x, y]}` | Mouse move, press, `hold_ms`, release at CSS pixels from the viewport's top-left. Fix the viewport (`--viewport`) when a scenario taps. |
+| `{"wait_mark": "name"}` | Wait for the next presentation of that mark after the last one a step saw, up to `timeout_ms` (`step_timeout_ms`, 15000). |
+| `{"wait_ms": 300}` | Stay on the screen. |
+
+Each scenario run is a fresh browser: it loads cold, waits for `start_mark`,
+takes a baseline checkpoint, runs every phase's warmup rounds (kept, left out of
+trends) and measured rounds, then sits idle for `settle_ms` and takes a final
+checkpoint. Every round ends with a checkpoint. `--scenario-runs N` repeats the
+whole thing; with `--scenario`, cold, warm and profiler-pair runs default to 0.
+A run records at most 256 marks, so the scenario refuses more waits than that.
+
+What a checkpoint reads, and the sampler every `sample_ms` between them:
+
+| Source | Metrics |
+|---|---|
+| `unonePlayerPerformance.snapshot({includeMemory:true}).memory` | One row per owner, flattened to `<owner>.bytes`, `<owner>.entries` and the owner's other counts. See the owner table below. |
+| DevTools `Runtime.getHeapUsage`, `Memory.getDOMCounters` | `js_heap.used_bytes`, `js_heap.total_bytes`, `js_heap.backing_storage_bytes` (when the browser reports it), `dom.nodes`, `dom.listeners`, `dom.documents`. Nothing forces a collection. |
+| The OS, per browser process (checkpoints only) | `os.<process>.working_set_bytes`, `peak_working_set_bytes` (the OS high-water mark since the process started), `private_bytes`, and on Windows `gpu_dedicated_bytes` and `gpu_shared_bytes` from the GPU process-memory counters. `<process>` is `browser_process`, `gpu_process` or `largest_renderer` (with one page open, the page's renderer). Linux reads `/proc` without GPU memory; other platforms report none. |
+
+The player's owner rows (`includeMemory:true`; the default snapshot leaves them out):
+
+| Owner | What the number is |
+|---|---|
+| `wasm.linear_memory` | Linear memory capacity. It only grows; it holds the Luau VM, engine state and published buffers. |
+| `luau.heap` | The main Luau VM in use, garbage not yet collected included (within `wasm.linear_memory`). Null on a runtime built before this read existed. |
+| `images.decoded.resident` | Every decoded image the broker holds, width × height × 4. |
+| `images.decoded.active`, `.scene`, `.groups` | Images some consumer leases, the scene plan holds, or preload/load groups hold. Each is within `resident`; they overlap one another. |
+| `images.decoded.inactive_cache` | Ready images no owner holds, kept by the bounded LRU (within `resident`, apart from the three above). |
+| `canvas_ui.images` | Decoded images the current Canvas UI borrows (within `active`). |
+| `gpu.textures`, `gpu.geometries` | three.js live texture and geometry counts. WebGL hides their bytes. |
+| `gpu.world_textures`, `gpu.sprite_textures`, `gpu.ui_prefix` | Upload-size estimates and counts of world textures, sprite textures and the GPU UI prefix's textures, meshes and buffers (within `gpu.textures`). |
+| `render_targets.drawing_buffer` | Canvas width × height × 4: a lower bound; depth, multisampling and swap chain are not included. `render_targets.post` gives post-processing target sizes when bloom is on. |
+| `audio.decoded` | Decoded PCM as 32-bit float per channel. |
+| `js.heap` | Null here: read outside the page through DevTools. |
+
+`unmeasured` names what the page cannot see (browser process memory, driver
+allocations, browser image copies, compositor buffers), and `failures` counts
+image load failures, sprite texture errors and Canvas UI images in error, so a
+round trip that broke a displayed image shows up.
+
+The report adds `scenario`: the file's SHA-256 and parsed definition, then per
+run a `baseline`, `phases[].rounds[]` (duration, each step with the mark's page
+time and `presented_after_input_ms`, the checkpoint's metrics as `end`, the
+largest sampled values as `peak`, and the raw OS rows), `phases[].trend`, the
+`settled` checkpoint and every raw sample in columns. `trend.end` and
+`trend.peak` give, per metric over the measured rounds: first, last, min, max,
+the maximum of each half, `second_half_not_higher`, the least-squares
+`slope_per_round`, `rounds_increased` and `increased_every_round`.
+`scenario.summary` puts each run's baseline, last round, phase peaks and settled
+values through the same median and p95 as startup runs.
+
+How to read it:
+
+- Never add owner rows, heaps or processes: `within` and `overlaps` say which
+  ones hold the same bytes, and processes share memory the OS counts in each.
+- A round's peak is the largest value sampled every `sample_ms`, not a
+  continuous high-water mark; only `peak_working_set_bytes` is one.
+- `second_half_not_higher` is a fact about this window. A garbage-collected heap
+  can rise across rounds and fall later without leaking, and a flat window does
+  not prove nothing leaks. Owner counts (`entries`) that keep rising across
+  rounds are what to investigate.
+- `closed_images` and released bytes are logical releases, not memory the
+  browser or OS took back; read the `os.*` rows for that.
+- `presented_after_input_ms` includes DevTools input delivery and is measured
+  on the page clock; it is a screen-change cost, not a frame-time measurement.
+
+`tests/memory-roundtrip-project` is a four-screen fixture with image groups and
+its scenario; its README shows the export and measure commands.
 
 ## Performance targets: when to optimise and where
 
@@ -329,7 +430,10 @@ its `start_ms` and `callback_end_ms` measure the actual synchronous drawing
 continuation, not the elapsed await. Cancelled preparation has no successful
 submission/cadence sample. Startup/manual draws retain null RAF fields.
 `includeRafSamples`
-must be a boolean; unknown public query options fail explicitly. Recording uses
+must be a boolean; unknown public query options fail explicitly.
+`includeMemory:true` (also a boolean) adds `memory`: the player's memory owners
+with how they overlap, described under
+[memory over round trips](#memory-over-round-trips---scenario). Recording uses
 fixed primitive storage and constructs row objects only for the opted-in query.
 
 Unchanged official-player saves use an engine-issued immutable memory lease and

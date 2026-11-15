@@ -140,6 +140,9 @@ To measure an export's load the same way every time (cold and warm runs, a
 profiler pair, the game's own milestone, artifact hashes and conditions in one
 report), run `node scripts/measure-web-export.mjs --export <dir> --output <report.json>`;
 see [measuring a production Web export](profiling.md#measuring-a-production-web-export).
+`unonePlayerPerformance.snapshot({includeMemory:true})` adds the player's memory owners
+(WASM capacity, Luau heap, decoded image sets, GPU counts, render targets, audio) with
+how they overlap; the same tool's `--scenario` samples them over scripted round trips.
 Save restoration precedes Game.start; input/scheduler/UI/audio use shared host modules.
 
 The official presentation wire retains unchanged ordinary UI as an immutable
