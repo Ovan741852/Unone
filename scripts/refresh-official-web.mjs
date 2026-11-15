@@ -22,12 +22,12 @@ export function inspectRuntime(directory){
 }
 async function validatePresentation(hostRoot,presentation,assets){
  const from=relative=>import(pathToFileURL(sourceFile(hostRoot,'web/'+relative)).href);
- const [encoding,raster,frame,texture]=await Promise.all([from('shared/asset-encoding.js'),from('renderer/projected-raster-policy.js'),from('renderer/projected-frame-policy.js'),from('renderer/texture-cache-policy.js')]);
+ const [encoding,raster,frame,texture,atlas]=await Promise.all([from('shared/asset-encoding.js'),from('renderer/projected-raster-policy.js'),from('renderer/projected-frame-policy.js'),from('renderer/texture-cache-policy.js'),from('renderer/ui-text-atlas-policy.js')]);
  const policy=raster.parseProjectedRaster(presentation.projected_raster),profile=frame.parseFrameProfile(presentation.projected_material_profile);
  if(presentation.antialias!==undefined)requireThat(typeof presentation.antialias==='boolean','ANTIALIAS_INVALID');
  if(policy.requested==='upper_left_checked')requireThat(presentation.antialias===false&&!presentation.bloom,'PROJECTED_RASTER_PROFILE_UNSUPPORTED');
  frame.assertFrameOptions(profile,{backend:'webgl',raster:policy.requested,antialias:presentation.antialias??true,bloom:presentation.bloom,ao:false});
- texture.parseTextureCache(presentation.texture_cache);requireThat(presentation.physical_input===undefined||presentation.physical_input==='ordered_physical_v1','INPUT_PHYSICAL_PROFILE_INVALID');
+ atlas.parseUiTextAtlasSize(presentation.ui_text_atlas_size);texture.parseTextureCache(presentation.texture_cache);requireThat(presentation.physical_input===undefined||presentation.physical_input==='ordered_physical_v1','INPUT_PHYSICAL_PROFILE_INVALID');
  for(const asset of assets.assets)if(asset.kind!=='data')encoding.requireAssetEncoding(asset,asset.kind==='texture2d'?'image':asset.kind==='mesh3d'?'mesh':asset.kind==='audio'?'audio':'effekseer');
  return encoding;
 }

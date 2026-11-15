@@ -10,6 +10,7 @@ import {slicePatches} from '../shared/ui-geometry.mjs';
 import {textPaintBounds} from '../shared/ui-presentation.mjs';
 import {imageBatchSnappedRect} from '../shared/ui-image-batch.mjs';
 import {assetCatalogSpecs} from '../shared/asset-encoding.js';
+import {parseUiTextAtlasSize} from './ui-text-atlas-policy.js';
 
 const STRIDE=32,FILL=0,BORDER=1,IMAGE=2,FREE=3,MAX_PAGES=4,ATTRIBUTES=['uiOrigin','uiAxis','uiUv','uiColor','uiBorder','uiBox','uiParams','uiClip'];
 // Pixel space is the drawing buffer, y down. uiOrigin = origin.xy + x axis,
@@ -46,7 +47,8 @@ const WHITE=[1,1,1,1],NONE=[0,0,0,0],FULL_UV=[0,0,1,1];
 // placement stays in the quad; retain the complete style conservatively.
 const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placeholder,node.text_edit,node.style,node.align,node.fontSize,node.lineHeight]);
 
-export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null}={}){
+export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize}={}){
+ const requestedAtlasSize=parseUiTextAtlasSize(uiTextAtlasSize);
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
  const quadPositions=new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),quadIndex=new Uint16Array([0,1,2,0,2,3]);
  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
@@ -174,7 +176,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    let own=dedicated.get(request.key);
    if(!own||own.content!==request.content){const canvas=surface(request.w,request.h),context=canvas.getContext('2d');
     if(!context)throw Error('UI_TEXT_RASTER_UNAVAILABLE');paint(request,canvas,context);
-    const previous=own;own={texture:configure(new THREE.Texture(canvas)),content:request.content};own.texture.needsUpdate=true;dedicated.set(request.key,own);if(previous)retireTexture(previous.texture);uploads++;}
+    const previous=own;own={texture:configure(new THREE.Texture(canvas)),content:request.content,bytes:request.w*request.h*4};own.texture.needsUpdate=true;dedicated.set(request.key,own);if(previous)retireTexture(previous.texture);uploads++;}
    request.texture=own.texture;request.uv=FULL_UV;request.dedicated=true;
   }
   for(const [key,own]of dedicated)if(!missing.some(r=>r.key===key)){dedicated.delete(key);retireTexture(own.texture);}
@@ -292,7 +294,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   retiring=true;let failure;try{for(const r of oldRuns){bindRun(r,white);scene.remove(r.mesh);}textureRuns.clear();
    try{clearImageOwners();}catch(error){failure??=error;}
    for(const [values,fn]of [[oldRuns,r=>{try{r.geometry.dispose();}finally{r.mesh.material.dispose();}}],[oldPages,p=>retireTexture(p.texture)],[oldDedicated,p=>retireTexture(p.texture)],[oldImages,retireTexture]])try{attemptAll(values,fn);}catch(error){failure??=error;}
-  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=0;stale=true;}if(failure)throw failure;
+  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=atlasSize=0;stale=true;}if(failure)throw failure;
  }
  return {
   // Drawing-buffer pixels the UI lays out against, and the CSS->device scale.
@@ -306,7 +308,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    if(!syncImageScope())return {skipped:true,regions:0};const epoch=imageEpoch;
    renderer.getDrawingBufferSize(size);
    if(disposed||epoch!==imageEpoch)return {skipped:true,regions:0};
-   if(!atlasSize)atlasSize=Math.min(4096,renderer.capabilities?.maxTextureSize??2048);
+   if(!atlasSize)atlasSize=Math.min(requestedAtlasSize,renderer.capabilities?.maxTextureSize??2048);
    if(context.changed||stale||size.x!==width||size.y!==height){width=size.x;height=size.y;uiSize.set(width,height);rebuild(context);}
    if(count){
     const autoClear=renderer.autoClear,test=renderer.getScissorTest(),target=renderer.getRenderTarget();renderer.getViewport(viewport);
@@ -320,7 +322,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   clear,
    dispose(){if(disposed)return;if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');disposed=true;try{clear();}finally{white.dispose();}},
   metrics:()=>({backend:'three.js',quads:count,draw_calls:drawRuns,rebuilds,last_rebuild_ms:lastMs,text_rasters:rasters,atlas_uploads:uploads,atlas_compactions:compactions,
-    atlas_pages:pages.length,atlas_page_size:atlasSize,text_slots:slots.size,dedicated_text_textures:dedicated.size,image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
+    atlas_pages:pages.length,atlas_page_size:atlasSize,atlas_page_size_requested:requestedAtlasSize,atlas_reserved_bytes_estimate:pages.length*atlasSize*atlasSize*4,text_slots:slots.size,dedicated_text_textures:dedicated.size,dedicated_text_bytes_estimate:[...dedicated.values()].reduce((sum,own)=>sum+own.bytes,0),image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
     image_cache_scope:sharedImages?'shared_texture_cache_with_broker_lease':'borrowed_immediate_no_shared_cache',image_active_owners:imageActive,image_cached_owners:imageCached,image_bytes_estimate:imageBytes,image_texture_builds:imageBuilds,image_cache_hits:imageHits,image_idle_hits:imageIdleHits,image_owners_retired:imageRetired,image_epoch:imageEpoch}),
  };
 }

@@ -81,7 +81,7 @@ export function startupFor(project,files,startup){
 }
 function presentationFor(project,files,base){
  const file=path.join(project,'player.presentation.json');const raw=fs.existsSync(file)?json(sourceFile(project,'player.presentation.json')):{};
- const allowed=['texture_cache','spatial_backend','renderer_mode','renderer_module','renderer_files','ui','bloom','antialias','projected_raster','projected_material_profile','physical_input','show_performance','runtime_backend','job_policy','interpolation','interpolate_instances','render_extensions','error_policy','startup'];closed(raw,allowed,'WEB_REFRESH_PRESENTATION_INVALID');
+ const allowed=['ui_text_atlas_size','texture_cache','spatial_backend','renderer_mode','renderer_module','renderer_files','ui','bloom','antialias','projected_raster','projected_material_profile','physical_input','show_performance','runtime_backend','job_policy','interpolation','interpolate_instances','render_extensions','error_policy','startup'];closed(raw,allowed,'WEB_REFRESH_PRESENTATION_INVALID');
  requireThat((raw.renderer_mode??'official')==='official'&&raw.renderer_module==null&&(raw.renderer_files??[]).length===0,'WEB_REFRESH_OFFICIAL_ONLY');
  const result={spatial_backend:'cpu',renderer_mode:'official',renderer_module:null,renderer_files:[],ui:{font_source:null,font_family:null,fonts:[]},bloom:false,show_performance:false,runtime_backend:'main',job_policy:{mode:'auto',max_workers:2,memory_budget_mb:128},interpolation:false,interpolate_instances:[],...raw};
  for(const key of ['bloom','show_performance','interpolation'])requireThat(typeof result[key]==='boolean','WEB_REFRESH_PRESENTATION_INVALID',key);

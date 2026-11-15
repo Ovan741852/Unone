@@ -52,6 +52,7 @@ const NATIVE_DECODERS: &[&str] = &[
 const NATIVE_EXPORT_BLOCKED: &[&str] = &["spine", "effekseer"];
 const NATIVE_RUNTIME_BLOCKED: &[&str] = &["spine", "effekseer"];
 const WEB_PRESENTATION_KEYS: &[&str] = &[
+    "ui_text_atlas_size",
     "texture_cache",
     "render_extensions",
     "renderer_mode",
@@ -238,6 +239,8 @@ pub enum JobMode {
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct PresentationSettings {
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="declared_ui_text_atlas_size")]
+    pub ui_text_atlas_size: Option<u32>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="texture_cache::declared")]
     pub texture_cache: Option<texture_cache::TextureCachePolicy>,
     pub spatial_backend: SpatialBackend,
@@ -363,8 +366,16 @@ fn declared_antialias<'de,D:serde::Deserializer<'de>>(deserializer:D)->Result<Op
     <bool as serde::Deserialize>::deserialize(deserializer).map(Some)
 }
 
+fn declared_ui_text_atlas_size<'de,D:serde::Deserializer<'de>>(deserializer:D)->Result<Option<u32>,D::Error> {
+    <u32 as serde::Deserialize>::deserialize(deserializer).map(Some)
+}
+
 impl PresentationSettings {
     pub fn validate_renderer(&self) -> Result<()> {
+        if let Some(size)=self.ui_text_atlas_size {
+            ensure!(self.renderer_mode==RendererMode::Official,"UI_TEXT_ATLAS_OFFICIAL_ONLY");
+            ensure!((256..=4096).contains(&size) && size.is_power_of_two(),"UI_TEXT_ATLAS_SIZE_INVALID: expected a power of two from 256 to 4096");
+        }
         if let Some(policy)=self.texture_cache {
             ensure!(self.renderer_mode==RendererMode::Official,"TEXTURE_CACHE_OFFICIAL_ONLY");
             policy.validate()?;
@@ -608,6 +619,9 @@ pub fn native_wgpu_export_gate(
     // antialias true selects 4x MSAA in the native player (single sample when
     // omitted or false), fixed until relaunch like the Web context option.
     let mut keys = Vec::new();
+    if presentation.ui_text_atlas_size.is_some() {
+        keys.push("ui_text_atlas_size");
+    }
     if presentation.texture_cache.is_some() {
         keys.push("texture_cache");
     }
@@ -637,6 +651,25 @@ pub fn native_wgpu_export_gate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ui_text_atlas_is_optional_validated_official_web_only() {
+        let default=PresentationSettings::default();
+        assert!(serde_json::to_value(default).unwrap().get("ui_text_atlas_size").is_none());
+        for size in [256,512,1024,2048,4096] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"ui_text_atlas_size":size})).unwrap();
+            settings.validate_renderer().unwrap();
+            let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([("spine".into(),false),("effekseer".into(),false)])).unwrap();
+            assert!(native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string().contains("ui_text_atlas_size"));
+        }
+        for size in [0,255,300,8192] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"ui_text_atlas_size":size})).unwrap();
+            assert!(settings.validate_renderer().unwrap_err().to_string().contains("UI_TEXT_ATLAS_SIZE_INVALID"));
+        }
+        for size in [json!(null),json!(1.5),json!("2048")] {assert!(serde_json::from_value::<PresentationSettings>(json!({"ui_text_atlas_size":size})).is_err());}
+        let custom:PresentationSettings=serde_json::from_value(json!({"renderer_mode":"custom","renderer_module":"r.mjs","renderer_files":["r.mjs"],"ui_text_atlas_size":2048})).unwrap();
+        assert!(custom.validate_renderer().unwrap_err().to_string().contains("UI_TEXT_ATLAS_OFFICIAL_ONLY"));
+    }
 
     #[test]
     fn render_extensions_are_namespaced_official_web_modules(){

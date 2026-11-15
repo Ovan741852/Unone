@@ -389,6 +389,20 @@ drives the emitted WASM through the player's own runtime core.
 
 ## Raster construction request
 
+The official Web renderer also accepts optional `"ui_text_atlas_size": 2048` in
+`player.presentation.json`. Supported values are powers of two from 256 through
+4096; omission retains the existing 4096-pixel page (capped by the GPU's maximum
+texture size). The renderer retains up to four RGBA atlas pages and uses dedicated
+textures for text that does not fit. A smaller page therefore saves 48 MiB per
+first page at 2048 instead of 4096, but additional pages and dedicated text can
+offset that saving. Text continues to rasterize at the drawing-buffer resolution;
+this setting does not change font size or UI scale. Text blocks larger than the
+device's maximum texture size remain subject to the renderer/device limit. Inspect the
+UI metrics `atlas_pages`, `atlas_page_size`, `atlas_reserved_bytes_estimate`,
+`dedicated_text_textures` and `dedicated_text_bytes_estimate` for the actual
+composition. These are allocation estimates, not driver or process totals.
+This setting is Web-only and is rejected for native and custom renderers.
+
 Official Web presentation accepts optional `"antialias": false|true`. Omission
 retains the existing true request. This is a renderer/context construction
 option: re-export and relaunch with a new page/canvas to change it. A game

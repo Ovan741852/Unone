@@ -5,26 +5,68 @@ import {createGpuUi} from './ui-gpu.js';
 import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
 
 // Actual presenter/Three objects, with no GPU, DOM, raster-quality or GC claim.
-async function fixture({maxTextureSize=8}={}){
+async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64}={}){
  const images=new Map(),leases=[],closed=[],surfaces=[];let scene=null,renders=0,failPaint=false;
  const catalog=createAssetCatalog({assets:['a','b'].map(id=>({id,kind:'texture2d',source:id+'.png'}))});
  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source,loadImage:async id=>({id,width:2,height:2,close(){closed.push(id);}}),unusedMaxBytes:0,unusedMaxEntries:0});
  for(const id of ['a','b']){const lease=broker.acquire(id);leases.push(lease);await lease.promise;images.set(id,{image:lease.image});}
  const createSurface=()=>{const canvas={width:1,height:1},context={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},rect(){},clip(){},fillText(){},getImageData(_x,_y,w,h){return {data:new Uint8ClampedArray(w*h*4)};}};canvas.getContext=()=>context;surfaces.push(canvas);return canvas;};
  const gl={isContextLost:()=>false,pixelStorei(){},texSubImage2D(){}};
- const renderer={autoClear:true,capabilities:{maxTextureSize},getDrawingBufferSize:v=>v.set(64,64),getPixelRatio:()=>1,
+ const renderer={autoClear:true,capabilities:{maxTextureSize},getDrawingBufferSize:v=>v.set(bufferSize,bufferSize),getPixelRatio:()=>1,
   getContext:()=>gl,state:{bindTexture(){}},properties:{get:texture=>({__webglTexture:texture})},getScissorTest:()=>false,getRenderTarget:()=>null,getViewport:v=>v.set(0,0,64,64),
   setRenderTarget(){},setScissorTest(){},setViewport(){},initTexture(){},render(value){scene=value;renders++;}};
- const ui=createGpuUi(THREE,renderer,{createSurface});
+ const ui=createGpuUi(THREE,renderer,{createSurface,uiTextAtlasSize});
  const image=id=>({kind:'image',id,asset:id,fit:'stretch',rect:{x:0,y:0,width:10,height:10}});
  // 16px wide against an 8px atlas forces the real dedicated-text path.
  const text=(value='old')=>({kind:'text',id:'label',text:value,rect:{x:0,y:25,width:25,height:25}});
  const draw=nodes=>ui.draw({nodes,nodeKeys:nodes.map(n=>JSON.stringify(n)),batches:new Map(),images,scale:1,changed:true,identity:'fixed-font',hasText:n=>n.kind==='text',paintText(){if(failPaint)throw Error('PAINT_FAILED');},imageError(_node,_index,error){throw error;}});
- return {ui,broker,images,leases,closed,surfaces,image,text,draw,get renders(){return renders;},get meshes(){return scene?.children??[];},failPaint(){failPaint=true;},
+ return {ui,renderer,broker,images,leases,closed,surfaces,image,text,draw,get renders(){return renders;},get meshes(){return scene?.children??[];},failPaint(){failPaint=true;},
   dispose(){ui.dispose();for(const lease of leases)lease.release();broker.dispose();}};
 }
 const sampler=mesh=>mesh.material.uniforms.uiTexture.value;
 function watch(texture){let count=0;texture.addEventListener('dispose',()=>count++);return ()=>count;}
+
+test('atlas policy defaults to 4096 and opt-in uses 2048 with accurately reported page bytes',async()=>{
+ for(const [requested,expected] of [[undefined,4096],[2048,2048]]){
+  const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:requested});try{
+   f.draw([f.text()]);const m=f.ui.metrics();assert.equal(m.atlas_page_size,expected);assert.equal(m.atlas_page_size_requested,expected);assert.equal(m.atlas_pages,1);assert.equal(m.atlas_reserved_bytes_estimate,expected*expected*4);
+   assert.equal(m.dedicated_text_bytes_estimate,0);f.renderer.capabilities.maxTextureSize=1024;f.ui.contextLost();assert.equal(f.ui.metrics().atlas_reserved_bytes_estimate,0);f.draw([f.text()]);assert.equal(f.ui.metrics().atlas_page_size,1024);
+  }finally{f.dispose();}
+ }
+});
+
+test('bounded pages repack and oversized 4K text falls back to dedicated storage',async()=>{
+ const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:256,bufferSize:4096});try{
+  const t=(id,width,height)=>({kind:'text',id,text:id,rect:{x:0,y:0,width,height}});
+  // 200x200 requests exhaust the four-page cap; the fifth uses a dedicated texture.
+  const nodes=Array.from({length:5},(_,i)=>t('n'+i,4.8,4.8));f.draw(nodes);
+  let m=f.ui.metrics();assert.equal(m.atlas_pages,4);assert.equal(m.dedicated_text_textures,1);assert(m.dedicated_text_bytes_estimate>0);
+  f.draw([t('new',4.8,4.8)]);m=f.ui.metrics();assert(m.atlas_compactions>0);assert.equal(m.dedicated_text_textures,0);
+  f.draw([t('wide-4k',75,3)]);m=f.ui.metrics();assert.equal(m.dedicated_text_textures,1);assert(m.dedicated_text_bytes_estimate>3000*100*4);
+ }finally{f.dispose();}
+});
+
+test('2048 pages retain small text while a 4K-wide text block uses a dedicated texture',async()=>{
+ const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:2048,bufferSize:4096});try{
+  const label=(id,width)=>({kind:'text',id,text:id,rect:{x:0,y:0,width,height:3}});
+  f.draw([label('small',5),label('wide',75)]);const m=f.ui.metrics();
+  assert.equal(m.atlas_page_size,2048);assert.equal(m.atlas_pages,1);assert.equal(m.text_slots,1);
+  assert.equal(m.dedicated_text_textures,1);assert(m.dedicated_text_bytes_estimate>3000*100*4);
+ }finally{f.dispose();}
+});
+
+test('multiple oversized 4K text blocks count separately and retire when removed',async()=>{
+ const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:2048,bufferSize:4096});try{
+  const label=id=>({kind:'text',id,text:id,rect:{x:0,y:0,width:75,height:3}});
+  const a=label('result-title'),b=label('reward-one'),c=label('reward-two');
+  f.draw([a,b,c]);let m=f.ui.metrics();assert.equal(m.atlas_pages,0);assert.equal(m.dedicated_text_textures,3);
+  const bytes=m.dedicated_text_bytes_estimate,meshes=[...f.meshes],first=sampler(meshes[0]),second=sampler(meshes[1]),third=sampler(meshes[2]);
+  assert(bytes>3*3000*100*4);const retired=watch(second);f.draw([a,c]);m=f.ui.metrics();
+  assert.equal(m.dedicated_text_textures,2);assert.equal(m.dedicated_text_bytes_estimate,bytes*2/3);assert.equal(retired(),1);
+  assert.equal(sampler(f.meshes[0]),first);assert.equal(sampler(f.meshes[1]),third);
+  f.draw([]);assert.equal(f.ui.metrics().dedicated_text_bytes_estimate,0);
+ }finally{f.dispose();}
+});
 
 test('shrinking UI runs detach retired image/dedicated samplers while preserving active ownership',async()=>{
  const f=await fixture();try{

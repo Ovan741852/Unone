@@ -39,6 +39,13 @@ test('fresh presentation/fonts/extensions are copied; unknown fields and unsuppo
  write(dir,'player.presentation.json',{ui:{fonts:[{family:'A',source:'fonts/a.ttf',subset:'yes'}]}});assert.throws(()=>assembleContent(dir,b),/WEB_REFRESH_FONT_INVALID/);
  write(dir,'player.presentation.json',{postprocessing:{}});assert.throws(()=>assembleContent(dir,b),/PRESENTATION_INVALID/);write(dir,'player.presentation.json',{renderer_mode:'custom'});assert.throws(()=>assembleContent(dir,b),/OFFICIAL_ONLY/);
 });
+test('official web refresh carries the declared UI text atlas page size into presentation',t=>{
+ const root=temporary(t),dir=project(root),b=base(root);
+ write(dir,'player.presentation.json',{ui_text_atlas_size:2048});
+ const c=assembleContent(dir,b);assert.equal(c.presentation.ui_text_atlas_size,2048);
+ assert.equal(JSON.parse(c.files.get('content/presentation.json').data).ui_text_atlas_size,2048);
+ const snapshot=inspectHostSnapshot(repo);assert(snapshot.files.some(f=>f.path==='web/renderer/ui-text-atlas-policy.js'));
+});
 test('closed asset shapes, traversal, duplicate ids and unsafe JSON integers fail before publication',t=>{
  const root=temporary(t),dir=project(root),b=base(root);write(dir,'outside.bin','x');
  for(const assets of [[null],[{id:'a',source:'../outside.bin',kind:'data'}],[{id:'a',source:'outside.bin',kind:'data',typo:1}],[{id:'a',source:'outside.bin',kind:'data'},{id:'a',source:'outside.bin',kind:'data'}]]){write(dir,'assets.json',{assets});assert.throws(()=>assembleContent(dir,b));}

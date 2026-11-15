@@ -841,7 +841,7 @@ pub(crate) fn llms_txt() -> String {
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 31] {
+fn authoring_files() -> [(&'static str, &'static str); 32] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/profiling.md", include_str!("../../../docs/profiling.md")),
@@ -861,6 +861,7 @@ fn authoring_files() -> [(&'static str, &'static str); 31] {
         ("docs/ui-preview-fixtures.md", include_str!("../../../docs/ui-preview-fixtures.md")),
         ("docs/ui-cursor.md", include_str!("../../../docs/ui-cursor.md")),
         ("docs/ui-text-input.md", include_str!("../../../docs/ui-text-input.md")),
+        ("docs/ui-text-atlas.md", include_str!("../../../docs/ui-text-atlas.md")),
         ("docs/ui-presentation-input.md", include_str!("../../../docs/ui-presentation-input.md")),
         ("docs/ordered-physical-input.md", include_str!("../../../docs/ordered-physical-input.md")),
         ("docs/rollback.md", include_str!("../../../docs/rollback.md")),
@@ -1304,6 +1305,15 @@ mod tests {
 
 #[cfg(test)]
 mod llms_tests {
+    #[test]
+    fn text_atlas_readme_link_has_a_bundled_guide() {
+        let files=super::authoring_files();
+        let readme=files.iter().find(|(path,_)|*path=="README.md").unwrap().1;
+        assert!(readme.contains("](docs/ui-text-atlas.md)"));
+        let guide=files.iter().find(|(path,_)|*path=="docs/ui-text-atlas.md").unwrap().1;
+        assert!(guide.contains("ui_text_atlas_size") && guide.contains("dedicated_text_bytes_estimate"));
+        assert!(super::llms_txt().contains("](docs/ui-text-atlas.md)"));
+    }
     #[test]
     fn llms_txt_lists_the_tools_and_every_bundled_guide_once() {
         let text = super::llms_txt();

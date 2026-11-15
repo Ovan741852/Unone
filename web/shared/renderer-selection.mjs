@@ -4,6 +4,7 @@
 import {parseProjectedRaster} from '../renderer/projected-raster-policy.js';
 import {parseFrameProfile} from '../renderer/projected-frame-policy.js';
 import {parseTextureCache} from '../renderer/texture-cache-policy.js';
+import {parseUiTextAtlasSize} from '../renderer/ui-text-atlas-policy.js';
 export function normalizeAntialias(value) {
   if (value === undefined) return true;
   if (typeof value !== 'boolean') throw Error('ANTIALIAS_INVALID: expected an optional boolean');
@@ -27,9 +28,12 @@ export async function createPlayerRenderer(canvas, options, presentation = {}, {
     parseFrameProfile(frame);
     const textureCache=presentation.texture_cache===undefined?options.textureCache:presentation.texture_cache;
     parseTextureCache(textureCache);
-    return createOfficial(canvas, {...options, antialias,...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
+    const uiTextAtlasSize=presentation.ui_text_atlas_size===undefined?options.uiTextAtlasSize:presentation.ui_text_atlas_size;
+    parseUiTextAtlasSize(uiTextAtlasSize);
+    return createOfficial(canvas, {...options, antialias,...(uiTextAtlasSize===undefined?{}:{uiTextAtlasSize}),...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
   }
   if (mode !== 'custom') throw Error(`RENDERER_MODE_INVALID: ${mode}`);
+  if(presentation.ui_text_atlas_size!==undefined||options.uiTextAtlasSize!==undefined)throw Error('UI_TEXT_ATLAS_OFFICIAL_ONLY');
   if(presentation.texture_cache!==undefined||options.textureCache!==undefined)throw Error('TEXTURE_CACHE_OFFICIAL_ONLY');
   if(presentation.projected_material_profile!==undefined||options.projectedMaterialProfile!==undefined)throw Error('PROJECTED_FRAME_OFFICIAL_WEBGL_ONLY');
   if(presentation.projected_raster!==undefined||options.projectedRaster!==undefined)throw Error('PROJECTED_RASTER_OFFICIAL_WEBGL_ONLY: omit projected_raster for a custom renderer');
