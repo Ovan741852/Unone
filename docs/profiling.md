@@ -184,11 +184,22 @@ node scripts/measure-web-export.mjs --export <export> --output memory.json --sce
 | Step | Does |
 |---|---|
 | `{"key": "KeyT"}` | Key down, `hold_ms` (50), key up, as DevTools input events with the browser's `code`, `key` and virtual key code. Codes: `KeyA`–`KeyZ`, `Digit0`–`Digit9`, `F1`–`F12`, `Escape`, `Enter`, `Space`, `Tab`, arrows and modifiers. |
-| `{"tap": [x, y]}` | Mouse move, press, `hold_ms`, release at CSS pixels from the viewport's top-left. Fix the viewport (`--viewport`) when a scenario taps. |
-| `{"drag": {"from": [x, y], "to": [x, y], "ms": 500, "moves": 31}}` | Mouse press at `from`, `moves` evenly timed moves over `ms`, release at `to`. |
+| `{"tap": [x, y]}` | Mouse move, press, `hold_ms`, release at CSS pixels from the player's top-left. Fix the viewport (`--viewport`) when a scenario taps. With `"pointer": "touch"`: one finger down, `hold_ms`, up. |
+| `{"drag": {"from": [x, y], "to": [x, y], "ms": 500, "moves": 31}}` | Mouse press at `from`, `moves` evenly timed moves over `ms`, release at `to`. With `"pointer": "touch"` beside `drag`: one finger the same way. |
+| `{"pinch": {"at": [x, y], "from": 150, "to": 450, "ms": 500, "moves": 31}}` | Two fingers level with each other around `at`, `from` CSS pixels apart, moving to `to` apart (wider zooms in, narrower out), then both lift. |
 | `{"wheel": {"at": [x, y], "dy": 100, "dx": 0, "count": 1, "interval_ms": 16}}` | `count` mouse wheel events at one point, `interval_ms` apart. |
 | `{"wait_mark": "name"}` | Wait for the next presentation of that mark after the last one a step saw, up to `timeout_ms` (`step_timeout_ms`, 15000). Not allowed in a frame window's `loop`. |
 | `{"wait_ms": 300}` | Stay on the screen. |
+
+A scenario with any touch step (`"pointer": "touch"` or `pinch`) runs with touch
+emulation from before the game loads, as `scenario.conditions.touch_emulation`
+says: the game sees a touch device with 5 touch points, and the browser handles
+touch gestures the way it does on a touch screen. A canvas that lets it
+(`touch-action` other than `none`) loses a touch drag to the browser after its
+first move (`pointercancel`), and a horizontal swipe can take the tab back a
+page; the run then fails with `MEASURE_PLAYER_GONE` instead of waiting for
+milestones that will not come. Touch timings come from DevTools touch events
+in a desktop browser, not a phone's touch screen.
 
 Each scenario run is a fresh browser: it loads cold, waits for `start_mark`,
 takes a baseline checkpoint, runs every phase's warmup rounds (kept, left out of

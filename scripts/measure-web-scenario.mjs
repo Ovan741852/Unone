@@ -9,6 +9,9 @@
 // largest sampled value, not a continuous high-water mark (the OS peak working set is one).
 // Nothing forces a garbage collection and nothing is added across owners or processes.
 //
+// Taps and drags are mouse input unless they say pointer:"touch"; a pinch is two touch points. A
+// scenario with any touch step runs with touch emulation from before the game loads.
+//
 // A frame window phase runs its setup once, then repeats a loop (keys, taps, drags, wheel) through a
 // warmup and a measured window while it reads the player's own draw and input rows and stitches them
 // by sequence: submission and RAF intervals, gaps over 50/100 ms, dropped steps, input-to-presentation.
@@ -46,8 +49,8 @@ export function keyFields(code){
 const TOP_KEYS=['schema','name','description','start_mark','phases','settle_ms','sample_ms','step_timeout_ms'];
 const ROUND_KEYS=['name','warmup_rounds','rounds','steps'];
 const FRAME_KEYS=['name','setup','loop','warmup_ms','window_ms'];
-const STEP_KINDS=['key','tap','drag','wheel','wait_mark','wait_ms'];
-const STEP_KEYS={key:['key','hold_ms'],tap:['tap','hold_ms'],drag:['drag'],wheel:['wheel'],wait_mark:['wait_mark','timeout_ms'],wait_ms:['wait_ms']};
+const STEP_KINDS=['key','tap','drag','pinch','wheel','wait_mark','wait_ms'];
+const STEP_KEYS={key:['key','hold_ms'],tap:['tap','hold_ms','pointer'],drag:['drag','pointer'],pinch:['pinch'],wheel:['wheel'],wait_mark:['wait_mark','timeout_ms'],wait_ms:['wait_ms']};
 const point=value=>Array.isArray(value)&&value.length===2&&value.every(n=>finite(n)&&n>=0&&n<=100000);
 
 /**
@@ -75,14 +78,26 @@ export function parseScenario(text){
   const kind=kinds[0];
   for(const key of Object.keys(step))if(!STEP_KEYS[kind].includes(key))fail(`${where}.${key}`,`not allowed on a ${kind} step (allowed: ${STEP_KEYS[kind].join(', ')})`);
   if(kind==='key'){if(!keyFields(step.key))fail(`${where}.key`,'a KeyboardEvent.code such as KeyT, Digit1, Escape, Enter, Space, ArrowLeft or F1');return Object.freeze({kind,key:step.key,hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
-  if(kind==='tap'){if(!point(step.tap))fail(`${where}.tap`,'[x, y] in CSS pixels from the top-left of the player (its iframe, with --url)');return Object.freeze({kind,tap:Object.freeze([...step.tap]),hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50)});}
+  const pointer=()=>{if(step.pointer===undefined)return 'mouse';if(step.pointer!=='mouse'&&step.pointer!=='touch')fail(`${where}.pointer`,'"mouse" (the default) or "touch"');return step.pointer;};
+  if(kind==='tap'){if(!point(step.tap))fail(`${where}.tap`,'[x, y] in CSS pixels from the top-left of the player (its iframe, with --url)');return Object.freeze({kind,tap:Object.freeze([...step.tap]),hold_ms:whole(step.hold_ms,`${where}.hold_ms`,0,10000,50),pointer:pointer()});}
   if(kind==='drag'){
    const d=step.drag;
    if(!d||typeof d!=='object'||Array.isArray(d))fail(`${where}.drag`,'{from:[x,y], to:[x,y], ms?, moves?}');
    for(const key of Object.keys(d))if(!['from','to','ms','moves'].includes(key))fail(`${where}.drag.${key}`,'unknown field (allowed: from, to, ms, moves)');
    if(!point(d.from)||!point(d.to))fail(`${where}.drag`,'from and to are [x, y] in CSS pixels');
    const ms=whole(d.ms,`${where}.drag.ms`,1,60000,500);
-   return Object.freeze({kind,from:Object.freeze([...d.from]),to:Object.freeze([...d.to]),ms,moves:whole(d.moves,`${where}.drag.moves`,1,10000,Math.max(2,Math.round(ms/16)))});
+   return Object.freeze({kind,from:Object.freeze([...d.from]),to:Object.freeze([...d.to]),ms,moves:whole(d.moves,`${where}.drag.moves`,1,10000,Math.max(2,Math.round(ms/16))),pointer:pointer()});
+  }
+  if(kind==='pinch'){
+   // Two touch points level with each other, at distance from, moving to distance to around one midpoint.
+   const p=step.pinch;
+   if(!p||typeof p!=='object'||Array.isArray(p))fail(`${where}.pinch`,'{at:[x,y], from, to, ms?, moves?}');
+   for(const key of Object.keys(p))if(!['at','from','to','ms','moves'].includes(key))fail(`${where}.pinch.${key}`,'unknown field (allowed: at, from, to, ms, moves)');
+   if(!point(p.at))fail(`${where}.pinch.at`,'[x, y] in CSS pixels: the midpoint between the two fingers');
+   for(const key of ['from','to'])if(!finite(p[key])||p[key]<1||p[key]>100000)fail(`${where}.pinch.${key}`,'the distance between the two fingers in CSS pixels, 1..100000');
+   if(p.at[0]-Math.max(p.from,p.to)/2<0)fail(`${where}.pinch`,'the left finger would start or end left of the player; move at or shorten the distance');
+   const ms=whole(p.ms,`${where}.pinch.ms`,1,60000,500);
+   return Object.freeze({kind,at:Object.freeze([...p.at]),from:p.from,to:p.to,ms,moves:whole(p.moves,`${where}.pinch.moves`,1,10000,Math.max(2,Math.round(ms/16)))});
   }
   if(kind==='wheel'){
    const w=step.wheel;
@@ -119,6 +134,11 @@ export function parseScenario(text){
  // The engine keeps a run's first 256 marks and the player's milestone table holds 256 rows.
  if(markWaits+(s.start_mark?1:0)>256)fail('phases',`waits for ${markWaits} milestones across all rounds; a run records at most 256 api.profile.mark calls, so use fewer rounds or fewer waits`);
  return Object.freeze({schema:SCENARIO_SCHEMA,name:s.name,...(s.description!==undefined?{description:s.description}:{}),start_mark:s.start_mark??null,phases:Object.freeze(phases),settle_ms:settleMs,sample_ms:sampleMs,step_timeout_ms:stepTimeoutMs});
+}
+
+/** Whether any step touches the screen: such a scenario needs touch emulation from the first load. */
+export function usesTouch(scenario){
+ return scenario.phases.some(phase=>[...(phase.steps??[]),...(phase.setup??[]),...(phase.loop??[])].some(s=>s.kind==='pinch'||s.pointer==='touch'));
 }
 
 // ---------------------------------------------------------------- what one sample holds
@@ -351,10 +371,10 @@ export async function measureBlank(page,url,{warmupMs=3000,windowMs}){
 // One read of the player's memory owners and milestone rows; kept small, it runs every sample_ms.
 const SAMPLE_SOURCE=`JSON.stringify((()=>{const d=document.body?.dataset??{};let s=null;
 try{s=window.unonePlayerPerformance?.snapshot({windowMs:1000,includeMemory:true})??null;}catch(e){return {error:String(e.message??e)};}
-const m=s?.milestones;return {error:d.playerError??null,memory:s?.memory?{owners:s.memory.owners,failures:s.memory.failures}:null,
+const m=s?.milestones;return {error:d.playerError??null,gone:!window.unonePlayerPerformance,href:location.href,memory:s?.memory?{owners:s.memory.owners,failures:s.memory.failures}:null,
 milestones:m?{rows:m.rows.map(r=>[r.name,r.sequence,r.accepted_at_ms,r.presented_at_ms]),engine_dropped:m.engine_dropped,host_dropped:m.host_dropped}:null};})())`;
 const MARK_SOURCE=`JSON.stringify((()=>{const d=document.body?.dataset??{};let m=null;try{m=window.unonePlayerPerformance?.snapshot({windowMs:1000})?.milestones??null;}catch{}
-return {error:d.playerError??null,now:performance.now(),milestones:m?{rows:m.rows.map(r=>[r.name,r.sequence,r.accepted_at_ms,r.presented_at_ms]),engine_dropped:m.engine_dropped,host_dropped:m.host_dropped}:null};})())`;
+return {error:d.playerError??null,gone:!window.unonePlayerPerformance,href:location.href,now:performance.now(),milestones:m?{rows:m.rows.map(r=>[r.name,r.sequence,r.accepted_at_ms,r.presented_at_ms]),engine_dropped:m.engine_dropped,host_dropped:m.host_dropped}:null};})())`;
 
 /** Columnar raw samples: one column list, one row per sample, null where a sample lacked a metric. */
 export function columns(samples){
@@ -374,7 +394,10 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
  const t0=clock(),at=()=>round(clock()-t0),samples=[];
  // The memory sampler pauses during frame windows: its player reads would land in the frames measured.
  let where={phase:null,round:null},seen=0,stop=false,samplerError=null,samplerPaused=false;
- const markState=state=>{if(state?.error)throw Error(`MEASURE_PLAYER_ERROR: ${state.error}`);return state?.milestones??null;};
+ // A page that left the player (navigated or reloaded) is not a player without milestones.
+ const markState=state=>{if(state?.error)throw Error(`MEASURE_PLAYER_ERROR: ${state.error}`);
+  if(state?.gone)throw Error(`MEASURE_PLAYER_GONE: the page no longer runs the player (now ${state.href}): it navigated or reloaded. A touch swipe does this when the game canvas lets the browser take touch gestures (CSS touch-action is not none) and the tab can go back`);
+  return state?.milestones??null;};
  async function sample(checkpoint=false){
   const t=at(),tag=where;
   const [state,heap,dom]=await Promise.all([page.evaluate(SAMPLE_SOURCE,15000).then(JSON.parse),page.send('Runtime.getHeapUsage').catch(()=>null),page.send('Memory.getDOMCounters').catch(()=>null)]);
@@ -400,6 +423,10 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
   }
  }
  async function pageNow(){return JSON.parse(await page.evaluate(MARK_SOURCE,5000)).now;}
+ // Touch points carry their index as id; a touchEnd lists no points (all fingers lift).
+ const touch=(type,points)=>page.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(([x,y],id)=>({x,y,id}))});
+ // moves evenly spaced in time over s.ms, each at fraction t of the way.
+ async function glide(s,move){const began=clock();for(let i=1;i<=s.moves;i++){const t=i/s.moves;await move(t);const wait=began+s.ms*t-clock();if(wait>0)await sleep(wait);}}
  // timed: read the page clock before a key or tap, for presented_after_input_ms; frame loops skip it.
  async function step(s,{timed=true}={}){
   const began=clock();
@@ -407,6 +434,21 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
    await page.send('Input.dispatchKeyEvent',{type:'keyDown',...fields});await sleep(s.hold_ms);
    const {text,...up}=fields;await page.send('Input.dispatchKeyEvent',{type:'keyUp',...up});
    return {kind:'key',key:s.key,input_at_ms,ms:round(clock()-began)};}
+  if(s.kind==='tap'&&s.pointer==='touch'){const [x,y]=s.tap,input_at_ms=timed?await pageNow():undefined;
+   await touch('touchStart',[[x,y]]);await sleep(s.hold_ms);await touch('touchEnd',[]);
+   return {kind:'tap',pointer:'touch',tap:s.tap,input_at_ms,ms:round(clock()-began)};}
+  if(s.kind==='drag'&&s.pointer==='touch'){
+   const [x0,y0]=s.from,[x1,y1]=s.to;
+   await touch('touchStart',[[x0,y0]]);
+   await glide(s,t=>touch('touchMove',[[x0+(x1-x0)*t,y0+(y1-y0)*t]]));
+   await touch('touchEnd',[]);
+   return {kind:'drag',pointer:'touch',ms:round(clock()-began)};}
+  if(s.kind==='pinch'){
+   const [x,y]=s.at,fingers=d=>[[x-d/2,y],[x+d/2,y]];
+   await touch('touchStart',fingers(s.from));
+   await glide(s,t=>touch('touchMove',fingers(s.from+(s.to-s.from)*t)));
+   await touch('touchEnd',[]);
+   return {kind:'pinch',ms:round(clock()-began)};}
   if(s.kind==='tap'){const [x,y]=s.tap,input_at_ms=timed?await pageNow():undefined;
    await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x,y,button:'none',buttons:0});
    await page.send('Input.dispatchMouseEvent',{type:'mousePressed',x,y,button:'left',buttons:1,clickCount:1});await sleep(s.hold_ms);
@@ -416,10 +458,7 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
    const [x0,y0]=s.from,[x1,y1]=s.to;
    await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:x0,y:y0,button:'none',buttons:0});
    await page.send('Input.dispatchMouseEvent',{type:'mousePressed',x:x0,y:y0,button:'left',buttons:1,clickCount:1});
-   const pressed=clock();
-   for(let i=1;i<=s.moves;i++){const t=i/s.moves;
-    await page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:x0+(x1-x0)*t,y:y0+(y1-y0)*t,button:'left',buttons:1});
-    const wait=pressed+s.ms*t-clock();if(wait>0)await sleep(wait);}
+   await glide(s,t=>page.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:x0+(x1-x0)*t,y:y0+(y1-y0)*t,button:'left',buttons:1}));
    await page.send('Input.dispatchMouseEvent',{type:'mouseReleased',x:x1,y:y1,button:'left',buttons:0,clickCount:1});
    return {kind:'drag',ms:round(clock()-began)};}
   if(s.kind==='wheel'){

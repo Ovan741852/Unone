@@ -37,7 +37,8 @@ A three-run measurement of this fixture is in
 
 More screens drive frame windows (`frame-tail.scenario.json`): `E` opens a screen
 that draws only its title (the minimal-player control), `M` a world map dragged
-with the pointer, `L` a scroll view of 40 image rows, and battle moves its 40
+with the pointer (it marks `map.panned` the first time a drag moves it per visit,
+so a scenario can wait for proof that its mouse or touch drag landed), `L` a scroll view of 40 image rows, and battle moves its 40
 units every tick. Add `--scenario tests/memory-roundtrip-project/frame-tail.scenario.json`
 (and `--scenario-runs 3 --scenario-profile`) to the measure command.
 

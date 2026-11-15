@@ -4,7 +4,8 @@
 --   city --E--> empty;  city --M--> map (drag to pan);  city --L--> list (wheel to scroll)
 -- City keeps its group loaded; every other screen loads its group on entry and unloads it on
 -- exit. Battle spawns world sprites that move every tick and despawns them on exit; map pans the
--- camera over a world sprite while the pointer is dragged; list is a scroll view of image rows;
+-- camera over a world sprite while the pointer is dragged and marks "map.panned" the first time it
+-- moves per visit; list is a scroll view of image rows;
 -- empty draws only its title, the minimal-player control (a screen always has nodes: ui.setRoot
 -- rejects an empty children table on purpose). Each entry marks "<screen>.interactive" once
 -- its group is ready, the milestone the scenarios wait for.
@@ -23,6 +24,7 @@ local screen = "city"
 local marked = false
 local entities: {string} = {}
 local lastPointer: {x: number, y: number}? = nil
+local panned = false
 local camera = {x = 0, y = 0}
 local frame = 0
 
@@ -40,6 +42,7 @@ local function enter(api: any, nextScreen: string)
     screen = nextScreen
     marked = false
     lastPointer = nil
+    panned = false
     if after and after ~= "city" then groups.load(after) end
     if screen == "battle" then
         table.insert(entities, api.entity.spawn("field", {transform = {x = 0, y = 0}, sprite = {asset = "texture://battle-field", size = {x = 16, y = 9}, layer = 0}}))
@@ -67,6 +70,11 @@ local function panMap(api: any)
         if lastPointer then
             camera = {x = camera.x - (p.x - lastPointer.x) * 0.16, y = camera.y - (p.y - lastPointer.y) * 0.09}
             api.camera.setPosition(camera)
+            -- Once per visit: a scenario can wait for proof that its drag (mouse or touch) moved the map.
+            if not panned and (p.x ~= lastPointer.x or p.y ~= lastPointer.y) then
+                panned = true
+                api.profile.mark("map.panned")
+            end
         end
         lastPointer = {x = p.x, y = p.y}
     else

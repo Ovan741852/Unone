@@ -32,7 +32,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gzipSync} from 'node:zlib';
-import {parseScenario,runScenario,readProcessMemory,measureBlank,flattenFrames,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
+import {parseScenario,runScenario,readProcessMemory,measureBlank,flattenFrames,usesTouch,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 
 export const SCHEMA='unone.web-export-measurement.v1';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -497,6 +497,8 @@ export function shiftInput(method,params,offset){
  return params;
 }
 
+const TOUCH_POINTS=5;
+
 async function openPage(browser,options){
  const {cdp}=browser,{targetId}=await cdp.send('Target.createTarget',{url:'about:blank'});
  const {sessionId}=await cdp.send('Target.attachToTarget',{targetId,flatten:true});
@@ -517,6 +519,7 @@ async function openPage(browser,options){
    await to('Page.enable');await to('Runtime.enable');await to('Network.enable');
    await to('Page.addScriptToEvaluateOnNewDocument',{source:probe});
    await to('Emulation.setFocusEmulationEnabled',{enabled:true}).catch(()=>{});
+   if(options.touch)await to('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:TOUCH_POINTS}).catch(()=>{});
    await to('Target.setAutoAttach',{autoAttach:true,waitForDebuggerOnStart:true,flatten:true});
   }catch{}
   await run();
@@ -551,6 +554,8 @@ async function openPage(browser,options){
  await send('Page.enable');await send('Runtime.enable');await send('Network.enable');
  await send('Emulation.setDeviceMetricsOverride',{width:options.viewport.width,height:options.viewport.height,deviceScaleFactor:options.dpr,mobile:false});
  await send('Emulation.setFocusEmulationEnabled',{enabled:true});
+ // A scenario with touch steps: the game sees a touch device from its first frame, as on a phone.
+ if(options.touch)await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:TOUCH_POINTS});
  if(options.cpuThrottle!==1)await send('Emulation.setCPUThrottlingRate',{rate:options.cpuThrottle});
  if(options.network)await send('Network.emulateNetworkConditions',{offline:false,latency:options.network.latency_ms,downloadThroughput:options.network.download_kbps*1000/8,uploadThroughput:options.network.upload_kbps*1000/8});
  await send('Page.addScriptToEvaluateOnNewDocument',{source:probe});
@@ -709,13 +714,13 @@ export async function measure(options,log=message=>process.stderr.write(message+
   // then drives the game and samples memory until the settle checkpoint.
   const windows=scenario?scenario.definition.phases.filter(phase=>phase.kind==='frames'):[];
   const blankMs=windows.length&&options.blankControl?Math.max(...windows.map(phase=>phase.window_ms)):0;
-  const scenarioTotal=options.scenarioRuns+(options.scenarioRuns&&options.scenarioProfile?1:0);
+  const scenarioTotal=options.scenarioRuns+(options.scenarioRuns&&options.scenarioProfile?1:0),touch=scenario?usesTouch(scenario.definition):false;
   for(let i=0;i<scenarioTotal;i++){
    const profiling=i===options.scenarioRuns;
    const milestones=[...new Set([...options.milestones,...(scenario.definition.start_mark?[scenario.definition.start_mark]:[])])];
    const browser=await launchBrowser(executable,options);browserInfo??=conditionsOf(browser);
    try{
-    const page=await openPage(browser,options);
+    const page=await openPage(browser,{...options,touch});
     // The browser's own cadence on an empty page, same browser and viewport, before the game loads.
     let blank=null;
     if(blankMs&&!profiling){try{blank=await measureBlank({send:page.send,evaluate:page.evaluateTop},new URL(BLANK_PATH,server.url).href,{windowMs:blankMs});log(`scenario ${i+1}: blank control p95 ${blank.raf_interval.p95_ms} ms over ${blank.frames} frames`);}catch(error){blank={error:String(error.message??error)};}}
@@ -799,6 +804,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   coverage,
   summary:{cold:summarize(ok('cold')),warm:summarize(ok('warm')),profiler_pairs:pairDeltas(okPairs)},
   ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
+   touch_emulation:usesTouch(scenario.definition)?`touch emulation with ${TOUCH_POINTS} points from before the game loads (the scenario has touch steps): the game sees a touch device`:false,
    frame_windows:{poll_ms:2000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true}) draw and input rows, stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
    os_memory:process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
    summary:scenarioSummary(scenarioRuns),runs:scenarioRuns}}:{}),

@@ -2,7 +2,7 @@
 // OS process memory parsing and the round/trend bookkeeping, driven against a fake page.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {SCENARIO_SCHEMA,parseScenario,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario,distributionOf,frameWindowMetrics,flattenFrames,profileWindowSummary,measureBlank,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
+import {SCENARIO_SCHEMA,parseScenario,usesTouch,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario,distributionOf,frameWindowMetrics,flattenFrames,profileWindowSummary,measureBlank,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 import {parseArgs,scenarioSummary,scenarioConsole} from './measure-web-export.mjs';
 
 const roundTrip={schema:SCENARIO_SCHEMA,name:'city-tech-bag',start_mark:'city.interactive',
@@ -175,7 +175,7 @@ const frameScenario={schema:SCENARIO_SCHEMA,name:'frames',start_mark:'city.inter
 test('a frame window phase runs setup once and repeats a loop that cannot wait for milestones',()=>{
  const s=parseScenario(JSON.stringify(frameScenario)),phase=s.phases[0];
  assert.deepEqual([phase.kind,phase.warmup_ms,phase.window_ms,phase.setup.length],['frames',0,1000,2]);
- assert.deepEqual(phase.loop[0],{kind:'drag',from:[100,100],to:[300,100],ms:64,moves:4});
+ assert.deepEqual(phase.loop[0],{kind:'drag',from:[100,100],to:[300,100],ms:64,moves:4,pointer:'mouse'});
  assert.deepEqual(phase.loop[1],{kind:'wheel',at:[50,50],dx:0,dy:120,count:2,interval_ms:0});
  assert.equal(parseScenario(JSON.stringify({...frameScenario,phases:[{name:'idle',loop:[{wait_ms:100}],window_ms:30000}]})).phases[0].warmup_ms,3000);
  const bad=(phase,pattern)=>assert.throws(()=>parseScenario(JSON.stringify({...frameScenario,phases:[phase]})),pattern);
@@ -266,4 +266,52 @@ test('--scenario-profile adds a diagnostic run and --no-blank-control skips the 
  const base=['--export','e','--output','o.json','--scenario','s.json'];
  assert.deepEqual([parseArgs(base).scenarioProfile,parseArgs(base).blankControl],[false,true]);
  const o=parseArgs([...base,'--scenario-profile','--no-blank-control']);assert.deepEqual([o.scenarioProfile,o.blankControl],[true,false]);
+});
+
+test('taps and drags can be touch input and a pinch is two fingers; touch makes the scenario need touch emulation',()=>{
+ const base={schema:SCENARIO_SCHEMA,name:'touch',phases:[{name:'p',rounds:1,steps:[{wait_ms:1}]}]};
+ const with_=steps=>parseScenario(JSON.stringify({...base,phases:[{name:'p',rounds:1,steps}]}));
+ const s=with_([{tap:[10,20],pointer:'touch'},{drag:{from:[1,1],to:[50,1],ms:100},pointer:'touch'},{tap:[3,4]},{pinch:{at:[400,300],from:100,to:300}}]);
+ const [tap,drag,mouseTap,pinch]=s.phases[0].steps;
+ assert.deepEqual([tap.pointer,drag.pointer,mouseTap.pointer],['touch','touch','mouse']);
+ assert.deepEqual(pinch,{kind:'pinch',at:[400,300],from:100,to:300,ms:500,moves:31});
+ assert.equal(usesTouch(s),true);
+ assert.equal(usesTouch(with_([{tap:[3,4]},{drag:{from:[1,1],to:[2,2]}}])),false,'mouse only');
+ assert.equal(usesTouch(parseScenario(JSON.stringify({...base,phases:[{name:'w',setup:[{tap:[1,1],pointer:'touch'}],loop:[{wait_ms:10}],window_ms:1000}]}))),true,'a frame window setup counts');
+ const bad=(steps,pattern)=>assert.throws(()=>with_(steps),pattern);
+ bad([{tap:[1,1],pointer:'pen'}],/steps\[0\]\.pointer: "mouse" \(the default\) or "touch"/);
+ bad([{key:'KeyT',pointer:'touch'}],/steps\[0\]\.pointer: not allowed on a key step/);
+ bad([{wheel:{at:[1,1]},pointer:'touch'}],/steps\[0\]\.pointer: not allowed on a wheel step/);
+ bad([{pinch:{at:[100,100],from:300,to:50}}],/left finger would start or end left of the player/);
+ bad([{pinch:{at:[100,100],from:0,to:50}}],/pinch\.from: the distance between the two fingers/);
+ bad([{pinch:{at:[100,100],from:10,to:50,angle:3}}],/pinch\.angle: unknown field/);
+});
+
+test('touch steps send DevTools touch events: one point per finger, all lifted at the end',async()=>{
+ const scenario=parseScenario(JSON.stringify({schema:SCENARIO_SCHEMA,name:'touch',settle_ms:0,sample_ms:50,phases:[{name:'p',rounds:1,steps:[
+  {tap:[10,20],pointer:'touch',hold_ms:0},{drag:{from:[0,0],to:[100,50],ms:2,moves:2},pointer:'touch'},{pinch:{at:[200,100],from:100,to:200,ms:2,moves:2}},{tap:[5,6],hold_ms:0}]}]}));
+ const {page,state}=fakePage();const sent=[];const send=page.send;
+ page.send=async(method,params)=>{if(method.startsWith('Input.'))sent.push([method,params]);return send(method,params);};
+ const result=await runScenario(page,scenario,{pollMs:1});
+ assert.equal(result.ok,true,result.error);
+ const touches=sent.filter(([m])=>m==='Input.dispatchTouchEvent').map(([,p])=>[p.type,p.touchPoints.map(t=>[t.x,t.y,t.id])]);
+ assert.deepEqual(touches,[
+  ['touchStart',[[10,20,0]]],['touchEnd',[]],
+  ['touchStart',[[0,0,0]]],['touchMove',[[50,25,0]]],['touchMove',[[100,50,0]]],['touchEnd',[]],
+  ['touchStart',[[150,100,0],[250,100,1]]],['touchMove',[[125,100,0],[275,100,1]]],['touchMove',[[100,100,0],[300,100,1]]],['touchEnd',[]],
+ ]);
+ assert.deepEqual(sent.filter(([m])=>m==='Input.dispatchMouseEvent').map(([,p])=>p.type),['mouseMoved','mousePressed','mouseReleased'],'a tap without pointer stays a mouse tap');
+ assert.deepEqual(result.phases[0].rounds[0].steps.map(s=>s.kind+(s.pointer?':'+s.pointer:'')),['tap:touch','drag:touch','pinch','tap']);
+ assert.ok(state.heapReads>0);
+});
+
+test('a page that leaves the player mid-run fails as gone, not as a player without milestones',async()=>{
+ const scenario=parseScenario(JSON.stringify({schema:SCENARIO_SCHEMA,name:'gone',settle_ms:0,sample_ms:50,phases:[{name:'p',rounds:1,steps:[
+  {drag:{from:[300,360],to:[700,360],ms:2,moves:2},pointer:'touch'},{wait_mark:'map.panned',timeout_ms:200}]}]}));
+ const {page}=fakePage();const send=page.send,evaluate=page.evaluate;let left=false;
+ page.send=async(method,params)=>{if(method==='Input.dispatchTouchEvent')left=true;return send(method,params);};
+ page.evaluate=async expression=>left?JSON.stringify({error:null,gone:true,href:'about:blank',now:1,milestones:null}):evaluate(expression);
+ const result=await runScenario(page,scenario,{pollMs:1});
+ assert.equal(result.ok,false);
+ assert.match(result.error,/MEASURE_PLAYER_GONE: the page no longer runs the player \(now about:blank\).*touch-action/);
 });
