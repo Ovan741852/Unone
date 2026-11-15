@@ -40,3 +40,7 @@ that draws only its title (the minimal-player control), `M` a world map dragged
 with the pointer, `L` a scroll view of 40 image rows, and battle moves its 40
 units every tick. Add `--scenario tests/memory-roundtrip-project/frame-tail.scenario.json`
 (and `--scenario-runs 3 --scenario-profile`) to the measure command.
+
+Frame-window measurements of this fixture are in
+`docs/evidence/2026-11-15-web-export-frame-tail.json` (and a first batch with one
+unexplained stall in `docs/evidence/2026-11-15-web-export-frame-tail-first-batch.json`).
