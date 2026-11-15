@@ -16,14 +16,21 @@ ready, which is what `round-trip.scenario.json` waits for.
 
 The PNGs are striped RGBA images (a few KB each) whose decoded sizes are real:
 city 5 MiB, tech 5 MiB, bag 3 MiB, battle 4.5 MiB as width × height × 4.
+The scenario settles for 45 s, longer than the renderer texture cache's default
+idle limit (1800 drawn frames), so the settled checkpoint shows whether idle
+textures are retired.
 
 Measure it:
 
 ```text
-game --project tests/memory-roundtrip-project export --target web --output <export>
+scripts/build-web-live.ps1 -Player -Project tests/memory-roundtrip-project -OutputRoot <runtime>
+game --project tests/memory-roundtrip-project export web --runtime <runtime> --output <export>
 node scripts/prepare-web-image-assets.mjs --project tests/memory-roundtrip-project --input-export <export> --output <export-with-groups>
 node scripts/measure-web-export.mjs --export <export-with-groups> --output memory.json --scenario tests/memory-roundtrip-project/round-trip.scenario.json
 ```
 
 `game test` covers the screen logic (`round-trip.test.json`, `battle.test.json`);
 it holds no image groups, so the marks fire on the first update of each screen.
+
+A three-run measurement of this fixture is in
+`docs/evidence/2026-11-15-web-export-memory-roundtrip.json`.

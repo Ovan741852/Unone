@@ -1,7 +1,7 @@
 {
   "schema": "unone.web-scenario.v1",
   "name": "city-tech-bag-battle",
-  "description": "Twenty city-tech-bag-city round trips after two warmups, then five city-battle-city trips after one, then ten idle seconds.",
+  "description": "Twenty city-tech-bag-city round trips after two warmups, then five city-battle-city trips after one, then 45 idle seconds, longer than the renderer texture cache's default 1800-frame idle limit.",
   "start_mark": "city.interactive",
   "phases": [
     {
@@ -27,6 +27,6 @@
       ]
     }
   ],
-  "settle_ms": 10000,
+  "settle_ms": 45000,
   "sample_ms": 250
 }
