@@ -46,6 +46,16 @@ test('100 UI hide/show compositions reuse one texture and lease until actual idl
  }finally{f.dispose();}
 });
 
+test('selected image namespace retires only after idle while unrelated and active UI remain',async()=>{
+ const f=await fixture({policy:{max_bytes:1024,max_entries:20,idle_frames:100,idle_overrides:[{asset_ids:[A],idle_frames:3}]}});
+ try{
+  await f.warm([A,B]);const retired=[],other={};f.cache.trackOwner(other,{assetId:'texture://other/bag',bytes:()=>16,loading:()=>false,retire:()=>retired.push('bag')});f.cache.pinOwner(other,false);
+  f.draw([B]);for(let i=0;i<4;i++)f.draw([B]);assert.equal(f.gpu.metrics().image_textures,1);assert.equal(f.gpu.metrics().image_active_owners,1);assert.equal(f.cache.metrics().override_idle_expired,1);assert.deepEqual(retired,[]);
+  assert.equal(f.draw([A,B]).reason,'ui_assets_pending');await f.canvas.ready();assert.equal(f.draw([A,B]).status,'completed');assert.equal(f.gpu.metrics().image_active_owners,2);assert.deepEqual(retired,[]);
+  f.cache.untrackOwner(other);
+ }finally{f.dispose();}
+});
+
 test('one shared controller evicts idle UI under world pressure and never evicts currently active UI',async()=>{
  const f=await fixture({policy:{max_bytes:16,max_entries:1,idle_frames:100}});try{
   await f.warm();f.draw([]);let worldRetired=0;const world={};f.cache.trackOwner(world,{bytes:()=>16,loading:()=>false,retire:()=>worldRetired++});f.cache.sweep();

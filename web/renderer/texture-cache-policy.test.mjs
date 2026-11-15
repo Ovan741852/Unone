@@ -14,6 +14,63 @@ test('strict finite optional policy',()=>{
   for(const value of [null,[],{}, {...limits,max_bytes:0},{...limits,max_entries:1.5},
     {...limits,idle_frames:Infinity},{...limits,game:'wuxia'}])assert.throws(()=>parseTextureCache(value),/TEXTURE_CACHE_INVALID/);
 });
+test('idle overrides are bounded, closed, explicit namespaces, and copied',()=>{
+ const rule={asset_prefix:'texture://example/tiles/',idle_frames:3},value={...limits,idle_overrides:[rule]},parsed=parseTextureCache(value);
+ assert.deepEqual(parsed,value);rule.idle_frames=1;assert.equal(parsed.idle_overrides[0].idle_frames,3);
+ for(const x of [null,{},'x',[{}],[{asset_prefix:'texture://example/tiles',idle_frames:3}],
+   [{asset_prefix:'bad/',idle_frames:1}],[{asset_prefix:'texture://a/\n',idle_frames:1}],
+   [{asset_prefix:'texture://a/',idle_frames:0}],[{asset_prefix:'texture://a/',idle_frames:1,extra:true}],
+   [{asset_prefix:'texture://a/',idle_frames:1},{asset_prefix:'texture://a/',idle_frames:2}],Array.from({length:65},(_,i)=>({asset_prefix:`texture://a/${i}/`,idle_frames:1}))])
+  assert.throws(()=>parseTextureCache({...limits,idle_overrides:x}),/TEXTURE_CACHE_INVALID/);
+});
+test('exact asset IDs override namespaces without matching nearby overview and rule data are immutable',()=>{
+ const rules=[{asset_prefix:'texture://world/',idle_frames:9},{asset_ids:['texture://world/tiles/a'],idle_frames:2}],value={...limits,idle_frames:10,idle_overrides:rules};
+ const cache=createTextureCachePolicy(new Map(),value),retired=[];
+ for(const id of ['texture://world/tiles/a','texture://world/tiles/overview']){const key={};cache.trackOwner(key,{assetId:id,bytes:()=>1,loading:()=>false,retire:()=>retired.push(id)});cache.pinOwner(key,false);}
+ rules[1].asset_ids[0]='texture://world/tiles/overview';assert(Object.isFrozen(cache.policy.idle_overrides));assert(Object.isFrozen(cache.policy.idle_overrides[1].asset_ids));
+ assert.throws(()=>{cache.policy.idle_overrides[1].asset_ids[0]='x';},TypeError);
+ cache.begin();cache.begin();cache.sweep();assert.deepEqual(retired,['texture://world/tiles/a']);
+ for(let i=0;i<7;i++)cache.begin();cache.sweep();assert.deepEqual(retired,['texture://world/tiles/a','texture://world/tiles/overview']);
+ for(const bad of [[],[1],['bad'],['texture://a/a','texture://a/a']])assert.throws(()=>parseTextureCache({...limits,idle_overrides:[{asset_ids:bad,idle_frames:1}]}),/TEXTURE_CACHE_INVALID/);
+ assert.throws(()=>parseTextureCache({...limits,idle_overrides:[{asset_ids:['texture://a/a'],asset_prefix:'texture://a/',idle_frames:1}]}),/TEXTURE_CACHE_INVALID/);
+});
+test('expiry scan reschedules promptly if a retire callback reorders the remaining idle list',()=>{
+ const cache=createTextureCachePolicy(new Map(),{max_bytes:1024,max_entries:10,idle_frames:1800,idle_overrides:[{asset_ids:['texture://tiles/a','texture://tiles/c'],idle_frames:1}]}),a={},b={},c={},retired=[];
+ cache.trackOwner(a,{assetId:'texture://tiles/a',bytes:()=>1,loading:()=>false,retire(){retired.push('a');cache.touchOwner(b);}});cache.pinOwner(a,false);
+ cache.trackOwner(b,{assetId:'texture://ui/b',bytes:()=>1,loading:()=>false,retire(){retired.push('b');}});cache.pinOwner(b,false);
+ cache.trackOwner(c,{assetId:'texture://tiles/c',bytes:()=>1,loading:()=>false,retire(){retired.push('c');}});cache.pinOwner(c,false);
+ cache.begin();cache.sweep();assert.deepEqual(retired,['a']);cache.begin();cache.sweep();assert.deepEqual(retired,['a','c']);assert.equal(cache.metrics().entries,1);
+});
+test('expiry scan reschedules if a retire callback pin-unpins another idle owner',()=>{
+ const cache=createTextureCachePolicy(new Map(),{max_bytes:1024,max_entries:10,idle_frames:1800,idle_overrides:[{asset_ids:['texture://tiles/a','texture://tiles/c'],idle_frames:1}]}),a={},b={},c={},retired=[];
+ cache.trackOwner(a,{assetId:'texture://tiles/a',bytes:()=>1,loading:()=>false,retire(){retired.push('a');cache.pinOwner(b,true);cache.pinOwner(b,false);}});cache.pinOwner(a,false);
+ cache.trackOwner(b,{assetId:'texture://ui/b',bytes:()=>1,loading:()=>false,retire(){retired.push('b');}});cache.pinOwner(b,false);
+ cache.trackOwner(c,{assetId:'texture://tiles/c',bytes:()=>1,loading:()=>false,retire(){retired.push('c');}});cache.pinOwner(c,false);
+ cache.begin();cache.sweep();assert.deepEqual(retired,['a']);cache.begin();cache.sweep();assert.deepEqual(retired,['a','c']);
+});
+test('shorter idle rule expires newer tile before older ordinary owner without touching pinned owners',()=>{
+ const policy={max_bytes:1024,max_entries:32,idle_frames:10,idle_overrides:[{asset_prefix:'texture://world/tiles/',idle_frames:2}]};
+ const cache=createTextureCachePolicy(new Map(),policy),retired=[],old={},short={},live={};
+ const track=(key,id)=>cache.trackOwner(key,{assetId:id,bytes:()=>16,loading:()=>false,retire:()=>retired.push(id)});
+ track(old,'texture://ui/bag');cache.pinOwner(old,false);cache.begin();track(short,'texture://world/tiles/1');cache.pinOwner(short,false);track(live,'texture://world/tiles/active');
+ cache.begin();cache.sweep();assert.deepEqual(retired,[]);cache.begin();cache.sweep();assert.deepEqual(retired,['texture://world/tiles/1']);assert.equal(cache.metrics().override_owner_evicted,1);assert.equal(cache.metrics().override_owner_released_bytes_estimate,16);assert.equal(cache.metrics().override_idle_expired,1);
+ for(let i=0;i<8;i++){cache.begin();cache.sweep();}assert.deepEqual(retired,['texture://world/tiles/1','texture://ui/bag']);assert.equal(cache.metrics().entries,1);cache.untrackOwner(live);
+});
+test('longest prefix wins including longer than global TTL; fallback and unnamed owner keep global TTL',()=>{
+ const policy={max_bytes:1024,max_entries:32,idle_frames:3,idle_overrides:[{asset_prefix:'texture://world/',idle_frames:2},{asset_prefix:'texture://world/tiles/',idle_frames:8}]};
+ const cache=createTextureCachePolicy(new Map(),policy),retired=[];
+ function put(id){const key={id};cache.trackOwner(key,{...(id?{assetId:id}:{}),bytes:()=>1,loading:()=>false,retire:()=>retired.push(id)});cache.pinOwner(key,false);return key;}
+ put('texture://world/tiles/1');put('texture://world/other/1');put('texture://ui/status');put(null);
+ cache.begin();cache.sweep();cache.begin();cache.sweep();assert.deepEqual(retired,['texture://world/other/1']);
+ cache.begin();cache.sweep();assert.deepEqual(retired,['texture://world/other/1','texture://ui/status',null]);
+ for(let i=0;i<5;i++){cache.begin();cache.sweep();}assert.equal(retired.at(-1),'texture://world/tiles/1');
+});
+test('separate owners of same asset remain independently protected and pressure stays LRU',()=>{
+ const cache=createTextureCachePolicy(new Map(),{max_bytes:32,max_entries:2,idle_frames:100,idle_overrides:[{asset_prefix:'texture://tiles/',idle_frames:2}]}),retired=[];
+ const a={},b={},other={};for(const [key,id,label] of [[a,'texture://tiles/a','ui'],[b,'texture://tiles/a','sprite'],[other,'texture://ui/bag','bag']])cache.trackOwner(key,{assetId:id,bytes:()=>16,loading:()=>false,retire:()=>retired.push(label)});
+ cache.pinOwner(a,false);cache.sweep();assert.deepEqual(retired,['ui']);assert.equal(cache.metrics().entries,2);
+ cache.begin();cache.begin();cache.sweep();assert.deepEqual(retired,['ui']);assert.equal(cache.metrics().pinned_bytes_estimate,32);cache.untrackOwner(b);cache.untrackOwner(other);
+});
 test('idle resources evict by LRU under entry/byte pressure',()=>{
   const f=fixture();f.cache.begin();f.add('a');f.add('b');f.cache.begin();f.add('c');f.cache.sweep();
   assert.deepEqual([...f.records.keys()],['b','c']);assert.deepEqual(f.released,['a']);

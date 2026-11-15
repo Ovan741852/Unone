@@ -194,7 +194,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
     const [w,h]=imageSize(image),bytes=w*h*4;if(!Number.isSafeInteger(bytes)||bytes<=0)throw Error('UI_IMAGE_DIMENSIONS_INVALID');owner.bytes=bytes;
     owner.texture=configure(new THREE.Texture(image));owner.texture.needsUpdate=true;renderer.initTexture(owner.texture);
     if(disposed||retiring||epoch!==imageEpoch)throw Error('UI_IMAGE_RESOURCE_CANCELLED');
-    textureCache.trackOwner(owner,{bytes:()=>owner.bytes,loading:()=>false,retire:()=>retireImage(owner)});owner.tracked=true;
+    textureCache.trackOwner(owner,{assetId:id,bytes:()=>owner.bytes,loading:()=>false,retire:()=>retireImage(owner)});owner.tracked=true;
     imageOwners.set(id,owner);owner.counted=true;imageActive++;imageBytes+=bytes;imageBuilds++;created.push(owner);
    }catch(error){try{retireImage(owner);}catch{/* retain the preparation error */}throw error;}
   }else if(!used.has(owner)){imageHits++;if(!owner.active){imageIdleHits++;promoted.push(owner);imageActiveState(owner,true);}}

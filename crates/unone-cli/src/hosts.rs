@@ -376,7 +376,7 @@ impl PresentationSettings {
             ensure!(self.renderer_mode==RendererMode::Official,"UI_TEXT_ATLAS_OFFICIAL_ONLY");
             ensure!((256..=4096).contains(&size) && size.is_power_of_two(),"UI_TEXT_ATLAS_SIZE_INVALID: expected a power of two from 256 to 4096");
         }
-        if let Some(policy)=self.texture_cache {
+        if let Some(policy)=&self.texture_cache {
             ensure!(self.renderer_mode==RendererMode::Official,"TEXTURE_CACHE_OFFICIAL_ONLY");
             policy.validate()?;
         }

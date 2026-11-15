@@ -115,7 +115,7 @@ export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,bu
   let owner=entry.textureOwner;
   if(!owner){
    owner=textures.get(entry.textureKey);
-   if(!owner){textureRoom(0,1);owner={key:entry.textureKey,cacheDomain,asset:entry.asset,entries:new Set(),bytes:0,generation:0,epoch,state:'loading',retired:false,cacheTracked:false,controller:new AbortController(),promise:null};textureCache.trackOwner(owner,{bytes:()=>owner.texture?owner.bytes:0,loading:()=>owner.state==='loading',retire:()=>retireCachedTexture(owner)});owner.cacheTracked=true;textures.set(owner.key,owner);}
+   if(!owner){textureRoom(0,1);owner={key:entry.textureKey,cacheDomain,asset:entry.asset,entries:new Set(),bytes:0,generation:0,epoch,state:'loading',retired:false,cacheTracked:false,controller:new AbortController(),promise:null};textureCache.trackOwner(owner,{assetId:entry.asset,bytes:()=>owner.texture?owner.bytes:0,loading:()=>owner.state==='loading',retire:()=>retireCachedTexture(owner)});owner.cacheTracked=true;textures.set(owner.key,owner);}
    owner.entries.add(entry);entry.textureOwner=owner;
    updatePin(owner);
   }

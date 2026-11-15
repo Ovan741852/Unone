@@ -406,6 +406,11 @@ UI metrics `atlas_pages`, `atlas_page_size`, `atlas_reserved_bytes_estimate`,
 composition. These are allocation estimates, not driver or process totals.
 This setting is Web-only and is rejected for native and custom renderers.
 
+The optional official Web `texture_cache` also supports bounded per-asset
+idle-grace overrides. These never retire active owners and do not change the
+decoded-image broker's independent ownership. See [texture cache](texture-cache.md)
+for exact-ID and namespace selectors, budgets, precedence and diagnostics.
+
 Official Web presentation accepts optional `"antialias": false|true`. Omission
 retains the existing true request. This is a renderer/context construction
 option: re-export and relaunch with a new page/canvas to change it. A game

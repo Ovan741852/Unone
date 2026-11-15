@@ -276,6 +276,11 @@ omission retains 4096 and `2048` can reduce a page from 64 MiB to 16 MiB.
 Additional pages and oversized text textures count separately. See
 [UI text atlas](docs/ui-text-atlas.md) for supported sizes and UI metrics.
 
+Optional `texture_cache.idle_overrides` selects a GPU idle grace period for
+exact asset IDs or namespaces without changing unrelated assets. The default
+policy stays unchanged when omitted. See [texture cache](docs/texture-cache.md)
+for ownership, validation and diagnostics.
+
 Official WebGL additionally supports the constructor-only
 `projected_raster="upper_left_checked"` profile, with actual bounded GPU validation
 per physical target/context generation. It is restricted to current opaque/cutout
