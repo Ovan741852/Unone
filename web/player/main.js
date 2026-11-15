@@ -245,7 +245,8 @@ async function finishStartup(presentation,kind){
   if(combined.status==='unknown')throw Error('PLAYER_COMPLETION_CONTRACT_MISSING: world, UI and cursor must report explicit completion');
   return combined.status==='completed'?world:{state:'needs_draw'};
  };
- const subscribe=listener=>{listeners.add(listener);const unsubscribe=gate?.subscribe(listener);return()=>{listeners.delete(listener);unsubscribe?.();};};
+ // Without the checked gate, the renderer still reports a link-loss wait opening or closing (no context event).
+ const subscribe=listener=>{listeners.add(listener);const unsubscribe=gate?gate.subscribe(listener):renderer.subscribePresentation?.(listener);return()=>{listeners.delete(listener);unsubscribe?.();};};
  const commit=()=>{
  draw(null,null,false,'startup');
  metrics.raster=renderer.metrics().raster;

@@ -10,6 +10,7 @@ import {slicePatches} from '../shared/ui-geometry.mjs';
 import {textPaintBounds} from '../shared/ui-presentation.mjs';
 import {imageBatchSnappedRect} from '../shared/ui-image-batch.mjs';
 import {assetCatalogSpecs} from '../shared/asset-encoding.js';
+import {isSuspectedContextLoss} from './link-loss.js';
 import {parseUiTextAtlasSize} from './ui-text-atlas-policy.js';
 
 const STRIDE=32,FILL=0,BORDER=1,IMAGE=2,FREE=3,MAX_PAGES=4,ATTRIBUTES=['uiOrigin','uiAxis','uiUv','uiColor','uiBorder','uiBox','uiParams','uiClip'];
@@ -318,6 +319,8 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    if(count){
     const autoClear=renderer.autoClear,test=renderer.getScissorTest(),target=renderer.getRenderTarget();renderer.getViewport(viewport);
     try{renderer.autoClear=false;renderer.setRenderTarget(null);renderer.setScissorTest(false);renderer.setViewport(0,0,width/renderer.getPixelRatio(),height/renderer.getPixelRatio());renderer.render(scene,camera);draws++;}
+    // A UI program that failed to link with empty logs: skip while the renderer waits for the loss (link-loss.js).
+    catch(error){if(!isSuspectedContextLoss(error))throw error;try{renderer.resetState?.();}catch{/* the skip stands */}return {skipped:true,regions:0};}
     finally{renderer.setRenderTarget(target);renderer.setViewport(viewport);renderer.setScissorTest(test);renderer.autoClear=autoClear;}
    }
    return disposed||epoch!==imageEpoch?{skipped:true,regions:0}:{skipped:false,regions:lastRegions,cpu_ms:lastMs};

@@ -75,6 +75,10 @@ resources, and again after external presentation hooks. It can precede the DOM
 loss event. Repeated loss/restore notifications are idempotent; one loss creates
 one new epoch after restore. Loss during conformance readback is reported as
 lost, rather than treating invalid readback bytes as a target mismatch.
+A conformance check that meets a link failure with empty logs on a live context
+(a suspected loss, see [shader materials](shader-materials.md)) returns to
+unchecked and checks again after the wait; if the context stayed alive, the
+same program's failure is terminal.
 
 Checked startup also requires a completed game draw token for the current
 epoch, target generation, physical size and DPR. Requested/skipped draws and old

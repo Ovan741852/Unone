@@ -1,3 +1,4 @@
+import {createLinkLossGuard,emptyLogs,programLogs,suspectedContextLoss} from './link-loss.js';
 // Declarative fragment materials. Only this engine adapter creates GPU resources;
 // game scripts select IDs and update typed uniforms through api.shader.
 const vertexShader = `varying vec2 unone_uv;
@@ -131,11 +132,21 @@ export function applySpriteMaterialValues(material, descriptor, texture, values,
   else uniforms[name].value=value;
  }
 }
-export function createShaderMaterials(THREE,renderer,backend){
+// Every program three.js links for this renderer reports a failed link here
+// (world, UI and sprite materials alike). Empty logs on a live context are a
+// suspected loss (link-loss.js): the shaders stay attached, so three.js checks
+// the same program again on its next use, after the wait.
+export function createShaderMaterials(THREE,renderer,backend,{linkLoss:shared=null}={}){
+ const linkLoss=shared??createLinkLossGuard();
  const records=new Map();
  const white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
  const previousError=renderer.debug?.onShaderError,previousCheck=renderer.debug?.checkShaderErrors;
- const onShaderError=(gl,program,vertex,fragment)=>{const source=gl.getShaderSource(fragment)??'';const id=source.match(/UNONE_MATERIAL:([^\s]+)/)?.[1]??'engine-program';const message=`SHADER_COMPILE_FAILED: ${id}\n${gl.getProgramInfoLog(program)??''}\n${gl.getShaderInfoLog(vertex)??''}\n${gl.getShaderInfoLog(fragment)??''}`;gl.deleteShader(vertex);gl.deleteShader(fragment);throw Error(message);};
+ const onShaderError=(gl,program,vertex,fragment)=>{
+  const source=gl.getShaderSource(fragment)??'';const id=source.match(/UNONE_MATERIAL:([^\s]+)/)?.[1]??'engine-program';
+  const logs=programLogs(gl,program,vertex,fragment);
+  if(linkLoss.classify(gl,program,logs)==='suspected')throw suspectedContextLoss(id);
+  const note=emptyLogs(logs)?`\nlink failed with empty logs and the context stayed alive through a ${linkLoss.waitMs} ms wait for webglcontextlost`:'';
+  const message=`SHADER_COMPILE_FAILED: ${id}\n${gl.getProgramInfoLog(program)??''}\n${gl.getShaderInfoLog(vertex)??''}\n${gl.getShaderInfoLog(fragment)??''}${note}`;gl.deleteShader(vertex);gl.deleteShader(fragment);throw Error(message);};
  if(renderer.debug){renderer.debug.checkShaderErrors=true;renderer.debug.onShaderError=onShaderError;}
  function assign(entity,base,world){
   const id=entity.shader_material,key=String(entity.id);if(!id)return base;
@@ -157,5 +168,5 @@ export function createShaderMaterials(THREE,renderer,backend){
  }
  function retain(ids){for(const [id,record] of records)if(!ids.has(id)){record.material.dispose();records.delete(id);}}
  function clear(){retain(new Set());}
- return {assign,retain,clear,contextLost(retire){retire(white);for(const record of records.values())retire(record.material);},get count(){return records.size},dispose(){clear();white.dispose();if(renderer.debug?.onShaderError===onShaderError){renderer.debug.onShaderError=previousError;renderer.debug.checkShaderErrors=previousCheck;}}};
+ return {assign,retain,clear,contextLost(retire){retire(white);for(const record of records.values())retire(record.material);},get count(){return records.size},dispose(){clear();white.dispose();if(!shared)linkLoss.dispose();if(renderer.debug?.onShaderError===onShaderError){renderer.debug.onShaderError=previousError;renderer.debug.checkShaderErrors=previousCheck;}}};
 }

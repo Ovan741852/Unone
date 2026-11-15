@@ -252,7 +252,9 @@ node scripts/measure-web-export.mjs --export <export> --output webview.json `
   first three WebGL loads after each Chrome start, with BlueStacks set to its
   Vulkan renderer (`graphics_renderer="vlcn"`). The player reported the dead
   context as `SHADER_COMPILE_FAILED: engine-program` (empty logs: the
-  context-lost event had not arrived yet), and for tens of seconds Chrome
+  context-lost event had not arrived yet); it now treats such a failure as a
+  suspected loss and waits for the event (see
+  [shader materials](shader-materials.md)). For tens of seconds Chrome
   refused new WebGL contexts (`Error creating WebGL context.`). After the third
   crash Chrome turned Vulkan off (`environment.gpu.feature_status.vulkan`
   `enabled_on` → `disabled_off`; an attached report reads the GPU again at the

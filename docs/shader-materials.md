@@ -82,6 +82,16 @@ renderer reports `SHADER_BACKEND_UNSUPPORTED` for non-WebGL bindings and
 `SHADER_COMPILE_FAILED` for compilation failures; native export reports
 `HOST_SHADER_UNSUPPORTED` for shader declarations.
 
+A link failure whose program and shader logs are all empty, on a context that
+still reports itself alive, is first treated as a lost GPU context: a browser
+whose GPU process died can fail the next link before it dispatches
+`webglcontextlost`. The renderer skips frames and waits up to 5 seconds for the
+loss (the event, or `isContextLost()` turning true), then recovers on restore as
+for any context loss. If the wait ends with the context alive, the same program
+fails with `SHADER_COMPILE_FAILED` and a note about the wait. A failure with a
+log fails at once. `metrics().link_loss` counts these waits
+(`web/renderer/link-loss.js`).
+
 Uniform state belongs to the material definition, so updating one named material
 affects entities that share it. Declare separate material IDs when entities need
 independent parameter values. Headless tests can verify declarations, bindings

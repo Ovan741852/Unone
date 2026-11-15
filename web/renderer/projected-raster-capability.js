@@ -1,3 +1,4 @@
+import {isSuspectedContextLoss} from './link-loss.js';
 // Context-local observations. No Core/World clock, input or simulation state lives here.
 export function createRasterCapability({policy,profile,validate,onState=()=>{}}){
  const checked=policy.requested==='upper_left_checked';let status=checked?'unchecked':'host',epoch=1,counter=0,generation=null;
@@ -29,7 +30,10 @@ export function createRasterCapability({policy,profile,validate,onState=()=>{}})
    last={context_epoch:epoch,target_generation:generation,physical_size:size.slice(),dpr,samples:result.samples,passed:result.passed,
     profile_version:profile.version,probe_hash:profile.hash};
    key=next;status='validated';failure=null;emit();return true;
-  }catch(error){if(error===terminal)throw error;return fail(error);}
+  }catch(error){if(error===terminal)throw error;
+   // A link failure with empty logs (link-loss.js): check again once the wait for the loss ends.
+   if(isSuspectedContextLoss(error)){key=null;generation=null;status='unchecked';emit();return false;}
+   return fail(error);}
  }
  return {ensure,metrics,
   lost,

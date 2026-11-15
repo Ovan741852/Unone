@@ -26,7 +26,7 @@ function fixture(){
   lastDrawTime:null,presentationContext:()=>({}),presentationHooks:[{beforeRender(){hooks++;lost=true;}}],
   resize(){resizes++;},worldOf:x=>x,
   // draw() begins/sweeps the production texture cache; supply the real default (unbounded) policy.
-  textureCache:createTextureCachePolicy(new Map()),frameDecoder:createProjectedFrameDecoder(),profile:null};
+  textureCache:createTextureCachePolicy(new Map()),frameDecoder:createProjectedFrameDecoder(),profile:null,linkLoss:{pending:()=>false}};
  vm.createContext(context);
  // Execute the actual production entry functions with allocation/query sentinels.
  const start=source.indexOf('  function validateRaster('),end=source.indexOf('  canvas.addEventListener',start);

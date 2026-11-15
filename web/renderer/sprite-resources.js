@@ -1,6 +1,7 @@
 import {assetCatalogSpecs} from '../shared/asset-encoding.js';
 import {configureTexture} from './presentation3d.js';
 import {spriteMaterialDescriptor,createSpriteMaterial} from './shader-materials.js';
+import {createLinkLossGuard,isSuspectedContextLoss,suspectedContextLoss} from './link-loss.js';
 
 const error=(code,detail='')=>Error(`${code}${detail?`: ${detail}`:''}`);
 const SAMPLER_KEY='nearest-clamp-srgb-no-mips-v1';
@@ -20,8 +21,9 @@ export function parseSpriteResourceBudget(value={max_bytes:64*1024*1024,max_entr
  * the same physical texture controller used by the ordinary renderer records.
  * Public leases expose metadata only; readiness is scoped to the current epoch.
  */
-export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,budget,textureCache,backend='webgl',onReset=()=>{},withPreparationTargets=fn=>fn()}) {
+export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,budget,textureCache,backend='webgl',onReset=()=>{},withPreparationTargets=fn=>fn(),linkLoss:sharedLinkLoss=null}) {
  if(!textureCache||typeof textureCache.trackOwner!=='function'||typeof textureCache.reclaim!=='function')throw error('SPRITE_RESOURCE_CACHE_UNAVAILABLE');
+ const linkLoss=sharedLinkLoss??createLinkLossGuard();
  const limits=parseSpriteResourceBudget(budget),entries=new Map(),textures=new Map(),requests=new Map(),privateLeases=new WeakMap(),updates=new Map(),appearanceUpdates=new Map();
  let epoch=1,disposed=false,retiring=false,available=true,reserved=0,builds=0,retired=0,textureBuilds=0,textureRetired=0;
  const stageGeometry=new THREE.PlaneGeometry(1,1),stageCamera=new THREE.PerspectiveCamera();
@@ -79,7 +81,14 @@ export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,bu
   withPreparationTargets(()=>{
    renderer.compile(scene,stageCamera);const program=renderer.properties?.get(material)?.currentProgram;
    if(typeof program?.getUniforms!=='function')throw error('SPRITE_RESOURCE_COMPILE_UNAVAILABLE');
-   program.getUniforms();if(program.diagnostics?.runnable===false)throw error('SPRITE_RESOURCE_SHADER_COMPILE_FAILED');
+   program.getUniforms();const diagnostics=program.diagnostics;
+   if(diagnostics?.runnable===false){
+    // The engine's shader hook classifies a failed link before this; without
+    // it three.js keeps the logs here, and empty ones are a suspected loss too.
+    const logs={program:diagnostics.programLog??'',vertex:diagnostics.vertexShader?.log??'',fragment:diagnostics.fragmentShader?.log??''};
+    if(linkLoss.classify(renderer.getContext?.(),program.program??program,logs)==='suspected')throw suspectedContextLoss('sprite material');
+    throw error('SPRITE_RESOURCE_SHADER_COMPILE_FAILED');
+   }
   });
  }
  async function prepareTexture(owner,generation){
@@ -127,7 +136,16 @@ export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,bu
   entry.material=createSpriteMaterial(THREE,entry.descriptor,owner.texture);
   // Pinned Three's compileAsync owns an uncancellable timer that reads mutable
   // epoch properties. Synchronous compile safely retires on loss/cancellation.
-  compileMaterial(entry.material);
+  try{compileMaterial(entry.material);}
+  catch(cause){
+   if(!isSuspectedContextLoss(cause))throw cause;
+   // Empty link logs on a live context (link-loss.js): the loss fences this
+   // generation; if the wait ends with the context alive, the same program is
+   // checked once more and fails with its diagnostics.
+   await linkLoss.settled();
+   if(!current(entry,generation)||!available)throw error('SPRITE_RESOURCE_CANCELLED');
+   compileMaterial(entry.material);
+  }
   if(!current(entry,generation)||!available)throw error('SPRITE_RESOURCE_CANCELLED');
   entry.state='ready';entry.error=null;entry.epoch=epoch;builds++;publish(entry);
  }
@@ -217,5 +235,5 @@ export function createSpriteResourcePool({THREE,renderer,getCatalog,getImages,bu
    if(error.message.startsWith('IMAGE_ASSET_DIMENSIONS_UNAVAILABLE')&&[...entry.leases].some(lease=>lease.unmanaged))return;throw error;
   })));},
   metrics(){let liveTextures=0,images=0,pending=0,ready=0,errors=0;for(const owner of textures.values()){if(owner.texture)liveTextures++;if(owner.imageLease)images++;}for(const e of entries.values()){if(e.state==='loading')pending++;if(e.state==='ready')ready++;if(e.state==='error')errors++;}return {supported:true,epoch,entries:entries.size,texture_entries:textures.size,handles:requests.size,live_textures:liveTextures,image_leases:images,pending,ready,errors,cpu_reserved_bytes_estimate:reserved,gpu_reserved_bytes_estimate:reserved,builds,retired,texture_builds:textureBuilds,texture_retired:textureRetired,idle_material_entries:idleCount,idle_material_limit:idleMaterialLimit,limits,scope:'Unique sprite asset/sampler texture reservations with the existing hard admission limit. Automatic idle owners share the renderer texture_cache controller; broker/browser copies and other renderer allocations are separate.'};},
-  dispose(){if(disposed)return;if(retiring)throw error('SPRITE_RESOURCES_RETIRING');try{reset();}finally{disposed=true;stageGeometry.dispose();}},get epoch(){return epoch;}};
+  dispose(){if(disposed)return;if(retiring)throw error('SPRITE_RESOURCES_RETIRING');try{reset();}finally{disposed=true;stageGeometry.dispose();if(!sharedLinkLoss)linkLoss.dispose();}},get epoch(){return epoch;}};
 }

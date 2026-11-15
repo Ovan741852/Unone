@@ -1,4 +1,5 @@
 import {createShaderMaterials} from './shader-materials.js';
+import {createLinkLossGuard,isSuspectedContextLoss} from './link-loss.js';
 import {createTextureCachePolicy,parseTextureCache} from './texture-cache-policy.js';
 import { createParticleRenderer } from "./particles.js?build=particle-texture-colorbins-v1";
 import { meshGeometry, validateMesh } from "./mesh.js";
@@ -117,6 +118,10 @@ export async function createThreeRenderer(canvas, options = {}) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setClearColor(0x111827, 1);
   const clearRecovery=backend==='webgl'?installContextClearRecovery(THREE,renderer,canvas):null;
+  // A program that failed to link with empty logs on a live context opens a
+  // bounded wait for the loss; draws skip until it closes (link-loss.js).
+  const presentationListeners=new Set();
+  const linkLoss=createLinkLossGuard({canvas,onChange:()=>{startupPresentation?.changed();for(const notify of [...presentationListeners])notify();}});
   renderer.info.autoReset=false;
   const contextAntialias=renderer.getContext?.()?.getContextAttributes?.()?.antialias;
   const raster=Object.freeze({antialias_requested:antialias,context_antialias:typeof contextAntialias==='boolean'?contextAntialias:null,
@@ -236,8 +241,12 @@ export async function createThreeRenderer(canvas, options = {}) {
     spriteResources?.contextRestored();profile?.record('context','restored',{context_epoch:rasterCapability.metrics().context_epoch});
   }
   function rasterAvailable(){
+    // A program that failed to link with empty logs opens a wait for the loss
+    // (link-loss.js); asked first, so a raw loss below also ends that wait.
+    const waiting=linkLoss.pending();
     // The raw flag can change before webglcontextlost is dispatched.
     if(renderer.getContext?.()?.isContextLost?.()){rasterLost();return false;}
+    if(waiting)return false;
     return !['lost','disposed'].includes(rasterCapability.metrics().status);
   }
   canvas.addEventListener('webglcontextlost',rasterLost);canvas.addEventListener('webglcontextrestored',rasterRestored);
@@ -248,9 +257,9 @@ export async function createThreeRenderer(canvas, options = {}) {
   camera.position.z = 10;
   const geometry = new THREE.PlaneGeometry(1, 1);
   const records = new Map();
-  const shaderMaterials = createShaderMaterials(THREE, renderer, backend);
+  const shaderMaterials = createShaderMaterials(THREE, renderer, backend, {linkLoss});
   spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,textureCache,
-    getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,
+    getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,linkLoss,
     onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;
   if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor,lighting);
@@ -605,7 +614,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
 
   function dispose() {
-    spriteResources?.dispose();
+    spriteResources?.dispose();linkLoss.dispose();presentationListeners.clear();
     canvas.removeEventListener('webglcontextlost',rasterLost);canvas.removeEventListener('webglcontextrestored',rasterRestored);
     rasterCapability.dispose();startupPresentation?.dispose();rasterPass?.dispose();framePass?.dispose();clearRecovery?.dispose();uiImageBatchPrefix.dispose();ui?.dispose();
     for (const hook of [...disposeHooks].reverse()) {
@@ -634,11 +643,26 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
   if(checkedRaster){try{resize({});validateRaster();}catch(error){dispose();throw error;}}
 
+  // A suspected loss (link-loss.js) unwinds the draw from inside three.js. Reset
+  // three's GL state and skip the frame; rasterAvailable() skips the next ones
+  // until the loss arrives or the wait ends.
+  function drawOrSkip(snapshot, drawOptions) {
+    try { return draw(snapshot, drawOptions); }
+    catch (error) {
+      if (!isSuspectedContextLoss(error)) throw error;
+      try { renderer.resetState?.(); } catch { /* the skip stands either way */ }
+      startupPresentation?.invalidate(); profile?.outcome('skipped_suspected_context_loss');
+      return DRAW_SKIPPED.raster_unavailable;
+    }
+  }
+
   return {
-    draw,
+    draw: drawOrSkip,
     uiImageBatchPrefix,
     ui,
     isPresentationAvailable:()=>rasterAvailable(),
+    // Calls listener when availability can change without a context event (a link-loss wait opened or closed).
+    subscribePresentation(listener){presentationListeners.add(listener);return()=>presentationListeners.delete(listener);},
     startupPresentation,
     spriteResources:spriteResources?.public??Object.freeze({prepare(){throw Error('SPRITE_RESOURCE_BACKEND_UNSUPPORTED');},reset(){},takeUpdates(){return {resources:[],appearances:[]};}}),
     async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise));await spriteResources?.ready(); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
@@ -655,7 +679,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     // at 2) when the device pixel ratio changes; one a presentation hook set is left alone.
     pixelRatio: () => renderer.getPixelRatio(),
     setPixelRatio: ratio => renderer.setPixelRatio(ratio),
-      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,link_loss:linkLoss.metrics(),instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

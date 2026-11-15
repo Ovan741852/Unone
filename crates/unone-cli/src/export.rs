@@ -61,6 +61,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/vfx-player.js",
         "renderer/vfx-native.js",
         "renderer/shader-materials.js",
+        "renderer/link-loss.js",
         "renderer/sprite-cells.js",
         "renderer/sprite-resources.js",
         "renderer/sprite-presentation.js",

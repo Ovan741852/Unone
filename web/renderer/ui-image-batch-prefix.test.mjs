@@ -98,3 +98,11 @@ test('each group uploads current per-instance snap and framebuffer uniforms with
  assert.deepEqual(h.renderer.calls.map(c=>c.snap),[0,1]);assert.deepEqual(h.renderer.calls[0].framebuffer,[100,100]);const builds=h.presenter.metrics().geometry_builds;
  h.presenter.drawPrefix([{...plain,pixelSnap:true},{...snap,pixelSnap:false}],h.context);assert.deepEqual(h.renderer.calls.map(c=>c.snap),[1,0]);assert.equal(h.presenter.metrics().geometry_builds,builds);h.presenter.dispose();
 });
+test('a suspected context loss in the prefix render leaves the target unavailable; other errors still fail',async()=>{
+ const {suspectedContextLoss}=await import('./link-loss.js');
+ const h=harness(),render=h.renderer.render;let failure=null;h.renderer.render=function(scene){if(failure)throw failure;return render.call(this,scene);};
+ failure=suspectedContextLoss('engine-program');assert.equal(h.presenter.drawPrefix([h.instance('a')],h.context),0);
+ assert.equal(h.presenter.completion().reason,'ui_target_unavailable');assert.equal(h.presenter.metrics().fallback_reason,'suspected_context_loss');
+ failure=null;assert.equal(h.presenter.drawPrefix([h.instance('a')],h.context),1);assert.equal(h.presenter.completion().status,'completed');
+ failure=Error('SHADER_COMPILE_FAILED: engine-program');assert.throws(()=>h.presenter.drawPrefix([h.instance('a')],h.context),/SHADER_COMPILE_FAILED/);h.presenter.dispose();
+});

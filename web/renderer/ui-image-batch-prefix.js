@@ -1,5 +1,6 @@
 import {PROJECTED_FRAGMENT_SHADER} from './projected-raster-shaders.js';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
+import {isSuspectedContextLoss} from './link-loss.js';
 const VERTEX=`attribute float imageOpacity;
 uniform mat3 imageTransform;
 uniform vec2 imageFramebufferSize;
@@ -159,6 +160,8 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
    unpack=upload?[gl.getParameter(gl.UNPACK_FLIP_Y_WEBGL),gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL)]:null;
   renderer.getViewport(viewport);renderer.getScissor(scissor);
   try{renderer.autoClear=false;renderer.sortObjects=true;renderer.setViewport(0,0,width/renderer.getPixelRatio(),height/renderer.getPixelRatio());renderer.render(scene,camera);if(gl.isContextLost()){targetUnavailable=true;lastReason='context_lost';return 0;}uploadedTextureWrites=textureWrites;}
+  // A program that failed to link with empty logs: unavailable while the renderer waits for the loss (link-loss.js).
+  catch(error){if(!isSuspectedContextLoss(error))throw error;try{renderer.resetState?.();}catch{/* unavailable either way */}targetUnavailable=true;lastReason='suspected_context_loss';return 0;}
   finally{if(unpack){gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,unpack[0]);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,unpack[1]);}renderer.setViewport(viewport);renderer.setScissor(scissor);renderer.setScissorTest(test);renderer.sortObjects=sort;renderer.autoClear=autoClear;}
   draws++;lastNodes=count;for(let i=0;i<count;i++)lastQuads+=prefix[i].definition.quads.length;lastReason=count===prefix.length?'accelerated':lastReason;return count;
  }
