@@ -180,7 +180,7 @@ export function flattenProcesses(os){
  return out;
 }
 
-function runProcess(command,args,{timeoutMs=30000,input=null}={}){
+export function runProcess(command,args,{timeoutMs=30000,input=null}={}){
  return new Promise((resolve,reject)=>{
   const child=spawn(command,args,{stdio:[input===null?'ignore':'pipe','pipe','pipe'],windowsHide:true});
   let stdout='',stderr='';child.stdout.on('data',d=>{stdout+=d;});child.stderr.on('data',d=>{stderr+=d;});

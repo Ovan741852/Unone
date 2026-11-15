@@ -23,16 +23,23 @@
 //
 // --url measures a page the caller serves instead (a platform harness with the player in an iframe,
 // also a sandboxed one in its own process): reads go to the frame that runs the export index.html.
+//
+// --attach measures inside a browser that is already running (an Android WebView or Chrome reached
+// over adb forward, or any browser with a DevTools port): it takes over one existing page instead of
+// launching a browser, never closes the browser, and reads no OS process memory (the browser's
+// processes are not this machine's). --adb-socket finds that endpoint on an Android device itself
+// and lets the device reach this tool's server through adb reverse.
 import {spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {createServer} from 'node:http';
+import {createServer as createNetServer} from 'node:net';
 import {existsSync} from 'node:fs';
 import {mkdtemp,mkdir,readFile,readdir,rm,stat,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {gzipSync} from 'node:zlib';
-import {parseScenario,runScenario,readProcessMemory,measureBlank,flattenFrames,usesTouch,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
+import {parseScenario,runScenario,readProcessMemory,measureBlank,flattenFrames,usesTouch,runProcess,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 
 export const SCHEMA='unone.web-export-measurement.v1';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -40,12 +47,14 @@ const finite=n=>typeof n==='number'&&Number.isFinite(n);
 const sha256=bytes=>createHash('sha256').update(bytes).digest('hex');
 const round=n=>finite(n)?Math.round(n*1000)/1000:null;
 const minus=(a,b)=>finite(a)&&finite(b)?round(a-b):null;
+const printable=(value,max=64)=>typeof value==='string'&&value.length>=1&&value.length<=max&&!/[\u0000-\u001f\u007f]/.test(value);
 
 // ---------------------------------------------------------------- options
 
 const DEFAULTS=Object.freeze({cold:5,warm:5,profilePairs:1,milestones:[],settleMs:1000,frameWindowMs:1000,timeoutMs:60000,
  viewport:{width:1280,height:720},dpr:1,seed:'42',backend:null,cacheControl:null,compress:'none',network:null,cpuThrottle:1,
- browser:null,headed:false,keepStorage:false,allowDevelopment:false,wasmTiming:'split',includeProfileEvents:false,pollMs:100,scenario:null,scenarioRuns:1,scenarioProfile:false,blankControl:true,url:null});
+ browser:null,headed:false,keepStorage:false,allowDevelopment:false,wasmTiming:'split',includeProfileEvents:false,pollMs:100,scenario:null,scenarioRuns:1,scenarioProfile:false,blankControl:true,url:null,
+ attach:null,attachTarget:null,servePort:0,adb:null,adbSerial:null,adbSocket:null,deviceLabel:null});
 const NETWORK_PRESETS=Object.freeze({
  // Chrome DevTools' own throttling presets; emulated in the browser, not a real radio network.
  'fast-4g':{latency_ms:60,download_kbps:9000,upload_kbps:1500},
@@ -59,11 +68,19 @@ export const USAGE=`Usage: node scripts/measure-web-export.mjs --export <product
   [--network fast-4g|slow-4g|fast-3g|LATENCY_MS,DOWN_KBPS,UP_KBPS] [--cpu-throttle RATE]
   [--browser PATH] [--headed] [--keep-storage] [--allow-development] [--wasm-timing split|observe]
   [--include-profile-events] [--scenario FILE] [--scenario-runs N=1] [--scenario-profile] [--no-blank-control]
-  [--url PAGE]
+  [--url PAGE] [--serve-port PORT]
+  [--attach http://HOST:PORT|ws://... [--attach-target TEXT]] [--device-label TEXT]
+  [--adb-socket auto|package:NAME|SOCKET [--adb-serial SERIAL] [--adb PATH]]
   With --scenario, cold, warm and profiler pairs default to 0 unless given.
   --url opens a page you serve instead of serving --export: the player may sit in an iframe of it, also a
   sandboxed (opaque-origin) one. --export still names the export that page serves, for the report's hashes.
-  The page must pass ?unone_profile and ?unone_profile_limit on to the player frame for profiler runs.`;
+  The page must pass ?unone_profile and ?unone_profile_limit on to the player frame for profiler runs.
+  --attach takes over one page of a browser that is already running (its DevTools endpoint) instead of
+  launching one; --attach-target picks the page by URL or title text. Nothing is cold there (cold runs are
+  refused), the viewport is the device's unless --viewport/--dpr are given, and OS memory is not read.
+  --adb-socket attaches to an Android WebView or Chrome over adb: it forwards the DevTools socket, lets the
+  device reach this tool's server with adb reverse, records the device's build properties and removes
+  both forwards afterwards. --serve-port fixes this tool's server port (default: any free one).`;
 
 export function parseArgs(argv){
  const options={...DEFAULTS,milestones:[]},given=new Set(),take=(i,name)=>{const value=argv[i+1];if(value===undefined||value.startsWith('--'))throw Error(`MEASURE_ARG_INVALID: ${name} needs a value`);return value;};
@@ -88,8 +105,15 @@ export function parseArgs(argv){
    case '--settle-ms':options.settleMs=ms(take(i,arg),arg);i++;break;
    case '--frame-window-ms':{const n=ms(take(i,arg),arg);if(n<1||n>60000)throw Error('MEASURE_ARG_INVALID: --frame-window-ms must be 1..60000 (the player accessor limit)');options.frameWindowMs=n;i++;break;}
    case '--timeout-ms':options.timeoutMs=ms(take(i,arg),arg);i++;break;
-   case '--viewport':{const match=/^(\d{2,5})x(\d{2,5})$/.exec(take(i,arg));if(!match)throw Error('MEASURE_ARG_INVALID: --viewport is WIDTHxHEIGHT in CSS pixels, e.g. 926x428');options.viewport={width:Number(match[1]),height:Number(match[2])};i++;break;}
-   case '--dpr':{const n=Number(take(i,arg));if(!finite(n)||n<=0||n>8)throw Error('MEASURE_ARG_INVALID: --dpr must be in (0,8]');options.dpr=n;i++;break;}
+   case '--viewport':{const match=/^(\d{2,5})x(\d{2,5})$/.exec(take(i,arg));if(!match)throw Error('MEASURE_ARG_INVALID: --viewport is WIDTHxHEIGHT in CSS pixels, e.g. 926x428');options.viewport={width:Number(match[1]),height:Number(match[2])};given.add(arg);i++;break;}
+   case '--dpr':{const n=Number(take(i,arg));if(!finite(n)||n<=0||n>8)throw Error('MEASURE_ARG_INVALID: --dpr must be in (0,8]');options.dpr=n;given.add(arg);i++;break;}
+   case '--attach':options.attach=parseAttach(take(i,arg));i++;break;
+   case '--attach-target':{const value=take(i,arg);if(!printable(value,200))throw Error('MEASURE_ARG_INVALID: --attach-target is 1-200 printable characters of the page URL or title');options.attachTarget=value;i++;break;}
+   case '--serve-port':{const n=Number(take(i,arg));if(!Number.isInteger(n)||n<1024||n>65535)throw Error('MEASURE_ARG_INVALID: --serve-port is a TCP port 1024..65535');options.servePort=n;i++;break;}
+   case '--adb':options.adb=take(i,arg);i++;break;
+   case '--adb-serial':{const value=take(i,arg);if(!/^[\w.:\-]{1,128}$/.test(value))throw Error('MEASURE_ARG_INVALID: --adb-serial is a serial from adb devices, e.g. emulator-5554 or 127.0.0.1:5555');options.adbSerial=value;i++;break;}
+   case '--adb-socket':{const value=take(i,arg);if(!/^(auto|package:[A-Za-z][\w.]{0,254}|[A-Za-z][\w.\-]{0,254})$/.test(value))throw Error('MEASURE_ARG_INVALID: --adb-socket is auto, package:<android package> or a DevTools socket name such as webview_devtools_remote_1234 or chrome_devtools_remote');options.adbSocket=value;i++;break;}
+   case '--device-label':{const value=take(i,arg);if(!printable(value,200))throw Error('MEASURE_ARG_INVALID: --device-label is 1-200 printable characters, e.g. "BlueStacks emulator on this PC"');options.deviceLabel=value;i++;break;}
    case '--seed':{const value=take(i,arg);if(!/^\d{1,20}$/.test(value)||BigInt(value)>18446744073709551615n)throw Error('MEASURE_ARG_INVALID: --seed is an unsigned 64-bit integer');options.seed=value;i++;break;}
    case '--backend':{const value=take(i,arg);if(!['main','worker'].includes(value))throw Error('MEASURE_ARG_INVALID: --backend is main or worker');options.backend=value;i++;break;}
    case '--cache-control':options.cacheControl=take(i,arg);i++;break;
@@ -110,6 +134,19 @@ export function parseArgs(argv){
  if(!options.export||!options.output)throw Error('MEASURE_ARG_INVALID: --export and --output are required');
  // The page behind --url is served by its own server; this tool cannot change how.
  if(options.url&&(options.cacheControl!==null||options.compress!=='none'))throw Error("MEASURE_ARG_INVALID: --cache-control and --compress change this tool's own server; with --url the page's server decides");
+ if(options.attach&&options.adbSocket)throw Error('MEASURE_ARG_INVALID: --adb-socket finds and forwards the DevTools endpoint itself; give --attach or --adb-socket, not both');
+ if((options.adb||options.adbSerial)&&!options.adbSocket)throw Error('MEASURE_ARG_INVALID: --adb and --adb-serial only go with --adb-socket');
+ const attached=Boolean(options.attach||options.adbSocket);
+ if(options.attachTarget&&!attached)throw Error('MEASURE_ARG_INVALID: --attach-target picks a page of an attached browser; give --attach or --adb-socket');
+ if(attached){
+  // The attached browser is one long-lived process this tool did not start and will not close.
+  if(options.browser||options.headed)throw Error('MEASURE_ARG_INVALID: --browser and --headed launch a browser; an attached one (--attach, --adb-socket) is already running');
+  if(given.has('--cold')&&options.cold>0)throw Error('MEASURE_ARG_INVALID: a cold run is a new browser process and profile; an attached browser (--attach, --adb-socket) is one process that stays up, so measure --warm runs there');
+  options.cold=0;
+  // Its viewport is the device's own unless one is asked for.
+  if(!given.has('--viewport'))options.viewport=null;
+  if(!given.has('--dpr'))options.dpr=null;
+ }
  // A scenario is minutes of memory sampling; startup runs come along only when asked for.
  if(options.scenario){if(!given.has('--cold'))options.cold=0;if(!given.has('--warm'))options.warm=0;if(!given.has('--profile-pairs'))options.profilePairs=0;}
  else options.scenarioRuns=0;
@@ -122,6 +159,22 @@ export function parseNetwork(value){
  const parts=value.split(',').map(Number);
  if(parts.length!==3||!parts.every(n=>finite(n)&&n>=0))throw Error('MEASURE_ARG_INVALID: --network is a preset (fast-4g, slow-4g, fast-3g) or LATENCY_MS,DOWN_KBPS,UP_KBPS');
  return {preset:null,latency_ms:parts[0],download_kbps:parts[1],upload_kbps:parts[2]};
+}
+
+/**
+ * A DevTools endpoint of a running browser: its HTTP root (http://127.0.0.1:9222, what adb forward
+ * gives) or one WebSocket, the browser's (ws://.../devtools/browser/...) or a page's
+ * (ws://.../devtools/page/<id>).
+ */
+export function parseAttach(value){
+ let url;try{url=new URL(value);}catch{url=null;}
+ const invalid=()=>Error('MEASURE_ARG_INVALID: --attach is a DevTools endpoint: http://127.0.0.1:PORT (e.g. after adb forward tcp:PORT localabstract:webview_devtools_remote_<pid>), ws://HOST:PORT/devtools/browser/<id> or ws://HOST:PORT/devtools/page/<id>');
+ if(!url||!url.hostname)throw invalid();
+ if(url.protocol==='http:'){if(url.search||url.hash||!['','/','/json','/json/version','/json/list'].includes(url.pathname))throw invalid();return {http:`http://${url.host}/`,ws:null,kind:null,targetId:null};}
+ if(url.protocol!=='ws:')throw invalid();
+ const match=/^\/devtools\/(browser|page)(?:\/([^/]+))?$/.exec(url.pathname);
+ if(!match||match[1]==='page'&&!match[2])throw invalid();
+ return {http:`http://${url.host}/`,ws:url.href,kind:match[1],targetId:match[1]==='page'?decodeURIComponent(match[2]):null};
 }
 
 // ---------------------------------------------------------------- statistics
@@ -270,7 +323,7 @@ export function normalizeLoad(raw,{network=[],server=[],options={},kind,index,pr
  return {kind,index,profiling,url,ok:true,error:null,
   foreground:{visibility_at_start:visibilityLog[0]?.state??null,focused_at_start:raw?.probe?.focused_at_start??null,visibility_at_sample:raw?.visibility??null,focused_at_sample:raw?.focused??null,
    hidden_during_run:visibilityLog.some(entry=>entry.state!=='visible'),blur_events:(raw?.probe?.focus??[]).filter(entry=>!entry.focused).length},
-  page:{device_pixel_ratio:raw?.dpr??null,inner_size:raw?.inner??null,user_agent:raw?.ua??null,backend:metrics?.backend??null,renderer:metrics?.renderer??null,seed:metrics?.seed??null,seed_source:metrics?.seed_source??null,
+  page:{device_pixel_ratio:raw?.dpr??null,inner_size:raw?.inner??null,screen_size:raw?.screen??null,max_touch_points:finite(raw?.touch_points)?raw.touch_points:null,user_agent:raw?.ua??null,backend:metrics?.backend??null,renderer:metrics?.renderer??null,seed:metrics?.seed??null,seed_source:metrics?.seed_source??null,
    error:raw?.error??null,time_origin_epoch_ms:raw?.time_origin??null,sampled_at_ms:minus(raw?.now,boot),player_accessors:{performance:Boolean(perf),assets:Boolean(raw?.assets),profile:Boolean(raw?.profile),milestones:Boolean(perf?.milestones)}},
   metrics:flat,
   startup_steps:steps,
@@ -341,7 +394,7 @@ export function cacheControlFor(relative,policy,override){
  return 'no-cache';
 }
 
-export async function startServer(root,{cachePolicy=null,cacheControl=null,compress='none'}={}){
+export async function startServer(root,{cachePolicy=null,cacheControl=null,compress='none',port=0}={}){
  const base=path.resolve(root),log=[],cache=new Map();
  const server=createServer(async(request,response)=>{
   const entry={path:null,status:0,bytes:0,conditional:Boolean(request.headers['if-none-match']),encoding:'identity'};
@@ -363,7 +416,7 @@ export async function startServer(root,{cachePolicy=null,cacheControl=null,compr
   }catch(error){entry.status=error.status??404;response.writeHead(entry.status,{'content-type':'text/plain'});response.end(String(error.message??error));}
   finally{log.push(entry);}
  });
- await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+ await new Promise((resolve,reject)=>{server.once('error',error=>reject(error.code==='EADDRINUSE'?Error(`MEASURE_SERVE_PORT_BUSY: 127.0.0.1:${port} is in use; pick another --serve-port`):error));server.listen(port,'127.0.0.1',resolve);});
  return {url:`http://127.0.0.1:${server.address().port}/`,log,take(){return log.splice(0,log.length);},close:()=>new Promise(resolve=>server.close(()=>resolve()))};
 }
 
@@ -422,7 +475,7 @@ async function launchBrowser(executable,options){
  const cdp=await Cdp.connect(endpoint);let closed=false;const wasClosed=new Promise(resolve=>{const previous=cdp.ws.onclose;cdp.ws.onclose=event=>{closed=true;previous?.(event);resolve();};});
  const version=await cdp.send('Browser.getVersion');
  let browserPid=null;try{browserPid=(await cdp.send('SystemInfo.getProcessInfo')).processInfo.find(p=>p.type==='browser')?.id??null;}catch{}
- let gpu=null;try{const info=await cdp.send('SystemInfo.getInfo');gpu={devices:(info.gpu?.devices??[]).map(d=>({vendor_id:d.vendorId,device_id:d.deviceId,vendor:d.vendorString,device:d.deviceString,driver_vendor:d.driverVendor,driver_version:d.driverVersion})),feature_status:info.gpu?.featureStatus??null};}catch{}
+ const gpu=await readGpu(cdp);
  async function close(){
   try{await cdp.send('Browser.close',{},undefined,5000);}catch{}
   await Promise.race([wasClosed,sleep(10000)]);
@@ -430,7 +483,172 @@ async function launchBrowser(executable,options){
   // The browser's helper processes release the profile a moment after it closes.
   for(let i=0;i<40;i++){try{await rm(profileDir,{recursive:true,force:true});break;}catch{await sleep(250);}}
  }
- return {cdp,version,gpu,args,close};
+ return {cdp,version,gpu,args,close,attached:null,target:null,direct:false,leave:[]};
+}
+
+async function readGpu(cdp){
+ try{const info=await cdp.send('SystemInfo.getInfo',{},undefined,10000);return {devices:(info.gpu?.devices??[]).map(d=>({vendor_id:d.vendorId,device_id:d.deviceId,vendor:d.vendorString,device:d.deviceString,driver_vendor:d.driverVendor,driver_version:d.driverVersion})),feature_status:info.gpu?.featureStatus??null};}
+ catch{return null;}
+}
+
+// ---------------------------------------------------------------- a browser that is already running (--attach)
+
+const shortUrl=url=>{try{return pageWithoutQuery(url);}catch{return String(url??'').slice(0,200);}};
+const rehost=(ws,http)=>{const url=new URL(ws);url.host=new URL(http).host;return url.href;};
+
+/** /json/list rows as targets; an Android WebView row's description is JSON saying whether it is shown. */
+export function listTargets(list){
+ return (Array.isArray(list)?list:[]).map(row=>{let d=null;try{d=row.description?JSON.parse(row.description):null;}catch{}
+  return {id:row.id,type:row.type,url:row.url??'',title:row.title??'',webSocketDebuggerUrl:row.webSocketDebuggerUrl??null,visible:typeof d?.visible==='boolean'?d.visible:null,
+   size:finite(d?.width)&&finite(d?.height)?{width:d.width,height:d.height}:null};});
+}
+
+/**
+ * The page to measure among an attached browser's targets: the one whose URL or title contains
+ * `match`; without one, the only page, else the only visible page. Anything else fails and lists them.
+ */
+export function pickPageTarget(targets,match=null){
+ const pages=(targets??[]).filter(t=>t.type==='page');
+ const describe=list=>list.map(t=>`${shortUrl(t.url)}${t.title?` "${t.title}"`:''}${t.visible===true?' (visible)':t.visible===false?' (hidden)':''}`).join('; ')||'none';
+ let found=pages,selectedBy='the only page';
+ if(match){found=pages.filter(t=>String(t.url).includes(match)||String(t.title).includes(match));selectedBy='--attach-target';}
+ else if(pages.length>1){const visible=pages.filter(t=>t.visible===true);if(visible.length===1){found=visible;selectedBy='the only visible page';}}
+ if(found.length===1)return {...found[0],selected_by:selectedBy};
+ if(!found.length)throw Error(`MEASURE_ATTACH_NO_PAGE: ${match?`no page's URL or title contains "${match}"`:'the attached browser shows no page'} (pages: ${describe(pages)}); open the app's WebView or a tab first`);
+ throw Error(`MEASURE_ATTACH_AMBIGUOUS: ${found.length} pages${match?` contain "${match}"`:''} (${describe(found)}); pick one with --attach-target <text of its URL or title>`);
+}
+
+/**
+ * Connect to a running browser's DevTools endpoint and choose the page to take over. The browser
+ * WebSocket is used when the endpoint has one; otherwise the chosen page's own WebSocket. close()
+ * leaves the page (each openPage registers how) and disconnects: the browser keeps running.
+ */
+async function attachBrowser(attach,options,via=null){
+ const getJson=async name=>{const response=await fetch(new URL(name,attach.http),{signal:AbortSignal.timeout(5000)});if(!response.ok)throw Error(`HTTP ${response.status}`);return response.json();};
+ let info=null,list=null;
+ try{info=await getJson('json/version');}catch(error){if(!attach.ws)throw Error(`MEASURE_ATTACH_UNREACHABLE: nothing answers ${attach.http}json/version (${error.message}); forward the DevTools socket first (adb forward tcp:PORT localabstract:webview_devtools_remote_<pid>) or use --adb-socket`);}
+ try{list=listTargets(await getJson('json/list'));}catch{}
+ const browserWs=attach.kind==='browser'?attach.ws:attach.kind===null&&typeof info?.webSocketDebuggerUrl==='string'?rehost(info.webSocketDebuggerUrl,attach.http):null;
+ let cdp,target,direct=false;
+ if(browserWs){
+  cdp=await Cdp.connect(browserWs);
+  try{const {targetInfos}=await cdp.send('Target.getTargets');const shown=new Map((list??[]).map(t=>[t.id,t]));
+   target=pickPageTarget(targetInfos.map(t=>({id:t.targetId,type:t.type,url:t.url,title:t.title,visible:shown.get(t.targetId)?.visible??null,size:shown.get(t.targetId)?.size??null})),options.attachTarget);}
+  catch(error){cdp.close();throw error;}
+ }else{
+  if(attach.kind==='page')target={...((list??[]).find(t=>t.id===attach.targetId)??{id:attach.targetId,type:'page',url:'',title:'',visible:null,size:null}),webSocketDebuggerUrl:attach.ws,selected_by:'--attach page WebSocket'};
+  else{if(!list)throw Error(`MEASURE_ATTACH_UNREACHABLE: ${attach.http}json/list lists no targets`);target=pickPageTarget(list,options.attachTarget);}
+  // DevTools hands a page's WebSocket to one client at a time.
+  if(!target.webSocketDebuggerUrl)throw Error(`MEASURE_ATTACH_BUSY: ${shortUrl(target.url)} has no free DevTools WebSocket (another client, e.g. chrome://inspect, holds it); close that client`);
+  cdp=await Cdp.connect(attach.kind==='page'?attach.ws:rehost(target.webSocketDebuggerUrl,attach.http));direct=true;
+ }
+ let version=null;
+ try{const v=await cdp.send('Browser.getVersion',{},undefined,5000);version={product:v.product,userAgent:v.userAgent,jsVersion:v.jsVersion,protocolVersion:v.protocolVersion};}
+ catch{version={product:info?.Browser??null,userAgent:info?.['User-Agent']??null,jsVersion:info?.['V8-Version']??null,protocolVersion:info?.['Protocol-Version']??null};}
+ const gpu=await readGpu(cdp),leave=[];
+ async function close(){for(const step of leave.splice(0).reverse())try{await step();}catch{}cdp.close();}
+ return {cdp,version,gpu,args:null,close,leave,direct,target,
+  attached:{endpoint:attach.http,connection:direct?'the page\'s own WebSocket':'the browser WebSocket',android_package:info?.['Android-Package']??null,via,
+   page_at_attach:{url:shortUrl(target.url),title:target.title||null,visible:target.visible??null,size:target.size??null,selected_by:target.selected_by}}};
+}
+
+// ---------------------------------------------------------------- Android over adb (--adb-socket)
+
+/** adb: --adb, UNONE_ADB_PATH, an Android SDK's platform-tools, else whatever `adb` is on PATH. */
+export function findAdb(explicit,{env=process.env,exists=existsSync,platform=process.platform,home=os.homedir()}={}){
+ if(explicit){if(!exists(explicit))throw Error(`MEASURE_ADB_MISSING: ${explicit} does not exist`);return explicit;}
+ const exe=platform==='win32'?'adb.exe':'adb';
+ const candidates=[env.UNONE_ADB_PATH,...[env.ANDROID_HOME,env.ANDROID_SDK_ROOT,env.LOCALAPPDATA&&path.join(env.LOCALAPPDATA,'Android','Sdk'),path.join(home,'Library','Android','sdk'),path.join(home,'Android','Sdk')].filter(Boolean).map(sdk=>path.join(sdk,'platform-tools',exe))];
+ return candidates.filter(Boolean).find(candidate=>exists(candidate))??'adb';
+}
+
+/** Listening DevTools sockets from the device's /proc/net/unix: @webview_devtools_remote_<pid>, @chrome_devtools_remote, ... */
+export function parseDevtoolsSockets(text){
+ const found=new Map();
+ for(const line of String(text).split(/\r?\n/)){
+  const socket=/\s@([\w.\-]*devtools_remote[\w.\-]*)\s*$/.exec(line)?.[1];if(!socket||found.has(socket))continue;
+  const pid=/_devtools_remote_(\d+)$/.exec(socket)?.[1];
+  found.set(socket,{socket,kind:socket.startsWith('webview_devtools_remote')?'webview':socket.startsWith('chrome_devtools_remote')?'chrome':'other',pid:pid?Number(pid):null});
+ }
+ return [...found.values()];
+}
+
+/** The socket --adb-socket names: auto (the only one), package:<name> (that app's WebView) or a socket name. */
+export function chooseSocket(sockets,want,{pids=null,packageOf=new Map()}={}){
+ const describe=()=>sockets.map(s=>s.socket+(s.pid&&packageOf.get(s.pid)?` (${packageOf.get(s.pid)})`:'')).join(', ')||'none';
+ const pkg=want.startsWith('package:')?want.slice(8):null;
+ const found=want==='auto'?sockets:pkg?sockets.filter(s=>s.pid!==null&&(pids??[]).includes(s.pid)):sockets.filter(s=>s.socket===want);
+ if(found.length===1)return found[0];
+ if(!found.length){
+  const why=want==='auto'?'no app on the device has a DevTools socket open':pkg?(pids?.length?`${pkg} is running but has no WebView DevTools socket: its WebView debugging is off (the app calls WebView.setWebContentsDebuggingEnabled(true) only in a debug or test build) or it has not created a WebView yet`:`${pkg} is not running`):`there is no socket named ${want}`;
+  throw Error(`MEASURE_ADB_NO_SOCKET: ${why} (sockets: ${describe()}); open the page in the app first`);
+ }
+ throw Error(`MEASURE_ADB_AMBIGUOUS: ${found.length} DevTools sockets (${describe()}); pick one with --adb-socket <socket> or --adb-socket package:<name>`);
+}
+
+/** `adb shell getprop` output as an object. */
+export function parseGetprop(text){
+ const out={};for(const match of String(text).matchAll(/^\[([^\]]+)\]: \[([^\]]*)\]\s*$/gm))out[match[1]]=match[2];return out;
+}
+
+/** The current WebView provider from `adb shell dumpsys webviewupdate`, or null. */
+export function parseWebViewProvider(text){
+ const match=/Current WebView package \(name, version\): \(([^,()]+), ([^()]+)\)/.exec(String(text));
+ return match?{package:match[1].trim(),version:match[2].trim()}:null;
+}
+
+const DEVICE_PROPS=Object.freeze({manufacturer:'ro.product.manufacturer',brand:'ro.product.brand',model:'ro.product.model',device:'ro.product.device',android_release:'ro.build.version.release',
+ sdk:'ro.build.version.sdk',build_type:'ro.build.type',abi:'ro.product.cpu.abi',abi_list:'ro.product.cpu.abilist',hardware:'ro.hardware',characteristics:'ro.build.characteristics'});
+
+/**
+ * What the device says it is: a few build properties (no serial or identifiers) and every property an
+ * emulator is known to set. An emulator can report a phone's maker and model (BlueStacks does), so
+ * emulator is true only when such a property is present and null otherwise, never false.
+ */
+export function deviceInfo(props){
+ const out={};for(const [name,key] of Object.entries(DEVICE_PROPS))out[name]=props[key]||null;
+ const markers=Object.entries(props).filter(([key,value])=>/(^|[._])(qemu|bst|bluestacks|vbox|genymotion|nox|ldplayer|memu)([._]|$)/i.test(key)&&value!==''&&value!=='0'
+  ||(key==='ro.hardware'||key==='ro.boot.hardware'||key==='ro.product.board')&&/^(ranchu|goldfish|vbox86|cutf_cvm)$/i.test(value))
+  .map(([key,value])=>({key,value:/(^|[._])(id|serial|imei|mac|guid|uuid)([._]|$)/i.test(key)?'(identifier not recorded)':value.slice(0,64)}));
+ return {...out,emulator:markers.length?true:null,emulator_markers:markers.slice(0,32)};
+}
+
+async function freeLocalPort(){
+ const server=createNetServer();await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+ const {port}=server.address();await new Promise(resolve=>server.close(resolve));return port;
+}
+
+/**
+ * Find the DevTools socket on an Android device, forward it to a free local port, let the device reach
+ * this tool's server through adb reverse, and read what the device is. close() removes both forwards.
+ */
+export async function adbConnect(options,{serverPort=null,run=runProcess,freePort=freeLocalPort}={}){
+ const adb=findAdb(options.adb);
+ const call=async(args,timeoutMs=15000)=>{
+  try{return await run(adb,[...(options.adbSerial?['-s',options.adbSerial]:[]),...args],{timeoutMs});}
+  catch(error){if(error.code==='ENOENT')throw Error(`MEASURE_ADB_MISSING: ${adb} not found; install Android platform-tools or pass --adb <path to adb> (BlueStacks ships HD-Adb.exe in its install folder)`);
+   throw Error(`MEASURE_ADB_FAILED: adb ${args.join(' ')}: ${String(error.message??error).trim()}`);}
+ };
+ const state=(await call(['get-state'])).trim();
+ if(state!=='device')throw Error(`MEASURE_ADB_NO_DEVICE: adb get-state says "${state}"; connect and authorize the device (adb devices), or pass --adb-serial`);
+ const sockets=parseDevtoolsSockets(await call(['shell','cat','/proc/net/unix']));
+ const packageOf=new Map();
+ for(const s of sockets)if(s.pid)try{packageOf.set(s.pid,(await call(['shell','cat',`/proc/${s.pid}/cmdline`])).split('\0')[0].trim()||null);}catch{}
+ let pids=null;
+ if(options.adbSocket.startsWith('package:'))pids=(await call(['shell','pidof',options.adbSocket.slice(8)]).catch(()=>'')).trim().split(/\s+/).filter(Boolean).map(Number).filter(Number.isSafeInteger);
+ const socket=chooseSocket(sockets,options.adbSocket,{pids,packageOf});
+ const device=deviceInfo(parseGetprop(await call(['shell','getprop'])));
+ try{device.webview_provider=parseWebViewProvider(await call(['shell','dumpsys','webviewupdate']));}catch{device.webview_provider=null;}
+ const hostPort=await freePort(),removals=[];
+ const undo=async()=>{for(const args of removals.splice(0).reverse())await call(args).catch(()=>{});};
+ try{
+  await call(['forward',`tcp:${hostPort}`,`localabstract:${socket.socket}`]);removals.push(['forward','--remove',`tcp:${hostPort}`]);
+  if(serverPort){await call(['reverse',`tcp:${serverPort}`,`tcp:${serverPort}`]);removals.push(['reverse','--remove',`tcp:${serverPort}`]);}
+ }catch(error){await undo();throw error;}
+ return {endpoint:{http:`http://127.0.0.1:${hostPort}/`,ws:null,kind:null,targetId:null},device,
+  via:{tool:'adb',adb:path.basename(adb),socket:socket.socket,socket_kind:socket.kind,package:socket.pid?packageOf.get(socket.pid)??null:null,
+   forward:`this machine tcp:${hostPort} -> device localabstract:${socket.socket}`,reverse:serverPort?`device tcp:${serverPort} -> this machine tcp:${serverPort}`:null},
+  close:undo};
 }
 
 // Instrumentation added to every document before its own scripts. Timing only: every wrapper
@@ -472,7 +690,7 @@ const nav=performance.getEntriesByType('navigation')[0];
 let perf=null;try{perf=window.unonePlayerPerformance?.snapshot({windowMs:${Number(frameWindowMs)}})??null;}catch(e){perf={error:String(e.message??e)};}
 let assets=null;try{assets=window.unonePlayerAssets?.snapshot?.({includeTimings:true})??null;}catch(e){assets={error:String(e.message??e)};}
 let profile=null;try{profile=window.unonePlayerProfile?.report?.()??null;}catch(e){profile={error:String(e.message??e)};}
-return {boot:window.playerBoot??null,time_origin:performance.timeOrigin,now:performance.now(),visibility:document.visibilityState,focused:document.hasFocus(),dpr:devicePixelRatio,inner:[innerWidth,innerHeight],ua:navigator.userAgent,
+return {boot:window.playerBoot??null,time_origin:performance.timeOrigin,now:performance.now(),visibility:document.visibilityState,focused:document.hasFocus(),dpr:devicePixelRatio,inner:[innerWidth,innerHeight],screen:[screen.width,screen.height],touch_points:navigator.maxTouchPoints,ua:navigator.userAgent,
 metrics:parse(d.playerMetrics),startup:parse(d.playerStartup),error:d.playerError??null,playerPerformance:parse(d.playerPerformance),
 nav:nav?nav.toJSON():null,resources:performance.getEntriesByType('resource').map(e=>e.toJSON()),paints:performance.getEntriesByType('paint').map(e=>({name:e.name,start_ms:e.startTime})),
 perf,assets,profile,probe:window.__unoneMeasure??null};})())`;
@@ -500,9 +718,13 @@ export function shiftInput(method,params,offset){
 const TOUCH_POINTS=5;
 
 async function openPage(browser,options){
- const {cdp}=browser,{targetId}=await cdp.send('Target.createTarget',{url:'about:blank'});
- const {sessionId}=await cdp.send('Target.attachToTarget',{targetId,flatten:true});
+ const {cdp}=browser;let targetId,sessionId;
+ // A launched browser gets a new tab; an attached one lends its chosen page (over the browser
+ // WebSocket as a session, or as the page's own WebSocket with no session id).
+ if(browser.target){targetId=browser.target.id;if(!browser.direct)({sessionId}=await cdp.send('Target.attachToTarget',{targetId,flatten:true}));}
+ else{({targetId}=await cdp.send('Target.createTarget',{url:'about:blank'}));({sessionId}=await cdp.send('Target.attachToTarget',{targetId,flatten:true}));}
  const send=(method,params={},timeoutMs)=>cdp.send(method,params,sessionId,timeoutMs);
+ let touchEmulated=false,touchPoints=null;
  const embedded=Boolean(options.url),probe=probeSource({...options,embedded});
  // The page's session plus, when it embeds the player, each out-of-process frame it attaches (a
  // sandboxed iframe usually is one). contexts: default execution contexts by id, with their frame.
@@ -519,7 +741,7 @@ async function openPage(browser,options){
    await to('Page.enable');await to('Runtime.enable');await to('Network.enable');
    await to('Page.addScriptToEvaluateOnNewDocument',{source:probe});
    await to('Emulation.setFocusEmulationEnabled',{enabled:true}).catch(()=>{});
-   if(options.touch)await to('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:TOUCH_POINTS}).catch(()=>{});
+   if(touchEmulated)await to('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:TOUCH_POINTS}).catch(()=>{});
    await to('Target.setAutoAttach',{autoAttach:true,waitForDebuggerOnStart:true,flatten:true});
   }catch{}
   await run();
@@ -552,10 +774,18 @@ async function openPage(browser,options){
   else if(message.method==='Network.loadingFailed'){const row=network.get(key);if(row){row.failed=true;row.error=p.errorText??null;}}
  });
  await send('Page.enable');await send('Runtime.enable');await send('Network.enable');
- await send('Emulation.setDeviceMetricsOverride',{width:options.viewport.width,height:options.viewport.height,deviceScaleFactor:options.dpr,mobile:false});
- await send('Emulation.setFocusEmulationEnabled',{enabled:true});
+ // An attached browser keeps its own viewport (a phone's screen) unless one is asked for.
+ if(options.viewport||options.dpr)await send('Emulation.setDeviceMetricsOverride',{width:options.viewport?.width??0,height:options.viewport?.height??0,deviceScaleFactor:options.dpr??0,mobile:false});
+ if(browser.attached)await send('Emulation.setFocusEmulationEnabled',{enabled:true}).catch(()=>{});
+ else await send('Emulation.setFocusEmulationEnabled',{enabled:true});
  // A scenario with touch steps: the game sees a touch device from its first frame, as on a phone.
- if(options.touch)await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:TOUCH_POINTS});
+ // An attached browser that already has touch points (a phone, an emulator) is left as it is.
+ if(options.touch){
+  if(browser.attached)try{touchPoints=await evaluateIn(null,'navigator.maxTouchPoints',5000);}catch{}
+  if(!(touchPoints>0)){await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:TOUCH_POINTS});touchEmulated=true;}
+ }
+ // Leaving an attached page: blank it (the game stops drawing and playing) and let it go.
+ if(browser.attached)browser.leave.push(async()=>{await send('Page.navigate',{url:'about:blank'},5000).catch(()=>{});if(sessionId)await cdp.send('Target.detachFromTarget',{sessionId},undefined,5000).catch(()=>{});});
  if(options.cpuThrottle!==1)await send('Emulation.setCPUThrottlingRate',{rate:options.cpuThrottle});
  if(options.network)await send('Network.emulateNetworkConditions',{offline:false,latency:options.network.latency_ms,downloadThroughput:options.network.download_kbps*1000/8,uploadThroughput:options.network.upload_kbps*1000/8});
  await send('Page.addScriptToEvaluateOnNewDocument',{source:probe});
@@ -617,7 +847,8 @@ async function openPage(browser,options){
  }
  async function load(url,{origin,keepStorage,milestones,timeoutMs,settleMs,pollMs,frameWindowMs}){
   await send('Page.navigate',{url:'about:blank'});await sleep(100);player=geometry=null;
-  if(!keepStorage)for(const o of new Set([origin,playerOrigin].filter(o=>o&&o!=='null')))await send('Storage.clearDataForOrigin',{origin:o,storageTypes:'local_storage,indexeddb,service_workers,cache_storage'});
+  let storageError=null;
+  if(!keepStorage)for(const o of new Set([origin,playerOrigin].filter(o=>o&&o!=='null')))await send('Storage.clearDataForOrigin',{origin:o,storageTypes:'local_storage,indexeddb,service_workers,cache_storage'}).catch(error=>{if(!browser.attached)throw error;storageError??=String(error.message??error);});
   network.clear();consoleErrors.length=0;collecting=true;
   const readyOrError=new Promise(resolve=>{readyResolve=resolve;});
   const started=Date.now();
@@ -648,9 +879,10 @@ async function openPage(browser,options){
   const waiting=milestones.filter(name=>!outcome.presented.includes(name));
   const error=raw?.error??outcome.error??collectError??(outcome.ready?null:outcome.timedOut?`MEASURE_TIMEOUT: no first presented frame within ${timeoutMs} ms${embedded&&!player?' (no frame of the page runs a Unone player)':''}`:'MEASURE_NOT_READY')
    ??(waiting.length?`MEASURE_MILESTONE_TIMEOUT: ${waiting.join(', ')} not presented within ${timeoutMs} ms${outcome.milestones?'':' (this player publishes no milestones: rebuild the runtime and export with an engine that has api.profile.mark)'}`:null);
-  return {raw,network:[...network.values()],error};
+  return {raw,network:[...network.values()],error,storageError};
  }
- return {load,send:sendTo,evaluate,evaluateTop,playerFrame,close:()=>cdp.send('Target.closeTarget',{targetId}).catch(()=>{})};
+ return {load,send:sendTo,evaluate,evaluateTop,playerFrame,touch:{emulated:touchEmulated,max_touch_points:touchPoints},
+  close:browser.attached?async()=>{}:()=>cdp.send('Target.closeTarget',{targetId}).catch(()=>{})};
 }
 
 // ---------------------------------------------------------------- orchestration
@@ -671,10 +903,11 @@ export function profileMissing(raw,{profiling,embedded}){
 
 async function measureOnce(page,server,options,{kind,index,profiling,milestones=options.milestones,profileLimit=null}){
  const base=options.url??server.url,url=measuredUrl(base,options,profiling,profileLimit);server.take();
- const {raw,network,error}=await page.load(url,{origin:new URL(base).origin,keepStorage:options.keepStorage,milestones,timeoutMs:options.timeoutMs,settleMs:options.settleMs,pollMs:options.pollMs,frameWindowMs:options.frameWindowMs});
+ const {raw,network,error,storageError}=await page.load(url,{origin:new URL(base).origin,keepStorage:options.keepStorage,milestones,timeoutMs:options.timeoutMs,settleMs:options.settleMs,pollMs:options.pollMs,frameWindowMs:options.frameWindowMs});
  // With --url the page's own server sent the player; this tool's server only has the blank control.
  const served=server.take();
  const sample=normalizeLoad(raw,{network,server:options.url?null:served,options,kind,index,profiling,url:options.url?pageWithoutQuery(url):url});
+ if(storageError)sample.page.storage_clear_error=storageError;
  if(options.url)sample.player_frame=await page.playerFrame();
  const failed=error??profileMissing(raw,{profiling,embedded:Boolean(options.url)});
  if(failed){sample.ok=false;sample.error=failed;}
@@ -685,18 +918,25 @@ export async function measure(options,log=message=>process.stderr.write(message+
  const exported=await readExport(path.resolve(options.export),options);
  let scenario=null;
  if(options.scenarioRuns>0){const bytes=await readFile(path.resolve(options.scenario));scenario={file:{name:path.basename(options.scenario),sha256:sha256(bytes)},definition:parseScenario(bytes.toString('utf8'))};}
- const executable=findBrowser(options.browser);
- const server=await startServer(exported.root,{cachePolicy:exported.exported.cache_policy,cacheControl:options.cacheControl,compress:options.compress});
- const runs=[],pairs=[],scenarioRuns=[];let browserInfo=null;
- const conditionsOf=browser=>({browser:{product:browser.version.product,user_agent:browser.version.userAgent,js_version:browser.version.jsVersion,protocol:browser.version.protocolVersion,executable,headless:!options.headed,args:browser.args.filter(arg=>!arg.startsWith('--user-data-dir='))},gpu:browser.gpu});
+ const attaching=Boolean(options.attach||options.adbSocket);
+ const executable=attaching?null:findBrowser(options.browser);
+ const server=await startServer(exported.root,{cachePolicy:exported.exported.cache_policy,cacheControl:options.cacheControl,compress:options.compress,port:options.servePort});
+ const runs=[],pairs=[],scenarioRuns=[];let browserInfo=null,adb=null;
+ const conditionsOf=browser=>({browser:{product:browser.version.product,user_agent:browser.version.userAgent,js_version:browser.version.jsVersion,protocol:browser.version.protocolVersion,
+  executable,headless:attaching?null:!options.headed,args:browser.args?.filter(arg=>!arg.startsWith('--user-data-dir='))??null,...(browser.attached?{attached:browser.attached}:{})},gpu:browser.gpu,
+  ...(attaching?{device:{label:options.deviceLabel,...(adb?{reported:adb.device}:{reported:null,note:'Attached with --attach: this tool did not ask the device what it is; see --device-label.'})}}:{})});
  try{
+  // The device reaches this tool's server on its own 127.0.0.1 through adb reverse.
+  if(options.adbSocket){adb=await adbConnect(options,{serverPort:Number(new URL(server.url).port)});log(`adb: ${adb.via.forward}; ${adb.via.reverse}`);}
+  const endpoint=adb?.endpoint??options.attach;
+  const openBrowser=()=>attaching?attachBrowser(endpoint,options,adb?.via??null):launchBrowser(executable,options);
   for(let i=0;i<options.cold;i++){
    const browser=await launchBrowser(executable,options);browserInfo??=conditionsOf(browser);
    try{const page=await openPage(browser,options);const sample=await measureOnce(page,server,options,{kind:'cold',index:i+1,profiling:false});runs.push(sample);log(`cold ${i+1}/${options.cold}: ${sample.ok?`first submission ${sample.metrics['player.first_successful_submission_ms']} ms`:sample.error}`);}
    finally{await browser.close();}
   }
   if(options.warm+options.profilePairs>0){
-   const browser=await launchBrowser(executable,options);browserInfo??=conditionsOf(browser);
+   const browser=await openBrowser();browserInfo??=conditionsOf(browser);
    try{
     const page=await openPage(browser,options);
     const prime=await measureOnce(page,server,options,{kind:'prime',index:0,profiling:false});
@@ -718,7 +958,7 @@ export async function measure(options,log=message=>process.stderr.write(message+
   for(let i=0;i<scenarioTotal;i++){
    const profiling=i===options.scenarioRuns;
    const milestones=[...new Set([...options.milestones,...(scenario.definition.start_mark?[scenario.definition.start_mark]:[])])];
-   const browser=await launchBrowser(executable,options);browserInfo??=conditionsOf(browser);
+   const browser=await openBrowser();browserInfo??=conditionsOf(browser);
    try{
     const page=await openPage(browser,{...options,touch});
     // The browser's own cadence on an empty page, same browser and viewport, before the game loads.
@@ -729,15 +969,30 @@ export async function measure(options,log=message=>process.stderr.write(message+
     if(!startup.ok)result={ok:false,error:`MEASURE_SCENARIO_NOT_STARTED: ${startup.error}`,phases:[],settled:null,samples:null};
     else{
      log(`scenario ${i+1}/${options.scenarioRuns}: ${scenario.definition.name} started`);
-     const readOs=async()=>{let info;try{info=(await browser.cdp.send('SystemInfo.getProcessInfo')).processInfo;}catch(error){return {supported:false,error:String(error.message??error),processes:[]};}return readProcessMemory(info);};
+     // An attached browser's process ids are its own machine's: reading them here would name unrelated processes.
+     const readOs=attaching?async()=>attachedOsMemory():async()=>{let info;try{info=(await browser.cdp.send('SystemInfo.getProcessInfo')).processInfo;}catch(error){return {supported:false,error:String(error.message??error),processes:[]};}return readProcessMemory(info);};
      result=await runScenario(page,scenario.definition,{readOs,profiling,log:message=>log(`scenario ${i+1}${profiling?' (profiler on)':''}: ${message}`)});
     }
-    scenarioRuns.push({index:i+1,profiling,startup_run:runs.length-1,...(blank?{blank_control:blank}:{}),...result});
+    scenarioRuns.push({index:i+1,profiling,startup_run:runs.length-1,...(touch?{touch:page.touch}:{}),...(blank?{blank_control:blank}:{}),...result});
     log(`scenario ${i+1}/${scenarioTotal}${profiling?' (profiler on, diagnostic)':''}: ${result.ok?'ok':result.error}`);
    }finally{await browser.close();}
   }
- }finally{await server.close();}
+ }finally{await adb?.close();await server.close();}
  return buildReport({options,exported,runs,pairs,browserInfo,scenario,scenarioRuns});
+}
+
+/** OS memory for an attached browser's checkpoints: not read, and why. */
+export function attachedOsMemory(){
+ return {platform:null,source:null,supported:false,processes:[],error:'MEASURE_OS_MEMORY_UNAVAILABLE: the attached browser (--attach, --adb-socket) runs as processes this machine cannot read; the process ids DevTools reports belong to its device'};
+}
+
+/** How the scenario's touch steps reached the game, from what each run's page found. */
+export function touchCondition(scenarioRuns,attached){
+ const touches=scenarioRuns.map(run=>run.touch).filter(Boolean);
+ if(!attached)return `touch emulation with ${TOUCH_POINTS} points from before the game loads (the scenario has touch steps): the game sees a touch device`;
+ if(touches.length&&touches.every(t=>!t.emulated))return `not emulated: the attached browser reports ${[...new Set(touches.map(t=>t.max_touch_points))].join('/')} touch points of its own; touch steps are DevTools touch events dispatched into it, not a finger on its screen`;
+ if(touches.length&&touches.every(t=>t.emulated))return `touch emulation with ${TOUCH_POINTS} points: the attached browser reported no touch points of its own`;
+ return 'mixed or unknown: see scenario.runs[].touch';
 }
 
 const SCENARIO_NOTES=Object.freeze([
@@ -785,28 +1040,33 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   'Profiler-on runs are diagnostics for locating costs; compare profiler-off runs for acceptance.',
   'Emulated network and CPU throttling are not a real device or radio network.',
  ];
+ const attached=Boolean(options.attach||options.adbSocket);
  if(exported.development)notes.push('This export is a development build (--allow-development): its timings are not production timings.');
  if(!foreground)notes.push('At least one run was not foreground and focused for its whole duration; check runs[].foreground before using its timings.');
+ if(attached)notes.push('Attached browser (--attach/--adb-socket): environment.os is the machine that ran this tool, not the measured device; environment.browser.attached and environment.device describe the measured one, and environment.device.label is what the person running it said it is.',
+  'Attached browser: every run is a new document in one long-lived browser process this tool did not start, so there are no cold runs and its caches and heap carry over between runs; scenario os.* metrics are absent because this machine cannot read that device\'s processes.');
  if(scenario)notes.push(...SCENARIO_NOTES);
  return {schema:SCHEMA,created_at:createdAt,tool:{name:'measure-web-export',script:'scripts/measure-web-export.mjs',node:process.version},
   artifact:exported.artifact,engine:exported.engine,execution:{...exported.execution,development:exported.development},
   environment:{...browserInfo,os:{platform:process.platform,release:os.release(),arch:process.arch,cpu:os.cpus()[0]?.model?.trim()??null,logical_cpus:os.cpus().length,memory_bytes:os.totalmem()}},
-  conditions:{viewport:options.viewport,device_pixel_ratio:options.dpr,seed:options.seed,backend_override:options.backend,focus_emulated:true,foreground_all_runs:foreground,
-   network:options.network?{emulated:true,...options.network}:{emulated:false,note:'Loopback server: no network latency or bandwidth limit.'},cpu_throttle:options.cpuThrottle,
+  conditions:{viewport:options.viewport,device_pixel_ratio:options.dpr,viewport_overridden:Boolean(options.viewport||options.dpr),...(options.viewport||options.dpr?{}:{viewport_note:'Not overridden: the attached browser\'s own viewport; runs[].page has its inner size, screen size and device pixel ratio.'}),
+   seed:options.seed,backend_override:options.backend,focus_emulated:true,foreground_all_runs:foreground,
+   network:options.network?{emulated:true,...options.network}:{emulated:false,note:options.adbSocket?'Static server on this machine, reached from the device through adb reverse (the adb transport to the emulator or phone): no radio network, latency or bandwidth limit.':attached?'Static server on this machine; how the attached browser reaches it decides the network path.':'Loopback server: no network latency or bandwidth limit.'},cpu_throttle:options.cpuThrottle,
    server:options.url?{kind:'page served by the caller (--url)',page:pageWithoutQuery(options.url),player:'the frame of the page that runs the export index.html; runs[].player_frame says which',
      note:'This tool served no player file: sizes and cache come from the browser network log, and the page decides caching, compression and whether the export it serves is --export.'}
-    :{kind:'loopback static server',cache_control:options.cacheControl??'export cache_policy',cache_policy:options.cacheControl?null:exported.artifact.cache_policy,etag:true,compression:options.compress,timing_allow_origin:'*'},
-   storage_cleared_between_runs:!options.keepStorage,cold:'new browser process and profile per run (empty HTTP and code caches)',warm:'one browser profile primed by an unreported first load; each run is a new document',
+    :{kind:'loopback static server',cache_control:options.cacheControl??'export cache_policy',cache_policy:options.cacheControl?null:exported.artifact.cache_policy,etag:true,compression:options.compress,timing_allow_origin:'*',...(options.servePort?{port:options.servePort}:{})},
+   storage_cleared_between_runs:!options.keepStorage,cold:attached?'none: an attached browser is one process that stays up':'new browser process and profile per run (empty HTTP and code caches)',
+   warm:attached?'the attached page, primed by an unreported first load; each run is a new document in the same long-lived browser process':'one browser profile primed by an unreported first load; each run is a new document',
    wasm_timing:options.wasmTiming,poll_ms_after_first_submission:options.pollMs,settle_ms:options.settleMs,frame_window_ms:options.frameWindowMs,timeout_ms:options.timeoutMs,milestones:options.milestones},
   clock:{origin:'window.playerBoot',origin_definition:'performance.now() when the export index.html head runs, before any module loads; performance.now() itself counts from navigation start (performance.timeOrigin).',
    unit:'ms',host_clock:'main-thread performance.now(); worker clocks are not mixed in'},
   instrumentation:['Timing wrappers on WebAssembly.instantiateStreaming/instantiate/compileStreaming/compile and FontFace.prototype.load (results unchanged)','longtask PerformanceObserver','DevTools protocol Page/Runtime/Network domains; Performance.getMetrics once per run','one player-accessor poll every '+options.pollMs+' ms between the first submission and the last awaited milestone'],
   coverage,
   summary:{cold:summarize(ok('cold')),warm:summarize(ok('warm')),profiler_pairs:pairDeltas(okPairs)},
-  ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
-   touch_emulation:usesTouch(scenario.definition)?`touch emulation with ${TOUCH_POINTS} points from before the game loads (the scenario has touch steps): the game sees a touch device`:false,
+  ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:attached?'the attached browser and page (--attach/--adb-socket) for every run: nothing restarts between runs':'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
+   touch_emulation:usesTouch(scenario.definition)?touchCondition(scenarioRuns,attached):false,
    frame_windows:{poll_ms:2000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true}) draw and input rows, stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
-   os_memory:process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
+   os_memory:attached?'not read: the attached browser\'s processes are its device\'s, not this machine\'s':process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
    summary:scenarioSummary(scenarioRuns),runs:scenarioRuns}}:{}),
   runs,
   pairs:pairs.map(pair=>({index:pair.index,order:pair.order,off_run:runs.indexOf(pair.off),on_run:runs.indexOf(pair.on)})),

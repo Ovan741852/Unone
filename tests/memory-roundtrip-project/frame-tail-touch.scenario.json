@@ -1,0 +1,50 @@
+{
+  "schema": "unone.web-scenario.v1",
+  "name": "frame-tail-touch",
+  "description": "frame-tail with fingers: the empty screen and city idle as before, the map dragged and pinched by touch (map.panned proves a touch drag landed), the research list dragged by touch instead of the wheel, and the battle. Five 30 s windows after 3 s warmups.",
+  "start_mark": "city.interactive",
+  "phases": [
+    {
+      "name": "empty",
+      "setup": [{"key": "KeyE"}, {"wait_mark": "empty.interactive"}],
+      "loop": [{"wait_ms": 1000}],
+      "window_ms": 30000
+    },
+    {
+      "name": "city-idle",
+      "setup": [{"key": "Escape"}, {"wait_mark": "city.interactive"}],
+      "loop": [{"wait_ms": 1000}],
+      "window_ms": 30000
+    },
+    {
+      "name": "map-touch",
+      "setup": [
+        {"key": "Escape"}, {"wait_mark": "city.interactive"}, {"key": "KeyM"}, {"wait_mark": "map.interactive"},
+        {"drag": {"from": [300, 360], "to": [700, 360], "ms": 400}, "pointer": "touch"}, {"wait_mark": "map.panned"}
+      ],
+      "loop": [
+        {"drag": {"from": [300, 360], "to": [900, 360], "ms": 800}, "pointer": "touch"},
+        {"drag": {"from": [900, 360], "to": [300, 360], "ms": 800}, "pointer": "touch"},
+        {"pinch": {"at": [640, 360], "from": 120, "to": 360, "ms": 500}},
+        {"pinch": {"at": [640, 360], "from": 360, "to": 120, "ms": 500}}
+      ],
+      "window_ms": 30000
+    },
+    {
+      "name": "list-touch",
+      "setup": [{"key": "Escape"}, {"wait_mark": "city.interactive"}, {"key": "KeyL"}, {"wait_mark": "list.interactive"}],
+      "loop": [
+        {"drag": {"from": [380, 560], "to": [380, 160], "ms": 500}, "pointer": "touch"},
+        {"drag": {"from": [380, 160], "to": [380, 560], "ms": 500}, "pointer": "touch"}
+      ],
+      "window_ms": 30000
+    },
+    {
+      "name": "battle",
+      "setup": [{"key": "Escape"}, {"wait_mark": "city.interactive"}, {"key": "KeyF"}, {"wait_mark": "battle.interactive"}],
+      "loop": [{"wait_ms": 1000}],
+      "window_ms": 30000
+    }
+  ],
+  "settle_ms": 0
+}

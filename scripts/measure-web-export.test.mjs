@@ -4,7 +4,8 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,rm,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import {parseArgs,quantiles,summarize,pairDeltas,resourceRow,joinNetwork,startupSteps,normalizeLoad,readExport,startServer,cacheControlFor,browserArgs,probeSource,collectSource,buildReport,shiftInput,profileMissing,pageWithoutQuery,measuredUrl,SCHEMA} from './measure-web-export.mjs';
+import {parseArgs,quantiles,summarize,pairDeltas,resourceRow,joinNetwork,startupSteps,normalizeLoad,readExport,startServer,cacheControlFor,browserArgs,probeSource,collectSource,buildReport,shiftInput,profileMissing,pageWithoutQuery,measuredUrl,SCHEMA,
+ parseAttach,listTargets,pickPageTarget,findAdb,parseDevtoolsSockets,chooseSocket,parseGetprop,parseWebViewProvider,deviceInfo,adbConnect,attachedOsMemory,touchCondition} from './measure-web-export.mjs';
 
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 
@@ -231,4 +232,137 @@ test('a profiler run whose player reports no profiler fails, naming the page whe
  assert.equal(profileMissing(null,{profiling:true,embedded:true}),null,'a failed load reports its own error');
  assert.match(profileMissing({profile:null},{profiling:true,embedded:true}),/MEASURE_PROFILE_NOT_ENABLED: .*pass \?unone_profile/);
  assert.doesNotMatch(profileMissing({profile:null},{profiling:true,embedded:false}),/page must/);
+});
+
+test('--attach takes over a running browser: nothing cold, the device viewport, no launch flags',()=>{
+ const options=parseArgs(['--export','e','--output','r.json','--attach','http://127.0.0.1:9222']);
+ assert.deepEqual(options.attach,{http:'http://127.0.0.1:9222/',ws:null,kind:null,targetId:null});
+ assert.equal(options.cold,0,'an attached browser has no cold runs');assert.equal(options.warm,5);
+ assert.equal(options.viewport,null,'the device keeps its own viewport');assert.equal(options.dpr,null);
+ const forced=parseArgs(['--export','e','--output','r.json','--attach','http://127.0.0.1:9222','--viewport','926x428','--dpr','3','--attach-target','game']);
+ assert.deepEqual(forced.viewport,{width:926,height:428});assert.equal(forced.dpr,3);assert.equal(forced.attachTarget,'game');
+ const adb=parseArgs(['--export','e','--output','r.json','--adb-socket','package:dev.koncrate.viewer.test','--adb-serial','127.0.0.1:5555','--scenario','s.json']);
+ assert.equal(adb.adbSocket,'package:dev.koncrate.viewer.test');assert.equal(adb.cold,0);assert.equal(adb.scenarioRuns,1);
+ assert.equal(parseArgs(['--export','e','--output','r','--serve-port','8765']).servePort,8765);
+ for(const [argv,pattern] of [
+  [['--attach','http://127.0.0.1:9222','--cold','2'],/a cold run is a new browser process/],
+  [['--attach','http://127.0.0.1:9222','--browser','x.exe'],/already running/],
+  [['--attach','http://127.0.0.1:9222','--headed'],/already running/],
+  [['--attach-target','x'],/picks a page of an attached browser/],
+  [['--attach','http://127.0.0.1:9222','--adb-socket','auto'],/not both/],
+  [['--adb-serial','emulator-5554'],/only go with --adb-socket/],
+  [['--adb-socket','rm -rf'],/--adb-socket is auto/],
+  [['--serve-port','80'],/--serve-port/],
+  [['--device-label','a\u0007b'],/--device-label/],
+ ])assert.throws(()=>parseArgs(['--export','e','--output','r',...argv]),pattern,argv.join(' '));
+ assert.equal(parseArgs(['--export','e','--output','r','--attach','http://127.0.0.1:9222','--cold','0']).cold,0,'an explicit --cold 0 is fine');
+});
+
+test('an attach endpoint is the DevTools HTTP root or a browser or page WebSocket',()=>{
+ assert.deepEqual(parseAttach('http://127.0.0.1:9222/json/version'),{http:'http://127.0.0.1:9222/',ws:null,kind:null,targetId:null});
+ assert.deepEqual(parseAttach('ws://127.0.0.1:9222/devtools/browser/abc'),{http:'http://127.0.0.1:9222/',ws:'ws://127.0.0.1:9222/devtools/browser/abc',kind:'browser',targetId:null});
+ assert.deepEqual(parseAttach('ws://127.0.0.1:9222/devtools/browser'),{http:'http://127.0.0.1:9222/',ws:'ws://127.0.0.1:9222/devtools/browser',kind:'browser',targetId:null},'Android names its browser endpoint without an id');
+ assert.equal(parseAttach('ws://localhost:9222/devtools/page/E1F2').targetId,'E1F2');
+ for(const value of ['localhost:9222','https://example.com/','http://127.0.0.1:9222/somewhere','ws://127.0.0.1:9222/devtools/page','ws://127.0.0.1:9222/other','http://127.0.0.1:9222/?x=1'])
+  assert.throws(()=>parseAttach(value),/MEASURE_ARG_INVALID: --attach/,value);
+});
+
+test('the page to take over: the --attach-target match, the only page, or the only visible WebView',()=>{
+ const list=listTargets([
+  {id:'A',type:'page',url:'https://appassets.androidplatform.net/workspace/index.html?session=secret',title:'Workspace',description:'{"attached":true,"empty":false,"height":1980,"screenX":0,"screenY":0,"visible":false,"width":1080}',webSocketDebuggerUrl:'ws://127.0.0.1:9222/devtools/page/A'},
+  {id:'B',type:'page',url:'http://127.0.0.1:8765/?seed=42',title:'Unone',description:'{"attached":true,"visible":true,"width":1080,"height":1980}'},
+  {id:'W',type:'service_worker',url:'http://127.0.0.1:8765/sw.js',title:'',description:''}]);
+ assert.deepEqual(list[0].size,{width:1080,height:1980});assert.equal(list[0].visible,false);assert.equal(list[1].webSocketDebuggerUrl,null,'a page another client holds has no WebSocket');
+ assert.equal(list[2].visible,null,'no description, no claim');
+ const visible=pickPageTarget(list);assert.equal(visible.id,'B');assert.equal(visible.selected_by,'the only visible page');
+ assert.equal(pickPageTarget(list,'Workspace').id,'A');assert.equal(pickPageTarget(list,'Workspace').selected_by,'--attach-target');
+ assert.equal(pickPageTarget([{id:'only',type:'page',url:'about:blank',title:''}]).selected_by,'the only page');
+ const both=list.map(t=>({...t,visible:null}));
+ assert.throws(()=>pickPageTarget(both),error=>/MEASURE_ATTACH_AMBIGUOUS: 2 pages/.test(error.message)&&!error.message.includes('secret'),'pages are listed without their query');
+ assert.throws(()=>pickPageTarget(list,'nothing'),/MEASURE_ATTACH_NO_PAGE: no page's URL or title contains "nothing"/);
+ assert.throws(()=>pickPageTarget([list[2]]),/MEASURE_ATTACH_NO_PAGE: the attached browser shows no page/);
+});
+
+const PROC_NET_UNIX=['Num       RefCount Protocol Flags    Type St Inode Path',
+ '0000000000000000: 00000002 00000000 00010000 0001 01 23456 @webview_devtools_remote_4321',
+ '0000000000000000: 00000003 00000000 00000000 0001 03 23460 @webview_devtools_remote_4321',
+ '0000000000000000: 00000002 00000000 00010000 0001 01 23457 @chrome_devtools_remote',
+ '0000000000000000: 00000002 00000000 00010000 0001 01 1234 /dev/socket/zygote',
+ '0000000000000000: 00000002 00000000 00010000 0001 01 1235 @jdwp-control',''].join('\n');
+
+test('DevTools sockets on the device and which one --adb-socket means',()=>{
+ const sockets=parseDevtoolsSockets(PROC_NET_UNIX.replace(/\n/g,'\r\n'));
+ assert.deepEqual(sockets,[{socket:'webview_devtools_remote_4321',kind:'webview',pid:4321},{socket:'chrome_devtools_remote',kind:'chrome',pid:null}]);
+ const packageOf=new Map([[4321,'dev.koncrate.viewer.test']]);
+ assert.equal(chooseSocket(sockets,'package:dev.koncrate.viewer.test',{pids:[4321],packageOf}).socket,'webview_devtools_remote_4321');
+ assert.equal(chooseSocket(sockets,'chrome_devtools_remote').kind,'chrome');
+ assert.equal(chooseSocket([sockets[0]],'auto').pid,4321);
+ assert.throws(()=>chooseSocket(sockets,'auto',{packageOf}),/MEASURE_ADB_AMBIGUOUS: 2 DevTools sockets \(webview_devtools_remote_4321 \(dev.koncrate.viewer.test\), chrome_devtools_remote\)/);
+ assert.throws(()=>chooseSocket(sockets,'package:com.example.game',{pids:[999]}),/com.example.game is running but has no WebView DevTools socket: its WebView debugging is off/);
+ assert.throws(()=>chooseSocket(sockets,'package:com.example.game',{pids:[]}),/com.example.game is not running/);
+ assert.throws(()=>chooseSocket([],'auto'),/no app on the device has a DevTools socket open \(sockets: none\)/);
+ assert.throws(()=>chooseSocket(sockets,'webview_devtools_remote_1'),/there is no socket named webview_devtools_remote_1/);
+});
+
+test('the device record keeps build properties and emulator markers, never serials or identifiers',()=>{
+ const props=parseGetprop(['[ro.product.manufacturer]: [samsung]','[ro.product.model]: [SM-S942N]','[ro.build.version.release]: [16]','[ro.build.version.sdk]: [36]','[ro.build.type]: [user]',
+  '[ro.serialno]: [R5CT0000000]','[ro.boot.qemu]: [1]','[ro.kernel.qemu]: [0]','[ro.hardware]: [ranchu]','[ro.bst.instance.id]: [889889d4]','[ro.bst.version]: [16.0.0.29]','[persist.sys.timezone]: [Asia/Taipei]'].join('\r\n'));
+ assert.equal(props['ro.product.model'],'SM-S942N');
+ const device=deviceInfo(props);
+ assert.equal(device.manufacturer,'samsung');assert.equal(device.android_release,'16');assert.equal(device.sdk,'36');assert.equal(device.build_type,'user');assert.equal(device.brand,null);
+ assert.equal(device.emulator,true,'a phone model with emulator properties is an emulator');
+ assert.deepEqual(device.emulator_markers.map(m=>m.key).sort(),['ro.boot.qemu','ro.bst.instance.id','ro.bst.version','ro.hardware']);
+ assert.equal(device.emulator_markers.find(m=>m.key==='ro.bst.instance.id').value,'(identifier not recorded)');
+ assert(!JSON.stringify(device).includes('R5CT0000000'),'no serial number');assert(!JSON.stringify(device).includes('Taipei'));
+ assert.equal(deviceInfo(parseGetprop('[ro.product.model]: [Pixel 9]\n[ro.hardware]: [tensor]')).emulator,null,'no marker is unknown, not "a phone"');
+ assert.deepEqual(parseWebViewProvider('Current WebView package (name, version): (com.google.android.webview, 141.0.7390.122)\nPreferred'),{package:'com.google.android.webview',version:'141.0.7390.122'});
+ assert.equal(parseWebViewProvider('nothing here'),null);
+});
+
+test('adb: forwards the WebView socket, lets the device reach the server, and removes both afterwards',async()=>{
+ const calls=[],out={'get-state':'device\n','shell cat /proc/net/unix':PROC_NET_UNIX,'shell cat /proc/4321/cmdline':'dev.koncrate.viewer.test\0','shell pidof dev.koncrate.viewer.test':'4321\n',
+  'shell getprop':'[ro.product.model]: [SM-S942N]\n[ro.bst.version]: [16.0.0.29]\n','shell dumpsys webviewupdate':'Current WebView package (name, version): (com.google.android.webview, 141.0.1)'};
+ const run=async(command,args)=>{calls.push([command,...args].join(' '));const key=args.slice(2).join(' ');if(key in out)return out[key];if(/^(forward|reverse)/.test(key))return '';throw Error(`unexpected ${key}`);};
+ const session=await adbConnect({adb:null,adbSerial:'127.0.0.1:5555',adbSocket:'package:dev.koncrate.viewer.test'},{serverPort:8765,run,freePort:async()=>61234});
+ assert.deepEqual(session.endpoint,{http:'http://127.0.0.1:61234/',ws:null,kind:null,targetId:null});
+ assert.equal(session.via.package,'dev.koncrate.viewer.test');assert.equal(session.via.socket,'webview_devtools_remote_4321');
+ assert.equal(session.device.model,'SM-S942N');assert.equal(session.device.emulator,true);assert.deepEqual(session.device.webview_provider,{package:'com.google.android.webview',version:'141.0.1'});
+ assert(calls.every(call=>call.includes(' -s 127.0.0.1:5555 ')),'every call names the device');
+ assert(calls.some(call=>call.endsWith(' forward tcp:61234 localabstract:webview_devtools_remote_4321')));
+ assert(calls.some(call=>call.endsWith(' reverse tcp:8765 tcp:8765')));
+ calls.length=0;await session.close();
+ assert.deepEqual(calls.map(call=>call.split(' -s 127.0.0.1:5555 ')[1]),['reverse --remove tcp:8765','forward --remove tcp:61234']);
+ calls.length=0;await session.close();assert.equal(calls.length,0,'closing twice removes nothing twice');
+ // A failed reverse takes the forward back with it.
+ const failing=async(command,args)=>{if(args[2]==='reverse'&&args[3]!=='--remove'){calls.push(args.slice(2).join(' '));throw Error('exit 1: error: closed');}return run(command,args);};
+ calls.length=0;await assert.rejects(adbConnect({adbSerial:'127.0.0.1:5555',adbSocket:'webview_devtools_remote_4321'},{serverPort:8765,run:failing,freePort:async()=>61235}),/MEASURE_ADB_FAILED: adb reverse tcp:8765 tcp:8765: exit 1: error: closed/);
+ assert(calls.at(-1).endsWith(' forward --remove tcp:61235'));
+ await assert.rejects(adbConnect({adbSocket:'auto'},{run:async()=>'unauthorized\n'}),/MEASURE_ADB_NO_DEVICE: adb get-state says "unauthorized"/);
+ await assert.rejects(adbConnect({adbSocket:'auto'},{run:async()=>{throw Object.assign(Error('spawn adb ENOENT'),{code:'ENOENT'});}}),/MEASURE_ADB_MISSING: .*--adb <path to adb>/);
+});
+
+test('adb is found from --adb, UNONE_ADB_PATH or an SDK, else PATH',()=>{
+ const sdkAdb=path.join('C:/sdk','platform-tools','adb.exe');
+ assert.equal(findAdb(null,{env:{ANDROID_HOME:'C:/sdk'},exists:file=>file===sdkAdb,platform:'win32',home:'C:/home'}),sdkAdb);
+ assert.equal(findAdb(null,{env:{UNONE_ADB_PATH:'D:/bs/HD-Adb.exe'},exists:()=>true,platform:'win32',home:'C:/home'}),'D:/bs/HD-Adb.exe');
+ assert.equal(findAdb(null,{env:{},exists:()=>false,platform:'linux',home:'/home/u'}),'adb');
+ assert.throws(()=>findAdb('Z:/missing/adb.exe',{exists:()=>false}),/MEASURE_ADB_MISSING: Z:\/missing\/adb.exe does not exist/);
+});
+
+test('report: an attached run says what was measured where, without host OS memory or cold runs',()=>{
+ const options=parseArgs(['--export','e','--output','r','--adb-socket','auto','--scenario','s.json','--device-label','BlueStacks emulator on this PC (not a phone, not 4G)']);
+ const exported={development:false,artifact:{cache_policy:null},engine:{},execution:{}};
+ const browserInfo={browser:{product:'Chrome/141',attached:{endpoint:'http://127.0.0.1:61234/',via:{tool:'adb'}}},device:{label:options.deviceLabel,reported:{model:'SM-S942N',emulator:true}}};
+ const scenarioRuns=[{index:1,profiling:false,ok:true,touch:{emulated:false,max_touch_points:10},phases:[]}];
+ const report=buildReport({options,exported,runs:[],pairs:[],browserInfo,scenario:{file:{},definition:{sample_ms:250,settle_ms:0,phases:[{kind:'frames',name:'f',setup:[],loop:[{kind:'pinch'}]}]}},scenarioRuns,createdAt:'2026-11-15T00:00:00Z'});
+ assert.equal(report.environment.device.label,'BlueStacks emulator on this PC (not a phone, not 4G)');assert.equal(report.environment.device.reported.emulator,true);
+ assert.equal(report.conditions.viewport,null);assert.equal(report.conditions.viewport_overridden,false);assert.match(report.conditions.viewport_note,/own viewport/);
+ assert.match(report.conditions.cold,/^none/);assert.equal(report.coverage.cold.requested,0);
+ assert.match(report.conditions.network.note,/adb reverse/);
+ assert.match(report.scenario.conditions.os_memory,/^not read/);assert.match(report.scenario.conditions.browser,/attached browser/);
+ assert.match(report.scenario.conditions.touch_emulation,/^not emulated: the attached browser reports 10 touch points/);
+ assert(report.notes.some(note=>/environment\.os is the machine that ran this tool/.test(note)));
+ assert.equal(attachedOsMemory().supported,false);assert.match(attachedOsMemory().error,/^MEASURE_OS_MEMORY_UNAVAILABLE/);
+ assert.match(touchCondition([{touch:{emulated:true,max_touch_points:0}}],true),/reported no touch points/);
+ assert.match(touchCondition([],false),/touch emulation with 5 points from before the game loads/);
 });

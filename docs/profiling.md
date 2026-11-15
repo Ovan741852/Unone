@@ -84,6 +84,9 @@ reading everything once.
 | `--keep-storage`, `--allow-development`, `--browser PATH`, `--headed` | Keep saves between runs, measure a development export (marked in the report), choose the browser. |
 | `--scenario FILE`, `--scenario-runs N`, `--scenario-profile`, `--no-blank-control` | Drive the game through a scripted scenario: memory per round ([memory over round trips](#memory-over-round-trips---scenario)) and frame windows under load ([frame windows](#frame-time-under-load-frame-windows)); add a profiler-on diagnostic run; skip the blank-page control. |
 | `--url PAGE` | Open a page you serve instead of serving `--export`; the player may sit in an iframe of it ([a player inside your page](#a-player-inside-your-page---url)). |
+| `--attach URL`, `--attach-target TEXT`, `--device-label TEXT` | Take over one page of a browser that is already running, through its DevTools endpoint, instead of launching one ([a browser that is already running](#a-browser-that-is-already-running---attach)). |
+| `--adb-socket auto\|package:NAME\|SOCKET`, `--adb-serial SERIAL`, `--adb PATH` | Find, forward and attach to an Android WebView or Chrome over adb ([Android over adb](#android-webview-or-chrome-over-adb---adb-socket)). |
+| `--serve-port PORT` | Fix this tool's server port (default: any free one). |
 
 | Report section | Contents |
 |---|---|
@@ -152,6 +155,79 @@ node scripts/measure-web-export.mjs --export <export dir> --url http://127.0.0.1
   and size in the page. The report names the page without its query.
 - With the player in its own process, `os.largest_renderer` is usually that
   process, but this is the largest renderer, not necessarily the player's.
+
+### A browser that is already running: `--attach`
+
+On a phone or an emulator the player runs in a browser this tool cannot launch:
+an app's WebView, or Chrome for Android. `--attach` takes over one page of a
+running browser through its DevTools endpoint instead of launching Edge:
+
+```powershell
+node scripts/measure-web-export.mjs --export <export> --output webview.json --attach http://127.0.0.1:9222 `
+  --scenario tests/memory-roundtrip-project/frame-tail-touch.scenario.json --device-label "what this device is"
+```
+
+- The endpoint is the DevTools HTTP root (`http://HOST:PORT`, what
+  `adb forward` gives) or a WebSocket (`ws://…/devtools/browser/…` or
+  `ws://…/devtools/page/<id>`). The page is the one whose URL or title contains
+  `--attach-target TEXT`; without it, the only page, else the only visible one
+  (a WebView says which are shown). Anything else fails with
+  `MEASURE_ATTACH_AMBIGUOUS` or `MEASURE_ATTACH_NO_PAGE` and lists the pages; a
+  page another DevTools client holds fails with `MEASURE_ATTACH_BUSY`.
+- The tool navigates that page to its own server, so the browser must reach
+  `http://127.0.0.1:PORT` on this machine (`adb reverse` does that, below) and
+  an app WebView must allow cleartext HTTP to it. `--url` works here too.
+- No cold runs: `--cold` is refused, because the browser is one process this
+  tool did not start. Warm and scenario runs each load a new document in it, so
+  its caches and heap carry over from run to run (`conditions.cold`,
+  `conditions.warm`, `scenario.conditions.browser` say so).
+- The viewport, DPR and touch points are the device's own. `--viewport` and
+  `--dpr` override them only when given (`conditions.viewport_overridden`);
+  `runs[].page` records inner size, screen size, DPR and `max_touch_points`.
+- Touch steps go in as DevTools touch events. A browser that has touch points
+  of its own is not emulated; `scenario.conditions.touch_emulation` and
+  `scenario.runs[].touch` say which happened. These are events dispatched into
+  the browser, not a finger on the screen.
+- OS process memory is not read. DevTools reports the device's process ids,
+  and reading those on this machine would name unrelated processes, so scenario
+  checkpoints carry `os.supported: false` with `MEASURE_OS_MEMORY_UNAVAILABLE`.
+  Player memory owners, the JS heap and DOM counters still come from DevTools.
+- The browser is never closed. At the end the page is navigated to
+  `about:blank` (the game stops drawing and playing) and the tool disconnects.
+- `environment.os` is still the machine that ran the tool.
+  `environment.browser.attached` names the endpoint and the page found there;
+  `environment.device.label` is what `--device-label` said the device is, and
+  `environment.device.reported` what adb read from it.
+
+#### Android WebView or Chrome over adb: `--adb-socket`
+
+```powershell
+node scripts/measure-web-export.mjs --export <export> --output webview.json `
+  --adb-socket package:<app package> --adb-serial 127.0.0.1:5555 `
+  --scenario tests/memory-roundtrip-project/frame-tail-touch.scenario.json `
+  --device-label "BlueStacks emulator on this PC (not a phone, not 4G)"
+```
+
+- Chromium on Android listens on an abstract socket per browser: an app's
+  WebView on `webview_devtools_remote_<pid>` once the app calls
+  `WebView.setWebContentsDebuggingEnabled(true)` (debug and test builds),
+  Chrome on `chrome_devtools_remote`. `--adb-socket auto` takes the only one,
+  `package:<name>` that app's WebView, or name the socket itself.
+- The tool runs `adb forward tcp:<free port> localabstract:<socket>` and
+  `adb reverse tcp:<server port> tcp:<server port>` (the device's own
+  `127.0.0.1` then reaches this tool's server), reads a few build properties
+  with `getprop` (maker, model, Android version, ABI, build type and any
+  emulator property; no serials or identifiers) and the WebView provider from
+  `dumpsys webviewupdate`, and removes both forwards when it is done.
+- adb comes from `--adb`, `UNONE_ADB_PATH`, an Android SDK's platform-tools, or
+  PATH. BlueStacks ships one as `HD-Adb.exe` in its install folder; turn on its
+  Android Debug Bridge in BlueStacks settings and the device is `127.0.0.1:5555`.
+- `environment.device.reported.emulator` is true only when an emulator
+  property is present, and null otherwise: an emulator can report a phone's
+  maker and model (BlueStacks does), so a missing marker does not mean a phone.
+- An emulator's CPU and GPU are this PC's and the network path is adb reverse,
+  not a radio network: label the report with `--device-label` and do not read
+  it as a phone or 4G measurement.
 
 ### Memory over round trips: `--scenario`
 
