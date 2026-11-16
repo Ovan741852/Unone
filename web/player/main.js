@@ -24,7 +24,7 @@ import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '..
 import {createPlayerPerformanceFeed} from '../shared/player-performance-feed.mjs';
 import {playerMemorySnapshot} from '../shared/player-memory.mjs';
 import {serializedSavePayload} from '../shared/save-publication.mjs';
-import {playerErrorPolicy,createRecoveryReporter} from '../shared/player-errors.mjs';
+import {playerErrorPolicy,createRecoveryReporter,createPlayerErrorChannel} from '../shared/player-errors.mjs';
 import {createStartupScreen} from '../shared/startup-screen.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
@@ -59,7 +59,9 @@ let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=
 let saved,key,projectPayload;
 // What the engine may recover from (presentation error_policy); null is strict.
 let errorPolicy=null;
-const recovery=createRecoveryReporter({target:document.body});
+let playerPhase='startup';
+const errors=createPlayerErrorChannel({target:window,context:()=>({phase:playerPhase,backend:backend?.kind})});
+const recovery=createRecoveryReporter({target:document.body,onError:record=>errors.recovered(record)});
 const playerCompletion=createPlayerCompletionMetrics();
 // Input-to-presentation timing (unonePlayerPerformance input_latency): only the time of the
 // earliest input not yet consumed by a tick. Passive capture listeners never change routing.
@@ -98,7 +100,7 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
+function fail(error){errors.fatal(error);profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
  textInputs.setExternalInput(Boolean(physicalProfile));
@@ -229,7 +231,7 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){errors.reset();const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.start('present');
@@ -260,7 +262,7 @@ async function finishStartup(presentation,kind){
   onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();audio?.setVisibility(visible);}});
  /* DEVELOPER_CONNECT */
  if(performanceFeed)publishPerformanceFeed();
- scheduler.start();
+ playerPhase='runtime';scheduler.start();
 
  // A pixel ratio change with no new window size (another monitor) fires no resize event: watch the
  // current resolution, and watch again for the next one after each change.
@@ -385,6 +387,6 @@ window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('resize',()=>viewportChanged());
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
+window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();errors.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

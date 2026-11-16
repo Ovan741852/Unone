@@ -448,3 +448,5 @@ Omission retains host raster. Explicit declarations on Native/WebGPU/custom
 are unsupported. See [the full profile and lifecycle contract](projected-raster.md).
 Export/preflight eligibility is not target GPU validation; current epoch/status
 metrics must be checked, rather than reusing a historical READY after restore.
+
+Handled errors also leave the player through the [public outgoing error contract](player-errors.md). Hosts can subscribe without a telemetry or platform dependency.
