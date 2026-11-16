@@ -452,7 +452,11 @@ metrics must be checked, rather than reusing a historical READY after restore.
 Handled errors also leave the player through the [public outgoing error contract](player-errors.md). Hosts can subscribe without a telemetry or platform dependency.
 # Trusted custom renderer actions
 
-The official player passes `options.hostActions` to a declared custom renderer.
+The official player passes `options.hostActions` (version 1) to a declared custom renderer.
+Import `requireRendererHostActions` from `web/shared/renderer-selection.mjs`
+to validate the version and complete interface before initializing an adapter.
+Its exported JSDoc type is `RendererHostActions`. Calls return an acceptance
+boolean; a retired/aborted renderer returns false and cannot inject stale input.
 Use `setHeld(action, boolean)` for persistent state and atomic bit packets,
 `pulse(action)` for one fixed-tick presses, or `transition(action, boolean)` for
 ordered semantic button transitions. Names must be 1–128 characters without

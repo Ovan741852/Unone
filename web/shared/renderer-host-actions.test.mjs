@@ -1,6 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createHostInput,createRendererHostActions} from './host-input.js';
 import {physicalKeyAction} from './player-input.js';
+import {requireRendererHostActions} from './renderer-selection.mjs';
+test('versioned capability guard rejects incompatible SDKs at startup and retired renderers cannot inject',()=>{
+ let active=true;const input=createHostInput(),api=createRendererHostActions(input,{isActive:()=>active});assert.equal(api.version,1);assert.equal(requireRendererHostActions({hostActions:api}),api);
+ for(const options of [{},{hostActions:{version:2,setHeld(){}}}])assert.throws(()=>requireRendererHostActions(options),/RENDERER_HOST_ACTIONS_UNSUPPORTED/);
+ active=false;assert.equal(api.setHeld('LatePacket',true),false);assert.equal(api.pulse('LateShot'),false);assert.deepEqual(input.consumeFrame().actions,{});
+});
 test('custom renderer bit packets reach one fixed tick without impersonating physical keys',()=>{
  const input=createHostInput(),actions=createRendererHostActions(input);
  assert.equal(physicalKeyAction('HPPacketBit4'),null);

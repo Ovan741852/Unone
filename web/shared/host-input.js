@@ -222,16 +222,21 @@ export { DEFAULT_POINTER };
 // KeyboardEvent.code is reserved for physical keys and intentionally rejects
 // arbitrary names. Held packet bits are committed together before the tick;
 // button press edges use pulse rather than a DOM key event.
-export function createRendererHostActions(input) {
+/**
+ * @typedef {Readonly<{version:1, setHeld:(action:string,down:boolean)=>boolean,
+ * pulse:(action:string)=>boolean, transition:(action:string,down:boolean)=>boolean}>} RendererHostActions
+ */
+export function createRendererHostActions(input, {isActive = () => true} = {}) {
   function validate(action) {
     if (typeof action !== 'string' || action.length < 1 || action.length > 128 || /[\u0000-\u001f\u007f]/.test(action)) {
       throw new TypeError('HOST_ACTION_INVALID: expected a bounded action name');
     }
   }
   return Object.freeze({
-    setHeld(action, down) { validate(action); if (typeof down !== 'boolean') throw new TypeError('HOST_ACTION_INVALID: down must be boolean'); input.setHeld(action, down); },
-    pulse(action) { validate(action); input.queueAction(action); },
-    transition(action, down) { validate(action); input.queueActionTransition(action, down); },
+    version: 1,
+    setHeld(action, down) { validate(action); if (typeof down !== 'boolean') throw new TypeError('HOST_ACTION_INVALID: down must be boolean'); if(!isActive())return false;input.setHeld(action, down);return true; },
+    pulse(action) { validate(action);if(!isActive())return false;input.queueAction(action);return true; },
+    transition(action, down) { validate(action);if(typeof down!=='boolean')throw new TypeError('HOST_ACTION_INVALID: down must be boolean');if(!isActive())return false;input.queueActionTransition(action, down);return true; },
   });
 }
 import {createActionQueue,createScreenButtonQueue} from './physical-input.js';

@@ -5,6 +5,14 @@ import {parseProjectedRaster} from '../renderer/projected-raster-policy.js';
 import {parseFrameProfile} from '../renderer/projected-frame-policy.js';
 import {parseTextureCache} from '../renderer/texture-cache-policy.js';
 import {parseUiTextAtlasSize} from '../renderer/ui-text-atlas-policy.js';
+/** @returns {import('./host-input.js').RendererHostActions} */
+export function requireRendererHostActions(options) {
+  const api=options?.hostActions;
+  if(api?.version!==1||['setHeld','pulse','transition'].some(name=>typeof api[name]!=='function')) {
+    throw Error('RENDERER_HOST_ACTIONS_UNSUPPORTED: this adapter requires hostActions v1; upgrade the complete SDK');
+  }
+  return api;
+}
 export function normalizeAntialias(value) {
   if (value === undefined) return true;
   if (typeof value !== 'boolean') throw Error('ANTIALIAS_INVALID: expected an optional boolean');
