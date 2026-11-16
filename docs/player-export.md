@@ -450,3 +450,16 @@ Export/preflight eligibility is not target GPU validation; current epoch/status
 metrics must be checked, rather than reusing a historical READY after restore.
 
 Handled errors also leave the player through the [public outgoing error contract](player-errors.md). Hosts can subscribe without a telemetry or platform dependency.
+# Trusted custom renderer actions
+
+The official player passes `options.hostActions` to a declared custom renderer.
+Use `setHeld(action, boolean)` for persistent state and atomic bit packets,
+`pulse(action)` for one fixed-tick presses, or `transition(action, boolean)` for
+ordered semantic button transitions. Names must be 1–128 characters without
+control characters. This trusted capability feeds the ordinary host input and
+works with main/worker backends; pause/blur/restart still release host input.
+It is not exposed as an untrusted global or cross-origin message interface.
+Do not dispatch made-up `KeyboardEvent.code` values: the physical keyboard path
+accepts real key codes only. Custom adapters should reassert owned holds after
+focus/resume where their own state remains active.
+

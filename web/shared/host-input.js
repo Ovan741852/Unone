@@ -217,4 +217,21 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
 }
 
 export { DEFAULT_POINTER };
+
+// Trusted custom renderers send named game actions through this capability.
+// KeyboardEvent.code is reserved for physical keys and intentionally rejects
+// arbitrary names. Held packet bits are committed together before the tick;
+// button press edges use pulse rather than a DOM key event.
+export function createRendererHostActions(input) {
+  function validate(action) {
+    if (typeof action !== 'string' || action.length < 1 || action.length > 128 || /[\u0000-\u001f\u007f]/.test(action)) {
+      throw new TypeError('HOST_ACTION_INVALID: expected a bounded action name');
+    }
+  }
+  return Object.freeze({
+    setHeld(action, down) { validate(action); if (typeof down !== 'boolean') throw new TypeError('HOST_ACTION_INVALID: down must be boolean'); input.setHeld(action, down); },
+    pulse(action) { validate(action); input.queueAction(action); },
+    transition(action, down) { validate(action); input.queueActionTransition(action, down); },
+  });
+}
 import {createActionQueue,createScreenButtonQueue} from './physical-input.js';
