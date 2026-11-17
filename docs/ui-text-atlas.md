@@ -19,12 +19,20 @@ Pages use RGBA without mipmaps. A 4096 page estimates 64 MiB and a 2048 page
 estimates 16 MiB, but up to four pages can remain allocated. A text block that
 does not fit or cannot be packed gets a dedicated texture. Multiple dedicated
 textures can coexist, so smaller pages do not guarantee lower total use.
+After a page has had no references from the current UI composition for at
+least 30 seconds, the renderer may retire it and its cached text slots; it
+retires at most one page per second. Active pages and their text are not moved
+or repacked for this idle policy. A window reopened within the grace period
+can reuse its previous slots, while a later reopening may rasterize its text
+again. Text spread over multiple active pages still needs those pages; this
+policy does not promise a particular page count or immediate driver release.
 Text larger than the device's maximum texture size remains subject to the
 renderer/device limit. The canvas and GPU implementation can retain additional
 copies and use padding; these figures are not process or driver measurements.
 
 The player performance report exposes `ui.gpu.atlas_page_size_requested`,
-`atlas_page_size`, `atlas_pages`, `atlas_reserved_bytes_estimate`,
+`atlas_page_size`, `atlas_pages`, `atlas_active_pages`, `atlas_retired_pages`,
+`atlas_idle_grace_ms`, `atlas_reserved_bytes_estimate`,
 `dedicated_text_textures`, `dedicated_text_bytes_estimate`, and
 `atlas_compactions`. The byte estimates describe RGBA allocation sizes rather
 than physical GPU residency. For a comparison, record atlas plus dedicated

@@ -5,7 +5,7 @@ import {createGpuUi} from './ui-gpu.js';
 import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
 
 // Actual presenter/Three objects, with no GPU, DOM, raster-quality or GC claim.
-async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64}={}){
+async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64,atlasNow}={}){
  const images=new Map(),leases=[],closed=[],surfaces=[];let scene=null,renders=0,failPaint=false;
  const catalog=createAssetCatalog({assets:['a','b'].map(id=>({id,kind:'texture2d',source:id+'.png'}))});
  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source,loadImage:async id=>({id,width:2,height:2,close(){closed.push(id);}}),unusedMaxBytes:0,unusedMaxEntries:0});
@@ -15,12 +15,12 @@ async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64}={}){
  const renderer={autoClear:true,capabilities:{maxTextureSize},getDrawingBufferSize:v=>v.set(bufferSize,bufferSize),getPixelRatio:()=>1,
   getContext:()=>gl,state:{bindTexture(){}},properties:{get:texture=>({__webglTexture:texture})},getScissorTest:()=>false,getRenderTarget:()=>null,getViewport:v=>v.set(0,0,64,64),
   setRenderTarget(){},setScissorTest(){},setViewport(){},initTexture(){},render(value){scene=value;renders++;}};
- const ui=createGpuUi(THREE,renderer,{createSurface,uiTextAtlasSize});
+ const ui=createGpuUi(THREE,renderer,{createSurface,uiTextAtlasSize,...(atlasNow?{atlasNow}:{})});
  const image=id=>({kind:'image',id,asset:id,fit:'stretch',rect:{x:0,y:0,width:10,height:10}});
  // 16px wide against an 8px atlas forces the real dedicated-text path.
  const text=(value='old')=>({kind:'text',id:'label',text:value,rect:{x:0,y:25,width:25,height:25}});
- const draw=nodes=>ui.draw({nodes,nodeKeys:nodes.map(n=>JSON.stringify(n)),batches:new Map(),images,scale:1,changed:true,identity:'fixed-font',hasText:n=>n.kind==='text',paintText(){if(failPaint)throw Error('PAINT_FAILED');},imageError(_node,_index,error){throw error;}});
- return {ui,renderer,broker,images,leases,closed,surfaces,image,text,draw,get renders(){return renders;},get meshes(){return scene?.children??[];},failPaint(){failPaint=true;},
+ const draw=(nodes,changed=true)=>ui.draw({nodes,nodeKeys:nodes.map(n=>JSON.stringify(n)),batches:new Map(),images,scale:1,changed,identity:'fixed-font',hasText:n=>n.kind==='text',paintText(){if(failPaint)throw Error('PAINT_FAILED');},imageError(_node,_index,error){throw error;}});
+ return {ui,renderer,broker,images,leases,closed,surfaces,image,text,draw,get renders(){return renders;},get meshes(){return scene?.children??[];},failPaint(){failPaint=true;},allowPaint(){failPaint=false;},
   dispose(){ui.dispose();for(const lease of leases)lease.release();broker.dispose();}};
 }
 const sampler=mesh=>mesh.material.uniforms.uiTexture.value;
@@ -113,6 +113,59 @@ test('hidden atlas borrowers detach without evicting cached text; context loss r
   assert.equal(sampler(meshes[2]),page);assert.equal(f.ui.metrics().atlas_pages,1);assert.equal(f.ui.metrics().dedicated_text_textures,0);
   f.draw([]);for(const mesh of meshes)assert.notEqual(sampler(mesh),page);assert.equal(disposed(),0);assert.equal(f.ui.metrics().text_slots,2);
   f.ui.contextLost();assert.equal(disposed(),1);assert.equal(f.ui.metrics().atlas_pages,0);f.draw([f.text('restored')]);assert.notEqual(sampler(f.meshes[0]),page);assert.equal(f.ui.metrics().atlas_pages,1);
+ }finally{f.dispose();}
+});
+
+test('idle atlas pages retire individually after grace while quick return reuses cached text',async()=>{
+ let clock=0;const f=await fixture({maxTextureSize:256,uiTextAtlasSize:256,bufferSize:4096,atlasNow:()=>clock});try{
+  const t=id=>({kind:'text',id,text:id,rect:{x:0,y:0,width:4.8,height:4.8}}),a=t('town'),b=t('bag'),c=t('status');
+  f.draw([a,b,c]);const meshes=[...f.meshes],textures=meshes.map(sampler),retired=textures.map(watch);
+  let m=f.ui.metrics();assert.equal(m.atlas_pages,3);assert.equal(m.atlas_active_pages,3);
+  const rasters=m.text_rasters,compactions=m.atlas_compactions;
+  f.draw([a]);m=f.ui.metrics();assert.equal(m.atlas_active_pages,1);assert.equal(m.text_slots,3);
+  clock=10000;f.draw([a,b]);assert.equal(sampler(f.meshes[1]),textures[1]);assert.equal(f.ui.metrics().text_rasters,rasters);
+  f.draw([a]);clock=29999;f.draw([a],false);assert.equal(f.ui.metrics().atlas_pages,3);
+  clock=31000;f.draw([a],false);m=f.ui.metrics();assert.equal(m.atlas_pages,2);assert.equal(m.atlas_retired_pages,1);
+  assert.deepEqual(retired.map(read=>read()),[0,0,1]);assert.equal(m.text_slots,2);assert.equal(sampler(f.meshes[0]),textures[0]);
+  f.draw([a,b]);assert.equal(sampler(f.meshes[1]),textures[1]);assert.equal(f.ui.metrics().text_rasters,rasters);
+  f.draw([a]);clock=60999;f.draw([a],false);assert.equal(f.ui.metrics().atlas_pages,2);
+  clock=62000;f.draw([a],false);m=f.ui.metrics();assert.equal(m.atlas_pages,1);assert.equal(m.atlas_retired_pages,2);
+  assert.equal(m.atlas_compactions,compactions);assert.equal(m.text_rasters,rasters);assert.deepEqual(retired.map(read=>read()),[0,1,1]);
+  f.draw([a,b]);assert.equal(f.ui.metrics().atlas_pages,2);assert.equal(f.ui.metrics().text_rasters,rasters+1);
+ }finally{f.dispose();}
+});
+
+test('idle retirement keeps active page slots and context loss does not retire twice',async()=>{
+ let clock=0;const f=await fixture({maxTextureSize:256,uiTextAtlasSize:256,bufferSize:4096,atlasNow:()=>clock});try{
+  const t=id=>({kind:'text',id,text:id,rect:{x:0,y:0,width:4.8,height:4.8}}),a=t('a'),b=t('b'),c=t('c');
+  f.draw([a,b,c]);const textures=f.meshes.map(sampler),retired=textures.map(watch);f.draw([a]);
+  clock=30001;f.draw([a],false);assert.equal(f.ui.metrics().atlas_pages,2);
+  assert.equal(f.ui.metrics().atlas_retired_pages,1,'only one page is retired per sweep');
+  f.ui.contextLost();assert.deepEqual(retired.map(read=>read()),[1,1,1]);
+  f.draw([a]);assert.equal(f.ui.metrics().atlas_pages,1);assert.notEqual(sampler(f.meshes[0]),textures[0]);
+ }finally{f.dispose();}
+});
+
+test('a failed rebuild cannot age or retire pages from the previous complete composition',async()=>{
+ let clock=0;const f=await fixture({maxTextureSize:256,uiTextAtlasSize:256,bufferSize:4096,atlasNow:()=>clock});try{
+  const t=(id,text=id)=>({kind:'text',id,text,rect:{x:0,y:0,width:4.8,height:4.8}}),a=t('a'),b=t('b');
+  f.draw([a,b]);const textures=f.meshes.map(sampler),retired=textures.map(watch);f.failPaint();
+  assert.throws(()=>f.draw([t('a','changed')]),/PAINT_FAILED/);
+  clock=60000;assert.throws(()=>f.draw([t('a','changed')]),/PAINT_FAILED/);
+  assert.equal(f.ui.metrics().atlas_pages,2);assert.deepEqual(retired.map(read=>read()),[0,0]);
+  f.allowPaint();f.draw([a]);assert.equal(f.ui.metrics().atlas_pages,2,'idle grace starts after a successful rebuild');
+  clock=90001;f.draw([a],false);assert.equal(f.ui.metrics().atlas_pages,1);assert.deepEqual(retired.map(read=>read()),[0,1]);
+ }finally{f.dispose();}
+});
+
+test('idle page disposal failure leaves the active page usable and fences reentry',async()=>{
+ let clock=0;const f=await fixture({maxTextureSize:256,uiTextAtlasSize:256,bufferSize:4096,atlasNow:()=>clock});try{
+  const t=id=>({kind:'text',id,text:id,rect:{x:0,y:0,width:4.8,height:4.8}}),a=t('a'),b=t('b');
+  f.draw([a,b]);const active=sampler(f.meshes[0]),idle=sampler(f.meshes[1]);f.draw([a]);
+  idle.addEventListener('dispose',()=>{assert.throws(()=>f.ui.contextLost(),/UI_IMAGE_RESOURCES_RETIRING/);throw Error('TEXTURE_DISPOSE_FAILED');});
+  clock=30001;assert.throws(()=>f.draw([a],false),/TEXTURE_DISPOSE_FAILED/);
+  assert.equal(f.ui.metrics().atlas_pages,1);assert.equal(sampler(f.meshes[0]),active);
+  assert.equal(f.draw([a],false).skipped,false,'retirement guard is released after failure');
  }finally{f.dispose();}
 });
 

@@ -53,7 +53,7 @@ const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placehold
 // quantum is much smaller than a visible antialiasing phase change.
 const rasterPhaseKey=value=>Math.round(value*1e7)/1e7;
 
-export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize}={}){
+export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize,atlasNow=()=>performance.now()}={}){
  const requestedAtlasSize=parseUiTextAtlasSize(uiTextAtlasSize);
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
  const quadPositions=new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),quadIndex=new Uint16Array([0,1,2,0,2,3]);
@@ -61,6 +61,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
  let rebuilds=0,rasters=0,uploads=0,compactions=0,draws=0,lastRegions=0,lastMs=null,wasted=0,stale=true;
+ const atlasIdleMs=30000,atlasSweepMs=1000;let nextAtlasSweep=0,atlasRetired=0;
  const sharedImages=!!(textureCache&&getImageAssets&&getAssetCatalog),imageOwners=new Map();
  let imageBroker=null,imageCatalog=null,imageSpecs=null,imageEpoch=0,retiring=false,drawing=false,imageActive=0,imageCached=0,imageBytes=0,imageBuilds=0,imageHits=0,imageIdleHits=0,imageRetired=0;
  function attemptAll(values,fn){let failure;for(const value of values)try{fn(value);}catch(error){failure??=error;}if(failure)throw failure;}
@@ -123,7 +124,23 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  function newPage(){
   const blank=surface(atlasSize,atlasSize),texture=configure(new THREE.Texture(blank));texture.needsUpdate=true;
   renderer.initTexture(texture);blank.width=blank.height=1;// GPU storage stays; the blank CPU canvas is released.
-  const page={texture,shelves:[],top:0};pages.push(page);return page;
+  const page={texture,shelves:[],top:0,idleSince:null};pages.push(page);return page;
+ }
+ // Keep cached slots for quick window toggles. Never repack or touch a page
+ // used by the last successful composition; retire at most one wholly idle
+ // page per sweep after the grace period. Slots on other pages stay stable.
+ function retireIdleAtlasPage(){
+  if(stale||retiring||disposed)return;
+  const now=atlasNow();if(now<nextAtlasSweep)return;nextAtlasSweep=now+atlasSweepMs;
+  const index=pages.findIndex(page=>page.idleSince!==null&&now-page.idleSince>=atlasIdleMs&&
+   ![...(textureRuns.get(page.texture)??[])].some(run=>run.mesh.visible));
+  if(index<0)return;
+  const page=pages[index];retiring=true;
+  try{
+   pages.splice(index,1);
+   for(const [key,slot]of slots)if(slot.page===page)slots.delete(key);
+   atlasRetired++;retireTexture(page.texture);
+  }finally{retiring=false;}
  }
  function fit(page,w,h){
   for(const s of page.shelves)if(h<=s.height&&s.height<=h*1.5+8&&s.x+w<=atlasSize){const x=s.x;s.x+=w+1;return {page,x,y:s.y};}
@@ -276,9 +293,10 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   for(const [image,texture]of imageTextures)if(!usedImages.has(image)){imageTextures.delete(image);retireTexture(texture);}
   // Pack quads in painter order; a draw call ends only where the texture changes.
   if(data.length<prims.length*STRIDE)data=new Float32Array(capacityFor(prims.length)*STRIDE);
-  const groups=[];let group=null;count=0;
+  const groups=[],activeAtlasPages=new Set();let group=null;count=0;
   for(const p of prims){
    const texture=p.text?p.text.texture:p.texture;if(p.text&&!texture)continue;
+   if(p.text&&p.text.slot?.page?.texture===texture)activeAtlasPages.add(p.text.slot.page);
    if(!group||(texture&&group.texture&&texture!==group.texture)){group={texture:null,start:count,count:0};groups.push(group);}
    if(texture)group.texture=texture;
    const uv=p.text?p.text.uv:p.uv,o=count*STRIDE,c=p.color,b=p.border,box=p.box,clip=p.clip;
@@ -291,6 +309,8 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    r.geometry.instanceCount=g.count;bindRun(r,g.texture??white);r.mesh.visible=g.count>0;});
   for(let i=groups.length;i<runs.length;i++){bindRun(runs[i],white);runs[i].mesh.visible=false;}
   for(const owner of imageOwners.values())if(owner.active&&!usedImages.has(owner))imageActiveState(owner,false);
+  const atlasTime=atlasNow();
+  for(const page of pages){if(activeAtlasPages.has(page))page.idleSince=null;else if(page.idleSince===null)page.idleSince=atlasTime;}
   drawRuns=groups.length;lastRegions=prims.length;lastMs=performance.now()-started;rebuilds++;stale=false;
   }catch(error){stale=true;try{attemptAll(created,retireImage);}catch{}try{attemptAll(promoted,owner=>{if(!owner.retired)imageActiveState(owner,false);});}catch{}throw error;}
  }
@@ -300,7 +320,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   retiring=true;let failure;try{for(const r of oldRuns){bindRun(r,white);scene.remove(r.mesh);}textureRuns.clear();
    try{clearImageOwners();}catch(error){failure??=error;}
    for(const [values,fn]of [[oldRuns,r=>{try{r.geometry.dispose();}finally{r.mesh.material.dispose();}}],[oldPages,p=>retireTexture(p.texture)],[oldDedicated,p=>retireTexture(p.texture)],[oldImages,retireTexture]])try{attemptAll(values,fn);}catch(error){failure??=error;}
-  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=atlasSize=0;stale=true;}if(failure)throw failure;
+  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=atlasSize=0;nextAtlasSweep=0;stale=true;}if(failure)throw failure;
  }
  return {
   // Drawing-buffer pixels the UI lays out against, and the CSS->device scale.
@@ -323,14 +343,16 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
     catch(error){if(!isSuspectedContextLoss(error))throw error;try{renderer.resetState?.();}catch{/* the skip stands */}return {skipped:true,regions:0};}
     finally{renderer.setRenderTarget(target);renderer.setViewport(viewport);renderer.setScissorTest(test);renderer.autoClear=autoClear;}
    }
-   return disposed||epoch!==imageEpoch?{skipped:true,regions:0}:{skipped:false,regions:lastRegions,cpu_ms:lastMs};
+   if(disposed||epoch!==imageEpoch)return {skipped:true,regions:0};
+   retireIdleAtlasPage();
+   return {skipped:false,regions:lastRegions,cpu_ms:lastMs};
    }finally{drawing=false;}
   },
   contextLost(){clear();},
   clear,
    dispose(){if(disposed)return;if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');disposed=true;try{clear();}finally{white.dispose();}},
   metrics:()=>({backend:'three.js',quads:count,draw_calls:drawRuns,rebuilds,last_rebuild_ms:lastMs,text_rasters:rasters,atlas_uploads:uploads,atlas_compactions:compactions,
-    atlas_pages:pages.length,atlas_page_size:atlasSize,atlas_page_size_requested:requestedAtlasSize,atlas_reserved_bytes_estimate:pages.length*atlasSize*atlasSize*4,text_slots:slots.size,dedicated_text_textures:dedicated.size,dedicated_text_bytes_estimate:[...dedicated.values()].reduce((sum,own)=>sum+own.bytes,0),image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
+    atlas_pages:pages.length,atlas_active_pages:pages.filter(page=>page.idleSince===null).length,atlas_retired_pages:atlasRetired,atlas_idle_grace_ms:atlasIdleMs,atlas_page_size:atlasSize,atlas_page_size_requested:requestedAtlasSize,atlas_reserved_bytes_estimate:pages.length*atlasSize*atlasSize*4,text_slots:slots.size,dedicated_text_textures:dedicated.size,dedicated_text_bytes_estimate:[...dedicated.values()].reduce((sum,own)=>sum+own.bytes,0),image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
     image_cache_scope:sharedImages?'shared_texture_cache_with_broker_lease':'borrowed_immediate_no_shared_cache',image_active_owners:imageActive,image_cached_owners:imageCached,image_bytes_estimate:imageBytes,image_texture_builds:imageBuilds,image_cache_hits:imageHits,image_idle_hits:imageIdleHits,image_owners_retired:imageRetired,image_epoch:imageEpoch}),
  };
 }
