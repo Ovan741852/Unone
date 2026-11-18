@@ -652,6 +652,12 @@ export async function createThreeRenderer(canvas, options = {}) {
       record.discarded=true;textureRecords.delete(id);textureCache.untrackOwner(id);
       const lease=record.imageLease;record.imageLease=null;record.texture?.dispose();record.texture=null;lease?.release();count++;
     }
+    // Mesh records can cache a dependent image failure after their JSON was
+    // already valid. Retire only those failed records so a retry can reuse
+    // their fresh texture; unrelated meshes and sprite leases remain owned.
+    for(const [id,record]of meshAssets)if(retryableWorldImageError(record.error)){
+      record.discarded=true;meshAssets.delete(id);record.geometry?.dispose();record.material?.dispose();record.litMaterial?.dispose();count++;
+    }
     return count;
   }
   function clearTextures() {

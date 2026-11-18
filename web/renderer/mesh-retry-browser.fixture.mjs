@@ -1,9 +1,9 @@
 import {createThreeRenderer} from './three.js';
 import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
 window.testMeshRetry=async mode=>{
- const assets=[{id:'sprite',kind:'texture2d',source:'sprite.png',encoding:{decoder:'image',format:'png',mime:'image/png'}},{id:'mesh',kind:'mesh3d',source:'qa/model.mesh.json'}];
+ const assets=[{id:'sprite',kind:'texture2d',source:'sprite.png',encoding:{decoder:'image',format:'png',mime:'image/png'}},{id:'texture',kind:'texture2d',source:'texture.png',encoding:{decoder:'image',format:'png',mime:'image/png'}},{id:'mesh',kind:'mesh3d',source:'qa/model.mesh.json'}];
  const catalog=createAssetCatalog({assets}),image=document.createElement('canvas');image.width=image.height=4;
- const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source,inspectImage:async()=>({format:'png',width:4,height:4}),loadImage:async()=>image});
+ let textureLoads=0;const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source,inspectImage:async()=>({format:'png',width:4,height:4}),loadImage:async(_url,{asset})=>{if(mode==='image'&&asset.id==='texture'&&textureLoads++===0)throw Error('IMAGE_ASSET_LOAD_FAILED: texture');return image;}});
  const canvas=document.createElement('canvas');canvas.style.cssText='width:320px;height:180px';document.body.append(canvas);
  const r=await createThreeRenderer(canvas,{kind:'three-webgl',threeModuleUrl:'/web/vendor/three/three.player.min.js',antialias:false,frameTransaction:true,webglDefaultDepth:false,getAssetManifest:()=>({assets}),getAssetCatalog:()=>catalog,getImageAssets:()=>broker,loadAssetUrl:async asset=>'/'+asset.source+'?case='+mode});
  const tx=r.frameTransaction,assert=(x,message)=>{if(!x)throw Error(message);};
@@ -13,8 +13,8 @@ window.testMeshRetry=async mode=>{
   const snapshot={world:{camera:{view_height:5,zoom:1},camera3d:{position:{x:2,y:2,z:8},target:{x:0,y:0,z:0},fov_degrees:50},entities:{mesh:{id:'mesh',mesh3d:{asset:'mesh',visible:true},transform3d:{position:{x:0,y:0,z:0},rotation:{x:0,y:0,z:0},scale:{x:1,y:1,z:1}}}}}};
   function startDraw(){const begin=tx.begin(snapshot,{allowResize:true});assert(begin.status==='completed','begin '+JSON.stringify(begin));const result=r.draw(snapshot);if(result.status!=='completed')tx.abort();return result;}
   assert(startDraw().status==='skipped','first fetch should be pending');let error=null;try{await r.ready();}catch(e){error=String(e.message??e)}
-  assert(mode==='invalid'?!error?.includes('MESH_ASSET_FETCH_FAILED'):error?.includes('MESH_ASSET_FETCH_FAILED'),'incorrect error classification '+error);
-  const retired=r.retryFailedMeshAssets();assert(retired===(mode==='invalid'?0:1),'incorrect retry eligibility '+retired);assert(sprite.state==='ready'&&sprite.epoch===prior.epoch,'retry altered sprite handle or epoch');
+  assert(mode==='invalid'?!error?.includes('MESH_ASSET_FETCH_FAILED'):mode==='image'?error?.includes('IMAGE_ASSET_LOAD_FAILED'):error?.includes('MESH_ASSET_FETCH_FAILED'),'incorrect error classification '+error);
+  const retired=mode==='image'?r.retryFailedWorldImages():r.retryFailedMeshAssets();assert(retired===(mode==='invalid'?0:mode==='image'?2:1),'incorrect retry eligibility '+retired);assert(sprite.state==='ready'&&sprite.epoch===prior.epoch,'retry altered sprite handle or epoch');
   if(mode==='invalid')return {error,retired,sprite:{before:prior,after:{epoch:sprite.epoch,state:sprite.state,metrics:r.metrics().sprite_resources}}};
   assert(startDraw().status==='skipped','fresh fetch should be pending');await r.ready();assert(startDraw().status==='completed','retried mesh draw');assert(tx.commit().status==='completed','commit');
   const after=r.metrics().sprite_resources;assert(sprite.state==='ready'&&sprite.epoch===prior.epoch,'successful mesh altered sprite handle');assert(after.builds===prior.metrics.builds&&after.retired===prior.metrics.retired,'successful sprite was rebuilt');
