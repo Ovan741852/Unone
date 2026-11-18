@@ -539,7 +539,8 @@ pub(crate) fn preflight(
     let (_, settings, assets, mut files) = crate::export::content(project)?;
     // Validate the same presentation payload and packaged font paths that the
     // exporters append, while still keeping preflight read-only.
-    crate::export::append_presentation(project, &mut files)?;
+    let presentation=crate::export::append_presentation(project, &mut files)?;
+    crate::hosts::atomic_frame_assets_gate(&presentation,&assets)?;
     if selection.host.family == "native-wgpu" {
         crate::export::native_shader_gate(&files)?;
         crate::hosts::native_wgpu_export_gate(

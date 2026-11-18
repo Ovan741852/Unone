@@ -257,6 +257,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         );
     }
     let mut presentation = append_presentation(project, &mut files)?;
+    crate::hosts::atomic_frame_assets_gate(&presentation,&assets)?;
     let error_policy = resolve_error_policy(&mut presentation, &mut files, development)?;
     let font_subset = match game_text {
         Some(text) => crate::font_subset::apply(project, &presentation.ui, text, &mut files, development)?,

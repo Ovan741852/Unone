@@ -60,7 +60,10 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
 }});
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null,networkHost=null;
 let atomicFrame=null,atomicWait=null,atomicClock=null,atomicPreflight=null,atomicUiSnapshot=null,atomicPendingReady=null,atomicHostPaused=false;
-let atomicDrawing=false,atomicRedraw=false;
+let atomicDrawing=false,atomicRedraw=false,atomicRetryReady=true,atomicRetryTimer=null,atomicLastOutcome=null,atomicUnsubscribe=null;
+function wakeAtomic(){atomicRetryReady=true;}
+function armAtomicRetry(){atomicRetryReady=false;if(atomicRetryTimer===null)atomicRetryTimer=setTimeout(()=>{atomicRetryTimer=null;wakeAtomic();},250);}
+function clearAtomicRetry(){if(atomicRetryTimer!==null)clearTimeout(atomicRetryTimer);atomicRetryTimer=null;atomicRetryReady=true;}
 function requestUiDraw(){if(!snapshot||!renderer||startupAbort.signal.aborted)return;if(atomicDrawing){atomicRedraw=true;return;}draw();}
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
@@ -107,7 +110,7 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function disposeAtomic(){atomicFrame?.dispose();atomicFrame=null;atomicWait?.dispose();atomicWait=null;atomicPreflight?.dispose();atomicPreflight=null;atomicClock?.dispose();atomicClock=null;}
+function disposeAtomic(){clearAtomicRetry();atomicUnsubscribe?.();atomicUnsubscribe=null;canvas.removeEventListener('webglcontextrestored',wakeAtomic);atomicFrame?.dispose();atomicFrame=null;atomicWait?.dispose();atomicWait=null;atomicPreflight?.dispose();atomicPreflight=null;atomicClock?.dispose();atomicClock=null;}
 function fail(error){errors.fatal(error);profiler?.publish();disposePerformanceFeed();startupAbort.abort();disposeAtomic();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
@@ -184,7 +187,9 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
  if(pd)profiler.mark(pd,'interpolation_sample');
  if(atomicFrame){
-  let outcome;atomicDrawing=true;try{outcome=atomicFrame.present({snapshot,display:display.snapshot});}finally{atomicDrawing=false;if(atomicRedraw){atomicRedraw=false;queueMicrotask(requestUiDraw);}}
+  let outcome;
+  if(atomicWait?.isActive()&&!atomicRetryReady&&drawSource==='scheduler_raf'&&atomicLastOutcome)outcome=atomicLastOutcome;
+  else{atomicDrawing=true;try{outcome=atomicFrame.present({snapshot,display:display.snapshot});atomicLastOutcome=outcome;}finally{atomicDrawing=false;if(atomicRedraw){atomicRedraw=false;queueMicrotask(requestUiDraw);}}}
   renderMs=performance.now()-began;
   const combined=playerCompletion.finish(outcome,outcome,outcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
   if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
@@ -327,13 +332,13 @@ function configureAtomicFrame(settings){
  if(settings.mode!=='pause_offline'||!settings.labels||!renderer.frameTransaction)throw Error('ATOMIC_FRAME_WAIT_UNSUPPORTED: official single-sample transactional renderer required');
  if(snapshot.world.network_commands?.length)throw Error('ATOMIC_FRAME_WAIT_NETWORK_UNSUPPORTED');
  atomicClock=createPresentationWaitClock({eligible:!document.hidden&&!atomicHostPaused});
- const redraw=()=>{if(snapshot&&renderer&&!startupAbort.signal.aborted)queueMicrotask(()=>{if(snapshot&&renderer&&!startupAbort.signal.aborted)try{draw();}catch(error){fail(error);}});};
+ const redraw=()=>{wakeAtomic();if(snapshot&&renderer&&!startupAbort.signal.aborted)queueMicrotask(()=>{if(snapshot&&renderer&&!startupAbort.signal.aborted)try{draw();}catch(error){fail(error);}});};
  atomicPreflight=createUiAssetPreflight({acquire:id=>imageAssets.acquire(id),onChange:redraw});
  atomicWait=createUiFrameWait({document,window,labels:settings.labels,isComposing:()=>textInputs.report().composing,
   onEnter(){orderedRouter?.setPaused(true);scheduler?.pause();atomicClock.begin();input.releaseNonText();uiRenderer.releaseAll();uiScroll.cancel();releaseLegacyPointer();},
-  onLeave(){atomicClock.end();if(!frozen&&!atomicHostPaused){orderedRouter?.setPaused(false);scheduler?.resume();}},
+  onLeave(){clearAtomicRetry();atomicClock.end();if(!frozen&&!atomicHostPaused){orderedRouter?.setPaused(false);scheduler?.resume();}},
   onRetry(){atomicPreflight.release();uiRenderer.invalidateAssets();cursorHost.invalidateAssets();redraw();},onReload(){location.reload();}});
- atomicFrame=createAtomicFramePresenter({transaction:renderer.frameTransaction,
+ atomicFrame=createAtomicFramePresenter({transaction:renderer.frameTransaction,transactionSnapshot:value=>value.display,
   prepare(value){
    atomicPendingReady=null;
    const source=uiPassHidden(value.snapshot)?{...value.snapshot,world:{...value.snapshot.world,ui:null}}:value.snapshot;
@@ -346,9 +351,10 @@ function configureAtomicFrame(settings){
   commitRoute:token=>uiRenderer.commitRoute(token),abortRoute:token=>uiRenderer.abortRoute(token),
   commitHosts(value){const source=uiPassHidden(value.snapshot)?{...value.snapshot,world:{...value.snapshot.world,ui:null}}:value.snapshot;
    textInputs.draw(uiScroll.draw(source));const cursor=cursorHost.update(value.snapshot.world.ui_cursor);if(cursor.status!=='completed')throw Error('ATOMIC_FRAME_CURSOR_COMMIT_FAILED');},
-  enterWait:outcome=>atomicWait.show(outcome?.reason?.includes('diagnostic')?'error':'pending',outcome?.reason),
-  recover:outcome=>atomicWait.show('error',outcome?.reason),leaveWait:()=>atomicWait.hide(),
+  enterWait:outcome=>{atomicWait.show(outcome?.reason?.includes('diagnostic')?'error':'pending',outcome?.reason);armAtomicRetry();},
+  recover:outcome=>{atomicWait.show('error',outcome?.reason);armAtomicRetry();},leaveWait:()=>atomicWait.hide(),
  });
+ atomicUnsubscribe=renderer.subscribePresentation?.(wakeAtomic)??null;canvas.addEventListener('webglcontextrestored',wakeAtomic);
 }
 async function start(){
  startupScreen.start('content');

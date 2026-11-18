@@ -402,6 +402,10 @@ impl PresentationSettings {
     pub fn validate_renderer(&self) -> Result<()> {
         if let Some(wait)=&self.atomic_frame_wait {
             ensure!(self.renderer_mode==RendererMode::Official && self.antialias==Some(false),"ATOMIC_FRAME_WAIT_OFFICIAL_SINGLE_SAMPLE_REQUIRED");
+            ensure!(self.webgl_desynchronized!=Some(true),"ATOMIC_FRAME_WAIT_DESYNCHRONIZED_UNSUPPORTED");
+            ensure!(self.projected_raster!=Some(projected_raster::ProjectedRasterPolicy::UpperLeftChecked),"ATOMIC_FRAME_WAIT_CHECKED_RASTER_UNSUPPORTED");
+            ensure!(self.projected_material_profile.is_none(),"ATOMIC_FRAME_WAIT_MATERIAL_PROFILE_UNSUPPORTED");
+            ensure!(self.render_extensions.is_empty(),"ATOMIC_FRAME_WAIT_RENDER_EXTENSIONS_UNSUPPORTED");
             for label in [&wait.labels.loading,&wait.labels.delayed,&wait.labels.error,&wait.labels.retry,&wait.labels.reload] {
                 ensure!(!label.trim().is_empty() && label.chars().count()<=120,"ATOMIC_FRAME_WAIT_LABEL_INVALID");
             }
@@ -452,6 +456,14 @@ impl PresentationSettings {
         }
         Ok(())
     }
+}
+
+pub fn atomic_frame_assets_gate(presentation:&PresentationSettings,assets:&Value)->Result<()> {
+    if presentation.atomic_frame_wait.is_some() {
+        ensure!(!assets["assets"].as_array().is_some_and(|all|all.iter().any(|asset|asset["kind"]=="effekseer")),
+            "ATOMIC_FRAME_WAIT_EFFEKSEER_UNSUPPORTED: raw effects do not participate in whole-frame transactions");
+    }
+    Ok(())
 }
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
@@ -712,6 +724,13 @@ mod tests {
         assert!(serde_json::from_value::<PresentationSettings>(invalid).unwrap().validate_renderer().is_err());
         let mut msaa=candidate;msaa["antialias"]=json!(true);
         assert!(serde_json::from_value::<PresentationSettings>(msaa).unwrap().validate_renderer().is_err());
+        for (key,bad) in [("webgl_desynchronized",json!(true)),("projected_raster",json!("upper_left_checked")),
+          ("render_extensions",json!([{"kind":"test.pass","module":"pass.js"}]))] {
+            let mut incompatible=serde_json::to_value(&value).unwrap();incompatible[key]=bad;
+            assert!(serde_json::from_value::<PresentationSettings>(incompatible).unwrap().validate_renderer().is_err(),"{key}");
+        }
+        assert!(atomic_frame_assets_gate(&value,&json!({"assets":[{"kind":"effekseer"}]})).is_err());
+        assert!(atomic_frame_assets_gate(&plain,&json!({"assets":[{"kind":"effekseer"}]})).is_ok());
     }
     use super::*;
 
