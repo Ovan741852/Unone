@@ -8,6 +8,36 @@ function fixture(){
 }
 const plan=(revision,ids)=>({revision,resources:ids.map(id=>({id,asset:'texture://shared'}))});
 const ready=(id,epoch=1)=>({id,state:'ready',epoch,bytes:4096});
+test('retry reprepares only failed callers with the same plan IDs and preserves successful leases',()=>{
+ const calls=[],releases=[],updates={resources:[],appearances:[]},states=new Map([['1','error'],['2','ready']]);
+ const renderer={spriteResources:{prepare(spec){calls.push(spec.id);const state=states.get(spec.id);return{state,readyPromise:Promise.resolve(),release(){releases.push(spec.id);}};},
+  takeUpdates(){return {resources:updates.resources.splice(0),appearances:updates.appearances.splice(0)};},reset(){throw Error('must not reset');}}};
+ const host=createSpriteResourceHost(renderer);host.acceptSnapshot({world:{entities:{hero:{sprite_appearance:{resource:'1',revision:1}}}},sprite_resource_plan:plan(1,['1','2'])});
+ updates.resources.push({...ready('1',2),state:'error',bytes:0,error:'network'},ready('2',2));
+ updates.appearances.push({entity:'hero',state:'error',epoch:2,revision:1});host.collect();assert.equal(host.hasFailed(),true);states.set('1','ready');
+ assert.equal(host.retryFailed(),1);assert.equal(host.hasFailed(),false);assert.deepEqual(calls,['1','2','1']);assert.deepEqual(releases,['1']);
+ updates.resources.push(ready('1',2));updates.appearances.push({entity:'hero',state:'submitted',epoch:2,revision:1});
+ const packet=host.leaseInput({actions:{}});assert.deepEqual(packet.frame.presentation_resources.resources.map(v=>[v.id,v.state,v.epoch]),[['2','ready',2],['1','ready',2]]);
+ assert.deepEqual(packet.frame.presentation_resources.appearances.map(v=>v.state),['submitted']);host.commitInput(packet.token);
+ assert.equal(host.leaseInput({actions:{}}).token,null);assert.equal(host.report().revision,1);assert.equal(host.report().leases,2);
+});
+test('repeated failed caller retry stays pending and never fabricates ready',()=>{
+ const updates={resources:[],appearances:[]};let prepared=0,released=0;
+ const host=createSpriteResourceHost({spriteResources:{prepare(spec){prepared++;updates.resources.push({id:spec.id,state:'error',epoch:3,bytes:0,error:'network'});
+  return{state:'error',readyPromise:Promise.reject(Error('network')),release(){released++;}};},takeUpdates(){return{resources:updates.resources.splice(0),appearances:updates.appearances.splice(0)};},reset(){}}});
+ host.acceptSnapshot({world:{entities:{}},sprite_resource_plan:plan(1,['1'])});assert.equal(host.retryFailed(),1);assert.equal(host.retryFailed(),1);
+ const packet=host.leaseInput({actions:{}});assert.equal(packet.frame.presentation_resources.resources[0].state,'error');assert.equal(prepared,3);assert.equal(released,2);host.close();
+});
+test('synchronous prepare failure remains retryable without regressing the resource epoch',()=>{
+ const updates={resources:[],appearances:[]};let attempt=0;
+ const host=createSpriteResourceHost({spriteResources:{prepare(spec){attempt++;
+  if(attempt===2)throw Error('transient prepare failure');
+  const state=attempt===1?'error':'ready';updates.resources.push({id:spec.id,state,epoch:3,bytes:state==='ready'?8:0});
+  return{state,epoch:3,readyPromise:Promise.resolve(),release(){}};},takeUpdates(){return{resources:updates.resources.splice(0),appearances:updates.appearances.splice(0)};},reset(){}}});
+ host.acceptSnapshot({world:{entities:{}},sprite_resource_plan:plan(1,['1'])});assert.equal(host.retryFailed(),0);
+ const failed=host.leaseInput({actions:{}});assert.equal(failed.frame.presentation_resources.resources[0].epoch,3);assert.equal(failed.frame.presentation_resources.resources[0].state,'error');host.commitInput(failed.token);
+ assert.equal(host.retryFailed(),1);const next=host.leaseInput({actions:{}});assert.equal(next.frame.presentation_resources.resources[0].epoch,3);assert.equal(next.frame.presentation_resources.resources[0].state,'ready');assert.equal(attempt,3);
+});
 test('unchanged plan retains caller leases; removal releases only the removed caller',()=>{
  const f=fixture();f.host.acceptSnapshot({world:{entities:{}},sprite_resource_plan:plan(1,['1','2'])});
  f.host.acceptSnapshot({world:{entities:{}},sprite_resource_plan:plan(1,['1','2'])});

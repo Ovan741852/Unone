@@ -340,7 +340,13 @@ function configureAtomicFrame(settings){
  atomicWait=createUiFrameWait({document,window,labels:settings.labels,isComposing:()=>textInputs.report().composing,
   onEnter(){orderedRouter?.setPaused(true);scheduler?.pause();atomicClock.begin();input.releaseNonText();uiRenderer.releaseAll();uiScroll.cancel();releaseLegacyPointer();},
   onLeave(){clearAtomicRetry();atomicClock.end();orderedRouter?.setPaused(frozen);if(!frozen&&!atomicHostPaused)scheduler?.resume();},
-  onRetry(){atomicPreflight.release();renderer.retryFailedMeshAssets();uiRenderer.invalidateAssets();cursorHost.invalidateAssets();atomicStartupRetry?.();atomicStartupRetry=null;redraw();},onReload(){location.reload();}});
+  onRetry(){
+   const retry=()=>{if(startupAbort.signal.aborted||!atomicWait?.isActive())return;
+    atomicPreflight.release();renderer.retryFailedMeshAssets();resourceHost?.retryFailed();uiRenderer.invalidateAssets();cursorHost.invalidateAssets();atomicStartupRetry?.();atomicStartupRetry=null;redraw();};
+   // A manual redraw may have entered the wait while a worker tick was still
+   // in flight. Never replace a caller whose old receipt is being admitted.
+   if(tickFlight)tickFlight.then(retry,()=>{});else retry();
+  },onReload(){location.reload();}});
  atomicFrame=createAtomicFramePresenter({transaction:renderer.frameTransaction,transactionSnapshot:value=>value.display,
   prepare(value){
    atomicPendingReady=null;
@@ -349,7 +355,8 @@ function configureAtomicFrame(settings){
    const ui=atomicPreflight.update(atomicUiSnapshot);if(ui.outcome.status!=='completed')return ui.outcome;
    const cursor=cursorHost.prepare(value.snapshot.world.ui_cursor);if(cursor.outcome.status!=='completed'){atomicPendingReady=cursor.ready;cursor.ready?.then(redraw,redraw);return cursor.outcome;}return ui.outcome;
   },
-  drawWorld(value){try{return renderer.draw(value.display);}catch(error){if(!recoverableWorldAsset(error))throw error;return {status:'skipped',reason:'world_asset_failed'};}finally{resourceHost?.collect();}},
+  drawWorld(value){let result;try{result=renderer.draw(value.display);}catch(error){if(!recoverableWorldAsset(error))throw error;return {status:'skipped',reason:'world_asset_failed'};}finally{resourceHost?.collect();}
+   return result.status==='skipped'&&resourceHost?.hasFailed()?{status:'skipped',reason:'world_asset_failed'}:result;},
   drawUi(){return uiRenderer.draw(atomicUiSnapshot,{deferRouting:true});},routeToken:()=>uiRenderer.stagedRoute(),
   commitRoute:token=>uiRenderer.commitRoute(token),abortRoute:token=>uiRenderer.abortRoute(token),
   commitHosts(value){const source=uiPassHidden(value.snapshot)?{...value.snapshot,world:{...value.snapshot.world,ui:null}}:value.snapshot;

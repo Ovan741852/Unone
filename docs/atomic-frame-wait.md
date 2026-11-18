@@ -29,3 +29,11 @@ option is absent. Use matching host JS, Core/WASM and game API declarations.
 At 4K the staging RGBA target uses approximately 31.64 MiB, independent of the
 on-demand depth attachment. Actual process/GPU memory and frame timing must be
 measured on the target device; this feature does not promise a fixed reduction.
+
+Explicit Retry re-prepares failed managed sprite callers without replacing
+healthy callers, and retries failed mesh JSON network/HTTP/body transfers.
+An invalid mesh, unsupported encoding, or a mesh's shared texture failure is a
+terminal error rather than a claim that all shared leases can be retried safely;
+the player exposes reload as the recovery. Repeated failure must not be
+reported as ready, and the previous committed game state is not advanced by
+the paused scheduler while awaiting a retry.

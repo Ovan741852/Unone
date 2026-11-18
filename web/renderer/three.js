@@ -452,12 +452,17 @@ export async function createThreeRenderer(canvas, options = {}) {
     const asset = specs.get(id);
     if (asset?.kind !== 'mesh3d' || !asset.source.endsWith('.mesh.json')) throw new Error(`MESH_DECODER_UNAVAILABLE: ${id}`);
     const record = {geometry:null, material:null, error:null};
-    record.promise = options.loadAssetUrl(asset).then(url => fetch(url)).catch(error=>{
+    record.promise = options.loadAssetUrl(asset).then(url => fetch(url).catch(error=>{
       throw new Error(`MESH_ASSET_FETCH_FAILED: ${id}: ${String(error?.message??error)}`);
-    }).then(response => {
+    })).then(response => {
       if(record.discarded||meshAssets.get(id)!==record)return null;
       if (!response.ok) throw new Error(`MESH_ASSET_FETCH_FAILED: ${id} (${response.status})`);
-      return response.json();
+      return response.json().catch(error=>{
+        // Invalid JSON is a content error; a rejected response stream can be
+        // a transient network failure and may be retried explicitly.
+        if(error?.name==='SyntaxError')throw error;
+        throw new Error(`MESH_ASSET_FETCH_FAILED: ${id}: ${String(error?.message??error)}`);
+      });
     }).then(async raw => {
       if(record.discarded||meshAssets.get(id)!==record)return;
       const data = validateMesh(raw);
@@ -467,7 +472,9 @@ export async function createThreeRenderer(canvas, options = {}) {
       if (!texture) throw new Error(`MESH_TEXTURE_LOADER_MISSING: ${data.texture}`);
       await texture.promise;
       if(record.discarded||meshAssets.get(id)!==record)return;
-      if (texture.error) throw texture.error;
+      // Shared textures may still have sprite/scene owners. Do not retire
+      // their leases as a side effect of retrying a mesh JSON request.
+      if (texture.error) throw new Error(`MESH_TEXTURE_ASSET_FAILED: ${data.texture}: ${String(texture.error.message??texture.error)}`);
       if(texture.discarded||!texture.texture)return;
       record.geometry = meshGeometry(THREE, data);
       record.material = new THREE.MeshBasicMaterial({map:texture.texture, side:THREE.DoubleSide, alphaTest:0.05});

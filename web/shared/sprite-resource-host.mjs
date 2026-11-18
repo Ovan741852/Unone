@@ -38,15 +38,15 @@ export function createSpriteResourceHost(renderer){
    if(!spec||!id(spec.id)||typeof spec.asset!=='string'||!spec.asset||next.has(spec.id)||Object.keys(spec).some(key=>!['id','asset','material_id','material'].includes(key)))throw Error('SPRITE_RESOURCE_PLAN_INVALID');
    const signature=JSON.stringify(spec),old=requests.get(spec.id);
    if(old&&old.signature!==signature)throw Error('SPRITE_RESOURCE_ID_REUSED');
-   next.set(spec.id,old??{signature,spec,lease:null});
+   next.set(spec.id,old??{signature,spec,lease:null,failed:false,failedEpoch:1});
   }
   const previous=requests;requests=next;revision=plan.revision;
   for(const [key,entry]of next)if(!entry.lease){
    try{
     if(typeof service()?.prepare!=='function')throw Error('SPRITE_RESOURCE_BACKEND_UNSUPPORTED');
-    entry.lease=service().prepare(entry.spec);
+    entry.lease=service().prepare(entry.spec);entry.failed=false;
     entry.lease.readyPromise?.catch?.(()=>{});
-   }catch(error){entry.lease?.release();entry.lease=null;enqueue('resources',{id:key,state:'error',epoch:1,bytes:0,error:String(error?.message??error).slice(0,1024)});}
+   }catch(error){entry.lease?.release();entry.lease=null;entry.failed=true;enqueue('resources',{id:key,state:'error',epoch:entry.failedEpoch,bytes:0,error:String(error?.message??error).slice(0,1024)});}
   }
   for(const [key,entry]of previous)if(!next.has(key)){entry.lease?.release();resources.delete(key);admittedResources.delete(key);}
   collect();
@@ -76,10 +76,27 @@ export function createSpriteResourceHost(renderer){
   for(const [key,entry]of token.resources){admittedResources.set(key,entry.value);if(resources.get(key)===entry)resources.delete(key);}
   for(const [key,entry]of token.appearances)if(appearances.get(key)===entry)appearances.delete(key);
  }
+ // Reprepare only failed callers, without advancing the game or disturbing
+ // successful leases. Retire stale acknowledgements before a replacement can
+ // publish feedback for the same caller and renderer epoch.
+ function retryFailed(){
+  if(closed)return 0;collect();let count=0;
+  for(const [key,entry]of requests){
+   if(entry.lease?.state!=='error'&&!(entry.lease===null&&entry.failed))continue;
+   const failedEpoch=entry.lease?.epoch??resources.get(key)?.value.epoch??entry.failedEpoch;
+   if(!safe(failedEpoch)||failedEpoch===0)throw Error('SPRITE_RESOURCE_FEEDBACK_INVALID');
+   entry.failedEpoch=failedEpoch;entry.lease?.release();entry.lease=null;resources.delete(key);admittedResources.delete(key);
+   for(const [entity]of appearances)if(world?.entities?.[entity]?.sprite_appearance?.resource===key)appearances.delete(entity);
+   try{
+    entry.lease=service().prepare(entry.spec);entry.failed=false;entry.lease.readyPromise?.catch?.(()=>{});count++;
+   }catch(error){entry.lease?.release();entry.lease=null;entry.failed=true;enqueue('resources',{id:key,state:'error',epoch:failedEpoch,bytes:0,error:String(error?.message??error).slice(0,1024)});}
+  }
+  collect();return count;
+ }
  function reset(){
   for(const entry of requests.values())entry.lease?.release();
   requests.clear();resources.clear();appearances.clear();admittedResources.clear();revision=-1;world=null;
   service()?.reset?.();
  }
- return {acceptSnapshot,collect,leaseInput,commitInput,reset,close(){if(closed)return;reset();closed=true;},report:()=>({closed,revision,leases:requests.size,pending_resources:resources.size,pending_appearances:appearances.size,scope:'Opaque host leases and queued recorded-input receipts; not total GPU memory.'})};
+ return {acceptSnapshot,collect,leaseInput,commitInput,retryFailed,hasFailed:()=>[...requests.values()].some(entry=>entry.failed||entry.lease?.state==='error'),reset,close(){if(closed)return;reset();closed=true;},report:()=>({closed,revision,leases:requests.size,pending_resources:resources.size,pending_appearances:appearances.size,scope:'Opaque host leases and queued recorded-input receipts; not total GPU memory.'})};
 }
