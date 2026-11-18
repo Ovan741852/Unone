@@ -24,7 +24,7 @@ async function fixture(){
  const options={getImageAssets:()=>broker,getAssetCatalog:()=>catalog,textureCache:{max_bytes:16,max_entries:1,idle_frames:3}};
  const root=new THREE.Group(),geometry=new THREE.PlaneGeometry(1,1),records=new Map(),textureRecords=new Map();
  function recordFor(entity){let record=records.get(entity.id);if(!record){const material=new THREE.MeshBasicMaterial(),mesh=new THREE.Mesh(geometry,material);record={mesh,material};records.set(entity.id,record);root.add(mesh);}return record;}
- const inputs={createTextureCachePolicy,textureRecords,options,backend:'webgl',linkLoss:null,createSpriteResourcePool,THREE,renderer,spriteBudget:parseSpriteResourceBudget(),root,geometry,records,recordFor,createSpritePresentation,bloom:null,drawLegacySprite(){throw Error('Unexpected readiness-bypassing legacy fallback');}};
+ const inputs={createTextureCachePolicy,textureRecords,options,transactional:false,backend:'webgl',linkLoss:null,createSpriteResourcePool,THREE,renderer,spriteBudget:parseSpriteResourceBudget(),root,geometry,records,recordFor,createSpritePresentation,bloom:null,drawLegacySprite(){throw Error('Unexpected readiness-bypassing legacy fallback');}};
  const constructed=new Function(...Object.keys(inputs),'let spriteResources=null,spritePresentation=null;'+routing+';return {textureCache,pool:spriteResources,presenter:spritePresentation};')(...Object.values(inputs));
  const world=visible=>({frame:1,entities:{slot:{id:'slot',transform:{x:0,y:0},sprite:{asset:ASSET,visible}}}});
  const render=visible=>{constructed.textureCache.begin();const complete=constructed.presenter.draw(world(visible));constructed.textureCache.sweep();return complete;};
