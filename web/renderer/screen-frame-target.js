@@ -6,7 +6,7 @@ export function createScreenFrameTarget(THREE,renderer){
  let created=0,released=0,depthCreated=0,depthReleased=0,commits=0,aborts=0,lastFailure=null;
  const status=(ok,reason,presentation)=>Object.freeze({status:ok?'completed':'skipped',reason:reason??null,presentation,epoch});
  function lost(){return gl.isContextLost();}
- function invalidate(){active=false;lostTarget=target;target=null;depthBuffer=null;epoch++;}
+ function invalidate(){active=false;lostTarget=target;if(lostTarget)lostTarget.dispose();target=null;depthBuffer=null;epoch++;}
  function bindTarget(){renderer.setRenderTarget(target);}
  function deleteDepth(){if(!depthBuffer)return;gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,null);gl.deleteRenderbuffer(depthBuffer);depthBuffer=null;depthReleased++;}
  function release(){
@@ -22,7 +22,7 @@ export function createScreenFrameTarget(THREE,renderer){
   if(lost())return status(false,'context_lost','unknown');
   // Three can retain its logical current target over a WebGL context loss.
   // Reset only our own invalidated target, never a caller's unrelated target.
-  if(lostTarget){if(renderer.getRenderTarget()===lostTarget)renderer.setRenderTarget(null);lostTarget.dispose();lostTarget=null;}
+  if(lostTarget){if(renderer.getRenderTarget()===lostTarget)renderer.setRenderTarget(null);lostTarget=null;}
   if(renderer.getRenderTarget()!==null)return status(false,'target_busy','unchanged');
   if(!Number.isSafeInteger(width)||!Number.isSafeInteger(height)||width<1||height<1||typeof depth!=='boolean')return status(false,'invalid_size_or_depth','unchanged');
   try{
@@ -72,13 +72,13 @@ export function createScreenFrameTarget(THREE,renderer){
    gl.bindFramebuffer(gl.READ_FRAMEBUFFER,framebuffer);
    renderer.state.bindFramebuffer(gl.DRAW_FRAMEBUFFER,null);gl.readBuffer(gl.COLOR_ATTACHMENT0);
    submitted=true;gl.blitFramebuffer(0,0,width,height,0,0,width,height,gl.COLOR_BUFFER_BIT,gl.NEAREST);
-   if(lost()||gl.getError()!==gl.NO_ERROR){lastFailure='commit_failed';return status(false,lastFailure,'unknown');}
+   const glError=gl.getError();if(lost()||glError!==gl.NO_ERROR){lastFailure=`commit_failed:${glError}`;return status(false,lastFailure,'unknown');}
    commits++;lastFailure=null;return status(true,null,'submitted');
   }catch(error){lastFailure=String(error?.message??error);return status(false,lastFailure,submitted?'unknown':'unchanged');}
   finally{gl.bindFramebuffer(gl.READ_FRAMEBUFFER,null);renderer.setScissorTest(scissor);}
  }
  function abort(){const contextLost=lost();if(active){active=false;aborts++;if(!contextLost)renderer.setRenderTarget(null);}return status(!contextLost,contextLost?'context_lost':null,contextLost?'unknown':'unchanged');}
  function contextLost(){invalidate();lastFailure='context_lost';}
- function dispose(){if(disposed)return;abort();release();lostTarget?.dispose();lostTarget=null;disposed=true;}
+ function dispose(){if(disposed)return;abort();release();lostTarget=null;disposed=true;}
  return {begin,rebind,commit,abort,contextLost,dispose,target:()=>active?target:null,metrics:()=>({active,disposed,epoch,allocated:!!target,depth_allocated:!!depthBuffer,width:target?.width??0,height:target?.height??0,created,released,depth_created:depthCreated,depth_released:depthReleased,commits,aborts,last_failure:lastFailure,color_bytes_estimate:target?target.width*target.height*4:0,depth_bytes_estimate:depthBuffer?target.width*target.height*4:0})};
 }

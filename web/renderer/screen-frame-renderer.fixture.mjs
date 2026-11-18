@@ -26,6 +26,11 @@ window.testFrameRenderer=async()=>{
   }
   const before=read(stagedCanvas);assert(tx.begin(rect).status==='completed','abort begin');assert(staged.draw(rect).status==='completed','abort draw');assert(tx.abort().presentation==='unchanged','abort');const after=read(stagedCanvas);
   const retained=before.every((x,i)=>x===after[i]);
-  return {results,retained,depthPolicy:staged.metrics().webgl_default_depth,transaction:tx.metrics()};
+  const gl=stagedCanvas.getContext('webgl2'),extension=gl.getExtension('WEBGL_lose_context');assert(extension,'missing lose-context extension');
+  await new Promise(resolve=>{stagedCanvas.addEventListener('webglcontextlost',event=>{event.preventDefault();resolve();},{once:true});extension.loseContext();});
+  const lost=tx.begin(base);assert(lost.status==='skipped'&&lost.presentation==='unknown','loss must be uncertain '+JSON.stringify(lost));
+  await new Promise(resolve=>{stagedCanvas.addEventListener('webglcontextrestored',resolve,{once:true});setTimeout(()=>extension.restoreContext(),100);});
+  const restored=draw(base),restoredPixels=read(stagedCanvas);assert(restoredPixels.every((x,i)=>x===before[i]),'restore pixels differ');assert(tx.metrics().epoch===2,'context epoch');
+  return {results,retained,lost,restored,depthPolicy:staged.metrics().webgl_default_depth,transaction:tx.metrics()};
  }finally{ordinary.dispose();staged.dispose();}
 };
