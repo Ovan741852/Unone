@@ -388,7 +388,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             ] {
                 text = replace_required(text, marker, if development { code } else { "" })?;
             }
-            bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({profileWindow,getSnapshot:()=>snapshot,acceptSnapshot,coreRequest,setTransport,restart,backendReport:()=>backend.report(),getStats:()=>({...lastStats,dropped_steps:scheduler?.totalDroppedSteps??0}),getBoot:()=>metrics,draw,tick:tickOnce,releaseInput:()=>input.releaseAll(),setPaused,getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:queueDeveloperInput});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
+            bytes=if development {text.replace("/* DEVELOPER_IMPORT */", "import {createDeveloper} from '../developer/main.js';\nconst developer=createDeveloper();").replace("/* DEVELOPER_CONNECT */", "developer.connect({profileWindow,getSnapshot:()=>snapshot,acceptSnapshot,coreRequest,setTransport,restart,backendReport:()=>backend.report(),getStats:()=>({...lastStats,dropped_steps:scheduler?.totalDroppedSteps??0}),getBoot:()=>metrics,draw,tick:developerStep,releaseInput:()=>input.releaseAll(),setPaused,getPaused:()=>frozen,setBloom:value=>renderer.setBloom(value),queueInput:queueDeveloperInput});")} else {text.replace("/* DEVELOPER_IMPORT */", "").replace("/* DEVELOPER_CONNECT */", "")}.into_bytes();
         }
         files.push((format!("web/{path}"), bytes));
     }

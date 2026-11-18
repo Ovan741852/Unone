@@ -42,3 +42,12 @@ a terminal error. A failed image still retained by another broker owner may
 remain unavailable; repeated failure must not be reported as ready, and the
 player exposes reload as a recovery. The paused scheduler does not advance
 the game while awaiting a retry.
+
+In development exports this opt-in disables single-step and manual input
+injection, because an asynchronous queued step cannot safely be canceled after
+input has been leased. The diagnostics are `PRESENTATION_STEP_UNSUPPORTED` and
+`PRESENTATION_INPUT_UNSUPPORTED`; ordinary hosts retain both operations.
+During an active wait, mutating tool invocations,
+queued input, transport changes, and restart are rejected until recovery.
+An invocation already dispatched before the wait cannot be retroactively
+canceled. Read-only developer inspection remains available.

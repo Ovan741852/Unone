@@ -39,15 +39,15 @@ export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobP
   if(remote.packed_ms!==undefined){span('worker_pack',done,toHost(remote.packed_ms));span('worker_to_main',toHost(remote.packed_ms),arrived);}else span('worker_to_main',done,arrived);
   span('admission',arrived,admitted);profiler.set(event,{clock_alignment:'worker performance.timeOrigin'});
  }
- function profiledRequest(command,owner){
+ function profiledRequest(command,owner,beforeDispatch){
   const event=profiler.begin('command',{command_kind:String(command?.kind),backend:kind,...(owner?{owner}:{})});
   const rejected=error=>{profiler.end(event,'rejected',{error});return Promise.reject(error);};
   if(closed)return rejected(Error('RUNTIME_CLOSED'));if(pending>=32)return rejected(Error('RUNTIME_QUEUE_FULL'));
-  pending++;const result=tail.then(()=>dispatch(command,event));tail=result.catch(()=>{});
+  pending++;const result=tail.then(()=>{beforeDispatch?.();return dispatch(command,event);});tail=result.catch(()=>{});
   return result.then(value=>{profiler.tag(value,event.id);profiler.end(event,'ok');return value;},error=>{profiler.end(event,'error',{error});throw error;}).finally(()=>pending--);
  }
  // `owner` is the caller's profile identity; it is ignored when profiling is disabled.
- function request(command,owner){if(profiler)return profiledRequest(command,owner);if(closed)return Promise.reject(Error('RUNTIME_CLOSED'));if(pending>=32)return Promise.reject(Error('RUNTIME_QUEUE_FULL'));pending++;const result=tail.then(()=>dispatch(command));tail=result.catch(()=>{});return result.finally(()=>pending--);}
+ function request(command,owner,beforeDispatch){if(profiler)return profiledRequest(command,owner,beforeDispatch);if(closed)return Promise.reject(Error('RUNTIME_CLOSED'));if(pending>=32)return Promise.reject(Error('RUNTIME_QUEUE_FULL'));pending++;const result=tail.then(()=>{beforeDispatch?.();return dispatch(command);});tail=result.catch(()=>{});return result.finally(()=>pending--);}
  if(worker){try{await request({kind:'init',url,jobPolicy,device,spatialBackend,requirePhysicalViewport,...(profiler?{profile:true}:{})});}catch(error){shutdown(error);throw error;}}
  return {kind,request,close:shutdown,report:()=>({...metrics,pending,closed}),memory:batch=>core?core.module.HEAPU8.buffer:receiver.memory(batch)};
 }
