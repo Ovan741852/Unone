@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createUiScrollHost} from './ui-scroll.mjs';
 import {createUiPointerRouter} from './canvas-ui.mjs';
 import {createUiTreePublication} from './ui-tree-publication.mjs';
+import {createAtomicFramePresenter} from './atomic-frame-presenter.mjs';
 
 // Minimal DOM surface for controller lifecycle checks. Painted native rails,
 // actual keyboard focus and touch dispatch are also exercised by the game UI test.
@@ -110,6 +111,20 @@ test('a virtual window request queued before waiting is deferred and retried aft
  let blocked=false;const requests=[],snapshot=screen([virtualNode(['a','b','c','d'],1,1)]);
  const {draw}=harness(t,snapshot,{isInputBlocked:()=>blocked,requestWindow:request=>requests.push(request)});
  blocked=true;await flush();assert.deepEqual(requests,[]);blocked=false;draw(snapshot);await flush();assert.equal(requests.length,1);
+});
+test('an in-flight virtual response during wait only updates the candidate until a complete frame commits',async t=>{
+ let blocked=false,ready=false,resolveRequest,accepted=null,commits=0,routeCommits=0;
+ const initial=screen([virtualNode(['a','b','c','d'],1,1)]),next=screen([virtualNode(['a','b','c','d'],1,4)]);
+ let presenter;const h=harness(t,initial,{isInputBlocked:()=>blocked,requestRender(){},requestWindow:async()=>{
+  const value=await new Promise(resolve=>{resolveRequest=resolve;});accepted=value;presenter.present(value);
+ }});
+ const oldReport=JSON.stringify(h.host.report()),ok={status:'completed'};
+ presenter=createAtomicFramePresenter({transaction:{begin:()=>ok,abort(){},commit(){commits++;return {...ok,presentation:'submitted'};}},
+  prepare:value=>{h.host.preview(value);return ready?ok:{status:'skipped',reason:'ui_assets_pending'};},drawWorld:()=>ok,drawUi:()=>ok,routeToken:()=>Symbol('route'),
+  commitRoute(){routeCommits++;},abortRoute(){},commitHosts:value=>h.host.draw(value),enterWait(){blocked=true;},recover(){blocked=true;},leaveWait(){blocked=false;}});
+ await flush();assert.equal(typeof resolveRequest,'function');presenter.present(initial);assert.equal(blocked,true);
+ resolveRequest(next);await flush();assert.equal(accepted,next);assert.equal(JSON.stringify(h.host.report()),oldReport);assert.equal(commits,0);assert.equal(routeCommits,0);
+ ready=true;presenter.present(accepted);assert.equal(blocked,false);assert.equal(commits,1);assert.equal(routeCommits,1);assert.notEqual(JSON.stringify(h.host.report()),oldReport);
 });
 test('external ordered router obtains real UI receipts exactly once and omission keeps legacy listeners',t=>{
  const {host,canvas,win}=harness(t,screen([view('scroll',[button('tail',110)])]));
