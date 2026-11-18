@@ -52,7 +52,7 @@ export function projectScrollTree(tree,offsets=null){
  return result;
 }
 
-export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=async()=>{},onDiagnostic=console.error,requestRender=()=>{},now=()=>performance.now(),requestFrame=fn=>requestAnimationFrame(fn),cancelFrame=id=>cancelAnimationFrame(id),getFocusedNode=()=>document.activeElement?.dataset?.uiControl,focusNode=id=>{const el=[...stage.querySelectorAll('[data-ui-control]')].find(el=>el.dataset.uiControl===id);if(!el)return false;el.focus();return true;}}){
+export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=async()=>{},onDiagnostic=console.error,requestRender=()=>{},isInputBlocked=()=>false,now=()=>performance.now(),requestFrame=fn=>requestAnimationFrame(fn),cancelFrame=id=>cancelAnimationFrame(id),getFocusedNode=()=>document.activeElement?.dataset?.uiControl,focusNode=id=>{const el=[...stage.querySelectorAll('[data-ui-control]')].find(el=>el.dataset.uiControl===id);if(!el)return false;el.focus();return true;}}){
  const states=new Map(),passthrough=new Set(),ignored=new Set();let views=[],projected=null,hovered='',focused='',gesture=null,disposed=false,pendingFocus=null,momentum=null,frame=null,externalInput=false;
  const point=e=>{const r=stage.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*100,y:100-(e.clientY-r.top)/r.height*100};};
  const ownerAt=p=>[...views].reverse().find(v=>v.enabled&&inside(v.clip,p.x,p.y));
@@ -61,8 +61,8 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
    const bar=document.createElement('div'),content=document.createElement('div');bar.dataset.uiScrollbar=id;bar.dataset.axis=axis;bar.tabIndex=-1;bar.setAttribute('aria-hidden','true');
    Object.assign(bar.style,{position:'absolute',zIndex:'7',boxSizing:'border-box',overscrollBehavior:'contain',scrollBehavior:'auto',scrollbarColor:'var(--ui-scroll-thumb, #b4b4b4) var(--ui-scroll-track, #252525)',overflowX:axis==='x'?'scroll':'hidden',overflowY:axis==='y'?'scroll':'hidden'});
    bar.append(content);stage.append(bar);rails[axis]={bar,content,range:0,max:0};
-   bar.addEventListener('scroll',()=>{const s=states.get(id),rail=s?.rails[axis];if(!s||bar.hidden||!rail.range)return;s[axis]=(axis==='x'?bar.scrollLeft:bar.scrollTop)/rail.range*rail.max;requestRender();});
-   bar.addEventListener('pointerdown',()=>{stopMomentum();focused=id;abandonGesture();});
+   bar.addEventListener('scroll',()=>{const s=states.get(id),rail=s?.rails[axis];if(!s||bar.hidden||!rail.range)return;if(isInputBlocked()){bar[axis==='x'?'scrollLeft':'scrollTop']=rail.max?s[axis]/rail.max*rail.range:0;return;}s[axis]=(axis==='x'?bar.scrollLeft:bar.scrollTop)/rail.range*rail.max;requestRender();});
+   bar.addEventListener('pointerdown',event=>{if(isInputBlocked()){event.preventDefault?.();return;}stopMomentum();focused=id;abandonGesture();});
   }
   return {x:0,y:0,reset:null,rails,pending:false,requested:'',keys:null,pitch:0};
  }
@@ -72,7 +72,7 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
  const signature=v=>JSON.stringify([v.rect,v.clip,v.maxX,v.maxY,v.node.scroll.axis,v.node.scroll.inertia,v.node.scroll.deceleration??8,v.node.scroll.reset_key,v.node.scroll.virtual_items?.revision]);
  function stopMomentum(){momentum=null;if(frame!==null)cancelFrame(frame);frame=null;}
  function coast(){
-  frame=null;const m=momentum;if(!m||disposed)return;
+  frame=null;const m=momentum;if(!m||disposed)return;if(isInputBlocked()){stopMomentum();return;}
   const v=views.find(v=>v.id===m.id&&v.enabled),r=stage.getBoundingClientRect(),time=now(),dt=(time-m.time)/1000;
   if(!v||signature(v)!==m.signature||r.width!==m.width||r.height!==m.height||!Number.isFinite(dt)||dt<=0||dt>.25){stopMomentum();return;}
   const s=states.get(v.id),exponent=m.deceleration*dt,decay=Math.exp(-exponent);
@@ -96,17 +96,17 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   if(virtual.first<=range.first&&virtual.last>=range.last||s.requested===key)return;s.requested=key;s.pending=true;
   // A slow host request must not retain a former view tree or virtual key list.
   const id=v.id,revision=virtual.revision;
-  Promise.resolve().then(()=>{if(!disposed&&states.get(id)===s)return requestWindow({id,revision,...range});}).catch(e=>{if(!disposed&&states.get(id)===s)onDiagnostic(e);}).finally(()=>{s.pending=false;if(!disposed&&states.get(id)===s)requestRender();});
+  Promise.resolve().then(()=>{if(isInputBlocked()){if(states.get(id)===s&&s.requested===key)s.requested='';return;}if(!disposed&&states.get(id)===s)return requestWindow({id,revision,...range});}).catch(e=>{if(!disposed&&states.get(id)===s)onDiagnostic(e);}).finally(()=>{s.pending=false;if(!disposed&&!isInputBlocked()&&states.get(id)===s)requestRender();});
  }
  const retireState=s=>{for(const {bar}of Object.values(s.rails))bar.remove();s.keys=null;s.reset=null;};
- const wheel=e=>{const p=point(e),r=stage.getBoundingClientRect(),scale=e.deltaMode===1?24:e.deltaMode===2?r.height:1,dx=e.deltaX*scale/r.width*100,dy=e.deltaY*scale/r.height*100;
+ const wheel=e=>{if(isInputBlocked()){e.preventDefault?.();return true;}const p=point(e),r=stage.getBoundingClientRect(),scale=e.deltaMode===1?24:e.deltaMode===2?r.height:1,dx=e.deltaX*scale/r.width*100,dy=e.deltaY*scale/r.height*100;
   for(const v of [...views].reverse()){
    if(!v.enabled||!inside(v.wheelRect,p.x,p.y))continue;stopMomentum();const s=states.get(v.id),x=s.x+(v.node.scroll.axis==='horizontal'?(dx||dy):dx),y=s.y+dy;
    if(clamp(x,v.maxX)===s.x&&clamp(y,v.maxY)===s.y)continue;e.preventDefault();hovered=v.id;focused=v.id;setOffset(v,x,y);return true;
   }
   return false;
  };
- const move=e=>{hovered=ownerAt(point(e))?.id??'';},leave=()=>{hovered='';};
+ const move=e=>{if(!isInputBlocked())hovered=ownerAt(point(e))?.id??'';},leave=()=>{hovered='';};
  function scrollToKey(id,key){
   const v=views.find(v=>v.id===id&&v.enabled),items=v?.node.scroll.virtual_items;if(!items)return false;
   const index=items.keys.indexOf(key);if(index<0)return false;stopMomentum();const s=states.get(id),start=Math.floor(index/items.columns)*(items.row_height+items.gap_y),end=start+items.row_height;
@@ -125,6 +125,7 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
  }
  const keydown=e=>{
   if(e.target.closest?.('input,textarea,select,[contenteditable=true],#unone-developer'))return false;
+  if(isInputBlocked()){if(!e.isComposing&&e.keyCode!==229)e.preventDefault?.();return true;}
   const nodeId=getFocusedNode(),node=projected?.children?.find(n=>n.id===nodeId);
   if(node&&['slider','combobox'].includes(node.kind))return false;
   if(nodeId&&navigate(nodeId,e.code)){e.preventDefault();e.stopPropagation();return true;}
@@ -188,6 +189,7 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   },
   scrollToKey,ensureVisible,reveal:ensureVisible,navigate,isNavigating:()=>!!pendingFocus,
   pointer(e,kind,hit){
+   if(isInputBlocked())return true;
    if(kind==='down')stopMomentum();
    if(passthrough.has(e.pointerId)){if(kind==='up'||kind==='cancel')passthrough.delete(e.pointerId);return false;}
    if(ignored.has(e.pointerId)){if(kind==='down')ignored.delete(e.pointerId);else{if(kind==='up'||kind==='cancel')ignored.delete(e.pointerId);return true;}}

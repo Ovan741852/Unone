@@ -48,7 +48,7 @@ const input=createHostInput(),uiRenderer=createCanvasUi(null,{getPresenter:()=>r
  return new URL(`content/${asset.source}`,document.baseURI).href;
 }});
 const uiScroll=createUiScrollHost({canvas,stage:document.querySelector('#ui-layer'),onAction:action=>input.queueAction(action),
- requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));requestUiDraw();},requestRender:requestUiDraw,onDiagnostic:fail});
+ requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));requestUiDraw();},requestRender:requestUiDraw,isInputBlocked:()=>!!atomicWait?.isActive(),onDiagnostic:fail});
 const textInputs=createUiTextInputHost({canvas,onInteraction:event=>input.queueTextInputInteraction(event),
  releaseKeyboard:()=>input.releaseKeyboard(),requestRender:requestUiDraw,isInputBlocked:()=>!!atomicWait?.isActive(),onDiagnostic:fail});
 const renderUi=snapshot=>uiRenderer.draw(textInputs.draw(uiScroll.draw(uiPassHidden(snapshot)?{...snapshot,world:{...snapshot.world,ui:null}}:snapshot)));

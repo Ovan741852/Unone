@@ -46,6 +46,21 @@ test('preflight scroll preview matches commit without changing rails or offsets'
 });
 const wheel=(canvas,x,y,deltaY)=>canvas.dispatch('wheel',{clientX:x*10,clientY:(100-y)*10,deltaX:0,deltaY,deltaMode:0});
 
+test('presentation wait blocks earlier-registered legacy keyboard, wheel, native rail and touch until recovery',t=>{
+ let blocked=false;const s=screen([view('rows',[button('top',0),button('tail',160)])]),h=harness(t,s,{isInputBlocked:()=>blocked});
+ h.canvas.dispatch('pointermove',{clientX:150,clientY:150});h.host.cancel();const before=h.host.report()[0].offset.y;
+ // The scroll listener is installed before the overlay listener on window.
+ let overlayEvents=0;h.win.addEventListener('keydown',()=>overlayEvents++);blocked=true;
+ h.win.dispatch('keydown',{code:'ArrowDown'});assert.equal(overlayEvents,1);assert.equal(h.host.report()[0].offset.y,before);
+ wheel(h.canvas,15,85,300);assert.equal(h.host.report()[0].offset.y,before);
+ const rail=h.stage.children.find(e=>e.dataset.axis==='y'&&!e.hidden);assert(rail);rail.scrollTop=100;rail.dispatch('scroll');assert.equal(h.host.report()[0].offset.y,before);assert.equal(rail.scrollTop,0);
+ const down={pointerId:8,pointerType:'touch',isPrimary:true,clientX:150,clientY:150};
+ assert.equal(h.host.pointer(down,'down',null),true);assert.equal(h.host.pointer({...down,clientY:60},'move',null),true);assert.equal(h.host.report()[0].offset.y,before);
+ blocked=false;h.win.dispatch('keydown',{code:'ArrowDown'});assert(h.host.report()[0].offset.y>before);
+ const current=h.host.report()[0].offset.y;h.host.pointer({...down,pointerId:9},'down',null);h.host.pointer({...down,pointerId:9,clientY:60},'move',null);h.host.pointer({...down,pointerId:9,clientY:60},'up',null);
+ assert(h.host.report()[0].offset.y>current);
+});
+
 test('in-place reset, nested offsets and content shrink project current geometry on the same draw',t=>{
  const inner=view('inner',[button('deep',80)]);inner.rect={x:2,y:20,width:20,height:30};
  const outer=view('outer',[inner,button('tail',110)]),snapshot=screen([outer]),{host,canvas,draw,stage}=harness(t,snapshot);
@@ -89,6 +104,11 @@ test('queued virtual requests are suppressed when disposed or unmounted before t
  const requests=[],snapshot=screen([virtualNode(['a','b','c','d'],1,1)]),{host,draw}=harness(t,snapshot,{requestWindow:request=>requests.push(request)});
  draw(screen([]));await flush();assert.deepEqual(requests,[]);
  draw(snapshot);host.dispose();await flush();assert.deepEqual(requests,[]);
+});
+test('a virtual window request queued before waiting is deferred and retried after recovery',async t=>{
+ let blocked=false;const requests=[],snapshot=screen([virtualNode(['a','b','c','d'],1,1)]);
+ const {draw}=harness(t,snapshot,{isInputBlocked:()=>blocked,requestWindow:request=>requests.push(request)});
+ blocked=true;await flush();assert.deepEqual(requests,[]);blocked=false;draw(snapshot);await flush();assert.equal(requests.length,1);
 });
 test('external ordered router obtains real UI receipts exactly once and omission keeps legacy listeners',t=>{
  const {host,canvas,win}=harness(t,screen([view('scroll',[button('tail',110)])]));
