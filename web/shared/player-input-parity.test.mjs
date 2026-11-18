@@ -14,7 +14,7 @@ const mappings=[...native.slice(native.indexOf('fn key_action('),native.indexOf(
 
 function harness() {
   const canvasEvents=new Map(),windowEvents=new Map(),input=createHostInput(),uiCalls=[],captures=new Set(),released=[];
-  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,scheduler:null,frozen:false,orderedRouter:null,textInputs:{pointer:()=>false,routeKey:()=>false,suspend(){}},
+  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,scheduler:null,frozen:false,orderedRouter:null,atomicWait:null,atomicClock:null,atomicHostPaused:false,document:{hidden:false},textInputs:{pointer:()=>false,routeKey:()=>false,suspend(){}},
     canvas:{getBoundingClientRect:()=>({left:0,top:0,width:200,height:100}),setPointerCapture:id=>captures.add(id),hasPointerCapture:id=>captures.has(id),
       releasePointerCapture:id=>{captures.delete(id);released.push(id);},addEventListener:(name,fn)=>canvasEvents.set(name,fn)},
     window:{addEventListener:(name,fn)=>windowEvents.set(name,fn)},
