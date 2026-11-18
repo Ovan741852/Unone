@@ -73,6 +73,9 @@ export function routeBrowserKey(input,event,down) {
   const target=event.target;
   if(down&&(target?.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(target?.tagName)))return;
   event.preventDefault?.();
+  // Repeats carry no new physical press. In particular, a key still held
+  // across a wait/blur reset must not silently restart gameplay movement.
+  if(down&&event.repeat)return;
   input.queuePhysicalAction(action,down);
   // Existing Web games may explicitly read KeyboardEvent.code. Retain aliases
   // while exposing the native neutral action as the canonical cross-host name.
