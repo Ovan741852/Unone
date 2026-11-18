@@ -197,13 +197,14 @@ async function readImageHeader(url,signal,limit) {
   // Retain only the bounded header prefix. A server may ignore Range; drain a successful
   // response to EOF rather than turning speculative inspection into an aborted
   // network request. The encoded body is never accumulated or decoded here.
-  const response = await fetch(url, { signal, headers: { Range: `bytes=0-${limit-1}` } });
+  const transportError=error=>{if(error?.name==='AbortError'||signal?.aborted)throw error;throw imageError('IMAGE_ASSET_HEADER_FAILED',String(error?.message??error));};
+  let response;try{response=await fetch(url, { signal, headers: { Range: `bytes=0-${limit-1}` } });}catch(error){transportError(error);}
   if (!response.ok) throw imageError('IMAGE_ASSET_HEADER_FAILED', String(response.status));
   if (!response.body?.getReader) return null;
   const reader = response.body.getReader(), header = new Uint8Array(limit); let length = 0, complete = false;
   try {
     while (true) {
-      const next = await reader.read(); if (next.done) { complete = true; break; }
+      let next;try{next=await reader.read();}catch(error){transportError(error);}if (next.done) { complete = true; break; }
       if (length < header.length) { const take = Math.min(next.value.byteLength, header.length - length); header.set(next.value.subarray(0, take), length); length += take; }
     }
   } finally { if (!complete) { try { await reader.cancel(); } catch {} } reader.releaseLock(); }

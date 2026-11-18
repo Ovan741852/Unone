@@ -35,3 +35,14 @@ test('default PNG metadata keeps the24B fastpath while unsupported SVG performs 
  try{assert.equal((await broker.inspect('a')).bytes,24);await assert.rejects(broker.inspect('b'),/DIMENSIONS_UNAVAILABLE/);assert.equal(requests,1);}
  finally{broker.dispose();globalThis.fetch=original;}
 });
+
+test('header transport failures are retryable, aborts and format errors keep their identity',async()=>{
+ const original=globalThis.fetch,catalog=createAssetCatalog({assets:[{id:'a',kind:'texture2d',source:'a.png',encoding:{decoder:'image',format:'png',mime:'image/png'}}]});
+ const check=async(fetcher,verify)=>{globalThis.fetch=fetcher;const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source});try{await assert.rejects(broker.inspect('a'),verify);}finally{broker.dispose();}};
+ try{
+  await check(async()=>{throw new TypeError('offline');},e=>e.message==='IMAGE_ASSET_HEADER_FAILED: offline');
+  let cancelled=false,released=false;await check(async()=>({ok:true,body:{getReader:()=>({read:async()=>{throw new TypeError('stream interrupted');},cancel:async()=>{cancelled=true;},releaseLock:()=>{released=true;}})}}),e=>e.message==='IMAGE_ASSET_HEADER_FAILED: stream interrupted');assert(cancelled&&released);
+  const abort=Object.assign(Error('cancelled'),{name:'AbortError'});await check(async()=>{throw abort;},e=>e===abort);
+  await check(async()=>({ok:true,body:{getReader:()=>({read:async()=>({done:true}),releaseLock(){},cancel:async()=>{}})}}),e=>!e.message.startsWith('IMAGE_ASSET_HEADER_FAILED'));
+ }finally{globalThis.fetch=original;}
+});
