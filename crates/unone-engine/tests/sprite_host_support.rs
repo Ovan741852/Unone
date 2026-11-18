@@ -43,3 +43,16 @@ fn hot_reload_keeps_the_original_session_declaration() {
  let replacement=r#"return {start=function(api) end,update=function(api) api.observation.set('support',api.sprite.hostSupport()) end}"#;
  r.reload_source(replacement).unwrap();r.tick().unwrap();assert_eq!(r.semantic_observations()["support"],"supported");
 }
+
+#[test]
+fn supported_is_only_a_capability_not_a_false_ready_signal() {
+ let script=r#"local h return {start=function(api) h=api.sprite.prepare('texture://test') end,update=function(api) api.observation.set('support',api.sprite.hostSupport());api.observation.set('state',api.sprite.status(h).state) end}"#;
+ let payload=json!({"config":{"name":"capability"},"script":script,"sprite_resource_host":"supported","asset_catalog":[{"id":"texture://test","kind":"texture2d"}]});
+ let mut r=HostProject::parse(&serde_json::to_vec(&payload).unwrap()).unwrap().into_runtime(42).unwrap();
+ let id=r.sprite_resource_plan()[0].id.clone();r.tick().unwrap();assert_eq!(r.semantic_observations()["state"],"loading");
+ for (state,epoch,error) in [("error",1,Some("broken")),("ready",2,None),("loading",3,None)] {
+  let mut receipt=json!({"id":id,"state":state,"epoch":epoch,"bytes":0});if let Some(error)=error {receipt["error"]=json!(error)}
+  let input:InputFrame=serde_json::from_value(json!({"presentation_resources":{"resources":[receipt]}})).unwrap();
+  r.tick_with_input(&input).unwrap();assert_eq!(r.semantic_observations()["support"],"supported");assert_eq!(r.semantic_observations()["state"],state);
+ }
+}
