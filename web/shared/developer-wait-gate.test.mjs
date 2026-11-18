@@ -40,3 +40,31 @@ test('queued worker invoke rechecks admission at actual dispatch, including prof
   waiting=false;await backend.request({kind:'developer',request:{method:'invoke'}},undefined,guard);assert.deepEqual(sent,['init','viewport','invoke']);backend.close();
  }
 });
+
+test('restart restores its prior pause state without hiding a wait that begins during an in-flight tick',async()=>{
+ const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
+ const lines=['assertPresentationReady','restart'].map(name=>{const m=source.match(new RegExp(`^(?:async )?function ${name}\\([^\\n]+$`,'m'));assert(m);return m[0];}).join('\n');
+ for(const wasPaused of [false,true]){
+  let waiting=false,release,hidden=0,load=0;const pauses=[];
+  const gate=new Promise(resolve=>release=resolve);
+  const ctx={atomicWait:{isActive:()=>waiting,hide:()=>hidden++},frozen:wasPaused,errors:{reset(){}},
+   setPaused:async value=>{pauses.push(value);if(pauses.length===1)await gate;},backend:{request:async()=>{load++;}}};
+  vm.createContext(ctx);vm.runInContext(lines,ctx);const restarting=ctx.restart();await Promise.resolve();waiting=true;release();
+  await assert.rejects(restarting,error=>error.code==='PRESENTATION_WAIT_ACTIVE');
+  assert.deepEqual(pauses,[true,wasPaused]);assert.equal(hidden,0);assert.equal(load,0);assert.equal(waiting,true);
+ }
+});
+
+test('restart without atomic wait preserves existing reload and prior pause behavior',async()=>{
+ const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8');
+ const lines=['assertPresentationReady','restart'].map(name=>{const m=source.match(new RegExp(`^(?:async )?function ${name}\\([^\\n]+$`,'m'));assert(m);return m[0];}).join('\n');
+ for(const wasPaused of [false,true]){
+  const calls=[];const snapshot={world:{}};const ctx={atomicWait:null,atomicClock:null,frozen:wasPaused,errors:{reset(){calls.push('reset')}},
+   setPaused:async value=>{calls.push('pause:'+value)},withCatalog:x=>x,json:async()=>({config:{},scene:{}}),uiAssetManifest:{},fitStage(){},
+   canvas:{clientWidth:1,clientHeight:1},physicalViewport:()=>({width:1,height:1}),saved:'null',errorPolicy:null,imageGroupHost:null,
+   imageAssets:{prepareScene:async()=>({})},startupAbort:{signal:{aborted:false}},assertRequiredImagePreparation(){},imagePreloadPlan:{},
+   backend:{request:async request=>{calls.push(request.kind);return snapshot}},sessionSeed:()=>1,dataAssets:async()=>({}),acceptSnapshot(){},resizeStageViewport:async()=>{},configurePhysical(){},
+   orderedRouter:null,audio:null,scheduler:{resetClock(){}},draw(){calls.push('draw')},persistSave(){calls.push('save')}};
+  vm.createContext(ctx);vm.runInContext(lines,ctx);await ctx.restart();assert.deepEqual(calls,['reset','pause:true','load','draw','save','pause:'+wasPaused]);
+ }
+});
