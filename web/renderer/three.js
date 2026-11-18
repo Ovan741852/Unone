@@ -15,7 +15,7 @@ import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 import { syncSpriteCell } from "./sprite-cells.js";
 import {createSpriteResourcePool,parseSpriteResourceBudget} from './sprite-resources.js';
-import {createSpritePresentation} from './sprite-presentation.js';
+import {createSpritePresentation,retryableWorldImageError} from './sprite-presentation.js';
 import {heightfieldEntries,createHeightfieldRenderer} from '../shared/heightfields.js';
 import {configureTexture,createPerspectiveCamera} from './presentation3d.js';
 import {createProjectedRenderer,assertProjectedBackend} from './projected.js';
@@ -273,7 +273,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,textureCache,
     getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,linkLoss,
     onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;
-  if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
+  if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite,retainFailures:transactional});
   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor,lighting);
   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
   const dataTextures = createDataTextures(THREE,{memory:options.instanceMemory});
@@ -472,9 +472,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       if (!texture) throw new Error(`MESH_TEXTURE_LOADER_MISSING: ${data.texture}`);
       await texture.promise;
       if(record.discarded||meshAssets.get(id)!==record)return;
-      // Shared textures may still have sprite/scene owners. Do not retire
-      // their leases as a side effect of retrying a mesh JSON request.
-      if (texture.error) throw new Error(`MESH_TEXTURE_ASSET_FAILED: ${data.texture}: ${String(texture.error.message??texture.error)}`);
+      if (texture.error) throw texture.error;
       if(texture.discarded||!texture.texture)return;
       record.geometry = meshGeometry(THREE, data);
       record.material = new THREE.MeshBasicMaterial({map:texture.texture, side:THREE.DoubleSide, alphaTest:0.05});
@@ -648,6 +646,27 @@ export async function createThreeRenderer(canvas, options = {}) {
     return DRAW_COMPLETED;
   }
 
+  function worldImageFailure(){
+    if(!screenFrame)return null;
+    const failure=spritePresentation?.worldImageFailure();if(failure)return failure;
+    for(const record of textureRecords.values())if(record.lastUsed===textureCache.frame&&record.state==='error'&&retryableWorldImageError(record.error))return String(record.error?.message??record.error);
+    return null;
+  }
+  function retryFailedWorldImages(){
+    if(!screenFrame)return 0;
+    let count=spritePresentation?.retryFailedImages()??0;
+    for(const [id,record]of textureRecords)if(record.state==='error'&&retryableWorldImageError(record.error)){
+      record.discarded=true;textureRecords.delete(id);textureCache.untrackOwner(id);
+      const lease=record.imageLease;record.imageLease=null;record.texture?.dispose();record.texture=null;lease?.release();count++;
+    }
+    // Mesh records can cache a dependent image failure after their JSON was
+    // already valid. Retire only those failed records so a retry can reuse
+    // their fresh texture; unrelated meshes and sprite leases remain owned.
+    for(const [id,record]of meshAssets)if(retryableWorldImageError(record.error)){
+      record.discarded=true;meshAssets.delete(id);record.geometry?.dispose();record.material?.dispose();record.litMaterial?.dispose();count++;
+    }
+    return count;
+  }
   function clearTextures() {
     spriteResources?.public.reset();
     if(frameProfile)startupPresentation?.invalidate();
@@ -737,7 +756,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     spriteResources:spriteResources?.public??Object.freeze({prepare(){throw Error('SPRITE_RESOURCE_BACKEND_UNSUPPORTED');},reset(){},takeUpdates(){return {resources:[],appearances:[]};}}),
     async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise));await spriteResources?.ready(); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
     clearTextures,
-    retryFailedMeshAssets,
+    retryFailedMeshAssets,worldImageFailure,retryFailedWorldImages,
     attachPresentation,
     dispose,
     usesGpuSprites: true,

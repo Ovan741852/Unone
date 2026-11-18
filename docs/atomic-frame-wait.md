@@ -17,10 +17,15 @@ context loss and uncertain GPU submission require an opaque recovery surface;
 neither GPU submission nor a browser compositor guarantees physical scanout.
 
 The recorded `api.input.getPresentationWait()` receipt carries an epoch and a
-cumulative `visible_ms` counter. A game using `api.hostTime.sample` for idle
-catch-up must explicitly subtract only the receipt delta in that same sample
-interval. Hidden or host-paused segments are excluded according to delivered
-browser lifecycle events; clocks cannot infer an unobserved OS suspension.
+cumulative `visible_ms` and `uncertain_ms` counters. A game using
+`api.hostTime.sample` for idle catch-up must explicitly subtract only the
+`visible_ms` delta in that same sample interval; uncertain time is not
+evidence of a visible wait. A 250 ms heartbeat separates observed foreground
+intervals from gaps over 1 second, and compares monotonic and wall clocks.
+Hidden or host-paused segments are excluded according to delivered browser
+lifecycle events. A stalled process can be misclassified as uncertain; neither
+clock proves whether an unobserved OS suspension occurred, and whether
+hostTime itself advances during device sleep is platform-dependent.
 The host retries a failed tick with the same receipt, and acknowledges it only
 after a successful tick. Counter values and the epoch are validated as safe,
 monotonic integers. Legacy hosts, games and replays remain unchanged when this
@@ -31,9 +36,9 @@ on-demand depth attachment. Actual process/GPU memory and frame timing must be
 measured on the target device; this feature does not promise a fixed reduction.
 
 Explicit Retry re-prepares failed managed sprite callers without replacing
-healthy callers, and retries failed mesh JSON network/HTTP/body transfers.
-An invalid mesh, unsupported encoding, or a mesh's shared texture failure is a
-terminal error rather than a claim that all shared leases can be retried safely;
-the player exposes reload as the recovery. Repeated failure must not be
-reported as ready, and the previous committed game state is not advanced by
-the paused scheduler while awaiting a retry.
+healthy callers, and retries mesh JSON or image load/header transport errors
+through their failed owners. An invalid mesh or unsupported encoding remains
+a terminal error. A failed image still retained by another broker owner may
+remain unavailable; repeated failure must not be reported as ready, and the
+player exposes reload as a recovery. The paused scheduler does not advance
+the game while awaiting a retry.

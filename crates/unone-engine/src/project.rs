@@ -326,6 +326,8 @@ pub struct InputFrame {
 pub struct PresentationWaitReceipt {
     pub epoch: u64,
     pub visible_ms: u64,
+    #[serde(default)]
+    pub uncertain_ms: u64,
 }
 
 /// Gamepad buttons in the W3C standard order; each becomes the actions
@@ -415,8 +417,8 @@ impl InputFrame {
     /// Validate before mutating input or ticking, across every host path.
     pub fn validate(&self) -> Result<(), Box<crate::Diagnostic>> {
         const MAX_SAFE: u64 = 9_007_199_254_740_991;
-        if self.presentation_wait.as_ref().is_some_and(|r| r.epoch == 0 || r.epoch > MAX_SAFE || r.visible_ms > MAX_SAFE) {
-            return Err(Box::new(crate::Diagnostic::error("INPUT_PRESENTATION_WAIT_INVALID", "Invalid presentation wait receipt", "epoch must be a positive exact JavaScript integer and visible_ms an exact nonnegative JavaScript integer")));
+        if self.presentation_wait.as_ref().is_some_and(|r| r.epoch == 0 || r.epoch > MAX_SAFE || r.visible_ms > MAX_SAFE || r.uncertain_ms > MAX_SAFE) {
+            return Err(Box::new(crate::Diagnostic::error("INPUT_PRESENTATION_WAIT_INVALID", "Invalid presentation wait receipt", "epoch must be a positive exact JavaScript integer; wait counters must be exact nonnegative JavaScript integers")));
         }
         self.presentation_resources.validate().map_err(|e| Box::new(crate::Diagnostic::error(
             "INPUT_PRESENTATION_INVALID", "Invalid presentation resource feedback", e)))?;

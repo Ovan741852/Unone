@@ -21,3 +21,8 @@ test('labels are configurable and composition final input remains admitted witho
  wait.show('error','technical detail');assert.equal(panel.children[0].textContent,'連線失敗');wait.dispose();
  assert.throws(()=>createUiFrameWait({document:doc,window:win,labels:{...labels,retry:''}}),/UI_FRAME_WAIT_LABEL_INVALID/);
 });
+test('dispose removes the overlay and event barriers even if the leave callback fails',()=>{
+ const body=new Elem(),listeners=new Map(),doc={body,createElement:()=>new Elem()},win={addEventListener(k,f){listeners.set(k,f)},removeEventListener(k){listeners.delete(k)}};
+ const wait=createUiFrameWait({document:doc,window:win,onLeave(){throw Error('clock failed');},schedule:()=>1,cancel(){}});
+ wait.show();const root=body.children[0];assert.throws(()=>wait.dispose(),/clock failed/);assert.equal(root.removed,true);assert.equal(listeners.size,0);
+});

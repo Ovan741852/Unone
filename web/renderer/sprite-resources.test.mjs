@@ -9,7 +9,7 @@ import {createTextureCachePolicy} from './texture-cache-policy.js';
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
 const flush=async()=>{for(let i=0;i<30;i++)await Promise.resolve();};
 const definition=value=>({fragment:'vec4 unoneShade(vec2 uv,vec4 color){return color*strength;}',uniforms:{strength:value,tint:[1,.5,.25]}});
-function fixture({pending=[],budget={max_bytes:128,max_entries:8},texturePolicy,failCompile=false,failMaterialId=null,failUpload=false,failFirstUse=false,inspectImage=async()=>({format:'png',width:2,height:2}),imageSize={width:2,height:2},legacy=null,throwImageRelease=false,withPreparationTargets}={}){
+function fixture({pending=[],budget={max_bytes:128,max_entries:8},texturePolicy,failCompile=false,failMaterialId=null,failUpload=false,failFirstUse=false,inspectImage=async()=>({format:'png',width:2,height:2}),imageSize={width:2,height:2},legacy=null,throwImageRelease=false,withPreparationTargets,retainFailures=false}={}){
  const catalog=createAssetCatalog({assets:['a','b','c'].map(id=>({id,kind:'texture2d',source:id+'.png',encoding:{decoder:'image',format:'png',mime:'image/png'}}))});
  const waits=new Map(pending.map(id=>[id,deferred()])),loads=[],closed=[],uploads=[],compiles=[];
  const image=id=>({...imageSize,id,close(){closed.push(id);}});
@@ -20,10 +20,20 @@ function fixture({pending=[],budget={max_bytes:128,max_entries:8},texturePolicy,
  const textureCache=createTextureCachePolicy(new Map(),texturePolicy);
  const pool=createSpriteResourcePool({THREE,renderer,textureCache,getCatalog:()=>catalog,getImages:()=>images,budget,onReset:()=>presenter?.reset(),withPreparationTargets});
  const recordFor=entity=>{let record=records.get(entity.id);if(!record){const material=new THREE.MeshBasicMaterial(),mesh=new THREE.Mesh(geometry,material);record={mesh,material};records.set(entity.id,record);root.add(mesh);}return record;};
- presenter=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:pool,legacy});
- return {pool,presenter,textureCache,records,geometry,broker,loads,closed,uploads,compiles,resolve:id=>waits.get(id).resolve(image(id)),
+ presenter=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:pool,legacy,retainFailures});
+ return {pool,presenter,textureCache,records,geometry,broker,loads,closed,uploads,compiles,resolve:id=>waits.get(id).resolve(image(id)),reject:(id,error)=>waits.get(id).reject(error),succeed:id=>waits.delete(id),
   dispose(){pool.dispose();geometry.dispose();broker.dispose();}};
 }
+test('transactional unmanaged image failure latches until explicit targeted retry',async()=>{
+ const f=fixture({pending:['b'],retainFailures:true});try{
+  const keep=f.pool.public.prepare({id:'keep',asset:'a'});await keep.readyPromise;const epoch=keep.epoch;
+  assert.equal(f.presenter.draw(world(entity('b'))),false);await flush();f.reject('b',Error('IMAGE_ASSET_LOAD_FAILED: b'));await flush();
+  assert.equal(f.presenter.draw(world(entity('b'))),false);assert.match(f.presenter.worldImageFailure(),/^IMAGE_ASSET_LOAD_FAILED/);
+  for(let i=0;i<5;i++)assert.equal(f.presenter.draw(world(entity('b'))),false);assert.deepEqual(f.loads,['a','b']);
+  assert.equal(f.presenter.retryFailedImages(),1);assert.equal(keep.state,'ready');assert.equal(keep.epoch,epoch);f.succeed('b');
+  assert.equal(f.presenter.draw(world(entity('b'))),false);await f.pool.ready();assert.equal(f.presenter.draw(world(entity('b'))),true);assert.deepEqual(f.loads,['a','b','b']);assert.equal(keep.state,'ready');assert.equal(keep.epoch,epoch);
+ }finally{f.dispose();}
+});
 const entity=(asset='a',extra={})=>({id:'slot',transform:{x:0,y:0},sprite:{asset,sheet:{columns:2,rows:1},frame:0},shader_material:'test',...extra});
 const world=(e,value=.25)=>({frame:1,time_seconds:0,entities:{[e.id]:e},shader_materials:{test:definition(value)}});
 const uv=record=>Array.from(record.mesh.geometry.attributes.uv.array);

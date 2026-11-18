@@ -3,6 +3,9 @@ import {syncSpriteCell} from './sprite-cells.js';
 import {spriteMaterialDescriptor,createSpriteMaterial,validateSpriteUniforms,applySpriteMaterialValues} from './shader-materials.js';
 import {spriteResourceError} from './sprite-resources.js';
 const finite=value=>typeof value==='number'&&Number.isFinite(value);
+// Only errors identifying transport/load failures are offered as retryable;
+// malformed assets and rendering/programming errors retain their diagnostics.
+export const retryableWorldImageError=value=>/^IMAGE_ASSET_(?:LOAD|HEADER)_FAILED(?::|$)/.test(String(value?.message??value??''));
 function number(value,fallback){const result=value??fallback;if(!finite(result))throw Error('SPRITE_APPEARANCE_INVALID: finite placement required');return result;}
 function metadata(entity){const v=entity.sprite_appearance;if(v===undefined)return null;if(!v||typeof v.resource!=='string'||!v.resource||!Number.isSafeInteger(v.revision)||v.revision<1)throw Error('SPRITE_APPEARANCE_INVALID');return v;}
 
@@ -21,8 +24,8 @@ function capture(record,entity,world,descriptor,values){
  const meta=metadata(entity);if(meta){d.meta??={};d.meta.resource=meta.resource;d.meta.revision=meta.revision;}else d.meta=null;
  d.frame=world.frame??0;d.time_seconds=world.time_seconds??0;return d;
 }
-export function createSpritePresentation({THREE,root,geometry,records,recordFor,resources,legacy=null}) {
- const descriptorCache=new Map(),submitted=new Map(),frameCandidates=[],alive=new Set(),usedMaterials=new Set(),legacyIds=new Set(),visibleEntities=[];let pending=false,disposed=false;
+export function createSpritePresentation({THREE,root,geometry,records,recordFor,resources,legacy=null,retainFailures=false}) {
+ const descriptorCache=new Map(),submitted=new Map(),frameCandidates=[],alive=new Set(),usedMaterials=new Set(),legacyIds=new Set(),visibleEntities=[];let pending=false,disposed=false,imageFailure=null;
  const matches=(a,b)=>a&&a.resource===b.resource&&a.revision===b.revision&&a.epoch===b.epoch;
  function attemptAll(actions){let failure;for(const action of actions)try{action();}catch(error){failure??=error;}if(failure)throw failure;}
  function stage(id,meta,absence=false){if(!meta)return;const old=submitted.get(id);if(old?.resource===meta.resource&&old.revision===meta.revision&&old.epoch===resources.epoch)return;frameCandidates.push({entity:id,revision:meta.revision,state:'submitted',epoch:resources.epoch,resource:meta.resource,absence});}
@@ -42,7 +45,7 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
   if(remove){root.remove(record.mesh);records.delete(record.id);submitted.delete(record.id);}
   attemptAll([()=>material?.dispose(),()=>cell?.dispose(),()=>candidate?.release(),()=>committed?.release()]);
  }
- function failure(record,meta,error){record.candidateLease?.release();record.candidateLease=null;if(record.committedLease?.state!=='ready')record.mesh.visible=false;if(meta)resources.appearance({entity:record.id,revision:meta.revision,state:'error',epoch:resources.epoch,error:spriteResourceError(error)});pending=true;}
+ function failure(record,meta,error){record.candidateLease?.release();record.candidateLease=null;if(record.committedLease?.state!=='ready')record.mesh.visible=false;if(meta)resources.appearance({entity:record.id,revision:meta.revision,state:'error',epoch:resources.epoch,error:spriteResourceError(error)});else if(retainFailures&&retryableWorldImageError(error)){record.failedImage={asset:record.requestedAsset,error:spriteResourceError(error)};imageFailure=record.failedImage.error;}pending=true;}
  function selectLease(record,entity,world){
   const meta=metadata(entity);
   if(meta){
@@ -77,6 +80,8 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
  }
  function update(entity,world){
   const record=recordFor(entity);record.id=String(entity.id);
+  if(record.failedImage){if(record.failedImage.asset===entity.sprite.asset){pending=true;imageFailure=record.failedImage.error;return;}record.failedImage=null;}
+  record.requestedAsset=entity.sprite.asset;
   if(record.legacyAsset===entity.sprite.asset&&!entity.sprite_appearance){if(!legacy(record,entity,world))pending=true;return;}
   record.legacyAsset=null;
   try{const lease=selectLease(record,entity,world),entry=resources.read(lease);if(!entity.sprite_appearance){resources.touchAuto(lease);if(record.committedLease!==lease)resources.touchAuto(record.committedLease);}
@@ -93,10 +98,10 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
    }
    if(lease.state!=='ready'){pending=true;if(!record.committedLease||record.committedLease.state!=='ready')record.mesh.visible=false;return;}
    adopt(record,lease,entry,desired);stage(record.id,desired.meta);
-  }catch(error){failure(record,metadata(entity),error);if(!entity.sprite_appearance)throw error;}
+  }catch(error){failure(record,metadata(entity),error);if(!entity.sprite_appearance&&!(retainFailures&&retryableWorldImageError(error)))throw error;}
  }
  function draw(world,visible=true){
-  if(disposed)throw Error('SPRITE_PRESENTATION_DISPOSED');resources.beginFrame();pending=false;frameCandidates.length=0;alive.clear();usedMaterials.clear();legacyIds.clear();visibleEntities.length=0;
+  if(disposed)throw Error('SPRITE_PRESENTATION_DISPOSED');resources.beginFrame();pending=false;imageFailure=null;frameCandidates.length=0;alive.clear();usedMaterials.clear();legacyIds.clear();visibleEntities.length=0;
   const entities=world.entities??{};
   for(const id in entities)if(Object.hasOwn(entities,id)){const e=entities[id];if(e.sprite&&visible&&e.sprite.visible!==false)visibleEntities.push(e);}
   visibleEntities.sort(compareSpriteEntities);
@@ -105,7 +110,7 @@ export function createSpritePresentation({THREE,root,geometry,records,recordFor,
   for(const id in entities)if(Object.hasOwn(entities,id)){const entity=entities[id];if(entity.sprite&&!alive.has(String(entity.id))&&!records.has(String(entity.id)))stage(String(entity.id),metadata(entity),entity.sprite.visible===false);}
   for(const id of descriptorCache.keys())if(!usedMaterials.has(id))descriptorCache.delete(id);return !pending;
  }
- return {draw,legacyEntities:()=>legacyIds,submitted(sceneDrawn=true){for(const candidate of frameCandidates)if((sceneDrawn||candidate.absence)&&!matches(submitted.get(candidate.entity),candidate)){const {absence,...value}=candidate;resources.appearance(value);submitted.set(value.entity,value);}},
+ return {draw,legacyEntities:()=>legacyIds,worldImageFailure:()=>imageFailure,retryFailedImages(){let count=0;for(const record of records.values())if(record.failedImage){record.failedImage=null;count++;}imageFailure=null;return count;},submitted(sceneDrawn=true){for(const candidate of frameCandidates)if((sceneDrawn||candidate.absence)&&!matches(submitted.get(candidate.entity),candidate)){const {absence,...value}=candidate;resources.appearance(value);submitted.set(value.entity,value);}},
   reset(){try{attemptAll([...records.values()].map(record=>()=>detach(record,true)));}finally{submitted.clear();descriptorCache.clear();frameCandidates.length=0;visibleEntities.length=0;alive.clear();usedMaterials.clear();legacyIds.clear();}},
   dispose(){if(disposed)return;try{this.reset();}finally{disposed=true;}},get pending(){return pending;}};
 }

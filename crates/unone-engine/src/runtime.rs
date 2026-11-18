@@ -1195,7 +1195,7 @@ impl EngineRuntime {
             let wait_conflict = frame.presentation_wait.as_ref().is_some_and(|receipt|
                 input.pending_presentation_wait.as_ref().is_some_and(|pending| pending != receipt)
                 || input.last_presentation_wait.as_ref().is_some_and(|last|
-                    receipt.epoch < last.epoch || (receipt.epoch == last.epoch && receipt.visible_ms < last.visible_ms)));
+                    receipt.epoch < last.epoch || (receipt.epoch == last.epoch && (receipt.visible_ms < last.visible_ms || receipt.uncertain_ms < last.uncertain_ms))));
             let slider_count = input.pending_ui_sliders.len() + frame.ui_sliders.keys()
                 .filter(|id| !input.pending_ui_sliders.contains_key(*id)).count();
             let text_count = input.pending_ui_text_inputs.len() + frame.ui_text_inputs.keys()
@@ -3942,7 +3942,7 @@ mod text_input_tick_tests {
     #[test]
     fn failed_tick_preserves_presentation_wait_until_success_and_retires_it_once() {
         let state=Rc::new(RefCell::new(InputState::default()));
-        let receipt=crate::project::PresentationWaitReceipt{epoch:1,visible_ms:1234};
+        let receipt=crate::project::PresentationWaitReceipt{epoch:1,visible_ms:1234,uncertain_ms:0};
         state.borrow_mut().pending_presentation_wait=Some(receipt.clone());
         { let _tick=InputTick::begin(&state); assert_eq!(state.borrow().presentation_wait,Some(receipt.clone())); }
         assert_eq!(state.borrow().presentation_wait,None);
@@ -3961,7 +3961,7 @@ mod text_input_tick_tests {
         let bytes=serde_json::to_string(&valid).unwrap();
         let again:crate::InputFrame=serde_json::from_str(&bytes).unwrap();
         assert_eq!(again.presentation_wait,valid.presentation_wait);
-        for text in [r#"{"presentation_wait":{"epoch":0,"visible_ms":0}}"#,r#"{"presentation_wait":{"epoch":1,"visible_ms":9007199254740992}}"#] {
+        for text in [r#"{"presentation_wait":{"epoch":0,"visible_ms":0}}"#,r#"{"presentation_wait":{"epoch":1,"visible_ms":9007199254740992}}"#,r#"{"presentation_wait":{"epoch":1,"visible_ms":0,"uncertain_ms":9007199254740992}}"#] {
             let frame:crate::InputFrame=serde_json::from_str(text).unwrap();
             assert_eq!(frame.validate().unwrap_err().code,"INPUT_PRESENTATION_WAIT_INVALID");
         }
@@ -3984,7 +3984,7 @@ end
 return Game
 "#;
         let mut runtime=EngineRuntime::load_source("WaitReceipt","main.luau",source,None).unwrap();
-        let frame=|epoch,visible_ms| crate::InputFrame{presentation_wait:Some(crate::PresentationWaitReceipt{epoch,visible_ms}),..Default::default()};
+        let frame=|epoch,visible_ms| crate::InputFrame{presentation_wait:Some(crate::PresentationWaitReceipt{epoch,visible_ms,uncertain_ms:0}),..Default::default()};
         let world=runtime.tick_with_input(&frame(1,100)).unwrap();
         assert_eq!(world.observations["wait_epoch"],serde_json::json!(1));
         assert_eq!(world.observations["wait_ms"],serde_json::json!(100));
@@ -3992,6 +3992,9 @@ return Game
         assert_eq!(runtime.tick_with_input(&frame(0,0)).unwrap_err().code,"INPUT_PRESENTATION_WAIT_INVALID");
         let world=runtime.tick_with_input(&frame(1,101)).unwrap();
         assert_eq!(world.observations["wait_ms"],serde_json::json!(101));
+        let uncertain=|n| crate::InputFrame{presentation_wait:Some(crate::PresentationWaitReceipt{epoch:1,visible_ms:101,uncertain_ms:n}),..Default::default()};
+        runtime.tick_with_input(&uncertain(20)).unwrap();
+        assert_eq!(runtime.tick_with_input(&uncertain(19)).unwrap_err().code,"INPUT_PRESENTATION_WAIT_ORDER");
         let world=runtime.tick_with_input(&frame(2,0)).unwrap();
         assert_eq!(world.observations["wait_epoch"],serde_json::json!(2));
         assert_eq!(runtime.tick_with_input(&frame(1,500)).unwrap_err().code,"INPUT_PRESENTATION_WAIT_ORDER");

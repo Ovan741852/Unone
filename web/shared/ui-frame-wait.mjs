@@ -29,5 +29,5 @@ export function createUiFrameWait({document:doc,window:win,onEnter=()=>{},onLeav
   retry.hidden=reload.hidden=mode==='pending';root.hidden=false;root.style.display='flex';
  }
  function hide(){if(!active)return;active=false;mode='';message='';if(timer!==null){cancel(timer);timer=null;}root.hidden=true;root.style.display='none';onLeave();}
- return {show,hide,isActive:()=>active,report:()=>({active,mode,message}),dispose(){if(disposed)return;hide();disposed=true;win.removeEventListener('keydown',block,true);win.removeEventListener('keyup',block,true);win.removeEventListener('beforeinput',block,true);root.remove();}};
+ return {show,hide,isActive:()=>active,report:()=>({active,mode,message}),dispose(){if(disposed)return;try{hide();}finally{disposed=true;win.removeEventListener('keydown',block,true);win.removeEventListener('keyup',block,true);win.removeEventListener('beforeinput',block,true);root.remove();}}};
 }

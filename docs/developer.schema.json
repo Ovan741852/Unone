@@ -630,6 +630,17 @@
           "$ref": "#/$defs/PresentationResourceInput",
           "description": "Recorded presentation feedback, accepted only with a successful tick."
         },
+        "presentation_wait": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PresentationWaitReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Recorded host presentation wait counter; absent for hosts which do not\nopt in. This is not hostTime and does not alter its clock."
+        },
         "ui_sliders": {
           "additionalProperties": {
             "$ref": "#/$defs/SliderInteraction"
@@ -1288,6 +1299,33 @@
           "type": "array"
         }
       },
+      "type": "object"
+    },
+    "PresentationWaitReceipt": {
+      "additionalProperties": false,
+      "description": "Session-local cumulative time spent visibly waiting for presentation.\nA new epoch resets the counter; both numbers must be exact in JavaScript.",
+      "properties": {
+        "epoch": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "uncertain_ms": {
+          "default": 0,
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "visible_ms": {
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "epoch",
+        "visible_ms"
+      ],
       "type": "object"
     },
     "RecordedCommand": {
