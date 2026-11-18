@@ -33,6 +33,11 @@ fn handle(value: &Value) -> mlua::Result<Rc<Resource>> {
 
 pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let api = lua.create_table()?;
+    let registry = Rc::clone(&state.sprite_resources);
+    api.set("hostSupport", lua.create_function(move |_, args: MultiValue| {
+        arity(&args, 0, 0, "hostSupport")?;
+        Ok(registry.borrow().host_support().as_str())
+    })?)?;
     bind_prepare(lua, state, &api)?;
     bind_commit(lua, state, &api)?;
     bind_status(lua, state, &api)?;

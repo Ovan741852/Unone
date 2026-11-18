@@ -3132,6 +3132,10 @@ fn sprite_resource_descriptors() -> Vec<ApiDescriptor> {
     let shared = "Presentation-owned decoded images, GPU texture/program preparation and reference-counted lifetime. Host readiness/submission receipts enter recorded InputFrame.presentation_resources; no promise mutates World. A matching official player/runtime is required. Native custom sprite GLSL is unsupported and reports an error.";
     let errors = vec!["SPRITE_ARGUMENT_INVALID", "SPRITE_HANDLE_INVALID", "SPRITE_ASSET_INVALID", "SPRITE_RESOURCE_RELEASED", "SPRITE_RESOURCE_LIMIT", "SPRITE_APPEARANCE_INVALID", "SHADER_BACKEND_UNSUPPORTED", "UI_PURE_VIEW"];
     [
+        ("sprite.hostSupport", "Read the host's sprite resource feedback capability.",
+         "Distinguish an explicitly headless host from a presenting host or an unknown legacy host; unknown must stay conservative.",
+         vec![], "unknown|supported|unsupported; fixed for the runtime session, independent of image groups and resource readiness.",
+         "local support = api.sprite.hostSupport()"),
         ("sprite.prepare", "Prepare a declared texture and optional material (prefetch, asset readiness, sprite lease, 預取、資源就緒).",
          "Before a character, weapon, effect or unit needs an atlas; retain a small authored working set rather than preloading the manifest.",
          vec![parameter("assetId", "string", "Declared texture2d asset id"), parameter("materialId", "string?", "Declared sprite shader material; absent selects plain sprite rendering")],
