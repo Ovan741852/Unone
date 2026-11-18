@@ -26,6 +26,10 @@ import {playerMemorySnapshot} from '../shared/player-memory.mjs';
 import {serializedSavePayload} from '../shared/save-publication.mjs';
 import {playerErrorPolicy,createRecoveryReporter,createPlayerErrorChannel} from '../shared/player-errors.mjs';
 import {createStartupScreen} from '../shared/startup-screen.mjs';
+import {createAtomicFramePresenter} from '../shared/atomic-frame-presenter.mjs';
+import {createPresentationWaitClock} from '../shared/presentation-wait-clock.mjs';
+import {createUiAssetPreflight} from '../shared/ui-asset-preflight.mjs';
+import {createUiFrameWait} from '../shared/ui-frame-wait.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game');
@@ -44,9 +48,9 @@ const input=createHostInput(),uiRenderer=createCanvasUi(null,{getPresenter:()=>r
  return new URL(`content/${asset.source}`,document.baseURI).href;
 }});
 const uiScroll=createUiScrollHost({canvas,stage:document.querySelector('#ui-layer'),onAction:action=>input.queueAction(action),
- requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));draw();},requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
+ requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));requestUiDraw();},requestRender:requestUiDraw,onDiagnostic:fail});
 const textInputs=createUiTextInputHost({canvas,onInteraction:event=>input.queueTextInputInteraction(event),
- releaseKeyboard:()=>input.releaseKeyboard(),requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
+ releaseKeyboard:()=>input.releaseKeyboard(),requestRender:requestUiDraw,isInputBlocked:()=>!!atomicWait?.isActive(),onDiagnostic:fail});
 const renderUi=snapshot=>uiRenderer.draw(textInputs.draw(uiScroll.draw(uiPassHidden(snapshot)?{...snapshot,world:{...snapshot.world,ui:null}}:snapshot)));
 const cursorCanvas=document.createElement('canvas');document.querySelector('#ui-layer').append(cursorCanvas);
 const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fail,getImageAssets:()=>imageAssets,loadImage:assetId=>{
@@ -55,6 +59,9 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
  return loadCursorImage(new URL(`content/${asset.source}`,document.baseURI).href);
 }});
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null,networkHost=null;
+let atomicFrame=null,atomicWait=null,atomicClock=null,atomicPreflight=null,atomicUiSnapshot=null,atomicPendingReady=null,atomicHostPaused=false;
+let atomicDrawing=false,atomicRedraw=false;
+function requestUiDraw(){if(!snapshot||!renderer||startupAbort.signal.aborted)return;if(atomicDrawing){atomicRedraw=true;return;}draw();}
 let bridgeMs=0,renderMs=0,renderCount=0,frozen=false,manualInput=null,lastStats=null,hasWorldPointer=false;
 let saved,key,projectPayload;
 // What the engine may recover from (presentation error_policy); null is strict.
@@ -100,7 +107,8 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){errors.fatal(error);profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
+function disposeAtomic(){atomicFrame?.dispose();atomicFrame=null;atomicWait?.dispose();atomicWait=null;atomicPreflight?.dispose();atomicPreflight=null;atomicClock?.dispose();atomicClock=null;}
+function fail(error){errors.fatal(error);profiler?.publish();disposePerformanceFeed();startupAbort.abort();disposeAtomic();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
  textInputs.setExternalInput(Boolean(physicalProfile));
@@ -155,7 +163,7 @@ function sendViewport(){viewportQueued=false;if(!snapshot||!backend||startupAbor
  return backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);}
 function viewportChanged(){fitStage();followPixelRatio();if(!snapshot||!backend||startupAbort.signal.aborted)return;if(!viewportQueued){viewportQueued=true;requestAnimationFrame(sendViewport);}}
 function resizeStageViewport(){fitStage();followPixelRatio();return sendViewport();}
-function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession){resourceHost?.reset();imageGroupHost?.reset();}resourceHost?.acceptSnapshot(snapshot);imageGroupHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
+function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');if(atomicClock&&value.world.network_commands?.length)throw Error('ATOMIC_FRAME_WAIT_NETWORK_UNSUPPORTED');snapshot=value;recovery.accept(value.world);if(newSession){resourceHost?.reset();imageGroupHost?.reset();}resourceHost?.acceptSnapshot(snapshot);imageGroupHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
 // Each load or restart starts a new session seed; ?seed= reproduces a reported one.
 function sessionSeed(){const {seed,source}=playerSeed(location.search);metrics.seed=seed;metrics.seed_source=source;document.body.dataset.playerSeed=seed;return seed;}
 function persistSave(){const next=serializedSavePayload(snapshot);if(next!==saved){localStorage.setItem(key,next);saved=next;}}
@@ -175,6 +183,15 @@ function drawFrame(pd,rafTime,rafStart,inFlight,drawSource,budgetMs){
 function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
  if(pd)profiler.mark(pd,'interpolation_sample');
+ if(atomicFrame){
+  let outcome;atomicDrawing=true;try{outcome=atomicFrame.present({snapshot,display:display.snapshot});}finally{atomicDrawing=false;if(atomicRedraw){atomicRedraw=false;queueMicrotask(requestUiDraw);}}
+  renderMs=performance.now()-began;
+  const combined=playerCompletion.finish(outcome,outcome,outcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
+  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
+  const frameText=String(snapshot.world.frame);if(document.body.dataset.playerFrame!==frameText)document.body.dataset.playerFrame=frameText;
+  publishPhysical();
+  return combined;
+ }
  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
  resourceHost?.collect();
   const uiOutcome=renderUi(snapshot);if(pd){profiler.set(pd,uiRenderer.assetDiagnostics());profiler.mark(pd,'ui_draw');}const submittedAt=performance.now();renderMs=submittedAt-began;
@@ -208,10 +225,11 @@ async function advanceFrame(pu,presenting){
  if(orderedQueue){if(!browserInput)throw Error('INPUT_PHYSICAL_MANUAL_UNSUPPORTED: ordered ingress owns the tick batch');frame.physical=orderedQueue.lease();}
  const resourceInput=resourceHost?.leaseInput(frame,{live:browserInput});if(resourceInput)frame=resourceInput.frame;
  const groupInput=imageGroupHost?.leaseInput(frame,{live:browserInput});if(groupInput)frame=groupInput.frame;
+ const waitLease=atomicClock?.lease();if(waitLease)frame={...frame,presentation_wait:waitLease.receipt};
  if(pu)profiler.mark(pu,'input_consume');
  /* PROFILE_INPUT */
  let nextSnapshot;
- try{nextSnapshot=await backend.request({kind:'tick',input:frame,presenting:presenting!==false},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);imageGroupHost?.commitInput(groupInput?.token);}
+ try{nextSnapshot=await backend.request({kind:'tick',input:frame,presenting:presenting!==false},pu?.id);if(orderedQueue)orderedQueue.commit(nextSnapshot.world.physical_input_receipt);resourceHost?.commitInput(resourceInput?.token);imageGroupHost?.commitInput(groupInput?.token);if(waitLease)atomicClock.commit(waitLease.token);}
  catch(error){if(orderedQueue)try{orderedQueue.terminate(String(error.message??error));}catch{}publishPhysical();throw error;}
  if(pu){profiler.mark(pu,'backend_request');profiler.set(pu,{command:profiler.sourceOf(nextSnapshot),snapshot_frame:nextSnapshot?.world?.frame??null});}
  /* PROFILE_TICK_END */
@@ -228,10 +246,10 @@ async function advanceFrame(pu,presenting){
 }
 // A tick request while one is in flight shares it; profiling records that request as coalesced.
 function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update_request','coalesced',{joined:profileFlight});return tickFlight;}tickFlight=advance(presenting).finally(()=>{tickFlight=null;});return tickFlight;}
-async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
+async function setPaused(value){frozen=value;atomicClock?.setEligible(!value&&!document.hidden&&!atomicHostPaused);orderedRouter?.setPaused(value||!!atomicWait?.isActive());publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else if(!atomicWait?.isActive()&&!atomicHostPaused)scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){errors.reset();const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){errors.reset();const wasPaused=frozen;await setPaused(true);if(atomicWait?.isActive())atomicWait.hide();if(atomicClock)atomicClock.reset(atomicClock.report().epoch+1);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused||!!atomicWait?.isActive());audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.start('present');
@@ -259,7 +277,7 @@ async function finishStartup(presentation,kind){
   onWakeDiagnostic:profiler?recordSchedulerWake:null,
   onRafEnd:(at,start,end,flight,budget)=>{playerCompletion.rafEnd(at,start,end,flight,budget);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
   onPreparationEnd:(tag,at,start,end,steps,cancelled,budget)=>playerCompletion.preparationEnd(tag,at,start,end,steps,cancelled,budget),
-  onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();audio?.setVisibility(visible);}});
+  onVisibilityChange:({visible})=>{atomicClock?.setEligible(visible&&!atomicHostPaused&&!frozen);textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();audio?.setVisibility(visible);}});
  /* DEVELOPER_CONNECT */
  if(performanceFeed)publishPerformanceFeed();
  playerPhase='runtime';scheduler.start();
@@ -270,7 +288,7 @@ async function finishStartup(presentation,kind){
  };
  canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
  try{
-  await completeStartupPresentation({draw:()=>draw(null,null,false,'startup'),waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready()]),sample,subscribe,
+  await completeStartupPresentation({draw:()=>draw(null,null,false,'startup'),waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready(),atomicPreflight?.ready(),atomicPendingReady]),sample,subscribe,
    commit,signal:startupAbort.signal,onState:state=>{metrics.startup_presentation=state;metrics.raster=renderer.metrics().raster;
     document.body.dataset.playerMetrics=JSON.stringify(metrics);document.body.dataset.playerStartupPresentation=JSON.stringify(state);}});
  }finally{canvas.removeEventListener('webglcontextlost',lost);canvas.removeEventListener('webglcontextrestored',restored);listeners.clear();}
@@ -303,6 +321,34 @@ async function readImagePreloadPlan(catalog){
  if(startupAbort.signal.aborted)throw startupCancelled();
  let plan;try{plan=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,size)));}catch(error){throw Error(`IMAGE_PRELOAD_PLAN_JSON_INVALID: ${String(error.message??error)}`);}
  return validateImagePreloadPlan(plan,catalog);
+}
+function configureAtomicFrame(settings){
+ if(!settings)return;
+ if(settings.mode!=='pause_offline'||!settings.labels||!renderer.frameTransaction)throw Error('ATOMIC_FRAME_WAIT_UNSUPPORTED: official single-sample transactional renderer required');
+ if(snapshot.world.network_commands?.length)throw Error('ATOMIC_FRAME_WAIT_NETWORK_UNSUPPORTED');
+ atomicClock=createPresentationWaitClock({eligible:!document.hidden&&!atomicHostPaused});
+ const redraw=()=>{if(snapshot&&renderer&&!startupAbort.signal.aborted)queueMicrotask(()=>{if(snapshot&&renderer&&!startupAbort.signal.aborted)try{draw();}catch(error){fail(error);}});};
+ atomicPreflight=createUiAssetPreflight({acquire:id=>imageAssets.acquire(id),onChange:redraw});
+ atomicWait=createUiFrameWait({document,window,labels:settings.labels,isComposing:()=>textInputs.report().composing,
+  onEnter(){orderedRouter?.setPaused(true);scheduler?.pause();atomicClock.begin();input.releaseNonText();uiRenderer.releaseAll();uiScroll.cancel();releaseLegacyPointer();},
+  onLeave(){atomicClock.end();if(!frozen&&!atomicHostPaused){orderedRouter?.setPaused(false);scheduler?.resume();}},
+  onRetry(){atomicPreflight.release();uiRenderer.invalidateAssets();cursorHost.invalidateAssets();redraw();},onReload(){location.reload();}});
+ atomicFrame=createAtomicFramePresenter({transaction:renderer.frameTransaction,
+  prepare(value){
+   atomicPendingReady=null;
+   const source=uiPassHidden(value.snapshot)?{...value.snapshot,world:{...value.snapshot.world,ui:null}}:value.snapshot;
+   atomicUiSnapshot=textInputs.preview(uiScroll.preview(source));
+   const ui=atomicPreflight.update(atomicUiSnapshot);if(ui.outcome.status!=='completed')return ui.outcome;
+   const cursor=cursorHost.prepare(value.snapshot.world.ui_cursor);if(cursor.outcome.status!=='completed'){atomicPendingReady=cursor.ready;cursor.ready?.then(redraw,redraw);return cursor.outcome;}return ui.outcome;
+  },
+  drawWorld(value){try{return renderer.draw(value.display);}finally{resourceHost?.collect();}},
+  drawUi(){return uiRenderer.draw(atomicUiSnapshot,{deferRouting:true});},routeToken:()=>uiRenderer.stagedRoute(),
+  commitRoute:token=>uiRenderer.commitRoute(token),abortRoute:token=>uiRenderer.abortRoute(token),
+  commitHosts(value){const source=uiPassHidden(value.snapshot)?{...value.snapshot,world:{...value.snapshot.world,ui:null}}:value.snapshot;
+   textInputs.draw(uiScroll.draw(source));const cursor=cursorHost.update(value.snapshot.world.ui_cursor);if(cursor.status!=='completed')throw Error('ATOMIC_FRAME_CURSOR_COMMIT_FAILED');},
+  enterWait:outcome=>atomicWait.show(outcome?.reason?.includes('diagnostic')?'error':'pending',outcome?.reason),
+  recover:outcome=>atomicWait.show('error',outcome?.reason),leaveWait:()=>atomicWait.hide(),
+ });
 }
 async function start(){
  startupScreen.start('content');
@@ -361,9 +407,10 @@ async function start(){
  await resizeStageViewport();
  startupScreen.complete('game');startupScreen.start('renderer');
  const renderPasses=await renderExtensions(presentation.render_extensions);
- renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{hostActions:createRendererHostActions(input,{isActive:()=>!startupAbort.signal.aborted}),kind:'three-webgl',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
+ renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{hostActions:createRendererHostActions(input,{isActive:()=>!startupAbort.signal.aborted&&!atomicWait?.isActive()}),kind:'three-webgl',bloom:presentation.bloom,renderPasses,frameTransaction:!!presentation.atomic_frame_wait,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  appliedPixelRatio=renderer.pixelRatio?.()??null;
  resourceHost=createSpriteResourceHost(renderer);resourceHost.acceptSnapshot(snapshot);
+ configureAtomicFrame(presentation.atomic_frame_wait);
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;
  startupScreen.complete('renderer');startupScreen.start('audio');
  audio=await createAudioPlayback({assetManifest:assets,config:project.config.audio,projectRoot:new URL('content/',document.baseURI)});if(audio?.report().failures.length)throw Error(JSON.stringify(audio.report()));
@@ -384,9 +431,9 @@ canvas.addEventListener('pointerdown',e=>{if(!orderedRouter)legacyPointer.route(
 canvas.addEventListener('pointermove',e=>{if(!orderedRouter)legacyPointer.route(e,'move');});canvas.addEventListener('pointerup',e=>{if(!orderedRouter)legacyPointer.route(e,'up');});canvas.addEventListener('pointercancel',e=>{if(!orderedRouter)legacyPointer.route(e,'cancel');});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
-window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
+window.addEventListener('unone-host-pause',()=>{atomicHostPaused=true;atomicClock?.setEligible(false);textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{atomicHostPaused=false;atomicClock?.setEligible(!document.hidden&&!frozen);if(!frozen&&!atomicWait?.isActive())scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('resize',()=>viewportChanged());
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();errors.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
+window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();errors.dispose();startupAbort.abort();disposeAtomic();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

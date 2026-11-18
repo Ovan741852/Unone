@@ -151,9 +151,9 @@ export function createBloom(THREE,renderer,settings) {
     if(vignette?.on){u.vignetteRadius.value=vignette.radius;u.vignetteSoftness.value=vignette.softness;u.vignetteColor.value.set(vignette.color);}
   }
   // first: the chain target holding the image the first extension reads.
-  function extensions(list,first) {
+  function extensions(list,first,destination=null) {
     for(let index=0;index<list.length;index++){
-      const input=chain[(first+index)%2],output=index===list.length-1?null:chain[(first+index+1)%2];
+      const input=chain[(first+index)%2],output=index===list.length-1?destination:chain[(first+index+1)%2];
       list[index].runner.draw({THREE,renderer,input:input.texture,output,width,height,params:list[index].params,fullscreen:(material,destination)=>pass(material,destination)});
     }
   }
@@ -180,7 +180,7 @@ export function createBloom(THREE,renderer,settings) {
     // Without it the creation settings and setEnabled/setAO apply as before.
     // Whether a draw would run any post-processing pass at all.
     active(pipeline){return active(pipeline);},
-    draw(worldScene,worldCamera,overlay,pipeline) {
+    draw(worldScene,worldCamera,overlay,pipeline,destination=null) {
       if(disposed)throw Error('POSTPROCESSING_DISPOSED');
       const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled;
       const tone=pipeline?pipeline.tone:configuredTone,post=pipeline?.extensions??[];
@@ -205,13 +205,13 @@ export function createBloom(THREE,renderer,settings) {
           blur.uniforms.image.value=b.texture;blur.uniforms.direction.value.set(0,1/a.height);pass(blur,a);
         }
         const antialias=Boolean(pipeline?.fxaa);
-        output(tone,antialias||post.length?chain[0]:null);
+        output(tone,antialias||post.length?chain[0]:destination);
         if(antialias){
           fxaa.uniforms.image.value=chain[0].texture;fxaa.uniforms.pixels.value.set(1/width,1/height);
-          pass(fxaa,post.length?chain[1]:null);
+          pass(fxaa,post.length?chain[1]:destination);
         }
-        if(post.length)extensions(post,antialias?1:0);
-      } else {releaseInactiveTargets();renderer.setRenderTarget(null);world();}
+        if(post.length)extensions(post,antialias?1:0,destination);
+      } else {releaseInactiveTargets();renderer.setRenderTarget(destination);world();}
       }finally{timer.end(query);}
     },
     metrics(){

@@ -172,11 +172,15 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     pointerFrames.length = 0;
   }
 
-  function releaseAll() {
+  function releaseNonText() {
     releaseKeyboard();releaseScreenActions();
     releasePointer();
     semanticHeld.clear();semanticEdges.length=0;
     cancelSliders();
+  }
+
+  function releaseAll() {
+    releaseNonText();
     // Preserve admitted text and submit order across focus/lifecycle barriers.
     // Append a cancellation rather than dropping a just-committed IME value.
     for (const [id,text] of textActive) queueTextInputInteraction({id,phase:'cancel',text,composing:false});
@@ -197,6 +201,7 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     releasePointer,
     releaseKeyboard,
     releaseScreenActions,
+    releaseNonText,
     releaseAll,
     get pointer() {
       return copyPointer(pointer);

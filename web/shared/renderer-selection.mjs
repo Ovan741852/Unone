@@ -5,6 +5,7 @@ import {parseProjectedRaster} from '../renderer/projected-raster-policy.js';
 import {parseFrameProfile} from '../renderer/projected-frame-policy.js';
 import {parseTextureCache} from '../renderer/texture-cache-policy.js';
 import {parseUiTextAtlasSize} from '../renderer/ui-text-atlas-policy.js';
+import {normalizeWebglDefaultDepth} from '../renderer/webgl-default-depth.js';
 /** @returns {import('./host-input.js').RendererHostActions} */
 export function requireRendererHostActions(options) {
   const api=options?.hostActions;
@@ -45,10 +46,13 @@ export async function createPlayerRenderer(canvas, options, presentation = {}, {
     parseUiTextAtlasSize(uiTextAtlasSize);
     const webglDesynchronized=presentation.webgl_desynchronized===undefined?options.webglDesynchronized:presentation.webgl_desynchronized;
     normalizeWebglDesynchronized(webglDesynchronized);
-    return createOfficial(canvas, {...options, antialias,...(webglDesynchronized===undefined?{}:{webglDesynchronized}),...(uiTextAtlasSize===undefined?{}:{uiTextAtlasSize}),...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
+    const webglDefaultDepth=presentation.webgl_default_depth===undefined?options.webglDefaultDepth:presentation.webgl_default_depth;
+    normalizeWebglDefaultDepth(webglDefaultDepth);
+    return createOfficial(canvas, {...options, antialias,...(webglDesynchronized===undefined?{}:{webglDesynchronized}),...(webglDefaultDepth===undefined?{}:{webglDefaultDepth}),...(uiTextAtlasSize===undefined?{}:{uiTextAtlasSize}),...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
   }
   if (mode !== 'custom') throw Error(`RENDERER_MODE_INVALID: ${mode}`);
   if(presentation.webgl_desynchronized!==undefined||options.webglDesynchronized!==undefined)throw Error('WEBGL_DESYNCHRONIZED_OFFICIAL_ONLY');
+  if(presentation.webgl_default_depth!==undefined||options.webglDefaultDepth!==undefined)throw Error('WEBGL_DEFAULT_DEPTH_OFFICIAL_WEBGL_ONLY');
   if(presentation.ui_text_atlas_size!==undefined||options.uiTextAtlasSize!==undefined)throw Error('UI_TEXT_ATLAS_OFFICIAL_ONLY');
   if(presentation.texture_cache!==undefined||options.textureCache!==undefined)throw Error('TEXTURE_CACHE_OFFICIAL_ONLY');
   if(presentation.projected_material_profile!==undefined||options.projectedMaterialProfile!==undefined)throw Error('PROJECTED_FRAME_OFFICIAL_WEBGL_ONLY');

@@ -6943,7 +6943,7 @@ function WebGLPrograms( renderer, cubemaps, cubeuvmaps, extensions, capabilities
 
 		if ( material.toneMapped ) {
 
-			if ( currentRenderTarget === null || currentRenderTarget.isXRRenderTarget === true ) {
+			if ( currentRenderTarget === null || currentRenderTarget.isXRRenderTarget === true || currentRenderTarget.texture?.userData?.unoneScreenEncoded === true ) {
 
 				toneMapping = renderer.toneMapping;
 
@@ -6976,7 +6976,7 @@ function WebGLPrograms( renderer, cubemaps, cubeuvmaps, extensions, capabilities
 			instancingMorph: IS_INSTANCEDMESH && object.morphTexture !== null,
 
 			supportsVertexTextures: SUPPORTS_VERTEX_TEXTURES,
-			outputColorSpace: ( currentRenderTarget === null ) ? renderer.outputColorSpace : ( currentRenderTarget.isXRRenderTarget === true ? currentRenderTarget.texture.colorSpace : LinearSRGBColorSpace ),
+			outputColorSpace: ( currentRenderTarget === null || currentRenderTarget.texture?.userData?.unoneScreenEncoded === true ) ? renderer.outputColorSpace : ( currentRenderTarget.isXRRenderTarget === true ? currentRenderTarget.texture.colorSpace : LinearSRGBColorSpace ),
 			alphaToCoverage: !! material.alphaToCoverage,
 
 			map: HAS_MAP,
@@ -17051,7 +17051,7 @@ class WebGLRenderer {
 
 			const fog = scene.fog;
 			const environment = material.isMeshStandardMaterial ? scene.environment : null;
-			const colorSpace = ( _currentRenderTarget === null ) ? _this.outputColorSpace : ( _currentRenderTarget.isXRRenderTarget === true ? _currentRenderTarget.texture.colorSpace : LinearSRGBColorSpace );
+			const colorSpace = ( _currentRenderTarget === null || _currentRenderTarget.texture?.userData?.unoneScreenEncoded === true ) ? _this.outputColorSpace : ( _currentRenderTarget.isXRRenderTarget === true ? _currentRenderTarget.texture.colorSpace : LinearSRGBColorSpace );
 			const envMap = ( material.isMeshStandardMaterial ? cubeuvmaps : cubemaps ).get( material.envMap || environment );
 			const vertexAlphas = material.vertexColors === true && !! geometry.attributes.color && geometry.attributes.color.itemSize === 4;
 			const vertexTangents = !! geometry.attributes.tangent && ( !! material.normalMap || material.anisotropy > 0 );
@@ -17063,7 +17063,7 @@ class WebGLRenderer {
 
 			if ( material.toneMapped ) {
 
-				if ( _currentRenderTarget === null || _currentRenderTarget.isXRRenderTarget === true ) {
+				if ( _currentRenderTarget === null || _currentRenderTarget.isXRRenderTarget === true || _currentRenderTarget.texture?.userData?.unoneScreenEncoded === true ) {
 
 					toneMapping = _this.toneMapping;
 

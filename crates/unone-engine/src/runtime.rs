@@ -190,6 +190,9 @@ struct InputState {
     pending_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
     pending_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
+    presentation_wait: Option<crate::project::PresentationWaitReceipt>,
+    pending_presentation_wait: Option<crate::project::PresentationWaitReceipt>,
+    last_presentation_wait: Option<crate::project::PresentationWaitReceipt>,
     pending_presentation: crate::PresentationResourceInput,
     /// Every name scripts have asked about, for INPUT_ACTION_UNKNOWN. Shared, not
     /// copied, when a reload snapshots this state.
@@ -217,6 +220,7 @@ struct InputTick {
     previous_released: BTreeSet<String>,
     previous_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     previous_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
+    previous_presentation_wait: Option<crate::project::PresentationWaitReceipt>,
     committed: bool,
 }
 
@@ -228,6 +232,7 @@ impl InputTick {
         let released = state.previous_down.iter().filter(|(action, down)| **down && !state.down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
         let sliders = state.pending_ui_sliders.clone();
         let text_inputs=state.pending_ui_text_inputs.clone();
+        let presentation_wait=state.pending_presentation_wait.clone();
         Self {
             input: Rc::clone(input),
             down: state.down.clone(),
@@ -235,6 +240,7 @@ impl InputTick {
             previous_released: std::mem::replace(&mut state.released, released),
             previous_ui_sliders: std::mem::replace(&mut state.ui_sliders, sliders),
             previous_ui_text_inputs: std::mem::replace(&mut state.ui_text_inputs,text_inputs),
+            previous_presentation_wait: std::mem::replace(&mut state.presentation_wait,presentation_wait),
             committed: false,
         }
     }
@@ -244,6 +250,8 @@ impl InputTick {
         input.previous_down = std::mem::take(&mut self.down);
         input.pending_ui_sliders.clear();
         input.pending_ui_text_inputs.clear();
+        if let Some(receipt)=input.presentation_wait.clone() { input.last_presentation_wait=Some(receipt); }
+        input.pending_presentation_wait=None;
         input.pending_presentation = Default::default();
         input.physical.commit();
         self.committed = true;
@@ -259,6 +267,7 @@ impl Drop for InputTick {
             input.released = std::mem::take(&mut self.previous_released);
             input.ui_sliders = std::mem::take(&mut self.previous_ui_sliders);
             input.ui_text_inputs = std::mem::take(&mut self.previous_ui_text_inputs);
+            input.presentation_wait = std::mem::take(&mut self.previous_presentation_wait);
         }
     }
 }
@@ -1180,10 +1189,20 @@ impl EngineRuntime {
             let presentation_conflict = !input.pending_presentation.is_empty()
                 && !frame.presentation_resources.is_empty()
                 && input.pending_presentation != frame.presentation_resources;
+            let wait_conflict = frame.presentation_wait.as_ref().is_some_and(|receipt|
+                input.pending_presentation_wait.as_ref().is_some_and(|pending| pending != receipt)
+                || input.last_presentation_wait.as_ref().is_some_and(|last|
+                    receipt.epoch < last.epoch || (receipt.epoch == last.epoch && receipt.visible_ms < last.visible_ms)));
             let slider_count = input.pending_ui_sliders.len() + frame.ui_sliders.keys()
                 .filter(|id| !input.pending_ui_sliders.contains_key(*id)).count();
             let text_count = input.pending_ui_text_inputs.len() + frame.ui_text_inputs.keys()
                 .filter(|id| !input.pending_ui_text_inputs.contains_key(*id)).count();
+            if wait_conflict {
+                return Err(Box::new(Diagnostic::error(
+                    "INPUT_PRESENTATION_WAIT_ORDER", "Presentation wait receipt rejected",
+                    "Retry an unconsumed receipt unchanged; within an epoch the cumulative visible wait must not decrease, and epochs must not go backwards.",
+                )));
+            }
             if conflicts || presentation_conflict || slider_count > 256 || text_count > 64 {
                 return Err(Box::new(Diagnostic::error(
                     "INPUT_UI_PENDING", "Semantic input is still pending",
@@ -1195,6 +1214,7 @@ impl EngineRuntime {
             input.gamepads = frame.gamepads.clone();
             input.pending_ui_sliders.extend(frame.ui_sliders.clone());
             input.pending_ui_text_inputs.extend(frame.ui_text_inputs.clone());
+            if let Some(receipt)=&frame.presentation_wait { input.pending_presentation_wait=Some(receipt.clone()); }
             if !frame.presentation_resources.is_empty() { input.pending_presentation = frame.presentation_resources.clone(); }
         }
         if let Some(pointer) = &frame.pointer {
@@ -3914,6 +3934,66 @@ mod text_input_tick_tests {
         assert!(state.borrow().pending_ui_text_inputs.is_empty());
         InputTick::begin(&state).commit();
         assert!(state.borrow().ui_text_inputs.is_empty());
+    }
+
+    #[test]
+    fn failed_tick_preserves_presentation_wait_until_success_and_retires_it_once() {
+        let state=Rc::new(RefCell::new(InputState::default()));
+        let receipt=crate::project::PresentationWaitReceipt{epoch:1,visible_ms:1234};
+        state.borrow_mut().pending_presentation_wait=Some(receipt.clone());
+        { let _tick=InputTick::begin(&state); assert_eq!(state.borrow().presentation_wait,Some(receipt.clone())); }
+        assert_eq!(state.borrow().presentation_wait,None);
+        assert_eq!(state.borrow().pending_presentation_wait,Some(receipt.clone()));
+        assert_eq!(state.borrow().last_presentation_wait,None);
+        InputTick::begin(&state).commit();
+        assert_eq!(state.borrow().pending_presentation_wait,None);
+        assert_eq!(state.borrow().last_presentation_wait,Some(receipt));
+        { let _tick=InputTick::begin(&state); assert_eq!(state.borrow().presentation_wait,None); }
+    }
+
+    #[test]
+    fn presentation_wait_validation_requires_safe_integers_and_round_trips() {
+        let valid:crate::InputFrame=serde_json::from_str(r#"{"presentation_wait":{"epoch":1,"visible_ms":9007199254740991}}"#).unwrap();
+        assert!(valid.validate().is_ok());
+        let bytes=serde_json::to_string(&valid).unwrap();
+        let again:crate::InputFrame=serde_json::from_str(&bytes).unwrap();
+        assert_eq!(again.presentation_wait,valid.presentation_wait);
+        for text in [r#"{"presentation_wait":{"epoch":0,"visible_ms":0}}"#,r#"{"presentation_wait":{"epoch":1,"visible_ms":9007199254740992}}"#] {
+            let frame:crate::InputFrame=serde_json::from_str(text).unwrap();
+            assert_eq!(frame.validate().unwrap_err().code,"INPUT_PRESENTATION_WAIT_INVALID");
+        }
+        for text in [r#"{"presentation_wait":{"epoch":1,"visible_ms":-1}}"#,r#"{"presentation_wait":{"epoch":1,"visible_ms":1.5}}"#,r#"{"presentation_wait":{"epoch":1,"visible_ms":0,"extra":1}}"#] {
+            assert!(serde_json::from_str::<crate::InputFrame>(text).is_err());
+        }
+        assert!(!serde_json::to_string(&crate::InputFrame::default()).unwrap().contains("presentation_wait"));
+    }
+
+    #[test]
+    fn presentation_wait_is_tick_scoped_ordered_and_observable() {
+        let source=r#"
+local Game={}
+function Game.start(api) end
+function Game.update(api,dt)
+ local wait=api.input.getPresentationWait()
+ api.observation.set('wait_epoch',if wait then wait.epoch else 0)
+ api.observation.set('wait_ms',if wait then wait.visible_ms else -1)
+end
+return Game
+"#;
+        let mut runtime=EngineRuntime::load_source("WaitReceipt","main.luau",source,None).unwrap();
+        let frame=|epoch,visible_ms| crate::InputFrame{presentation_wait:Some(crate::PresentationWaitReceipt{epoch,visible_ms}),..Default::default()};
+        let world=runtime.tick_with_input(&frame(1,100)).unwrap();
+        assert_eq!(world.observations["wait_epoch"],serde_json::json!(1));
+        assert_eq!(world.observations["wait_ms"],serde_json::json!(100));
+        assert_eq!(runtime.tick_with_input(&frame(1,99)).unwrap_err().code,"INPUT_PRESENTATION_WAIT_ORDER");
+        assert_eq!(runtime.tick_with_input(&frame(0,0)).unwrap_err().code,"INPUT_PRESENTATION_WAIT_INVALID");
+        let world=runtime.tick_with_input(&frame(1,101)).unwrap();
+        assert_eq!(world.observations["wait_ms"],serde_json::json!(101));
+        let world=runtime.tick_with_input(&frame(2,0)).unwrap();
+        assert_eq!(world.observations["wait_epoch"],serde_json::json!(2));
+        assert_eq!(runtime.tick_with_input(&frame(1,500)).unwrap_err().code,"INPUT_PRESENTATION_WAIT_ORDER");
+        let world=runtime.tick_with_input(&crate::InputFrame::default()).unwrap();
+        assert_eq!(world.observations["wait_ms"],serde_json::json!(-1));
     }
 }
 

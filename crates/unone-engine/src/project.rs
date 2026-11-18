@@ -308,10 +308,24 @@ pub struct InputFrame {
     /// Recorded presentation feedback, accepted only with a successful tick.
     #[serde(default, skip_serializing_if = "crate::PresentationResourceInput::is_empty")]
     pub presentation_resources: crate::PresentationResourceInput,
+    /// Recorded host presentation wait counter; absent for hosts which do not
+    /// opt in. This is not hostTime and does not alter its clock.
+    #[serde(default, skip_serializing_if = "Option::is_none", deserialize_with = "crate::physical_input::present")]
+    pub presentation_wait: Option<PresentationWaitReceipt>,
     /// Sticks and triggers of each connected gamepad (docs/input-gamepad.md).
     /// Buttons arrive as actions: Gamepad_A for any pad, Gamepad1_A for slot 1.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub gamepads: Vec<GamepadInput>,
+}
+
+/// Session-local cumulative time spent visibly waiting for presentation.
+/// A new epoch resets the counter; both numbers must be exact in JavaScript.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct PresentationWaitReceipt {
+    pub epoch: u64,
+    pub visible_ms: u64,
 }
 
 /// Gamepad buttons in the W3C standard order; each becomes the actions
@@ -400,6 +414,10 @@ pub struct PointerInput {
 impl InputFrame {
     /// Validate before mutating input or ticking, across every host path.
     pub fn validate(&self) -> Result<(), Box<crate::Diagnostic>> {
+        const MAX_SAFE: u64 = 9_007_199_254_740_991;
+        if self.presentation_wait.as_ref().is_some_and(|r| r.epoch == 0 || r.epoch > MAX_SAFE || r.visible_ms > MAX_SAFE) {
+            return Err(Box::new(crate::Diagnostic::error("INPUT_PRESENTATION_WAIT_INVALID", "Invalid presentation wait receipt", "epoch must be a positive exact JavaScript integer and visible_ms an exact nonnegative JavaScript integer")));
+        }
         self.presentation_resources.validate().map_err(|e| Box::new(crate::Diagnostic::error(
             "INPUT_PRESENTATION_INVALID", "Invalid presentation resource feedback", e)))?;
         if let Some(b)=&self.physical {b.validate().map_err(|e|Box::new(crate::Diagnostic::error("INPUT_PHYSICAL_INVALID","Invalid physical batch",e)))?;}

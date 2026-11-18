@@ -188,7 +188,7 @@ pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{AspectMode, DisplayConfig};
 pub use project::{
     AnimationAssertion, AudioAssertion, EffectsAssertion, GAMEPAD_BUTTONS, GAMEPAD_SLOTS, GamepadInput, InputFrame, ObservationAssertion,
-    PointerInput, SliderInteraction, SliderPhase, TextInputInteraction, TextInputPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
+    PointerInput, PresentationWaitReceipt, SliderInteraction, SliderPhase, TextInputInteraction, TextInputPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,
     ProjectInitReport, ProjectInspectReport, ProjectPaths, TestAssertion, TestSpec, UiAssertion,
     UiPreviewSpec, ImportConfig, ImporterSpec, ImportRoot,
 };

@@ -63,6 +63,8 @@ const WEB_PRESENTATION_KEYS: &[&str] = &[
     "show_performance",
     "antialias",
     "webgl_desynchronized",
+    "webgl_default_depth",
+    "atomic_frame_wait",
     "projected_raster",
     "projected_material_profile",
     "physical_input",
@@ -256,6 +258,13 @@ pub struct PresentationSettings {
     pub antialias: Option<bool>,
     #[serde(default, skip_serializing_if="Option::is_none", deserialize_with="declared_antialias")]
     pub webgl_desynchronized: Option<bool>,
+    /// The official WebGL default drawing buffer depth attachment. Omission
+    /// retains Three's existing depth-enabled behavior.
+    #[serde(default, skip_serializing_if="Option::is_none", deserialize_with="declared_antialias")]
+    pub webgl_default_depth: Option<bool>,
+    /// Explicit offline-only simulation pause during presentation waits.
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="declared_atomic_frame_wait")]
+    pub atomic_frame_wait: Option<AtomicFrameWait>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_raster::declared")]
     pub projected_raster: Option<projected_raster::ProjectedRasterPolicy>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_frame::declared")]
@@ -283,6 +292,22 @@ pub struct PresentationSettings {
     /// reads it from the packaged presentation.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub startup: Option<StartupScreen>,
+}
+
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AtomicFrameWait {
+    pub mode: AtomicFrameWaitMode,
+    pub labels: AtomicFrameWaitLabels,
+}
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all="snake_case")]
+pub enum AtomicFrameWaitMode { PauseOffline }
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AtomicFrameWaitLabels { pub loading:String, pub delayed:String, pub error:String, pub retry:String, pub reload:String }
+fn declared_atomic_frame_wait<'de,D:serde::Deserializer<'de>>(deserializer:D)->Result<Option<AtomicFrameWait>,D::Error> {
+    <AtomicFrameWait as serde::Deserialize>::deserialize(deserializer).map(Some)
 }
 
 /// What the official players show while they start: a logo over a
@@ -375,6 +400,12 @@ fn declared_ui_text_atlas_size<'de,D:serde::Deserializer<'de>>(deserializer:D)->
 
 impl PresentationSettings {
     pub fn validate_renderer(&self) -> Result<()> {
+        if let Some(wait)=&self.atomic_frame_wait {
+            ensure!(self.renderer_mode==RendererMode::Official && self.antialias==Some(false),"ATOMIC_FRAME_WAIT_OFFICIAL_SINGLE_SAMPLE_REQUIRED");
+            for label in [&wait.labels.loading,&wait.labels.delayed,&wait.labels.error,&wait.labels.retry,&wait.labels.reload] {
+                ensure!(!label.trim().is_empty() && label.chars().count()<=120,"ATOMIC_FRAME_WAIT_LABEL_INVALID");
+            }
+        }
         if let Some(size)=self.ui_text_atlas_size {
             ensure!(self.renderer_mode==RendererMode::Official,"UI_TEXT_ATLAS_OFFICIAL_ONLY");
             ensure!((256..=4096).contains(&size) && size.is_power_of_two(),"UI_TEXT_ATLAS_SIZE_INVALID: expected a power of two from 256 to 4096");
@@ -382,6 +413,9 @@ impl PresentationSettings {
         if let Some(policy)=&self.texture_cache {
             ensure!(self.renderer_mode==RendererMode::Official,"TEXTURE_CACHE_OFFICIAL_ONLY");
             policy.validate()?;
+        }
+        if self.webgl_default_depth.is_some() {
+            ensure!(self.renderer_mode==RendererMode::Official,"WEBGL_DEFAULT_DEPTH_OFFICIAL_WEBGL_ONLY");
         }
         physical_input::validate(self.physical_input,self.renderer_mode==RendererMode::Official)?;
         if let Some(policy)=self.error_policy { policy.validate().map_err(anyhow::Error::msg)?; }
@@ -626,6 +660,10 @@ pub fn native_wgpu_export_gate(
     if presentation.webgl_desynchronized.is_some() {
         keys.push("webgl_desynchronized");
     }
+    if presentation.webgl_default_depth.is_some() {
+        keys.push("webgl_default_depth");
+    }
+    if presentation.atomic_frame_wait.is_some() { keys.push("atomic_frame_wait"); }
     if presentation.ui_text_atlas_size.is_some() {
         keys.push("ui_text_atlas_size");
     }
@@ -657,6 +695,24 @@ pub fn native_wgpu_export_gate(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn atomic_wait_is_explicit_localized_single_sample_web_only() {
+        use super::*;
+        use serde_json::json;
+        let plain:PresentationSettings=serde_json::from_value(json!({})).unwrap();
+        assert!(plain.atomic_frame_wait.is_none());
+        let candidate=json!({"antialias":false,"atomic_frame_wait":{"mode":"pause_offline","labels":{"loading":"載入中","delayed":"請稍候","error":"載入失敗","retry":"重試","reload":"重新載入"}}});
+        let value:PresentationSettings=serde_json::from_value(candidate.clone()).unwrap();
+        value.validate_renderer().unwrap();
+        for bad in [json!(null),json!({}),json!({"mode":"pause_online","labels":{}})] {
+            let mut changed=candidate.clone();changed["atomic_frame_wait"]=bad;
+            assert!(serde_json::from_value::<PresentationSettings>(changed).is_err());
+        }
+        let mut invalid=candidate.clone();invalid["atomic_frame_wait"]["labels"]["retry"]=json!("");
+        assert!(serde_json::from_value::<PresentationSettings>(invalid).unwrap().validate_renderer().is_err());
+        let mut msaa=candidate;msaa["antialias"]=json!(true);
+        assert!(serde_json::from_value::<PresentationSettings>(msaa).unwrap().validate_renderer().is_err());
+    }
     use super::*;
 
     #[test]
@@ -800,6 +856,31 @@ mod tests {
         let custom:PresentationSettings=serde_json::from_value(json!({"webgl_desynchronized":true,"renderer_mode":"custom",
             "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
         assert!(custom.validate_renderer().unwrap_err().to_string().contains("WEBGL_DESYNCHRONIZED_OFFICIAL_ONLY"));
+    }
+
+    #[test]
+    fn webgl_default_depth_is_strict_optional_and_web_only() {
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([
+            ("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        let omitted=PresentationSettings::default();
+        assert!(omitted.webgl_default_depth.is_none());
+        assert!(serde_json::to_value(&omitted).unwrap().get("webgl_default_depth").is_none());
+        native_wgpu_export_gate(&quiet,Some(&omitted)).unwrap();
+        for value in [false,true] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"webgl_default_depth":value})).unwrap();
+            assert_eq!(settings.webgl_default_depth,Some(value));
+            assert_eq!(serde_json::to_value(&settings).unwrap()["webgl_default_depth"],value);
+            settings.validate_renderer().unwrap();
+            assert!(native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string().contains("webgl_default_depth"));
+        }
+        for value in [json!(null),json!(0),json!("false"),json!({}),json!([])] {
+            assert!(serde_json::from_value::<PresentationSettings>(json!({"webgl_default_depth":value})).is_err());
+        }
+        let custom:PresentationSettings=serde_json::from_value(json!({"webgl_default_depth":false,"renderer_mode":"custom",
+            "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
+        assert!(custom.validate_renderer().unwrap_err().to_string().contains("WEBGL_DEFAULT_DEPTH_OFFICIAL_WEBGL_ONLY"));
+        let checked:PresentationSettings=serde_json::from_value(json!({"webgl_default_depth":false,"projected_raster":"upper_left_checked","antialias":false})).unwrap();
+        checked.validate_renderer().unwrap(); // The runtime keeps depth for checked raster.
     }
 
     #[test]

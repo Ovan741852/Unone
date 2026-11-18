@@ -106,7 +106,8 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
   const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets,acquireAsset};
   const readyWaiters=new Set();let requiredAssets=new Set();
   let previous=null,paintKey=null,paintDefinitions=[],dirty=true,disposed=false,nodes=[],generation=0,batches=new Map(),prefix=[],references=[],gpuPrefix=0,loadingAssets=0;
-  let assetTrace=null,assetTraceEpoch=0;
+  let assetTrace=null,assetTraceEpoch=0,stagedRoute=null,routedNodes=null;
+  function publishRoute(next){routing.setNodes(next);routedNodes=next;}
   function setAssetObserver(observer){
     if(observer!==null&&typeof observer!=='function')throw Error('UI_ASSET_OBSERVER_INVALID');
     assetTrace=!disposed&&observer?{observer,epoch:++assetTraceEpoch,refs:new Map(),entries:new WeakMap(),composition:0,frame:null,nextEntry:0,events:0,emitted:0,eventOverflow:0,metadataOverflow:0,failures:0}:null;
@@ -280,6 +281,8 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
   return {
     draw(snapshot,options={}){
       if(disposed)throw Error('UI_DISPOSED');
+      // Invalidate an older candidate even when this draw cannot reach a target.
+      stagedRoute=null;
       const gpu=canvas?null:getPresenter();let bw,bh,scale;
       if(gpu){const target=gpu.target();if(!target)return DRAW_SKIPPED.ui_target_unavailable;bw=target.width;bh=target.height;scale=target.scale;
         if(gpuTarget.width!==bw||gpuTarget.height!==bh||gpuTarget.scale!==scale){gpuTarget={width:bw,height:bh,scale};dirty=true;}}
@@ -293,7 +296,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       const world=snapshot?.world??snapshot,tree=world?.ui??null,imageBatches=world?.ui_image_batches,key=uiTreeGeneration(tree)??uiProjectionGeneration(tree)??JSON.stringify(tree),resourceChanged=key===previous&&references.some(r=>batchResolver.resource(r.id,imageBatches)!==r.definition);
       if(assetTrace)assetTrace.frame=Number.isSafeInteger(world?.frame)?world.frame:null;
       let compositionChanged=false;
-      if(key!==previous||resourceChanged){const prepared=prepareUi(tree,imageBatches,batchResolver);usage=prepared.usage;nodes=prepared.nodes;batches=prepared.batches;routing.setNodes(nodes);previous=key;compositionChanged=true;
+      if(key!==previous||resourceChanged){const prepared=prepareUi(tree,imageBatches,batchResolver);usage=prepared.usage;nodes=prepared.nodes;batches=prepared.batches;if(!options.deferRouting)publishRoute(nodes);previous=key;compositionChanged=true;
         references=[];prefix=[];let leading=true;const used=new Set();
         if(assetTrace){assetTrace.composition++;assetTrace.events=0;assetTrace.refs.clear();}
         for(const node of nodes){if(node.kind==='image_batch'){const instance=batches.get(node);instance.prefixIndex=leading?prefix.length:-1;if(leading)prefix.push(instance);if(instance.retained)references.push({id:node.content,definition:instance.definition});for(const id of instance.definition.assets){used.add(id);if(assetTrace)traceReference(id,node,true);}}
@@ -310,6 +313,9 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
           for(const [id,e]of assets)if(!requiredAssets.has(id)){if(e.state==='loading')loadingAssets--;releaseAsset(e,id,'composition');assets.delete(id);diagnostics.delete(id);}
           batchResolver.prune(nodes);}}
         if(disposed)throw Error('UI_DISPOSED');}
+      if(options.deferRouting)stagedRoute={token:Symbol('ui-route'),nodes};
+      // A previous deferred draw can leave the current composition unrouted.
+      else if(nodes!==routedNodes)publishRoute(nodes);
       if(gpu){
         // One serialization per node serves composition/paint dirty detection.
         if(compositionChanged){const nextNodeKeys=nodes.map(n=>JSON.stringify(n)),definitions=nodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
@@ -360,6 +366,10 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,setAssetObserver,assetDiagnostics,
+    stagedRoute(){return stagedRoute?.token??null;},
+    commitRoute(token){if(disposed)throw Error('UI_DISPOSED');if(!stagedRoute||stagedRoute.token!==token)throw Error('UI_ROUTE_STALE');
+      const next=stagedRoute.nodes;stagedRoute=null;publishRoute(next);},
+    abortRoute(token){if(stagedRoute?.token===token)stagedRoute=null;},
     setFont(family){fontFamily=family;dirty=true;},
     invalidateAssets(){retireGpu();generation++;for(const [id,e]of assets)releaseAsset(e,id,'invalidate');assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
     report(){const gpu=canvas?null:getPresenter();return {backend:canvas?'canvas2d':'three.js',...(gpu?{gpu:gpu.metrics()}:{}),nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},

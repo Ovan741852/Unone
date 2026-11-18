@@ -814,6 +814,19 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 fn descriptors() -> Vec<ApiDescriptor> {
     let mut result = vec![
         descriptor(
+            "input.getPresentationWait", "input",
+            "Read an optional cumulative host presentation-wait receipt on this tick.",
+            "Opt-in local games can exclude visible presentation stalls from their own idle gap calculations while preserving real background time.",
+            "This receipt does not change hostTime, physics, the scheduler, or a game's save. A game chooses its own treatment. Hosts must not claim ordinary hidden or background time as presentation waiting.",
+            vec![],
+            "PresentationWaitReceipt? = {epoch:number, visible_ms:number}; nil when no receipt was delivered.",
+            vec!["Read-only tick snapshot; successful ticks consume the receipt"],
+            "Within an epoch visible_ms is cumulative and nondecreasing. Failed ticks preserve pending receipts for retry; a new host session uses a new epoch. Receipts are recorded with InputFrame for deterministic replay.",
+            vec!["Requires an explicitly opted-in matching host and Core; absent receipts preserve existing semantics.", "Both values are exact JavaScript integers, epoch positive."],
+            "local wait = api.input.getPresentationWait()",
+            vec!["hostTime.sample", "input.getTextInputInteraction"],
+        ),
+        descriptor(
             "input.getTextInputInteraction", "input",
             "Read the current non-consuming text input and IME event for an official text_input control.",
             "Editable single-line plain text with Chinese IME, paste and keyboard isolation; see docs/ui-text-input.md.",

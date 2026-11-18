@@ -230,12 +230,16 @@ export type GesturesApi = {
 -- after a radial deadzone; triggers 0..1. Buttons are actions: Gamepad_A
 -- (any pad) or Gamepad1_A..Gamepad4_A, read with isDown/wasPressed.
 export type GamepadState = { slot: number, leftStick: Vec2, rightStick: Vec2, leftTrigger: number, rightTrigger: number }
+export type PresentationWaitReceipt = { epoch: number, visible_ms: number }
 export type InputApi = {
     gestures: GesturesApi,
     -- Slot 1..4, or the lowest connected slot when omitted; nil when not connected.
     getGamepad: (slot: number?) -> GamepadState?,
     -- Every connected gamepad, by slot.
     getGamepads: () -> {GamepadState},
+    -- Optional cumulative visible presentation-wait milliseconds for this host session.
+    -- Nil when the host has not supplied a receipt on this tick.
+    getPresentationWait: () -> PresentationWaitReceipt?,
     -- Current successful-tick text editing event; nil when no event for this ID.
     getTextInputInteraction: (id: string) -> UiTextInputInteraction?,
     -- Tick-scope detached ordered ingress; nil outside update or for legacy input.

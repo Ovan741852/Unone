@@ -189,6 +189,9 @@ impl HostInputState {
         if self.queued.as_ref().is_some_and(|old|old.physical.is_some()) {
             return Err("INPUT_PHYSICAL_ALREADY_QUEUED: tick the accepted batch before another input frame".into());
         }
+        if self.queued.as_ref().is_some_and(|old|old.presentation_wait.is_some()) {
+            return Err("INPUT_PRESENTATION_WAIT_ALREADY_QUEUED: tick the accepted wait receipt before another input frame".into());
+        }
         self.queued=Some(frame);Ok(())
     }
     pub fn queue_frame(&mut self, frame: InputFrame)->Result<(),String> {self.try_queue_frame(frame)}
@@ -234,7 +237,8 @@ impl HostInputState {
             if let Some(pointer) = &mut frame.pointer {
                 pointer.down = false;
             }
-            if frame.physical.is_none() && frame.ui_sliders.is_empty() && frame.ui_text_inputs.is_empty() {
+            if frame.physical.is_none() && frame.ui_sliders.is_empty() && frame.ui_text_inputs.is_empty()
+                && frame.presentation_resources.is_empty() && frame.presentation_wait.is_none() {
                 self.queued = None;
             }
         }

@@ -3,6 +3,19 @@ import {createUiPointerRouter,createCanvasUi,flattenUi} from './canvas-ui.mjs';
 import {createHostInput} from './host-input.js';
 const rect={x:0,y:0,width:50,height:50},button={kind:'button',id:'open',rect,text:'',action:'OpenChest'};
 
+test('deferred routing keeps old hit targets on abort and only commits the latest candidate',()=>{
+ const ctx={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},rect(){},clip(){},fillText(){},measureText:()=>({width:1})};
+ const ui=createCanvasUi({width:100,height:100,getContext:()=>ctx});
+ const view=action=>({ui:{children:[{...button,action}]}});
+ ui.draw(view('Old'));assert.equal(ui.hitTest(5,5).action,'Old');
+ ui.draw(view('New'),{deferRouting:true});const first=ui.stagedRoute();assert.equal(ui.hitTest(5,5).action,'Old');
+ ui.abortRoute(first);assert.throws(()=>ui.commitRoute(first),/UI_ROUTE_STALE/);assert.equal(ui.hitTest(5,5).action,'Old');
+ ui.draw(view('New'),{deferRouting:true});const second=ui.stagedRoute();ui.draw(view('Newest'),{deferRouting:true});
+ const newest=ui.stagedRoute();assert.throws(()=>ui.commitRoute(second),/UI_ROUTE_STALE/);assert.equal(ui.hitTest(5,5).action,'Old');
+ ui.commitRoute(newest);assert.equal(ui.hitTest(5,5).action,'Newest');assert.throws(()=>ui.commitRoute(newest),/UI_ROUTE_STALE/);
+ ui.draw(view('Legacy'));assert.equal(ui.hitTest(5,5).action,'Legacy');ui.dispose();
+});
+
 test('Canvas detects in-place text, action and clip edits and validates changed batches',()=>{
  const drawn=[],events=[],ctx={setTransform(){},clearRect(){},save(){},restore(){},beginPath(){},rect(){},clip(){},fillText:t=>drawn.push(t),measureText:()=>({width:1})};
  const ui=createCanvasUi({width:100,height:100,getContext:()=>ctx},{onAction:e=>events.push(e)});

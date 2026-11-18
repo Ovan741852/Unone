@@ -18,6 +18,13 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         .set_name("@packages/unone-gestures")
         .call((super::value::json_to_lua(lua, package_info)?, declared, guard))?;
     input_api.set("gestures", gestures)?;
+    let presentation_wait=Rc::clone(&input);
+    input_api.set("getPresentationWait",lua.create_function(move |lua,():()| {
+        match &presentation_wait.borrow().presentation_wait {
+            Some(receipt)=>super::value::observation_json_to_lua(lua,serde_json::to_value(receipt).map_err(mlua::Error::external)?),
+            None=>Ok(mlua::Value::Nil),
+        }
+    })?)?;
     let physical_input=Rc::clone(&input);
     input_api.set("getPhysicalBatch",lua.create_function(move |lua,():()| {
         match &physical_input.borrow().physical.active {

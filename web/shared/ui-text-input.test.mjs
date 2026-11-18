@@ -24,21 +24,49 @@ function cssStyle(){const props=new Map();return {getPropertyValue:k=>props.get(
 function setup(){
   const win=new Target(),doc=new Target(),body=new Target(),canvas=new Target(),input=createHostInput();canvas.style=cssStyle();
   Object.assign(doc,{body,defaultView:win,activeElement:canvas,hidden:false});
-  let bounds={left:10,top:146.5,width:1591,height:894.9375},redraws=0,focuses=0;
+  let bounds={left:10,top:146.5,width:1591,height:894.9375},redraws=0,focuses=0,blocked=false;
   canvas.ownerDocument=doc;canvas.getBoundingClientRect=()=>bounds;
   doc.createElement=()=>{const el=new Target();el.value='';el.selectionStart=el.selectionEnd=0;
     el.focus=()=>{focuses++;doc.activeElement=el;};
     el.blur=()=>{if(doc.activeElement===el)doc.activeElement=canvas;el.emit('blur');};
     el.setSelectionRange=(start,end)=>{el.selectionStart=start;el.selectionEnd=end;};return el;};
   const events=[],host=createUiTextInputHost({canvas,onInteraction:e=>{events.push(e);input.queueTextInputInteraction(e);},
-    releaseKeyboard:()=>input.releaseKeyboard(),requestRender:()=>redraws++});
+    releaseKeyboard:()=>input.releaseKeyboard(),requestRender:()=>redraws++,isInputBlocked:()=>blocked});
   const node=(extra={})=>({kind:'text_input',id:'nickname',rect:{x:30,y:40,width:40,height:10},text:'',placeholder:'你的稱呼',max_length:8,focused:true,...extra});
   const draw=(extra={})=>host.draw({world:{ui:{children:[node(extra)]}}});
   const sink=()=>body.children[0];
   const key=(code,extra={})=>win.emit('keydown',{code,key:code,...extra});
-  return {win,doc,body,canvas,input,host,events,node,draw,sink,key,setBounds:v=>bounds=v,
+  return {win,doc,body,canvas,input,host,events,node,draw,sink,key,setBounds:v=>bounds=v,setBlocked:v=>blocked=v,
     get redraws(){return redraws;},get focuses(){return focuses;}};
 }
+
+test('covered input does not submit while an existing IME composition can finish',()=>{
+ const s=setup();s.draw();const el=s.sink();el.emit('compositionstart');el.value='小';el.emit('input',{isComposing:true});s.setBlocked(true);
+ assert.equal(s.key('Enter',{isComposing:true,keyCode:229}).prevented,undefined);el.value='小龍女';el.emit('compositionend');el.emit('input');
+ assert.equal(s.key('Enter').prevented,true);assert.equal(s.events.filter(e=>e.phase==='submit').length,0);
+ assert.equal(s.host.report().focused,'nickname');assert.equal(el.value,'小龍女');s.setBlocked(false);s.key('Enter');
+ assert.equal(s.events.filter(e=>e.phase==='submit').length,1);s.host.dispose();
+});
+
+test('text preview preserves native IME draft and focus, and matches a subsequent committed draw',()=>{
+ const s=setup();s.draw({text:'原名'});const el=s.sink();el.value='中文';el.setSelectionRange(1,2);el.emit('compositionstart');el.emit('input',{isComposing:true});
+ const candidate={world:{ui:{children:[s.node({text:'舊稿'})]}}},before=s.host.report(),events=s.events.length,focuses=s.focuses;
+ const staged=s.host.preview(candidate);assert.deepEqual(s.host.report(),before);assert.equal(s.events.length,events);assert.equal(s.focuses,focuses);
+ assert.equal(s.doc.activeElement,el);assert.equal(el.value,'中文');assert.deepEqual([el.selectionStart,el.selectionEnd],[1,2]);
+ assert.deepEqual(staged,s.host.draw(candidate));assert.equal(staged.world.ui.children[0].text_edit.composing,true);s.host.dispose();
+});
+
+test('text preview defers focus, removal and disable effects until commit',()=>{
+ for(const scenario of ['new','switch','remove','disable']){
+  const s=setup();if(scenario!=='new')s.draw({text:'甲'});
+  const before=s.host.report(),events=s.events.length,focuses=s.focuses,active=s.doc.activeElement;
+  const fields=scenario==='remove'?[]:scenario==='disable'?[s.node({text:'甲',enabled:false})]:scenario==='switch'?
+    [s.node({text:'甲',focused:false}),s.node({id:'other',text:'乙',focused:true})]:[s.node({text:'甲'})];
+  const candidate={world:{ui:{children:fields}}},staged=s.host.preview(candidate);
+  assert.deepEqual(s.host.report(),before,scenario);assert.equal(s.events.length,events,scenario);assert.equal(s.focuses,focuses,scenario);assert.equal(s.doc.activeElement,active,scenario);
+  assert.deepEqual(staged,s.host.draw(candidate),scenario);s.host.dispose();
+ }
+});
 
 test('screens without fields pass through without visiting image-batch payloads or creating a sink',()=>{
  const s=setup(),batch={kind:'image_batch',id:'map',get quads(){throw Error('editing host visited draw payload');}},

@@ -22,7 +22,7 @@ function hasTextInput(nodes,depth=1){
 }
 
 export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument??document,window:win=doc.defaultView??window,
-  onInteraction=()=>{},releaseKeyboard=()=>{},requestRender=()=>{},onDiagnostic=error=>{throw error;}}){
+  onInteraction=()=>{},releaseKeyboard=()=>{},requestRender=()=>{},isInputBlocked=()=>false,onDiagnostic=error=>{throw error;}}){
   const records=new Map(),captured=new Set(),ownedKeys=new Set(),listeners=[];
   let active=null,sink=null,disposed=false,suppressBlur=false,externalInput=false;
   const listen=(target,type,fn,options)=>{
@@ -101,6 +101,13 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
   }
   function routeKey(event,down){
     const key=event.code||event.key||'Unidentified';
+    if(isInputBlocked()){
+      // Preserve the OS's current composition, while preventing a fresh
+      // Enter/shortcut from being queued for a covered, paused screen.
+      const composing=active&&(active.composing||event.isComposing||event.keyCode===229);
+      if(!composing)event.preventDefault?.();
+      return true;
+    }
     if(!active&&!ownedKeys.has(key))return false;
     if(down&&active)ownedKeys.add(key);
     if(!down)ownedKeys.delete(key);
@@ -151,6 +158,35 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
     });
     const next={...world,ui:world.ui?{...world.ui,children}:world.ui};return value.world?{...value,world:next}:next;
   }
+  // Calculate the text/selection that draw() would paint without changing the
+  // native sink, focus, records or emitting interactions.  This allows a host
+  // to draw an uncommitted frame before it publishes input routing.
+  function preview(value){
+    if(disposed)throw Error('UI_TEXT_INPUT_DISPOSED');
+    const world=value.world??value,hasFields=hasTextInput(world.ui?.children);
+    if(!hasFields&&!records.size)return value;
+    const nodes=flattenUi(world.ui,world.ui_image_batches).filter(n=>n.kind==='text_input'&&visible(n));
+    if(nodes.length>64)throw Error('UI_TEXT_INPUT_LIMIT: at most 64 fields may be presented');
+    const staged=new Map();for(const [id,r]of records)staged.set(id,{...r});
+    let focused=active?.node.id??null;const live=new Set(nodes.map(n=>n.id));
+    for(const id of staged.keys())if(!live.has(id)){if(focused===id)focused=null;staged.delete(id);}
+    for(const node of nodes){
+      let r=staged.get(node.id),previous=r?.node;
+      if(!r){r={node,text:node.text,composing:false,start:null,end:null,local:false,lastChange:null};staged.set(node.id,r);}
+      r.node=node;
+      if(!r.local){if(r.text!==node.text){r.text=node.text;if(focused===node.id)r.start=r.end=node.text.length;}}
+      else if(focused!==node.id&&node.text===r.text)r.local=false;
+      if(!editable(node)){if(focused===node.id){r.composing=false;focused=null;}continue;}
+      if(node.focused===true&&previous?.focused!==true){
+        if(focused!==node.id){const old=staged.get(focused);if(old)old.composing=false;focused=node.id;r.composing=false;r.start=Math.min(r.start??r.text.length,r.text.length);r.end=Math.min(r.end??r.start,r.text.length);}
+      }else if(node.focused===false&&previous?.focused===true&&focused===node.id){r.composing=false;focused=null;}
+    }
+    if(!hasFields)return value;
+    const children=(world.ui?.children??[]).map(n=>{if(n.kind!=='text_input')return n;const r=staged.get(n.id);
+      return r?{...n,text:r.text,text_edit:{focused:focused===n.id,selection_start:r.start??r.text.length,
+        selection_end:r.end??r.text.length,composing:r.composing}}:n;});
+    const next={...world,ui:world.ui?{...world.ui,children}:world.ui};return value.world?{...value,world:next}:next;
+  }
   function pointer(event,kind,hit){
     const id=event.pointerId??0;
     if(captured.has(id)){if(kind==='up'||kind==='cancel')captured.delete(id);return true;}
@@ -162,7 +198,7 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
     }
     close('blur');return false;
   }
-  return {draw,pointer,routeKey,setExternalInput:value=>{externalInput=!!value;},suspend,
+  return {draw,preview,pointer,routeKey,setExternalInput:value=>{externalInput=!!value;},suspend,
     report:()=>({focused:active?.node.id??null,composing:active?.composing??false,fields:records.size,backend:'native-editing-sink'}),
     dispose(){if(disposed)return;active=null;disposed=true;for(const remove of listeners)remove();listeners.length=0;sink?.remove();sink=null;records.clear();captured.clear();ownedKeys.clear();},
   };

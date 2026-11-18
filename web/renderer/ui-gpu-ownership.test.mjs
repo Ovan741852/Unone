@@ -5,8 +5,8 @@ import {createGpuUi} from './ui-gpu.js';
 import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
 
 // Actual presenter/Three objects, with no GPU, DOM, raster-quality or GC claim.
-async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64,atlasNow}={}){
- const images=new Map(),leases=[],closed=[],surfaces=[];let scene=null,renders=0,failPaint=false;
+async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64,atlasNow,getFrameTarget}={}){
+ const images=new Map(),leases=[],closed=[],surfaces=[],targetCalls=[];let scene=null,renders=0,failPaint=false;
  const catalog=createAssetCatalog({assets:['a','b'].map(id=>({id,kind:'texture2d',source:id+'.png'}))});
  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source,loadImage:async id=>({id,width:2,height:2,close(){closed.push(id);}}),unusedMaxBytes:0,unusedMaxEntries:0});
  for(const id of ['a','b']){const lease=broker.acquire(id);leases.push(lease);await lease.promise;images.set(id,{image:lease.image});}
@@ -14,17 +14,19 @@ async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64,atlasNow}
  const gl={isContextLost:()=>false,pixelStorei(){},texSubImage2D(){}};
  const renderer={autoClear:true,capabilities:{maxTextureSize},getDrawingBufferSize:v=>v.set(bufferSize,bufferSize),getPixelRatio:()=>1,
   getContext:()=>gl,state:{bindTexture(){}},properties:{get:texture=>({__webglTexture:texture})},getScissorTest:()=>false,getRenderTarget:()=>null,getViewport:v=>v.set(0,0,64,64),
-  setRenderTarget(){},setScissorTest(){},setViewport(){},initTexture(){},render(value){scene=value;renders++;}};
- const ui=createGpuUi(THREE,renderer,{createSurface,uiTextAtlasSize,...(atlasNow?{atlasNow}:{})});
+  setRenderTarget(value){targetCalls.push(value);},setScissorTest(){},setViewport(){},initTexture(){},render(value){scene=value;renders++;}};
+ const ui=createGpuUi(THREE,renderer,{createSurface,uiTextAtlasSize,...(atlasNow?{atlasNow}:{}),...(getFrameTarget?{getFrameTarget}:{})});
  const image=id=>({kind:'image',id,asset:id,fit:'stretch',rect:{x:0,y:0,width:10,height:10}});
  // 16px wide against an 8px atlas forces the real dedicated-text path.
  const text=(value='old')=>({kind:'text',id:'label',text:value,rect:{x:0,y:25,width:25,height:25}});
  const draw=(nodes,changed=true)=>ui.draw({nodes,nodeKeys:nodes.map(n=>JSON.stringify(n)),batches:new Map(),images,scale:1,changed,identity:'fixed-font',hasText:n=>n.kind==='text',paintText(){if(failPaint)throw Error('PAINT_FAILED');},imageError(_node,_index,error){throw error;}});
- return {ui,renderer,broker,images,leases,closed,surfaces,image,text,draw,get renders(){return renders;},get meshes(){return scene?.children??[];},failPaint(){failPaint=true;},allowPaint(){failPaint=false;},
+ return {ui,renderer,broker,images,leases,closed,surfaces,targetCalls,image,text,draw,get renders(){return renders;},get meshes(){return scene?.children??[];},failPaint(){failPaint=true;},allowPaint(){failPaint=false;},
   dispose(){ui.dispose();for(const lease of leases)lease.release();broker.dispose();}};
 }
 const sampler=mesh=>mesh.material.uniforms.uiTexture.value;
 function watch(texture){let count=0;texture.addEventListener('dispose',()=>count++);return ()=>count;}
+
+test('transactional UI renders to the frame target and preserves original target',async()=>{const staged={id:'staged'},f=await fixture({getFrameTarget:()=>staged});try{f.draw([f.image('a')]);assert.equal(f.targetCalls[0],staged);assert.equal(f.targetCalls.at(-1),null);}finally{f.dispose();}});
 
 test('atlas policy defaults to 4096 and opt-in uses 2048 with accurately reported page bytes',async()=>{
  for(const [requested,expected] of [[undefined,4096],[2048,2048]]){

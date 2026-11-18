@@ -1,0 +1,2 @@
+import {createScreenFrameTarget} from './screen-frame-target.js';
+export function createDepthBlitProbe(THREE,renderer){const tx=createScreenFrameTarget(THREE,renderer);return {draw(fn){const size=renderer.getDrawingBufferSize(new THREE.Vector2());const begin=tx.begin({width:size.x,height:size.y,depth:true});if(begin.status!=='completed')throw Error(JSON.stringify(begin));fn();const commit=tx.commit();if(commit.status!=='completed')throw Error(JSON.stringify(commit));tx.dispose();}};}

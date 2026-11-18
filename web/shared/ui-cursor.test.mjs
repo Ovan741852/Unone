@@ -15,6 +15,19 @@ function surface(){
  return {target,layer,context,calls,handlers,focus,focusHandlers,emit};
 }
 
+test('preparing a pending cursor does not alter the displayed cursor and a later commit reuses its lease',async()=>{
+ const f=surface(),bitmap={width:17,height:19},pending={state:'loading',image:null};let resolve,released=0;
+ pending.promise=new Promise(yes=>resolve=yes);
+ const broker={acquire(id){return id===image.asset?{state:'ready',image:bitmap,promise:Promise.resolve(bitmap),release(){released++;}}:
+  {get state(){return pending.state;},get image(){return pending.image;},promise:pending.promise,release(){released++;}};}};
+ const host=createUiCursorHost({...f,getImageAssets:()=>broker,onError:e=>{throw e;}});f.emit(74,60);host.update(image);
+ const before=host.report(),callCount=f.calls.length,newCursor={...image,asset:'texture://new'},prepared=host.prepare(newCursor);
+ assert.equal(prepared.outcome.reason,'cursor_assets_pending');assert.deepEqual(host.report(),{...before,shared_image_leases:2});
+ assert.equal(f.calls.length,callCount);assert.equal(f.target.style.cursor,'none');assert.equal(released,0);
+ pending.state='ready';pending.image=bitmap;resolve(bitmap);await prepared.ready;await Promise.resolve();
+ assert.equal(host.prepare(newCursor).outcome.status,'completed');host.update(newCursor);assert.equal(released,1);host.dispose();assert.equal(released,2);
+});
+
 test('strict shape and explicit default/hidden/image',()=>{
  assert.equal(validateCursor(null).kind,'default');assert.deepEqual(validateCursor(image),image);
  for(const bad of [{kind:'hand'},{kind:'hidden',asset:'x'},{...image,width:0},{...image,width:17.5},

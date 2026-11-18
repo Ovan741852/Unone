@@ -26,7 +26,7 @@ export function loadCursorImage(url){
 export function createUiCursorHost({target,layer,focus=globalThis.window,loadImage,getImageAssets,onError=error=>{throw error;}}){
  if(getImageAssets!==undefined&&typeof getImageAssets!=='function')throw Error('UI_CURSOR_IMAGE_PROVIDER_INVALID');
  const context=layer.getContext('2d');if(!context)throw Error('UI_CURSOR_CANVAS_UNAVAILABLE');
- const previous=target.style.cursor,images=new Map(),readyWaiters=new Set();let spec={kind:'default'},pointer=null,disposed=false,visible=false,rect=null;
+ const previous=target.style.cursor,images=new Map(),readyWaiters=new Set();let spec={kind:'default'},preparedAsset=null,pointer=null,disposed=false,visible=false,rect=null;
  Object.assign(layer.style,{position:'fixed',pointerEvents:'none',zIndex:'2147483000'});
  function restore(){if(target.style.cursor==='none')target.style.cursor=previous;}
  // Nothing else draws on the layer: a layer with no cursor on it needs no clearing every frame.
@@ -50,8 +50,8 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
     else entry.lease.promise.then(adopt).catch(failed);
    }catch(error){failed(error);}return entry;
   }
-  let loading;try{loading=loadImage(asset);}catch(error){entry.error=true;clear();onError(error);return entry;}
-  Promise.resolve(loading).then(image=>{
+  let loading;try{loading=loadImage(asset);}catch(error){entry.error=true;if(spec.kind==='image'&&spec.asset===asset){clear();onError(error);}return entry;}
+  entry.promise=Promise.resolve(loading).then(image=>{
    if(!current())return;entry.image=image;if(spec.kind==='image'&&spec.asset===asset)renderAndNotify();
   }).catch(failed);
   return entry;
@@ -87,7 +87,20 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  target.addEventListener('pointermove',move,{passive:true});target.addEventListener('pointerenter',move,{passive:true});
  target.addEventListener('pointerleave',leave,{passive:true});focus?.addEventListener('blur',leave);
  return {
-  update(value){if(disposed)return DRAW_SKIPPED.cursor_diagnostics;const next=validateCursor(value);spec=next;
+  // Prepare a future cursor without changing the visible cursor, CSS style,
+  // pointer state or the currently presented cursor's image lease.
+  prepare(value){
+   if(disposed)return {outcome:DRAW_SKIPPED.cursor_diagnostics};
+   const next=validateCursor(value),candidate=next.kind==='image'?next.asset:null;
+   if(preparedAsset&&preparedAsset!==candidate&&!(spec.kind==='image'&&preparedAsset===spec.asset)){
+    const retired=images.get(preparedAsset);if(retired)retire(preparedAsset,retired);
+   }
+   preparedAsset=candidate;if(!candidate)return {outcome:DRAW_COMPLETED};
+   const entry=resource(next.asset);
+   return {outcome:entry.image?DRAW_COMPLETED:entry.error?DRAW_SKIPPED.cursor_diagnostics:DRAW_SKIPPED.cursor_assets_pending,
+    ...((entry.lease?.promise??entry.promise)?{ready:entry.lease?.promise??entry.promise}:{})};
+  },
+  update(value){if(disposed)return DRAW_SKIPPED.cursor_diagnostics;const next=validateCursor(value);preparedAsset=null;spec=next;
    // Pin the incoming cursor before retiring the outgoing lease can sweep it
    // from the shared idle cache. Retire old ownership even if onError throws.
    try{if(spec.kind==='image')resource(spec.asset);}

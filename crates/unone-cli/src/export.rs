@@ -2,6 +2,8 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "player/main.js",
         "renderer/three.js",
         "renderer/webgl-desynchronized.js",
+        "renderer/webgl-default-depth.js",
+        "renderer/screen-frame-target.js",
         "renderer/mesh.js",
         "renderer/projected.js",
         "renderer/ui-image-batch-prefix.js",
@@ -36,6 +38,10 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "renderer/renderer-clear-lifecycle.js",
         "shared/startup-presentation.mjs",
         "shared/startup-screen.mjs",
+        "shared/atomic-frame-presenter.mjs",
+        "shared/presentation-wait-clock.mjs",
+        "shared/ui-asset-preflight.mjs",
+        "shared/ui-frame-wait.mjs",
         "shared/player-completion.mjs",
         "shared/player-performance-feed.mjs",
         "shared/player-memory.mjs",
@@ -270,6 +276,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             || (path == "shared/ui-style.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-presentation.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-image-batch.mjs" && !settings.is_enabled("ui"))
+            || (path == "shared/ui-asset-preflight.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-scroll.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-contract.mjs" && !settings.is_enabled("ui"))
             || (path == "shared/ui-geometry.mjs" && !settings.is_enabled("ui"))
@@ -315,17 +322,20 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
                 text = replace_required(
                     text,
                     "import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';",
-                    "const disabledUiCompleted = Object.freeze({status:'completed'}); const createCanvasUi = () => ({draw:()=>disabledUiCompleted,ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},setAssetObserver(){},assetDiagnostics:()=>null,report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})}); const loadPresentationFonts = async () => {};",
+                    "const disabledUiCompleted = Object.freeze({status:'completed'}); const createCanvasUi = () => ({draw:()=>disabledUiCompleted,stagedRoute:()=>null,commitRoute(){},abortRoute(){},invalidateAssets(){},ready:async()=>{},pointer(){return false},hitTest(){return null},releaseAll(){},setFont(){},setAssetObserver(){},assetDiagnostics:()=>null,report:()=>({backend:'disabled',nodes:0,render_regions:0,assets:[],diagnostics:[]})}); const loadPresentationFonts = async () => {};",
                 )?;
                 text = replace_required(text,
                     "import {createUiTextInputHost} from '../shared/ui-text-input.mjs';",
-                    "const createUiTextInputHost = () => ({draw:s=>s,pointer:()=>false,routeKey:()=>false,setExternalInput(){},suspend(){},dispose(){}});")?;
+                    "const createUiTextInputHost = () => ({draw:s=>s,preview:s=>s,report:()=>({composing:false}),pointer:()=>false,routeKey:()=>false,setExternalInput(){},suspend(){},dispose(){}});")?;
                 text = replace_required(text,
                     "import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';",
-                    "const createUiCursorHost = () => ({update:()=>disabledUiCompleted,ready:async()=>{},dispose(){},report:()=>({kind:'default'})}); const loadCursorImage = async () => null;")?;
+                    "const createUiCursorHost = () => ({prepare:()=>({outcome:disabledUiCompleted}),update:()=>disabledUiCompleted,invalidateAssets(){},ready:async()=>{},dispose(){},report:()=>({kind:'default'})}); const loadCursorImage = async () => null;")?;
                 text = replace_required(text,
                     "import {createUiScrollHost} from '../shared/ui-scroll.mjs';",
-                    "const createUiScrollHost = () => ({draw:s=>s,pointer:()=>false,routeKey:()=>false,routeWheel:()=>false,setExternalInput(){},cancel(){},dispose(){}});")?;
+                    "const createUiScrollHost = () => ({draw:s=>s,preview:s=>s,pointer:()=>false,routeKey:()=>false,routeWheel:()=>false,setExternalInput(){},cancel(){},dispose(){}});")?;
+                text = replace_required(text,
+                    "import {createUiAssetPreflight} from '../shared/ui-asset-preflight.mjs';",
+                    "const createUiAssetPreflight = () => ({update:()=>({outcome:disabledUiCompleted}),ready:async()=>{},release(){},dispose(){}});")?;
             }
             if !settings.is_enabled("audio") {
                 text = replace_required(
@@ -771,6 +781,29 @@ mod tests {
             json!({"ui_capacity":"fail","script_errors":"continue","max_consecutive_script_errors":5}));
         assert_eq!(resolved(Some(json!({"ui_capacity":"keep_previous"})),true),strict,"a declaration never relaxes a development player");
     }
+    #[test]
+    fn web_default_depth_export_is_optional_and_preserves_explicit_values() {
+        assert!(WEB_FILES.contains(&"renderer/webgl-default-depth.js"));
+        assert!(WEB_FILES.contains(&"renderer/screen-frame-target.js"));
+        let dir=tempfile::tempdir().unwrap();
+        let run=|declared:Option<Value>| {
+            match declared {
+                Some(value)=>fs::write(dir.path().join("player.presentation.json"),serde_json::to_vec(&value).unwrap()).unwrap(),
+                None=>{let _=fs::remove_file(dir.path().join("player.presentation.json"));}
+            }
+            let mut files=vec![];
+            let mut presentation=append_presentation(dir.path(),&mut files).unwrap();
+            resolve_error_policy(&mut presentation,&mut files,false).unwrap();
+            serde_json::from_slice::<Value>(&files.iter().find(|(path,_)|path=="content/presentation.json").unwrap().1).unwrap()
+        };
+        assert!(run(None).get("webgl_default_depth").is_none());
+        for value in [true,false] {
+            assert_eq!(run(Some(json!({"webgl_default_depth":value})))["webgl_default_depth"],value);
+        }
+        fs::write(dir.path().join("player.presentation.json"),br#"{"webgl_default_depth":null}"#).unwrap();
+        assert!(append_presentation(dir.path(),&mut vec![]).is_err());
+    }
+
     #[test]
     fn both_hosts_package_default_presentation_and_explicit_font() {
         let dir=tempfile::tempdir().unwrap();let mut files=vec![];
